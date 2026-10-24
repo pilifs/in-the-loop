@@ -107,6 +107,24 @@ Lift bytecode to an intermediate representation, and let an existing verifier ge
 
 These give fast, cheap counterexamples. Run them before attempting a B1 proof.
 
+Finding (October 2026): JBMC 6.11 does not handle Java 21+ bytecode as it ships. It treats the `typeSwitch` invokedynamic of a
+pattern `switch` as an unknown value, so it reports spurious failures. It also has no models for `List.of`, `List.copyOf`,
+record `equals` or `Math.multiplyExact`. A bytecode pre-pass that lowers `typeSwitch` to `instanceof` chains is a prerequisite.
+
+### B8. Behavioural contracts (POC in [`tools/contracts`](../tools/contracts/README.md))
+
+Treat verification as a contract that changes only when the developer intends it to. For a method, the contract is
+the outcome of every input, derived from the bytecode and checked in. The build fails on any drift, and the pull-request
+diff of the contract shows reviewers each changed case. The proof has three steps:
+
+1. Purity is proved from bytecode, by a closed-world walk through sealed hierarchies with a small trusted JDK list.
+2. The input domain is derived from types: enums, booleans, records and sealed interfaces are finite.
+3. Every input is executed.
+
+It runs in `./gradlew check` and emits SARIF for GitHub and SonarQube. On Box Office it caught a refactor that changed
+null handling, which the agent that wrote the refactor believed was equivalent. Infinite domains are the next step:
+equivalence of old and new bytecode, outside the declared changes, using JBMC (after the pre-pass above) or an SMT solver.
+
 ### B6. Proof-carrying bytecode (outside the box)
 
 The JVM's own bytecode verifier is already a proof checker: `StackMapTable` frames are type certificates.

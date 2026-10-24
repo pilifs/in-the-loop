@@ -85,6 +85,7 @@ Placing an order, step by step:
 ## Invariants: what verification should establish
 
 These are the properties the verification scenarios target. `system-tests` checks the safety properties at quiescence after every test, and `OrderLifecycleTest` model-checks the state machine for every input sequence up to six inputs long.
+`OrderLifecycle#decide` also has a [behavioural contract](ticketing-domain/src/contract/OrderLifecycle.decide.contract), which `./gradlew check` verifies against the bytecode ([`tools/contracts`](../../tools/contracts/README.md)).
 
 **Safety**
 

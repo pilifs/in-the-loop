@@ -2,6 +2,11 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
+// The behavioural-contract verifier, built from source (tools/contracts).
+includeBuild("../../tools/contracts") {
+    name = "contract-verifier"
+}
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
