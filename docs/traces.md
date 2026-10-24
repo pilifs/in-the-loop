@@ -78,10 +78,29 @@ Plain `jj commit` and `jj describe` also work. The hook adds the `LLM-Trace` lin
 
 ## Storage
 
-Logs are gitignored because they are large: about 3 MB raw and 0.7 MB gzipped per hour of session.
-Because they are content-addressed, the storage backend can change without touching any identifier.
-For example: GitHub release assets, a Hugging Face dataset, S3 or R2, or Git LFS.
-Upload URLs go in `log.locations`. Until a log is uploaded, `check` requires it to exist locally.
+Logs are gitignored in the repo and published on Cloudflare at a deterministic URL:
+
+```
+https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
+```
+
+so anyone can turn the `LLM-Trace:` line of a commit into a download, then check it:
+
+```bash
+curl -s https://terminalvalue.net/raw-traces/<sid>/<sha>.jsonl.gz | gunzip | sha256sum   # equals <sha>
+```
+
+- **R2 bucket `llm-traces`** holds the files. The object key is the URL path.
+- **Worker `raw-traces`** ([`infra/cdn/`](../infra/cdn)) serves them on the route `terminalvalue.net/raw-traces/*`.
+  It runs ahead of the Pages site on the same domain, so the site is unaffected and a site deploy cannot remove the logs.
+  It is read-only (GET and HEAD only), rejects keys that are not `<uuid>/<64 hex>.jsonl.gz`, serves `application/gzip` without re-encoding, and caches each log at the edge forever (`immutable`).
+- **`sync.py upload`** uploads only the logs that commits point at, plus subagent logs; it skips `@`, whose log changes every turn.
+  After each upload it downloads the log again through the CDN, verifies its SHA-256, and only then records the URL in `manifest.uploads`, `commits[].log_url` and `log.locations`.
+  `jj trace-push` runs the upload before pushing, so no pushed commit points at a log nobody else can fetch.
+- **`sync.py check --remote`** downloads every recorded upload again and checks its hash.
+
+Deploying the Worker: `cd infra/cdn && npx wrangler deploy`. Wrangler 4.149 uploads the script, then fails with error 10007 before it creates the route.
+The route (`terminalvalue.net/raw-traces/*` → `raw-traces`) was created through the zone's Workers Routes API and already exists, so redeploys only need the script upload.
 
 The first commit (`qxqvplms`) predates this layout. Its log is checked into that commit under `traces/sessions/`, and its message line has no `sha256:`. `check` reports it as a legacy note.
 

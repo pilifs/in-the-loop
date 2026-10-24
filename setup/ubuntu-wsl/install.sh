@@ -11,6 +11,7 @@ set -euo pipefail
 
 DEFAULT_COMPONENTS=(system devtools jvm k8s verify provers)
 OPTIONAL_COMPONENTS=(rocq isabelle acl2 angr)
+NODE_VERSION=24.21.0           # LTS; pinned for reproducible wrangler runs
 
 BIN="$HOME/.local/bin"
 TOOLS="$HOME/tools"
@@ -128,6 +129,13 @@ install_devtools() {
   step "gh (GitHub CLI)"
   fetch_tar "$(gh_asset cli/cli "^gh_.*_linux_$ARCH\\.tar\\.gz$")" "$TOOLS/gh"
   link_bin "$TOOLS/gh" gh
+
+  step "Node.js $NODE_VERSION (for wrangler / Cloudflare; Windows' node under /mnt/c is not usable here)"
+  local node_arch=$([[ $ARCH == arm64 ]] && echo arm64 || echo x64)
+  rm -rf "$TOOLS/node"; mkdir -p "$TOOLS/node"
+  curl -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$node_arch.tar.xz" \
+    | tar -xJ -C "$TOOLS/node" --strip-components=1
+  for b in node npm npx; do ln -sf "$TOOLS/node/bin/$b" "$BIN/$b"; done
 }
 
 # --------------------------------------------------------------------------- Kubernetes

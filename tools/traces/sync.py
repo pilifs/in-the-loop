@@ -6,6 +6,8 @@ Layout (docs/traces.md has the full spec):
   traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
   traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
 
+Public URL of a log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
+
 Identifiers:
   session   the Claude Code session UUID
   log       sha256 of the *uncompressed* redacted JSONL; a snapshot file never changes
@@ -17,8 +19,9 @@ Commands:
   sync.py hook                  Claude Code Stop/SessionEnd hook (hook JSON on stdin)
   sync.py sync [--all | ID...]  snapshot sessions of this repo from ~/.claude/projects
   sync.py commit -m MESSAGE     finish @ with trailers matching its manifest (alias: jj trace-commit)
-  sync.py push [JJ PUSH ARGS]   sync, check, then `jj git push` (alias: jj trace-push)
-  sync.py check                 verify hashes, trailers and redaction (non-zero on error)
+  sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
+  sync.py push [JJ PUSH ARGS]   sync, upload, check, then `jj git push` (alias: jj trace-push)
+  sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
 
 Standard library only. The hook never fails a session; errors go to
@@ -55,6 +58,12 @@ JJ = shutil.which("jj") or str(Path.home() / ".local" / "bin" / "jj")
 MAX_ATTR = 64 * 1024           # truncate large tool outputs sent to Langfuse
 LIVE_SECONDS = 600             # a transcript written this recently may have an unfinished turn
 EDIT_TOOLS = {"Edit", "Write", "NotebookEdit", "MultiEdit"}
+# Logs are served from R2 by the Worker in infra/cdn; the URL path is the object key.
+CDN_BASE = "https://terminalvalue.net"
+CDN_BUCKET = "llm-traces"
+CDN_DIR = REPO / "infra" / "cdn"
+NODE = shutil.which("node") or str(Path.home() / ".local" / "bin" / "node")
+WRANGLER = CDN_DIR / "node_modules" / "wrangler" / "bin" / "wrangler.js"  # pinned in infra/cdn/package.json
 
 
 # --------------------------------------------------------------------------- redaction
@@ -338,8 +347,8 @@ def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, 
     entries = read_jsonl(data)
     old = load_manifest(sid)
     log = store_log(sid, data)
-    if old.get("log", {}).get("sha256") == log["sha256"]:
-        log["locations"] = old["log"].get("locations", [])
+    if url := old.get("uploads", {}).get(log["sha256"]):
+        log["locations"] = [url]
     subagents = []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
@@ -355,6 +364,7 @@ def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, 
         "log": log,
         "subagents": subagents,
         "commits": old.get("commits", []),
+        "uploads": old.get("uploads", {}),
         "langfuse": {"project": read_env(LANGFUSE_ENV).get("LANGFUSE_INIT_PROJECT_ID"), "session_id": sid},
         "redaction_policy": REDACTION_POLICY,
         "generator": "tools/traces/sync.py",
@@ -426,7 +436,8 @@ def link_commits(sid: str, m: dict) -> None:
                         "commit_id": c["commit_id"] if c["immutable"] else None,
                         "immutable": c["immutable"],
                         "summary": c["description"].split("\n", 1)[0],
-                        "log_sha256": (shas[0] or None) if shas else None})
+                        "log_sha256": (shas[0] or None) if shas else None,
+                        "log_url": m.get("uploads", {}).get(shas[0]) if shas and shas[0] else None})
     m["commits"] = sorted(commits, key=lambda c: (not c["immutable"], c["change_id"]))
     save_manifest(sid, m)
 
@@ -559,6 +570,72 @@ def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool) -> int:
     return len(pending)
 
 
+# --------------------------------------------------------------------------- CDN upload
+
+def log_url(sid: str, sha: str) -> str:
+    return f"{CDN_BASE}/raw-traces/{sid}/{sha}.jsonl.gz"
+
+
+def fetch_log(url: str) -> bytes:
+    req = urllib.request.Request(url, headers={"User-Agent": "llm-traces-sync"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return gzip.decompress(r.read())
+
+
+def remote_matches(url: str, sha: str) -> bool:
+    try:
+        return hashlib.sha256(fetch_log(url)).hexdigest() == sha
+    except (OSError, EOFError, gzip.BadGzipFile):
+        return False
+
+
+def upload_log(sid: str, sha: str) -> str:
+    """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns those bytes."""
+    url = log_url(sid, sha)
+    if remote_matches(url, sha):
+        return url
+    path = log_path(sid, sha)
+    if not path.exists():
+        raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
+    key = f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz"
+    if not WRANGLER.exists():
+        raise FileNotFoundError("wrangler is not installed; run: python3 tools/traces/sync.py init")
+    r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "put", key, "--remote",
+                        "--file", str(path), "--content-type", "application/gzip"],
+                       cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
+                       env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
+    if r.returncode != 0:
+        raise RuntimeError(f"wrangler r2 object put failed:\n{r.stdout}{r.stderr}")
+    if not remote_matches(url, sha):
+        raise RuntimeError(f"uploaded {url} but the CDN does not serve content with sha256 {sha}")
+    return url
+
+
+def cmd_upload() -> int:
+    """Upload every log a commit points at (and subagent logs), then record the URLs."""
+    failed = 0
+    # @'s log is replaced every turn; upload it only once @ stops being the working copy.
+    at = jj_commits("@")[0]["change_id"] if has_jj() else None
+    for sid, m in all_manifests().items():
+        if m.get("schema") != SCHEMA:
+            continue
+        wanted = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256") and c["change_id"] != at}
+        wanted |= {s["log"]["sha256"] for s in m.get("subagents", [])}
+        uploads = m.setdefault("uploads", {})
+        for sha in sorted(wanted - uploads.keys()):
+            try:
+                uploads[sha] = upload_log(sid, sha)
+                print(f"uploaded {uploads[sha]}")
+            except (OSError, RuntimeError) as e:
+                print(f"ERROR {e}", file=sys.stderr)
+                failed += 1
+        for c in m.get("commits", []):
+            c["log_url"] = uploads.get(c.get("log_sha256"))
+        m["log"]["locations"] = [uploads[m["log"]["sha256"]]] if m["log"]["sha256"] in uploads else []
+        save_manifest(sid, m)
+    return 1 if failed else 0
+
+
 # --------------------------------------------------------------------------- commands
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool) -> dict:
@@ -615,6 +692,10 @@ def cmd_commit(args: list[str]) -> int:
 
 def cmd_push(args: list[str]) -> int:
     cmd_sync([])
+    if cmd_upload() != 0:
+        print("log upload failed; not pushing", file=sys.stderr)
+        return 1
+    cmd_sync([])  # restamp @ now that the manifest records the uploads
     if cmd_check() != 0:
         print("trace check failed; not pushing", file=sys.stderr)
         return 1
@@ -624,7 +705,7 @@ def cmd_push(args: list[str]) -> int:
     return r.returncode
 
 
-def cmd_check() -> int:
+def cmd_check(remote: bool = False) -> int:
     redact, errors, notes = Redactor(), [], []
     manifests = all_manifests()
     for sid, m in manifests.items():
@@ -633,11 +714,17 @@ def cmd_check() -> int:
             continue
         logs = [m["log"]] + [s["log"] for s in m.get("subagents", [])]
         logs += [{"sha256": c["log_sha256"]} for c in m.get("commits", []) if c.get("log_sha256")]
+        uploads = m.get("uploads", {})
+        for sha, url in uploads.items():
+            if url != log_url(sid, sha):
+                errors.append(f"{sid}: upload URL {url} does not match its sha256")
+            elif remote and not remote_matches(url, sha):
+                errors.append(f"{sid}: CDN does not serve log {sha[:12]} at {url}")
         for lg in logs:
             data = load_log(sid, lg["sha256"])
             if data is None:
-                (errors if not lg.get("locations") else notes).append(
-                    f"{sid}: log {lg['sha256'][:12]} not stored locally")
+                if lg["sha256"] not in uploads:
+                    errors.append(f"{sid}: log {lg['sha256'][:12]} is neither stored locally nor uploaded")
                 continue
             if hashlib.sha256(data).hexdigest() != lg["sha256"]:
                 errors.append(f"{sid}: log {lg['sha256'][:12]} content does not match its name")
@@ -657,7 +744,7 @@ def cmd_check() -> int:
                     notes.append(f"{where}: legacy trailer without sha256 for {sid}")
                 elif sid not in manifests:
                     errors.append(f"{where}: session {sid} has no manifest")
-                elif load_log(sid, sha) is None and not manifests[sid]["log"].get("locations"):
+                elif load_log(sid, sha) is None and sha not in manifests[sid].get("uploads", {}):
                     errors.append(f"{where}: points at log {sha[:12]} that is not stored")
                 else:
                     # The manifest committed in the same tree should name the same log.
@@ -684,6 +771,8 @@ def cmd_init() -> None:
         ["util", "exec", "--", "bash", "-c",
          'exec python3 "$JJ_WORKSPACE_ROOT/tools/traces/sync.py" commit "$@"', "--"]))
     print("jj repo config set: snapshot.max-new-file-size=100MiB, aliases trace-commit, trace-push")
+    r = subprocess.run([shutil.which("npm") or "npm", "ci", "--no-fund", "--no-audit"], cwd=CDN_DIR)
+    print("infra/cdn: pinned wrangler installed" if r.returncode == 0 else "infra/cdn: npm ci failed")
 
 
 def log(msg: str) -> None:
@@ -702,8 +791,10 @@ def main(argv: list[str]) -> int:
         return cmd_commit(args)
     elif cmd == "push":
         return cmd_push(args)
+    elif cmd == "upload":
+        return cmd_upload()
     elif cmd == "check":
-        return cmd_check()
+        return cmd_check(remote=args == ["--remote"])
     elif cmd == "init":
         cmd_init()
     else:

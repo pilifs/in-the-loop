@@ -1,0 +1,12 @@
+# Worker that serves trace logs at terminalvalue.net/raw-traces/* (see docs/traces.md).
+# Deploy: cd infra/cdn && npx wrangler deploy
+# The route takes precedence over the Pages site on the same zone, for this path only.
+name = "raw-traces"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+routes = [{ pattern = "terminalvalue.net/raw-traces/*", zone_name = "terminalvalue.net" }]
+
+[[r2_buckets]]
+binding = "TRACES"
+bucket_name = "llm-traces"
