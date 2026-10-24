@@ -657,6 +657,8 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
                   f"peak context {s['peak_context_tokens']:,}",
         "log_url": log_url(sid, m["log"]["sha256"]),
         "log_sha256": m["log"]["sha256"],
+        "log_sha256_short": m["log"]["sha256"][:12],
+        "log_size": f"{m['log']['gzip_bytes'] / 1e6:.1f} MB",
         "changes": "\n\n".join(changes) or "*No commits yet.*",
         "turns": "\n\n".join(turns) or "*No prompts yet.*",
         "files": "\n".join(f"- `{f}`" for f in m.get("files_touched", [])) or "*None.*",
