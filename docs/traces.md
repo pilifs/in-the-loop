@@ -1,62 +1,97 @@
 # LLM traces
 
-Every Claude Code session in this repo is published with the code it produced.
+Every Claude Code session in this repo is published alongside the code it produced.
 The aim is to make sharing LLM traces normal: a reader can see the code, the prompts,
-the model's reasoning, and every tool call that led to each change.
+the model's reasoning, and every tool call that led to each commit.
 
-## What gets recorded
+## Layout
 
-| Where | What |
+```
+traces/<session-id>/manifest.json                 checked in
+traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
+```
+
+- **Manifest:** describes one session, meaning one context window plus any windows after a compaction.
+  It holds high-level stats and points at the log.
+- **Log:** the full redacted transcript (prompts, responses, thinking, tool calls and results, and raw API request records), stored gzipped.
+  Subagent transcripts are separate logs in the same folder, listed under `subagents`.
+
+## Identifiers
+
+These are the stable part of the design. Everything else may change.
+
+| Identifier | Definition | Properties |
+|---|---|---|
+| **Session ID** | The UUID that Claude Code assigns to a session | Names the folder and is the Langfuse session ID |
+| **Log ID** | `sha256` of the **uncompressed** redacted JSONL | Content-addressed: the file `<sha256>.jsonl.gz` never changes. A new state of the transcript is a new file. Any blob store keyed by the hash can serve it. |
+| **Commit → trace** | One message line per session: `LLM-Trace: <session-id> sha256:<log-sha256>` | Standard git trailer syntax: `git interpret-trailers --parse` reads it |
+| **Trace → commits** | `manifest.commits[]`: each entry has a jj `change_id` (survives rewrites), plus `commit_id` (the git SHA) once the commit is immutable | Derived from the commit trailers on every sync, so the two directions agree |
+
+**Invariants**, which `sync.py check` verifies:
+
+1. Every `sha256:` in a commit message names a log whose content hashes to that value.
+2. A log that a commit points at contains the whole conversation up to that commit.
+   Logs are append-only: a later log of the same session starts with the exact bytes of every earlier one.
+3. For a commit made with `jj trace-commit`, the `manifest.json` inside that commit's tree has the same `log.sha256` as the commit message.
+   A plain `jj commit` gets its `LLM-Trace` line at the end of the next turn, pointing at a newer log, which `check` notes.
+4. The hook never changes a pushed (immutable) commit. A change other than `@` gets its `LLM-Trace` line once. Only `@` is re-stamped each turn, together with its manifest.
+
+A log's bytes depend on the redaction rules, so `manifest.redaction_policy` records the version.
+A new policy produces new log IDs. Logs that commits already point at are kept.
+
+## Manifest fields
+
+| Field | Content |
 |---|---|
-| `traces/sessions/<session-id>.jsonl` | The full Claude Code transcript, redacted: prompts, responses, tool calls and results, raw API request records. `.jsonl.gz` above 45 MB. |
-| `traces/sessions/<session-id>/subagents/*.jsonl` | Transcripts of subagents spawned by that session |
-| `traces/manifest.json` | One record per session: file, SHA-256, title, time span, client version, models, turns, token usage, and the jj changes it touched |
-| jj change descriptions | One `LLM-Trace: <session-id>` trailer per session that touched the change |
-| Local Langfuse (`http://localhost:3000`) | The same sessions as browsable traces: one trace per turn, with generation and tool spans, grouped by session ID |
+| `schema` | `llm-trace-manifest/v1` |
+| `session_id`, `status` | `open` while the session runs, `ended` after `SessionEnd` |
+| `title`, `first_prompt`, `client`, `models` | What the session was and what ran it |
+| `started`, `ended`, `duration_seconds` | Time span |
+| `stats` | Turns, API calls, tool calls and errors, compactions, peak context tokens, and token usage (input, output, cache read, cache write) |
+| `tools` | Count of calls per tool |
+| `files_touched` | Files written by Edit and Write (repo-relative) |
+| `context_windows[]` | The same stats for each window between compactions |
+| `log` | `sha256`, `bytes`, `lines`, local `path`, `gzip_sha256`, `gzip_bytes`, and `locations` (upload URLs, empty for now) |
+| `subagents[]` | For each subagent: its stats and its own `log` |
+| `commits[]` | `change_id`, `commit_id`, `immutable`, `summary`, `log_sha256` |
+| `langfuse`, `redaction_policy`, `generator` | Where to browse the session, and how the files were produced |
 
-The **session ID is the primary key** everywhere: it names the trace file, keys the manifest,
-appears in the jj trailer, and serves as the Langfuse session ID.
+## Workflow
 
+`.claude/settings.json` runs `tools/traces/sync.py hook` at the end of every turn (`Stop`) and when a session ends (`SessionEnd`). The hook:
+
+1. Redacts the transcript, stores a new log snapshot, and rewrites the manifest.
+2. Updates the `LLM-Trace` lines in jj. The current change (`@`) always points at the latest log. Earlier changes made in this session get a line only if they lack one.
+3. Deletes logs that neither the manifest nor any commit points at.
+4. Sends finished turns to Langfuse (`http://localhost:3000`), if it is running.
+
+```bash
+python3 tools/traces/sync.py init      # once per clone: jj file-size limit and the two aliases below
+jj trace-commit -m "Summary line"      # finish @; its message and its manifest point at the same log
+jj trace-push --bookmark main          # sync, check, push, then record the new git SHAs
+python3 tools/traces/sync.py check     # verify hashes, trailers and redaction
+python3 tools/traces/sync.py sync --all  # backfill every session of this repo
+jj log -r 'description(substring:"LLM-Trace:")'   # changes that have traces
 ```
-jj change ──LLM-Trace: <sid>──▶ traces/manifest.json["sessions"][<sid>] ──file──▶ traces/sessions/<sid>.jsonl
-          ◀──jj_changes[]───────                                       ──langfuse.session_id──▶ Langfuse session
-```
 
-## How it works
+Plain `jj commit` and `jj describe` also work. The hook adds the `LLM-Trace` line on the next turn.
 
-`.claude/settings.json` runs `tools/traces/sync.py hook` on every `Stop`, which fires at the end of each turn, and on `SessionEnd`. The hook:
+## Storage
 
-1. Redacts the session transcript, together with any subagent transcripts, and writes it into `traces/sessions/`.
-2. Records the current jj change (`@`) in the manifest. It then adds an `LLM-Trace` trailer to each mutable change listed for each session (`relink`).
-3. Exports newly completed turns to Langfuse over OTLP. If Langfuse is down, it retries those turns on the next hook.
+Logs are gitignored because they are large: about 3 MB raw and 0.7 MB gzipped per hour of session.
+Because they are content-addressed, the storage backend can change without touching any identifier.
+For example: GitHub release assets, a Hugging Face dataset, S3 or R2, or Git LFS.
+Upload URLs go in `log.locations`. Until a log is uploaded, `check` requires it to exist locally.
 
-The trace file is written into the working copy, so a change contains the transcript that produced it.
-The hook never fails a session. Its errors go to `~/.local/state/llm-traces/hook.log`.
+The first commit (`qxqvplms`) predates this layout. Its log is checked into that commit under `traces/sessions/`, and its message line has no `sha256:`. `check` reports it as a legacy note.
 
 ## Redaction
 
-Traces are published, so `sync.py` redacts every JSON string, including keys, before writing:
+Traces are published, so `sync.py` redacts every JSON string, including keys, before hashing:
 
-- your home directory becomes `~`, your username becomes `user`, and your git, jj and Claude account emails become `user@example.com`
-- values of the secrets in `infra/langfuse/.env` are removed
+- your home directory becomes `~`, your username becomes `user`, and your git, jj and Claude account emails (including the part before the `@`) become `user@example.com`
+- the secret values in `infra/langfuse/.env` are removed
 - common token formats are removed: Anthropic, Langfuse, GitHub, AWS and Slack tokens, private keys, and bearer tokens
 - extra literals in `~/.config/llm-traces/redact.txt` are applied, one per line, as `literal` or `literal => replacement`
 
-`sync.py check` re-scans every published file for these, and also verifies hashes and trailers.
-**Read a trace before you push it.** Redaction catches identifiers and known token formats, not everything you might paste into a prompt.
-
-## Commands
-
-```bash
-infra/langfuse/up.sh                       # start Langfuse; first run generates .env with keys and an admin login
-python3 tools/traces/sync.py sync --all    # backfill every session of this repo from ~/.claude/projects
-python3 tools/traces/sync.py relink        # restore trailers after rewriting descriptions
-python3 tools/traces/sync.py check         # verify before pushing; non-zero exit on problems
-jj log -r 'description(glob:"*LLM-Trace:*")'   # changes that have traces
-```
-
-## Conventions
-
-- Write the summary line of a jj description as usual. Leave the `LLM-Trace:` trailers in place, and if you remove one by accident, `relink` puts it back.
-- `cleanupPeriodDays` is raised in `.claude/settings.json`, so Claude Code keeps raw transcripts locally for 10 years instead of 30 days.
-- Repo config: `jj config set --repo snapshot.max-new-file-size 100MiB`. jj ignores new files over 1 MiB by default, and trace files are larger. The hook passes this flag itself, but your own `jj` commands need the repo config.
+**Read a log before you upload it.** Redaction catches identifiers and known token formats, not everything you might paste into a prompt.

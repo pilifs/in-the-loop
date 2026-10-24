@@ -9,7 +9,7 @@ The demos ask what the equivalent pipelines look like for the JVM.
 
 - [`docs/approaches.md`](docs/approaches.md) lists the approaches by level (source, bytecode, native, distributed), together with the plan for the demos.
 - `demos/` holds the demos (coming soon).
-- [`docs/traces.md`](docs/traces.md) explains the published LLM traces. Every Claude Code session that worked on this repo is in `traces/`, and the jj changes it produced link to it.
+- [`docs/traces.md`](docs/traces.md) explains the published LLM traces. Every Claude Code session has a manifest in `traces/<session-id>/`, and each commit points at its log's SHA-256 with an `LLM-Trace:` line.
 
 ## Setup (Ubuntu 24.04, native or WSL2, amd64 or arm64)
 
@@ -34,7 +34,7 @@ Components are listed below. You can install any subset, for example `install.sh
 | `acl2` *(optional)* | ACL2, for the M1–M6 JVM models |
 | `angr` *(optional)* | angr, for binary symbolic execution, in a venv |
 
-For trace capture, also run `infra/langfuse/up.sh` and `jj config set --repo snapshot.max-new-file-size 100MiB`. [`docs/traces.md`](docs/traces.md) has the details.
+For trace capture, also run `infra/langfuse/up.sh` and `python3 tools/traces/sync.py init`. [`docs/traces.md`](docs/traces.md) has the details.
 
 User-level tools go in `~/.local/bin` and `~/tools`. The installer adds a marked block to `~/.bashrc`.
 
