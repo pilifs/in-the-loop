@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: payment-service
+  mongodb:
+    uri: mongodb://localhost:27017/payments?directConnection=true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+    consumer:
+      auto-offset-reset: earliest
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+boxoffice:
+  gateway:
+    slow-delay: 5s
+  outbox:
+    poll-interval: 100ms

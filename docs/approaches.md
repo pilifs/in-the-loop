@@ -159,6 +159,9 @@ Run **angr** (`install.sh angr`) over a native-image binary to find crashing inp
 
 ## Level D: distributed systems
 
+The subject system is [Box Office](../apps/boxoffice/README.md): concert ticketing as two services over Kafka and MongoDB.
+Its README lists the invariants to verify and the known gaps to find.
+
 | Approach | Tools |
 |---|---|
 | **TLA+ trace validation:** instrument the Java service, and check that recorded traces are behaviours of the spec | TLC, plus a `kind` cluster with fault injection (Chaos Mesh via Helm) to cover partitions and crashes |

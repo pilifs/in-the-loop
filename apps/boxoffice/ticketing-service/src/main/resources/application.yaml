@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: ticketing-service
+  mongodb:
+    # Transactions need a replica set; compose.yaml runs a single-node one.
+    uri: mongodb://localhost:27017/ticketing?directConnection=true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+    consumer:
+      auto-offset-reset: earliest
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+boxoffice:
+  hold:
+    ttl: 2m
+    max-seats: 8
+    sweep-interval: 1s
+  outbox:
+    poll-interval: 100ms
