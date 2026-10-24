@@ -1,0 +1,27 @@
+{
+  "cleanupPeriodDays": 3650,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/traces/sync.py\" hook",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/traces/sync.py\" hook",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
