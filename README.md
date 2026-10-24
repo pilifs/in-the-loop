@@ -9,7 +9,7 @@ The demos ask what the equivalent pipelines look like for the JVM.
 
 - [`docs/approaches.md`](docs/approaches.md) lists the approaches by level (source, bytecode, native, distributed), together with the plan for the demos.
 - `demos/` holds the demos (coming soon).
-- [`docs/traces.md`](docs/traces.md) explains the published LLM traces. Every Claude Code session has a manifest in `traces/<session-id>/`, and each commit points at its log's SHA-256 with an `LLM-Trace:` line.
+- [`changes/`](changes/README.md) publishes the LLM session behind every commit: a readable summary, metadata, and the full transcript. Each commit message links to them. [`docs/traces.md`](docs/traces.md) is the specification.
 
 ## Setup (Ubuntu 24.04, native or WSL2, amd64 or arm64)
 
@@ -41,7 +41,7 @@ User-level tools go in `~/.local/bin` and `~/tools`. The installer adds a marked
 ## License
 
 Code is licensed under Apache-2.0 ([LICENSE](LICENSE)).
-The documentation in `docs/` and the traces in `traces/`, including the published logs they point at, are licensed under CC BY 4.0 ([LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
+The documentation in `docs/` and everything in `changes/`, including the published logs they point at, are licensed under CC BY 4.0 ([LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
 
 **WSL notes:**
 - systemd must be enabled. Put `[boot] systemd=true` in `/etc/wsl.conf`, then run `wsl --shutdown`.

@@ -4,17 +4,31 @@ Every Claude Code session in this repo is published alongside the code it produc
 The aim is to make sharing LLM traces normal: a reader can see the code, the prompts,
 the model's reasoning, and every tool call that led to each commit.
 
+This page is the specification. [`changes/README.md`](../changes/README.md) has the procedure that agents follow, and the index of sessions.
+
 ## Layout
 
 ```
-traces/<session-id>/manifest.json                 checked in
-traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
+changes/index.json                                        checked in; one row per session
+changes/summary-template.md                               checked in; the template for summary.md
+changes/traces/<session-id>/manifest.json                 checked in
+changes/traces/<session-id>/summary.md                    checked in
+changes/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
 ```
 
-- **Manifest:** describes one session, meaning one context window plus any windows after a compaction.
-  It holds high-level stats and points at the log.
+- **Index:** the global manifest, a light list of every session with its title, time span, current log and the commits it made.
+  It answers "which session made this commit" and "what happened in October" without opening every manifest.
+  The same rows appear as a table in `changes/README.md`.
+- **Manifest:** the detailed metadata of one session, meaning one context window plus any windows after a compaction.
+  It holds stats, the commits with their full messages, and every referenced log.
+- **Summary:** the human-readable view of the session, rendered from `changes/summary-template.md`: each commit with the message the agent wrote, then each prompt with the final reply.
+  It is in the same tree as the manifest, so the summary in a commit describes exactly the log that the commit points at.
 - **Log:** the full redacted transcript (prompts, responses, thinking, tool calls and results, and raw API request records), stored gzipped.
   Subagent transcripts are separate logs in the same folder, listed under `subagents`.
+
+Metadata is split this way, a small global index plus a detailed file per session, for two reasons.
+A session's manifest changes on every turn of that session only, so separate sessions never edit the same detailed file.
+The index is small and fully derived, so a merge conflict in it is resolved by running `sync.py sync`.
 
 ## Identifiers
 
@@ -25,6 +39,7 @@ These are the stable part of the design. Everything else may change.
 | **Session ID** | The UUID that Claude Code assigns to a session | Names the folder and is the Langfuse session ID |
 | **Log ID** | `sha256` of the **uncompressed** redacted JSONL | Content-addressed: the file `<sha256>.jsonl.gz` never changes. A new state of the transcript is a new file. Any blob store keyed by the hash can serve it. |
 | **Commit → trace** | One message line per session: `LLM-Trace: <session-id> sha256:<log-sha256>` | Standard git trailer syntax: `git interpret-trailers --parse` reads it |
+| **Links** | Two lines above it: `LLM-Trace-Summary:` (the summary on GitHub, on the `main` branch) and `LLM-Trace-Log:` (the log on the CDN) | For readers only. Both are derived from the identifier line, and tools ignore them |
 | **Trace → commits** | `manifest.commits[]`: each entry has a jj `change_id` (survives rewrites), plus `commit_id` (the git SHA) once the commit is immutable | Derived from the commit trailers on every sync, so the two directions agree |
 
 **Invariants**, which `sync.py check` verifies:
@@ -33,6 +48,7 @@ These are the stable part of the design. Everything else may change.
 2. A log that a commit points at contains the whole conversation up to that commit.
    Logs are append-only: a later log of the same session starts with the exact bytes of every earlier one.
 3. For a commit made with `jj trace-commit`, the `manifest.json` inside that commit's tree has the same `log.sha256` as the commit message.
+   Commits made before the `changes/` layout keep their manifest at `traces/<session-id>/manifest.json`.
    A plain `jj commit` gets its `LLM-Trace` line at the end of the next turn, pointing at a newer log, which `check` notes.
 4. The hook never changes a pushed (immutable) commit. A change other than `@` gets its `LLM-Trace` line once. Only `@` is re-stamped each turn, together with its manifest.
 
@@ -53,7 +69,7 @@ A new policy produces new log IDs. Logs that commits already point at are kept.
 | `context_windows[]` | The same stats for each window between compactions |
 | `log` | The current log: `sha256`, `bytes`, `lines`, `gzip_bytes` and the local `path` |
 | `subagents[]` | For each subagent: its stats and its own `log` |
-| `commits[]` | `change_id`, `commit_id`, `immutable`, `summary`, `log_sha256` |
+| `commits[]` | Oldest first: `change_id`, `commit_id`, `immutable`, `summary` (null until described), `body` (the message without its summary line and trailers), `log_sha256` |
 | `logs` | Every log still referenced (the current one, subagent logs, and each log a commit points at), keyed by `sha256`: `bytes`, `lines`, `gzip_bytes`, and `url` once uploaded |
 | `redaction_policy`, `generator` | How the files were produced |
 
@@ -63,21 +79,21 @@ The manifest is derived data. It is rebuilt from the transcript on every sync, a
 
 `.claude/settings.json` runs `tools/traces/sync.py hook` at the end of every turn (`Stop`) and when a session ends (`SessionEnd`). The hook:
 
-1. Redacts the transcript, stores a new log snapshot, and rewrites the manifest.
+1. Redacts the transcript, stores a new log snapshot, and rewrites the manifest, the summary and the index.
 2. Updates the `LLM-Trace` lines in jj. The current change (`@`) always points at the latest log. Earlier changes made in this session get a line only if they lack one.
 3. Deletes logs that neither the manifest nor any commit points at.
 4. Sends finished turns to Langfuse (`http://localhost:3000`), if it is running.
 
 ```bash
 python3 tools/traces/sync.py init      # once per clone: jj file-size limit and the two aliases below
-jj trace-commit -m "Summary line"      # finish @; its message and its manifest point at the same log
+jj trace-commit -m "Summary line" -m "Body"   # finish @; its message and its manifest point at the same log
 jj trace-push --bookmark main          # sync, check, push, then record the new git SHAs
 python3 tools/traces/sync.py check     # verify hashes, trailers and redaction
 python3 tools/traces/sync.py sync --all  # backfill every session of this repo
 jj log -r 'description(substring:"LLM-Trace:")'   # changes that have traces
 ```
 
-Plain `jj commit` and `jj describe` also work. The hook adds the `LLM-Trace` line on the next turn.
+Plain `jj commit` and `jj describe` also work. The hook adds the `LLM-Trace` lines on the next turn.
 
 ## Storage
 
@@ -101,11 +117,13 @@ curl -s https://terminalvalue.net/raw-traces/<sid>/<sha>.jsonl.gz | gunzip | sha
   After each upload it downloads the log again through the CDN, verifies its SHA-256, and only then records the URL in `manifest.logs[<sha256>].url`.
   `jj trace-push` runs the upload before pushing, so no pushed commit points at a log nobody else can fetch.
 - **`sync.py check --remote`** downloads every recorded upload again and checks its hash.
+- **`sync.py unpublish <sid> <sha256>`** takes a log down, for example after a redaction miss: it deletes the R2 object, purges the URL from every edge cache, and removes the URL from the manifest.
+  Purging needs a Cloudflare API token that wrangler's login cannot grant. Create one with the permissions *Zone → Zone → Read* and *Zone → Cache Purge → Purge* for the zone only, and save it as `~/.config/llm-traces/cloudflare-token` (mode 600). Redaction removes the token from logs.
 
 Deploying the Worker: `cd infra/cdn && npx wrangler deploy`. Wrangler 4.149 uploads the script, then fails with error 10007 before it creates the route.
 The route (`terminalvalue.net/raw-traces/*` → `raw-traces`) was created through the zone's Workers Routes API and already exists, so redeploys only need the script upload.
 
-**History note.** The first three commits were made before this layout and redaction policy 3 existed. On 2026-10-24, before anyone had cloned the repo, they were rewritten so that every commit resolves to a log: their logs were regenerated from the same transcript prefixes under the current policy, their `LLM-Trace` lines updated, and the author email switched to a GitHub noreply address. The rewrite itself is in this session's log.
+**History note.** The first three commits were made before this layout and redaction policy 3 existed. On 2026-10-24, before anyone had cloned the repo, they were rewritten so that every commit resolves to a log: their logs were regenerated from the same transcript prefixes under the current policy, their `LLM-Trace` lines updated, and the author email switched to a GitHub noreply address. The rewrite itself is in this session's log. The traces moved from `traces/` to `changes/traces/` later the same day; the identifiers and URLs did not change.
 
 ## Redaction
 

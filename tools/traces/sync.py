@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Publish Claude Code session traces for this repo.
 
-Layout (docs/traces.md has the full spec):
+Layout (docs/traces.md has the full spec, changes/README.md the procedure):
 
-  traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
-  traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
+  changes/index.json                                 checked in: one row per session, for lookups
+  changes/traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
+  changes/traces/<session-id>/summary.md             checked in: readable summary (changes/summary-template.md)
+  changes/traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
 
 Public URL of a log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
 
@@ -13,15 +15,20 @@ Identifiers:
   log       sha256 of the *uncompressed* redacted JSONL; a snapshot file never changes
   commit    each change made in a session carries the trailer
               LLM-Trace: <session-id> sha256:<log-sha256>
+            next to links to the session summary and the log
+              LLM-Trace-Summary: <repo URL>/blob/main/changes/traces/<session-id>/summary.md
+              LLM-Trace-Log: https://terminalvalue.net/raw-traces/<session-id>/<sha256>.jsonl.gz
             and the manifest lists those changes (jj change id, git SHA once immutable)
 
 Commands:
   sync.py hook                  Claude Code Stop/SessionEnd hook (hook JSON on stdin)
   sync.py sync [--all | ID...]  snapshot sessions of this repo from ~/.claude/projects
-  sync.py commit -m MESSAGE     finish @ with trailers matching its manifest (alias: jj trace-commit)
+  sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
+                                each -m is one paragraph, as in git
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   sync, upload, check, then `jj git push` (alias: jj trace-push)
   sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
+  sync.py unpublish SID SHA     delete one log from R2 and purge it from the CDN cache (for leaks)
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
 
 Standard library only. The hook never fails a session; errors go to
@@ -36,24 +43,37 @@ import json
 import os
 import re
 import shutil
+import string
 import subprocess
 import sys
 import time
 import traceback
+import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-TRACES = REPO / "traces"
+CHANGES = REPO / "changes"
+TRACES = CHANGES / "traces"
+LEGACY_TRACES = "traces"       # where commits before the changes/ layout keep their manifests
+INDEX = CHANGES / "index.json"
+CHANGES_README = CHANGES / "README.md"
+SUMMARY_TEMPLATE = CHANGES / "summary-template.md"
+INDEX_SCHEMA = "llm-trace-index/v1"
 LANGFUSE_ENV = REPO / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
 EXTRA_REDACTIONS = Path.home() / ".config" / "llm-traces" / "redact.txt"
+# Cloudflare API token with Zone:Read and Cache Purge on the CDN zone; only `unpublish` uses it.
+PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
 SCHEMA = "llm-trace-manifest/v1"
 REDACTION_POLICY = 3           # bump when redaction changes the bytes it produces
 REDACT_KEYS = {"organizationUuid", "accountUuid"}  # account identifiers Claude Code records in attachments
 TRAILER = "LLM-Trace"
 TRAILER_RE = re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
+LINK_TRAILERS = ("LLM-Trace-Summary", "LLM-Trace-Log")  # convenience links next to LLM-Trace
+DEFAULT_BRANCH = "main"        # summary links point at the published copy on this branch
 # Hooks inherit the PATH Claude Code started with, which may predate ~/.local/bin.
 JJ = shutil.which("jj") or str(Path.home() / ".local" / "bin" / "jj")
 MAX_ATTR = 64 * 1024           # truncate large tool outputs sent to Langfuse
@@ -114,6 +134,8 @@ def personal_literals() -> tuple[list[tuple[re.Pattern, str]], str]:
     pairs += [(e.split("@")[0], "user", re.I) for e in emails if len(e.split("@")[0]) >= 4]
     pairs += [(v, "[REDACTED:local-secret]", 0) for k, v in read_env(LANGFUSE_ENV).items()
               if re.search(r"SECRET|PASSWORD|KEY|SALT|AUTH|DATABASE_URL", k) and len(v) >= 12]
+    if PURGE_TOKEN.exists() and len(token := PURGE_TOKEN.read_text().strip()) >= 12:
+        pairs.append((token, "[REDACTED:local-secret]", 0))
     if EXTRA_REDACTIONS.exists():
         for line in EXTRA_REDACTIONS.read_text().splitlines():
             if line.strip() and not line.startswith("#"):
@@ -427,13 +449,48 @@ def jj_commits(revset: str) -> list[dict]:
     return out
 
 
+def repo_web_url() -> str | None:
+    """https URL of the `origin` remote on GitHub (or a similar forge), if there is one."""
+    url = _cmd("git", "-C", str(REPO), "config", "--get", "remote.origin.url")
+    m = re.match(r"^(?:git@([^:]+):|ssh://git@([^/]+)/|https://([^/]+)/)(.+?)(?:\.git)?/?$", url)
+    return f"https://{m[1] or m[2] or m[3]}/{m[4]}" if m else None
+
+
+def summary_url(sid: str) -> str:
+    rel = f"{summary_path(sid).relative_to(REPO)}"
+    base = repo_web_url()
+    return f"{base}/blob/{DEFAULT_BRANCH}/{rel}" if base else rel
+
+
+def _is_session_trailer(line: str, sid: str) -> bool:
+    return bool(re.match(rf"^{TRAILER}: {re.escape(sid)}(\s|$)", line)
+                or (re.match(rf"^({'|'.join(LINK_TRAILERS)}): ", line) and f"/{sid}/" in line))
+
+
 def set_trailer(desc: str, sid: str, sha: str) -> str:
-    """Replace this session's LLM-Trace trailer (any old sha, or none) with the given one."""
-    lines = [ln for ln in desc.rstrip("\n").split("\n") if not re.match(rf"^{TRAILER}: {re.escape(sid)}(\s|$)", ln)]
+    """Replace this session's trailers (any old sha, or none) with ones for the given log:
+    links to the summary and the log, then the LLM-Trace identifier."""
+    lines = [ln for ln in desc.rstrip("\n").split("\n") if not _is_session_trailer(ln, sid)]
     body = "\n".join(lines).rstrip("\n")
     # Join an existing trailer block (e.g. Co-Authored-By) rather than start a new paragraph.
     sep = "\n" if re.search(r"(^|\n)[A-Za-z][A-Za-z-]*: .+$", body) else ("\n\n" if body else "")
-    return f"{body}{sep}{TRAILER}: {sid} sha256:{sha}\n"
+    return (f"{body}{sep}{LINK_TRAILERS[0]}: {summary_url(sid)}\n"
+            f"{LINK_TRAILERS[1]}: {log_url(sid, sha)}\n"
+            f"{TRAILER}: {sid} sha256:{sha}\n")
+
+
+def commit_summary(desc: str) -> str | None:
+    """The summary line, or None while the change has no message besides trailers."""
+    first = desc.strip().split("\n", 1)[0]
+    return None if not first or re.match(r"^[A-Za-z][A-Za-z-]*: ", first) and not commit_body(desc) else first
+
+
+def commit_body(desc: str) -> str:
+    """The description without its summary line and trailer block: the change's narrative."""
+    paras = desc.strip().split("\n\n")[1:]
+    if paras and all(re.match(r"^[A-Za-z][A-Za-z-]*: ", ln) for ln in paras[-1].split("\n")):
+        paras = paras[:-1]
+    return "\n\n".join(paras).strip()
 
 
 def session_trailers(desc: str) -> list[tuple[str, str]]:
@@ -463,14 +520,16 @@ def link_commits(sid: str, m: dict, current: bool) -> None:
             if new != c["description"]:
                 jj("describe", "-r", c["change_id"], "-m", new)
     commits = []
-    for c in jj_commits(f'description(substring:"{TRAILER}: {sid}")'):
+    # jj lists children first; the manifest lists commits oldest first.
+    for c in reversed(jj_commits(f'description(substring:"{TRAILER}: {sid}")')):
         shas = [s for s_id, s in TRAILER_RE.findall(c["description"]) if s_id == sid]
         commits.append({"change_id": c["change_id"],
                         "commit_id": c["commit_id"] if c["immutable"] else None,
                         "immutable": c["immutable"],
-                        "summary": c["description"].split("\n", 1)[0],
+                        "summary": commit_summary(c["description"]),
+                        "body": commit_body(c["description"]),
                         "log_sha256": (shas[0] or None) if shas else None})
-    m["commits"] = sorted(commits, key=lambda c: (not c["immutable"], c["change_id"]))
+    m["commits"] = commits
     save_manifest(sid, m)
 
 
@@ -490,6 +549,159 @@ def finalize_logs(sid: str, m: dict) -> None:
         if path.name.split(".")[0] not in keep:
             path.unlink()
     save_manifest(sid, m)
+
+
+# --------------------------------------------------------------------------- summary and index
+
+def summary_path(sid: str) -> Path:
+    return session_dir(sid) / "summary.md"
+
+
+def _when(ts: str | None) -> str:
+    return datetime.fromisoformat(ts.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M UTC") if ts else "?"
+
+
+def _clip(text: str, limit: int) -> str:
+    """Shorten at a paragraph or line break, closing a code fence the cut left open."""
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    cut = cut[:max(cut.rfind("\n\n"), cut.rfind("\n"), limit // 2)].rstrip()
+    if cut.count("```") % 2:
+        cut += "\n```"
+    return cut + "\n\n*… (shortened; the log has the full text)*"
+
+
+def _escape_html(text: str) -> str:
+    """Keep `<placeholder>` text visible on GitHub, which would drop it as an unknown tag.
+    Code spans and fenced blocks are left alone: they already render literally."""
+    parts = re.split(r"(```.*?```|`[^`\n]*`)", text, flags=re.S)
+    return "".join(p if i % 2 else p.replace("<", "&lt;") for i, p in enumerate(parts))
+
+
+def _prompt_text(e: dict) -> str:
+    text = re.sub(r"<system-reminder>.*?</system-reminder>", "", text_of(e["message"]), flags=re.S)
+    return re.sub(r"\x1b\[[0-9;]*m", "", text).strip()
+
+
+def _turn_md(n: int, turn: list[dict], repo_prefix: str) -> str | None:
+    """One prompt and its outcome, or one line for a slash command; None for noise."""
+    first, text = turn[0], _prompt_text(turn[0])
+    if first.get("isCompactSummary"):
+        return f"*{_when(first.get('timestamp'))}: context compacted; the conversation continues from a summary.*"
+    if cmd := re.search(r"<command-name>(.*?)</command-name>", text):
+        out = re.search(r"<local-command-stdout>(.*?)</local-command-stdout>", text, re.S)
+        return f"*{_when(first.get('timestamp'))}: `{cmd[1]}`{': ' + out[1].strip() if out else ''}*"
+    if not text or text.startswith("<local-command") or re.fullmatch(r"/\S+", text):
+        return None
+    tools, files, reply = {}, [], ""
+    for e in turn:
+        for b in blocks(e.get("message")) if e.get("type") == "assistant" else []:
+            if b.get("type") == "tool_use":
+                tools[b.get("name")] = tools.get(b.get("name"), 0) + 1
+                path = (b.get("input") or {}).get("file_path")
+                if b.get("name") in EDIT_TOOLS and isinstance(path, str):
+                    path = path[len(repo_prefix) + 1:] if path.startswith(repo_prefix + "/") else path
+                    files += [path] if path not in files else []
+            elif b.get("type") == "text" and b.get("text", "").strip():
+                reply = b["text"]
+    quoted = "\n".join("> " + ln if ln else ">" for ln in _escape_html(_clip(text, 800)).split("\n"))
+    parts = [f"### {n}. {_when(first.get('timestamp'))}", quoted]
+    if reply:
+        parts.append("**Reply:**\n\n" + _escape_html(_clip(reply, 1500)))
+    meta = []
+    if tools:
+        meta.append(f"{sum(tools.values())} tool calls ("
+                    + ", ".join(f"{k} {v}" for k, v in sorted(tools.items(), key=lambda kv: -kv[1])) + ")")
+    if files:
+        meta.append("edited " + ", ".join(f"`{f}`" for f in files))
+    if meta:
+        parts.append("<sub>" + " · ".join(meta) + "</sub>")
+    return "\n\n".join(parts)
+
+
+def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> None:
+    """Write summary.md from the template. It is derived only from the redacted log and the
+    manifest, so it is safe to publish and can be rebuilt from a published log."""
+    s, u = m["stats"], m["stats"]["usage"]
+    repo = repo_web_url()
+    changes = []
+    for c in m.get("commits", []):
+        ref = f"[`{c['commit_id'][:12]}`]({repo}/commit/{c['commit_id']})" if c.get("commit_id") and repo \
+            else f"change `{c['change_id'][:12]}`"
+        if not c.get("summary"):  # the working copy before its first commit message
+            changes.append(f"### (in progress)\n\n{ref}, not yet described")
+            continue
+        log_ref = f" · [log `{c['log_sha256'][:12]}`]({log_url(sid, c['log_sha256'])})" if c.get("log_sha256") else ""
+        changes.append(f"### {_escape_html(c['summary'])}\n\n{ref}{log_ref}"
+                       + (f"\n\n{_escape_html(c['body'])}" if c.get("body") else ""))
+    turns, n = [], 0
+    for turn in turns_of(entries):
+        if (md := _turn_md(n + 1, turn, repo_prefix)) is not None:
+            n += md.startswith("### ")
+            turns.append(md)
+    subagents = "".join(f"\n- `{a['agent']}`: {a['stats']['turns']} turns, {a['stats']['tool_calls']} tool calls, "
+                        f"[log]({log_url(sid, a['log']['sha256'])})" for a in m.get("subagents", []))
+    values = {
+        "title": m.get("title") or (m.get("first_prompt") or "Untitled session").split("\n")[0][:80],
+        "session_id": sid, "status": m["status"],
+        "when": f"{_when(m.get('started'))} to {_when(m.get('ended'))}"
+                + (f" ({m['duration_seconds'] // 60} min)" if m.get("duration_seconds") else ""),
+        "models": ", ".join(f"`{x}`" for x in m.get("models", [])) or "?",
+        "client": f"{m['client']['tool']} {m['client']['version'] or ''}".strip(),
+        "activity": f"{s['turns']} prompts, {s['api_calls']} API calls, {s['tool_calls']} tool calls "
+                    f"({s['tool_errors']} failed), {s['compactions']} compactions",
+        "tokens": f"{u['output_tokens']:,} output, {u['input_tokens']:,} input, "
+                  f"{u['cache_read_input_tokens']:,} cache read, {u['cache_creation_input_tokens']:,} cache write; "
+                  f"peak context {s['peak_context_tokens']:,}",
+        "log_url": log_url(sid, m["log"]["sha256"]),
+        "log_sha256": m["log"]["sha256"],
+        "changes": "\n\n".join(changes) or "*No commits yet.*",
+        "turns": "\n\n".join(turns) or "*No prompts yet.*",
+        "files": "\n".join(f"- `{f}`" for f in m.get("files_touched", [])) or "*None.*",
+        "tools": ", ".join(f"{k} {v}" for k, v in m.get("tools", {}).items()) or "*None.*",
+        "subagents": subagents.strip() or "*None.*",
+    }
+    text = string.Template(SUMMARY_TEMPLATE.read_text()).safe_substitute(values)
+    summary_path(sid).write_text(re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n")
+
+
+INDEX_BEGIN, INDEX_END = "<!-- index:begin (generated by tools/traces/sync.py) -->", "<!-- index:end -->"
+
+
+def write_index() -> None:
+    """changes/index.json lists every session with the commits it made, so a reader can go from
+    a commit or a date to a session without opening every manifest. The same rows are rendered as
+    a table in changes/README.md, between the index markers."""
+    rows = []
+    for sid, m in all_manifests().items():
+        if m.get("schema") != SCHEMA:
+            continue
+        rows.append({
+            "session_id": sid, "title": m.get("title"), "status": m.get("status"),
+            "started": m.get("started"), "ended": m.get("ended"), "models": m.get("models", []),
+            "turns": m.get("stats", {}).get("turns"),
+            "log_sha256": m.get("log", {}).get("sha256"),
+            "manifest": str(manifest_path(sid).relative_to(CHANGES)),
+            "summary": str(summary_path(sid).relative_to(CHANGES)),
+            "commits": [{k: c.get(k) for k in ("change_id", "commit_id", "summary")} for c in m.get("commits", [])],
+        })
+    rows.sort(key=lambda r: r["started"] or "")
+    index = {"schema": INDEX_SCHEMA, "sessions": rows}
+    tmp = INDEX.with_suffix(".tmp")
+    tmp.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n")
+    tmp.replace(INDEX)
+    if CHANGES_README.exists():
+        table = ["| Started | Session | Prompts | Commits | Status |", "|---|---|---|---|---|"]
+        for r in reversed(rows):
+            title = (r["title"] or r["session_id"]).replace("|", "\\|")
+            table.append(f"| {_when(r['started'])} | [{title}]({r['summary']}) | {r['turns']} | "
+                         f"{len(r['commits'])} | {r['status']} |")
+        readme = CHANGES_README.read_text()
+        start, end = readme.find(INDEX_BEGIN), readme.find(INDEX_END)
+        if 0 <= start < end:
+            CHANGES_README.write_text(readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
 
 
 # --------------------------------------------------------------------------- Langfuse (OTLP/JSON)
@@ -676,6 +888,60 @@ def cmd_upload() -> int:
     return 1 if failed else 0
 
 
+def cloudflare(method: str, path: str, token: str, body: dict | None = None) -> dict:
+    req = urllib.request.Request(f"https://api.cloudflare.com/client/v4{path}", method=method,
+                                 data=json.dumps(body).encode() if body is not None else None,
+                                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        return json.load(e)
+
+
+def purge_url(url: str) -> None:
+    """Evict one URL from every Cloudflare edge cache (including Worker Cache API entries)."""
+    if not PURGE_TOKEN.exists():
+        raise FileNotFoundError(f"no Cloudflare API token at {PURGE_TOKEN} (docs/traces.md, Storage)")
+    token = PURGE_TOKEN.read_text().strip()
+    host = urllib.parse.urlsplit(url).hostname
+    zones = cloudflare("GET", f"/zones?name={host}", token)
+    if not zones.get("success") or not zones.get("result"):
+        raise RuntimeError(f"zone lookup for {host} failed: {zones.get('errors')}")
+    r = cloudflare("POST", f"/zones/{zones['result'][0]['id']}/purge_cache", token, {"files": [url]})
+    if not r.get("success"):
+        raise RuntimeError(f"cache purge failed: {r.get('errors')}")
+
+
+def cmd_unpublish(args: list[str]) -> int:
+    """Take one log off the CDN: delete the R2 object, purge the edge caches, forget the URL.
+    A commit that still points at the log breaks invariant 1 until its trailer is rewritten."""
+    if len(args) != 2 or not re.fullmatch(r"[0-9a-f]{64}", args[1]):
+        print("usage: sync.py unpublish SESSION_ID SHA256", file=sys.stderr)
+        return 2
+    sid, sha = args
+    url = log_url(sid, sha)
+    r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "delete",
+                        f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", "--remote"],
+                       cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
+                       env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
+    if r.returncode != 0:
+        print(f"ERROR wrangler r2 object delete failed:\n{r.stdout}{r.stderr}", file=sys.stderr)
+        return 1
+    try:
+        purge_url(url)
+    except (OSError, RuntimeError) as e:
+        print(f"ERROR deleted from R2 but not purged: {e}", file=sys.stderr)
+        return 1
+    m = load_manifest(sid)
+    if m.get("logs", {}).get(sha, {}).pop("url", None):
+        save_manifest(sid, m)
+    print(f"unpublished {url}")
+    if any(c.get("log_sha256") == sha for c in m.get("commits", [])):
+        print("note: a commit still points at this log; rewrite its LLM-Trace line, or `check` will fail")
+    return 0
+
+
 # --------------------------------------------------------------------------- commands
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool) -> dict:
@@ -685,6 +951,8 @@ def process(transcript: Path, redact: Redactor, status: str, live: bool, current
     if has_jj():
         link_commits(sid, m, current)
     finalize_logs(sid, m)
+    render_summary(sid, m, entries, redact.string(str(REPO)))
+    write_index()
     try:
         export_langfuse(sid, entries, m, live)
     except OSError as e:  # Langfuse down: those turns are retried next time
@@ -716,12 +984,13 @@ def cmd_sync(args: list[str]) -> None:
 
 def cmd_commit(args: list[str]) -> int:
     """Finish @ with a message whose trailers match the manifest in its tree, then start a new change."""
-    if len(args) != 2 or args[0] != "-m":
-        print("usage: sync.py commit -m MESSAGE", file=sys.stderr)
+    if not args or len(args) % 2 or any(a != "-m" for a in args[::2]) or not args[1].strip():
+        print("usage: sync.py commit -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
         return 2
+    message = "\n\n".join(a.strip() for a in args[1::2] if a.strip())
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
-    if jj("describe", "-r", "@", "-m", args[1]).returncode:
+    if jj("describe", "-r", "@", "-m", message).returncode:
         print("jj describe failed", file=sys.stderr)
         return 1
     cmd_sync([])
@@ -775,6 +1044,8 @@ def cmd_check(remote: bool = False) -> int:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             if leaks := redact.leaks(data.decode(errors="replace")):
                 errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
+        if not summary_path(sid).exists():
+            errors.append(f"{sid}: summary.md is missing (run: python3 tools/traces/sync.py sync {sid})")
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         current = load_log(sid, m["log"]["sha256"]) or b""
         for c in m.get("commits", []):
@@ -793,7 +1064,9 @@ def cmd_check(remote: bool = False) -> int:
                     errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
                 else:
                     # The manifest committed in the same tree should name the same log.
-                    r = jj("file", "show", "-r", c["commit_id"], f"traces/{sid}/manifest.json")
+                    for path in (manifest_path(sid).relative_to(REPO), f"{LEGACY_TRACES}/{sid}/manifest.json"):
+                        if (r := jj("file", "show", "-r", c["commit_id"], str(path))).returncode == 0:
+                            break
                     tree_sha = json.loads(r.stdout).get("log", {}).get("sha256") if r.returncode == 0 else None
                     if tree_sha != sha:
                         notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
@@ -802,6 +1075,8 @@ def cmd_check(remote: bool = False) -> int:
         print("note ", n)
     for e in errors:
         print("ERROR", e)
+    if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
+        errors.append("changes/index.json does not list exactly the sessions in changes/traces (run sync)")
     print(f"{len(manifests)} session(s), {len(errors)} error(s), {len(notes)} note(s)")
     return 1 if errors else 0
 
@@ -838,6 +1113,8 @@ def main(argv: list[str]) -> int:
         return cmd_push(args)
     elif cmd == "upload":
         return cmd_upload()
+    elif cmd == "unpublish":
+        return cmd_unpublish(args)
     elif cmd == "check":
         return cmd_check(remote=args == ["--remote"])
     elif cmd == "init":
