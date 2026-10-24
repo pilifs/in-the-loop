@@ -50,7 +50,8 @@ LANGFUSE_ENV = REPO / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
 EXTRA_REDACTIONS = Path.home() / ".config" / "llm-traces" / "redact.txt"
 SCHEMA = "llm-trace-manifest/v1"
-REDACTION_POLICY = 2           # bump when redaction changes the bytes it produces
+REDACTION_POLICY = 3           # bump when redaction changes the bytes it produces
+REDACT_KEYS = {"organizationUuid", "accountUuid"}  # account identifiers Claude Code records in attachments
 TRAILER = "LLM-Trace"
 TRAILER_RE = re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
 # Hooks inherit the PATH Claude Code started with, which may predate ~/.local/bin.
@@ -96,28 +97,30 @@ def read_env(path: Path) -> dict[str, str]:
     return env
 
 
-def personal_literals() -> tuple[list[tuple[str, str]], str]:
-    """(literal, replacement) pairs for this machine: home path, emails, local secrets."""
-    pairs: list[tuple[str, str]] = []
+def personal_literals() -> tuple[list[tuple[re.Pattern, str]], str]:
+    """(pattern, replacement) pairs for this machine: home path, emails, local secrets.
+    Emails match case-insensitively. GitHub noreply addresses are public by design and are kept."""
+    pairs: list[tuple[str, str, int]] = []
     home, user = str(Path.home()), os.environ.get("USER") or Path.home().name
-    pairs += [(home, "~"), (re.sub(r"[^A-Za-z0-9]", "-", home), "-home-user")]
+    pairs += [(home, "~", 0), (re.sub(r"[^A-Za-z0-9]", "-", home), "-home-user", 0)]
     emails = {_cmd("git", "config", "--get", "user.email"), _cmd(JJ, "config", "get", "user.email")}
     try:
         account = json.loads((Path.home() / ".claude.json").read_text()).get("oauthAccount") or {}
         emails.add(account.get("emailAddress") or "")
     except (OSError, ValueError):
         pass
-    pairs += [(e, "user@example.com") for e in emails if e]
-    pairs += [(e.split("@")[0], "user") for e in emails if len(e.split("@")[0]) >= 4]
-    pairs += [(v, "[REDACTED:local-secret]") for k, v in read_env(LANGFUSE_ENV).items()
+    emails = {e.lower() for e in emails if e and not e.lower().endswith("@users.noreply.github.com")}
+    pairs += [(e, "user@example.com", re.I) for e in emails]
+    pairs += [(e.split("@")[0], "user", re.I) for e in emails if len(e.split("@")[0]) >= 4]
+    pairs += [(v, "[REDACTED:local-secret]", 0) for k, v in read_env(LANGFUSE_ENV).items()
               if re.search(r"SECRET|PASSWORD|KEY|SALT|AUTH|DATABASE_URL", k) and len(v) >= 12]
     if EXTRA_REDACTIONS.exists():
         for line in EXTRA_REDACTIONS.read_text().splitlines():
             if line.strip() and not line.startswith("#"):
                 lit, _, rep = line.partition("=>")
-                pairs.append((lit.strip(), rep.strip() or "[REDACTED]"))
+                pairs.append((lit.strip(), rep.strip() or "[REDACTED]", 0))
     pairs.sort(key=lambda p: -len(p[0]))
-    return pairs, user
+    return [(re.compile(re.escape(lit), flags), rep) for lit, rep, flags in pairs], user
 
 
 class Redactor:
@@ -130,8 +133,8 @@ class Redactor:
         self.secret_res = [(k, re.compile(p, re.S)) for k, p in SECRET_PATTERNS]
 
     def string(self, text: str) -> str:
-        for lit, rep in self.literals:
-            text = text.replace(lit, rep)
+        for rx, rep in self.literals:
+            text = rx.sub(lambda _m, r=rep: r, text)
         for kind, rx in self.secret_res:
             text = rx.sub(f"[REDACTED:{kind}]", text)
         if self.user_re:
@@ -149,14 +152,14 @@ class Redactor:
             except ValueError:
                 out.append(self.string(line))
                 continue
-            out.append(json.dumps(_walk(obj, self.string), ensure_ascii=False, separators=(",", ":")))
+            out.append(json.dumps(_walk(_scrub(obj), self.string), ensure_ascii=False, separators=(",", ":")))
         return ("\n".join(out) + "\n" if out else "").encode()
 
     def leaks(self, jsonl: str) -> list[str]:
         found: set[str] = set()
 
         def scan(s: str) -> str:
-            found.update("personal literal" for lit, _ in self.literals if lit in s)
+            found.update("personal literal" for rx, _ in self.literals if rx.search(s))
             found.update(kind for kind, rx in self.secret_res if rx.search(s))
             if self.user_re and self.user_re.search(s):
                 found.add("username")
@@ -164,9 +167,13 @@ class Redactor:
 
         for line in jsonl.splitlines():
             try:
-                _walk(json.loads(line), scan)
+                obj = json.loads(line)
             except ValueError:
                 scan(line)
+                continue
+            _walk(obj, scan)
+            if _unscrubbed(obj):
+                found.add("account identifier")
         return sorted(found)
 
 
@@ -178,6 +185,26 @@ def _walk(obj, fn):
     if isinstance(obj, dict):
         return {fn(k): _walk(v, fn) for k, v in obj.items()}
     return obj
+
+
+def _scrub(obj):
+    """Rules that act on JSON structure rather than on strings: account identifiers that
+    Claude Code records under known keys, and thinking-block signatures (opaque bytes)."""
+    if isinstance(obj, list):
+        return [_scrub(v) for v in obj]
+    if isinstance(obj, dict):
+        return {k: "[REDACTED:account-id]" if k in REDACT_KEYS and isinstance(v, str) else _scrub(v)
+                for k, v in obj.items() if not (k == "signature" and obj.get("type") == "thinking")}
+    return obj
+
+
+def _unscrubbed(obj) -> bool:
+    if isinstance(obj, list):
+        return any(_unscrubbed(v) for v in obj)
+    if isinstance(obj, dict):
+        return any((k in REDACT_KEYS and isinstance(v, str) and not v.startswith("[REDACTED")) or _unscrubbed(v)
+                   for k, v in obj.items())
+    return False
 
 
 # --------------------------------------------------------------------------- transcripts
@@ -275,7 +302,7 @@ def summarize(entries: list[dict], repo_prefix: str) -> dict:
     started, ended = windows[0]["started"], windows[-1]["ended"]
     return {
         "title": title, "first_prompt": first_prompt,
-        "client": f"claude-code {version}" if version else None, "models": sorted(models),
+        "client": {"tool": "claude-code", "version": version}, "models": sorted(models),
         "started": started, "ended": ended,
         "duration_seconds": round((ts_ns(ended) - ts_ns(started)) / 1e9) if started and ended else None,
         "stats": {"turns": sum(w["turns"] for w in windows), "api_calls": len(seen_msgs),
@@ -306,10 +333,14 @@ def store_log(sid: str, data: bytes) -> dict:
         tmp = path.with_suffix(".tmp")
         tmp.write_bytes(gzip.compress(data, mtime=0))  # mtime=0: same input, same .gz bytes
         tmp.replace(path)
-    gz = path.read_bytes()
-    return {"sha256": sha, "bytes": len(data), "lines": data.count(b"\n"),
-            "path": str(path.relative_to(REPO)), "gzip_sha256": hashlib.sha256(gz).hexdigest(),
-            "gzip_bytes": len(gz), "locations": []}
+    return {"sha256": sha, **log_info(sid, sha), "path": str(path.relative_to(REPO))}
+
+
+def log_info(sid: str, sha: str) -> dict:
+    """Sizes of a stored log: its content in bytes and lines, and the gzip file in bytes."""
+    gz = log_path(sid, sha).read_bytes()
+    data = gzip.decompress(gz)
+    return {"bytes": len(data), "lines": data.count(b"\n"), "gzip_bytes": len(gz)}
 
 
 def load_log(sid: str, sha: str) -> bytes | None:
@@ -347,8 +378,6 @@ def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, 
     entries = read_jsonl(data)
     old = load_manifest(sid)
     log = store_log(sid, data)
-    if url := old.get("uploads", {}).get(log["sha256"]):
-        log["locations"] = [url]
     subagents = []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
@@ -364,8 +393,7 @@ def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, 
         "log": log,
         "subagents": subagents,
         "commits": old.get("commits", []),
-        "uploads": old.get("uploads", {}),
-        "langfuse": {"project": read_env(LANGFUSE_ENV).get("LANGFUSE_INIT_PROJECT_ID"), "session_id": sid},
+        "logs": old.get("logs") or {sha: {"url": url} for sha, url in old.get("uploads", {}).items()},
         "redaction_policy": REDACTION_POLICY,
         "generator": "tools/traces/sync.py",
     }
@@ -412,15 +440,20 @@ def session_trailers(desc: str) -> list[tuple[str, str]]:
     return TRAILER_RE.findall(desc)
 
 
-def link_commits(sid: str, m: dict) -> None:
+def link_commits(sid: str, m: dict, current: bool) -> None:
     """Stamp this session's trailer on the mutable changes it made, then record every
     change that carries its trailer (mutable or not) in the manifest.
 
-    @ is re-stamped with the latest log on every sync, together with the manifest in its
-    tree, so the two always agree. Other changes are stamped once, if they have no
-    trailer for this session yet, and then left alone; immutable ones are never touched."""
-    if m.get("started"):
-        made = f'mutable() & ::@ & author_date(after:"{m["started"]}") & ~(empty() & description(exact:""))'
+    A session "made" the mutable ancestors of @ created while it ran, plus @ itself if the
+    session is the one running now (`current`). @ is re-stamped with the latest log on every
+    sync, together with the manifest in its tree, so the two always agree. Other changes are
+    stamped once, if they have no trailer for this session yet, and then left alone;
+    immutable ones are never touched."""
+    if m.get("started") and m.get("ended"):
+        made = (f'mutable() & ::@ & author_date(after:"{m["started"]}") & author_date(before:"{m["ended"]}")'
+                f' & ~(empty() & description(exact:""))')
+        if current:
+            made = f"({made}) | @"
         at = jj_commits("@")[0]["change_id"]
         for c in jj_commits(made):
             stamped = any(s_id == sid and sha for s_id, sha in session_trailers(c["description"]))
@@ -436,19 +469,27 @@ def link_commits(sid: str, m: dict) -> None:
                         "commit_id": c["commit_id"] if c["immutable"] else None,
                         "immutable": c["immutable"],
                         "summary": c["description"].split("\n", 1)[0],
-                        "log_sha256": (shas[0] or None) if shas else None,
-                        "log_url": m.get("uploads", {}).get(shas[0]) if shas and shas[0] else None})
+                        "log_sha256": (shas[0] or None) if shas else None})
     m["commits"] = sorted(commits, key=lambda c: (not c["immutable"], c["change_id"]))
     save_manifest(sid, m)
 
 
-def prune_logs(sid: str, m: dict) -> None:
-    """Keep the current log and every log a commit trailer points at; drop the rest."""
+def finalize_logs(sid: str, m: dict) -> None:
+    """m["logs"] lists every log still referenced (current, subagents, commit trailers) with its
+    sizes and, once uploaded, its URL. Local snapshots nothing references any more are deleted."""
     keep = {m["log"]["sha256"]} | {s["log"]["sha256"] for s in m.get("subagents", [])}
     keep |= {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
+    logs = {}
+    for sha in sorted(keep):
+        entry = {"bytes": None, "lines": None, "gzip_bytes": None, "url": None, **(m.get("logs", {}).get(sha) or {})}
+        if log_path(sid, sha).exists():
+            entry.update(log_info(sid, sha))
+        logs[sha] = entry
+    m["logs"] = logs
     for path in (session_dir(sid) / "logs").glob("*.jsonl.gz"):
         if path.name.split(".")[0] not in keep:
             path.unlink()
+    save_manifest(sid, m)
 
 
 # --------------------------------------------------------------------------- Langfuse (OTLP/JSON)
@@ -621,28 +662,29 @@ def cmd_upload() -> int:
             continue
         wanted = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256") and c["change_id"] != at}
         wanted |= {s["log"]["sha256"] for s in m.get("subagents", [])}
-        uploads = m.setdefault("uploads", {})
-        for sha in sorted(wanted - uploads.keys()):
+        logs = m.setdefault("logs", {})
+        for sha in sorted(wanted):
+            if logs.get(sha, {}).get("url"):
+                continue
             try:
-                uploads[sha] = upload_log(sid, sha)
-                print(f"uploaded {uploads[sha]}")
+                logs.setdefault(sha, {})["url"] = upload_log(sid, sha)
+                print(f"uploaded {logs[sha]['url']}")
             except (OSError, RuntimeError) as e:
                 print(f"ERROR {e}", file=sys.stderr)
                 failed += 1
-        for c in m.get("commits", []):
-            c["log_url"] = uploads.get(c.get("log_sha256"))
-        m["log"]["locations"] = [uploads[m["log"]["sha256"]]] if m["log"]["sha256"] in uploads else []
         save_manifest(sid, m)
     return 1 if failed else 0
 
 
 # --------------------------------------------------------------------------- commands
 
-def process(transcript: Path, redact: Redactor, status: str, live: bool) -> dict:
+def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool) -> dict:
+    """live: the last turn may be unfinished (Langfuse waits for it). current: the session is
+    the one running now, so @ is its working copy."""
     sid, m, entries = sync_session(transcript, redact, status)
     if has_jj():
-        link_commits(sid, m)
-    prune_logs(sid, m)
+        link_commits(sid, m, current)
+    finalize_logs(sid, m)
     try:
         export_langfuse(sid, entries, m, live)
     except OSError as e:  # Langfuse down: those turns are retried next time
@@ -654,7 +696,7 @@ def cmd_hook() -> None:
     try:
         payload = json.load(sys.stdin)
         status = "ended" if payload.get("hook_event_name") == "SessionEnd" else "open"
-        process(Path(payload["transcript_path"]), Redactor(), status, live=False)
+        process(Path(payload["transcript_path"]), Redactor(), status, live=False, current=True)
     except Exception:
         log(traceback.format_exc())
 
@@ -666,7 +708,7 @@ def cmd_sync(args: list[str]) -> None:
     for p in paths:
         live = time.time() - p.stat().st_mtime < LIVE_SECONDS
         old_status = load_manifest(p.stem).get("status")
-        m = process(p, redact, "open" if live else (old_status or "ended"), live)
+        m = process(p, redact, "open" if live else (old_status or "ended"), live, current=live)
         s = m["stats"]
         print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
@@ -677,14 +719,15 @@ def cmd_commit(args: list[str]) -> int:
     if len(args) != 2 or args[0] != "-m":
         print("usage: sync.py commit -m MESSAGE", file=sys.stderr)
         return 2
-    cmd_sync([])  # writes manifests and stamps @ with the current log of each session
+    # Describe first: the sync then stamps the trailer onto this message and writes a manifest
+    # that lists @ under its real summary, before `jj new` freezes both into the commit.
+    if jj("describe", "-r", "@", "-m", args[1]).returncode:
+        print("jj describe failed", file=sys.stderr)
+        return 1
+    cmd_sync([])
     at = jj_commits("@")[0]
-    desc = args[1]
-    for sid, sha in session_trailers(at["description"]):
-        if sha:
-            desc = set_trailer(desc, sid, sha)
-    if jj("describe", "-r", "@", "-m", desc).returncode or jj("new").returncode:
-        print("jj describe/new failed", file=sys.stderr)
+    if jj("new").returncode:
+        print("jj new failed", file=sys.stderr)
         return 1
     print(f"committed {at['change_id'][:12]}")
     return 0
@@ -712,24 +755,26 @@ def cmd_check(remote: bool = False) -> int:
         if m.get("schema") != SCHEMA:
             errors.append(f"{sid}: unknown schema {m.get('schema')}")
             continue
-        logs = [m["log"]] + [s["log"] for s in m.get("subagents", [])]
-        logs += [{"sha256": c["log_sha256"]} for c in m.get("commits", []) if c.get("log_sha256")]
-        uploads = m.get("uploads", {})
-        for sha, url in uploads.items():
-            if url != log_url(sid, sha):
-                errors.append(f"{sid}: upload URL {url} does not match its sha256")
-            elif remote and not remote_matches(url, sha):
+        logs = m.get("logs", {})
+        referenced = {m["log"]["sha256"]} | {s["log"]["sha256"] for s in m.get("subagents", [])}
+        referenced |= {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
+        for sha in sorted(referenced - logs.keys()):
+            errors.append(f"{sid}: log {sha[:12]} is referenced but missing from logs")
+        for sha, info in logs.items():
+            url = info.get("url")
+            if url and url != log_url(sid, sha):
+                errors.append(f"{sid}: URL of log {sha[:12]} does not match its sha256: {url}")
+            elif url and remote and not remote_matches(url, sha):
                 errors.append(f"{sid}: CDN does not serve log {sha[:12]} at {url}")
-        for lg in logs:
-            data = load_log(sid, lg["sha256"])
+            data = load_log(sid, sha)
             if data is None:
-                if lg["sha256"] not in uploads:
-                    errors.append(f"{sid}: log {lg['sha256'][:12]} is neither stored locally nor uploaded")
+                if not url:
+                    errors.append(f"{sid}: log {sha[:12]} is neither stored locally nor uploaded")
                 continue
-            if hashlib.sha256(data).hexdigest() != lg["sha256"]:
-                errors.append(f"{sid}: log {lg['sha256'][:12]} content does not match its name")
+            if hashlib.sha256(data).hexdigest() != sha:
+                errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             if leaks := redact.leaks(data.decode(errors="replace")):
-                errors.append(f"{sid}: unredacted {leaks} in log {lg['sha256'][:12]}")
+                errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         current = load_log(sid, m["log"]["sha256"]) or b""
         for c in m.get("commits", []):
@@ -744,8 +789,8 @@ def cmd_check(remote: bool = False) -> int:
                     notes.append(f"{where}: legacy trailer without sha256 for {sid}")
                 elif sid not in manifests:
                     errors.append(f"{where}: session {sid} has no manifest")
-                elif load_log(sid, sha) is None and sha not in manifests[sid].get("uploads", {}):
-                    errors.append(f"{where}: points at log {sha[:12]} that is not stored")
+                elif sha not in manifests[sid].get("logs", {}):
+                    errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
                 else:
                     # The manifest committed in the same tree should name the same log.
                     r = jj("file", "show", "-r", c["commit_id"], f"traces/{sid}/manifest.json")

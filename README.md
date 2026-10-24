@@ -38,6 +38,11 @@ For trace capture, also run `infra/langfuse/up.sh` and `python3 tools/traces/syn
 
 User-level tools go in `~/.local/bin` and `~/tools`. The installer adds a marked block to `~/.bashrc`.
 
+## License
+
+Code is licensed under Apache-2.0 ([LICENSE](LICENSE)).
+The documentation in `docs/` and the traces in `traces/`, including the published logs they point at, are licensed under CC BY 4.0 ([LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
+
 **WSL notes:**
 - systemd must be enabled. Put `[boot] systemd=true` in `/etc/wsl.conf`, then run `wsl --shutdown`.
 - The installer sets up native Docker Engine inside the distro. If Docker Desktop is installed, quit it or disable its WSL integration, so that two daemons don't compete.

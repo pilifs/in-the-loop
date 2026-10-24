@@ -45,16 +45,19 @@ A new policy produces new log IDs. Logs that commits already point at are kept.
 |---|---|
 | `schema` | `llm-trace-manifest/v1` |
 | `session_id`, `status` | `open` while the session runs, `ended` after `SessionEnd` |
-| `title`, `first_prompt`, `client`, `models` | What the session was and what ran it |
+| `title`, `first_prompt`, `client`, `models` | What the session was and what ran it. `client` is `{tool, version}`, for example `claude-code` |
 | `started`, `ended`, `duration_seconds` | Time span |
 | `stats` | Turns, API calls, tool calls and errors, compactions, peak context tokens, and token usage (input, output, cache read, cache write) |
 | `tools` | Count of calls per tool |
 | `files_touched` | Files written by Edit and Write (repo-relative) |
 | `context_windows[]` | The same stats for each window between compactions |
-| `log` | `sha256`, `bytes`, `lines`, local `path`, `gzip_sha256`, `gzip_bytes`, and `locations` (upload URLs, empty for now) |
+| `log` | The current log: `sha256`, `bytes`, `lines`, `gzip_bytes` and the local `path` |
 | `subagents[]` | For each subagent: its stats and its own `log` |
 | `commits[]` | `change_id`, `commit_id`, `immutable`, `summary`, `log_sha256` |
-| `langfuse`, `redaction_policy`, `generator` | Where to browse the session, and how the files were produced |
+| `logs` | Every log still referenced (the current one, subagent logs, and each log a commit points at), keyed by `sha256`: `bytes`, `lines`, `gzip_bytes`, and `url` once uploaded |
+| `redaction_policy`, `generator` | How the files were produced |
+
+The manifest is derived data. It is rebuilt from the transcript on every sync, and `summarize()` runs on the redacted entries, so it can also be rebuilt from a published log. Changing its schema is cheap; the identifiers above are not.
 
 ## Workflow
 
@@ -95,20 +98,21 @@ curl -s https://terminalvalue.net/raw-traces/<sid>/<sha>.jsonl.gz | gunzip | sha
   It runs ahead of the Pages site on the same domain, so the site is unaffected and a site deploy cannot remove the logs.
   It is read-only (GET and HEAD only), rejects keys that are not `<uuid>/<64 hex>.jsonl.gz`, serves `application/gzip` without re-encoding, and caches each log at the edge forever (`immutable`).
 - **`sync.py upload`** uploads only the logs that commits point at, plus subagent logs; it skips `@`, whose log changes every turn.
-  After each upload it downloads the log again through the CDN, verifies its SHA-256, and only then records the URL in `manifest.uploads`, `commits[].log_url` and `log.locations`.
+  After each upload it downloads the log again through the CDN, verifies its SHA-256, and only then records the URL in `manifest.logs[<sha256>].url`.
   `jj trace-push` runs the upload before pushing, so no pushed commit points at a log nobody else can fetch.
 - **`sync.py check --remote`** downloads every recorded upload again and checks its hash.
 
 Deploying the Worker: `cd infra/cdn && npx wrangler deploy`. Wrangler 4.149 uploads the script, then fails with error 10007 before it creates the route.
 The route (`terminalvalue.net/raw-traces/*` → `raw-traces`) was created through the zone's Workers Routes API and already exists, so redeploys only need the script upload.
 
-The first commit (`qxqvplms`) predates this layout. Its log is checked into that commit under `traces/sessions/`, and its message line has no `sha256:`. `check` reports it as a legacy note.
+**History note.** The first three commits were made before this layout and redaction policy 3 existed. On 2026-10-24, before anyone had cloned the repo, they were rewritten so that every commit resolves to a log: their logs were regenerated from the same transcript prefixes under the current policy, their `LLM-Trace` lines updated, and the author email switched to a GitHub noreply address. The rewrite itself is in this session's log.
 
 ## Redaction
 
 Traces are published, so `sync.py` redacts every JSON string, including keys, before hashing:
 
-- your home directory becomes `~`, your username becomes `user`, and your git, jj and Claude account emails (including the part before the `@`) become `user@example.com`
+- your home directory becomes `~`, your username becomes `user`, and your git, jj and Claude account emails (including the part before the `@`, in any letter case) become `user@example.com`. GitHub noreply addresses are public by design and are kept.
+- account identifiers that Claude Code records in the transcript (`organizationUuid`, `accountUuid`) are removed, and the opaque `signature` of thinking blocks is dropped
 - the secret values in `infra/langfuse/.env` are removed
 - common token formats are removed: Anthropic, Langfuse, GitHub, AWS and Slack tokens, private keys, and bearer tokens
 - extra literals in `~/.config/llm-traces/redact.txt` are applied, one per line, as `literal` or `literal => replacement`
