@@ -7,44 +7,28 @@ These demos are inspired by [LLM-assisted formal verification at scale](https://
 which proved properties of compiled RISC-V binaries, not source code.
 The demos ask what the equivalent pipelines look like for the JVM.
 
-- [`docs/approaches.md`](docs/approaches.md) lists the approaches by level (source, bytecode, native, distributed), together with the plan for the demos.
-- [`examples/`](examples/README.md) is the place to start: numbered examples of code changes run through a formal verifier, each with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests.
-- [`apps/boxoffice/`](apps/boxoffice/README.md) is the subject system for the distributed scenarios: concert ticketing as two Spring Boot services with Kafka and MongoDB, a saga with compensation, an outbox and an inbox, and the invariants they must keep.
-- `demos/` holds the demos (coming soon).
-- [`changes/`](changes/README.md) publishes the LLM session behind every commit: a readable summary, metadata, and the full transcript. Each commit message links to them. [`docs/traces.md`](docs/traces.md) is the specification.
+The repo has two parts:
 
-## Setup (Ubuntu 24.04, native or WSL2, amd64 or arm64)
+## [`examples/`](examples/README.md): formal verification
 
-```bash
-setup/ubuntu-wsl/install.sh          # default components; prompts for sudo once, for apt and Docker
-exec bash                            # pick up PATH and docker group membership
-setup/ubuntu-wsl/doctor.sh           # verify
-```
+**Start here.** Numbered examples of code changes run through a formal verifier, each with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests.
+The folder also holds everything the examples need:
 
-Components are listed below. You can install any subset, for example `install.sh jvm provers`. `install.sh all` installs everything, including the optional components.
-
-| Component | Installs |
+| Path | Content |
 |---|---|
-| `devtools` | jj (Jujutsu, colocated with git) and gh |
-| `system` | apt build tools, Docker Engine, CBMC/JBMC, Z3, .NET 8, opam, the RISC-V cross-compiler, qemu-user with binfmt, and kernel limits for kind |
-| `jvm` | SDKMAN with Temurin 25 (default), Temurin 21, GraalVM CE 25 (native-image), Gradle and Maven |
-| `k8s` | kubectl, kind, Helm and k9s |
-| `verify` | TLA+ (TLC), Alloy, KeY, Jazzer, cvc5, Dafny and Boogie |
-| `provers` | Lean 4 (via elan) and Sail (ISA specifications) |
-| `rocq` *(optional)* | Rocq via opam. This is slow because it compiles from source. |
-| `isabelle` *(optional)* | Isabelle, for Jinja/JinjaThreads JVM semantics (about 1 GB) |
-| `acl2` *(optional)* | ACL2, for the M1–M6 JVM models |
-| `angr` *(optional)* | angr, for binary symbolic execution, in a venv |
+| [`examples/README.md`](examples/README.md) | The table of contents |
+| [`examples/approaches.md`](examples/approaches.md) | The approaches by level (source, bytecode, native, distributed), and the plan for the demos |
+| [`examples/apps/boxoffice/`](examples/apps/boxoffice/README.md) | The subject system: concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep |
+| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The verifier: behavioural contracts, a CI gate that proves behaviour unchanged |
+| [`examples/tools/build.py`](examples/tools/build.py) | Runs every example and generates its page |
+| [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
 
-For trace capture, also run `infra/langfuse/up.sh` and `python3 tools/traces/sync.py init`. [`docs/traces.md`](docs/traces.md) has the details.
+## [`llm-dlc/`](llm-dlc/README.md): the LLM development lifecycle
 
-User-level tools go in `~/.local/bin` and `~/tools`. The installer adds a marked block to `~/.bashrc`.
+A meta example. This repo is written with an LLM, and every commit is published with the session that made it: a readable summary, metadata, and the full transcript, linked from the commit message.
+The folder holds the procedure and session index, the [specification](llm-dlc/specification.md), the published traces, the tooling that captures and checks them, and the CDN and Langfuse infrastructure.
 
 ## License
 
 Code is licensed under Apache-2.0 ([LICENSE](LICENSE)).
-The documentation in `docs/` and everything in `changes/`, including the published logs they point at, are licensed under CC BY 4.0 ([LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
-
-**WSL notes:**
-- systemd must be enabled. Put `[boot] systemd=true` in `/etc/wsl.conf`, then run `wsl --shutdown`.
-- The installer sets up native Docker Engine inside the distro. If Docker Desktop is installed, quit it or disable its WSL integration, so that two daemons don't compete.
+`examples/approaches.md`, `llm-dlc/specification.md`, and the session records in `llm-dlc/` (`README.md`, `index.json`, `summary-template.md` and `traces/`, including the published logs they point at) are licensed under CC BY 4.0 ([LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
