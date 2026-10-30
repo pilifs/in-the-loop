@@ -17,6 +17,7 @@ final class Sarif {
     private static final String[][] RULES = {
         {"behaviour-changed", "The code no longer matches its behavioural contract."},
         {"unverifiable", "The method cannot be verified: it is not pure, or its inputs are not finite."},
+        {"capability-changed", "The module's bytecode reaches a capability, or a library, that its contract does not list."},
     };
 
     private Sarif() {}

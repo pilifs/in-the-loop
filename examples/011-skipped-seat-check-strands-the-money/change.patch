@@ -1,0 +1,24 @@
+--- a/examples/apps/boxoffice/spec/BoxOffice.tla
++++ b/examples/apps/boxoffice/spec/BoxOffice.tla
+@@ -116,7 +116,7 @@
+ 
+ \* PaymentEventHandler.handle: the payment outcome becomes an OrderInput, and the decision is applied.
+ Input(m, c) ==
+-    CASE m.kind = "PaymentCaptured" -> [kind |-> "PaymentCaptured", seatsStillHeld |-> HeldBy(c) = hold[c].seats]
++    CASE m.kind = "PaymentCaptured" -> [kind |-> "PaymentCaptured", seatsStillHeld |-> TRUE]
+       [] m.kind = "PaymentDeclined" -> [kind |-> "PaymentDeclined"]
+       [] m.kind = "PaymentRefunded" -> [kind |-> "PaymentRefunded"]
+ 
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java
+@@ -42,8 +42,8 @@
+                 return;
+             }
+             OrderInput input = switch (event) {
+-                case PaymentEvent.PaymentCaptured _ ->
+-                    new OrderInput.PaymentCaptured(store.heldBy(order.holdId()) == order.seatLabels().size());
++                // The hold was checked when the order was placed, so the seats are ours: no need to count them again.
++                case PaymentEvent.PaymentCaptured _ -> new OrderInput.PaymentCaptured(true);
+                 case PaymentEvent.PaymentDeclined _ -> new OrderInput.PaymentDeclined();
+                 case PaymentEvent.PaymentRefunded _ -> new OrderInput.PaymentRefunded();
+             };

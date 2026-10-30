@@ -76,6 +76,112 @@
       "approach": "B8",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "006",
+      "path": "006-per-seat-discount-rounds-differently",
+      "title": "A per-seat discount that rounds differently from the per-total one",
+      "summary": "The group discount is moved from the order total to the unit price, so that tickets can show what each seat cost. It reads as the same arithmetic, and the unit tests pass. The prover finds prices where the two versions differ by a few cents, over an input space of 2^96 values that no test could sweep.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "007",
+      "path": "007-doubled-group-discount-proved-confined",
+      "title": "A doubled group discount, proved to change only groups",
+      "summary": "Product doubles the group discount from 10% to 20%. The developer declares that the change affects holds of six seats or more and nothing else, and the prover confirms it for every price and every smaller seat count. The pull request's claim becomes a checked fact.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents",
+      "approach": "B9",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "008",
+      "path": "008-percentage-rewrite-leaks-outside-new-tier",
+      "title": "A new tier, written as one formula, also changes groups of six and seven",
+      "summary": "Product adds 20% off for eight seats or more. The developer writes it generally, a percentage per tier and one formula, and the pull request says that only eight seats or more are affected. The prover disagrees, and shows a group below eight seats whose price changed by a cent.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "009",
+      "path": "009-codec-loads-classes-named-by-payload",
+      "title": "A codec that loads whatever class a Kafka message names",
+      "summary": "To let one consumer decode messages of either family, the codec writes the Java class name into every payload and resolves it with Class.forName when reading. Round-trip tests pass. The module's capability contract now lists reflection, with the call site: the shape of the Jackson and XStream deserialization CVEs, caught without a CVE database.",
+      "categories": [
+        "security"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.boxoffice.contracts.MessageCodec#decode",
+      "approach": "B10",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "010",
+      "path": "010-sorted-payload-keeps-capabilities",
+      "title": "A codec setting that changes payloads but not what the module can do",
+      "summary": "Message properties are now written in alphabetical order, so that payloads in logs and dead-letter topics diff cleanly. The wire format changes, but the module reaches exactly the same JDK capabilities and libraries as before, and the capability contract passes untouched.",
+      "categories": [
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "configuration",
+      "symbol": "net.terminalvalue.boxoffice.contracts.MessageCodec#encode",
+      "approach": "B10",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "011",
+      "path": "011-skipped-seat-check-strands-the-money",
+      "title": "Skipping one query in a Kafka listener strands a customer's money",
+      "summary": "When a payment is captured, the ticketing service counts the seats the order's hold still has before it decides. A developer removes that query: the hold was checked when the order was placed. No unit test covers the listener. The model checker finds a nine-step run across two customers, two services, Kafka and the clock after which a customer is charged, owns no seat, and the event that would have refunded them sits in a dead-letter topic.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.app.PaymentEventHandler#handle",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "012",
+      "path": "012-deleting-the-sweeper-is-safe",
+      "title": "Deleting the hold sweeper, proved safe for every interleaving",
+      "summary": "The scheduled job that releases expired holds looks load-bearing: without it, seats of expired holds stay marked HELD. A developer deletes it anyway, and the model checker confirms that every safety invariant still holds in every reachable state, because the rest of the system already treats an expired hold as free.",
+      "categories": [
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.app.HoldService#releaseExpiredHolds",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

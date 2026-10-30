@@ -6,6 +6,7 @@
   "type": "object",
   "required": [
     "verdict",
+    "verdictLabel",
     "matchesExpected",
     "existingTests",
     "before",
@@ -49,6 +50,10 @@
         "unverifiable"
       ]
     },
+    "verdictLabel": {
+      "description": "The verdict with the approach's own measure of it, as shown in the tables: '✗ Violation: 2 of 36 cases changed', '✓ Verified: equivalent on every input'.",
+      "type": "string"
+    },
     "matchesExpected": {
       "type": "boolean"
     },
@@ -86,14 +91,21 @@
       "$ref": "#/$defs/excerpt"
     },
     "casesTotal": {
-      "description": "Size of the input domain, or null when unverifiable.",
+      "description": "Size of the input domain when it is finite (B8), or null.",
       "type": [
         "integer",
         "null"
       ]
     },
+    "domain": {
+      "description": "The input domain in words when it is not finite (B9), for example 'priceCents: long × seats: int'.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "counterexamples": {
-      "description": "Inputs whose outcome differs from the contract. Each is a concrete, replayable witness.",
+      "description": "Inputs whose outcome differs: from the contract (B8), or between the old and new version (B9, where 'contract' is the old outcome and 'actual' the new one). Each is a concrete, replayable witness.",
       "type": "array",
       "items": {
         "type": "object",
@@ -140,6 +152,58 @@
     },
     "contractDiff": {
       "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "proof": {
+      "description": "One line on how the verdict was reached, from the verifier: the prover, what it covered, how long it took.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "problem": {
+      "description": "Why the verifier refused, when the verdict is unverifiable and it is not a purity violation.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "statement": {
+      "description": "File name of the statement the prover checked, such as a generated harness, relative to the example folder.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trace": {
+      "description": "For a model-checking violation (D1): the counterexample, one step per entry, with the action and the variables it changed.",
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "required": ["step", "action", "changes"],
+        "additionalProperties": false,
+        "properties": {
+          "step": { "type": "integer" },
+          "action": { "type": "string" },
+          "changes": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "statesExplored": {
+      "description": "For model checking (D1): the number of distinct states TLC explored.",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "invariant": {
+      "description": "For a model-checking violation (D1): the invariant that failed.",
       "type": [
         "string",
         "null"

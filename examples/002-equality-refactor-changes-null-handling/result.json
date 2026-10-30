@@ -1,5 +1,6 @@
 {
   "verdict": "violation",
+  "verdictLabel": "✗ Violation: 1 of 36 cases changed",
   "matchesExpected": true,
   "existingTests": {
     "task": ":ticketing-domain:test",
@@ -17,6 +18,7 @@
     "code": "};\ncase PaymentDeclined _ -> switch (current) {\n    case PENDING_PAYMENT -> transition(DECLINED, RELEASE_SEATS);\n    case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged(\"payment outcome already recorded\");\n};\ncase PaymentRefunded _ ->\n    current == REFUND_PENDING ? transition(REFUNDED) : unchanged(\"no refund outstanding\");\ncase CancellationRequested _ -> switch (current) {\n    case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);\n    case REFUND_PENDING, REFUNDED -> unchanged(\"already cancelled\");\n    case PENDING_PAYMENT -> new Decision.Rejected(\"payment is in progress; try again shortly\");\n    case DECLINED -> new Decision.Rejected(\"the order was never paid\");\n"
   },
   "casesTotal": 36,
+  "domain": null,
   "counterexamples": [
     {
       "input": "decide(null, PaymentRefunded[])",
@@ -35,6 +37,12 @@
     "java.util.Objects.requireNonNull"
   ],
   "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
   "sarif": "result.sarif",
   "output": "verifier-output.txt"
 }

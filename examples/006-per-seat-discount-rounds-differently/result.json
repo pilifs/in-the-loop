@@ -1,0 +1,40 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-domain:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 43,
+    "code": "\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}\n     * seats or more. The discount is taken off the total and rounded down to the cent. Throws\n     * {@link ArithmeticException} rather than overflow.\n     */\n    public static long totalCents(long priceCents, int seats) {\n        if (priceCents < 0 || seats < 0) {\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long total = Math.multiplyExact(priceCents, seats);\n        return seats >= GROUP_SIZE ? total - total / 10 : total;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 43,
+    "code": "\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}\n     * seats or more. The discount is taken off each seat and rounded down to the cent, so that the ticket can show\n     * the price paid per seat. Throws {@link ArithmeticException} rather than overflow.\n     */\n    public static long totalCents(long priceCents, int seats) {\n        if (priceCents < 0 || seats < 0) {\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long unitCents = seats >= GROUP_SIZE ? priceCents - priceCents / 10 : priceCents;\n        return Math.multiplyExact(unitCents, seats);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "priceCents: long × seats: int",
+  "counterexamples": [
+    {
+      "input": "totalCents(priceCents=17, seats=6)",
+      "contract": "92",
+      "actual": "96"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

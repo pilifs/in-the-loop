@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "011",
+  "title": "Skipping one query in a Kafka listener strands a customer's money",
+  "summary": "When a payment is captured, the ticketing service counts the seats the order's hold still has before it decides. A developer removes that query: the hold was checked when the order was placed. No unit test covers the listener. The model checker finds a nine-step run across two customers, two services, Kafka and the clock after which a customer is charged, owns no seat, and the event that would have refunded them sits in a dead-letter topic.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.app.PaymentEventHandler#handle"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/boxoffice/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Drop the `heldBy` count from the payment-captured path and pass `seatsStillHeld = true`. The reasoning in the review: an order can only be placed for an unexpired hold, so by the time the payment comes back the seats are ours, and the count is one MongoDB round trip per payment event for nothing. The same line is changed in the TLA+ model of the handler, which is kept next to the code.",
+    "patch": "change.patch"
+  },
+  "risk": "A hold is a lease, and the payment is slow. Between placing the order and the capture coming back, the hold can expire and another customer can take the seat. With the check in place the state machine answers 'refund'. Without it, the state machine answers 'confirm and sell', the sell finds no seats to sell, the transaction throws, Kafka retries, and the event ends up in the dead-letter topic. The customer has paid, has no seats, and nothing in the system will ever refund them: an operator has to notice the dead letter and repair the order by hand. In production this surfaces as chargebacks and a support queue, weeks after the deploy that caused it, and the line that caused it looks like a harmless optimisation.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The TLA+ model has one action per transaction of each service, one for each relay, and one for the clock, and TLC explores every interleaving of them for two customers and one seat. The order state machine inside the model is not hand-written: it is generated from the behavioural contract of `OrderLifecycle#decide`, which example 001's verifier proves the bytecode satisfies, so the model decides exactly as the service does. The invariant that fails says that captured money is held for a confirmed order, is being refunded, or its capture event is still in flight. TLC's trace is the shortest run that reaches a state where none of those holds, and every step in it names the Java operation it stands for. A unit test of the listener could not have found this: the bug is in the interleaving, not in any one method.",
+  "resolution": "Keep the query. The seat count at capture time is the one piece of information that the order-placement check cannot supply, because it is about the present and not the past. The system test `paymentThatOutlivesItsHoldIsRefunded` would also catch this change, in about half a minute with Docker, by engineering the one timing it knows about; the model checker finds it in two seconds and would find any other interleaving too.",
+  "provenance": "Constructed from the lease-versus-slow-payment race that the Box Office README names as the interesting case, by removing the code that handles it."
+}

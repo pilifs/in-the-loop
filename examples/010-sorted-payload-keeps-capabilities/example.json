@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "010",
+  "title": "A codec setting that changes payloads but not what the module can do",
+  "summary": "Message properties are now written in alphabetical order, so that payloads in logs and dead-letter topics diff cleanly. The wire format changes, but the module reaches exactly the same JDK capabilities and libraries as before, and the capability contract passes untouched.",
+  "categories": [
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "symbol": "net.terminalvalue.boxoffice.contracts.MessageCodec#encode"
+  },
+  "approach": {
+    "id": "B10",
+    "name": "Capability contracts",
+    "tool": "examples/tools/contracts"
+  },
+  "change": {
+    "kind": "configuration",
+    "behaviourChangeIntended": false,
+    "description": "Enable Jackson's alphabetical property ordering on the shared mapper. Operations asked for it: when two copies of a message are compared in a log viewer, the fields should line up.",
+    "patch": "change.patch"
+  },
+  "risk": "None for the capability contract. The example is here to show its selectivity: it is not a diff of the code or of the output, but of what the compiled module is able to do. A change to serialization order, however visible on the wire, is invisible to it, so the gate stays quiet for the everyday changes that make up most of a module's history.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The verifier recomputes the module's capability contract from the new bytecode and compares it with the checked-in one. The new code calls one more Jackson method on the builder, which is a call into a library the contract already lists, and no JDK entry point of any capability. The two contracts are identical, so the build passes without a contract change, and the pull request contains only the code.",
+  "resolution": "Merge.",
+  "provenance": "Constructed as the counterpart of example 009."
+}

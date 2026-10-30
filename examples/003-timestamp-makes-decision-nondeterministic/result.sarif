@@ -18,11 +18,36 @@
               "shortDescription": {
                 "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
               }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
+              }
             }
           ]
         }
       },
       "results": [
+        {
+          "ruleId": "capability-changed",
+          "level": "error",
+          "message": {
+            "text": "Capabilities of module ticketing-domain differ from its contract:\n  added clock: net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java"
+                },
+                "region": {
+                  "startLine": 67
+                }
+              }
+            }
+          ]
+        },
         {
           "ruleId": "unverifiable",
           "level": "error",

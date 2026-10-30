@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "012",
+  "title": "Deleting the hold sweeper, proved safe for every interleaving",
+  "summary": "The scheduled job that releases expired holds looks load-bearing: without it, seats of expired holds stay marked HELD. A developer deletes it anyway, and the model checker confirms that every safety invariant still holds in every reachable state, because the rest of the system already treats an expired hold as free.",
+  "categories": [
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.app.HoldService#releaseExpiredHolds"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/boxoffice/spec"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Remove `HoldService.releaseExpiredHolds`, its schedule, and its setting. The job's own comment claims that correctness does not depend on it; the developer takes the claim at its word and removes the moving part, and removes the matching `Sweep` action from the TLA+ model.",
+    "patch": "change.patch"
+  },
+  "risk": "None, if the comment is right. The risk the example addresses is the other one: code that nobody dares delete because nobody can say what it protects. A model that covers every interleaving can say it. Here it says that no double sale, no stranded money and no disagreement between the services becomes reachable when the sweeper is gone, because hold expiry is checked at every point that matters, by comparing timestamps rather than by trusting a stored status.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "With the `Sweep` action removed, TLC explores every reachable state of the smaller system and finds no violation of any invariant. The result is specific to the safety properties the model states; it says nothing about the display of availability or about how long a seat stays marked HELD, which are the sweeper's actual job. Deleting it is safe, and also makes the seat list lie to readers until the next hold, which is a product decision rather than a correctness one.",
+  "resolution": "Safe to merge as far as correctness goes. Keep the sweeper if the seat list is read directly by anything that does not compare expiry times.",
+  "provenance": "Constructed to show the model checker accepting a deletion, which is the kind of change reviewers are most reluctant to approve on inspection."
+}

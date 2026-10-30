@@ -63,7 +63,8 @@ Placing an order, step by step:
 | Module | Contents |
 |---|---|
 | `contracts` | The Kafka messages, as sealed interfaces of records, and their JSON codec. The type is in the payload, not in a Java class header |
-| `ticketing-domain` | The order state machine (`OrderLifecycle`), seat and hold rules. Pure Java with no dependencies: the first target for verification tools |
+| `ticketing-domain` | The order state machine (`OrderLifecycle`), seat and hold rules, and pricing with a group discount (`HoldPolicy`). Pure Java with no dependencies: the first target for verification tools |
+| `spec` | The TLA+ model of the saga, checked by TLC ([README](spec/README.md)) |
 | `messaging` | Transactional outbox and relay, idempotent inbox, transaction retry, and Kafka retry with dead-letter topics |
 | `ticketing-service` | Spring Boot: REST API, MongoDB store, payment-event listener, hold sweeper |
 | `payment-service` | Spring Boot: command listener, payment ledger, fake gateway |
@@ -85,7 +86,8 @@ Placing an order, step by step:
 ## Invariants: what verification should establish
 
 These are the properties the verification scenarios target. `system-tests` checks the safety properties at quiescence after every test, and `OrderLifecycleTest` model-checks the state machine for every input sequence up to six inputs long.
-`OrderLifecycle#decide` also has a [behavioural contract](ticketing-domain/src/contract/OrderLifecycle.decide.contract), which `./gradlew check` verifies against the bytecode ([`examples/tools/contracts`](../../tools/contracts/README.md)).
+`OrderLifecycle#decide` also has a [behavioural contract](ticketing-domain/src/contract/OrderLifecycle.decide.contract), which `./gradlew check` verifies against the bytecode ([`examples/tools/contracts`](../../tools/contracts/README.md)), and the `contracts` and `ticketing-domain` modules have [capability contracts](contracts/src/contract/capabilities.contract) that say what their bytecode can reach.
+The safety invariants below are also checked over every interleaving of the two services, Kafka and the clock by the TLA+ model in [`spec/`](spec/README.md).
 
 **Safety**
 

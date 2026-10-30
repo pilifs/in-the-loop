@@ -106,6 +106,7 @@ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lan
 <details><summary>Verifier output</summary>
 
 ```text
+✓ module ticketing-domain matches its capability contract (15 classes, 64 methods, 0 capability uses, 0 libraries)
 ✗ Behaviour of net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide differs from its contract in 1 of 36 cases:
   decide(null, PaymentRefunded[])
     contract: throws NullPointerException
@@ -139,6 +140,12 @@ If a change is intended, run `./gradlew updateContracts` and commit the contract
               "id": "unverifiable",
               "shortDescription": {
                 "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
+              }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
               }
             }
           ]

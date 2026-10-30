@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "006",
+  "title": "A per-seat discount that rounds differently from the per-total one",
+  "summary": "The group discount is moved from the order total to the unit price, so that tickets can show what each seat cost. It reads as the same arithmetic, and the unit tests pass. The prover finds prices where the two versions differ by a few cents, over an input space of 2^96 values that no test could sweep.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "examples/tools/contracts"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Apply the 10% group discount to the seat price before multiplying, instead of to the total afterwards. The ticket can then print the discounted price per seat, and `price × seats × 90%` is the same number either way. Or so it seems: integer division rounds down at a different point.",
+    "patch": "change.patch"
+  },
+  "risk": "A group of six paying $49.99 a seat is charged 26,995 cents before the change and 27,000 after: five cents more, with no release note. Multiply that by every group booking, and the finance team reconciles totals that no longer match the published prices, and the refunds that were computed with the old formula no longer match the charges. Rounding changes like this are a classic source of long-lived billing discrepancies, precisely because every individual case looks like a rounding error.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The inputs are a `long` and an `int`, so there are 2^96 of them and the behavioural-contract approach refuses. Instead the verifier compiles both versions into one program, generates a statement that says they agree on every input, and hands it to JBMC, a bounded model checker for JVM bytecode. JBMC looks for an input that falsifies the statement by solving it as a satisfiability problem, and finds one. The generator then runs that input through both versions on a real JVM, so the counterexample row is observed behaviour, not solver output. The search starts with small inputs so that the witness is readable, but a counterexample anywhere in the domain would fail the build.",
+  "resolution": "Keep rounding on the total, and derive the displayed per-seat price from it. If per-seat rounding is the policy change the business wants, declare it as intended and regenerate the prices in the test fixtures; the verifier then shows that nothing else moved.",
+  "provenance": "Constructed as the kind of refactor that is approved because the arithmetic looks identical."
+}

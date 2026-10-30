@@ -1,0 +1,34 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "008",
+  "title": "A new tier, written as one formula, also changes groups of six and seven",
+  "summary": "Product adds 20% off for eight seats or more. The developer writes it generally, a percentage per tier and one formula, and the pull request says that only eight seats or more are affected. The prover disagrees, and shows a group below eight seats whose price changed by a cent.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "examples/tools/contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add a 20% tier for eight seats or more, and while there, replace the special cases with one formula: pick the percentage for the tier, then `total * (100 - percent) / 100`. For the existing 10% tier, `total * 90 / 100` is the same as `total - total / 10`. The pull request declares, as in example 007, that only the new tier's inputs change: holds of eight seats or more.",
+    "patch": "change.patch",
+    "intendedInputs": "seats >= 8"
+  },
+  "risk": "The declared scope of the change is wrong. `total - total / 10` rounds the discount down, and `total * 90 / 100` rounds the discounted total down, which differs by one cent whenever the total is not a multiple of ten. Every six- and seven-seat group is now priced a cent lower than yesterday, and nobody meant that. In a payment system a silent one-cent drift is a reconciliation incident; in a system that reports prices to a partner it is a contract breach. The reviewer approved the change on the strength of the pull request's description, which the prover shows to be false.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The statement JBMC checks excludes the declared inputs, `seats >= 8`, and asserts agreement everywhere else. JBMC finds a six-seat input on which the versions disagree, and the generator replays it on the JVM: the old code returns one cent more than the new. The declaration did not make the change pass; it made the verifier check the developer's claim about the change, and the claim fails. Had the developer declared `seats >= 6` instead, the proof would succeed, and the review would turn to whether a one-cent change for existing tiers is acceptable.",
+  "resolution": "Either leave the existing tier's arithmetic alone and add the new tier as its own branch, or decide that the new rounding is the policy, declare `seats >= 6` as the scope, and tell the business.",
+  "provenance": "Constructed as the general-looking rewrite a developer reaches for when adding the second case of anything."
+}

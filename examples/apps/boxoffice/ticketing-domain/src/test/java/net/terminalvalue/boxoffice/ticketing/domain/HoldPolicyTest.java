@@ -33,6 +33,13 @@ class HoldPolicyTest {
     }
 
     @Test
+    void groupsGetTenPercentOff() {
+        assertThat(HoldPolicy.totalCents(4500, 5)).isEqualTo(22500);
+        assertThat(HoldPolicy.totalCents(4500, 6)).isEqualTo(24300);
+        assertThat(HoldPolicy.totalCents(4500, 8)).isEqualTo(32400);
+    }
+
+    @Test
     void anExpiredHoldFreesTheSeatBeforeTheSweeperRuns() {
         var now = Instant.parse("2026-10-24T12:00:00Z");
         assertThat(SeatStatus.isHoldable(SeatStatus.AVAILABLE, null, now)).isTrue();

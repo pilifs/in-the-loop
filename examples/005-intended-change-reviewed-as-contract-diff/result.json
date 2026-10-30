@@ -1,5 +1,6 @@
 {
   "verdict": "verified",
+  "verdictLabel": "✓ Verified: all 36 cases match",
   "matchesExpected": true,
   "existingTests": {
     "task": ":ticketing-domain:test",
@@ -17,6 +18,7 @@
     "code": "            case PENDING_PAYMENT, CONFIRMED, DECLINED, REFUNDED -> unchanged(\"no refund outstanding\");\n        };\n        case CancellationRequested _ -> switch (current) {\n            case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);\n            case REFUND_PENDING, REFUNDED -> unchanged(\"already cancelled\");\n            case PENDING_PAYMENT -> new Decision.Rejected(\"payment is in progress; try again in a few seconds\");\n            case DECLINED -> new Decision.Rejected(\"the order was never paid\");\n        };\n    };\n}\n\n"
   },
   "casesTotal": 36,
+  "domain": null,
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [
@@ -29,6 +31,12 @@
     "java.util.Objects.requireNonNull"
   ],
   "contractDiff": "--- a/examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract\n+++ b/examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract\n@@ -8,7 +8,7 @@\n decide(PENDING_PAYMENT, PaymentCaptured[seatsStillHeld=true])  => Transition[next=CONFIRMED, effects=[SELL_SEATS]]\n decide(PENDING_PAYMENT, PaymentDeclined[])                     => Transition[next=DECLINED, effects=[RELEASE_SEATS]]\n decide(PENDING_PAYMENT, PaymentRefunded[])                     => Unchanged[reason=\"no refund outstanding\"]\n-decide(PENDING_PAYMENT, CancellationRequested[])               => Rejected[reason=\"payment is in progress; try again shortly\"]\n+decide(PENDING_PAYMENT, CancellationRequested[])               => Rejected[reason=\"payment is in progress; try again in a few seconds\"]\n decide(PENDING_PAYMENT, null)                                  => throws NullPointerException\n decide(CONFIRMED, PaymentCaptured[seatsStillHeld=false])       => Unchanged[reason=\"payment already recorded\"]\n decide(CONFIRMED, PaymentCaptured[seatsStillHeld=true])        => Unchanged[reason=\"payment already recorded\"]\n",
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
   "sarif": "result.sarif",
   "output": "verifier-output.txt"
 }

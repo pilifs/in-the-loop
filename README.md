@@ -19,7 +19,8 @@ The folder also holds everything the examples need:
 | [`examples/README.md`](examples/README.md) | The table of contents |
 | [`examples/approaches.md`](examples/approaches.md) | The approaches by level (source, bytecode, native, distributed), and the plan for the demos |
 | [`examples/apps/boxoffice/`](examples/apps/boxoffice/README.md) | The subject system: concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep |
-| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The verifier: behavioural contracts, a CI gate that proves behaviour unchanged |
+| [`examples/apps/boxoffice/spec/`](examples/apps/boxoffice/spec/README.md) | Its TLA+ model: the two services, Kafka and the clock, checked by TLC over every interleaving |
+| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The verifiers: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
 | [`examples/tools/build.py`](examples/tools/build.py) | Runs every example and generates its page |
 | [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
 

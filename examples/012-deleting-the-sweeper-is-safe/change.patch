@@ -1,0 +1,101 @@
+--- a/examples/apps/boxoffice/spec/BoxOffice.cfg
++++ b/examples/apps/boxoffice/spec/BoxOffice.cfg
+@@ -8,7 +8,6 @@
+     Seats = {s1}
+     MaxTime = 3
+     HoldTtl = 1
+-    Sweeper = TRUE
+ 
+ INVARIANTS
+     TypeOK
+--- a/examples/apps/boxoffice/spec/BoxOffice.tla
++++ b/examples/apps/boxoffice/spec/BoxOffice.tla
+@@ -25,8 +25,7 @@
+     Customers,   \* who can hold seats, place orders and cancel them
+     Seats,       \* the seats of the one concert
+     MaxTime,     \* how far the clock runs, in ticks
+-    HoldTtl,     \* how long a hold lasts, in ticks (boxoffice.hold.ttl)
+-    Sweeper      \* whether the hold sweeper runs (HoldService.releaseExpiredHolds)
++    HoldTtl      \* how long a hold lasts, in ticks (boxoffice.hold.ttl)
+ 
+ VARIABLES
+     time,        \* the clock
+@@ -137,13 +136,6 @@
+                  /\ UNCHANGED dlt
+     /\ UNCHANGED <<time, hold, payment, pOutbox, commands>>
+ 
+-\* HoldService.releaseExpiredHolds
+-Sweep ==
+-    /\ Sweeper
+-    /\ \E s \in Seats : seat[s].status = "HELD" /\ seat[s].expiresAt <= time
+-    /\ seat' = [s \in Seats |-> IF seat[s].status = "HELD" /\ seat[s].expiresAt <= time THEN Available ELSE seat[s]]
+-    /\ UNCHANGED <<time, hold, order, payment, tOutbox, pOutbox, commands, events, dlt>>
+-
+ (***************************************************************************)
+ (* The relays and Kafka.                                                   *)
+ (***************************************************************************)
+@@ -228,7 +220,6 @@
+     \/ HandleCommand
+     \/ RelayEvent
+     \/ HandleEvent
+-    \/ Sweep
+     \/ Tick
+ 
+ Spec == Init /\ [][Next]_vars
+--- a/examples/apps/boxoffice/system-tests/src/test/java/net/terminalvalue/boxoffice/system/BoxOffice.java
++++ b/examples/apps/boxoffice/system-tests/src/test/java/net/terminalvalue/boxoffice/system/BoxOffice.java
+@@ -50,7 +50,6 @@
+             "--server.port=0",
+             "--spring.kafka.bootstrap-servers=" + kafka.getBootstrapServers(),
+             "--boxoffice.hold.ttl=" + HOLD_TTL.toSeconds() + "s",
+-            "--boxoffice.hold.sweep-interval=200ms",
+             "--boxoffice.gateway.slow-delay=" + SLOW_PAYMENT.toSeconds() + "s",
+         };
+         ticketing = new SpringApplicationBuilder(TicketingApplication.class)
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java
+@@ -9,9 +9,6 @@
+ import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;
+ import net.terminalvalue.boxoffice.ticketing.store.HoldDocument;
+ import net.terminalvalue.boxoffice.ticketing.store.TicketingStore;
+-import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+-import org.springframework.scheduling.annotation.Scheduled;
+ import org.springframework.stereotype.Service;
+ 
+ /**
+@@ -21,8 +18,6 @@
+ @Service
+ public class HoldService {
+ 
+-    private static final Logger log = LoggerFactory.getLogger(HoldService.class);
+-
+     private final TicketingStore store;
+     private final Transactions transactions;
+     private final HoldPolicy policy;
+@@ -79,16 +74,4 @@
+     public HoldDocument get(String holdId) {
+         return store.hold(holdId).orElseThrow(() -> new NotFoundException("no hold " + holdId));
+     }
+-
+-    /**
+-     * Releases expired holds. Correctness does not depend on this: a new hold already treats an expired seat as free.
+-     * The sweep keeps the stored status honest for readers and for the order flow.
+-     */
+-    @Scheduled(fixedDelayString = "${boxoffice.hold.sweep-interval:1s}")
+-    public void releaseExpiredHolds() {
+-        long released = store.releaseExpired(clock.instant());
+-        if (released > 0) {
+-            log.info("Released {} seats whose hold expired", released);
+-        }
+-    }
+ }
+--- a/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml
++++ b/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml
+@@ -29,6 +29,5 @@
+   hold:
+     ttl: 2m
+     max-seats: 8
+-    sweep-interval: 1s
+   outbox:
+     poll-interval: 100ms

@@ -1,0 +1,34 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants hold in 3,604 states",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "startLine": 9,
+    "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.scheduling.annotation.Scheduled;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private static final Logger log = LoggerFactory.getLogger(HoldService.class);\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n\n    /**\n     * Releases expired holds. Correctness does not depend on this: a new hold already treats an expired seat as free.\n     * The sweep keeps the stored status honest for readers and for the order flow.\n     */\n    @Scheduled(fixedDelayString = \"${boxoffice.hold.sweep-interval:1s}\")\n    public void releaseExpiredHolds() {\n        long released = store.releaseExpired(clock.instant());\n        if (released > 0) {\n            log.info(\"Released {} seats whose hold expired\", released);\n        }\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "startLine": 9,
+    "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 3604,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

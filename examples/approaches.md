@@ -107,9 +107,11 @@ Lift bytecode to an intermediate representation, and let an existing verifier ge
 
 These give fast, cheap counterexamples. Run them before attempting a B1 proof.
 
-Finding (October 2026): JBMC 6.11 does not handle Java 21+ bytecode as it ships. It treats the `typeSwitch` invokedynamic of a
-pattern `switch` as an unknown value, so it reports spurious failures. It also has no models for `List.of`, `List.copyOf`,
-record `equals` or `Math.multiplyExact`. A bytecode pre-pass that lowers `typeSwitch` to `instanceof` chains is a prerequisite.
+Findings (October 2026): JBMC 6.11 does not handle pattern-matching bytecode as it ships. It treats the `typeSwitch`
+invokedynamic of a pattern `switch` as an unknown value, so it reports spurious failures, and it has no models for
+`List.of`, `List.copyOf` or record `equals`. A bytecode pre-pass that lowers `typeSwitch` to `instanceof` chains is a
+prerequisite for state machines like `OrderLifecycle`. Plain arithmetic, branches and exceptions in Java 25 class files
+work, and `java.lang.Math` works when its real bytecode is put on JBMC's classpath instead of its models; B9 relies on that.
 
 ### B8. Behavioural contracts (POC in [`tools/contracts`](tools/contracts/README.md))
 
@@ -122,8 +124,29 @@ diff of the contract shows reviewers each changed case. The proof has three step
 3. Every input is executed.
 
 It runs in `./gradlew check` and emits SARIF for GitHub and SonarQube. On Box Office it caught a refactor that changed
-null handling, which the agent that wrote the refactor believed was equivalent. Infinite domains are the next step:
-equivalence of old and new bytecode, outside the declared changes, using JBMC (after the pre-pass above) or an SMT solver.
+null handling, which the agent that wrote the refactor believed was equivalent ([examples 001 to 005](README.md)).
+
+### B9. Regression verification (POC in [`tools/contracts`](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs))
+
+The same contract idea for methods whose inputs are not finite, such as a `long` price and an `int` seat count. The
+statement is "the new bytecode behaves as the old bytecode on every input, except the inputs the developer declared
+as changed", and it is proved with JBMC (B5) rather than by execution: both versions are compiled into one program,
+a generated harness asserts the statement, and the solver either proves it or produces an input on which the two
+versions differ, which the tool replays on the JVM. The developer's declaration (`seats >= 8`, say) is Java, so it is
+checked by the compiler and committed with the change as its scope. This is the "measure the patch" idea of the post:
+prove how few inputs a change touches. [Examples 006 to 008](README.md) show a rounding refactor refuted, a feature
+proved confined to its declared inputs, and a declared scope shown to be wrong.
+
+### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
+
+A different property under the same lockfile-and-diff workflow: what a module is *able to do*. From the compiled
+classes, list every call to a JDK entry point that reaches beyond pure computation (the clock, randomness, files, the
+network, processes, environment, threads, reflection, class loading, native code, serialization, JNDI, scripting),
+grouped by capability, together with the libraries the module calls. Check it in; fail the build when it changes.
+The claim is one of absence: bytecode that never names the entry points of a capability cannot exercise it, and the
+ways around that (reflection, method handles, class loaders, native code) are capabilities on the list themselves.
+It is a sound closed-world check, not a heuristic, and it is cheap. [Example 009](README.md) catches a codec that
+starts loading classes named by Kafka payloads, the mechanism of the Jackson deserialization CVEs, with no CVE database.
 
 ### B6. Proof-carrying bytecode (outside the box)
 
@@ -180,11 +203,12 @@ Run **angr** (`install.sh angr`) over a native-image binary to find crashing inp
 The subject system is [Box Office](apps/boxoffice/README.md): concert ticketing as two services over Kafka and MongoDB.
 Its README lists the invariants to verify and the known gaps to find.
 
-| Approach | Tools |
-|---|---|
-| **TLA+ trace validation:** instrument the Java service, and check that recorded traces are behaviours of the spec | TLC, plus a `kind` cluster with fault injection (Chaos Mesh via Helm) to cover partitions and crashes |
-| **P with PObserve:** runtime monitoring of Java services against P specs | P compiler (.NET) |
-| **Refinement down to bytecode:** prove each message handler's bytecode (B1) refines its TLA+ action, so the TLA+ invariants hold for the shipped code | Lean + TLA+ (ambitious) |
+| # | Approach | Tools |
+|---|---|---|
+| D1 | **Protocol model checking** (POC in [`apps/boxoffice/spec`](apps/boxoffice/spec/README.md)): a TLA+ model with one action per service transaction, relay and clock tick; TLC checks the README's safety invariants over every interleaving within small bounds. The order state machine in the model is generated from its B8 contract, so the proven bytecode behaviour is what the model runs. [Examples 011 and 012](README.md) | TLC |
+| D2 | **TLA+ trace validation:** instrument the Java service, and check that recorded traces are behaviours of the D1 model | TLC, plus a `kind` cluster with fault injection (Chaos Mesh via Helm) to cover partitions and crashes |
+| D3 | **P with PObserve:** runtime monitoring of Java services against P specs | P compiler (.NET) |
+| D4 | **Refinement down to bytecode:** prove each message handler's bytecode (B1) refines its TLA+ action, so the TLA+ invariants hold for the shipped code | Lean + TLA+ (ambitious) |
 
 ## Cross-cutting: making AI-written proofs trustworthy
 
@@ -197,6 +221,9 @@ Every demo should guard against this:
 - **Mine statements** from existing JUnit, jqwik and Jazzer tests, rather than hand-writing them.
 
 ## Proposed demo sequence
+
+Done so far, as the numbered [examples](README.md): B8 (001 to 005), B9 (006 to 008), B10 (009 and 010) and D1 (011 and 012).
+Still to do:
 
 | # | Demo | Level | Tools |
 |---|---|---|---|

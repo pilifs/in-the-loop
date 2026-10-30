@@ -1,5 +1,6 @@
 {
   "verdict": "unverifiable",
+  "verdictLabel": "⚠ Unverifiable",
   "matchesExpected": true,
   "existingTests": {
     "task": ":ticketing-domain:test",
@@ -17,12 +18,25 @@
     "code": "    private static Decision transition(OrderStatus next, Effect... effects) {\n        return new Decision.Transition(next, List.of(effects));\n    }\n\n    private static Decision unchanged(String reason) {\n        return new Decision.Unchanged(reason + \" (checked at \" + java.time.Instant.now() + \")\");\n    }\n}\n"
   },
   "casesTotal": null,
-  "counterexamples": [],
+  "domain": null,
+  "counterexamples": [
+    {
+      "input": "clock",
+      "contract": null,
+      "actual": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now"
+    }
+  ],
   "purityViolations": [
     "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now, which is not known to be pure"
   ],
   "trustedCalls": [],
   "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
   "sarif": "result.sarif",
   "output": "verifier-output.txt"
 }

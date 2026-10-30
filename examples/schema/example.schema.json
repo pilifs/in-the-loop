@@ -42,7 +42,8 @@
         "kind": { "description": "What the developer thought they were doing.", "enum": ["refactor", "cleanup", "feature", "bug-fix", "logging", "dependency-upgrade", "configuration"] },
         "behaviourChangeIntended": { "description": "True if the developer meant to change behaviour, and so regenerates the contract.", "type": "boolean" },
         "description": { "description": "The change in the developer's words, and why it looked right.", "type": "string" },
-        "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" }
+        "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" },
+        "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" }
       }
     },
     "risk": { "description": "What could go wrong in production if this change shipped unnoticed.", "type": "string" },

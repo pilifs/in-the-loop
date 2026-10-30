@@ -1,0 +1,41 @@
+--- a/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java
++++ b/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java
+@@ -1,12 +1,14 @@
+ package net.terminalvalue.boxoffice.contracts;
+ 
+ import tools.jackson.databind.DeserializationFeature;
++import tools.jackson.databind.JsonNode;
+ import tools.jackson.databind.json.JsonMapper;
++import tools.jackson.databind.node.ObjectNode;
+ 
+ /**
+  * The JSON wire format of every message. Both services use this class, so they agree on the format whatever their
+- * own Jackson settings are. The type is in the payload ({@code "type": "ChargePayment"}), not in a header that names
+- * a Java class, so producers and consumers can be deployed independently.
++ * own Jackson settings are. The type is in the payload ({@code "type": "ChargePayment"}), and so is the Java class
++ * ({@code "class"}), so that a consumer can decode any message without knowing its family up front.
+  */
+ public final class MessageCodec {
+ 
+@@ -18,7 +20,20 @@
+     private MessageCodec() {}
+ 
+     public static String encode(Message message) {
+-        return MAPPER.writeValueAsString(message);
++        ObjectNode node = MAPPER.valueToTree(message);
++        node.put("class", message.getClass().getName());
++        return MAPPER.writeValueAsString(node);
++    }
++
++    /** Decodes a message of any family: the payload's {@code class} field names the record to build. */
++    public static Message decode(String json) {
++        JsonNode tree = MAPPER.readTree(json);
++        String className = tree.path("class").asString();
++        try {
++            return (Message) MAPPER.treeToValue(tree, Class.forName(className));
++        } catch (ClassNotFoundException e) {
++            throw new IllegalArgumentException("unknown message class " + className, e);
++        }
+     }
+ 
+     /** Throws {@link tools.jackson.core.JacksonException} for a payload that is not a {@code type}. */

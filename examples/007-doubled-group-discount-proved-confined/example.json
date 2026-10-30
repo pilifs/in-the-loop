@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "007",
+  "title": "A doubled group discount, proved to change only groups",
+  "summary": "Product doubles the group discount from 10% to 20%. The developer declares that the change affects holds of six seats or more and nothing else, and the prover confirms it for every price and every smaller seat count. The pull request's claim becomes a checked fact.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "examples/tools/contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Take 20% off a group instead of 10%: `total - total / 5` instead of `total - total / 10`. The pull request says that holds of fewer than six seats are priced exactly as before.",
+    "patch": "change.patch",
+    "intendedInputs": "seats >= 6"
+  },
+  "risk": "None, and that is the point. A verifier that only ever fails the build is switched off. This one accepts an intended change once the developer says which inputs it is meant to affect, and the proof that nothing else changed is what the reviewer reads instead of re-deriving the arithmetic. The declared condition is also a precise release note.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The developer declares `seats >= 6` as the inputs the change is for. The generated statement excludes exactly those inputs and asserts that old and new agree on all the others, including the overflow check and the negative-input check, which both versions still make. JBMC proves the statement: no price and no seat count below six exists on which the two versions differ. The proof covers every `long` price and every `int` count, which is 2^96 inputs, in well under a minute, because the solver reasons about the arithmetic symbolically instead of trying values. The condition is Java, checked by the compiler, and can be as specific as the change.",
+  "resolution": "Merge. The condition `seats >= 6` is committed with the change, as its scope. A later refactor of the same method is checked against the whole domain again.",
+  "provenance": "Constructed to show the workflow for an intended change to a method with unbounded inputs."
+}

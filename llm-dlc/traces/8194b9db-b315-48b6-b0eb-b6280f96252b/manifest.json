@@ -1,0 +1,120 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "8194b9db-b315-48b6-b0eb-b6280f96252b",
+  "status": "open",
+  "title": "LLM formal verification examples",
+  "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.310"
+  },
+  "models": [
+    "claude-fable-5-1"
+  ],
+  "started": "2026-10-31T01:39:26.314Z",
+  "ended": "2026-10-31T08:28:43.542Z",
+  "duration_seconds": 24557,
+  "stats": {
+    "turns": 12,
+    "api_calls": 69,
+    "tool_calls": 183,
+    "tool_errors": 11,
+    "compactions": 0,
+    "peak_context_tokens": 437354,
+    "usage": {
+      "input_tokens": 1846,
+      "output_tokens": 222930,
+      "cache_read_input_tokens": 19171586,
+      "cache_creation_input_tokens": 556189
+    }
+  },
+  "tools": {
+    "Bash": 88,
+    "Edit": 57,
+    "Write": 21,
+    "Read": 14,
+    "TaskStop": 2,
+    "ToolSearch": 1
+  },
+  "files_touched": [
+    "/home:user/code/java-formal-verification/examples/README.md",
+    "README.md",
+    "examples/006-per-seat-discount-rounds-differently/example.json",
+    "examples/007-doubled-group-discount-proved-confined/example.json",
+    "examples/007-second-discount-tier-proved-confined/example.json",
+    "examples/008-percentage-rewrite-leaks-outside-new-tier/example.json",
+    "examples/009-codec-loads-classes-named-by-payload/example.json",
+    "examples/010-sorted-payload-keeps-capabilities/example.json",
+    "examples/011-skipped-seat-check-strands-the-money/example.json",
+    "examples/012-deleting-the-sweeper-is-safe/example.json",
+    "examples/README.md",
+    "examples/approaches.md",
+    "examples/apps/boxoffice/README.md",
+    "examples/apps/boxoffice/build-logic/src/main/kotlin/boxoffice.contracts.gradle.kts",
+    "examples/apps/boxoffice/contracts/build.gradle.kts",
+    "examples/apps/boxoffice/spec/BoxOffice.cfg",
+    "examples/apps/boxoffice/spec/BoxOffice.tla",
+    "examples/apps/boxoffice/spec/README.md",
+    "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "examples/apps/boxoffice/ticketing-domain/src/test/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicyTest.java",
+    "examples/schema/example.schema.json",
+    "examples/schema/result.schema.json",
+    "examples/setup/README.md",
+    "examples/tools/build.py",
+    "examples/tools/contracts/README.md",
+    "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Capabilities.java",
+    "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Equivalence.java",
+    "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Main.java",
+    "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Relocate.java",
+    "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Sarif.java",
+    "examples/tools/contracts/src/test/java/net/terminalvalue/contracts/CapabilitiesTest.java",
+    "examples/tools/contracts/src/test/java/net/terminalvalue/contracts/EquivalenceTest.java",
+    "examples/tools/contracts/src/test/java/net/terminalvalue/contracts/fixtures/Capable.java",
+    "examples/tools/tla/contract_to_tla.py",
+    "~/.claude/projects/-home-user-code-java-formal-verification/memory/verification-examples-state.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-10-31T01:39:26.314Z",
+      "ended": "2026-10-31T08:28:43.542Z",
+      "turns": 12,
+      "api_calls": 69,
+      "usage": {
+        "input_tokens": 1846,
+        "output_tokens": 222930,
+        "cache_read_input_tokens": 19171586,
+        "cache_creation_input_tokens": 556189
+      },
+      "peak_context_tokens": 437354
+    }
+  ],
+  "log": {
+    "sha256": "1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4",
+    "bytes": 3788464,
+    "lines": 1303,
+    "gzip_bytes": 600481,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "pqkrtxsktnwttqvwprxslwnklqrtvtuz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add symbolic, capability and TLA+ verification examples 006 to 012",
+      "body": "The first five examples enumerate a finite state machine, which a type system could approximate. This adds three approaches that a type system cannot, each with examples aimed at cloud Java developers: B9 regression verification, B10 capability contracts and D1 protocol model checking. The examples generator (examples/tools/build.py) now has one runner per approach id, the result schema gained verdictLabel, domain, proof, statement, trace and related fields, and the table of contents shows the approach.\n\nB9, regression verification (examples 006 to 008): Equivalence.java in examples/tools/contracts compares two compiled versions of a method with unbounded inputs. It relocates the old classes into a 'before' package by rewriting constant pools (Relocate.java), generates a harness that asserts both versions agree on every input outside an optional --unchanged-unless Java expression, and runs JBMC on the bytecode with java.lang.Math's real class on the classpath. A counterexample is replayed on the JVM; small inputs are searched first so the witness is readable. HoldPolicy.totalCents gained a 10% group discount for six seats or more to have realistic arithmetic to verify. 006 refutes a per-seat rounding refactor, 007 proves a doubled discount confined to seats >= 6 over all 2^96 inputs in 13 s, 008 shows a declared scope (seats >= 8) that a one-formula rewrite violates. Measured limit, recorded in the README: an unchanged region with a 64-bit division on each side does not finish in 10 min with MiniSat, Z3, cvc5 or --refine.\n\nB10, capability contracts (examples 009 and 010): Capabilities.java derives, from a module's compiled classes, every call to a JDK entry point of a capability (clock, console, environment, filesystem, JNDI, native, network, process, randomness, reflection, scripting, serialization, threads) and the libraries called, as src/contract/capabilities.contract, checked by the same verifyContracts task (the Gradle plugin now passes --classes and --module; -Ptarget=capabilities adds the contract). The contracts and ticketing-domain modules have baseline contracts with no capabilities. 009 catches MessageCodec resolving a class named in a Kafka payload with Class.forName, the shape of the Jackson deserialization CVEs; 010 shows a serialization setting that changes nothing.\n\nD1, protocol model checking (examples 011 and 012): examples/apps/boxoffice/spec/BoxOffice.tla models the two services, their outbox relays, Kafka topics, the sweeper and the clock, one action per transaction, with the README's safety invariants. Its order state machine, OrderLifecycleContract.tla, is generated by examples/tools/tla/contract_to_tla.py from the B8 behavioural contract, so the model runs the decisions the bytecode is proven to make. 011 removes the heldBy query in PaymentEventHandler and TLC produces a nine-step trace in which a paid customer's capture event is dead-lettered after the hold expires; 012 deletes the hold sweeper and TLC confirms every invariant in 3,604 states. The generator runs TLC with one worker so the trace is stable.\n\nVerified by running the verifier's 17 unit tests (jbmc installed) and python3 examples/tools/build.py for all twelve examples, each reaching its expected verdict; the first five pages regenerate unchanged apart from the new table column. Documentation updated: examples/README.md (approach table and intro), approaches.md (B9, B10, D1 and the JBMC finding), the contracts README (three contract kinds, limits), the spec README, the Box Office README, the root README and the setup README. These land in one commit because the generator, schemas and tables are shared by all three approaches.",
+      "log_sha256": "1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4"
+    }
+  ],
+  "logs": {
+    "1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4": {
+      "bytes": 3788464,
+      "lines": 1303,
+      "gzip_bytes": 600481,
+      "url": null
+    }
+  },
+  "redaction_policy": 3,
+  "generator": "llm-dlc/tools/sync.py"
+}

@@ -38,11 +38,19 @@ public record HoldPolicy(int maxSeats, Duration ttl) {
         return now.plus(ttl);
     }
 
-    /** The price of {@code seats} seats. Throws {@link ArithmeticException} rather than overflow. */
+    /** A hold of this many seats or more is a group, and gets 10% off. */
+    public static final int GROUP_SIZE = 6;
+
+    /**
+     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}
+     * seats or more. The discount is taken off the total and rounded down to the cent. Throws
+     * {@link ArithmeticException} rather than overflow.
+     */
     public static long totalCents(long priceCents, int seats) {
         if (priceCents < 0 || seats < 0) {
             throw new IllegalArgumentException("price and seat count must not be negative");
         }
-        return Math.multiplyExact(priceCents, seats);
+        long total = Math.multiplyExact(priceCents, seats);
+        return seats >= GROUP_SIZE ? total - total / 10 : total;
     }
 }

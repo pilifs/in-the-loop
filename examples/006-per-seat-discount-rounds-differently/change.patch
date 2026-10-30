@@ -1,0 +1,21 @@
+--- a/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
++++ b/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
+@@ -43,14 +43,14 @@
+ 
+     /**
+      * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}
+-     * seats or more. The discount is taken off the total and rounded down to the cent. Throws
+-     * {@link ArithmeticException} rather than overflow.
++     * seats or more. The discount is taken off each seat and rounded down to the cent, so that the ticket can show
++     * the price paid per seat. Throws {@link ArithmeticException} rather than overflow.
+      */
+     public static long totalCents(long priceCents, int seats) {
+         if (priceCents < 0 || seats < 0) {
+             throw new IllegalArgumentException("price and seat count must not be negative");
+         }
+-        long total = Math.multiplyExact(priceCents, seats);
+-        return seats >= GROUP_SIZE ? total - total / 10 : total;
++        long unitCents = seats >= GROUP_SIZE ? priceCents - priceCents / 10 : priceCents;
++        return Math.multiplyExact(unitCents, seats);
+     }
+ }

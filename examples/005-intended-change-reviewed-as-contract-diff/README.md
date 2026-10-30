@@ -108,6 +108,7 @@ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lan
 <details><summary>Verifier output</summary>
 
 ```text
+✓ module ticketing-domain matches its capability contract (15 classes, 64 methods, 0 capability uses, 0 libraries)
 ✓ net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide matches its contract (36 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ```
 
@@ -135,6 +136,12 @@ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lan
               "id": "unverifiable",
               "shortDescription": {
                 "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
+              }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
               }
             }
           ]

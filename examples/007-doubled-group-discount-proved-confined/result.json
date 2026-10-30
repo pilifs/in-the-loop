@@ -1,0 +1,34 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-domain:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 38,
+    "code": "        return now.plus(ttl);\n    }\n\n    /** A hold of this many seats or more is a group, and gets 10% off. */\n    public static final int GROUP_SIZE = 6;\n\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}\n     * seats or more. The discount is taken off the total and rounded down to the cent. Throws\n     * {@link ArithmeticException} rather than overflow.\n     */\n    // ...\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long total = Math.multiplyExact(priceCents, seats);\n        return seats >= GROUP_SIZE ? total - total / 10 : total;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 38,
+    "code": "        return now.plus(ttl);\n    }\n\n    /** A hold of this many seats or more is a group, and gets 20% off. */\n    public static final int GROUP_SIZE = 6;\n\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 20% for a group of {@link #GROUP_SIZE}\n     * seats or more. The discount is taken off the total and rounded down to the cent. Throws\n     * {@link ArithmeticException} rather than overflow.\n     */\n    // ...\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long total = Math.multiplyExact(priceCents, seats);\n        return seats >= GROUP_SIZE ? total - total / 5 : total;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "priceCents: long × seats: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

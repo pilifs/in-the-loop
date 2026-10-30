@@ -85,10 +85,15 @@ Log the timestamp in the adapter that applies the decision (OrderTransitions), o
 <details><summary>Verifier output</summary>
 
 ```text
+✗ Capabilities of module ticketing-domain differ from its contract:
+  added clock: net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now
+  (15 classes, 64 methods, 1 capability uses, 0 libraries)
 ✗ net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide cannot be verified: not provably pure:
   net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now, which is not known to be pure
 
 A method that cannot be verified has no contract. Move the impure or unbounded part out of it, or pass it in as a parameter, so that the method is a pure function of finite inputs again.
+
+If the module is meant to have this capability, run `./gradlew updateContracts` and commit the contract with the code. The contract diff then shows reviewers the new power and where it is used.
 ```
 
 </details>
@@ -116,11 +121,36 @@ A method that cannot be verified has no contract. Move the impure or unbounded p
               "shortDescription": {
                 "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
               }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
+              }
             }
           ]
         }
       },
       "results": [
+        {
+          "ruleId": "capability-changed",
+          "level": "error",
+          "message": {
+            "text": "Capabilities of module ticketing-domain differ from its contract:\n  added clock: net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java"
+                },
+                "region": {
+                  "startLine": 67
+                }
+              }
+            }
+          ]
+        },
         {
           "ruleId": "unverifiable",
           "level": "error",

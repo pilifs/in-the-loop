@@ -1,0 +1,34 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: capabilities unchanged",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":contracts:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.boxoffice.contracts;\n\nimport tools.jackson.databind.DeserializationFeature;\nimport tools.jackson.databind.json.JsonMapper;\n\n/**\n    // ...\n    private static final JsonMapper MAPPER = JsonMapper.builder()\n            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)\n            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)\n            .build();\n\n    private MessageCodec() {}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.boxoffice.contracts;\n\nimport tools.jackson.databind.DeserializationFeature;\nimport tools.jackson.databind.MapperFeature;\nimport tools.jackson.databind.json.JsonMapper;\n\n/**\n    // ...\n    private static final JsonMapper MAPPER = JsonMapper.builder()\n            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)\n            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)\n            // Stable key order, so that payloads diff cleanly in logs and in the dead-letter topic.\n            .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)\n            .build();\n\n    private MessageCodec() {}\n"
+  },
+  "casesTotal": null,
+  "domain": "10 classes, 52 methods",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

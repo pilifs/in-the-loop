@@ -1,7 +1,7 @@
 # Setup
 
 The toolchain for the examples and for the approaches in [`approaches.md`](../approaches.md).
-The examples so far need only Java 25 (and Docker for Box Office's end-to-end tests); the rest is for the approaches still to be tried.
+The examples need Java 25, JBMC (from the `system` component) and TLC (from `verify`), plus Docker for Box Office's end-to-end tests; the rest is for the approaches still to be tried.
 
 ## Ubuntu 24.04, native or WSL2, amd64 or arm64
 

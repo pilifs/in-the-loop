@@ -1,0 +1,40 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 1 capability change",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":contracts:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.boxoffice.contracts;\n\nimport tools.jackson.databind.DeserializationFeature;\nimport tools.jackson.databind.json.JsonMapper;\n\n/**\n * The JSON wire format of every message. Both services use this class, so they agree on the format whatever their\n * own Jackson settings are. The type is in the payload ({@code \"type\": \"ChargePayment\"}), not in a header that names\n * a Java class, so producers and consumers can be deployed independently.\n */\npublic final class MessageCodec {\n\n    // ...\n    private MessageCodec() {}\n\n    public static String encode(Message message) {\n        return MAPPER.writeValueAsString(message);\n    }\n\n    /** Throws {@link tools.jackson.core.JacksonException} for a payload that is not a {@code type}. */\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.boxoffice.contracts;\n\nimport tools.jackson.databind.DeserializationFeature;\nimport tools.jackson.databind.JsonNode;\nimport tools.jackson.databind.json.JsonMapper;\nimport tools.jackson.databind.node.ObjectNode;\n\n/**\n * The JSON wire format of every message. Both services use this class, so they agree on the format whatever their\n * own Jackson settings are. The type is in the payload ({@code \"type\": \"ChargePayment\"}), and so is the Java class\n * ({@code \"class\"}), so that a consumer can decode any message without knowing its family up front.\n */\npublic final class MessageCodec {\n\n    // ...\n    private MessageCodec() {}\n\n    public static String encode(Message message) {\n        ObjectNode node = MAPPER.valueToTree(message);\n        node.put(\"class\", message.getClass().getName());\n        return MAPPER.writeValueAsString(node);\n    }\n\n    /** Decodes a message of any family: the payload's {@code class} field names the record to build. */\n    public static Message decode(String json) {\n        JsonNode tree = MAPPER.readTree(json);\n        String className = tree.path(\"class\").asString();\n        try {\n            return (Message) MAPPER.treeToValue(tree, Class.forName(className));\n        } catch (ClassNotFoundException e) {\n            throw new IllegalArgumentException(\"unknown message class \" + className, e);\n        }\n    }\n\n    /** Throws {@link tools.jackson.core.JacksonException} for a payload that is not a {@code type}. */\n"
+  },
+  "casesTotal": null,
+  "domain": "10 classes, 53 methods",
+  "counterexamples": [
+    {
+      "input": "reflection",
+      "contract": null,
+      "actual": "net.terminalvalue.boxoffice.contracts.MessageCodec.decode calls java.lang.Class.forName"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

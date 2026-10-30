@@ -1,0 +1,41 @@
+--- a/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
++++ b/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
+@@ -41,16 +41,20 @@
+     /** A hold of this many seats or more is a group, and gets 10% off. */
+     public static final int GROUP_SIZE = 6;
+ 
++    /** A hold of this many seats or more is a large group, and gets 20% off. */
++    public static final int LARGE_GROUP_SIZE = 8;
++
+     /**
+      * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}
+-     * seats or more. The discount is taken off the total and rounded down to the cent. Throws
+-     * {@link ArithmeticException} rather than overflow.
++     * seats or more, or 20% for a large group of {@link #LARGE_GROUP_SIZE} or more. The discount is taken off the
++     * total and rounded down to the cent. Throws {@link ArithmeticException} rather than overflow.
+      */
+     public static long totalCents(long priceCents, int seats) {
+         if (priceCents < 0 || seats < 0) {
+             throw new IllegalArgumentException("price and seat count must not be negative");
+         }
+         long total = Math.multiplyExact(priceCents, seats);
+-        return seats >= GROUP_SIZE ? total - total / 10 : total;
++        int percentOff = seats >= LARGE_GROUP_SIZE ? 20 : seats >= GROUP_SIZE ? 10 : 0;
++        return total * (100 - percentOff) / 100;
+     }
+ }
+--- a/examples/apps/boxoffice/ticketing-domain/src/test/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicyTest.java
++++ b/examples/apps/boxoffice/ticketing-domain/src/test/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicyTest.java
+@@ -33,10 +33,10 @@
+     }
+ 
+     @Test
+-    void groupsGetTenPercentOff() {
++    void groupsGetTenPercentOffAndLargeGroupsTwenty() {
+         assertThat(HoldPolicy.totalCents(4500, 5)).isEqualTo(22500);
+         assertThat(HoldPolicy.totalCents(4500, 6)).isEqualTo(24300);
+-        assertThat(HoldPolicy.totalCents(4500, 8)).isEqualTo(32400);
++        assertThat(HoldPolicy.totalCents(4500, 8)).isEqualTo(28800);
+     }
+ 
+     @Test

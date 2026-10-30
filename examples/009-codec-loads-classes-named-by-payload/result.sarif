@@ -1,0 +1,54 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "contract-verifier",
+          "rules": [
+            {
+              "id": "behaviour-changed",
+              "shortDescription": {
+                "text": "The code no longer matches its behavioural contract."
+              }
+            },
+            {
+              "id": "unverifiable",
+              "shortDescription": {
+                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
+              }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "capability-changed",
+          "level": "error",
+          "message": {
+            "text": "Capabilities of module contracts differ from its contract:\n  added reflection: net.terminalvalue.boxoffice.contracts.MessageCodec.decode calls java.lang.Class.forName"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java"
+                },
+                "region": {
+                  "startLine": 33
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

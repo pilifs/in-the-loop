@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "009",
+  "title": "A codec that loads whatever class a Kafka message names",
+  "summary": "To let one consumer decode messages of either family, the codec writes the Java class name into every payload and resolves it with Class.forName when reading. Round-trip tests pass. The module's capability contract now lists reflection, with the call site: the shape of the Jackson and XStream deserialization CVEs, caught without a CVE database.",
+  "categories": [
+    "security"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java",
+    "symbol": "net.terminalvalue.boxoffice.contracts.MessageCodec#decode"
+  },
+  "approach": {
+    "id": "B10",
+    "name": "Capability contracts",
+    "tool": "examples/tools/contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": false,
+    "description": "An audit consumer wants to read both Kafka topics with one decoder, without a switch over message families that has to be extended for every new message. So `encode` adds a `class` field with the record's class name, and a new `decode(String)` reads it back with `Class.forName` and asks Jackson to build that class. Small, general, and it removes a chore. The developer does not mean to change what the module can do, only how it is used.",
+    "patch": "change.patch"
+  },
+  "risk": "Anyone who can write to the topic, or to anything that ends up on it, now chooses which class the ticketing and payment services instantiate from attacker-controlled fields. That is the exact mechanism of CVE-2017-7525 and its successors in Jackson, and of the XStream and Java deserialization gadget chains: a class name in the data, a framework that obligingly constructs it, and somewhere on the classpath a class whose constructor or setter does something dangerous. Dependency scanners find nothing, because no dependency is vulnerable; the application wrote the vulnerability itself. The original design comment, which said the type is a name in the payload and not a Java class for exactly this reason, was edited away in the same change.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The capability contract of the `contracts` module is computed from its compiled classes: every call to a JDK entry point that reaches beyond pure computation, grouped by capability, and every library it calls. Before the change the module uses no capability at all. After it, the verifier finds `Class.forName` in `MessageCodec.decode`, lists it under `reflection`, and fails the build because the checked-in contract does not grant it. The argument is one of absence turned into presence: a module whose bytecode never names a reflective entry point cannot load a class by name, and this one now does, at a line the finding points to.",
+  "resolution": "Keep the family in the API: decode with the sealed interface, which already carries the allowed subtypes as an explicit list, and route the audit consumer through a small switch on the two families. If a generic decoder is really wanted, map the `type` name through an allowlist the codec owns, never through the class loader, and the contract stays reflection-free.",
+  "provenance": "Constructed from the pattern behind the Jackson polymorphic deserialization advisories, applied to this codebase's own message codec."
+}
