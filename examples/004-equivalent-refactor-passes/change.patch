@@ -1,0 +1,15 @@
+--- a/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
++++ b/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
+@@ -46,11 +46,11 @@
+                 case PENDING_PAYMENT -> transition(DECLINED, RELEASE_SEATS);
+                 case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged("payment outcome already recorded");
+             };
+             case PaymentRefunded _ -> switch (current) {
+                 case REFUND_PENDING -> transition(REFUNDED);
+-                case PENDING_PAYMENT, CONFIRMED, DECLINED, REFUNDED -> unchanged("no refund outstanding");
++                default -> unchanged("no refund outstanding");
+             };
+             case CancellationRequested _ -> switch (current) {
+                 case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);
+                 case REFUND_PENDING, REFUNDED -> unchanged("already cancelled");
+                 case PENDING_PAYMENT -> new Decision.Rejected("payment is in progress; try again shortly");

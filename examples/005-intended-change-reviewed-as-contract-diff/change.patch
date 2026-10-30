@@ -1,0 +1,15 @@
+--- a/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
++++ b/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
+@@ -51,11 +51,11 @@
+                 case PENDING_PAYMENT, CONFIRMED, DECLINED, REFUNDED -> unchanged("no refund outstanding");
+             };
+             case CancellationRequested _ -> switch (current) {
+                 case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);
+                 case REFUND_PENDING, REFUNDED -> unchanged("already cancelled");
+-                case PENDING_PAYMENT -> new Decision.Rejected("payment is in progress; try again shortly");
++                case PENDING_PAYMENT -> new Decision.Rejected("payment is in progress; try again in a few seconds");
+                 case DECLINED -> new Decision.Rejected("the order was never paid");
+             };
+         };
+     }
+ 

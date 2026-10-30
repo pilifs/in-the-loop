@@ -1,0 +1,18 @@
+--- a/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
++++ b/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
+@@ -35,14 +35,11 @@
+             case PaymentCaptured captured -> switch (current) {
+                 case PENDING_PAYMENT ->
+                     captured.seatsStillHeld()
+                             ? transition(CONFIRMED, SELL_SEATS)
+                             : transition(REFUND_PENDING, REQUEST_REFUND);
+-                // The payment service charges an order at most once, so this is not expected. If it happens anyway,
+-                // the money must go back.
+-                case DECLINED -> transition(REFUND_PENDING, REQUEST_REFUND);
+-                case CONFIRMED, REFUND_PENDING, REFUNDED -> unchanged("payment already recorded");
++                case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged("payment already recorded");
+             };
+             case PaymentDeclined _ -> switch (current) {
+                 case PENDING_PAYMENT -> transition(DECLINED, RELEASE_SEATS);
+                 case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged("payment outcome already recorded");
+             };

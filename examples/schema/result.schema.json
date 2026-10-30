@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pilifs/in-the-loop/examples/schema/result.schema.json",
+  "title": "Formal verification example (generated result)",
+  "description": "What the verifier produced for an example, written by tools/examples/build.py. Do not edit by hand.",
+  "type": "object",
+  "required": [
+    "verdict",
+    "matchesExpected",
+    "existingTests",
+    "before",
+    "after",
+    "casesTotal",
+    "counterexamples",
+    "purityViolations",
+    "trustedCalls",
+    "sarif",
+    "output"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "excerpt": {
+      "type": "object",
+      "required": [
+        "file",
+        "startLine",
+        "code"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "properties": {
+    "verdict": {
+      "enum": [
+        "violation",
+        "verified",
+        "unverifiable"
+      ]
+    },
+    "matchesExpected": {
+      "type": "boolean"
+    },
+    "existingTests": {
+      "description": "The module's existing unit tests, run against the patched code: would they have caught the change without the verifier?",
+      "type": "object",
+      "required": [
+        "task",
+        "passed",
+        "failures"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Failing tests, as Class.method."
+        }
+      }
+    },
+    "before": {
+      "description": "The changed region before the patch, with context.",
+      "$ref": "#/$defs/excerpt"
+    },
+    "after": {
+      "description": "The changed region after the patch, with context.",
+      "$ref": "#/$defs/excerpt"
+    },
+    "casesTotal": {
+      "description": "Size of the input domain, or null when unverifiable.",
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "counterexamples": {
+      "description": "Inputs whose outcome differs from the contract. Each is a concrete, replayable witness.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "input",
+          "contract",
+          "actual"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "input": {
+            "type": "string"
+          },
+          "contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Null when the input is new."
+          },
+          "actual": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Null when the input no longer exists."
+          }
+        }
+      }
+    },
+    "purityViolations": {
+      "description": "Why the method could not be proved pure.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trustedCalls": {
+      "description": "JDK APIs the proof trusted to be pure.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contractDiff": {
+      "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sarif": {
+      "description": "File name of the SARIF report, relative to the example folder.",
+      "type": "string"
+    },
+    "output": {
+      "description": "File name of the verifier's console output.",
+      "type": "string"
+    }
+  }
+}

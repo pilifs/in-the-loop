@@ -1,0 +1,28 @@
+{
+  "verdict": "unverifiable",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-domain:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "startLine": 62,
+    "code": "    private static Decision transition(OrderStatus next, Effect... effects) {\n        return new Decision.Transition(next, List.of(effects));\n    }\n\n    private static Decision unchanged(String reason) {\n        return new Decision.Unchanged(reason);\n    }\n}\n"
+  },
+  "after": {
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "startLine": 62,
+    "code": "    private static Decision transition(OrderStatus next, Effect... effects) {\n        return new Decision.Transition(next, List.of(effects));\n    }\n\n    private static Decision unchanged(String reason) {\n        return new Decision.Unchanged(reason + \" (checked at \" + java.time.Instant.now() + \")\");\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "counterexamples": [],
+  "purityViolations": [
+    "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle.unchanged calls java.time.Instant.now, which is not known to be pure"
+  ],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

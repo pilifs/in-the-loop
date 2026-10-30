@@ -104,16 +104,24 @@ public final class Main {
                 String message = "Behaviour of " + entry.getKey() + " differs from its contract in " + diff.size()
                         + " of " + actual.cases().size() + " cases:\n" + String.join("\n", diff);
                 out.println("✗ " + message);
+                out.println("  (" + stats + ")");
                 findings.add(new Sarif.Finding("behaviour-changed", message, uri, line));
             }
         }
         if (report != null) {
             Sarif.write(report.resolve("contracts.sarif"), findings);
         }
-        if (!findings.isEmpty()) {
+        if (findings.stream().anyMatch(f -> f.ruleId().equals("behaviour-changed"))) {
             out.println();
             out.println("If a change is intended, run `./gradlew updateContracts` and commit the contract with the code."
                     + " The contract diff then shows reviewers exactly which behaviour changed.");
+        }
+        if (findings.stream().anyMatch(f -> f.ruleId().equals("unverifiable"))) {
+            out.println();
+            out.println("A method that cannot be verified has no contract. Move the impure or unbounded part out of it,"
+                    + " or pass it in as a parameter, so that the method is a pure function of finite inputs again.");
+        }
+        if (!findings.isEmpty()) {
             return 1;
         }
         return 0;

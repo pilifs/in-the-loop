@@ -8,6 +8,7 @@ which proved properties of compiled RISC-V binaries, not source code.
 The demos ask what the equivalent pipelines look like for the JVM.
 
 - [`docs/approaches.md`](docs/approaches.md) lists the approaches by level (source, bytecode, native, distributed), together with the plan for the demos.
+- [`examples/`](examples/README.md) is the place to start: numbered examples of code changes run through a formal verifier, each with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests.
 - [`apps/boxoffice/`](apps/boxoffice/README.md) is the subject system for the distributed scenarios: concert ticketing as two Spring Boot services with Kafka and MongoDB, a saga with compensation, an outbox and an inbox, and the invariants they must keep.
 - `demos/` holds the demos (coming soon).
 - [`changes/`](changes/README.md) publishes the LLM session behind every commit: a readable summary, metadata, and the full transcript. Each commit message links to them. [`docs/traces.md`](docs/traces.md) is the specification.

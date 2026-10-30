@@ -1,0 +1,34 @@
+{
+  "verdict": "verified",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-domain:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "startLine": 46,
+    "code": "    case PENDING_PAYMENT -> transition(DECLINED, RELEASE_SEATS);\n    case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged(\"payment outcome already recorded\");\n};\ncase PaymentRefunded _ -> switch (current) {\n    case REFUND_PENDING -> transition(REFUNDED);\n    case PENDING_PAYMENT, CONFIRMED, DECLINED, REFUNDED -> unchanged(\"no refund outstanding\");\n};\ncase CancellationRequested _ -> switch (current) {\n    case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);\n    case REFUND_PENDING, REFUNDED -> unchanged(\"already cancelled\");\n    case PENDING_PAYMENT -> new Decision.Rejected(\"payment is in progress; try again shortly\");\n"
+  },
+  "after": {
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "startLine": 46,
+    "code": "    case PENDING_PAYMENT -> transition(DECLINED, RELEASE_SEATS);\n    case CONFIRMED, DECLINED, REFUND_PENDING, REFUNDED -> unchanged(\"payment outcome already recorded\");\n};\ncase PaymentRefunded _ -> switch (current) {\n    case REFUND_PENDING -> transition(REFUNDED);\n    default -> unchanged(\"no refund outstanding\");\n};\ncase CancellationRequested _ -> switch (current) {\n    case CONFIRMED -> transition(REFUND_PENDING, RELEASE_SEATS, REQUEST_REFUND);\n    case REFUND_PENDING, REFUNDED -> unchanged(\"already cancelled\");\n    case PENDING_PAYMENT -> new Decision.Rejected(\"payment is in progress; try again shortly\");\n"
+  },
+  "casesTotal": 36,
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [
+    "java.lang.Enum.ordinal",
+    "java.lang.MatchException.<init>",
+    "java.lang.Record.<init>",
+    "java.lang.runtime.SwitchBootstraps.typeSwitch",
+    "java.util.List.copyOf",
+    "java.util.List.of",
+    "java.util.Objects.requireNonNull"
+  ],
+  "contractDiff": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

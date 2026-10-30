@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "004",
+  "title": "An equivalent refactor passes without touching the contract",
+  "summary": "The same simplification as example 002, written with `default ->` instead of `==`. It really is equivalent, so the verifier proves it and the build passes.",
+  "categories": [
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Box Office",
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "tools/contracts"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Collapse the four 'no refund outstanding' cases into a `default` branch.",
+    "patch": "change.patch"
+  },
+  "risk": "None. This example shows the other half of the bargain: a check that also flagged safe refactors would be switched off within a week.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "All 36 outcomes are identical, including decide(null, PaymentRefunded[]), because a switch over a null enum throws before any branch is chosen. The contract file is unchanged, so the pull request contains code changes only, and reviewers can tell from that alone that behaviour is preserved.",
+  "resolution": "Merge.",
+  "provenance": "Constructed while building the verifier, as the corrected form of example 002."
+}

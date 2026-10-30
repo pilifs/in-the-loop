@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "003",
+  "title": "Logging a timestamp makes the decision unverifiable",
+  "summary": "Appending the current time to a reason string looks like harmless diagnostics. It makes the state machine depend on the clock, so its behaviour can no longer be proved, and the verifier refuses.",
+  "categories": [
+    "determinism"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "tools/contracts"
+  },
+  "change": {
+    "kind": "logging",
+    "behaviourChangeIntended": false,
+    "description": "Add when a decision was made to the 'unchanged' reason, to help debug redelivered events.",
+    "patch": "change.patch"
+  },
+  "risk": "The order state machine is meant to be a pure function: the same status and input must always give the same decision. That is what makes redelivered Kafka events safe to replay, and what lets the decision be tested exhaustively. With a clock read inside, two replicas or two deliveries of the same event produce different results, and any equality check on decisions becomes flaky.",
+  "expected": {
+    "verdict": "unverifiable"
+  },
+  "explanation": "Before running anything, the verifier walks the bytecode of every method decide can reach. It finds a call from OrderLifecycle.unchanged to java.time.Instant.now, which is not on the list of JDK APIs trusted to be pure. Without purity, running every input proves nothing, so the verifier refuses instead of producing a contract.",
+  "resolution": "Log the timestamp in the adapter that applies the decision (OrderTransitions), outside the pure core. If the time really matters to the decision, pass it in as a parameter, which makes it part of the contract's input domain.",
+  "provenance": "Constructed while building the verifier."
+}

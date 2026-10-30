@@ -1,0 +1,34 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "002",
+  "title": "A refactor believed equivalent that changes null handling",
+  "summary": "A nested switch was replaced by a one-line conditional. The agent that wrote it believed the two were equivalent, and every existing unit test passes. They differ on one input: a null status no longer throws.",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "tools/contracts"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace a five-line switch over the order status with `current == REFUND_PENDING ? ... : ...`, since only one status matters for a refund.",
+    "patch": "change.patch"
+  },
+  "risk": "`switch` on a null enum throws NullPointerException, while `==` quietly compares it as not equal. A caller that passes a null status, such as an order loaded from a corrupted document, now gets 'no refund outstanding' instead of failing fast. The bad state propagates instead of stopping at the first point that could have caught it. Changes like this pass review because the code is obviously simpler.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "Null is part of the input domain for every reference parameter, because callers can pass it. The verifier executes decide(null, PaymentRefunded[]) on both versions: the contract records `throws NullPointerException`, and the new bytecode returns Unchanged. One case out of 36 differs.",
+  "resolution": "Keep the switch, or write the refactor with `default ->` (example 004), which preserves the null behaviour. If accepting null is intended, regenerate the contract so reviewers see that line change.",
+  "provenance": "Real: Claude wrote this refactor during the session that built the verifier, intending it as a behaviour-preserving check of the tool. The verifier caught it."
+}

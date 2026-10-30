@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "001",
+  "title": "A switch cleanup that keeps the money for declined orders",
+  "summary": "Merging one case into its neighbours makes the code shorter, and it still compiles. But a payment captured for a declined order is no longer refunded. This repo happens to have a model-checking unit test written for exactly this property, which also fails; the contract catches it without anyone having thought to write that test.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Box Office",
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "tools/contracts"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "The DECLINED branch looked like a special case of 'payment already recorded', so it was folded into the line below it to remove a comment and a branch.",
+    "patch": "change.patch"
+  },
+  "risk": "A customer whose payment is captured after their order was declined is charged and gets no seats. Normally this cannot happen, because the payment service charges each order once. That is exactly why the branch exists: it is the safety net for a broken assumption, and nothing exercises it day to day. The money would be kept silently, and the first sign would be a chargeback.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The input domain of decide is finite (6 statuses including null × 6 inputs including null), and the method is proved pure, so the verifier runs all 36 inputs against the bytecode. Exactly the 2 inputs where a DECLINED order receives PaymentCaptured changed outcome, and those 2 inputs are the counterexamples. No test had to anticipate them.",
+  "resolution": "Revert the merge. If this is truly unreachable, prove it: the system tests' invariant that every payment belongs to a confirmed or refunded order is the property to strengthen, not the safety net to remove.",
+  "provenance": "Constructed while building the verifier, as the kind of tidy-up a reviewer approves at a glance."
+}

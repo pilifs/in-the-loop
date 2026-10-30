@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "005",
+  "title": "An intended change, reviewed as a one-line contract diff",
+  "summary": "Product asks for a clearer message when a customer cancels during payment. The developer changes the code and regenerates the contract, and the pull request shows exactly one changed outcome.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Box Office",
+    "file": "apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "tools/contracts"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Change the rejection text for cancelling an order whose payment is in flight from 'try again shortly' to 'try again in a few seconds'.",
+    "patch": "change.patch"
+  },
+  "risk": "None, if the contract diff matches the intent. The point of the example is that the contract diff is how a reviewer confirms that the change did what was asked and nothing else, without reading the code.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The developer runs ./gradlew updateContracts, which rederives the contract from the new bytecode, and commits it with the code. The contract diff contains one line, for the one input whose outcome changed. Verification then passes. Had the edit also changed another case, that case would appear in the same diff.",
+  "resolution": "Review the contract diff against the ticket, then merge.",
+  "provenance": "Constructed to show the workflow for intended changes."
+}

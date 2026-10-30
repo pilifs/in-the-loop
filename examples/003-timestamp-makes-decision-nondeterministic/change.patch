@@ -1,0 +1,12 @@
+--- a/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
++++ b/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java
+@@ -62,8 +62,8 @@
+     private static Decision transition(OrderStatus next, Effect... effects) {
+         return new Decision.Transition(next, List.of(effects));
+     }
+ 
+     private static Decision unchanged(String reason) {
+-        return new Decision.Unchanged(reason);
++        return new Decision.Unchanged(reason + " (checked at " + java.time.Instant.now() + ")");
+     }
+ }

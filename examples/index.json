@@ -1,0 +1,81 @@
+{
+  "schema": "examples-index/v1",
+  "examples": [
+    {
+      "id": "001",
+      "path": "001-merged-case-keeps-money",
+      "title": "A switch cleanup that keeps the money for declined orders",
+      "summary": "Merging one case into its neighbours makes the code shorter, and it still compiles. But a payment captured for a declined order is no longer refunded. This repo happens to have a model-checking unit test written for exactly this property, which also fails; the contract catches it without anyone having thought to write that test.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": false
+    },
+    {
+      "id": "002",
+      "path": "002-equality-refactor-changes-null-handling",
+      "title": "A refactor believed equivalent that changes null handling",
+      "summary": "A nested switch was replaced by a one-line conditional. The agent that wrote it believed the two were equivalent, and every existing unit test passes. They differ on one input: a null status no longer throws.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "003",
+      "path": "003-timestamp-makes-decision-nondeterministic",
+      "title": "Logging a timestamp makes the decision unverifiable",
+      "summary": "Appending the current time to a reason string looks like harmless diagnostics. It makes the state machine depend on the clock, so its behaviour can no longer be proved, and the verifier refuses.",
+      "categories": [
+        "determinism"
+      ],
+      "severity": "medium",
+      "changeKind": "logging",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+      "approach": "B8",
+      "verdict": "unverifiable",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "004",
+      "path": "004-equivalent-refactor-passes",
+      "title": "An equivalent refactor passes without touching the contract",
+      "summary": "The same simplification as example 002, written with `default ->` instead of `==`. It really is equivalent, so the verifier proves it and the build passes.",
+      "categories": [
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+      "approach": "B8",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "005",
+      "path": "005-intended-change-reviewed-as-contract-diff",
+      "title": "An intended change, reviewed as a one-line contract diff",
+      "summary": "Product asks for a clearer message when a customer cancels during payment. The developer changes the code and regenerates the contract, and the pull request shows exactly one changed outcome.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+      "approach": "B8",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    }
+  ]
+}
