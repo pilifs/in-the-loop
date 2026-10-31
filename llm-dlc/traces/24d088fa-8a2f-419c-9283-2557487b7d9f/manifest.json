@@ -12,31 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T15:07:14.486Z",
-  "ended": "2026-10-31T15:38:56.920Z",
-  "duration_seconds": 1902,
+  "ended": "2026-10-31T16:04:28.030Z",
+  "duration_seconds": 3434,
   "stats": {
-    "turns": 4,
-    "api_calls": 19,
-    "tool_calls": 30,
+    "turns": 5,
+    "api_calls": 24,
+    "tool_calls": 35,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 250789,
+    "peak_context_tokens": 259751,
     "usage": {
-      "input_tokens": 46,
-      "output_tokens": 69056,
-      "cache_read_input_tokens": 3351780,
-      "cache_creation_input_tokens": 219197
+      "input_tokens": 58,
+      "output_tokens": 72836,
+      "cache_read_input_tokens": 4624138,
+      "cache_creation_input_tokens": 227622
     }
   },
   "tools": {
-    "Bash": 18,
+    "Bash": 22,
     "Read": 7,
     "Write": 3,
+    "Edit": 1,
     "Skill": 1,
     "ToolSearch": 1
   },
   "files_touched": [
     "/tmp/claude-1000/-home-user-code-java-formal-verification/24d088fa-8a2f-419c-9283-2557487b7d9f/scratchpad/compare_blog.py",
+    "README.md",
     "llm-dlc/pricing.json",
     "llm-dlc/tools/metrics.py"
   ],
@@ -44,45 +46,59 @@
     {
       "index": 0,
       "started": "2026-10-31T15:07:14.486Z",
-      "ended": "2026-10-31T15:38:56.920Z",
-      "turns": 4,
-      "api_calls": 19,
+      "ended": "2026-10-31T16:04:28.030Z",
+      "turns": 5,
+      "api_calls": 24,
       "usage": {
-        "input_tokens": 46,
-        "output_tokens": 69056,
-        "cache_read_input_tokens": 3351780,
-        "cache_creation_input_tokens": 219197
+        "input_tokens": 58,
+        "output_tokens": 72836,
+        "cache_read_input_tokens": 4624138,
+        "cache_creation_input_tokens": 227622
       },
-      "peak_context_tokens": 250789
+      "peak_context_tokens": 259751
     }
   ],
   "log": {
-    "sha256": "66dde45c3b33feea850f15232ca16089acc67705914cc15fbff81d1c94defcd4",
-    "bytes": 1803881,
-    "lines": 266,
-    "gzip_bytes": 459079,
-    "path": "llm-dlc/traces/24d088fa-8a2f-419c-9283-2557487b7d9f/logs/66dde45c3b33feea850f15232ca16089acc67705914cc15fbff81d1c94defcd4.jsonl.gz"
+    "sha256": "41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc",
+    "bytes": 1882751,
+    "lines": 312,
+    "gzip_bytes": 469054,
+    "path": "llm-dlc/traces/24d088fa-8a2f-419c-9283-2557487b7d9f/logs/41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "rkstsnyunkzpypvkxztprzrprssvnqxk",
       "commit_id": "3d51cd932fb8e02597363b71379ce64da239d648",
-      "immutable": false,
+      "immutable": true,
       "summary": "Generate chart data from session logs on every sync",
       "body": "Add llm-dlc/tools/metrics.py, which turns each redacted log into llm-dlc/traces/<session-id>/metrics.json: every prompt, model call, tool call, compaction, pause and large cache write as tables, with list-price costs from the new hand-written llm-dlc/pricing.json. llm-dlc/traces/metrics.json adds them up over all sessions, by model, effort, tool, day, session and commit. This is the data layer for charts like the ones in the reading-the-trace blog post, which came from one-off scripts run on one log with hand-typed prices, labels and annotations.\n\nBeyond what those scripts did: work is attributed to commits by the line count of each commit's log; cache writes get a derived cause and every other factor present, which replaces the hand-written notes; time uses interval unions, because parallel tool calls overlap; prompts are told apart from commands and tool results; and Claude Code's own cost-state record is kept beside the computed cost, because compaction and Haiku side calls are missing from logs.\n\nsync.py writes the files on every commit and push. check rebuilds each one from its log, fails if it differs or if its token totals differ from the manifest, scans it for leaks, and warns about models with no price. Verified on the post's log prefix: 327 calls, 364 tool calls, 25 prompts, every token total and the $39.35 / $284.85 costs match its session.json exactly. Computed costs reproduce cost-state to the cent per model. Usage sums to the totals across prompts, windows and commits on all sessions. test_metrics.py has 21 tests on made-up sessions.",
       "log_sha256": "7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488"
     },
     {
       "change_id": "lowrlswrmmozysomtkvmqllryxzoqmrr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "29658fca78ff2155af37633731f0ae6bbe6f0089",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "66dde45c3b33feea850f15232ca16089acc67705914cc15fbff81d1c94defcd4"
+    },
+    {
+      "change_id": "sxpopykxvpqkwyzwulyonytywzoknppy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Describe llm-dlc in the main README in full",
+      "body": "The llm-dlc section of the root README was two sentences, while the examples section has a table of what the folder holds. It now says how a commit links to its session and log, and lists the procedure, specification, traces, metrics, tools, session notes and infrastructure the same way. The figures stay in the generated traces overview, so this page does not go stale. Verified that every linked path exists.",
+      "log_sha256": "41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc"
     }
   ],
   "logs": {
+    "41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc": {
+      "bytes": 1882751,
+      "lines": 312,
+      "gzip_bytes": 469054,
+      "url": null
+    },
     "66dde45c3b33feea850f15232ca16089acc67705914cc15fbff81d1c94defcd4": {
       "bytes": 1803881,
       "lines": 266,

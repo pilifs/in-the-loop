@@ -52,7 +52,7 @@ Verified with 8 made-up strings that must stay quiet and 8 that must warn, and b
 
 ### Record session traces
 
-change `lowrlswrmmoz` · [log `a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz)
+[`29658fca78ff`](https://github.com/pilifs/in-the-loop/commit/29658fca78ff2155af37633731f0ae6bbe6f0089) · [log `a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
