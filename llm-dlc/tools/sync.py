@@ -37,6 +37,9 @@ Commands:
   sync.py unpublish SID SHA [--reason TEXT]
                                 delete one log from R2 and purge it from the CDN cache (for leaks);
                                 with a reason, record the log as withdrawn in the manifest
+  sync.py review                list what `check` would flag, masked, with an id for each finding
+  sync.py review accept ID... --reason TEXT
+                                record findings as false positives; a person at a terminal only
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
 
 Standard library only. The hook never fails a session; errors go to
@@ -101,6 +104,13 @@ ACCEPTED_LOGS = frozenset({
     "2315687ce7e9", "2ed48e0ccf0e", "3f9d33960b46", "4e5d02bfeb4c", "5026337d0f66", "5ec7a7c2be3b", "7fe45409baf7",
     "9aa1dc1182d6", "9b6989b99898", "ad2f8907be5d", "c57cac191c00", "d0d9da508c7a", "dbfac310a6e0",
 })
+# False positives a person has reviewed. An entry covers one kind and one exact value, so it survives
+# new log snapshots and a different value still warns. These kinds are real by construction: a match
+# is this machine's secret or account, so no review can waive them.
+REVIEWED = CHANGES / "reviewed-findings.json"
+REVIEWED_SCHEMA = "llm-trace-reviewed/v1"
+NEVER_REVIEWED = frozenset({"local-secret", "account-id"})
+CONFIRMATION = "false positive"
 TRAILER = "LLM-Trace"
 TRAILER_RE =re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
 LINK_TRAILERS = ("LLM-Trace-Summary", "LLM-Trace-Log")  # convenience links next to LLM-Trace
@@ -279,8 +289,19 @@ def _mask(s: str) -> str:
     return s if len(s) <= 4 else s[:3] + "…" + s[-2:] + f" ({len(s)} chars)" if len(s) > 12 else s[:2] + "…" + s[-1]
 
 
+def finding_id(kind: str, value: str) -> str:
+    """Names a finding without repeating it: the review list is published."""
+    return hashlib.sha256(f"{kind}\0{value}".encode()).hexdigest()[:32]
+
+
+def load_reviewed() -> dict[str, dict]:
+    return json.loads(REVIEWED.read_text())["findings"] if REVIEWED.exists() else {}
+
+
 class Redactor:
     def __init__(self) -> None:
+        self.reviewed = load_reviewed()
+        self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
         pairs, user = personal_literals()
         self.literals = [(kind, re.compile(rf"(?<![A-Za-z0-9]){re.escape(lit)}(?![A-Za-z0-9])" if kind == "hostname"
                                            else re.escape(lit), flags), rep)
@@ -328,19 +349,33 @@ class Redactor:
             out.append(json.dumps(_walk(_scrub(obj), self.string), ensure_ascii=False, separators=(",", ":")))
         return ("\n".join(out) + "\n" if out else "").encode()
 
-    def leaks(self, text: str) -> list[str]:
-        """Kinds of thing the redactor would still change in this text. Empty for its own output."""
-        found: set[str] = set()
+    def _unreviewed(self, kind: str, value: str) -> bool:
+        if kind in NEVER_REVIEWED or finding_id(kind, value) not in self.reviewed:
+            return True
+        self.skipped[kind] += 1
+        return False
+
+    def leak_hits(self, text: str) -> dict[str, Counter]:
+        """What the redactor would still change in this text, by kind, without reviewed false
+        positives. Empty for its own output."""
+        hits: dict[str, Counter] = {}
+
+        def add(kind: str, value: str) -> None:
+            if self._unreviewed(kind, value):
+                hits.setdefault(kind, Counter())[value] += 1
 
         def scan(s: str) -> str:
-            found.update(kind for kind, rx, _ in self.literals if rx.search(s))
-            found.update(kind for kind, rx, _ in self.secret_res if rx.search(s))
-            if any(not self._public_email(m.group(0)) for m in EMAIL_RE.finditer(s)):
-                found.add("email")
-            if WIN_USER_RE.sub(self._win_user, s) != s:
-                found.add("windows-user")
-            if self.user_re and self.user_re.search(s):
-                found.add("username")
+            for kind, rx, _ in self.literals + self.secret_res:
+                for m in rx.finditer(s):
+                    add(kind, m.group(0))
+            for m in EMAIL_RE.finditer(s):
+                if not self._public_email(m.group(0)):
+                    add("email", m.group(0))
+            for m in WIN_USER_RE.finditer(s):
+                if self._win_user(m) != m.group(0):
+                    add("windows-user", m.group(0))
+            for m in self.user_re.finditer(s) if self.user_re else ():
+                add("username", m.group(0))
             return s
 
         for line in text.splitlines():
@@ -351,19 +386,24 @@ class Redactor:
                 continue
             _walk(obj, scan)
             if _unscrubbed(obj):
-                found.add("account-id")
-        return sorted(found)
+                hits.setdefault("account-id", Counter())["account identifier under a known key"] += 1
+        return hits
 
-    def review(self, text: str) -> list[str]:
-        """Warnings for a person: things that may identify someone or something and that no rule
-        removes, masked, with counts. Public IPs, foreign home directories, unknown token formats."""
+    def leaks(self, text: str) -> list[str]:
+        """Kinds of thing the redactor would still change in this text."""
+        return sorted(self.leak_hits(text))
+
+    def review_hits(self, text: str) -> dict[str, Counter]:
+        """Things that may identify someone or something and that no rule removes, by kind, without
+        reviewed false positives. Public IPs, foreign home directories, unknown token formats."""
         hits: dict[str, Counter] = {}
 
         def scan(s: str) -> str:
             s = ANSI_RE.sub("", s)  # colour codes glue digits onto the words they precede
             for kind, rx, keep in self.review_res:
                 for m in rx.finditer(s):
-                    if keep(m.group(0)) and not (kind == "public-ip" and _is_version(m)):
+                    if (keep(m.group(0)) and not (kind == "public-ip" and _is_version(m))
+                            and self._unreviewed(kind, m.group(0))):
                         hits.setdefault(kind, Counter())[m.group(0)] += 1
             return s
 
@@ -372,8 +412,12 @@ class Redactor:
                 _walk(json.loads(line), scan)
             except ValueError:
                 scan(line)
+        return hits
+
+    def review(self, text: str) -> list[str]:
+        """The same, as masked warning lines with counts."""
         return [f"{kind} ×{sum(c.values())}: " + ", ".join(_mask(v) for v, _ in c.most_common(3))
-                + (f", +{len(c) - 3} more" if len(c) > 3 else "") for kind, c in sorted(hits.items())]
+                + (f", +{len(c) - 3} more" if len(c) > 3 else "") for kind, c in sorted(self.review_hits(text).items())]
 
 
 def _walk(obj, fn):
@@ -1420,7 +1464,113 @@ def cmd_scan(args: list[str]) -> int:
                 errors += 1
             for warning in redact.review(data):
                 print(f"  warn  {warning}")
+    if redact.skipped:
+        print(f"left out as reviewed false positives: {_skipped(redact)}")
     return 1 if errors else 0
+
+
+def _skipped(redact: Redactor) -> str:
+    return ", ".join(f"{kind} ×{n}" for kind, n in sorted(redact.skipped.items()))
+
+
+def open_findings(redact: Redactor) -> dict[str, dict]:
+    """Everything `check` or `scan` would raise now, by id: what a push would publish, plus the
+    tracked files that are published with it. Holds real values: never print one unmasked to an agent."""
+    texts = []
+    src = claude_project_dir()
+    for p in sorted(src.glob("*.jsonl")):
+        subdir = p.parent / p.stem / "subagents"
+        for path in [p] + (sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []):
+            texts.append((p.stem[:8], redact(path.read_text(errors="replace")).decode()))
+    for sid, m in all_manifests().items():
+        for sha, info in m.get("logs", {}).items():
+            if not info.get("url") and (data := load_log(sid, sha)) is not None:
+                texts.append((sid[:8], data.decode(errors="replace")))
+        for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):
+            if path.exists():
+                texts.append((sid[:8], path.read_text()))
+    found: dict[str, dict] = {}
+    for where, text in texts:
+        for level, hits in (("ERROR", redact.leak_hits(text)), ("warn", redact.review_hits(text))):
+            for kind, values in hits.items():
+                for value, n in values.items():
+                    row = found.setdefault(finding_id(kind, value), {"level": level, "kind": kind, "value": value,
+                                                                     "count": 0, "where": set()})
+                    row["count"] += n
+                    row["where"].add(where)
+    return found
+
+
+def person_at_terminal() -> bool:
+    """A check that an agent's shell fails: it has no terminal, and Claude Code marks its environment."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+
+
+def save_reviewed(findings: dict[str, dict]) -> None:
+    REVIEWED.write_text(json.dumps({"schema": REVIEWED_SCHEMA, "findings": dict(sorted(findings.items()))},
+                                   indent=2, ensure_ascii=False) + "\n")
+
+
+def cmd_review(args: list[str]) -> int:
+    """List open findings, masked, or record some as false positives. Listing is open to anyone.
+    Accepting is a person's decision, so it shows the real value and asks for it to be confirmed
+    at a terminal; an agent is sent back to ask."""
+    if not args:
+        found = open_findings(Redactor())
+        for fid, f in sorted(found.items(), key=lambda kv: (kv[1]["level"], kv[1]["kind"])):
+            print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+        print(f"{len(found)} open finding(s)")
+        return 0
+    ids = args[1:args.index("--reason")] if "--reason" in args else []
+    reason = " ".join(args[args.index("--reason") + 1:]).strip() if "--reason" in args else ""
+    if args[0] != "accept" or not ids or not reason:
+        print("usage: sync.py review [accept ID... --reason TEXT]", file=sys.stderr)
+        return 2
+    if not person_at_terminal():
+        print("refused: a person must accept findings, from their own terminal. Ask them to run this command.",
+              file=sys.stderr)
+        return 1
+    found = open_findings(Redactor())
+    chosen = {}
+    for prefix in ids:
+        matches = [fid for fid in found if fid.startswith(prefix)]
+        if len(matches) != 1 or found[matches[0]]["kind"] in NEVER_REVIEWED:
+            print(f"cannot accept {prefix}: it matches {len(matches)} open finding(s), or its kind can never be waived",
+                  file=sys.stderr)
+            return 1
+        chosen[matches[0]] = found[matches[0]]
+    for fid, f in chosen.items():
+        print(f"{fid[:8]}  {f['kind']}  ×{f['count']}  in {', '.join(sorted(f['where']))}\n    {f['value']}")
+    if input(f"Reason: {reason}\nType \"{CONFIRMATION}\" to record {len(chosen)} finding(s): ").strip() != CONFIRMATION:
+        print("nothing recorded")
+        return 1
+    reviewed = load_reviewed()
+    who = _cmd("git", "config", "--get", "user.name") or "maintainer"
+    for fid, f in chosen.items():
+        reviewed[fid] = {"kind": f["kind"], "masked": _mask(f["value"]), "reason": reason, "authorized_by": who,
+                         "date": time.strftime("%Y-%m-%d")}
+    save_reviewed(reviewed)
+    print(f"recorded {len(chosen)} finding(s) in {REVIEWED.relative_to(REPO)}; commit it to publish the decision")
+    return 0
+
+
+def reviewed_problems() -> list[str]:
+    """The list holds no values, so what can be checked is that each entry says who decided and why."""
+    if not REVIEWED.exists():
+        return []
+    doc = json.loads(REVIEWED.read_text())
+    if doc.get("schema") != REVIEWED_SCHEMA:
+        return [f"{REVIEWED.name}: unknown schema {doc.get('schema')}"]
+    errors = []
+    for fid, entry in doc.get("findings", {}).items():
+        if not re.fullmatch(r"[0-9a-f]{32}", fid):
+            errors.append(f"{REVIEWED.name}: bad id {fid[:12]}")
+        if entry.get("kind") in NEVER_REVIEWED:
+            errors.append(f"{REVIEWED.name}: {fid[:8]} waives {entry['kind']}, which no review can")
+        for field in ("kind", "reason", "authorized_by", "date"):
+            if not str(entry.get(field) or "").strip():
+                errors.append(f"{REVIEWED.name}: {fid[:8]} has no {field}")
+    return errors
 
 
 def cmd_commit(args: list[str]) -> int:
@@ -1491,6 +1641,7 @@ def cmd_push(args: list[str]) -> int:
 
 def cmd_check(remote: bool = False) -> int:
     redact, errors, notes, warnings = Redactor(), [], [], []
+    errors += reviewed_problems()
     manifests = all_manifests()
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
@@ -1573,6 +1724,10 @@ def cmd_check(remote: bool = False) -> int:
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
     if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup():
         errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
+    if REVIEWED.exists() and (leaks := redact.leaks(REVIEWED.read_text())):
+        errors.append(f"unredacted {leaks} in {REVIEWED.relative_to(REPO)}")
+    if redact.skipped:
+        notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     for n in notes:
         print("note ", n)
     for w in warnings:
@@ -1624,6 +1779,8 @@ def main(argv: list[str]) -> int:
         return cmd_check(remote=args == ["--remote"])
     elif cmd == "scan":
         return cmd_scan(args)
+    elif cmd == "review":
+        return cmd_review(args)
     elif cmd == "init":
         cmd_init()
     else:

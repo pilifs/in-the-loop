@@ -13,6 +13,7 @@ llm-dlc/index.json                                        checked in; one row pe
 llm-dlc/traces/README.md                                  checked in; every session added up
 llm-dlc/traces/metrics.json                               checked in; every session added up, as data
 llm-dlc/pricing.json                                      checked in; list prices, written by hand
+llm-dlc/reviewed-findings.json                            checked in; false positives a person reviewed
 llm-dlc/traces-readme-template.md                         checked in; the template for that README
 llm-dlc/summary-template.md                               checked in; the template for summary.md
 llm-dlc/session-notes/<session-id>.md                     checked in; optional, written by hand
@@ -202,6 +203,15 @@ Traces are published, so `sync.py` redacts every JSON string, including keys, be
 Every rule leaves its own output alone, so redaction is idempotent and `check` can run the same rules over a finished log: anything they would still change is reported as `unredacted`, and the upload refuses such a log. A policy change therefore also audits the logs that are already published: what the new rules find in them is reported as a warning, not an error, because the only remedy is `unpublish --reason` and whether a finding is worth that is a person's call. Once a person has decided to keep a log up, its hash goes in `ACCEPTED_LOGS` and the warning becomes a note. Acceptance is by hash, so a later policy that flags other published logs warns about them.
 
 `check` reports three levels. An `ERROR` must be fixed and fails the command. A `warn` is for a person to judge and does not fail it. A `note` needs no action, and is grouped per session rather than printed per log.
+
+**Reviewed false positives.** A finding that a person has judged harmless would otherwise come back with every new log snapshot, so `llm-dlc/reviewed-findings.json` records it. An entry covers one kind and one exact value, named by a hash, with the reason, who decided and when. The same value is then left out of `check`, `scan`, `push` and the upload refusal wherever it appears, including in future logs, and a different value of the same kind is still raised. `check` notes how many findings it left out, and fails if an entry has no reason, no author or no date. This works for errors as well as warnings, except for `local-secret` and `account-id`: a match there is this machine's secret or account by construction, so no entry can waive it. `ACCEPTED_LOGS` is different: it accepts whole published logs whatever they contain, and is kept for the 13 logs reviewed that way.
+
+```bash
+python3 llm-dlc/tools/sync.py review                               # open findings, masked, with ids
+python3 llm-dlc/tools/sync.py review accept <id>... --reason "why"  # a person, at a terminal
+```
+
+Listing is open to anyone. Accepting is a person's decision: the command shows the real value, asks for a typed confirmation, and refuses a shell with no terminal or one that Claude Code started. The project settings also deny agents direct edits to the list. These stop an agent acting by accident, not one set on getting round them, so the record that counts is the file's history: the list is published, and each change to it is in a commit with its session. An agent that finds a false positive asks the person. The first four entries were authorized in chat by the maintainer on 2026-10-31, before the command existed, and say so.
 
 Not everything can be a rule. **Read a log before you upload it.** `sync.py scan` previews what a push would publish for each session: the redaction markers by kind, and *warnings* about things no rule removes and a person should judge: public IP addresses, home directories of other users, authorization and cookie headers, long mixed-case tokens of unknown format. A four-part version number looks like an IP address, so one is skipped only when its surroundings say it is a version, such as `openjdk version`, `java.base@`, or an SDK listing row; `root@<ip>` still warns. `check` prints the same warnings for logs that are not yet uploaded, and `push` prints them for each log as it goes up. Output is masked, because it lands in the transcript of the session that runs it.
 
