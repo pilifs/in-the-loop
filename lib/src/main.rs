@@ -91,6 +91,10 @@ enum Command {
         /// Where TLC finds the standard modules, if not in its jar (`-DTLA-Library`).
         #[arg(long)]
         library: Option<PathBuf>,
+        /// Also report a reachable state in which no action is enabled, as a deadlock (off by default: a
+        /// finished system is meant to stop).
+        #[arg(long)]
+        deadlock: bool,
     },
     /// Draw the state machine a behavioural contract describes, as Mermaid or DOT.
     Statemachine {
@@ -396,11 +400,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             println!("wrote {}: {} cases", output.display(), text.lines().filter(|l| l.contains("->")).count());
             Ok(0)
         }
-        Command::Tlc { spec, json, workers, timeout, library } => {
+        Command::Tlc { spec, json, workers, timeout, library, deadlock } => {
             let mut options = tla::TlcOptions::new(&spec);
             options.workers = workers;
             options.timeout_seconds = timeout;
             options.library = library;
+            options.deadlock = deadlock;
             let result = tla::run_tlc(&options)?;
             if json {
                 println!("{}", serde_json::to_string_pretty(&result).expect("serializable"));

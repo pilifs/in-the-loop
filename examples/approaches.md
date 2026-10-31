@@ -126,7 +126,10 @@ diff of the contract shows reviewers each changed case. The proof has three step
 It runs in `./gradlew check` and emits SARIF for GitHub and SonarQube. On Box Office it caught a refactor that changed
 null handling, which the agent that wrote the refactor believed was equivalent ([examples 001 to 005](README.md)). On Crosscut
 it catches a transaction rollback rule rewritten without its `Error` half ([025](README.md)) and a circuit breaker that closes on
-its first good probe ([026](README.md)), each as a one- or two-line diff of the contract.
+its first good probe ([026](README.md)), each as a one- or two-line diff of the contract. On Mica, a JVM's own kernels, it catches
+a type checker that lets an uninitialized object pass as an `Object` ([038](README.md), two of 289 pairs) and an access control
+without the receiver rule for `protected` ([039](README.md), one of 120 cases), and shows JEP 181's nestmate access as a four-line
+diff ([040](README.md)).
 
 ### B9. Regression verification (POC in [`tools/contracts`](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs))
 
@@ -138,7 +141,10 @@ versions differ, which the tool replays on the JVM. The developer's declaration 
 checked by the compiler and committed with the change as its scope. This is the "measure the patch" idea of the post:
 prove how few inputs a change touches. [Examples 006 to 008](README.md) show a rounding refactor refuted, a feature
 proved confined to its declared inputs, and a declared scope shown to be wrong; [027](README.md) refutes a switch
-rewrite of a retry policy that drops the 5xx statuses it did not name.
+rewrite of a retry policy that drops the 5xx statuses it did not name. On Mica, [035](README.md) refutes a NaN check
+written as `== Float.NaN` with a NaN witness (floats are bit-vectors to the solver), [036](README.md) refutes javac's
+switch-lowering heuristic computed in `int`, and [037](README.md) proves the JDK 11 rewrite of `tableSizeFor` equal to the
+JDK 8 one on all 2^32 inputs, with the JDK's own bytecode of `Integer.numberOfLeadingZeros` in the proof.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 
@@ -150,7 +156,8 @@ The claim is one of absence: bytecode that never names the entry points of a cap
 ways around that (reflection, method handles, class loaders, native code) are capabilities on the list themselves.
 It is a sound closed-world check, not a heuristic, and it is cheap. [Example 009](README.md) catches a codec that
 starts loading classes named by Kafka payloads, the mechanism of the Jackson deserialization CVEs, with no CVE database;
-[028](README.md) catches a `Thread.sleep` added to a retry policy that was pure so that it could run on any thread.
+[028](README.md) catches a `Thread.sleep` added to a retry policy that was pure so that it could run on any thread;
+[041](README.md) catches a bytecode interpreter that starts resolving host methods by a name from the guest's constant pool.
 
 ### B11. Property proofs (in [`lib/`](../lib/README.md#how-a-property-proof-works))
 
@@ -163,7 +170,11 @@ spec" idea of the post with the sampling removed: a property-based test states t
 hundred inputs, the prover tries them all. [Examples 015 to 018 and 022](README.md) prove quorum intersection, backoff
 bounds, the monotonicity and symmetry of a hybrid logical clock and the antisymmetry of last-writer-wins, and refute
 four plausible rewrites of them. [Examples 023, 024 and 031 to 033](README.md) do the same for a Kafka partitioner, a
-JWT validator's clock skew, a token bucket's refill, a batch listener's commit and a cache's expiry.
+JWT validator's clock skew, a token bucket's refill, a batch listener's commit and a cache's expiry. [Examples 034, 044
+and 045](README.md) state three sentences of the JVM specification as properties: `idiv` by -1 negates (so
+`Integer.MIN_VALUE / -1` returns the dividend without an exception), no byte of a modified UTF-8 constant is zero, and the
+bisection of a `lookupswitch` stays in bounds for every size a `Code` attribute allows, which is the assumption that makes
+`(low + high) / 2` safe there and nowhere else.
 
 A limit found while writing them: JBMC's SAT backend proves linear arithmetic, comparisons, shifts and a single
 division quickly, and gets stuck on identities between divisions and multiplications, such as "the parts of an
@@ -228,7 +239,7 @@ Its README lists the invariants to verify and the known gaps to find.
 
 | # | Approach | Tools |
 |---|---|---|
-| D1 | **Protocol model checking** (POC in [`apps/boxoffice/spec`](apps/boxoffice/spec/README.md)): a TLA+ model with one action per service transaction, relay and clock tick; TLC checks the README's safety invariants over every interleaving within small bounds. The order state machine in the model is generated from its B8 contract, so the proven bytecode behaviour is what the model runs. [Examples 011 and 012](README.md). The same construction around a two-phase-commit coordinator ([`apps/quorum/spec`](apps/quorum/spec/README.md)): [examples 020 and 021](README.md). And around an `Idempotency-Key` receiver with a client retrying against it ([`apps/crosscut/spec`](apps/crosscut/spec/README.md)): [examples 029 and 030](README.md) | TLC |
+| D1 | **Protocol model checking** (POC in [`apps/boxoffice/spec`](apps/boxoffice/spec/README.md)): a TLA+ model with one action per service transaction, relay and clock tick; TLC checks the README's safety invariants over every interleaving within small bounds. The order state machine in the model is generated from its B8 contract, so the proven bytecode behaviour is what the model runs. [Examples 011 and 012](README.md). The same construction around a two-phase-commit coordinator ([`apps/quorum/spec`](apps/quorum/spec/README.md)): [examples 020 and 021](README.md). And around an `Idempotency-Key` receiver with a client retrying against it ([`apps/crosscut/spec`](apps/crosscut/spec/README.md)): [examples 029 and 030](README.md). And around the class initialization procedure of JVMS §5.5 with threads racing for one class ([`apps/mica/spec`](apps/mica/spec/README.md)), checked for deadlock as well as for its invariants: [examples 042 and 043](README.md) | TLC |
 | D2 | **TLA+ trace validation:** instrument the Java service, and check that recorded traces are behaviours of the D1 model | TLC, plus a `kind` cluster with fault injection (Chaos Mesh via Helm) to cover partitions and crashes |
 | D3 | **P with PObserve:** runtime monitoring of Java services against P specs | P compiler (.NET) |
 | D4 | **Refinement down to bytecode:** prove each message handler's bytecode (B1) refines its TLA+ action, so the TLA+ invariants hold for the shipped code | Lean + TLA+ (ambitious) |
@@ -255,6 +266,9 @@ role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wi
 Examples 023 to 033 run it over [Crosscut](apps/crosscut/README.md), the kernels inside a Spring Boot service's cross-cutting concerns:
 the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an idempotent receiver with its TLA+ model, a Kafka
 partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
+Examples 034 to 045 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
+with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, javac's
+switch heuristic, a power-of-two table size and modified UTF-8.
 Still to do:
 
 | # | Demo | Level | Tools |

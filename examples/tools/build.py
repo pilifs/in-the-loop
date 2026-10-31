@@ -21,10 +21,10 @@ Approaches (the ids are those of examples/approaches.md):
   B11  property proofs: a stated property of one method, on every input     (prove; JBMC)
   D1   protocol model checking: the system in TLA+, driven by a contract    (spec; TLC)
 
-Three subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
-by the Java proof of concept in examples/tools/contracts. Quorum (examples/apps/quorum, examples 013 to 022) and
-Crosscut (examples/apps/crosscut, examples 023 onwards) are plain javac, verified by the Rust tool in lib/
-(jvmcontract). The app is chosen by the example's subject file.
+Four subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
+by the Java proof of concept in examples/tools/contracts. Quorum (examples/apps/quorum, examples 013 to 022),
+Crosscut (examples/apps/crosscut, examples 023 to 033) and Mica (examples/apps/mica, examples 034 onwards) are
+plain javac, verified by the Rust tool in lib/ (jvmcontract). The app is chosen by the example's subject file.
 
 Usage: python3 examples/tools/build.py [ID ...]
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
@@ -52,6 +52,7 @@ COPY = [BUILD_ROOT, VERIFIER]
 TOOL_APPS = {
     "quorum": {"root": "examples/apps/quorum", "tests": "net.terminalvalue.quorum.Tests"},
     "crosscut": {"root": "examples/apps/crosscut", "tests": "net.terminalvalue.crosscut.Tests"},
+    "mica": {"root": "examples/apps/mica", "tests": "net.terminalvalue.mica.Tests"},
 }
 IGNORE = shutil.ignore_patterns("build", ".gradle", ".kotlin", "*.class")
 
@@ -399,7 +400,7 @@ def parse_trace(output):
     return steps
 
 
-# The javac apps (Quorum, Crosscut), verified by the Rust tool in lib/.
+# The javac apps (Quorum, Crosscut, Mica), verified by the Rust tool in lib/.
 
 
 def jvmcontract():
@@ -637,7 +638,33 @@ IDEMPOTENCY = {
     },
 }
 
-TOOL_MODELS = {"quorum": TWOPC, "crosscut": IDEMPOTENCY}
+CLASSINIT = {
+    "spec": "spec/ClassInit.tla",
+    "cfg": "spec/ClassInit.cfg",
+    "contract": "src/contract/ClassInitialization.decide.contract",
+    "operator": "spec/ClassInitContract.tla",
+    "symbol": "net.terminalvalue.mica.init.ClassInitialization#decide",
+    "parts": "the threads, the class's initialization state and its recorded initializer",
+    "initial": "the class uninitialized, no initializer recorded, every thread idle",
+    "deadlock": True,
+    "actions": {
+        "Initial predicate": "the initial state",
+        "Request": "`Runtime.initialize`: a thread needs the class, takes the initialization lock and acts on the decision",
+        "Recurse": "`Runtime.initialize` from inside `<clinit>`: the initializer touches its own class",
+        "Complete": "`Runtime.initialized`: `<clinit>` returned; the waiters are woken and the thread uses the class",
+        "Fail": "`Runtime.initializationFailed`: `<clinit>` threw; the waiters are woken and the thread gets the error",
+        "Terminating": "every thread is done with the class",
+    },
+    "invariants": {
+        "TypeOK": "every variable has a value of its type",
+        "UsedOnlyWhenInitialized": "a thread uses the class only once it is initialized",
+        "InitializedAtMostOnce": "the initializer runs at most once",
+        "OneInitializer": "only the recorded initializer runs the initializer",
+        "Deadlock": "a state in which no thread can move",
+    },
+}
+
+TOOL_MODELS = {"quorum": TWOPC, "crosscut": IDEMPOTENCY, "mica": CLASSINIT}
 
 
 def run_tool_tlc(folder, example, root, module, result):
@@ -648,7 +675,8 @@ def run_tool_tlc(folder, example, root, module, result):
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
     tool(app, root, "tla", model_files["contract"], model_files["operator"], anchored=False)
-    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", "--library", str(EXAMPLES / "tools/tla/standard-modules")],
+    deadlock = ["--deadlock"] if model_files.get("deadlock") else []
+    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", *deadlock, "--library", str(EXAMPLES / "tools/tla/standard-modules")],
                           text=True, capture_output=True, cwd=build)
     if proc.returncode == 2:
         sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
@@ -660,15 +688,19 @@ def run_tool_tlc(folder, example, root, module, result):
     model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", (build / model_files["cfg"]).read_text(), re.M))
     findings = []
     if verdict != "verified":
-        message = (f"Invariant {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
-                   if verdict == "violation" else "TLC produced no verdict: " + (tlc_result.get("problem") or "unknown"))
+        if verdict == "violation" and tlc_result.get("deadlock"):
+            message = f"{model_files['spec']} deadlocks after {len(trace)} steps: no action is enabled"
+        elif verdict == "violation":
+            message = f"Invariant {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
+        else:
+            message = "TLC produced no verdict: " + (tlc_result.get("problem") or "unknown")
         findings.append({"ruleId": "invariant-violated" if verdict == "violation" else "unverifiable", "level": "error",
                          "message": {"text": message},
                          "locations": [{"physicalLocation": {"artifactLocation": {"uri": example["subject"]["file"]},
                                                              "region": {"startLine": result["after"]["startLine"]}}}]})
     sarif = {"version": "2.1.0", "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "runs": [{
         "tool": {"driver": {"name": "jvmcontract tlc", "rules": [
-            {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant."}},
+            {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."}},
             {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}}]}},
         "results": findings}]}
     (folder / "result.sarif").write_text(json.dumps(sarif, indent=2, ensure_ascii=False) + "\n")
@@ -686,8 +718,9 @@ def run_tool_tlc(folder, example, root, module, result):
         "problem": tlc_result.get("problem") if verdict == "unverifiable" else None,
     })
     result["verdictLabel"] = {
-        "violation": f"{VERDICT_LABEL[verdict]}: {tlc_result.get('invariant') or ''}, {len(trace or [])}-step trace",
-        "verified": f"{VERDICT_LABEL[verdict]}: all invariants hold in {states:,} states" if states is not None else VERDICT_LABEL[verdict],
+        "violation": f"{VERDICT_LABEL[verdict]}: {'deadlock' if tlc_result.get('deadlock') else tlc_result.get('invariant') or ''}, {len(trace or [])}-step trace",
+        "verified": (f"{VERDICT_LABEL[verdict]}: all invariants hold in {states:,} states{', no deadlock' if deadlock else ''}"
+                     if states is not None else VERDICT_LABEL[verdict]),
         "unverifiable": VERDICT_LABEL[verdict],
     }[verdict]
 
@@ -1113,6 +1146,14 @@ MODELS = {
         "machine": "The receiver's decision rule inside the model is generated from the behavioural contract of "
                    "the patched code, so the model checks the decisions the receiver really makes.",
     },
+    "mica": {
+        "parts": CLASSINIT["parts"],
+        "initial": CLASSINIT["initial"],
+        "actions": CLASSINIT["actions"],
+        "invariants": CLASSINIT["invariants"],
+        "machine": "The runtime's decision rule inside the model is generated from the behavioural contract of "
+                   "the patched code, so the model checks the decisions the runtime really makes.",
+    },
 }
 
 
@@ -1121,8 +1162,12 @@ def findings_tlc(ex, res):
     if res["verdict"] == "violation":
         inv = res["invariant"]
         out = [
-            f"TLC found a run of the system, {len(res['trace'])} steps long, that violates the invariant "
-            f"**{inv}** ({model['invariants'].get(inv, inv)}). Each step is one action of one part of the system:",
+            (f"TLC found a run of the system, {len(res['trace'])} steps long, after which no action of any part is "
+             f"enabled: a **deadlock**, {model['invariants'].get(inv, 'every part waits for another')}. "
+             "Each step is one action of one part of the system:"
+             if inv == "Deadlock" else
+             f"TLC found a run of the system, {len(res['trace'])} steps long, that violates the invariant "
+             f"**{inv}** ({model['invariants'].get(inv, inv)}). Each step is one action of one part of the system:"),
             "",
         ]
         for step in res["trace"]:

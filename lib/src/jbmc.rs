@@ -168,7 +168,8 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
     result
 }
 
-/// Parses a primitive value as JBMC prints it in a trace (`17`, `-3l`, `'a'`, `true`, `1.5`).
+/// Parses a primitive value as JBMC prints it in a trace (`17`, `-3l`, `'a'`, `'\u0000'`, `true`, `1.5f`,
+/// `Float.NaN`, `-Double.POSITIVE_INFINITY`).
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
     let s = raw.trim_end_matches(['L', 'l', 'F', 'f', 'D', 'd']);
     let bad = || Error::new(format!("cannot parse {raw:?} as {}", t.java_name()));
@@ -178,17 +179,55 @@ pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
         Type::Short => Value::Int(i32::from(s.parse::<i16>().map_err(|_| bad())?)),
         Type::Byte => Value::Int(i32::from(s.parse::<i8>().map_err(|_| bad())?)),
         Type::Char => {
-            if let Some(c) = raw.strip_prefix('\'').and_then(|r| r.chars().next()) {
-                Value::Int(c as i32)
+            if let Some(literal) = raw.strip_prefix('\'').and_then(|r| r.strip_suffix('\'')) {
+                Value::Int(parse_char_literal(literal).ok_or_else(bad)?)
             } else {
                 Value::Int(s.parse::<i32>().map_err(|_| bad())? as u16 as i32)
             }
         }
         Type::Boolean => Value::Int((raw == "true" || raw == "1") as i32),
-        Type::Double => Value::Double(s.parse().map_err(|_| bad())?),
-        Type::Float => Value::Float(s.parse().map_err(|_| bad())?),
+        Type::Double => Value::Double(parse_special(raw).map(|f| f as f64).or_else(|| s.parse().ok()).ok_or_else(bad)?),
+        Type::Float => Value::Float(parse_special(raw).or_else(|| s.parse().ok()).ok_or_else(bad)?),
         other => return Err(Error::new(format!("not a primitive: {}", other.java_name()))),
     })
+}
+
+/// The body of a Java char literal as JBMC prints it: `a`, `\n`, `\'`, `\\`, `\u0000`.
+fn parse_char_literal(literal: &str) -> Option<i32> {
+    let mut chars = literal.chars();
+    let first = chars.next()?;
+    if first != '\\' {
+        return (chars.next().is_none()).then_some(first as i32);
+    }
+    let escaped = chars.next()?;
+    let rest: String = chars.collect();
+    Some(match escaped {
+        'u' => i32::from(u16::from_str_radix(&rest, 16).ok()?),
+        'n' if rest.is_empty() => '\n' as i32,
+        't' if rest.is_empty() => '\t' as i32,
+        'r' if rest.is_empty() => '\r' as i32,
+        'b' if rest.is_empty() => 8,
+        'f' if rest.is_empty() => 12,
+        '0' if rest.is_empty() => 0,
+        '\'' | '"' | '\\' if rest.is_empty() => escaped as i32,
+        _ => return None,
+    })
+}
+
+/// `Float.NaN`, `Double.POSITIVE_INFINITY` and the like, with an optional sign.
+fn parse_special(raw: &str) -> Option<f32> {
+    let (negative, name) = match raw.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, raw),
+    };
+    let name = name.strip_prefix("Float.").or_else(|| name.strip_prefix("Double.")).unwrap_or(name);
+    let value = match name {
+        "NaN" | "nan" => f32::NAN,
+        "POSITIVE_INFINITY" | "Infinity" | "inf" => f32::INFINITY,
+        "NEGATIVE_INFINITY" | "-Infinity" | "-inf" => f32::NEG_INFINITY,
+        _ => return None,
+    };
+    Some(if negative { -value } else { value })
 }
 
 #[cfg(test)]
@@ -222,6 +261,22 @@ mod tests {
         let r = parse_output(unreadable, "PropertyHarness", "check", 16, None);
         assert_eq!(r.verdict, Verdict::Unverifiable);
         assert_eq!(r.problem.as_deref(), Some("JBMC could not read the class path entry build/main"));
+    }
+
+    #[test]
+    fn parses_the_values_jbmc_prints() {
+        assert_eq!(parse_value(&Type::Char, "'a'").unwrap(), Value::Int(97));
+        assert_eq!(parse_value(&Type::Char, "'\\u0000'").unwrap(), Value::Int(0));
+        assert_eq!(parse_value(&Type::Char, "'\\u07ff'").unwrap(), Value::Int(0x7ff));
+        assert_eq!(parse_value(&Type::Char, "'\\n'").unwrap(), Value::Int(10));
+        assert_eq!(parse_value(&Type::Char, "'\\\\'").unwrap(), Value::Int(92));
+        assert_eq!(parse_value(&Type::Char, "65").unwrap(), Value::Int(65));
+        assert!(matches!(parse_value(&Type::Float, "Float.NaN").unwrap(), Value::Float(f) if f.is_nan()));
+        assert!(matches!(parse_value(&Type::Float, "-Float.POSITIVE_INFINITY").unwrap(), Value::Float(f) if f == f32::NEG_INFINITY));
+        assert!(matches!(parse_value(&Type::Double, "Double.NaN").unwrap(), Value::Double(f) if f.is_nan()));
+        assert_eq!(parse_value(&Type::Float, "1.5f").unwrap(), Value::Float(1.5));
+        assert_eq!(parse_value(&Type::Double, "-0.0").unwrap(), Value::Double(-0.0));
+        assert!(parse_value(&Type::Float, "Float.MAX").is_err());
     }
 
     #[test]

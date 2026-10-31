@@ -1,0 +1,42 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Comparison.java",
+    "startLine": 23,
+    "code": " * equals 0.0, and a NaN is neither less than, equal to, nor greater than anything.\n */\npublic static int fcmp(float a, float b, boolean nanIsGreater) {\n    if (a < b) {\n        return -1;\n    }\n    if (a > b) {\n        return 1;\n    }\n    if (a == b) {\n        return 0;\n    }\n    return nanIsGreater ? 1 : -1;\n}\n\n/** {@code dcmpg} when {@code nanIsGreater}, else {@code dcmpl}. */\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Comparison.java",
+    "startLine": 23,
+    "code": " * equals 0.0, and a NaN is neither less than, equal to, nor greater than anything.\n */\npublic static int fcmp(float a, float b, boolean nanIsGreater) {\n    // The unordered case first, so that what follows is a plain three-way comparison.\n    if (a == Float.NaN || b == Float.NaN) {\n        return nanIsGreater ? 1 : -1;\n    }\n    return a < b ? -1 : a <= b ? 0 : 1;\n}\n\n/** {@code dcmpg} when {@code nanIsGreater}, else {@code dcmpl}. */\n"
+  },
+  "casesTotal": null,
+  "domain": "a: float × b: float × nanIsGreater: boolean",
+  "counterexamples": [
+    {
+      "input": "fcmp(a=NaN, b=0.0, nanIsGreater=false)",
+      "contract": "-1",
+      "actual": "1"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

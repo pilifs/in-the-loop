@@ -505,6 +505,195 @@
       "approach": "B11",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "034",
+      "path": "034-idiv-overflow-check-throws-where-the-jvm-returns-min-value",
+      "title": "An idiv that throws on Integer.MIN_VALUE / -1, where the JVM must return the dividend",
+      "summary": "The interpreter's `idiv` divides on the host and throws on a zero divisor, as the instruction does. A developer adds a second check: `Integer.MIN_VALUE / -1` is the one quotient an int cannot hold, so report it as an `ArithmeticException` too rather than return the wrong sign. The property the build proves of `idiv`, that dividing by -1 negates on every input, is refuted on exactly that input, with the exception as the outcome: JVMS §6.5 specifies the overflow and forbids the exception.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.mica.interp.Arithmetic#idiv",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "035",
+      "path": "035-nan-compared-with-equals-turns-fcmpl-into-fcmpg",
+      "title": "A NaN check written as == Float.NaN never fires, and fcmpl quietly becomes fcmpg",
+      "summary": "The interpreter's `fcmp` implements `fcmpg` and `fcmpl` with four branches: less, greater, equal, and the unordered case that the two opcodes decide differently. A developer moves the unordered case to the front, written as `a == Float.NaN || b == Float.NaN`, so that what follows is a plain three-way comparison. The regression proof against the previous version finds an input with a NaN on which `fcmpl` now pushes 1 instead of -1: a comparison with `Float.NaN` is false for every operand, including NaN.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.interp.Comparison#fcmp",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "036",
+      "path": "036-switch-lowering-costs-in-int-overflow-on-wide-labels",
+      "title": "Switch lowering costs computed in int pick the wrong instruction for wide labels",
+      "summary": "The assembler chooses between `tableswitch` and `lookupswitch` with javac's heuristic: the table's space plus three times its time against the lookup's, computed in `long`. A developer drops the `long`: the costs are a few words and comparisons, and the casts clutter the formula. The regression proof against the previous version finds a label range on which the subtraction `hi - lo` overflows an `int`, and the two versions choose differently.",
+      "categories": [
+        "functional",
+        "performance"
+      ],
+      "severity": "medium",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.asm.SwitchLowering#useTable",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "037",
+      "path": "037-table-size-rewritten-with-leading-zeros-proved-equal",
+      "title": "tableSizeFor rewritten with numberOfLeadingZeros, proved equal on all 2^32 inputs",
+      "summary": "The symbol table rounds a requested capacity up to a power of two with the five-shift bit smear of JDK 8's `HashMap.tableSizeFor`. A developer replaces the smear with the one-line form JDK 11 adopted, `-1 >>> Integer.numberOfLeadingZeros(cap - 1)`. The regression proof compiles both versions into one program and proves them equal on every `int`, with the JDK's own bytecode of `numberOfLeadingZeros` in the proof.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.rt.SymbolTable#tableSizeFor",
+      "approach": "B9",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "038",
+      "path": "038-verifier-object-fast-path-accepts-uninitialized-objects",
+      "title": "A verifier fast path for \"everything is an Object\" lets an uninitialized object pass",
+      "summary": "The type checker's assignability relation answers `isAssignable(from, to)` over the verification types, with the uninitialized types assignable to themselves and `top` only. A developer hoists the most frequent answer, that every reference is assignable to `Object`, above the rarer checks. The behavioural contract of the relation, 289 pairs derived from the bytecode, changes in two: `uninitialized` and `uninitializedThis` are now assignable to `Object`, which is the hole a type-checking verifier exists to close.",
+      "categories": [
+        "security",
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.verify.Assignability#isAssignable",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "039",
+      "path": "039-protected-access-without-the-receiver-rule",
+      "title": "Protected access without the receiver rule opens every superclass object to a subclass",
+      "summary": "Access control at resolution time admits a `protected` member from a subclass in another package only through an object of the subclass itself, as JVMS §5.4.4 requires in its \"furthermore\" clause. A developer drops the clause: a subclass inherits its superclass's protected members, and the receiver's type is the type checker's business. The behavioural contract of the check, 120 cases derived from the bytecode, changes in one: a protected instance member on an arbitrary object of the superclass is now accessible from a subclass in another package.",
+      "categories": [
+        "security",
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.link.AccessControl#check",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "040",
+      "path": "040-nestmate-private-access-reviewed-as-a-contract-diff",
+      "title": "Nest-based private access (JEP 181), reviewed as four lines of a 120-line contract",
+      "summary": "Access control admits a `private` member from its declaring class only; nestmates reach each other through the synthetic accessors javac generates. A developer implements JEP 181: a `private` member is also accessible from a class in the same nest. The behavioural contract is regenerated, and its diff is the four cases where the visibility is `private` and the relation is `same nest`, each `false` to `true`. The other 116 cases are proved unchanged, and the diff is what the reviewer approves.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.mica.link.AccessControl#check",
+      "approach": "B8",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "041",
+      "path": "041-math-intrinsics-through-method-handles-give-the-interpreter-reflection",
+      "title": "Looking up StrictMath intrinsics by name on the host gives a pure interpreter reflection",
+      "summary": "The interpreter computes a fixed list of the guest's `StrictMath` functions on the host, by a `switch` on the name. A developer replaces the list with a `MethodHandles.Lookup.findStatic` on the host's `StrictMath`, so that any unary function works without maintaining the list. The capability contract of the module, every capability `none` until now, gains `reflection` at two call sites: the interpreter can now invoke host methods chosen by a string, and the string comes from the guest's constant pool.",
+      "categories": [
+        "security",
+        "determinism"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.mica.interp.Intrinsics#unary",
+      "approach": "B10",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "042",
+      "path": "042-class-init-that-proceeds-while-another-thread-initializes",
+      "title": "Letting other threads proceed while <clinit> runs hands out a half-built class",
+      "summary": "A thread that needs a class another thread is initializing waits on the initialization lock, as step 2 of JVMS §5.5 says. Class-initialization deadlocks between classes whose initializers refer to each other are a known production problem, and a developer removes the wait: a request during initialization completes normally for every thread, as step 3 already allows for the initializing one. The contract diff is one line and is approved. The model checker finds a three-step run in which the second thread uses the class before its initializer has returned.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.mica.init.ClassInitialization#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "043",
+      "path": "043-class-init-that-waits-on-its-own-thread-deadlocks",
+      "title": "One rule for every class-init request waits on its own thread, and TLC finds the deadlock",
+      "summary": "A request for a class being initialized waits, unless it comes from the initializing thread itself, which is a recursive request and completes normally (step 3 of JVMS §5.5). A developer removes the exception: every request during initialization waits, one rule, and the lock serializes everything. The contract diff is one line and is approved. The model checker, with deadlock detection on, finds a five-step run after which no thread can move: the initializer touched its own class, waited for itself, and every other thread waits for it.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.init.ClassInitialization#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "044",
+      "path": "044-modified-utf8-with-a-one-byte-nul",
+      "title": "A constant-pool encoder that writes NUL as one byte emits the byte no class file may hold",
+      "summary": "The class-file writer encodes `CONSTANT_Utf8_info` in modified UTF-8, where U+0000 takes two bytes so that no byte of an encoded string is zero. A developer aligns the encoder with standard UTF-8, one byte for every character up to U+007F, and updates the test that said otherwise. The property the build proves of the encoder, that no first byte is zero, is refuted on the one input it can be: the character U+0000, encoded as the byte 0, which JVMS §4.4.7 says no `CONSTANT_Utf8_info` may contain.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#firstByte",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "045",
+      "path": "045-lookupswitch-midpoint-by-division-proved-safe-within-a-code-attribute",
+      "title": "A bisection midpoint written as (low + high) / 2, proved safe for every lookupswitch index",
+      "summary": "The interpreter bisects the sorted match-offset pairs of a `lookupswitch` with the midpoint `(low + high) >>> 1`, the idiom that survived the overflow bug in `Arrays.binarySearch`. A developer writes it as the division it is, `(low + high) / 2`. On every `int` that is the bug; on every index of a `lookupswitch` it is not, because a `Code` attribute holds at most 65535 bytes and a pair takes eight. The property committed for the midpoint carries that bound in its assumption, and the proof goes through; without the bound, the same proof fails in a fraction of a second.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#midpoint",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

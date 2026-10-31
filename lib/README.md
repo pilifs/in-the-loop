@@ -58,6 +58,7 @@ jvmcontract capabilities --each build/libs/*.jar
 # The protocol model: a TLA+ operator from a contract, then TLC.
 jvmcontract tla src/contract/OrderLifecycle.decide.contract spec/OrderLifecycleContract.tla
 jvmcontract tlc spec/BoxOffice.tla --json
+jvmcontract tlc spec/ClassInit.tla --deadlock    # also report a reachable state in which no action is enabled
 
 # Views: the state machine a contract describes, and a class file's structure.
 jvmcontract statemachine src/contract/OrderLifecycle.decide.contract --format mermaid
@@ -98,8 +99,8 @@ On the Box Office domain module, deriving the 36-case contract takes about 15 mi
 
 1. The old classes are copied into a `before` package by rewriting their constant pools ([`relocate`](src/relocate.rs)), so both versions load side by side.
 2. A harness class is **generated directly as bytecode** ([`harness`](src/harness/mod.rs)): it calls both versions on the same arguments, catches what each throws, and asserts that the results and exception types agree. The `--unchanged-unless` expression is parsed and type-checked with Java's rules ([`harness::expr`](src/harness/expr.rs)) and compiled into the harness, so no Java compiler is needed. The same statement is written out as Java source for readers.
-3. JBMC turns the harness into a satisfiability problem over bit-vectors ([`jbmc`](src/jbmc.rs)). Small inputs are searched first so that a counterexample is readable; the last stage is the proof over the whole domain. The real bytecode of `java.lang.Math`, taken from the JDK image, is on JBMC's class path, so `Math.multiplyExact` is analysed as written.
-4. A counterexample is replayed through both versions in the interpreter, and the two observed outcomes are what the report shows.
+3. JBMC turns the harness into a satisfiability problem over bit-vectors ([`jbmc`](src/jbmc.rs)). Small inputs are searched first so that a counterexample is readable; the last stage is the proof over the whole domain. The real bytecode of `java.lang.Math`, `StrictMath` and the integer wrappers (`Integer`, `Long`, `Short`, `Byte`), taken from the JDK image, is on JBMC's class path, so `Math.multiplyExact` and `Integer.numberOfLeadingZeros` are analysed as written.
+4. A counterexample is replayed through both versions in the interpreter, and the two observed outcomes are what the report shows. A counterexample the interpreter cannot reproduce (both versions agree on it) is reported as *unverifiable*, not as a violation: it means JBMC had no bytecode for a method the target calls (one outside its models and the class path above, such as `Float.compare`, whose `floatToRawIntBits` is native) and treated it as returning an arbitrary value.
 
 ## How a property proof works
 
@@ -112,10 +113,10 @@ net.terminalvalue.quorum.replication.LastWriterWins#winner
 ```
 
 1. The harness ([`harness::generate_property`](src/harness/mod.rs)) is generated as bytecode: return if the assumption is false, call the method once on symbolic arguments, catch anything it throws, and assert that it threw nothing and that the assertion holds. A call of the method inside the assertion is compiled to an `invokestatic`, which is how commutativity, idempotence, monotonicity or antisymmetry are stated; a boolean method with no assertion given is its own property (it must return `true`).
-2. JBMC proves the harness or finds an input, small values first ([`property`](src/property.rs)); the input is replayed in the interpreter and the report shows the method's result or exception on it.
+2. JBMC proves the harness or finds an input, small values first ([`property`](src/property.rs)); the input is replayed in the interpreter and the report shows the method's result or exception on it. As for a regression proof, an input on which the replay finds the property holding is reported as *unverifiable*: a called method was missing from JBMC's class path.
 3. `prove --properties FILE` proves every block of a module's file and exits 1 if any is violated or cannot be verified, so the properties are a build step like the contracts.
 
-The five properties of the [Quorum](../examples/apps/quorum/README.md) module (quorum intersection, backoff bounds and monotonicity, the hybrid logical clock's monotonicity and symmetry, last-writer-wins antisymmetry) are proved in about four seconds in all, and the seven of [Crosscut](../examples/apps/crosscut/README.md) (a Kafka partitioner and batch commit, a retry policy, a JWT validator's skew, a token bucket's refill, a cache's expiry) in about forty. A property-based test states the same theorem and samples it; here the solver covers the domain, which is how [example 015](../examples/015-rounded-half-is-not-a-majority/README.md) catches `(n + 1) / 2` at `n = 2`, [example 016](../examples/016-backoff-cleanup-overflows-into-a-negative-delay/README.md) catches an overflow forty attempts in, and [example 023](../examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/README.md) catches `Math.abs(Integer.MIN_VALUE)`.
+The five properties of the [Quorum](../examples/apps/quorum/README.md) module (quorum intersection, backoff bounds and monotonicity, the hybrid logical clock's monotonicity and symmetry, last-writer-wins antisymmetry) are proved in about four seconds in all, and the seven of [Crosscut](../examples/apps/crosscut/README.md) (a Kafka partitioner and batch commit, a retry policy, a JWT validator's skew, a token bucket's refill, a cache's expiry) in about forty, and the six of [Mica](../examples/apps/mica/README.md) (`idiv` and `irem` at `Integer.MIN_VALUE / -1`, modified UTF-8's zero-free bytes, a `lookupswitch` bisection within the sizes a `Code` attribute allows, a power-of-two table size) in under two seconds. A property-based test states the same theorem and samples it; here the solver covers the domain, which is how [example 015](../examples/015-rounded-half-is-not-a-majority/README.md) catches `(n + 1) / 2` at `n = 2`, [example 016](../examples/016-backoff-cleanup-overflows-into-a-negative-delay/README.md) catches an overflow forty attempts in, [example 023](../examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/README.md) catches `Math.abs(Integer.MIN_VALUE)`, and [example 034](../examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value/README.md) catches an `idiv` that throws on the one input the specification says must not.
 
 ## Library use
 
@@ -146,7 +147,7 @@ The crate's modules follow the pipeline: [`classfile`](src/classfile/mod.rs) par
 - **Property proofs** (`prove`): a postcondition or a law about a method, stated next to the code and proved over every input by the same machinery as the regression proofs. The expression language gained `result` and calls of the method under proof for it.
 - **API contracts**, the fourth lockfile: the public surface of a module, diffed like the others.
 - **Capability contracts per dependency** (`capabilities --each a.jar b.jar`), the hook the Java README left open.
-- **A TLC runner** that parses the verdict, state counts and the counterexample trace into data, and a **state-machine view** of a contract (Mermaid or Graphviz) that names unreachable and terminal states.
+- **A TLC runner** that parses the verdict, state counts and the counterexample trace into data, with optional deadlock checking (`--deadlock`, whose trace is reported like an invariant violation), and a **state-machine view** of a contract (Mermaid or Graphviz) that names unreachable and terminal states.
 - **JSON output** for every command, **execution cost** per derivation (`--cost`), and a step and depth budget, so a method that does not terminate on some input is refused instead of hanging.
 
 ## Limits

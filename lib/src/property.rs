@@ -209,6 +209,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut counterexample = None;
     let mut proof = None;
     let mut problem = None;
+    let mut verdict = last.verdict;
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
@@ -217,15 +218,39 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let values = last.inputs(&descriptor.params)?;
-            let outcome = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor.ret, &values)?;
-            let rendered = format!("{method_name}({})", params.iter().zip(&values).map(|(p, v)| format!("{}={}", p.name, render::primitive(*v, &p.ty))).collect::<Vec<_>>().join(", "));
+            let (outcome, returned) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor.ret, &values)?;
+            let rendered = format!("{method_name}({})", params.iter().zip(&values).map(|(p, v)| format!("{}={}", p.name, render::witness(*v, &p.ty))).collect::<Vec<_>>().join(", "));
+            // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
+            // given an arbitrary result to a method it had no bytecode for. (A property that calls the method
+            // under proof is checked in the harness only, so it is taken at JBMC's word.)
+            if let Some(result) = returned {
+                let mut locals = Vec::new();
+                for v in values.iter().chain(std::iter::once(&result)) {
+                    locals.push(*v);
+                    if v.is_wide() {
+                        locals.push(Value::Int(0));
+                    }
+                }
+                if let Ok(Value::Int(1)) = harness::expr::eval(&harness.assertion, &locals) {
+                    let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                    let message = format!("{} cannot be verified: {p}", options.target);
+                    let _ = writeln!(out, "✗ {message}");
+                    findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                    problem = Some(p);
+                    verdict = Verdict::Unverifiable;
+                    if let Some(report) = &options.report {
+                        sarif::write(&report.join("property.sarif"), &findings)?;
+                    }
+                    return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+                }
+            }
             let message = format!("Property of {} violated: `{assertion}`{}:\n  {rendered}\n    outcome: {outcome}", options.target, where_);
             let _ = writeln!(out, "✗ {message}");
             let how = format!("found by {} in {seconds:.1} s{}, replayed in the interpreter; domain {domain}", last.version, last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default());
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, outcome, values: values.iter().zip(&params).map(|(v, p)| render::primitive(*v, &p.ty)).collect() });
+            counterexample = Some(Counterexample { input: rendered, outcome, values: values.iter().zip(&params).map(|(v, p)| render::witness(*v, &p.ty)).collect() });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
@@ -238,11 +263,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if let Some(report) = &options.report {
         sarif::write(&report.join("property.sarif"), &findings)?;
     }
-    if last.verdict == Verdict::Violation {
+    if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.");
     }
     Ok(Outcome {
-        verdict: last.verdict,
+        verdict,
         target: options.target.clone(),
         domain: Some(domain),
         assume: options.assume.clone(),
@@ -306,8 +331,9 @@ pub fn read_declarations(file: &std::path::Path) -> Result<Vec<Declaration>, Err
     parse_declarations(&text, &file.display().to_string())
 }
 
-/// Runs the counterexample through the method in the interpreter, with the effect monitor off.
-fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, ret: &Type, values: &[Value]) -> Result<String, Error> {
+/// Runs the counterexample through the method in the interpreter, with the effect monitor off: the outcome as
+/// text, and the value returned if the method returned a primitive.
+fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, ret: &Type, values: &[Value]) -> Result<(String, Option<Value>), Error> {
     let mut cp = ClassPath::new();
     for path in options.classes.iter().chain(&options.classpath) {
         if path.exists() {
@@ -319,10 +345,10 @@ fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &st
     m.monitor = false;
     let _ = m.begin_case();
     Ok(match m.call_static(class_internal, method, descriptor, values.to_vec()) {
-        Ok(Some(v)) => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
-        Ok(None) => "void".to_string(),
-        Err(Fault::Throw(r)) => render::thrown(&m, r),
-        Err(f) => format!("<could not replay: {}>", render::fault(&m, &f)),
+        Ok(Some(v)) => (render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)), ret.is_primitive().then_some(v)),
+        Ok(None) => ("void".to_string(), None),
+        Err(Fault::Throw(r)) => (render::thrown(&m, r), None),
+        Err(f) => (format!("<could not replay: {}>", render::fault(&m, &f)), None),
     })
 }
 

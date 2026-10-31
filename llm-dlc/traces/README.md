@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 6, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-10-31 21:36 UTC |
-| Prompts | 99 |
-| Model calls | 672 |
-| Tool calls | 1,223 (34 failed) |
-| Compactions | 9 |
+| Period | 2026-10-24 14:07 UTC to 2026-10-31 22:33 UTC |
+| Prompts | 104 |
+| Model calls | 715 |
+| Tool calls | 1,418 (38 failed) |
+| Compactions | 10 |
 | Subagents | 0 |
-| Tokens written | 1,750,574 |
-| Tokens read | 150,223,686 (97.3% from cache) |
-| Commits with a trace | 35 |
-| Log snapshots | 42 (56.3 MB gzipped, 38 uploaded) |
+| Tokens written | 1,941,534 |
+| Tokens read | 160,701,904 (97.3% from cache) |
+| Commits with a trace | 36 |
+| Log snapshots | 43 (58.9 MB gzipped, 38 uploaded) |
 
 ## Sessions
 
@@ -32,7 +32,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | ended | 10 h 34 min | `claude-fable-5-1`, `claude-opus-5-5` | 21 | 110 | 218 | 11 | 1 | 439,795 | 11 |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | ended | 41 min | `claude-opus-5-5` | 5 | 21 | 43 | 0 | 0 | 124,779 | 5 |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | ended | 1 h 21 min | `claude-opus-5-5` | 6 | 31 | 44 | 0 | 0 | 377,849 | 6 |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | open | 5 h 6 min | `claude-fable-5-1` | 11 | 142 | 476 | 6 | 2 | 535,846 | 3 |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | open | 6 h 3 min | `claude-fable-5-1` | 16 | 185 | 671 | 10 | 3 | 535,846 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -47,22 +47,22 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 301,576 | 1,938 | 741,586 | 24,884,767 | 97.1% | 85 |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 35,495 | 46 | 95,343 | 1,829,859 | 95.0% | 54 |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 95,754 | 76 | 345,353 | 6,786,174 | 95.2% | 74 |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 666,144 | 4,364 | 1,209,131 | 43,761,797 | 97.3% | 68 |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 857,104 | 5,710 | 1,552,985 | 53,894,815 | 97.2% | 65 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 635 | 51.9% | 6 |
-| `Edit` | 257 | 21.0% | 5 |
-| `Write` | 187 | 15.3% | 4 |
-| `Read` | 120 | 9.8% | 6 |
-| `ToolSearch` | 6 | 0.5% | 4 |
-| `WebFetch` | 6 | 0.5% | 2 |
+| `Bash` | 709 | 50.0% | 6 |
+| `Edit` | 314 | 22.1% | 5 |
+| `Write` | 237 | 16.7% | 4 |
+| `Read` | 126 | 8.9% | 6 |
+| `WebFetch` | 13 | 0.9% | 2 |
+| `ToolSearch` | 7 | 0.5% | 4 |
 | `Skill` | 5 | 0.4% | 2 |
 | `TaskStop` | 3 | 0.2% | 2 |
-| `AskUserQuestion` | 2 | 0.2% | 1 |
-| `WebSearch` | 2 | 0.2% | 1 |
+| `AskUserQuestion` | 2 | 0.1% | 1 |
+| `WebSearch` | 2 | 0.1% | 1 |
 
 ## Commits
 
@@ -105,6 +105,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 33 | change `pkonklwr` | Add jvmcontract, a Rust library and CLI for the verifiers | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz)) |
 | 34 | change `tnrplopp` | Add Quorum, ten distributed-systems examples, and property proofs to jvmcontract | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz)) |
 | 35 | change `svxmqsyr` | Add Crosscut, eleven Spring Boot examples verified by jvmcontract | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz)) |
+| 36 | change `qqnvnsyy` | Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz)) |
 
 ## Logs
 
@@ -117,7 +118,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 11 | 11 | 9.0 MB | [`5c7af483c8d0`](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz) |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | 0.9 MB | [`a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz) |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 7 | 6 | 3.6 MB | `405010b8bb85`, not uploaded |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 3 | 0 | 4.5 MB | `a1f98f08719c`, not uploaded |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 4 | 0 | 7.1 MB | `dc606bccc33d`, not uploaded |
 
 ## Session notes
 

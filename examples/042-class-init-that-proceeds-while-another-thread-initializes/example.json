@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "042",
+  "title": "Letting other threads proceed while <clinit> runs hands out a half-built class",
+  "summary": "A thread that needs a class another thread is initializing waits on the initialization lock, as step 2 of JVMS §5.5 says. Class-initialization deadlocks between classes whose initializers refer to each other are a known production problem, and a developer removes the wait: a request during initialization completes normally for every thread, as step 3 already allows for the initializing one. The contract diff is one line and is approved. The model checker finds a three-step run in which the second thread uses the class before its initializer has returned.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/ClassInitialization.java",
+    "symbol": "net.terminalvalue.mica.init.ClassInitialization#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/mica/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In state `IN_PROGRESS`, answer `PROCEED` to every request, not only to the initializing thread's. The reasoning: the initializer is running, so the class is as good as ready, and a thread that never waits on another thread's class initialization cannot take part in an initialization deadlock. The behavioural contract is regenerated and its diff is one line, the case `decide(IN_PROGRESS, Request[byInitializingThread=false])`, `WAIT` to `PROCEED`; the test for that case is updated. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "Step 2 is the whole guarantee of class initialization: when a thread's `getstatic` completes, `<clinit>` has run to the end and the static fields hold what it assigned. With this change a second thread reads a static `final` field as null or zero, calls a static method whose cache is not built, or sees a singleton before its constructor finished, for the few microseconds the initializer takes, on the machines where two threads touch a new class at once, which is startup under load. Nothing reports it: there is no exception, just a wrong value in one thread, once. The deadlock the developer wanted to avoid is real, but it is between two classes and two threads; the fix removed the guarantee for one class and every thread. The contract diff could not catch this: the diff was precisely the intended change. Whether the new rule is safe is a question about every interleaving of threads that need the class, and only the model answers it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The TLA+ model has one action per operation of a thread: request the class, request it again from inside the initializer, return from the initializer, throw from it. The runtime's decision rule inside the model is not hand-written: it is generated from the behavioural contract of `ClassInitialization#decide`, which the tool proves the bytecode satisfies on all 30 inputs, so the model decides exactly as the Java does. TLC explores every interleaving of three threads and reports the shortest run that breaks the invariant that a thread uses the class only once it is initialized: one thread requests the class and starts the initializer, a second thread requests it, is told to proceed, and uses the class while the state is still `IN_PROGRESS`. The run is three steps long, the initial state and two actions, and the step the developer's reasoning left out is the one between \"the initializer is running\" and \"the initializer has returned\".",
+  "resolution": "Revert. The deadlock between classes is addressed where it arises: by breaking the cycle between the initializers, or by initializing the classes in a fixed order on one thread before the others start, both of which the specification leaves to the program. The model picks up any further change to the rule through its contract, so the next idea of this kind is checked the same way before it is merged.",
+  "provenance": "Constructed from steps 2 and 3 of the initialization procedure of JVMS §5.5, by giving every thread the recursive-request treatment.",
+  "references": [
+    {
+      "title": "JVMS §5.5, Initialization: the twelve-step procedure, steps 2 and 3",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html#jvms-5.5"
+    },
+    {
+      "title": "JLS §12.4.2, Detailed Initialization Procedure",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.4.2"
+    }
+  ]
+}

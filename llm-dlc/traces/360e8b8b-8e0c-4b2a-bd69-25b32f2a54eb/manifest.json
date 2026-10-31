@@ -12,34 +12,37 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-10-31T21:36:29.712Z",
-  "duration_seconds": 18394,
+  "ended": "2026-10-31T22:33:01.342Z",
+  "duration_seconds": 21786,
   "stats": {
-    "turns": 11,
-    "api_calls": 142,
-    "tool_calls": 476,
-    "tool_errors": 6,
-    "compactions": 2,
+    "turns": 16,
+    "api_calls": 185,
+    "tool_calls": 671,
+    "tool_errors": 10,
+    "compactions": 3,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 4364,
-      "output_tokens": 666144,
-      "cache_read_input_tokens": 43761797,
-      "cache_creation_input_tokens": 1209131
+      "input_tokens": 5710,
+      "output_tokens": 857104,
+      "cache_read_input_tokens": 53894815,
+      "cache_creation_input_tokens": 1552985
     }
   },
   "tools": {
-    "Edit": 142,
-    "Bash": 140,
-    "Write": 130,
-    "Read": 56,
-    "WebFetch": 5,
-    "ToolSearch": 2,
+    "Bash": 214,
+    "Edit": 199,
+    "Write": 180,
+    "Read": 62,
+    "WebFetch": 12,
+    "ToolSearch": 3,
     "TaskStop": 1
   },
   "files_touched": [
     "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/make_patches.py",
     "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/make_patches_crosscut.py",
+    "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/make_patches_mica.py",
+    "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/probe/after/p/K.java",
+    "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/probe/before/p/K.java",
     "README.md",
     "examples/013-longest-log-wins-breaks-election-safety/example.json",
     "examples/014-leader-that-ignores-newer-terms-in-replies/example.json",
@@ -62,6 +65,18 @@
     "examples/031-rate-limiter-that-never-refills-under-steady-polling/example.json",
     "examples/032-batch-listener-that-commits-past-a-failed-record/example.json",
     "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/example.json",
+    "examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value/example.json",
+    "examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/example.json",
+    "examples/036-switch-lowering-costs-in-int-overflow-on-wide-labels/example.json",
+    "examples/037-table-size-rewritten-with-leading-zeros-proved-equal/example.json",
+    "examples/038-verifier-object-fast-path-accepts-uninitialized-objects/example.json",
+    "examples/039-protected-access-without-the-receiver-rule/example.json",
+    "examples/040-nestmate-private-access-reviewed-as-a-contract-diff/example.json",
+    "examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/example.json",
+    "examples/042-class-init-that-proceeds-while-another-thread-initializes/example.json",
+    "examples/043-class-init-that-waits-on-its-own-thread-deadlocks/example.json",
+    "examples/044-modified-utf8-with-a-one-byte-nul/example.json",
+    "examples/045-lookupswitch-midpoint-by-division-proved-safe-within-a-code-attribute/example.json",
     "examples/README.md",
     "examples/approaches.md",
     "examples/apps/crosscut/README.md",
@@ -102,6 +117,39 @@
     "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/security/JwtTimestampsTest.java",
     "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/tx/TransactionBoundaryTest.java",
     "examples/apps/crosscut/verify.sh",
+    "examples/apps/mica/README.md",
+    "examples/apps/mica/spec/ClassInit.cfg",
+    "examples/apps/mica/spec/ClassInit.tla",
+    "examples/apps/mica/spec/README.md",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/Decision.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/ClassInitialization.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/InitEffect.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/InitEvent.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/InitState.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Comparison.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Intrinsics.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/link/AccessControl.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/link/Relation.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/link/Visibility.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/verify/Assignability.java",
+    "examples/apps/mica/src/main/java/net/terminalvalue/mica/verify/VerificationType.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/Tests.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/asm/SwitchLoweringTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/classfile/ModifiedUtf8Test.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/init/ClassInitializationTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/interp/ArithmeticTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/interp/ComparisonTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/interp/IntrinsicsTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/interp/LookupSwitchTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/link/AccessControlTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/rt/SymbolTableTest.java",
+    "examples/apps/mica/src/test/java/net/terminalvalue/mica/verify/AssignabilityTest.java",
+    "examples/apps/mica/verify.sh",
     "examples/apps/quorum/README.md",
     "examples/apps/quorum/spec/README.md",
     "examples/apps/quorum/spec/TwoPhaseCommit.cfg",
@@ -171,7 +219,9 @@
     "lib/tests/fixtures/java/fixtures/Features.java",
     "lib/tests/fixtures/java/fixtures/Laws.java",
     "lib/tests/integration.rs",
-    "~/.claude/projects/-home-user-code-java-formal-verification/memory/jvmcontract-rust-lib.md"
+    "~/.claude/projects/-home-user-code-java-formal-verification/memory/MEMORY.md",
+    "~/.claude/projects/-home-user-code-java-formal-verification/memory/jvmcontract-rust-lib.md",
+    "~/.claude/projects/-home-user-code-java-formal-verification/memory/verification-examples-state.md"
   ],
   "context_windows": [
     {
@@ -205,24 +255,38 @@
     {
       "index": 2,
       "started": "2026-10-31T20:44:07.237Z",
-      "ended": "2026-10-31T21:36:29.712Z",
-      "turns": 4,
-      "api_calls": 37,
+      "ended": "2026-10-31T21:43:02.607Z",
+      "turns": 5,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 1064,
-        "output_tokens": 153124,
-        "cache_read_input_tokens": 8800106,
-        "cache_creation_input_tokens": 319226
+        "input_tokens": 1160,
+        "output_tokens": 158169,
+        "cache_read_input_tokens": 9863174,
+        "cache_creation_input_tokens": 327648
       },
-      "peak_context_tokens": 350644
+      "peak_context_tokens": 359066
+    },
+    {
+      "index": 3,
+      "started": "2026-10-31T21:44:46.964Z",
+      "ended": "2026-10-31T22:33:01.342Z",
+      "turns": 4,
+      "api_calls": 40,
+      "usage": {
+        "input_tokens": 1250,
+        "output_tokens": 185915,
+        "cache_read_input_tokens": 9069950,
+        "cache_creation_input_tokens": 335432
+      },
+      "peak_context_tokens": 366850
     }
   ],
   "log": {
-    "sha256": "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f",
-    "bytes": 11665144,
-    "lines": 2931,
-    "gzip_bytes": 2102178,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz"
+    "sha256": "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c",
+    "bytes": 14970730,
+    "lines": 4018,
+    "gzip_bytes": 2654442,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -249,6 +313,14 @@
       "summary": "Add Crosscut, eleven Spring Boot examples verified by jvmcontract",
       "body": "A third subject system, examples/apps/crosscut: the pure kernels behind a Spring Boot service's cross-cutting concerns, written so that jvmcontract can prove them. TransactionBoundary (the propagation and rollback rules of a transaction interceptor, two behavioural contracts of 16 and 22 cases), CircuitBreaker (44 cases, drawn as a state machine), RetryPolicy, TokenBucket, IdempotentReceiver (24 cases, plus a TLA+ model of a client retrying against it, 168 states), a Kafka Partitioner and BatchCommit, JwtTimestamps and cache Expiry. The module has capability and API contracts, seven properties proved by JBMC in about forty seconds, plain javac tests and a verify.sh.\n\nExamples 023 to 033 run eleven changes to it through the tool: Math.abs in a partitioner (023, B11), clock skew on the wrong side of nbf (024, B11), a rollback rule that commits after an Error (025, B8), a half-open breaker that closes on the first good probe (026, B8), a switch rewrite of the retry policy that drops the unlisted 5xx (027, B9), a Thread.sleep added to the retry policy (028, B10), an idempotency key that executes a retry while the first attempt is in flight (029, D1, five-step trace), stored failures proved at-most-once (030, D1, verified), a token bucket that stamps refills with now (031, B11, caught by one test), a batch listener that commits past a failed record (032, B11) and a cache expiry rewritten as a deadline proved on every nanosecond (033, B11, verified). Nine of the eleven are missed by the module's tests.\n\nbuild.py now has a table of javac apps (TOOL_APPS, TOOL_MODELS) instead of Quorum-specific functions, and reads a contract's case count from the output line that names the symbol, since a module with several contracts prints one line each. A money-allocation kernel was tried and dropped: JBMC's SAT backend cannot prove identities between divisions and multiplications (the sum of floorDiv shares) in minutes; approaches.md and the lib README record the limit. Verified by running the eleven examples (all verdicts as expected, about 20 seconds), examples/apps/crosscut/verify.sh (39 tests, 4 contracts, 7 properties, TLC), and three Quorum examples through the refactored generator.",
       "log_sha256": "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f"
+    },
+    {
+      "change_id": "qqnvnsyysztxumzswpzmurtrqxksvxqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes",
+      "body": "Mica (examples/apps/mica) is a fourth subject system: the decision kernels of a small JVM written in Java, each the few lines where the JVM specification says exactly what must happen. Class initialization (JVMS 5.5) as a state machine with a TLA+ model of threads racing for one class, checked by TLC with deadlock detection; the type checker's isAssignable over sixteen verification types (289-case contract); access control at resolution (5.4.4, 120 cases, with and without nestmates); idiv and irem at Integer.MIN_VALUE / -1; fcmpg/fcmpl with NaN; the bisection of a lookupswitch; javac's tableswitch/lookupswitch cost heuristic; a power-of-two table size; and the modified UTF-8 of the constant pool. Six properties prove in under two seconds; the whole verify.sh runs in about three.\n\nExamples 034 to 045 are one realistic change each, for readers who work on the JVM or the libraries closest to it: an idiv that throws where the specification returns the dividend (034), a NaN check written as == Float.NaN (035), javac's switch costs computed in int (036), the JDK 11 tableSizeFor rewrite proved equal on all 2^32 inputs (037), a verifier fast path that lets an uninitialized object pass as an Object (038), protected access without the receiver rule (039), JEP 181 nestmate access as a four-line contract diff (040), StrictMath intrinsics looked up through MethodHandles (041), a class initialization that lets other threads proceed during <clinit> (042) and one that waits on its own thread, which TLC reports as a deadlock (043), modified UTF-8 with a one-byte NUL (044), and (low + high) / 2 proved safe within a Code attribute's bounds (045). Nine violations, three verified; every violation is missed by the module's tests.\n\nThe tool needed four changes, found while writing the examples: JBMC's witness syntax for chars ('\\u0000') and floats (Float.NaN, the infinities) is parsed, and chars are shown as Java literals; java.lang.Integer, Long, Short and Byte join Math and StrictMath on JBMC's class path, taken from the JDK image, so Integer.numberOfLeadingZeros is analysed as written; a counterexample that the interpreter cannot reproduce (both versions agree, or the property holds on replay) is reported as unverifiable instead of a false violation, which is what a stubbed JDK method such as Float.compare produced before; and jvmcontract tlc gains --deadlock, with TLC's deadlock trace parsed and reported like an invariant violation. build.py gets the app and its model (with the deadlock flag and prose), and the docs the fourth system.\n\nVerified by: the Mica tests (47) and verify.sh; build.py for 034 to 045 (every verdict as expected) and for 013 to 033 rerun under the changed tool (unchanged apart from timestamps and TLC seeds, restored); cargo test (50 tests, JBMC and TLC included).",
+      "log_sha256": "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c"
     }
   ],
   "logs": {
@@ -262,6 +334,12 @@
       "bytes": 11665144,
       "lines": 2931,
       "gzip_bytes": 2102178,
+      "url": null
+    },
+    "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c": {
+      "bytes": 14970730,
+      "lines": 4018,
+      "gzip_bytes": 2654442,
       "url": null
     },
     "e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b": {

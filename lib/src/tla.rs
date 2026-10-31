@@ -199,7 +199,10 @@ pub struct Step {
 pub struct TlcResult {
     pub verdict: Verdict,
     pub version: String,
+    /// The invariant violated, or `Deadlock` when the trace ends in a state with no enabled action.
     pub invariant: Option<String>,
+    /// The violation is a deadlock (checked only with [`TlcOptions::deadlock`]).
+    pub deadlock: bool,
     pub states_generated: Option<u64>,
     pub distinct_states: Option<u64>,
     pub depth: Option<u32>,
@@ -217,6 +220,9 @@ impl TlcResult {
         match self.verdict {
             Verdict::Verified => {
                 s.push_str(&format!("✓ every invariant holds in {} distinct states", self.distinct_states.map(|n| n.to_string()).unwrap_or_else(|| "?".into())));
+            }
+            Verdict::Violation if self.deadlock => {
+                s.push_str(&format!("✗ deadlock: no action is enabled after {} steps", self.trace.len()));
             }
             Verdict::Violation => {
                 s.push_str(&format!("✗ invariant {} is violated after {} steps", self.invariant.as_deref().unwrap_or("?"), self.trace.len()));
@@ -320,7 +326,8 @@ fn tempfile_path(prefix: &str) -> PathBuf {
 /// Parses TLC's console output.
 pub fn parse_tlc_output(raw: &str) -> TlcResult {
     let output: String = raw.lines().filter(|l| !l.starts_with("Progress(")).collect::<Vec<_>>().join("\n");
-    let violated = re(r"(?m)^Error: Invariant (\w+) is violated").captures(&output).map(|c| c[1].to_string());
+    let deadlock = output.contains("Error: Deadlock reached.");
+    let violated = re(r"(?m)^Error: Invariant (\w+) is violated").captures(&output).map(|c| c[1].to_string()).or_else(|| deadlock.then(|| "Deadlock".to_string()));
     let states = re(r"(\d+) states generated, (\d+) distinct states found").captures(&output);
     let depth = re(r"depth of the complete state graph search is (\d+)").captures(&output).and_then(|c| c[1].parse().ok());
     let seconds = re(r"Finished in (\d+)s").captures(&output).and_then(|c| c[1].parse().ok());
@@ -338,6 +345,7 @@ pub fn parse_tlc_output(raw: &str) -> TlcResult {
         verdict,
         version,
         invariant: violated,
+        deadlock: deadlock && verdict == Verdict::Violation,
         states_generated: states.as_ref().and_then(|c| c[1].parse().ok()),
         distinct_states: states.as_ref().and_then(|c| c[2].parse().ok()),
         depth,
@@ -410,6 +418,15 @@ mod tests {
         assert_eq!(result.trace[1].action, "Hold");
         assert_eq!(result.trace[1].changes.get("order").map(String::as_str), Some("[alice |-> \"PENDING_PAYMENT\"]"));
         assert!(!result.trace[1].changes.contains_key("time"));
+        assert!(!result.deadlock);
+
+        let stuck = "TLC2 Version 2.19 of Day Month 20??\nError: Deadlock reached.\nError: The behavior up to this point is:\nState 1: <Initial predicate>\n/\\ state = \"UNINITIALIZED\"\n\nState 2: <Request line 60, col 5 to col 70 of module ClassInit>\n/\\ state = \"IN_PROGRESS\"\n\n3 states generated, 2 distinct states found, 0 states left on queue.\nFinished in 01s at (2026-10-31 10:00:00)\n";
+        let result = parse_tlc_output(stuck);
+        assert_eq!(result.verdict, Verdict::Violation);
+        assert!(result.deadlock);
+        assert_eq!(result.invariant.as_deref(), Some("Deadlock"));
+        assert_eq!(result.trace.len(), 2);
+        assert!(result.summary().starts_with("✗ deadlock: no action is enabled after 2 steps"), "{}", result.summary());
         let ok = parse_tlc_output("TLC2 Version 2.19\nModel checking completed. No error has been found.\n3604 states generated, 1000 distinct states found, 0 states left on queue.\nThe depth of the complete state graph search is 20.\nFinished in 02s");
         assert_eq!(ok.verdict, Verdict::Verified);
         assert_eq!(ok.depth, Some(20));

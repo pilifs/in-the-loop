@@ -1,0 +1,34 @@
+# Property contract: what the build proves of each kernel on every input, by bounded model checking of the
+# bytecode (jvmcontract prove --properties). Each block names a static method, the inputs the property is about
+# (assume: every input when absent) and the property (assert: over the parameters and the result). A property
+# that fails is reported with the input that violates it.
+kind: properties
+module: mica
+
+# JVMS 6.5, idiv: dividing by -1 negates, and Integer.MIN_VALUE / -1 is Integer.MIN_VALUE without an exception.
+net.terminalvalue.mica.interp.Arithmetic#idiv
+  assume: divisor != 0
+  assert: (divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)
+
+# JVMS 6.5, irem: the remainder of a division by 1 or -1 is zero, Integer.MIN_VALUE % -1 included.
+net.terminalvalue.mica.interp.Arithmetic#irem
+  assume: divisor != 0
+  assert: (divisor != -1 && divisor != 1) || result == 0
+
+# JVMS 4.4.7: no byte of a CONSTANT_Utf8 is zero, and the first byte says whether the character took one byte.
+net.terminalvalue.mica.classfile.ModifiedUtf8#firstByte
+  assert: result != 0 && result <= 255 && ((result >= 192) == (c == 0 || c >= 128))
+
+# JVMS 4.4.7: one byte for U+0001 to U+007F, two for U+0000 and up to U+07FF, three for the rest.
+net.terminalvalue.mica.classfile.ModifiedUtf8#encodedLength
+  assert: result >= 1 && result <= 3 && (c != 0 || result == 2) && ((c >= 1 && c <= 127) == (result == 1))
+
+# The bisection of a lookupswitch table stays within its bounds. A Code attribute holds at most 65535 bytes and
+# a match-offset pair takes eight, so an index is below 8190; the bound is what makes the midpoint safe.
+net.terminalvalue.mica.interp.LookupSwitch#midpoint
+  assume: low >= 0 && low <= high && high < 8190
+  assert: result >= low && result <= high
+
+# The capacity is a power of two, at least the requested one, and the smallest such, up to the maximum.
+net.terminalvalue.mica.rt.SymbolTable#tableSizeFor
+  assert: result >= 1 && result <= 1073741824 && (result & (result - 1)) == 0 && (cap > 1073741824 || result >= cap) && (cap <= 1 || result / 2 < cap)

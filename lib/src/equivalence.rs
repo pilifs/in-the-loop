@@ -24,7 +24,7 @@ use crate::sarif::{self, Finding};
 use crate::{Error, Verdict};
 
 /// JDK classes whose real bytecode JBMC analyses, instead of the small models it ships.
-pub const JDK_CLASSES: &[&str] = &["java/lang/Math", "java/lang/StrictMath"];
+pub const JDK_CLASSES: &[&str] = &["java/lang/Math", "java/lang/StrictMath", "java/lang/Integer", "java/lang/Long", "java/lang/Short", "java/lang/Byte"];
 
 /// Searched first, so that a counterexample is small enough to read; the last stage is the proof over all inputs.
 pub const STAGES: &[Option<&str>] = &[Some("[0:20]"), Some("[-100000:100000]"), None];
@@ -201,6 +201,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut counterexample = None;
     let mut proof = None;
     let mut problem = None;
+    let mut verdict = last.verdict;
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
@@ -210,7 +211,21 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Verdict::Violation => {
             let values = last.inputs(&descriptor.params)?;
             let (before_outcome, after_outcome) = replay(options, &before_dir, &class_internal, &method_name, &method.descriptor, &descriptor.ret, &values)?;
-            let rendered = format!("{method_name}({})", params.iter().zip(&values).map(|(p, v)| format!("{}={}", p.name, render::primitive(*v, &p.ty))).collect::<Vec<_>>().join(", "));
+            let rendered = format!("{method_name}({})", params.iter().zip(&values).map(|(p, v)| format!("{}={}", p.name, render::witness(*v, &p.ty))).collect::<Vec<_>>().join(", "));
+            // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
+            // result to a method it had no bytecode for (one outside its models and the class path it was given).
+            if before_outcome == after_outcome && !before_outcome.starts_with("<could not replay") {
+                let p = format!("JBMC's counterexample {rendered} does not reproduce: both versions give {before_outcome} in the interpreter. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                problem = Some(p);
+                verdict = Verdict::Unverifiable;
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("equivalence.sarif"), &findings)?;
+                }
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+            }
             let message = format!(
                 "Behaviour of {} changed{}:\n  {rendered}\n    before: {before_outcome}\n    after:  {after_outcome}",
                 options.target,
@@ -233,7 +248,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             }
             findings.push(Finding::new("behaviour-changed", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: values.iter().zip(&params).map(|(v, p)| render::primitive(*v, &p.ty)).collect() });
+            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: values.iter().zip(&params).map(|(v, p)| render::witness(*v, &p.ty)).collect() });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
@@ -246,10 +261,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if let Some(report) = &options.report {
         sarif::write(&report.join("equivalence.sarif"), &findings)?;
     }
-    if last.verdict == Verdict::Violation {
+    if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict: last.verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work })
 }
 
 /// Runs the counterexample through both versions in the interpreter, with the effect monitor off.

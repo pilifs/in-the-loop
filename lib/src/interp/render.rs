@@ -26,6 +26,23 @@ pub fn char_to_string(unit: i32) -> String {
     String::from_utf16_lossy(&[unit as u16])
 }
 
+/// A primitive value as a witness is shown: as [`primitive`], except that a char is a Java literal (`'a'`,
+/// `'\u0000'`), so that a control character or a surrogate is readable.
+pub fn witness(v: Value, t: &Type) -> String {
+    match (t, v) {
+        (Type::Char, Value::Int(x)) => {
+            let unit = x as u16;
+            match char::from_u32(u32::from(unit)) {
+                Some('\'') => "'\\''".into(),
+                Some('\\') => "'\\\\'".into(),
+                Some(c) if !c.is_control() => format!("'{c}'"),
+                _ => format!("'\\u{unit:04x}'"),
+            }
+        }
+        _ => primitive(v, t),
+    }
+}
+
 /// `Double.toString`: the shortest decimal that round-trips, in Java's layout.
 pub fn double_to_string(x: f64) -> String {
     if x.is_nan() {

@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.mica.classfile;\n\n/**\n * The encoding of {@code CONSTANT_Utf8_info} (JVMS §4.4.7): UTF-8, except that the character U+0000 takes the\n * two-byte form and supplementary characters are encoded as their two surrogates, three bytes each. The two\n * exceptions have one purpose: no byte of an encoded string is zero, so that the virtual machine can hand the\n * bytes to C code as a string and count them without decoding. A zero byte in a {@code CONSTANT_Utf8_info} is a\n * {@code ClassFormatError}.\n */\npublic final class ModifiedUtf8 {\n\n    // ...\n\n    /** How many bytes the UTF-16 code unit {@code c} takes: one, two or three. */\n    public static int encodedLength(char c) {\n        if (c >= 0x0001 && c <= 0x007f) {\n            return 1;\n        }\n        return c <= 0x07ff ? 2 : 3;\n    // ...\n\n    /** The first byte of the encoding of {@code c}, as an unsigned value. */\n    public static int firstByte(char c) {\n        if (c >= 0x0001 && c <= 0x007f) {\n            return c;\n        }\n        if (c <= 0x07ff) {\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.mica.classfile;\n\n/**\n * The encoding of {@code CONSTANT_Utf8_info} (JVMS §4.4.7): UTF-8 over the UTF-16 code units, so that a\n * supplementary character is encoded as its two surrogates, three bytes each, and the length in chars is cheap\n * to recover.\n */\npublic final class ModifiedUtf8 {\n\n    // ...\n\n    /** How many bytes the UTF-16 code unit {@code c} takes: one, two or three. */\n    public static int encodedLength(char c) {\n        if (c <= 0x007f) {\n            return 1;\n        }\n        return c <= 0x07ff ? 2 : 3;\n    // ...\n\n    /** The first byte of the encoding of {@code c}, as an unsigned value. */\n    public static int firstByte(char c) {\n        if (c <= 0x007f) {\n            return c;\n        }\n        if (c <= 0x07ff) {\n"
+  },
+  "casesTotal": null,
+  "domain": "c: char",
+  "counterexamples": [
+    {
+      "input": "firstByte(c='\\u0000')",
+      "contract": "result != 0 && result <= 255 && ((result >= 192) == (c == 0 || c >= 128))",
+      "actual": "0"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain c: char",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result != 0 && result <= 255 && ((result >= 192) == (c == 0 || c >= 128))",
+    "assume": null
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

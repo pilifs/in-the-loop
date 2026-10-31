@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "startLine": 11,
+    "code": "private Arithmetic() {}\n\n/**\n * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}.\n * The one overflow, {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no\n * exception is thrown.\n */\npublic static int idiv(int dividend, int divisor) {\n    if (divisor == 0) {\n        throw new ArithmeticException(\"/ by zero\");\n    }\n    return dividend / divisor;\n}\n\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "startLine": 11,
+    "code": "private Arithmetic() {}\n\n/**\n * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException},\n * and so does the one quotient an int cannot hold, {@code Integer.MIN_VALUE / -1}.\n */\npublic static int idiv(int dividend, int divisor) {\n    if (divisor == 0) {\n        throw new ArithmeticException(\"/ by zero\");\n    }\n    if (dividend == Integer.MIN_VALUE && divisor == -1) {\n        // The quotient would be 2^31, which does not fit: report it rather than return a wrong sign silently.\n        throw new ArithmeticException(\"integer overflow\");\n    }\n    return dividend / divisor;\n}\n\n"
+  },
+  "casesTotal": null,
+  "domain": "dividend: int × divisor: int",
+  "counterexamples": [
+    {
+      "input": "idiv(dividend=-2147483648, divisor=-1)",
+      "contract": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
+      "actual": "throws ArithmeticException(\"integer overflow\")"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.3 s, replayed in the interpreter; domain dividend: int × divisor: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
+    "assume": "divisor != 0"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "045",
+  "title": "A bisection midpoint written as (low + high) / 2, proved safe for every lookupswitch index",
+  "summary": "The interpreter bisects the sorted match-offset pairs of a `lookupswitch` with the midpoint `(low + high) >>> 1`, the idiom that survived the overflow bug in `Arrays.binarySearch`. A developer writes it as the division it is, `(low + high) / 2`. On every `int` that is the bug; on every index of a `lookupswitch` it is not, because a `Code` attribute holds at most 65535 bytes and a pair takes eight. The property committed for the midpoint carries that bound in its assumption, and the proof goes through; without the bound, the same proof fails in a fraction of a second.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "symbol": "net.terminalvalue.mica.interp.LookupSwitch#midpoint"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace `(low + high) >>> 1` with `(low + high) / 2`: the unsigned shift was an idiom for readers who know the story, and the division says what is meant. The tests for the bisection and the midpoint pass.",
+    "patch": "change.patch"
+  },
+  "risk": "`(low + high) / 2` is the midpoint that overflowed in `java.util.Arrays.binarySearch` for nine years (JDK-5045582): for `low + high` above 2^31 the sum wraps negative, the division keeps the sign, and the index is negative. The unsigned shift fixed it by reading the wrapped sum as unsigned. Whether the rewrite reintroduces the bug depends on whether `low + high` can reach 2^31 here, which depends on how many pairs a `lookupswitch` can have, which is a fact about class files, not about the method. A reviewer who knows the story rejects the change on sight; a reviewer who knows the format accepts it; the property says which is right and on what assumption.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The property committed for `midpoint` is that the result lies between `low` and `high`, for `0 <= low <= high < 8190`: a `Code` attribute's `code_length` is below 65536, a match-offset pair takes eight bytes, so the pairs of one instruction number fewer than 8190 and their indexes are below that. JBMC proves the property of the patched method over that domain in a fraction of a second, because `low + high` stays below 16380 and the division is exact. The assumption is the whole argument, and it is what the reviewer approves: drop it and run `jvmcontract prove` with `low >= 0 && low <= high` alone, and the solver refutes the same assertion at once with a pair of indexes whose sum wraps, which is Bloch's bug in the form of a witness. The unpatched shift proves the property with and without the bound.",
+  "resolution": "Merge, with the assumption of the property as the review record: the midpoint is safe because the format bounds the table, and the property is where that reasoning lives. If the method is ever reused for a table the format does not bound (the constant pool has up to 65535 entries; an array can have two billion), the assumption is what has to change, and the proof will fail until it does.",
+  "provenance": "Constructed from JDK-5045582 (the `binarySearch` overflow) and the size limits of JVMS §4.7.3 and §6.5.",
+  "references": [
+    {
+      "title": "Bloch, Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken (2006)",
+      "url": "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/"
+    },
+    {
+      "title": "JVMS §4.7.3, The Code Attribute: code_length must be less than 65536",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.3"
+    },
+    {
+      "title": "JVMS §6.5, lookupswitch: the match-offset pairs must be sorted, so that an implementation can search them",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.lookupswitch"
+    }
+  ]
+}
