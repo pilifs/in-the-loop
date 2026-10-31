@@ -54,8 +54,10 @@ These are the stable part of the design. Everything else may change.
    Logs are append-only: a later log of the same session starts with the exact bytes of every earlier one.
 3. For a commit made with `jj trace-commit`, the `manifest.json` inside that commit's tree has the same `log.sha256` as the commit message.
    Older commits keep their manifest where the layout was at the time: `traces/<session-id>/manifest.json`, then `changes/traces/<session-id>/manifest.json`.
-   A plain `jj commit` gets its `LLM-Trace` line at the end of the next turn, pointing at a newer log, which `check` notes.
-4. The hook never changes a pushed (immutable) commit. A change other than `@` gets its `LLM-Trace` line once. Only `@` is re-stamped each turn, together with its manifest.
+   This holds for a plain `jj commit` or `git commit` too, because a hook reopens the new commit and syncs into it. If `@` already holds trace files, the hook leaves the commit for the next sync, which stamps it with a newer log, and `check` notes that.
+4. The tools never change a pushed (immutable) commit. A change gets its `LLM-Trace` line once, when it is committed.
+5. `@` stays empty unless someone is working: only `commit` and `push` write tracked trace files, and `push` writes nothing after it pushes.
+   So a pushed manifest does not know its own commit's SHA. The next commit records it.
 
 A log's bytes depend on the redaction rules, so `manifest.redaction_policy` records the version.
 A new policy produces new log IDs. Logs that commits already point at are kept.
@@ -82,17 +84,17 @@ The manifest is derived data. It is rebuilt from the transcript on every sync, a
 
 ## Workflow
 
-`.claude/settings.json` runs `llm-dlc/tools/sync.py hook` at the end of every turn (`Stop`) and when a session ends (`SessionEnd`). The hook:
+`.claude/settings.json` runs two hooks, and `sync.py` does the rest:
 
-1. Redacts the transcript, stores a new log snapshot, and rewrites the manifest, the summary and the index.
-2. Updates the `LLM-Trace` lines in jj. The current change (`@`) always points at the latest log. Earlier changes made in this session get a line only if they lack one.
-3. Deletes logs that neither the manifest nor any commit points at.
-4. Sends finished turns to Langfuse (`http://localhost:3000`), if it is running.
+- **End of a turn or session** (`Stop`, `SessionEnd`, `sync.py hook`): sends finished turns to Langfuse (`http://localhost:3000`), if it is running, and leaves the repo alone. Nothing depends on this: a transcript stays on disk until a commit or push records it.
+- **After a shell command** (`PostToolUse`, `sync.py hook-commit`): if the command was a plain `jj commit`, `jj new` or `git commit`, traces the new commit as below.
+- **On a commit** (`sync.py commit`): redacts each transcript, stores a new log snapshot, rewrites the manifest, the summary, the index and the overview, stamps the `LLM-Trace` lines, and deletes logs that nothing points at. Earlier changes made in a session get a line only if they lack one.
+- **On a push** (`sync.py push`): does the same, stamping `@` for every session with log that no commit points at, uploads the logs, and freezes `@` as a *Record session traces* commit. It makes that commit only if a log or upload is new, so a repeated push changes nothing.
 
 ```bash
 python3 llm-dlc/tools/sync.py init      # once per clone: jj file-size limit and the two aliases below
 jj trace-commit -m "Summary line" -m "Body"   # finish @; its message and its manifest point at the same log
-jj trace-push --bookmark main          # sync, check, push, then record the new git SHAs
+jj trace-push --bookmark main          # record outstanding traces, upload, check, push; leaves @ empty
 python3 llm-dlc/tools/sync.py check     # verify hashes, trailers and redaction
 python3 llm-dlc/tools/sync.py sync --all  # backfill every session of this repo
 jj log -r 'description(substring:"LLM-Trace:")'   # changes that have traces

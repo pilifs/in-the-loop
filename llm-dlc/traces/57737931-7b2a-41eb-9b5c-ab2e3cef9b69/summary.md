@@ -18,7 +18,15 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-*No commits yet.*
+### Run the trace pipeline on commit and push, not on every turn
+
+change `nmzlvwzkkymw` · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
+
+The Stop hook rewrote tracked files and stamped @ after every turn, and each push recorded its own commit's SHA afterwards, so the repo could never be clean. A session's tail, and a session with no commits, also had no log a commit pointed at: nothing uploaded them, so their summaries linked to a 404.
+
+Tracked trace files now change only on commit and push. Stop and SessionEnd only feed Langfuse. A PostToolUse hook traces a plain jj commit or git commit by reopening the new commit and syncing into it, so it carries its trailer and manifest however it was made. sync.py push records everything outstanding in one last Record session traces commit, moves the bookmark to it, uploads, checks and pushes, then writes nothing, leaving @ empty. It refuses to run over uncommitted work, and a repeat push makes no commit. A manifest cannot contain its own commit's SHA, so the next commit records it. The /publish skill, run only by the user, wraps commit and push.
+
+Verified end to end in a throwaway clone with a local bare remote and a stubbed CDN upload: the Stop hook left the repo unchanged; plain jj commit, a partial jj commit and git commit were each traced, and re-running the hook changed nothing; push refused uncommitted work, published a tail and a session with no commits, left @ empty, and a second push was a no-op. That test found and fixed a bug: jj abandons an empty @ when another change is edited. No real push or upload was made.
 
 ## Conversation
 

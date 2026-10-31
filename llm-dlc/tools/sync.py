@@ -22,12 +22,14 @@ Identifiers:
             and the manifest lists those changes (jj change id, git SHA once immutable)
 
 Commands:
-  sync.py hook                  Claude Code Stop/SessionEnd hook (hook JSON on stdin)
+  sync.py hook                  Claude Code Stop/SessionEnd hook: Langfuse only, leaves the repo alone
+  sync.py hook-commit           Claude Code PostToolUse hook: traces a plain `jj commit` or `git commit`
   sync.py sync [--all | ID...]  snapshot sessions of this repo from ~/.claude/projects
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
-  sync.py push [JJ PUSH ARGS]   sync, upload, check, then `jj git push` (alias: jj trace-push)
+  sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
+                                moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
   sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
   sync.py unpublish SID SHA     delete one log from R2 and purge it from the CDN cache (for leaks)
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
@@ -502,7 +504,7 @@ def session_trailers(desc: str) -> list[tuple[str, str]]:
     return TRAILER_RE.findall(desc)
 
 
-def link_commits(sid: str, m: dict, current: bool) -> None:
+def link_commits(sid: str, m: dict, current: bool, publishing: bool = False) -> None:
     """Stamp this session's trailer on the mutable changes it made, then record every
     change that carries its trailer (mutable or not) in the manifest.
 
@@ -510,13 +512,14 @@ def link_commits(sid: str, m: dict, current: bool) -> None:
     session is the one running now (`current`). @ is re-stamped with the latest log on every
     sync, together with the manifest in its tree, so the two always agree. Other changes are
     stamped once, if they have no trailer for this session yet, and then left alone;
-    immutable ones are never touched."""
+    immutable ones are never touched. When publishing, every change below @ is about to be
+    pushed unchanged, so its git SHA is recorded now rather than by a later commit."""
+    at = jj_commits("@")[0]["change_id"]
     if m.get("started") and m.get("ended"):
         made = (f'mutable() & ::@ & author_date(after:"{m["started"]}") & author_date(before:"{m["ended"]}")'
                 f' & ~(empty() & description(exact:""))')
         if current:
             made = f"({made}) | @"
-        at = jj_commits("@")[0]["change_id"]
         for c in jj_commits(made):
             stamped = any(s_id == sid and sha for s_id, sha in session_trailers(c["description"]))
             if c["change_id"] != at and stamped:
@@ -529,7 +532,7 @@ def link_commits(sid: str, m: dict, current: bool) -> None:
     for c in reversed(jj_commits(f'description(substring:"{TRAILER}: {sid}")')):
         shas = [s for s_id, s in TRAILER_RE.findall(c["description"]) if s_id == sid]
         commits.append({"change_id": c["change_id"],
-                        "commit_id": c["commit_id"] if c["immutable"] else None,
+                        "commit_id": c["commit_id"] if c["immutable"] or (publishing and c["change_id"] != at) else None,
                         "immutable": c["immutable"],
                         "summary": commit_summary(c["description"]),
                         "body": commit_body(c["description"]),
@@ -993,11 +996,11 @@ def upload_log(sid: str, sha: str) -> str:
     return url
 
 
-def cmd_upload() -> int:
+def cmd_upload(include_at: bool = False) -> int:
     """Upload every log a commit points at (and subagent logs), then record the URLs."""
     failed = 0
-    # @'s log is replaced every turn; upload it only once @ stops being the working copy.
-    at = jj_commits("@")[0]["change_id"] if has_jj() else None
+    # @'s log can still be replaced; upload it only when @ is about to be frozen (include_at).
+    at = jj_commits("@")[0]["change_id"] if has_jj() and not include_at else None
     for sid, m in all_manifests().items():
         if m.get("schema") != SCHEMA:
             continue
@@ -1073,12 +1076,17 @@ def cmd_unpublish(args: list[str]) -> int:
 
 # --------------------------------------------------------------------------- commands
 
-def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool) -> dict:
-    """live: the last turn may be unfinished (Langfuse waits for it). current: the session is
-    the one running now, so @ is its working copy."""
+def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool,
+            publishing: bool = False) -> dict:
+    """Bring a session's tracked files up to date. live: the last turn may be unfinished (Langfuse
+    waits for it). current: the session is the one running now, so @ is its working copy.
+    publishing: @ is a trace record, which carries every session with log no commit points at yet."""
+    known = {c.get("log_sha256") for c in load_manifest(transcript.stem).get("commits", [])}
     sid, m, entries = sync_session(transcript, redact, status)
+    if publishing:
+        current = bool(m["stats"]["turns"]) and m["log"]["sha256"] not in known
     if has_jj():
-        link_commits(sid, m, current)
+        link_commits(sid, m, current, publishing)
     finalize_logs(sid, m)
     render_summary(sid, m, entries, redact.string(str(REPO)))
     write_index()
@@ -1090,22 +1098,64 @@ def process(transcript: Path, redact: Redactor, status: str, live: bool, current
 
 
 def cmd_hook() -> None:
+    """Stop and SessionEnd: send finished turns to Langfuse, and leave the repo alone. A transcript
+    is kept on disk until a commit or a push records it, so nothing depends on this running."""
     try:
         payload = json.load(sys.stdin)
-        status = "ended" if payload.get("hook_event_name") == "SessionEnd" else "open"
-        process(Path(payload["transcript_path"]), Redactor(), status, live=False, current=True)
+        transcript, redact = Path(payload["transcript_path"]), Redactor()
+        entries = read_jsonl(redact(transcript.read_text(errors="replace")))
+        m = {**load_manifest(transcript.stem), **summarize(entries, redact.string(str(REPO)))}
+        export_langfuse(transcript.stem, entries, m, live=False)
+    except OSError as e:  # Langfuse down: those turns are retried next time
+        log(f"langfuse export deferred: {e}")
     except Exception:
         log(traceback.format_exc())
 
 
-def cmd_sync(args: list[str]) -> None:
+def trace_owned(path: str) -> bool:
+    """Whether the trace tools write this repo path. llm-dlc/README.md counts, because `sync`
+    rewrites its session table, so a hand edit to it travels with the trace record."""
+    return path.startswith((str(TRACES.relative_to(REPO)) + "/", str(INDEX.relative_to(REPO)),
+                            str(CHANGES_README.relative_to(REPO))))
+
+
+PLAIN_COMMIT = re.compile(r"\b(?:jj\s+(?:commit|ci|new)|git\s+commit)\b")
+
+
+def cmd_hook_commit() -> None:
+    """PostToolUse on Bash: a commit made without `sync.py commit` gets the same treatment, so it
+    carries this session's trailer and its manifest whichever way it was made. It reopens the new
+    commit as @, syncs into it exactly as `sync.py commit` does, and returns to the working copy."""
+    try:
+        payload = json.load(sys.stdin)
+        transcript = Path(payload["transcript_path"])
+        if not PLAIN_COMMIT.search(payload.get("tool_input", {}).get("command", "")) or not has_jj():
+            return
+        at = jj_commits("@")[0]
+        parents = jj_commits("parents(@)")
+        if len(parents) != 1 or parents[0]["immutable"] or commit_summary(parents[0]["description"]) is None:
+            return
+        if any(s == transcript.stem and sha for s, sha in session_trailers(parents[0]["description"])):
+            return  # already recorded, for example by `sync.py commit`
+        changed = jj("diff", "--name-only").stdout.splitlines()
+        if any(trace_owned(p) for p in changed):
+            return  # rewriting the commit below would conflict; the next sync stamps it instead
+        jj("edit", parents[0]["change_id"])  # abandons @ if it is empty and has no message
+        try:
+            process(transcript, Redactor(), "open", live=False, current=True)
+        finally:
+            jj("edit", at["change_id"]) if changed or at["description"] else jj("new")
+    except Exception:
+        log(traceback.format_exc())
+
+
+def cmd_sync(args: list[str], publishing: bool = False) -> None:
     src = claude_project_dir()
     paths = sorted(src.glob("*.jsonl")) if args in ([], ["--all"]) else [src / f"{a}.jsonl" for a in args]
     redact = Redactor()
     for p in paths:
         live = time.time() - p.stat().st_mtime < LIVE_SECONDS
-        old_status = load_manifest(p.stem).get("status")
-        m = process(p, redact, "open" if live else (old_status or "ended"), live, current=live)
+        m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing)
         s = m["stats"]
         print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
@@ -1131,19 +1181,47 @@ def cmd_commit(args: list[str]) -> int:
     return 0
 
 
+def uncommitted_work() -> list[str]:
+    """Paths changed in @ that the trace tools did not write."""
+    return [p for p in jj("diff", "--name-only").stdout.splitlines() if not trace_owned(p)]
+
+
+RECORD_MESSAGE = ("Record session traces\n\nBrings the published traces up to this point: conversation that came "
+                  "after a session's last commit, and sessions with no commit of their own.")
+
+
 def cmd_push(args: list[str]) -> int:
-    cmd_sync([])
-    if cmd_upload() != 0:
+    """Publish everything and leave the repo clean. Whatever the trace tools have to say goes into
+    one last commit, which needs no follow-up: nothing is written after the push."""
+    if work := uncommitted_work():
+        print("uncommitted work in @; commit it first with `sync.py commit`:\n  " + "\n  ".join(work), file=sys.stderr)
+        return 1
+    original = jj_commits("@")[0]["description"]
+    described = commit_summary(original) is not None
+    if not described:
+        jj("describe", "-r", "@", "-m", RECORD_MESSAGE)
+    uploads = lambda: {(sid, sha) for sid, m in all_manifests().items() for sha, i in m.get("logs", {}).items() if i.get("url")}
+    uploaded = uploads()
+    cmd_sync([], publishing=True)
+    if cmd_upload(include_at=True) != 0:
         print("log upload failed; not pushing", file=sys.stderr)
         return 1
-    cmd_sync([])  # restamp @ now that the manifest records the uploads
+    write_index()  # the overview counts uploads
+    at = jj_commits("@")[0]["change_id"]
+    if any(c["change_id"] == at for m in all_manifests().values() for c in m.get("commits", [])) or uploads() != uploaded:
+        jj("new")
+        print(f"recorded traces in {at[:12]}")
+    else:  # only git SHAs changed: not worth a commit, which would have a new SHA of its own
+        jj("restore")
+        jj("describe", "-r", "@", "-m", original if described else "")
+    for flag, name in zip(args, args[1:]):
+        if flag in ("--bookmark", "-b") and jj("bookmark", "set", name, "-r", "@-").returncode:
+            print(f"could not move bookmark {name} to @-", file=sys.stderr)
+            return 1
     if cmd_check() != 0:
         print("trace check failed; not pushing", file=sys.stderr)
         return 1
-    r = subprocess.run([JJ, "--config", "snapshot.max-new-file-size=100MiB", "git", "push", *args], cwd=REPO)
-    if r.returncode == 0:
-        cmd_sync([])  # record git SHAs of the commits that just became immutable
-    return r.returncode
+    return subprocess.run([JJ, "--config", "snapshot.max-new-file-size=100MiB", "git", "push", *args], cwd=REPO).returncode
 
 
 def cmd_check(remote: bool = False) -> int:
@@ -1238,6 +1316,8 @@ def main(argv: list[str]) -> int:
     cmd, args = (argv[0], argv[1:]) if argv else ("", [])
     if cmd == "hook":
         cmd_hook()
+    elif cmd == "hook-commit":
+        cmd_hook_commit()
     elif cmd == "sync":
         cmd_sync(args)
     elif cmd == "commit":

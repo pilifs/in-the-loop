@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 3, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-10-31 11:55 UTC |
-| Prompts | 75 |
-| Model calls | 460 |
-| Tool calls | 644 (28 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-10-31 12:09 UTC |
+| Prompts | 76 |
+| Model calls | 473 |
+| Tool calls | 657 (28 failed) |
 | Compactions | 7 |
 | Subagents | 0 |
-| Tokens written | 911,776 |
-| Tokens read | 92,789,802 (97.5% from cache) |
-| Commits with a trace | 18 |
-| Log snapshots | 20 (30.1 MB gzipped, 18 uploaded) |
+| Tokens written | 949,298 |
+| Tokens read | 95,128,692 (97.5% from cache) |
+| Commits with a trace | 19 |
+| Log snapshots | 21 (30.9 MB gzipped, 18 uploaded) |
 
 ## Sessions
 
@@ -28,8 +28,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | Started | Session | Status | Elapsed | Models | Prompts | Model calls | Tool calls | Failed | Compactions | Peak context | Commits |
 | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | 2026-10-24 14:07 UTC | [WSL Java formal verification setup](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) | ended | 6 d 9 h | `claude-fable-5-1`, `claude-opus-5-5` | 50 | 353 | 416 | 17 | 6 | 400,634 | 13 |
-| 2026-10-31 00:53 UTC | [Formal verification example 004 proof](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | open | 11 min | `claude-opus-5-5` | 6 | 15 | 26 | 0 | 0 | 111,790 | 0 |
-| 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | open | 10 h 16 min | `claude-fable-5-1`, `claude-opus-5-5` | 19 | 92 | 202 | 11 | 1 | 439,795 | 6 |
+| 2026-10-31 00:53 UTC | [Formal verification example 004 proof](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | open | 11 min | `claude-opus-5-5` | 6 | 15 | 26 | 0 | 0 | 111,790 | 1 |
+| 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | open | 10 h 30 min | `claude-fable-5-1`, `claude-opus-5-5` | 20 | 105 | 215 | 11 | 1 | 439,795 | 7 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -41,16 +41,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [`560d5e98`](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) | 631,950 | 1,726 | 1,593,682 | 67,747,281 | 97.7% | 110 |
 | [`57737931`](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | 19,655 | 34 | 79,884 | 1,140,645 | 93.5% | 62 |
-| [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 260,171 | 1,898 | 667,335 | 21,557,317 | 97.0% | 85 |
+| [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 297,693 | 1,926 | 733,660 | 23,829,854 | 97.0% | 83 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 434 | 67.4% | 3 |
-| `Edit` | 97 | 15.1% | 2 |
-| `Write` | 54 | 8.4% | 2 |
-| `Read` | 46 | 7.1% | 3 |
+| `Bash` | 447 | 68.0% | 3 |
+| `Edit` | 97 | 14.8% | 2 |
+| `Write` | 54 | 8.2% | 2 |
+| `Read` | 46 | 7.0% | 3 |
 | `Skill` | 3 | 0.5% | 1 |
 | `ToolSearch` | 3 | 0.5% | 2 |
 | `AskUserQuestion` | 2 | 0.3% | 1 |
@@ -77,11 +77,12 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 11 | [`f408985e`](https://github.com/pilifs/in-the-loop/commit/f408985ee01ba29258749c61dd68af1d72ceaad6) | Split the repo into examples/ and llm-dlc/ | [`560d5e98`](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) ([log](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/d0d9da508c7ae72eb09a0f0ddc69b8f2efd23a32fc52fef49630dc0675190e27.jsonl.gz)) |
 | 12 | [`2533b1b2`](https://github.com/pilifs/in-the-loop/commit/2533b1b26e769e5bca71918be13b1d676fe34340) | Correct references left stale by the repo split | [`560d5e98`](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) ([log](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/9b6989b9989852231fd5ea28a2c1a64ff100103024bf763448a316f695eaf72e.jsonl.gz)) |
 | 13 | [`68f6567c`](https://github.com/pilifs/in-the-loop/commit/68f6567ca4e36d524cf74d031be494b6c75e9973) | Add symbolic, capability and TLA+ verification examples 006 to 012 | [`560d5e98`](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) ([log](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/5026337d0f6681bed96ec275fe879101ddcb9e348353838a4481f8ad488bf38b.jsonl.gz)), [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4.jsonl.gz)) |
-| 14 | [`94edaf9a`](https://github.com/pilifs/in-the-loop/commit/94edaf9a9369b57ee1438e9f45033aafb700a4f7) | Credit example authors and commit the TLA+ standard modules | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72.jsonl.gz)) |
-| 15 | [`582c96cb`](https://github.com/pilifs/in-the-loop/commit/582c96cb23427ab844375635dd773eb860edfd68) | Reword the note on which examples to read first | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141.jsonl.gz)) |
-| 16 | [`74ba0f5b`](https://github.com/pilifs/in-the-loop/commit/74ba0f5b0d58bb283f2627823611e9d45f2bd9b7) | Add hand-written session notes to the trace summaries | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79.jsonl.gz)) |
-| 17 | [`33f6d560`](https://github.com/pilifs/in-the-loop/commit/33f6d560a9c0d68e6d4ec7697a26a4094f338146) | Link the blog post now that it is on GitHub | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955.jsonl.gz)) |
-| 18 | change `tmwpqnxy` | Generate a traces overview at llm-dlc/traces/README.md | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3.jsonl.gz)) |
+| 14 | change `nmzlvwzk` | Run the trace pipeline on commit and push, not on every turn | [`57737931`](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) ([log](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)), [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/28ca8de051b59e14e31add5ae2346d28f5e7e99fd072cac2fad6a5854fcd7c64.jsonl.gz)) |
+| 15 | [`94edaf9a`](https://github.com/pilifs/in-the-loop/commit/94edaf9a9369b57ee1438e9f45033aafb700a4f7) | Credit example authors and commit the TLA+ standard modules | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72.jsonl.gz)) |
+| 16 | [`582c96cb`](https://github.com/pilifs/in-the-loop/commit/582c96cb23427ab844375635dd773eb860edfd68) | Reword the note on which examples to read first | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141.jsonl.gz)) |
+| 17 | [`74ba0f5b`](https://github.com/pilifs/in-the-loop/commit/74ba0f5b0d58bb283f2627823611e9d45f2bd9b7) | Add hand-written session notes to the trace summaries | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79.jsonl.gz)) |
+| 18 | [`33f6d560`](https://github.com/pilifs/in-the-loop/commit/33f6d560a9c0d68e6d4ec7697a26a4094f338146) | Link the blog post now that it is on GitHub | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955.jsonl.gz)) |
+| 19 | change `tmwpqnxy` | Generate a traces overview at llm-dlc/traces/README.md | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) ([log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3.jsonl.gz)) |
 
 ## Logs
 
@@ -91,7 +92,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | --- | ---: | ---: | ---: | --- |
 | [`560d5e98`](560d5e98-2825-4bc2-90e2-39953d65d9c0/summary.md) | 13 | 13 | 25.4 MB | [`5026337d0f66`](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/5026337d0f6681bed96ec275fe879101ddcb9e348353838a4481f8ad488bf38b.jsonl.gz) |
 | [`57737931`](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | 1 | 0 | 0.2 MB | `2b4b169fff20`, not uploaded |
-| [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 6 | 5 | 4.5 MB | `facb16ca1c04`, not uploaded |
+| [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 7 | 5 | 5.4 MB | `28ca8de051b5`, not uploaded |
 
 ## Session notes
 
