@@ -77,7 +77,7 @@ A new policy produces new log IDs. Logs that commits already point at are kept.
 | `log` | The current log: `sha256`, `bytes`, `lines`, `gzip_bytes` and the local `path` |
 | `subagents[]` | For each subagent: its stats and its own `log` |
 | `commits[]` | Oldest first: `change_id`, `commit_id`, `immutable`, `summary` (null until described), `body` (the message without its summary line and trailers), `log_sha256` |
-| `logs` | Every log still referenced (the current one, subagent logs, and each log a commit points at), keyed by `sha256`: `bytes`, `lines`, `gzip_bytes`, and `url` once uploaded |
+| `logs` | Every log still referenced (the current one, subagent logs, and each log a commit points at), keyed by `sha256`: `bytes`, `lines`, `gzip_bytes`, `url` once uploaded, and `withdrawn` (the reason) if it was taken down after publication |
 | `redaction_policy`, `generator` | How the files were produced |
 
 The manifest is derived data. It is rebuilt from the transcript on every sync, and `summarize()` runs on the redacted entries, so it can also be rebuilt from a published log. Changing its schema is cheap; the identifiers above are not.
@@ -89,13 +89,14 @@ The manifest is derived data. It is rebuilt from the transcript on every sync, a
 - **End of a turn or session** (`Stop`, `SessionEnd`, `sync.py hook`): sends finished turns to Langfuse (`http://localhost:3000`), if it is running, and leaves the repo alone. Nothing depends on this: a transcript stays on disk until a commit or push records it.
 - **After a shell command** (`PostToolUse`, `sync.py hook-commit`): if the command was a plain `jj commit`, `jj new` or `git commit`, traces the new commit as below.
 - **On a commit** (`sync.py commit`): redacts each transcript, stores a new log snapshot, rewrites the manifest, the summary, the index and the overview, stamps the `LLM-Trace` lines, and deletes logs that nothing points at. Earlier changes made in a session get a line only if they lack one.
-- **On a push** (`sync.py push`): does the same, stamping `@` for every session with log that no commit points at, uploads the logs, and freezes `@` as a *Record session traces* commit. It makes that commit only if a log or upload is new, so a repeated push changes nothing.
+- **On a push** (`sync.py push`): does the same, stamping `@` for every session with log that no commit points at, runs `check`, uploads the logs, runs `check` again, and freezes `@` as a *Record session traces* commit. It makes that commit only if a log or upload is new, so a repeated push changes nothing. The first `check` runs before anything is uploaded, and the upload itself refuses a log in which the current redaction rules would still change something, so a leak that the rules know about cannot reach the CDN.
 
 ```bash
 python3 llm-dlc/tools/sync.py init      # once per clone: jj file-size limit and the two aliases below
 jj trace-commit -m "Summary line" -m "Body"   # finish @; its message and its manifest point at the same log
 jj trace-push --bookmark main          # record outstanding traces, upload, check, push; leaves @ empty
 python3 llm-dlc/tools/sync.py check     # verify hashes, trailers and redaction
+python3 llm-dlc/tools/sync.py scan      # preview a publish: what was redacted, what to look at (writes nothing)
 python3 llm-dlc/tools/sync.py sync --all  # backfill every session of this repo
 jj log -r 'description(substring:"LLM-Trace:")'   # changes that have traces
 ```
@@ -124,23 +125,30 @@ curl -s https://terminalvalue.net/raw-traces/<sid>/<sha>.jsonl.gz | gunzip | sha
   After each upload it downloads the log again through the CDN, verifies its SHA-256, and only then records the URL in `manifest.logs[<sha256>].url`.
   `jj trace-push` runs the upload before pushing, so no pushed commit points at a log nobody else can fetch.
 - **`sync.py check --remote`** downloads every recorded upload again and checks its hash.
-- **`sync.py unpublish <sid> <sha256>`** takes a log down, for example after a redaction miss: it deletes the R2 object, purges the URL from every edge cache, and removes the URL from the manifest.
+- **`sync.py unpublish <sid> <sha256> [--reason TEXT]`** takes a log down, for example after a redaction miss: it deletes the R2 object, purges the URL from every edge cache, and removes the URL from the manifest. With a reason, the log is *withdrawn*: the local copy is deleted too, the manifest records the reason under `logs[<sha256>].withdrawn`, the summary lists it under *Notes*, and `check` reports the commits that still point at it as a note rather than an error. The content is gone; the hash in the trailers still identifies what it was.
   Purging needs a Cloudflare API token that wrangler's login cannot grant. Create one with the permissions *Zone → Zone → Read* and *Zone → Cache Purge → Purge* for the zone only, and save it as `~/.config/llm-traces/cloudflare-token` (mode 600). Redaction removes the token from logs.
 
 Deploying the Worker: `cd llm-dlc/infra/cdn && npx wrangler deploy`. Wrangler 4.149 uploads the script, then fails with error 10007 before it creates the route.
 The route (`terminalvalue.net/raw-traces/*` → `raw-traces`) was created through the zone's Workers Routes API and already exists, so redeploys only need the script upload.
 
-**History note.** The first three commits were made before this layout and redaction policy 3 existed. On 2026-10-24, before anyone had cloned the repo, they were rewritten so that every commit resolves to a log: their logs were regenerated from the same transcript prefixes under the current policy, their `LLM-Trace` lines updated, and the author email switched to a GitHub noreply address. The rewrite itself is in this session's log. The traces moved from `traces/` to `changes/traces/` later the same day; the identifiers and URLs did not change.
+**History note.** Redaction policy 4 (2026-10-31) added the hostname, Windows account names, account identifiers inside strings, third-party emails, wrangler's tokens and the broader credential formats above, after a review found the Anthropic organization UUID, the hostname and a third-party email in the logs of the first session. Those logs are policy 3 and stay as they were published unless withdrawn; `check` reports what the current rules find in them.
+
+The first three commits were made before this layout and redaction policy 3 existed. On 2026-10-24, before anyone had cloned the repo, they were rewritten so that every commit resolves to a log: their logs were regenerated from the same transcript prefixes under the current policy, their `LLM-Trace` lines updated, and the author email switched to a GitHub noreply address. The rewrite itself is in this session's log. The traces moved from `traces/` to `changes/traces/` later the same day; the identifiers and URLs did not change.
 On 2026-10-30 they moved again, to `llm-dlc/traces/`, when the repo was split into `examples/` and `llm-dlc/`. Before the repo was shared, the `LLM-Trace-Summary` lines of earlier commits were rewritten to the new path, so those commits have new git SHAs. Their change IDs, trees, log IDs and CDN URLs did not change. Manifests inside older trees can still name the earlier SHAs; the change ID is the stable key.
 
 ## Redaction
 
-Traces are published, so `sync.py` redacts every JSON string, including keys, before hashing:
+Traces are published, so `sync.py` redacts every JSON string, including keys, before hashing. This is redaction policy 4:
 
-- your home directory becomes `~`, your username becomes `user`, and your git, jj and Claude account emails (including the part before the `@`, in any letter case) become `user@example.com`. GitHub noreply addresses are public by design and are kept.
-- account identifiers that Claude Code records in the transcript (`organizationUuid`, `accountUuid`) are removed, and the opaque `signature` of thinking blocks is dropped
-- the secret values in `llm-dlc/infra/langfuse/.env` are removed
-- common token formats are removed: Anthropic, Langfuse, GitHub, AWS and Slack tokens, private keys, and bearer tokens
-- extra literals in `~/.config/llm-traces/redact.txt` are applied, one per line, as `literal` or `literal => replacement`
+- **This machine.** Your home directory becomes `~`, your username becomes `user`, your hostname becomes `host`, and Windows account names in `/mnt/<drive>/Users/<name>` and `<drive>:\Users\<name>` paths become `user`. Your git, jj and Claude account emails (including the part before the `@`, in any letter case) become `user@example.com`.
+- **Your accounts.** The identifiers Claude Code records (`organizationUuid`, `accountUuid`, `userID`) are removed wherever they occur: under those keys in the transcript, and inside strings, such as a transcript or `~/.claude.json` echoed by a tool. The opaque `signature` of thinking blocks is dropped.
+- **Local secrets.** The secret values in `llm-dlc/infra/langfuse/.env` and the Basic auth header built from them, the Cloudflare token in `~/.config/llm-traces/cloudflare-token`, and wrangler's OAuth tokens in `~/.config/.wrangler/config/default.toml` are removed. Plain URLs in `.env`, such as `NEXTAUTH_URL`, are left alone.
+- **Everyone else's email.** Every other email address becomes `[REDACTED:email]`, except addresses that are public by design or placeholders: GitHub noreply addresses, `noreply@anthropic.com`, `git@github.com`, and the `example.com`, `langfuse.local` and `localhost` domains.
+- **Credential formats.** Anthropic, OpenAI-style `sk-`, Langfuse, GitHub, GitLab, AWS, Google, Slack, npm, Hugging Face, Stripe and SendGrid keys, Slack and Discord webhooks, JWTs, private keys, bearer and Basic authorization headers, passwords in URLs (`scheme://user:password@host`) and in `curl -u`, and the value of any `KEY=VALUE` or `"key": "value"` pair whose key says it is a secret (`PASSWORD`, `SECRET`, `TOKEN`, `API_KEY`, `_AUTH` and the like). Templates such as `${VAR}` or `<placeholder>`, expressions, paths, flags, and values shorter than 8 characters are left.
+- **Your own list.** Extra literals in `~/.config/llm-traces/redact.txt` are applied, one per line, as `literal` or `literal => replacement`.
 
-**Read a log before you upload it.** Redaction catches identifiers and known token formats, not everything you might paste into a prompt.
+Every rule leaves its own output alone, so redaction is idempotent and `check` can run the same rules over a finished log: anything they would still change is reported as `unredacted`, and the upload refuses such a log. A policy change therefore also audits the logs that are already published: what the new rules find in them is reported as a note, not an error, because the only remedy is `unpublish --reason` and whether a finding is worth that is a person's call.
+
+Not everything can be a rule. **Read a log before you upload it.** `sync.py scan` previews what a push would publish for each session: the redaction markers by kind, and *warnings* about things no rule removes and a person should judge: public IP addresses, home directories of other users, authorization and cookie headers, long mixed-case tokens of unknown format. `check` prints the same warnings for logs that are not yet uploaded, and `push` prints them for each log as it goes up. Output is masked, because it lands in the transcript of the session that runs it.
+
+The agent itself is a common leak vector: while building or testing a redactor it tends to grep its own transcript, or to paste a real identifier into a test. Use made-up values in tests, and keep raw transcripts and `~/.claude.json` out of tool output.

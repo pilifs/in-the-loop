@@ -31,7 +31,10 @@ Commands:
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
   sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
-  sync.py unpublish SID SHA     delete one log from R2 and purge it from the CDN cache (for leaks)
+  sync.py scan [--all | ID...]  preview a publish: what the redactor changed and what it left to judge
+  sync.py unpublish SID SHA [--reason TEXT]
+                                delete one log from R2 and purge it from the CDN cache (for leaks);
+                                with a reason, record the log as withdrawn in the manifest
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
 
 Standard library only. The hook never fails a session; errors go to
@@ -46,6 +49,7 @@ import json
 import os
 import re
 import shutil
+import socket
 import string
 import subprocess
 import sys
@@ -54,6 +58,7 @@ import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -75,8 +80,14 @@ EXTRA_REDACTIONS = Path.home() / ".config" / "llm-traces" / "redact.txt"
 # Cloudflare API token with Zone:Read and Cache Purge on the CDN zone; only `unpublish` uses it.
 PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
 SCHEMA = "llm-trace-manifest/v1"
-REDACTION_POLICY = 3           # bump when redaction changes the bytes it produces
-REDACT_KEYS = {"organizationUuid", "accountUuid"}  # account identifiers Claude Code records in attachments
+REDACTION_POLICY = 4           # bump when redaction changes the bytes it produces
+REDACT_KEYS = {"organizationUuid", "accountUuid", "userID"}  # account identifiers Claude Code records
+# Wrangler keeps its OAuth tokens here; the spec forbids printing them, redaction removes them anyway.
+WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.toml",
+                    Path.home() / ".wrangler" / "config" / "default.toml")
+# Email addresses that are public by design or placeholders; every other address is redacted.
+PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
+                 "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
 TRAILER = "LLM-Trace"
 TRAILER_RE = re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
 LINK_TRAILERS = ("LLM-Trace-Summary", "LLM-Trace-Log")  # convenience links next to LLM-Trace
@@ -96,15 +107,77 @@ WRANGLER = CDN_DIR / "node_modules" / "wrangler" / "bin" / "wrangler.js"  # pinn
 
 # --------------------------------------------------------------------------- redaction
 
+# Credential formats that are recognisable on sight, applied after the personal literals.
+# An entry is (kind, pattern), replaced by "[REDACTED:<kind>]", or (kind, pattern, replacement)
+# when part of the match must survive: the key of a KEY=VALUE pair, the user of a URL.
+# Patterns never match their own replacement, so redaction is idempotent and `leaks` can
+# run the same rules over a finished log.
 SECRET_PATTERNS = [
     ("anthropic-key", r"sk-ant-[A-Za-z0-9_\-]{20,}"),
     ("langfuse-key", r"[ps]k-lf-[A-Za-z0-9\-]{16,}"),
+    ("api-key", r"\bsk-[A-Za-z0-9_\-]{20,}"),  # OpenAI and other sk- keys
     ("github-token", r"\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})"),
+    ("gitlab-token", r"\bglpat-[A-Za-z0-9_\-]{20,}"),
     ("aws-key", r"\bAKIA[0-9A-Z]{16}\b"),
+    ("google-key", r"\bAIza[0-9A-Za-z_\-]{35}\b"),
+    ("google-oauth", r"\bya29\.[0-9A-Za-z_\-]{20,}"),
     ("slack-token", r"\bxox[abprs]-[A-Za-z0-9\-]{10,}"),
+    ("slack-webhook", r"https://hooks\.slack\.com/services/[A-Za-z0-9/]+"),
+    ("discord-webhook", r"https://(?:[a-z]+\.)?discord(?:app)?\.com/api/webhooks/\d+/[A-Za-z0-9_\-]+"),
+    ("npm-token", r"\bnpm_[A-Za-z0-9]{36}\b"),
+    ("huggingface-token", r"\bhf_[A-Za-z0-9]{30,}\b"),
+    ("stripe-key", r"\b[sr]k_(?:live|test)_[A-Za-z0-9]{20,}"),
+    ("sendgrid-key", r"\bSG\.[A-Za-z0-9_\-]{22}\.[A-Za-z0-9_\-]{43}"),
+    ("jwt", r"\beyJ[A-Za-z0-9_\-]{8,}\.eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}"),
     ("private-key", r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----"),
     ("bearer", r"(?i)\bbearer\s+[A-Za-z0-9._\-]{20,}"),
+    ("basic-auth", r"(?i)(authorization[\"']?\s*[:=]\s*[\"']?basic\s+)[A-Za-z0-9+/]{16,}={0,2}",
+     r"\1[REDACTED:basic-auth]"),
+    # Credentials in URLs and curl arguments: scheme://user:password@host, -u user:password
+    ("url-password", r"\b([a-z][a-z0-9+.\-]*://[^/\s:@\"'\\]+):([^@\s/\"'\\\[\$<{%][^@\s/\"'\\]*)@",
+     r"\1:[REDACTED:url-password]@"),
+    ("curl-user", r"((?:^|\s)(?:-u|--user)[ =])(?![\[\$])([^\s:\"']+:[^\s\"']+)", r"\1[REDACTED:curl-user]"),
+    # Account identifiers inside strings (a transcript or ~/.claude.json echoed by a tool),
+    # where the structural rule in _scrub cannot see the key.
+    ("account-id", r"((?:accountUuid|organizationUuid|userID)\\*[\"']?\s*[:=]\s*\\*[\"']?)([0-9A-Fa-f\-]{32,64})",
+     r"\1[REDACTED:account-id]"),
+    # KEY=VALUE and "key": "value" pairs whose key says it is a secret: .env files, shell exports,
+    # YAML, JSON. Templates (${VAR}, <placeholder>, {{ }}), ${VAR:-defaults}, expressions, paths,
+    # flags and short values are left.
+    ("env-secret", r"(?i)(\b[A-Z0-9_]*(?:PASSWORD|PASSWD|PASSPHRASE|SECRET|TOKEN|CREDENTIALS?|"
+                   r"(?:SECRET|PRIVATE|API|ACCESS|ENCRYPTION|SIGNING|AUTH|LICENSE|SSH)[_-]?KEY|APIKEY|_AUTH|AUTHORIZATION)"
+                   r"[\"']?\s*[=:]\s*[\"']?)(?![\[\$<{%(\-~/])([^\s\"'`()\[\]{}<>,;]{8,})(?=$|[\s\"'`)\]}>,;])",
+     r"\1[REDACTED:env-secret]"),
 ]
+
+EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}(?![A-Za-z0-9\-])")
+# Windows account names in paths seen from WSL: /mnt/c/Users/<name>, C:\Users\<name>.
+WIN_USER_RE = re.compile(r"((?:/mnt/[A-Za-z]/Users/|[A-Za-z]:\\+Users\\+)(?:[^/\\\s\"'<>|]+))")
+WIN_SHARED = {"public", "default", "default user", "all users", "user", "desktop.ini"}
+
+# Findings the redactor does not act on, for a person to judge before a push (`scan`, `check`).
+# Each is (kind, pattern, keep): keep(match) says whether the match is worth a warning.
+_RESERVED_IP = re.compile(r"^(?:0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\."
+                          r"|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|22[4-9]\.|2[3-5]\d\."
+                          r"|1\.1\.1\.1$|1\.0\.0\.1$|8\.8\.[48]\.[48]$|9\.9\.9\.9$|255\.)")
+REVIEW_PATTERNS = [
+    ("public-ip", r"(?<![\w.\-+])(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\w.\-+])",
+     lambda s: not _RESERVED_IP.match(s)),
+    ("ipv6", r"(?<![\w:.])(?:[0-9a-fA-F]{1,4}:){5,7}[0-9a-fA-F]{1,4}(?![\w:])",
+     lambda s: not s.lower().startswith(("fe80:", "fd", "fc", "::1", "2001:db8:"))),
+    ("mac-address", r"\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\b", lambda s: s.lower() != "00:00:00:00:00:00"),
+    ("other-home-dir", r"(?<![\w.])/(?:home|Users)/(?!user\b)[A-Za-z][\w.\-]*", lambda s: True),
+    ("auth-header", r"(?i)\b(?:authorization|cookie|set-cookie|x-api-key|proxy-authorization)[\"']?\s*[:=]\s*[\"']?[^\s\"']{8,}",
+     lambda s: "[REDACTED" not in s),
+    # Long mixed-case strings with digits: API keys of unknown formats, base64 blobs. Hashes
+    # (hex, lower case) and UUIDs do not match; integrity hashes, file paths and embedded images
+    # (base64 PNG, JPEG, GIF, PDF, WEBP, or anything over 1000 characters) are skipped.
+    ("long-token", r"(?<![\w/+=\-])(?!sha(?:1|256|384|512)-)(?=[A-Za-z0-9+/_\-]*\d)(?=[A-Za-z0-9+/_\-]*[a-z])"
+                   r"(?=[A-Za-z0-9+/_\-]*[A-Z])[A-Za-z0-9+/_\-]{40,}={0,2}(?![\w/+=\-])",
+     lambda s: len(s) < 1000 and not s.startswith(("iVBORw0KGgo", "/9j/", "R0lGOD", "JVBERi0", "UklGR"))
+     and ("/" not in s or "+" in s or s.endswith("="))),
+]
+ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 
 
 def _cmd(*args: str) -> str:
@@ -124,48 +197,94 @@ def read_env(path: Path) -> dict[str, str]:
     return env
 
 
-def personal_literals() -> tuple[list[tuple[re.Pattern, str]], str]:
-    """(pattern, replacement) pairs for this machine: home path, emails, local secrets.
-    Emails match case-insensitively. GitHub noreply addresses are public by design and are kept."""
-    pairs: list[tuple[str, str, int]] = []
+def _hostnames() -> set[str]:
+    names = {socket.gethostname()}
+    try:
+        names.add(Path("/etc/hostname").read_text().strip())
+    except OSError:
+        pass
+    names = {n.split(".")[0] for n in names if n}
+    return {n for n in names if len(n) >= 4 and n.lower() not in ("localhost",)}
+
+
+def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
+    """(literal, replacement, re flags, kind) for this machine: home path, hostname, emails,
+    account identifiers, and the secrets of the local tools. Emails match case-insensitively.
+    GitHub noreply addresses are public by design and are kept."""
+    pairs: list[tuple[str, str, int, str]] = []
     home, user = str(Path.home()), os.environ.get("USER") or Path.home().name
-    pairs += [(home, "~", 0), (re.sub(r"[^A-Za-z0-9]", "-", home), "-home-user", 0)]
+    pairs += [(home, "~", 0, "home"), (re.sub(r"[^A-Za-z0-9]", "-", home), "-home-user", 0, "home")]
+    pairs += [(h, "host", re.I, "hostname") for h in _hostnames()]
     emails = {_cmd("git", "config", "--get", "user.email"), _cmd(JJ, "config", "get", "user.email")}
     try:
-        account = json.loads((Path.home() / ".claude.json").read_text()).get("oauthAccount") or {}
+        config = json.loads((Path.home() / ".claude.json").read_text())
+        account = config.get("oauthAccount") or {}
         emails.add(account.get("emailAddress") or "")
+        ids = (account.get("accountUuid"), account.get("organizationUuid"), config.get("userID"))
+        pairs += [(v, "[REDACTED:account-id]", 0, "account-id") for v in ids if isinstance(v, str) and len(v) >= 12]
     except (OSError, ValueError):
         pass
     emails = {e.lower() for e in emails if e and not e.lower().endswith("@users.noreply.github.com")}
-    pairs += [(e, "user@example.com", re.I) for e in emails]
-    pairs += [(e.split("@")[0], "user", re.I) for e in emails if len(e.split("@")[0]) >= 4]
-    pairs += [(v, "[REDACTED:local-secret]", 0) for k, v in read_env(LANGFUSE_ENV).items()
-              if re.search(r"SECRET|PASSWORD|KEY|SALT|AUTH|DATABASE_URL", k) and len(v) >= 12]
-    if PURGE_TOKEN.exists() and len(token := PURGE_TOKEN.read_text().strip()) >= 12:
-        pairs.append((token, "[REDACTED:local-secret]", 0))
+    pairs += [(e, "user@example.com", re.I, "email") for e in emails]
+    pairs += [(e.split("@")[0], "user", re.I, "email") for e in emails if len(e.split("@")[0]) >= 4]
+    env = read_env(LANGFUSE_ENV)
+    # Values of secret-looking keys, except bare URLs without credentials (NEXTAUTH_URL).
+    secrets = [v for k, v in env.items() if re.search(r"SECRET|PASSWORD|KEY|SALT|AUTH|DATABASE_URL", k)
+               and len(v) >= 12 and not re.fullmatch(r"[a-z][a-z0-9+.\-]*://[^@]*", v)]
+    pk, sk = env.get("LANGFUSE_INIT_PROJECT_PUBLIC_KEY"), env.get("LANGFUSE_INIT_PROJECT_SECRET_KEY")
+    if pk and sk:  # the Basic auth header sync.py sends to Langfuse
+        secrets.append(base64.b64encode(f"{pk}:{sk}".encode()).decode())
+    if PURGE_TOKEN.exists():
+        secrets.append(PURGE_TOKEN.read_text().strip())
+    for cfg in WRANGLER_CONFIGS:
+        if cfg.exists():
+            secrets += re.findall(r'^(?:oauth_token|refresh_token)\s*=\s*"([^"]+)"', cfg.read_text(), re.M)
+    pairs += [(v, "[REDACTED:local-secret]", 0, "local-secret") for v in secrets if len(v) >= 12]
     if EXTRA_REDACTIONS.exists():
         for line in EXTRA_REDACTIONS.read_text().splitlines():
             if line.strip() and not line.startswith("#"):
                 lit, _, rep = line.partition("=>")
-                pairs.append((lit.strip(), rep.strip() or "[REDACTED]", 0))
+                pairs.append((lit.strip(), rep.strip() or "[REDACTED]", 0, "redact.txt literal"))
     pairs.sort(key=lambda p: -len(p[0]))
-    return [(re.compile(re.escape(lit), flags), rep) for lit, rep, flags in pairs], user
+    return pairs, user
+
+
+def _mask(s: str) -> str:
+    """Enough of a finding to recognise it, not enough to repeat it: scan output lands in transcripts."""
+    return s if len(s) <= 4 else s[:3] + "…" + s[-2:] + f" ({len(s)} chars)" if len(s) > 12 else s[:2] + "…" + s[-1]
 
 
 class Redactor:
     def __init__(self) -> None:
-        self.literals, user = personal_literals()
+        pairs, user = personal_literals()
+        self.literals = [(kind, re.compile(rf"(?<![A-Za-z0-9]){re.escape(lit)}(?![A-Za-z0-9])" if kind == "hostname"
+                                           else re.escape(lit), flags), rep)
+                         for lit, rep, flags, kind in pairs]
         # Also match right after a literal backslash-n/t/r: JSON echoed inside a tool result
         # keeps its escapes, so there is no word boundary before the name.
         self.user_re = (re.compile(rf"(?:(?<=\\[nrt])|(?<![A-Za-z0-9_])){re.escape(user)}\b")
                         if len(user) >= 3 else None)
-        self.secret_res = [(k, re.compile(p, re.S)) for k, p in SECRET_PATTERNS]
+        self.secret_res = [(p[0], re.compile(p[1], re.S), p[2] if len(p) > 2 else f"[REDACTED:{p[0]}]")
+                           for p in SECRET_PATTERNS]
+        self.review_res = [(kind, re.compile(pattern), keep) for kind, pattern, keep in REVIEW_PATTERNS]
+
+    @staticmethod
+    def _public_email(address: str) -> bool:
+        return address.lower().endswith(PUBLIC_EMAILS)
+
+    @staticmethod
+    def _win_user(m: re.Match) -> str:
+        path = m.group(1)
+        prefix, name = re.match(r"(.*[/\\])([^/\\]*)$", path).groups()
+        return path if name.lower() in WIN_SHARED else prefix + "user"
 
     def string(self, text: str) -> str:
-        for rx, rep in self.literals:
+        for _kind, rx, rep in self.literals:
             text = rx.sub(lambda _m, r=rep: r, text)
-        for kind, rx in self.secret_res:
-            text = rx.sub(f"[REDACTED:{kind}]", text)
+        for _kind, rx, rep in self.secret_res:
+            text = rx.sub(rep, text)
+        text = EMAIL_RE.sub(lambda m: m.group(0) if self._public_email(m.group(0)) else "[REDACTED:email]", text)
+        text = WIN_USER_RE.sub(self._win_user, text)
         if self.user_re:
             text = self.user_re.sub("user", text)
         return text
@@ -184,17 +303,22 @@ class Redactor:
             out.append(json.dumps(_walk(_scrub(obj), self.string), ensure_ascii=False, separators=(",", ":")))
         return ("\n".join(out) + "\n" if out else "").encode()
 
-    def leaks(self, jsonl: str) -> list[str]:
+    def leaks(self, text: str) -> list[str]:
+        """Kinds of thing the redactor would still change in this text. Empty for its own output."""
         found: set[str] = set()
 
         def scan(s: str) -> str:
-            found.update("personal literal" for rx, _ in self.literals if rx.search(s))
-            found.update(kind for kind, rx in self.secret_res if rx.search(s))
+            found.update(kind for kind, rx, _ in self.literals if rx.search(s))
+            found.update(kind for kind, rx, _ in self.secret_res if rx.search(s))
+            if any(not self._public_email(m.group(0)) for m in EMAIL_RE.finditer(s)):
+                found.add("email")
+            if WIN_USER_RE.sub(self._win_user, s) != s:
+                found.add("windows-user")
             if self.user_re and self.user_re.search(s):
                 found.add("username")
             return s
 
-        for line in jsonl.splitlines():
+        for line in text.splitlines():
             try:
                 obj = json.loads(line)
             except ValueError:
@@ -202,8 +326,29 @@ class Redactor:
                 continue
             _walk(obj, scan)
             if _unscrubbed(obj):
-                found.add("account identifier")
+                found.add("account-id")
         return sorted(found)
+
+    def review(self, text: str) -> list[str]:
+        """Warnings for a person: things that may identify someone or something and that no rule
+        removes, masked, with counts. Public IPs, foreign home directories, unknown token formats."""
+        hits: dict[str, Counter] = {}
+
+        def scan(s: str) -> str:
+            s = ANSI_RE.sub("", s)  # colour codes glue digits onto the words they precede
+            for kind, rx, keep in self.review_res:
+                for m in rx.finditer(s):
+                    if keep(m.group(0)):
+                        hits.setdefault(kind, Counter())[m.group(0)] += 1
+            return s
+
+        for line in text.splitlines():
+            try:
+                _walk(json.loads(line), scan)
+            except ValueError:
+                scan(line)
+        return [f"{kind} ×{sum(c.values())}: " + ", ".join(_mask(v) for v, _ in c.most_common(3))
+                + (f", +{len(c) - 3} more" if len(c) > 3 else "") for kind, c in sorted(hits.items())]
 
 
 def _walk(obj, fn):
@@ -647,7 +792,9 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
         if not c.get("summary"):  # the working copy before its first commit message
             changes.append(f"### (in progress)\n\n{ref}, not yet described")
             continue
-        log_ref = f" · [log `{c['log_sha256'][:12]}`]({log_url(sid, c['log_sha256'])})" if c.get("log_sha256") else ""
+        withdrawn = c.get("log_sha256") and (m.get("logs", {}).get(c["log_sha256"]) or {}).get("withdrawn")
+        log_ref = (f" · log `{c['log_sha256'][:12]}` withdrawn: {_escape_html(withdrawn)}" if withdrawn
+                   else f" · [log `{c['log_sha256'][:12]}`]({log_url(sid, c['log_sha256'])})" if c.get("log_sha256") else "")
         changes.append(f"### {_escape_html(c['summary'])}\n\n{ref}{log_ref}"
                        + (f"\n\n{_escape_html(c['body'])}" if c.get("body") else ""))
     turns, n = [], 0
@@ -658,8 +805,12 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
     subagents = "".join(f"\n- `{a['agent']}`: {a['stats']['turns']} turns, {a['stats']['tool_calls']} tool calls, "
                         f"[log]({log_url(sid, a['log']['sha256'])})" for a in m.get("subagents", []))
     note = notes_path(sid)
+    withdrawn = [f"- `{sha[:12]}`: {_escape_html(info['withdrawn'])}"
+                 for sha, info in sorted(m.get("logs", {}).items()) if info.get("withdrawn")]
+    notes = ([note.read_text().strip()] if note.exists() else []) + \
+            (["**Withdrawn logs**, taken off the CDN after publication:\n\n" + "\n".join(withdrawn)] if withdrawn else [])
     values = {
-        "notes": f"## Notes\n\n{note.read_text().strip()}" if note.exists() else "",
+        "notes": "## Notes\n\n" + "\n\n".join(notes) if notes else "",
         "title": m.get("title") or (m.get("first_prompt") or "Untitled session").split("\n")[0][:80],
         "session_id": sid, "status": m["status"],
         "when": f"{_when(m.get('started'))} to {_when(m.get('ended'))}"
@@ -974,14 +1125,20 @@ def remote_matches(url: str, sha: str) -> bool:
         return False
 
 
-def upload_log(sid: str, sha: str) -> str:
-    """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns those bytes."""
+def upload_log(sid: str, sha: str, redact: Redactor) -> str:
+    """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns those bytes.
+    The log is scanned first: nothing the current redactor would change may go public."""
     url = log_url(sid, sha)
     if remote_matches(url, sha):
         return url
     path = log_path(sid, sha)
     if not path.exists():
         raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
+    data = gzip.decompress(path.read_bytes()).decode(errors="replace")
+    if leaks := redact.leaks(data):
+        raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: unredacted {leaks}")
+    for warning in redact.review(data):
+        print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
     key = f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz"
     if not WRANGLER.exists():
         raise FileNotFoundError("wrangler is not installed; run: python3 llm-dlc/tools/sync.py init")
@@ -998,7 +1155,7 @@ def upload_log(sid: str, sha: str) -> str:
 
 def cmd_upload(include_at: bool = False) -> int:
     """Upload every log a commit points at (and subagent logs), then record the URLs."""
-    failed = 0
+    failed, redact = 0, Redactor()
     # @'s log can still be replaced; upload it only when @ is about to be frozen (include_at).
     at = jj_commits("@")[0]["change_id"] if has_jj() and not include_at else None
     for sid, m in all_manifests().items():
@@ -1011,7 +1168,7 @@ def cmd_upload(include_at: bool = False) -> int:
             if logs.get(sha, {}).get("url"):
                 continue
             try:
-                logs.setdefault(sha, {})["url"] = upload_log(sid, sha)
+                logs.setdefault(sha, {})["url"] = upload_log(sid, sha, redact)
                 print(f"uploaded {logs[sha]['url']}")
             except (OSError, RuntimeError) as e:
                 print(f"ERROR {e}", file=sys.stderr)
@@ -1047,9 +1204,14 @@ def purge_url(url: str) -> None:
 
 def cmd_unpublish(args: list[str]) -> int:
     """Take one log off the CDN: delete the R2 object, purge the edge caches, forget the URL.
-    A commit that still points at the log breaks invariant 1 until its trailer is rewritten."""
+    With --reason, the log is withdrawn: its local copy is deleted too and the manifest records
+    why, so `check` reports the commits that point at it as a note instead of an error. The
+    content is gone; the hash in the commit trailers still says what it was."""
+    reason = None
+    if len(args) == 4 and args[2] == "--reason" and args[3].strip():
+        args, reason = args[:2], args[3].strip()
     if len(args) != 2 or not re.fullmatch(r"[0-9a-f]{64}", args[1]):
-        print("usage: sync.py unpublish SESSION_ID SHA256", file=sys.stderr)
+        print("usage: sync.py unpublish SESSION_ID SHA256 [--reason TEXT]", file=sys.stderr)
         return 2
     sid, sha = args
     url = log_url(sid, sha)
@@ -1066,11 +1228,15 @@ def cmd_unpublish(args: list[str]) -> int:
         print(f"ERROR deleted from R2 but not purged: {e}", file=sys.stderr)
         return 1
     m = load_manifest(sid)
-    if m.get("logs", {}).get(sha, {}).pop("url", None):
-        save_manifest(sid, m)
-    print(f"unpublished {url}")
-    if any(c.get("log_sha256") == sha for c in m.get("commits", [])):
-        print("note: a commit still points at this log; rewrite its LLM-Trace line, or `check` will fail")
+    entry = m.setdefault("logs", {}).setdefault(sha, {})
+    entry.pop("url", None)
+    if reason:
+        entry["withdrawn"] = reason
+        log_path(sid, sha).unlink(missing_ok=True)
+    save_manifest(sid, m)
+    print(f"unpublished {url}" + (f" and withdrew it: {reason}" if reason else ""))
+    if any(c.get("log_sha256") == sha for c in m.get("commits", [])) and not reason:
+        print("note: a commit still points at this log; withdraw it with --reason, or `check` will fail")
     return 0
 
 
@@ -1161,6 +1327,32 @@ def cmd_sync(args: list[str], publishing: bool = False) -> None:
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
 
 
+def cmd_scan(args: list[str]) -> int:
+    """Preview a publish without writing anything: redact each transcript in memory, then report
+    what the redactor changed, what it would still change (an error: a rule that is not
+    idempotent) and what it leaves for a person to judge. Output is masked, because it lands in
+    the transcript of the session that runs it."""
+    src = claude_project_dir()
+    paths = sorted(src.glob("*.jsonl")) if args in ([], ["--all"]) else [src / f"{a}.jsonl" for a in args]
+    redact, errors = Redactor(), 0
+    for p in paths:
+        subdir = p.parent / p.stem / "subagents"
+        transcripts = [(p.stem, p)] + ([(f"{p.stem} agent {s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))]
+                                       if subdir.is_dir() else [])
+        for name, path in transcripts:
+            raw = path.read_text(errors="replace")
+            data = redact(raw).decode()
+            kinds = Counter(re.findall(r"\[REDACTED:([a-z.\-]+)\]", data))
+            print(f"{name}: {len(raw):,} B raw, {len(data):,} B redacted; "
+                  + (", ".join(f"{k} {n}" for k, n in kinds.most_common()) if kinds else "no redaction markers"))
+            for kind in redact.leaks(data):
+                print(f"  ERROR still unredacted after redaction: {kind}")
+                errors += 1
+            for warning in redact.review(data):
+                print(f"  warn  {warning}")
+    return 1 if errors else 0
+
+
 def cmd_commit(args: list[str]) -> int:
     """Finish @ with a message whose trailers match the manifest in its tree, then start a new change."""
     if not args or len(args) % 2 or any(a != "-m" for a in args[::2]) or not args[1].strip():
@@ -1203,6 +1395,9 @@ def cmd_push(args: list[str]) -> int:
     uploads = lambda: {(sid, sha) for sid, m in all_manifests().items() for sha, i in m.get("logs", {}).items() if i.get("url")}
     uploaded = uploads()
     cmd_sync([], publishing=True)
+    if cmd_check() != 0:  # before the upload: a log with a leak must not reach the CDN
+        print("trace check failed; nothing uploaded", file=sys.stderr)
+        return 1
     if cmd_upload(include_at=True) != 0:
         print("log upload failed; not pushing", file=sys.stderr)
         return 1
@@ -1225,7 +1420,7 @@ def cmd_push(args: list[str]) -> int:
 
 
 def cmd_check(remote: bool = False) -> int:
-    redact, errors, notes = Redactor(), [], []
+    redact, errors, notes, warnings = Redactor(), [], [], []
     manifests = all_manifests()
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
@@ -1244,17 +1439,29 @@ def cmd_check(remote: bool = False) -> int:
                 errors.append(f"{sid}: CDN does not serve log {sha[:12]} at {url}")
             data = load_log(sid, sha)
             if data is None:
-                if not url:
+                if info.get("withdrawn"):
+                    notes.append(f"{sid}: log {sha[:12]} was withdrawn ({info['withdrawn']})")
+                elif not url:
                     errors.append(f"{sid}: log {sha[:12]} is neither stored locally nor uploaded")
                 continue
             if hashlib.sha256(data).hexdigest() != sha:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
-            if leaks := redact.leaks(data.decode(errors="replace")):
-                errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
+            text = data.decode(errors="replace")
+            if leaks := redact.leaks(text):
+                # A log that is already public cannot be fixed, only withdrawn, and whether that is
+                # worth it is a person's call: a note. A log not yet uploaded is an error.
+                if url:
+                    notes.append(f"{sid}: published log {sha[:12]} has unredacted {leaks} under the current "
+                                 f"policy (withdraw it with unpublish --reason, or accept)")
+                else:
+                    errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
+            if not url:  # not public yet: what a person should look at before pushing
+                warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.review(text)]
         if not summary_path(sid).exists():
             errors.append(f"{sid}: summary.md is missing (run: python3 llm-dlc/tools/sync.py sync {sid})")
-        if notes_path(sid).exists() and (leaks := redact.leaks(notes_path(sid).read_text())):
-            errors.append(f"{sid}: unredacted {leaks} in its session note")
+        for path in (summary_path(sid), manifest_path(sid), notes_path(sid)):  # committed, so published
+            if path.exists() and (leaks := redact.leaks(path.read_text())):
+                errors.append(f"{sid}: unredacted {leaks} in {path.relative_to(REPO)}")
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         current = load_log(sid, m["log"]["sha256"]) or b""
         for c in m.get("commits", []):
@@ -1280,15 +1487,17 @@ def cmd_check(remote: bool = False) -> int:
                     if tree_sha != sha:
                         notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
                                      f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
-    for n in notes:
-        print("note ", n)
-    for e in errors:
-        print("ERROR", e)
     if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
     if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme():
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
-    print(f"{len(manifests)} session(s), {len(errors)} error(s), {len(notes)} note(s)")
+    for n in notes:
+        print("note ", n)
+    for w in warnings:
+        print("warn ", w)
+    for e in errors:
+        print("ERROR", e)
+    print(f"{len(manifests)} session(s), {len(errors)} error(s), {len(notes)} note(s), {len(warnings)} warning(s)")
     return 1 if errors else 0
 
 
@@ -1330,6 +1539,8 @@ def main(argv: list[str]) -> int:
         return cmd_unpublish(args)
     elif cmd == "check":
         return cmd_check(remote=args == ["--remote"])
+    elif cmd == "scan":
+        return cmd_scan(args)
     elif cmd == "init":
         cmd_init()
     else:

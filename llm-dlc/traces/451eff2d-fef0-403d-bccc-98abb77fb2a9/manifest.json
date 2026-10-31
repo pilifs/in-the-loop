@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "451eff2d-fef0-403d-bccc-98abb77fb2a9",
+  "status": "open",
+  "title": "Sync script PII guards",
+  "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.316"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-10-31T14:07:31.555Z",
+  "ended": "2026-10-31T14:11:58.686Z",
+  "duration_seconds": 267,
+  "stats": {
+    "turns": 3,
+    "api_calls": 5,
+    "tool_calls": 12,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 80525,
+    "usage": {
+      "input_tokens": 10,
+      "output_tokens": 6505,
+      "cache_read_input_tokens": 258332,
+      "cache_creation_input_tokens": 52943
+    }
+  },
+  "tools": {
+    "Read": 7,
+    "Bash": 5
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-10-31T14:07:31.555Z",
+      "ended": "2026-10-31T14:11:58.686Z",
+      "turns": 3,
+      "api_calls": 5,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 6505,
+        "cache_read_input_tokens": 258332,
+        "cache_creation_input_tokens": 52943
+      },
+      "peak_context_tokens": 80525
+    }
+  ],
+  "log": {
+    "sha256": "ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e",
+    "bytes": 631217,
+    "lines": 104,
+    "gzip_bytes": 158582,
+    "path": "llm-dlc/traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/logs/ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "nvozrtxtropmyyunrrkvrzynqonrmpkv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Harden trace redaction and add a pre-publish scan",
+      "body": "Redaction policy 4 follows an external review of the published traces, which found the Anthropic organization UUID, the hostname and a third-party email in the logs of the first session. It adds the hostname, Windows account names, account identifiers inside strings, every email that is not public by design, wrangler's OAuth tokens, the Langfuse Basic auth header, and many more credential formats: URL and curl passwords, KEY=VALUE secrets, JWTs, and GitLab, Google, Stripe and other keys.\n\nNew guards: sync.py scan previews a publish and masks its output; upload_log refuses a log the current rules would still change; push runs check before uploading as well as after; check now also covers committed summaries and manifests, and audits published logs, reporting findings as notes. unpublish --reason withdraws a log, deletes the local copy and records why, and the summary lists it.\n\nThese changes were written by another agent whose session is not in this project's transcripts, so the session traced here is the one that reviewed the diff and committed it, not the one that wrote it. Verified by compiling sync.py, running 12 made-up inputs through the redactor (each redacted or kept as intended, idempotent, no leaks), and running check and scan before the commit: 0 errors. Logs already on the CDN are not changed by this commit.",
+      "log_sha256": "ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e"
+    }
+  ],
+  "logs": {
+    "ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e": {
+      "bytes": 631217,
+      "lines": 104,
+      "gzip_bytes": 158582,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
