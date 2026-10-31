@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Run the trace pipeline on commit and push, not on every turn
 
-change `nmzlvwzkkymw` · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
+[`27db4f065afa`](https://github.com/pilifs/in-the-loop/commit/27db4f065afa08fab62179fb901f9a1d2861a96b) · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
 
 The Stop hook rewrote tracked files and stamped @ after every turn, and each push recorded its own commit's SHA afterwards, so the repo could never be clean. A session's tail, and a session with no commits, also had no log a commit pointed at: nothing uploaded them, so their summaries linked to a 404.
 
@@ -30,7 +30,7 @@ Verified end to end in a throwaway clone with a local bare remote and a stubbed 
 
 ### Correct the definition of session status
 
-change `mwqnvwnkrlzm` · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
+[`b6c67e7d80ca`](https://github.com/pilifs/in-the-loop/commit/b6c67e7d80cac0a53f5e715ad53b747be233d52c) · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
 
 Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.
 

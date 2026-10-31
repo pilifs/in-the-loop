@@ -60,7 +60,7 @@
   "commits": [
     {
       "change_id": "nmzlvwzkkymwnqozwmyyzrpluyvsykzx",
-      "commit_id": null,
+      "commit_id": "27db4f065afa08fab62179fb901f9a1d2861a96b",
       "immutable": false,
       "summary": "Run the trace pipeline on commit and push, not on every turn",
       "body": "The Stop hook rewrote tracked files and stamped @ after every turn, and each push recorded its own commit's SHA afterwards, so the repo could never be clean. A session's tail, and a session with no commits, also had no log a commit pointed at: nothing uploaded them, so their summaries linked to a 404.\n\nTracked trace files now change only on commit and push. Stop and SessionEnd only feed Langfuse. A PostToolUse hook traces a plain jj commit or git commit by reopening the new commit and syncing into it, so it carries its trailer and manifest however it was made. sync.py push records everything outstanding in one last Record session traces commit, moves the bookmark to it, uploads, checks and pushes, then writes nothing, leaving @ empty. It refuses to run over uncommitted work, and a repeat push makes no commit. A manifest cannot contain its own commit's SHA, so the next commit records it. The /publish skill, run only by the user, wraps commit and push.\n\nVerified end to end in a throwaway clone with a local bare remote and a stubbed CDN upload: the Stop hook left the repo unchanged; plain jj commit, a partial jj commit and git commit were each traced, and re-running the hook changed nothing; push refused uncommitted work, published a tail and a session with no commits, left @ empty, and a second push was a no-op. That test found and fixed a bug: jj abandons an empty @ when another change is edited. No real push or upload was made.",
@@ -68,7 +68,7 @@
     },
     {
       "change_id": "mwqnvwnkrlzmyyoypyvyzpwrqxlyovro",
-      "commit_id": null,
+      "commit_id": "b6c67e7d80cac0a53f5e715ad53b747be233d52c",
       "immutable": false,
       "summary": "Correct the definition of session status",
       "body": "Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.",
@@ -80,7 +80,7 @@
       "bytes": 859257,
       "lines": 198,
       "gzip_bytes": 178585,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz"
     }
   },
   "redaction_policy": 3,
