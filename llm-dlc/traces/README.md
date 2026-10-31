@@ -10,7 +10,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 5, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-10-31 16:18 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-10-31 16:19 UTC |
 | Prompts | 88 |
 | Model calls | 528 |
 | Tool calls | 746 (28 failed) |
@@ -18,8 +18,8 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Subagents | 0 |
 | Tokens written | 1,083,127 |
 | Tokens read | 104,493,480 (97.3% from cache) |
-| Commits with a trace | 31 |
-| Log snapshots | 37 (50.6 MB gzipped, 36 uploaded) |
+| Commits with a trace | 32 |
+| Log snapshots | 38 (51.2 MB gzipped, 38 uploaded) |
 
 ## Sessions
 
@@ -31,7 +31,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-10-31 00:53 UTC | [Formal verification example 004 proof](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | ended | 11 min | `claude-opus-5-5` | 6 | 15 | 26 | 0 | 0 | 111,790 | 3 |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | ended | 10 h 34 min | `claude-fable-5-1`, `claude-opus-5-5` | 21 | 110 | 218 | 11 | 1 | 439,795 | 11 |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | ended | 41 min | `claude-opus-5-5` | 5 | 21 | 43 | 0 | 0 | 124,779 | 5 |
-| 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | open | 1 h 11 min | `claude-opus-5-5` | 6 | 29 | 43 | 0 | 0 | 373,822 | 5 |
+| 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | open | 1 h 12 min | `claude-opus-5-5` | 6 | 29 | 43 | 0 | 0 | 373,822 | 6 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -98,7 +98,8 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 28 | [`3d51cd93`](https://github.com/pilifs/in-the-loop/commit/3d51cd932fb8e02597363b71379ce64da239d648) | Generate chart data from session logs on every sync | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488.jsonl.gz)) |
 | 29 | [`14e1aa42`](https://github.com/pilifs/in-the-loop/commit/14e1aa42bca9149d368bccd2318cfa59aad5bc3a) | Describe llm-dlc in the main README in full | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc.jsonl.gz)) |
 | 30 | [`2a395dd3`](https://github.com/pilifs/in-the-loop/commit/2a395dd34b0ff025826f1bbf68fc03caf702fcf4) | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/d65404ef1161699a79e78f7cdb112c8c6d5eeea5a7fd148a93d4120d7ab95088.jsonl.gz)) |
-| 31 | change `xvtmpkul` | Let a person mark findings as false positives | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/aea563c89ba52dcda61b1df8d91037858f74902f41987825ed54232596cd7e0c.jsonl.gz)) |
+| 31 | [`4e47aee0`](https://github.com/pilifs/in-the-loop/commit/4e47aee071187981445c0fdd64fb21298c3f0e2f) | Let a person mark findings as false positives | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/aea563c89ba52dcda61b1df8d91037858f74902f41987825ed54232596cd7e0c.jsonl.gz)) |
+| 32 | change `ukwylpnp` | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581.jsonl.gz)) |
 
 ## Logs
 
@@ -110,7 +111,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`57737931`](57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | 2 | 2 | 0.4 MB | [`3bec5f22f194`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/3bec5f22f19446d5889b0ae4345b373ad34907af0a9e008e36c0f164f84d40b7.jsonl.gz) |
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 11 | 11 | 9.0 MB | [`5c7af483c8d0`](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz) |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | 0.9 MB | [`a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz) |
-| [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 5 | 4 | 2.4 MB | `aea563c89ba5`, not uploaded |
+| [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 6 | 3.0 MB | [`63e24ed40c0e`](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581.jsonl.gz) |
 
 ## Session notes
 
