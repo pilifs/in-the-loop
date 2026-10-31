@@ -88,8 +88,15 @@ WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.
 # Email addresses that are public by design or placeholders; every other address is redacted.
 PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
                  "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
+# Published logs (SHA-256 prefixes) whose findings a person reviewed and left up, so `check` does
+# not raise them again. Listed by hash, not by policy: when a new policy flags other published
+# logs, nobody has reviewed those yet, and they should warn. See the specification's history note.
+ACCEPTED_LOGS = frozenset({
+    "2315687ce7e9", "2ed48e0ccf0e", "3f9d33960b46", "4e5d02bfeb4c", "5026337d0f66", "5ec7a7c2be3b", "7fe45409baf7",
+    "9aa1dc1182d6", "9b6989b99898", "ad2f8907be5d", "c57cac191c00", "d0d9da508c7a", "dbfac310a6e0",
+})
 TRAILER = "LLM-Trace"
-TRAILER_RE = re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
+TRAILER_RE =re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
 LINK_TRAILERS = ("LLM-Trace-Summary", "LLM-Trace-Log")  # convenience links next to LLM-Trace
 DEFAULT_BRANCH = "main"        # summary links point at the published copy on this branch
 # Hooks inherit the PATH Claude Code started with, which may predate ~/.local/bin.
@@ -160,11 +167,17 @@ WIN_SHARED = {"public", "default", "default user", "all users", "user", "desktop
 _RESERVED_IP = re.compile(r"^(?:0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\."
                           r"|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|22[4-9]\.|2[3-5]\d\."
                           r"|1\.1\.1\.1$|1\.0\.0\.1$|8\.8\.[48]\.[48]$|9\.9\.9\.9$|255\.)")
+# A four-part version looks exactly like an IP address, so only its surroundings tell them apart:
+# `openjdk version "...`, `java.base@...` (not any `@`: root@<ip> must still warn), or an SDK
+# listing whose row goes on to an identifier such as `| ...-graalce`.
+VERSION_BEFORE = re.compile(r"(?i)(?:\b(?:version|ver\.?|openjdk|jdk|javac?|adoptium|temurin|corretto|graalvm(?: ce)?)"
+                            r"|\b(?:java|jdk)\.[a-z.]+@)[\s\"'=:_\-]*$")
+VERSION_AFTER = re.compile(r"\s*\|\s*[\d.]+(?:\+\d+)?-[a-z]")
 REVIEW_PATTERNS = [
-    ("public-ip", r"(?<![\w.\-+])(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\w.\-+])",
+    ("public-ip",r"(?<![\w.\-+])(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\w.\-+])",
      lambda s: not _RESERVED_IP.match(s)),
     ("ipv6", r"(?<![\w:.])(?:[0-9a-fA-F]{1,4}:){5,7}[0-9a-fA-F]{1,4}(?![\w:])",
-     lambda s: not s.lower().startswith(("fe80:", "fd", "fc", "::1", "2001:db8:"))),
+     lambda s: s.strip("0:") and not s.lower().startswith(("fe80:", "fd", "fc", "::1", "2001:db8:"))),
     ("mac-address", r"\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\b", lambda s: s.lower() != "00:00:00:00:00:00"),
     ("other-home-dir", r"(?<![\w.])/(?:home|Users)/(?!user\b)[A-Za-z][\w.\-]*", lambda s: True),
     ("auth-header", r"(?i)\b(?:authorization|cookie|set-cookie|x-api-key|proxy-authorization)[\"']?\s*[:=]\s*[\"']?[^\s\"']{8,}",
@@ -247,6 +260,12 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
                 pairs.append((lit.strip(), rep.strip() or "[REDACTED]", 0, "redact.txt literal"))
     pairs.sort(key=lambda p: -len(p[0]))
     return pairs, user
+
+
+def _is_version(m: re.Match) -> bool:
+    """Whether an address-shaped match is a version number, judged by the text around it."""
+    return bool(VERSION_BEFORE.search(m.string, max(0, m.start() - 40), m.start())
+                or VERSION_AFTER.match(m.string, m.end()))
 
 
 def _mask(s: str) -> str:
@@ -338,7 +357,7 @@ class Redactor:
             s = ANSI_RE.sub("", s)  # colour codes glue digits onto the words they precede
             for kind, rx, keep in self.review_res:
                 for m in rx.finditer(s):
-                    if keep(m.group(0)):
+                    if keep(m.group(0)) and not (kind == "public-ip" and _is_version(m)):
                         hits.setdefault(kind, Counter())[m.group(0)] += 1
             return s
 
@@ -1426,7 +1445,7 @@ def cmd_check(remote: bool = False) -> int:
         if m.get("schema") != SCHEMA:
             errors.append(f"{sid}: unknown schema {m.get('schema')}")
             continue
-        logs = m.get("logs", {})
+        logs, accepted = m.get("logs", {}), 0
         referenced = {m["log"]["sha256"]} | {s["log"]["sha256"] for s in m.get("subagents", [])}
         referenced |= {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
         for sha in sorted(referenced - logs.keys()):
@@ -1448,13 +1467,16 @@ def cmd_check(remote: bool = False) -> int:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             text = data.decode(errors="replace")
             if leaks := redact.leaks(text):
-                # A log that is already public cannot be fixed, only withdrawn, and whether that is
-                # worth it is a person's call: a note. A log not yet uploaded is an error.
-                if url:
-                    notes.append(f"{sid}: published log {sha[:12]} has unredacted {leaks} under the current "
-                                 f"policy (withdraw it with unpublish --reason, or accept)")
-                else:
+                # A log that is not public yet is an error. One that is cannot be fixed, only
+                # withdrawn, and whether that is worth it is a person's call: a warning until
+                # they have made it, then a note.
+                if not url:
                     errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
+                elif sha[:12] in ACCEPTED_LOGS:
+                    accepted += 1
+                else:
+                    warnings.append(f"{sid}: published log {sha[:12]} has unredacted {leaks} and is not reviewed: "
+                                    f"withdraw it with unpublish --reason, or add it to ACCEPTED_LOGS in sync.py")
             if not url:  # not public yet: what a person should look at before pushing
                 warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.review(text)]
         if not summary_path(sid).exists():
@@ -1464,10 +1486,13 @@ def cmd_check(remote: bool = False) -> int:
                 errors.append(f"{sid}: unredacted {leaks} in {path.relative_to(REPO)}")
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         current = load_log(sid, m["log"]["sha256"]) or b""
-        for c in m.get("commits", []):
-            old = c.get("log_sha256") and load_log(sid, c["log_sha256"])
-            if old and not current.startswith(old):
-                notes.append(f"{sid}: log {c['log_sha256'][:12]} of {c['change_id'][:12]} is not a prefix of the current log")
+        rewritten = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")
+                     and (old := load_log(sid, c["log_sha256"])) and not current.startswith(old)}
+        if rewritten:
+            notes.append(f"{sid}: {len(rewritten)} older log(s) are not a prefix of the current log, "
+                         f"as after a redaction policy change")
+        if accepted:
+            notes.append(f"{sid}: {accepted} published log(s) have findings that were reviewed and accepted")
     if has_jj():
         for c in jj_commits(f'description(substring:"{TRAILER}:")'):
             for sid, sha in TRAILER_RE.findall(c["description"]):
@@ -1497,7 +1522,8 @@ def cmd_check(remote: bool = False) -> int:
         print("warn ", w)
     for e in errors:
         print("ERROR", e)
-    print(f"{len(manifests)} session(s), {len(errors)} error(s), {len(notes)} note(s), {len(warnings)} warning(s)")
+    print(f"{len(manifests)} session(s): {len(errors)} error(s), {len(warnings)} warning(s) for a person to judge, "
+          f"{len(notes)} note(s) needing no action")
     return 1 if errors else 0
 
 
