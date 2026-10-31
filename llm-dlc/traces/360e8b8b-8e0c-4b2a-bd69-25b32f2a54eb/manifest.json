@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-10-31T22:33:01.342Z",
-  "duration_seconds": 21786,
+  "ended": "2026-10-31T22:44:11.030Z",
+  "duration_seconds": 22456,
   "stats": {
-    "turns": 16,
-    "api_calls": 185,
-    "tool_calls": 671,
+    "turns": 20,
+    "api_calls": 189,
+    "tool_calls": 675,
     "tool_errors": 10,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 5710,
-      "output_tokens": 857104,
-      "cache_read_input_tokens": 53894815,
-      "cache_creation_input_tokens": 1552985
+      "input_tokens": 5838,
+      "output_tokens": 861450,
+      "cache_read_input_tokens": 55369618,
+      "cache_creation_input_tokens": 1558141
     }
   },
   "tools": {
-    "Bash": 214,
+    "Bash": 218,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -269,24 +269,38 @@
     {
       "index": 3,
       "started": "2026-10-31T21:44:46.964Z",
-      "ended": "2026-10-31T22:33:01.342Z",
-      "turns": 4,
-      "api_calls": 40,
+      "ended": "2026-10-31T22:42:16.059Z",
+      "turns": 5,
+      "api_calls": 44,
       "usage": {
-        "input_tokens": 1250,
-        "output_tokens": 185915,
-        "cache_read_input_tokens": 9069950,
-        "cache_creation_input_tokens": 335432
+        "input_tokens": 1378,
+        "output_tokens": 190261,
+        "cache_read_input_tokens": 10544753,
+        "cache_creation_input_tokens": 340588
       },
-      "peak_context_tokens": 366850
+      "peak_context_tokens": 372006
+    },
+    {
+      "index": 4,
+      "started": "2026-10-31T22:44:11.052Z",
+      "ended": "2026-10-31T22:44:11.030Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c",
-    "bytes": 14970730,
-    "lines": 4018,
-    "gzip_bytes": 2654442,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz"
+    "sha256": "a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354",
+    "bytes": 15186498,
+    "lines": 4093,
+    "gzip_bytes": 2695168,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -321,6 +335,14 @@
       "summary": "Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes",
       "body": "Mica (examples/apps/mica) is a fourth subject system: the decision kernels of a small JVM written in Java, each the few lines where the JVM specification says exactly what must happen. Class initialization (JVMS 5.5) as a state machine with a TLA+ model of threads racing for one class, checked by TLC with deadlock detection; the type checker's isAssignable over sixteen verification types (289-case contract); access control at resolution (5.4.4, 120 cases, with and without nestmates); idiv and irem at Integer.MIN_VALUE / -1; fcmpg/fcmpl with NaN; the bisection of a lookupswitch; javac's tableswitch/lookupswitch cost heuristic; a power-of-two table size; and the modified UTF-8 of the constant pool. Six properties prove in under two seconds; the whole verify.sh runs in about three.\n\nExamples 034 to 045 are one realistic change each, for readers who work on the JVM or the libraries closest to it: an idiv that throws where the specification returns the dividend (034), a NaN check written as == Float.NaN (035), javac's switch costs computed in int (036), the JDK 11 tableSizeFor rewrite proved equal on all 2^32 inputs (037), a verifier fast path that lets an uninitialized object pass as an Object (038), protected access without the receiver rule (039), JEP 181 nestmate access as a four-line contract diff (040), StrictMath intrinsics looked up through MethodHandles (041), a class initialization that lets other threads proceed during <clinit> (042) and one that waits on its own thread, which TLC reports as a deadlock (043), modified UTF-8 with a one-byte NUL (044), and (low + high) / 2 proved safe within a Code attribute's bounds (045). Nine violations, three verified; every violation is missed by the module's tests.\n\nThe tool needed four changes, found while writing the examples: JBMC's witness syntax for chars ('\\u0000') and floats (Float.NaN, the infinities) is parsed, and chars are shown as Java literals; java.lang.Integer, Long, Short and Byte join Math and StrictMath on JBMC's class path, taken from the JDK image, so Integer.numberOfLeadingZeros is analysed as written; a counterexample that the interpreter cannot reproduce (both versions agree, or the property holds on replay) is reported as unverifiable instead of a false violation, which is what a stubbed JDK method such as Float.compare produced before; and jvmcontract tlc gains --deadlock, with TLC's deadlock trace parsed and reported like an invariant violation. build.py gets the app and its model (with the deadlock flag and prose), and the docs the fourth system.\n\nVerified by: the Mica tests (47) and verify.sh; build.py for 034 to 045 (every verdict as expected) and for 013 to 033 rerun under the changed tool (unchanged apart from timestamps and TLC seeds, restored); cargo test (50 tests, JBMC and TLC included).",
       "log_sha256": "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c"
+    },
+    {
+      "change_id": "movtrrpolvswuqzwtvoxpxozzzyxknop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add feature-loop.sh to grow jvmcontract unattended",
+      "body": "llm-dlc/tools/feature-loop.sh resumes session 360e8b8b on Fable 5.1 at high effort and repeats one instruction from the repo root: add more advanced features and examples to jvmcontract. Each cycle that produces a commit is followed by /compact and another cycle. A cycle with no new commit stops the loop with exit 1, before compacting, so the session keeps its full context for whoever looks into it. A commit is detected by the change ID of @-, which survives a rewrite of the commit. The README describes the loop.\n\nVerified with a stub claude in a temporary jj repo: two commits then none gave instruction, compact, instruction, compact, instruction, exit 1; no commit on the first cycle stopped at once; a nonzero exit after a commit still continued; SIGTERM exited 130; the script ran at the repo root when started from elsewhere. Fable 5.1 at high effort in auto mode, and /compact in print mode (same session ID, one compact boundary), were checked against the real CLI on a throwaway session outside this repo. The loop itself has not been run against session 360e8b8b.",
+      "log_sha256": "a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354"
     }
   ],
   "logs": {
@@ -334,6 +356,12 @@
       "bytes": 11665144,
       "lines": 2931,
       "gzip_bytes": 2102178,
+      "url": null
+    },
+    "a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354": {
+      "bytes": 15186498,
+      "lines": 4093,
+      "gzip_bytes": 2695168,
       "url": null
     },
     "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c": {
