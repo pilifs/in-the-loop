@@ -1,0 +1,36 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants hold in 131 states",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 47,
+    "code": "    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Failed _ -> switch (state) {\n    case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);\n    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Expired _ -> switch (state) {\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 47,
+    "code": "    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Failed _ -> switch (state) {\n    // The failure is the response: a retry gets it back, instead of running the request again.\n    case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);\n    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Expired _ -> switch (state) {\n"
+  },
+  "casesTotal": null,
+  "domain": "Attempts = {a1, a2, a3}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n+++ b/examples/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n@@ -13,7 +13,7 @@\n decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected[reason=\"the key was reused for a different request\"]\n decide(IN_PROGRESS, Request[sameFingerprint=true])  => Rejected[reason=\"a request with this key is in progress\"]\n decide(IN_PROGRESS, Completed[])                    => Transition[next=COMPLETED, effects=[STORE_RESPONSE]]\n-decide(IN_PROGRESS, Failed[])                       => Transition[next=ABSENT, effects=[RELEASE_KEY]]\n+decide(IN_PROGRESS, Failed[])                       => Transition[next=COMPLETED, effects=[STORE_RESPONSE]]\n decide(IN_PROGRESS, Expired[])                      => Unchanged[reason=\"a key in progress does not expire\"]\n decide(IN_PROGRESS, null)                           => throws NullPointerException\n decide(COMPLETED, Request[sameFingerprint=false])   => Rejected[reason=\"the key was reused for a different request\"]\n",
+  "proof": "TLC 2.19 explored 131 distinct states to depth 8 in 0 s, for the model Attempts = {a1, a2, a3}",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 131,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=false] → effects=[EXECUTE]\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=true] → effects=[EXECUTE]\n    COMPLETED --> ABSENT: Expired[] → effects=[RELEASE_KEY]\n    COMPLETED --> COMPLETED: Request[sameFingerprint=true] → effects=[REPLAY_RESPONSE]\n    IN_PROGRESS --> COMPLETED: Completed[] → effects=[STORE_RESPONSE]\n    IN_PROGRESS --> COMPLETED: Failed[] → effects=[STORE_RESPONSE]\n    ABSENT --> ABSENT: Completed[] (Unchanged)\n    ABSENT --> ABSENT: Failed[] (Unchanged)\n    ABSENT --> ABSENT: Expired[] (Unchanged)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=false] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=true] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Expired[] (Unchanged)\n    COMPLETED --> COMPLETED: Request[sameFingerprint=false] (Rejected)\n    COMPLETED --> COMPLETED: Completed[] (Unchanged)\n    COMPLETED --> COMPLETED: Failed[] (Unchanged)\n",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

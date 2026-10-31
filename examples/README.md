@@ -1,27 +1,30 @@
 # Examples
 
-> **Start with examples 013 to 022**, then 006 to 012. Examples 001 to 005 were created by Opus 5.5, the rest by Fable 5.1.
+> **Start with examples 023 to 033** if you build services on Spring Boot, or **013 to 022** if you build the replicated systems under them, then 006 to 012. Examples 001 to 005 were created by Opus 5.5, the rest by Fable 5.1.
 > The later examples go significantly beyond what can be achieved with type checking.
 
 Each example is one code change to a subject system, run through a formal verifier, with the verdict and why it matters.
 Together they show what verification catches that code review and tests miss, and what it lets through.
 None of it needs the reader to write a specification: each verifier derives its statement from the code, the types, the previous version, or a one-line property committed next to the code.
 
-There are two subject systems. [Box Office](apps/boxoffice/README.md) (examples 001 to 012) is a ticketing system of two Spring Boot services over Kafka, verified by the Java proof of concept in [`tools/contracts`](tools/contracts/README.md).
-[Quorum](apps/quorum/README.md) (examples 013 to 022) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator, verified by [`jvmcontract`](../lib/README.md), the Rust tool, with no JVM in the loop.
+There are three subject systems. [Box Office](apps/boxoffice/README.md) (examples 001 to 012) is a ticketing system of two Spring Boot services over Kafka, verified by the Java proof of concept in [`tools/contracts`](tools/contracts/README.md).
+[Quorum](apps/quorum/README.md) (examples 013 to 022) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator.
+[Crosscut](apps/crosscut/README.md) (examples 023 to 033) is the kernels behind the cross-cutting concerns of a Spring Boot service: the transaction interceptor's rollback rule, a circuit breaker, a retry policy, a rate limiter, an `Idempotency-Key` receiver, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
+Both are verified by [`jvmcontract`](../lib/README.md), the Rust tool, with no JVM in the loop.
 
 The examples use five approaches, numbered as in [`approaches.md`](approaches.md). The common principle is that a checked-in artifact may change only where the developer intends a change, and the diff of that artifact is what the reviewer approves.
 
 | Approach | What is checked | How it is proved | Examples |
 |---|---|---|---|
-| [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | 001 to 005, 014 |
-| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008, 013 |
-| [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, ... | Closed-world inspection of every call site in the compiled classes | 009, 010, 019 |
-| [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, replayed by the tool | 015 to 018, 022 |
-| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011, 012, 020, 021 |
+| [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | 001 to 005, 014, 025, 026 |
+| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008, 013, 027 |
+| [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, threads, ... | Closed-world inspection of every call site in the compiled classes | 009, 010, 019, 028 |
+| [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, replayed by the tool | 015 to 018, 022 to 024, 031 to 033 |
+| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011, 012, 020, 021, 029, 030 |
 
 A type system could do some of what 001 to 005 do. It could not find a one-cent rounding drift across 2^96 inputs (006), prove that a pricing change touches only the groups it says it touches (007), notice that a codec started loading classes named by Kafka messages (009), or produce the nine-step interleaving in which a paid customer loses their seat and their refund (011).
 Nor could it tell that a Raft vote rule rewritten as "longest log wins" will elect a leader that overwrites committed entries (013), that `(n + 1) / 2` is not a majority (015), that a hybrid logical clock with one branch folded away hands out a timestamp older than the message it just received (018), or that a two-phase-commit coordinator which presumes commit on timeout commits over a participant's no vote that is still in flight (020).
+Nor that a transaction rollback rule rewritten as "a RuntimeException rolls back" commits after an `OutOfMemoryError` (025), that a switch rewrite of a retry policy stops retrying the 5xx statuses it did not name (027), that an idempotency key which runs a retry while the first attempt is in flight executes the request twice (029), or that a Kafka partitioner written with `Math.abs` sends one key in two billion to a negative partition (023).
 
 <!-- examples:begin (generated by examples/tools/build.py) -->
 | # | Example | Approach | Verdict | Existing tests | Categories | Severity if shipped | Change |
@@ -48,6 +51,17 @@ Nor could it tell that a Raft vote rule rewritten as "longest log wins" will ele
 | 020 | [A 2PC coordinator that presumes commit on timeout splits the participants](020-coordinator-that-presumes-commit-on-timeout/README.md) | D1 | ✗ Violation: Atomicity, 3-step trace | **missed** | functional | critical | feature |
 | 021 | [Aborting on the first no vote, proved safe for every interleaving of three participants](021-aborting-on-the-first-no-proved-safe/README.md) | D1 | ✓ Verified: all invariants hold in 644 states | pass | functional, no-false-positive | none | feature |
 | 022 | [A skew-tolerant tie-break for last-writer-wins lets replicas keep different values](022-skew-tolerant-tie-break-splits-the-replicas/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | feature |
+| 023 | [A partitioner written with Math.abs sends one key in two billion to a negative partition](023-abs-partitioner-sends-one-key-to-a-negative-partition/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | cleanup |
+| 024 | [A JWT validator that applies clock skew on the wrong side rejects fresh tokens](024-clock-skew-applied-on-the-wrong-side-of-not-before/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional, security | high | bug-fix |
+| 025 | [A rollback rule rewritten as "unchecked means RuntimeException" commits after an Error](025-transaction-that-commits-after-an-error/README.md) | B8 | ✗ Violation: 1 of 22 cases changed | **missed** | functional | high | refactor |
+| 026 | [A half-open circuit breaker that closes on the first good probe flaps through an outage](026-half-open-breaker-that-closes-on-the-first-good-probe/README.md) | B8 | ✗ Violation: 2 of 44 cases changed | **missed** | functional, performance | high | feature |
+| 027 | [A switch rewrite of the retry policy stops retrying the 5xx statuses it did not list](027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md) | B9 | ✗ Violation: counterexample found | **missed** | functional | medium | refactor |
+| 028 | [A retry helper that sleeps out the Retry-After delay gives a pure module a thread call](028-retry-that-sleeps-on-the-caller-thread/README.md) | B10 | ✗ Violation: 2 capability changes | **missed** | performance, determinism | high | feature |
+| 029 | [An idempotency key that executes a retry while the first attempt is in flight pays twice](029-retry-in-progress-executes-twice/README.md) | D1 | ✗ Violation: OneExecutionAtATime, 5-step trace | **missed** | functional | critical | bug-fix |
+| 030 | [Storing a failed attempt's response under its key, proved at-most-once for every retry](030-stored-failures-proved-at-most-once/README.md) | D1 | ✓ Verified: all invariants hold in 131 states | pass | functional, no-false-positive | none | feature |
+| 031 | [A token bucket that stamps each refill with "now" never refills under steady traffic](031-rate-limiter-that-never-refills-under-steady-polling/README.md) | B11 | ✗ Violation: counterexample found | caught | functional | high | cleanup |
+| 032 | [A batch listener that commits the whole batch after a failed record loses the rest of it](032-batch-listener-that-commits-past-a-failed-record/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | critical | bug-fix |
+| 033 | [A cache expiry rewritten as a stored deadline, proved on every nanosecond and the sentinel](033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/README.md) | B11 | ✓ Verified: property holds on every input | pass | functional, no-false-positive | none | refactor |
 <!-- examples:end -->
 
 The *Existing tests* column is measured, not claimed: the generator runs the module's unit tests against each patch. A **missed** entry means the tests pass and the change would have shipped.
@@ -73,7 +87,7 @@ Each example's page has the same sections:
 | What to do | The resolution |
 | Evidence | The verifier's console output and SARIF report, unedited; the JDK APIs a proof trusted; for a symbolic proof, the generated statement the prover checked |
 
-For a state machine (014, 020, 021), the page also draws the machine the patched code implements, from its derived contract, with unreachable and terminal states marked.
+For a state machine (014, 020, 021, 025, 026, 029, 030), the page also draws the machine the patched code implements, from its derived contract, with unreachable and terminal states marked.
 
 ## Layout
 
@@ -97,11 +111,13 @@ examples/
   apps/boxoffice/spec/       its TLA+ model (D1)
   apps/quorum/               the second subject system (013 to 022): the distributed-systems kernels, with their contracts and properties
   apps/quorum/spec/          its TLA+ model of two-phase commit (D1)
+  apps/crosscut/             the third subject system (023 to 033): the kernels of a Spring Boot service's cross-cutting concerns
+  apps/crosscut/spec/        its TLA+ model of an idempotent receiver (D1)
   tools/contracts/           the Java verifier for B8, B9 and B10, used by 001 to 012
   tools/tla/                 the generator of the model's state machine from the B8 contract, and the TLA+ standard modules TLC parses
   tools/build.py             the generator: runs every example and writes the generated files
   setup/                     the toolchain installer
-../lib/                      jvmcontract, the Rust verifier for B8 to B11 and D1, used by 013 to 022
+../lib/                      jvmcontract, the Rust verifier for B8 to B11 and D1, used by 013 to 033
 ```
 
 Everything a verifier says is generated by running it, so no example can claim a result the tool did not produce.
@@ -113,15 +129,16 @@ The generator also fails when a verdict differs from the example's `expected.ver
 python3 examples/tools/build.py          # run every example, then rewrite the pages and the table
 python3 examples/tools/build.py 002      # run one
 python3 examples/tools/build.py 013 014 015 016 017 018 019 020 021 022   # the Quorum examples, about 20 seconds in all
+python3 examples/tools/build.py 023 024 025 026 027 028 029 030 031 032 033   # the Crosscut examples, about 20 seconds in all
 ```
 
-It needs Java 25, JBMC for the B9 and B11 examples, TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for the D1 examples, and `cargo` (or a built `lib/target/release/jvmcontract`, or `JVMCONTRACT` pointing at one) for the Quorum examples; no Docker.
-A Box Office example takes from a few seconds to a minute, because its patch is applied to a temporary copy of the Gradle build, which is then compiled, tested and verified. A Quorum example takes a second or two: `javac`, the tests, and `jvmcontract`.
+It needs Java 25, JBMC for the B9 and B11 examples, TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for the D1 examples, and `cargo` (or a built `lib/target/release/jvmcontract`, or `JVMCONTRACT` pointing at one) for the Quorum and Crosscut examples; no Docker.
+A Box Office example takes from a few seconds to a minute, because its patch is applied to a temporary copy of the Gradle build, which is then compiled, tested and verified. A Quorum or Crosscut example takes a second or two: `javac`, the tests, and `jvmcontract`.
 
 To add an example:
 
 1. Make the change in your working copy, and save it with `jj diff --git > examples/NNN-short-name/change.patch`. Then undo the change.
-   A Box Office D1 example changes the Java and the matching action of [`apps/boxoffice/spec/BoxOffice.tla`](apps/boxoffice/spec/BoxOffice.tla) in the same patch; a Quorum D1 example changes the coordinator, and the model picks the change up through the regenerated contract.
+   A Box Office D1 example changes the Java and the matching action of [`apps/boxoffice/spec/BoxOffice.tla`](apps/boxoffice/spec/BoxOffice.tla) in the same patch; a Quorum or Crosscut D1 example changes the state machine the model is built around (the coordinator, the receiver), and the model picks the change up through the regenerated contract.
 2. Write `examples/NNN-short-name/example.json`, following [`schema/example.schema.json`](schema/example.schema.json). An editor that understands JSON Schema will complete and check the fields.
-   The `approach.id` picks the verifier, and the `subject.file` picks the subject system. For B9, `change.intendedInputs` declares the inputs the change is meant to affect. For B11, the property is the one declared for the symbol in [`apps/quorum/src/contract/properties.contract`](apps/quorum/src/contract/properties.contract).
+   The `approach.id` picks the verifier, and the `subject.file` picks the subject system. For B9, `change.intendedInputs` declares the inputs the change is meant to affect. For B11, the property is the one declared for the symbol in the app's `properties.contract` ([Quorum](apps/quorum/src/contract/properties.contract), [Crosscut](apps/crosscut/src/contract/properties.contract)).
 3. Run `python3 examples/tools/build.py NNN`, and read the generated page.

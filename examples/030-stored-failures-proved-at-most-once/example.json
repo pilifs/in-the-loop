@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "030",
+  "title": "Storing a failed attempt's response under its key, proved at-most-once for every retry",
+  "summary": "The receiver used to release an idempotency key when the attempt under it died, so that the client's retry could run the request again. The developer makes it store the failure as the key's response instead, which is Stripe's semantics: a retry gets the first attempt's outcome, whatever it was. The regenerated contract changes in one case, the model checker runs every interleaving of three attempts against the new rule, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of retries.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "When the attempt in progress fails, move the key to COMPLETED and store the failure, instead of releasing the key. A retry then replays the failure rather than running the request again, so that a request that failed for a reason that will not go away (a declined card, an invalid address) is not re-run on every retry. The contract diff is the case `decide(IN_PROGRESS, Failed[])`, from a release to a stored response, and the test for that case is updated with it.",
+    "patch": "change.patch"
+  },
+  "risk": "None, and that is the point. The question a reviewer has to answer is not about the line; it is whether, with failures now stored, a retry can still run alongside an execution, run after a result, or be answered with a stored response that does not exist, under every order in which a client's attempts and the receiver's executions can interleave. Example 029 shows a one-line change of the same shape that fails it. Answering by inspection is how idempotency layers get their bugs; answering by model checking takes under a second.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The receiver's rule in the model is generated from the regenerated contract, so the model runs the new rule. TLC explores every reachable state for three attempts: every order of sends, retries before and after a result, executions that finish and executions that die at every point. In every state, no two attempts execute at once, once an execution has produced a result no attempt is executing and none ever will, and every replayed response is a response that was stored. The stored failure can only ever turn a retry that would have run the request again into one that is answered from the record, which is the change the developer described.",
+  "resolution": "Merge. The contract diff is committed with the change, and the model is checked on every build, so the next change to the receiver is held to the same invariants.",
+  "provenance": "Constructed to show an intended change to a protocol's decision rule accepted on the strength of the model, to pair with example 029; the semantics are Stripe's.",
+  "references": [
+    {
+      "title": "Stripe, Idempotent requests (\"saves the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeds or fails\")",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    }
+  ]
+}

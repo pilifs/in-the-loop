@@ -1,0 +1,12 @@
+✓ module crosscut matches its capability contract (36 classes, 127 methods, 0 capability uses, 0 libraries)
+✓ module crosscut matches its API contract (33 public types, 124 members)
+✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
+✗ Behaviour of net.terminalvalue.crosscut.tx.TransactionBoundary#exit differs from its contract in 1 of 22 cases:
+  exit(Threw[kind=ERROR, rule=NONE], false)
+    contract: ROLLBACK
+    actual:   COMMIT
+  (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
+
+If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.

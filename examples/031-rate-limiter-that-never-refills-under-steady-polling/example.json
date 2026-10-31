@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "031",
+  "title": "A token bucket that stamps each refill with \"now\" never refills under steady traffic",
+  "summary": "A token bucket's state is its tokens and the time up to which refills have been credited. The kernel advances that time by whole periods only, keeping the part of a period that has not earned a token yet. A developer simplifies it to \"the refill happened now\", which reads better and drops a remainder. The module's properties file says a refill never forgets a part of a period. The prover finds a refill short of a whole period, which the patched code credits anyway, and a bucket polled a little faster than it refills never earns a token again.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Return `nowNanos` as the time of the last refill, instead of `nowNanos` less the remainder of the current period. The developer read the remainder as a rounding detail: the refill is happening now, so the last refill time is now. One test in this repo happens to poll the bucket twice within a period and fails, which is how the developer learns the remainder was the point.",
+    "patch": "change.patch"
+  },
+  "risk": "A gateway's rate limiter is consulted on every request. With a rate of ten per second and traffic at twenty requests per second, each refill sees fifty milliseconds elapsed, which is half a period: it earns no token, and the patched code moves the credited time forward by the half period anyway. No refill ever sees a whole period, so the bucket never gains a token, and every request is rejected with 429 once the initial burst is spent. The failure is proportional to how busy the client is: a client within its limit sees it only when its requests are spaced closer than one period, which is precisely the steady, well-behaved traffic the limit was sized for. The usual symptom report is \"we are nowhere near the limit and everything is 429\".",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property reads: for every refill, the credited time never runs behind the last one or ahead of the clock, less than one period of time is still owed, and whatever was credited is at least a period. The last clause is the one the cleanup breaks: the patched code credits whatever time elapsed, including a part of a period. JBMC finds it among the smallest inputs, a refill with less than a period elapsed since the last one, and the tool replays the method to show the credited time running ahead of what was earned. The old code was proved to satisfy the same property over the whole domain, five 64-bit numbers, in about thirty seconds, which is most of the module's proof time: the remainder makes the solver reason about division.",
+  "resolution": "Keep the remainder, or keep the credited time as a count of whole periods. The test that caught this was written by someone who knew the bug; the property states what any refill must do, and holds the next rewrite of this line to it for every clock reading.",
+  "provenance": "Constructed from the refill bug of hand-rolled token buckets, in which the refill timestamp is set to the current time and the fraction of a period is lost; Bucket4j and Guava's RateLimiter keep the remainder for this reason.",
+  "references": [
+    {
+      "title": "Spring Cloud Gateway, RequestRateLimiter (the token bucket behind the Redis rate limiter)",
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html"
+    },
+    {
+      "title": "Bucket4j, the token-bucket algorithm",
+      "url": "https://bucket4j.com/"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 2 capability changes",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "startLine": 25,
+    "code": "        }\n        return status == 408 || (status >= 500 && status <= 599 && status != 501);\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "startLine": 25,
+    "code": "        }\n        return status == 408 || (status >= 500 && status <= 599 && status != 501);\n    }\n\n    /**\n     * {@link #shouldRetry}, after waiting out the delay the server asked for ({@code Retry-After}), so that a client\n     * filter can retry inline without a scheduler of its own.\n     */\n    public static boolean retryAfterWaiting(int status, boolean idempotent, int attempt, int maxAttempts, long delayMillis) {\n        try {\n            Thread.sleep(delayMillis);\n        } catch (InterruptedException e) {\n            Thread.currentThread().interrupt();\n            return false;\n        }\n        return shouldRetry(status, idempotent, attempt, maxAttempts);\n    }\n}\n"
+  },
+  "casesTotal": 24,
+  "domain": "36 classes, 128 methods",
+  "counterexamples": [
+    {
+      "input": "threads",
+      "contract": null,
+      "actual": "net.terminalvalue.crosscut.retry.RetryPolicy.retryAfterWaiting calls java.lang.Thread.interrupt"
+    },
+    {
+      "input": "threads",
+      "contract": null,
+      "actual": "net.terminalvalue.crosscut.retry.RetryPolicy.retryAfterWaiting calls java.lang.Thread.sleep"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [
+    "java.lang.Enum.ordinal",
+    "java.lang.MatchException.<init>",
+    "java.lang.Record.<init>",
+    "java.lang.runtime.SwitchBootstraps.typeSwitch",
+    "java.util.List.copyOf",
+    "java.util.List.of",
+    "java.util.Objects.requireNonNull"
+  ],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

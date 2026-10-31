@@ -1,0 +1,6 @@
+✗ Property of net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit violated: `result >= batchStart && result <= batchStart + batchSize && (failedIndex == -1 ? result == batchStart + batchSize : result == batchStart + failedIndex)` where batchStart >= 0 && batchStart <= 4611686018427387903L && batchSize > 0 && batchSize <= 100000 && failedIndex >= -1 && failedIndex < batchSize:
+  offsetToCommit(batchStart=0, batchSize=1, failedIndex=0)
+    outcome: 1
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain batchStart: long × batchSize: int × failedIndex: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.

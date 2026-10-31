@@ -1,0 +1,45 @@
+# Property contract, proved by jvmcontract (`jvmcontract prove --properties`). Do not edit the proofs: edit the code.
+# Each block names a static method, the inputs the property is about (assume) and the property (assert), a Java
+# boolean expression over the parameters, `result`, and the method itself. JBMC proves each one over every
+# input, or the build fails with an input that violates it.
+kind: properties
+module: crosscut
+
+# Every key lands on a partition of the topic, whatever its hash: the ordering guarantee of a keyed topic.
+net.terminalvalue.crosscut.kafka.Partitioner#partitionFor
+  assume: numPartitions > 0
+  assert: result >= 0 && result < numPartitions
+
+# A retry never happens for a non-idempotent request unless the server said it did not process it (429, 503), never
+# past the last attempt, and never for 501.
+net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry
+  assert: (!result || attempt < maxAttempts) && (!result || idempotent || status == 429 || status == 503) && (!result || status != 501)
+
+# Skew only widens acceptance: a token valid with no tolerance is valid with any, and a token is valid at every
+# instant between its not-before and its expiry.
+net.terminalvalue.crosscut.security.JwtTimestamps#valid
+  assume: skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L
+  assert: (!valid(nowSeconds, notBefore, expiresAt, 0) || result) && (nowSeconds < notBefore || nowSeconds >= expiresAt || result)
+
+# A refill never takes tokens away and never fills past the capacity.
+net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter
+  assume: periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity
+  assert: result >= tokens && result <= capacity
+
+# A refill credits time in whole periods and never forgets a part of a period: the credited time never runs
+# ahead of the clock or behind the last refill, less than one period of it is still owed, and whatever was
+# credited is at least a period.
+net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter
+  assume: periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity
+  assert: result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)
+
+# The committed offset is the next record to read: one past the batch when every record is done, the failed
+# record itself when one is not, so that nothing done is read again and nothing not done is skipped.
+net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit
+  assume: batchStart >= 0 && batchStart <= 4611686018427387903L && batchSize > 0 && batchSize <= 100000 && failedIndex >= -1 && failedIndex < batchSize
+  assert: result >= batchStart && result <= batchStart + batchSize && (failedIndex == -1 ? result == batchStart + batchSize : result == batchStart + failedIndex)
+
+# An entry expires exactly when its time to live has elapsed, and an entry that lives forever never does.
+net.terminalvalue.crosscut.cache.Expiry#isExpired
+  assume: writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0
+  assert: result == (ttlNanos != 9223372036854775807L && nowNanos - writtenAtNanos >= ttlNanos)

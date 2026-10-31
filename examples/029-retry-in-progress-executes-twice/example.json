@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "029",
+  "title": "An idempotency key that executes a retry while the first attempt is in flight pays twice",
+  "summary": "An `Idempotency-Key` receiver refuses a retry while the first attempt with that key is still in progress, with a 409. Support reports clients stuck in 409 loops after a worker died mid-request, and a developer makes the receiver run the retry instead: if a retry arrives, the first attempt is gone. The one-line contract diff is reviewed and approved. The model checker finds a five-step run in which the first attempt is not gone at all, and the request is executed twice.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "On a retry with a matching fingerprint while the key is in progress, execute the request instead of answering 409. The reasoning: a client retries only after its timeout, by which point the first attempt's worker has given up too, so the record is stale and the client is stuck behind it. The behavioural contract of the receiver is regenerated and its diff is one line, the case `decide(IN_PROGRESS, Request[sameFingerprint=true])`, which is exactly what the developer meant to change. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "The one thing an idempotency key promises is that the request's effect happens at most once, however many times the client sends it. A client timeout says nothing about the server: the first attempt may be waiting on a lock, on a slow payment provider, or on garbage collection, and will complete. With this change the retry runs alongside it, and the customer is charged twice, the order is placed twice, the email goes out twice. The stuck-client report was real, but its cause was workers that die without releasing the key, which is what the `Failed` event is for; the fix removed the guarantee instead of fixing the cleanup. The contract diff could not catch this: the diff was precisely the intended change. Whether the new rule is safe is a question about every interleaving of a client that retries and a receiver that is still working, and only the model answers it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The TLA+ model has one action per operation of each part: the client sends an attempt or retries, the receiver decides on an arriving attempt, an execution finishes with a result, an execution dies. The receiver's decision rule inside the model is not hand-written: it is generated from the behavioural contract of `IdempotentReceiver#decide`, which the tool proves the bytecode satisfies on all 24 inputs, so the model decides exactly as the Java does. TLC explores every interleaving for three attempts and reports the shortest run that breaks the invariant that no two attempts under one key execute at once: the client sends, the receiver executes, the client retries before the first execution has finished, and the receiver executes again. The run is five steps long, the initial state and four actions, and the step the developer's reasoning left out is the second send, which the model allows at any time because a client's timeout is the client's business.",
+  "resolution": "Revert, and fix the cause: a worker that dies must release the key, which is the `Failed` transition, and a key held in progress for longer than any request can take should be released by a sweeper. A retry that arrives while the key is legitimately in progress should get the 409 with a `Retry-After`, or be parked until the first attempt's response is stored and then be answered with it. Any change to the receiver's rule reaches the model through its contract, so the next idea of this kind is checked the same way before it is merged.",
+  "provenance": "Constructed from the in-progress case of Stripe's idempotency-key semantics and the IETF draft of the header, by replacing the 409 with the shortcut a stuck-client report invites.",
+  "references": [
+    {
+      "title": "IETF draft, The Idempotency-Key HTTP Header Field (section on concurrent requests with the same key: 409 Conflict)",
+      "url": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/"
+    },
+    {
+      "title": "Stripe, Idempotent requests",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    }
+  ]
+}

@@ -335,6 +335,176 @@
       "approach": "B11",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "023",
+      "path": "023-abs-partitioner-sends-one-key-to-a-negative-partition",
+      "title": "A partitioner written with Math.abs sends one key in two billion to a negative partition",
+      "summary": "A custom Kafka partitioner routes a tenant's records by the hash of its id, so that every record of a tenant lands on the same partition. A developer rewrites Kafka's `toPositive(hash) % n`, with its unexplained bit mask, as `Math.abs(hash) % n`, which says what it means. The module's properties file says every hash lands on a partition of the topic. The prover finds the one `int` whose absolute value is negative, and the tool replays it: the partition is negative, which the producer rejects, and that tenant's records are never sent.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "024",
+      "path": "024-clock-skew-applied-on-the-wrong-side-of-not-before",
+      "title": "A JWT validator that applies clock skew on the wrong side rejects fresh tokens",
+      "summary": "A security review notes that the resource server accepts a token a few seconds before its `nbf`, and asks for that to stop. The developer moves the skew tolerance to the other side of the not-before check, so that a token is never accepted early. The module's properties file states two laws of a skew tolerance: it only ever widens acceptance, and a token is valid at every instant between its not-before and its expiry. The prover refutes both with a token checked a few seconds after it was issued, with a tolerance a little larger than that.",
+      "categories": [
+        "functional",
+        "security"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "025",
+      "path": "025-transaction-that-commits-after-an-error",
+      "title": "A rollback rule rewritten as \"unchecked means RuntimeException\" commits after an Error",
+      "summary": "Spring's default rollback rule is that a `RuntimeException` or an `Error` rolls the transaction back and a checked exception does not. The kernel writes it as \"anything but a checked exception\", and a developer rewrites it in the positive, as \"a runtime exception\", which is how most people remember the rule. The behavioural contract of the transaction boundary, 22 cases derived from the bytecode, changes in exactly one: a method that dies with an `Error` now commits whatever it had written.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.crosscut.tx.TransactionBoundary#exit",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "026",
+      "path": "026-half-open-breaker-that-closes-on-the-first-good-probe",
+      "title": "A half-open circuit breaker that closes on the first good probe flaps through an outage",
+      "summary": "A half-open breaker lets a few probe calls through and closes only once all of them are back with the failure rate under the threshold. A developer, chasing the latency of the calls that queue behind the probes, makes the first successful probe enough to close. The behavioural contract of the breaker, 44 cases derived from the bytecode, changes in two of them, and the state-machine view drawn from the patched code shows HALF_OPEN with its waiting state gone.",
+      "categories": [
+        "functional",
+        "performance"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "027",
+      "path": "027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx",
+      "title": "A switch rewrite of the retry policy stops retrying the 5xx statuses it did not list",
+      "summary": "The retry policy is four `if` statements, and a developer rewrites them as one switch expression over the status, listing the retryable statuses by name, which reads better and is how the team now writes such tables. The regression proof compares the old and the new bytecode on every input, 2^96 of them, and finds a status in the five hundreds that the old code retried and the switch does not.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "028",
+      "path": "028-retry-that-sleeps-on-the-caller-thread",
+      "title": "A retry helper that sleeps out the Retry-After delay gives a pure module a thread call",
+      "summary": "The kernels in this module decide and never wait: the retry policy returns whether to retry, and the client's scheduler does the waiting. A developer adds a convenience that waits out the server's `Retry-After` delay with `Thread.sleep` and then decides, so that a client filter can retry inline. The module's capability contract, which lists every JDK capability its bytecode can reach, gains `threads`, and the build fails: the module can now block the thread it is called on.",
+      "categories": [
+        "performance",
+        "determinism"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.retry.RetryPolicy#retryAfterWaiting",
+      "approach": "B10",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "029",
+      "path": "029-retry-in-progress-executes-twice",
+      "title": "An idempotency key that executes a retry while the first attempt is in flight pays twice",
+      "summary": "An `Idempotency-Key` receiver refuses a retry while the first attempt with that key is still in progress, with a 409. Support reports clients stuck in 409 loops after a worker died mid-request, and a developer makes the receiver run the retry instead: if a retry arrives, the first attempt is gone. The one-line contract diff is reviewed and approved. The model checker finds a five-step run in which the first attempt is not gone at all, and the request is executed twice.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "030",
+      "path": "030-stored-failures-proved-at-most-once",
+      "title": "Storing a failed attempt's response under its key, proved at-most-once for every retry",
+      "summary": "The receiver used to release an idempotency key when the attempt under it died, so that the client's retry could run the request again. The developer makes it store the failure as the key's response instead, which is Stripe's semantics: a retry gets the first attempt's outcome, whatever it was. The regenerated contract changes in one case, the model checker runs every interleaving of three attempts against the new rule, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of retries.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "031",
+      "path": "031-rate-limiter-that-never-refills-under-steady-polling",
+      "title": "A token bucket that stamps each refill with \"now\" never refills under steady traffic",
+      "summary": "A token bucket's state is its tokens and the time up to which refills have been credited. The kernel advances that time by whole periods only, keeping the part of a period that has not earned a token yet. A developer simplifies it to \"the refill happened now\", which reads better and drops a remainder. The module's properties file says a refill never forgets a part of a period. The prover finds a refill short of a whole period, which the patched code credits anyway, and a bucket polled a little faster than it refills never earns a token again.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": false
+    },
+    {
+      "id": "032",
+      "path": "032-batch-listener-that-commits-past-a-failed-record",
+      "title": "A batch listener that commits the whole batch after a failed record loses the rest of it",
+      "summary": "A batch listener commits one past the last record it finished: the whole batch when every record is done, the failed record's own offset when one is not, so that it and everything after it come back. An on-call engineer, after a night of a consumer re-reading a poison batch, makes the listener commit the batch whatever happened, and updates the test to match. The module's properties file states what a committed offset means, and the prover refutes the change with a batch whose failed record is not its last.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "033",
+      "path": "033-cache-expiry-as-a-deadline-proved-on-every-nanosecond",
+      "title": "A cache expiry rewritten as a stored deadline, proved on every nanosecond and the sentinel",
+      "summary": "A cache's expire-after-write test is \"has the time to live elapsed since the write\". A developer rewrites it as \"is now past the deadline\", computing the deadline once at write time so that an eviction wheel can index entries by it, and guards the one addition that can overflow. The module's properties file says an entry expires exactly when its time to live has elapsed, and an entry that lives forever never does. The prover shows the rewrite satisfies it on all 2^192 inputs, including the `Long.MAX_VALUE` sentinel and the deadlines the addition cannot represent.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

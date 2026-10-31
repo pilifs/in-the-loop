@@ -21,13 +21,14 @@ Approaches (the ids are those of examples/approaches.md):
   B11  property proofs: a stated property of one method, on every input     (prove; JBMC)
   D1   protocol model checking: the system in TLA+, driven by a contract    (spec; TLC)
 
-Two subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
-by the Java proof of concept in examples/tools/contracts. Quorum (examples/apps/quorum, examples 013 onwards) is
-plain javac, verified by the Rust tool in lib/ (jvmcontract). The app is chosen by the example's subject file.
+Three subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
+by the Java proof of concept in examples/tools/contracts. Quorum (examples/apps/quorum, examples 013 to 022) and
+Crosscut (examples/apps/crosscut, examples 023 onwards) are plain javac, verified by the Rust tool in lib/
+(jvmcontract). The app is chosen by the example's subject file.
 
 Usage: python3 examples/tools/build.py [ID ...]
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
-cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the Quorum examples. No Docker.
+cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps. No Docker.
 """
 
 import atexit
@@ -46,8 +47,12 @@ EXAMPLES = REPO / "examples"
 BUILD_ROOT = "examples/apps/boxoffice"  # the Gradle build the Box Office examples patch
 VERIFIER = "examples/tools/contracts"
 COPY = [BUILD_ROOT, VERIFIER]
-QUORUM_ROOT = "examples/apps/quorum"  # the javac build the Quorum examples patch
-QUORUM_COPY = [QUORUM_ROOT]
+# The javac builds verified by the Rust tool in lib/: the app's root, the main class that runs its tests, and its
+# TLA+ model for D1 (defined below).
+TOOL_APPS = {
+    "quorum": {"root": "examples/apps/quorum", "tests": "net.terminalvalue.quorum.Tests"},
+    "crosscut": {"root": "examples/apps/crosscut", "tests": "net.terminalvalue.crosscut.Tests"},
+}
 IGNORE = shutil.ignore_patterns("build", ".gradle", ".kotlin", "*.class")
 
 VERDICT_LABEL = {
@@ -97,13 +102,14 @@ def load_example(folder):
 
 
 def app_of(example):
-    """Which subject application the example changes: 'boxoffice' or 'quorum', by its subject file."""
+    """Which subject application the example changes: 'boxoffice' or a javac app, by its subject file."""
     file = example["subject"]["file"]
-    if file.startswith(QUORUM_ROOT + "/"):
-        return "quorum"
+    for app, config in TOOL_APPS.items():
+        if file.startswith(config["root"] + "/"):
+            return app
     if file.startswith(BUILD_ROOT + "/"):
         return "boxoffice"
-    sys.exit(f"{file}: not under {BUILD_ROOT} or {QUORUM_ROOT}")
+    sys.exit(f"{file}: not under {BUILD_ROOT} or " + ", ".join(c["root"] for c in TOOL_APPS.values()))
 
 
 def validate(document, schema_name, path):
@@ -127,10 +133,10 @@ def run(folder, example):
     patch = (folder / example["change"]["patch"]).read_text()
     before, after = excerpts(patch, example["subject"]["file"])
     app = app_of(example)
-    module = module_of(example["subject"]["file"]) if app == "boxoffice" else "quorum"
+    module = module_of(example["subject"]["file"]) if app == "boxoffice" else app
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        for part in COPY if app == "boxoffice" else QUORUM_COPY:
+        for part in COPY if app == "boxoffice" else [TOOL_APPS[app]["root"]]:
             shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
         subprocess.run(["git", "apply", "-p1", "-"], input=patch, text=True, cwd=tmp, check=True)
 
@@ -140,7 +146,7 @@ def run(folder, example):
             existing_tests = {"task": f":{module}:test", "passed": tests.returncode == 0,
                               "failures": failures(build / module / "build/test-results/test")}
         else:
-            existing_tests = quorum_tests(tmp)
+            existing_tests = tool_tests(app, tmp)
 
         result = {
             "verdict": None,
@@ -393,7 +399,7 @@ def parse_trace(output):
     return steps
 
 
-# The Quorum examples: a javac build, verified by the Rust tool in lib/.
+# The javac apps (Quorum, Crosscut), verified by the Rust tool in lib/.
 
 
 def jvmcontract():
@@ -425,84 +431,86 @@ def javac(out, sources, classpath=None):
         sys.exit(f"javac failed:\n{proc.stderr}")
 
 
-def quorum_compile(root):
-    """Compiles the module under root (a copy of the repo) into root/build: main and test classes."""
-    app = root / QUORUM_ROOT
-    main, test = app / "build/main", app / "build/test"
-    javac(main, sorted((app / "src/main/java").rglob("*.java")))
-    javac(test, sorted((app / "src/test/java").rglob("*.java")), classpath=main)
+def tool_compile(app, root):
+    """Compiles the app's module under root (a copy of the repo) into its build dir: main and test classes."""
+    build = root / TOOL_APPS[app]["root"]
+    main, test = build / "build/main", build / "build/test"
+    javac(main, sorted((build / "src/main/java").rglob("*.java")))
+    javac(test, sorted((build / "src/test/java").rglob("*.java")), classpath=main)
     return main, test
 
 
-def quorum_tests(root):
+def tool_tests(app, root):
     """Runs the module's tests (plain static methods, no framework) and reports which failed."""
-    main, test = quorum_compile(root)
-    proc = subprocess.run([java(), "-ea", "-cp", f"{main}{os.pathsep}{test}", "net.terminalvalue.quorum.Tests"],
-                          text=True, capture_output=True)
+    main, test = tool_compile(app, root)
+    runner = TOOL_APPS[app]["tests"]
+    proc = subprocess.run([java(), "-ea", "-cp", f"{main}{os.pathsep}{test}", runner], text=True, capture_output=True)
     failing = sorted(re.findall(r"^FAIL (\S+):", proc.stdout, re.M))
     if proc.returncode != 0 and not failing:
         sys.exit(f"the tests did not run:\n{proc.stdout}\n{proc.stderr}")
-    return {"task": "java -ea net.terminalvalue.quorum.Tests", "passed": proc.returncode == 0, "failures": failing}
+    return {"task": f"java -ea {runner}", "passed": proc.returncode == 0, "failures": failing}
 
 
-def quorum_before_classes():
+def tool_before_classes(app):
     """The module's classes compiled from the unpatched repo, built once per run."""
-    if "quorum" not in BEFORE_CLASSES:
-        root = SCRATCH / "before-quorum"
-        for part in QUORUM_COPY:
-            shutil.copytree(REPO / part, root / part, ignore=IGNORE)
-        BEFORE_CLASSES["quorum"] = quorum_compile(root)[0]
-    return BEFORE_CLASSES["quorum"]
+    if app not in BEFORE_CLASSES:
+        root = SCRATCH / f"before-{app}"
+        part = TOOL_APPS[app]["root"]
+        shutil.copytree(REPO / part, root / part, ignore=IGNORE)
+        BEFORE_CLASSES[app] = tool_compile(app, root)[0]
+    return BEFORE_CLASSES[app]
 
 
-def quorum_tool(root, *args, anchored=True):
+def tool(app, root, *args, anchored=True):
     """Runs jvmcontract on the patched copy, with findings anchored relative to the copy's root."""
-    app = root / QUORUM_ROOT
-    anchor = ["--sources", str(app / "src/main/java"), "--base", str(root)] if anchored else []
-    proc = subprocess.run([jvmcontract(), *args, *anchor], text=True, capture_output=True, cwd=app)
+    build = root / TOOL_APPS[app]["root"]
+    anchor = ["--sources", str(build / "src/main/java"), "--base", str(root)] if anchored else []
+    proc = subprocess.run([jvmcontract(), *args, *anchor], text=True, capture_output=True, cwd=build)
     output = (proc.stdout + proc.stderr).replace(str(root) + "/", "")
     if proc.returncode == 2:
         sys.exit(f"jvmcontract failed:\n{output}")
     return proc, output
 
 
-def quorum_update_contracts(root, result):
+def tool_update_contracts(app, root, result):
     """For an intended change: regenerates the module's contracts and records the diff a reviewer would approve."""
-    app = root / QUORUM_ROOT
-    contract_dir = app / "src/contract"
+    part = TOOL_APPS[app]["root"]
+    build = root / part
+    contract_dir = build / "src/contract"
     old = {f.name: f.read_text() for f in contract_dir.glob("*.contract")}
-    quorum_tool(root, "update", "--contracts", "src/contract", "--classes", str(app / "build/main"), "--module", "quorum")
+    tool(app, root, "update", "--contracts", "src/contract", "--classes", str(build / "build/main"), "--module", app)
     result["contractDiff"] = "".join(
         "".join(difflib.unified_diff(
             old.get(f.name, "").splitlines(True), f.read_text().splitlines(True),
-            f"a/{QUORUM_ROOT}/src/contract/{f.name}", f"b/{QUORUM_ROOT}/src/contract/{f.name}"))
+            f"a/{part}/src/contract/{f.name}", f"b/{part}/src/contract/{f.name}"))
         for f in sorted(contract_dir.glob("*.contract")))
 
 
-def quorum_state_machine(root, symbol):
+def tool_state_machine(app, root, symbol):
     """The state machine the patched code implements, as Mermaid, when the symbol's contract is one."""
-    app = root / QUORUM_ROOT
-    proc = subprocess.run([jvmcontract(), "derive", symbol, "--classes", str(app / "build/main")],
+    build = root / TOOL_APPS[app]["root"]
+    proc = subprocess.run([jvmcontract(), "derive", symbol, "--classes", str(build / "build/main")],
                           text=True, capture_output=True)
     if proc.returncode != 0:
         return None
-    contract = app / "build/derived.contract"
+    contract = build / "build/derived.contract"
     contract.write_text(proc.stdout)
     proc = subprocess.run([jvmcontract(), "statemachine", str(contract), "--format", "mermaid"],
                           text=True, capture_output=True)
     return proc.stdout if proc.returncode == 0 else None
 
 
-def run_quorum_contracts(folder, example, root, module, result):
-    """B8 and B10 on Quorum: `jvmcontract verify` over the module's contracts directory."""
-    app = root / QUORUM_ROOT
+def run_tool_contracts(folder, example, root, module, result):
+    """B8 and B10 on a javac app: `jvmcontract verify` over the module's contracts directory."""
+    app = app_of(example)
+    build = root / TOOL_APPS[app]["root"]
     if example["change"]["behaviourChangeIntended"]:
-        quorum_update_contracts(root, result)
-    proc, output = quorum_tool(root, "verify", "--contracts", "src/contract", "--classes", str(app / "build/main"),
-                               "--module", module, "--report", str(app / "build/reports"))
-    write_evidence(folder, output, app / "build/reports/contracts.sarif")
+        tool_update_contracts(app, root, result)
+    proc, output = tool(app, root, "verify", "--contracts", "src/contract", "--classes", str(build / "build/main"),
+                        "--module", module, "--report", str(build / "build/reports"))
+    write_evidence(folder, output, build / "build/reports/contracts.sarif")
     verdict = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
-    cases = cases_total(output)
+    cases = cases_total(output, example["subject"]["symbol"])
     changes = capability_changes(output)
     result.update({
         "verdict": verdict,
@@ -520,7 +528,7 @@ def run_quorum_contracts(folder, example, root, module, result):
             "unverifiable": VERDICT_LABEL[verdict],
         }[verdict]
         return
-    result["stateMachine"] = quorum_state_machine(root, example["subject"]["symbol"])
+    result["stateMachine"] = tool_state_machine(app, root, example["subject"]["symbol"])
     result["verdictLabel"] = {
         "violation": f"{VERDICT_LABEL[verdict]}: {len(result['counterexamples'])} of {cases} cases changed",
         "verified": f"{VERDICT_LABEL[verdict]}: all {cases} cases match",
@@ -540,17 +548,18 @@ def finish_symbolic(folder, example, result, output, work, harness, verdict_labe
     result["verdictLabel"] = verdict_labels[result["verdict"]]
 
 
-def run_quorum_equivalence(folder, example, root, module, result):
-    """B9 on Quorum: `jvmcontract equivalence` between the unpatched and the patched classes."""
-    app = root / QUORUM_ROOT
-    work = app / "build/equivalence"
-    command = ["equivalence", "--before", str(quorum_before_classes()), "--after", str(app / "build/main"),
-               "--target", example["subject"]["symbol"], "--work", str(work), "--report", str(app / "build/reports")]
+def run_tool_equivalence(folder, example, root, module, result):
+    """B9 on a javac app: `jvmcontract equivalence` between the unpatched and the patched classes."""
+    app = app_of(example)
+    build = root / TOOL_APPS[app]["root"]
+    work = build / "build/equivalence"
+    command = ["equivalence", "--before", str(tool_before_classes(app)), "--after", str(build / "build/main"),
+               "--target", example["subject"]["symbol"], "--work", str(work), "--report", str(build / "build/reports")]
     intended = example["change"].get("intendedInputs")
     if intended:
         command += ["--unchanged-unless", intended]
-    proc, output = quorum_tool(root, *command)
-    write_evidence(folder, output, app / "build/reports/equivalence.sarif")
+    proc, output = tool(app, root, *command)
+    write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
     result["counterexamples"] = counterexamples(output)
     finish_symbolic(folder, example, result, output, work, "EquivalenceHarness.java", {
@@ -560,13 +569,14 @@ def run_quorum_equivalence(folder, example, root, module, result):
     })
 
 
-def run_quorum_property(folder, example, root, module, result):
-    """B11 on Quorum: `jvmcontract prove` of the symbol's property in the module's properties file."""
-    app = root / QUORUM_ROOT
-    work = app / "build/property"
-    proc, output = quorum_tool(root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
-                               "--classes", str(app / "build/main"), "--work", str(work), "--report", str(app / "build/reports"))
-    write_evidence(folder, output, app / "build/reports/property.sarif")
+def run_tool_property(folder, example, root, module, result):
+    """B11 on a javac app: `jvmcontract prove` of the symbol's property in the module's properties file."""
+    app = app_of(example)
+    build = root / TOOL_APPS[app]["root"]
+    work = build / "build/property"
+    proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
+                        "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"))
+    write_evidence(folder, output, build / "build/reports/property.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
     m = (re.search(r"satisfies `(.*)` on every input(?: where (.*?))? \(JBMC", output)
          or re.search(r"violated: `(.*)`(?: where (.*?))?:$", output, re.M))
@@ -604,15 +614,42 @@ TWOPC = {
     },
 }
 
+IDEMPOTENCY = {
+    "spec": "spec/IdempotentReceiver.tla",
+    "cfg": "spec/IdempotentReceiver.cfg",
+    "contract": "src/contract/IdempotentReceiver.decide.contract",
+    "operator": "spec/IdempotentReceiverContract.tla",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+    "parts": "the client's attempts, the receiver, and the attempts in flight and executing",
+    "initial": "no record for the key, nothing sent, nothing executing, no response",
+    "actions": {
+        "Initial predicate": "the initial state",
+        "Send": "`IdempotentClient.send`: the client sends the request, or retries it without waiting for an answer",
+        "Receive": "`IdempotencyFilter.doFilter`: the receiver looks the key up, decides, and applies the decision in one transaction",
+        "Finish": "`IdempotencyFilter.onCompleted`: an execution produced a result, which the receiver stores and returns",
+        "Fail": "`IdempotencyFilter.onFailure`: an execution died without a result",
+    },
+    "invariants": {
+        "TypeOK": "every variable has a value of its type",
+        "OneExecutionAtATime": "no two attempts under one key execute at the same time",
+        "AtMostOnce": "once an execution has produced a result, no attempt is executing and none ever will",
+        "ReplayedResponsesExist": "a client is never answered with a stored response that does not exist",
+    },
+}
 
-def run_quorum_tlc(folder, example, root, module, result):
-    """D1 on Quorum: the coordinator operator regenerated from the (patched) contract, then TLC through the tool."""
-    app = root / QUORUM_ROOT
+TOOL_MODELS = {"quorum": TWOPC, "crosscut": IDEMPOTENCY}
+
+
+def run_tool_tlc(folder, example, root, module, result):
+    """D1 on a javac app: the operator regenerated from the (patched) contract, then TLC through the tool."""
+    app = app_of(example)
+    build = root / TOOL_APPS[app]["root"]
+    model_files = TOOL_MODELS[app]
     if example["change"]["behaviourChangeIntended"]:
-        quorum_update_contracts(root, result)
-    quorum_tool(root, "tla", TWOPC["contract"], TWOPC["operator"], anchored=False)
-    proc = subprocess.run([jvmcontract(), "tlc", TWOPC["spec"], "--json", "--library", str(EXAMPLES / "tools/tla/standard-modules")],
-                          text=True, capture_output=True, cwd=app)
+        tool_update_contracts(app, root, result)
+    tool(app, root, "tla", model_files["contract"], model_files["operator"], anchored=False)
+    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", "--library", str(EXAMPLES / "tools/tla/standard-modules")],
+                          text=True, capture_output=True, cwd=build)
     if proc.returncode == 2:
         sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
     tlc_result = json.loads(proc.stdout)
@@ -620,10 +657,10 @@ def run_quorum_tlc(folder, example, root, module, result):
     (folder / "verifier-output.txt").write_text(output.rstrip("\n") + "\n")
     verdict = tlc_result["verdict"]
     trace = [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in tlc_result["trace"]] if verdict == "violation" else None
-    model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", (app / TWOPC["cfg"]).read_text(), re.M))
+    model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", (build / model_files["cfg"]).read_text(), re.M))
     findings = []
     if verdict != "verified":
-        message = (f"Invariant {tlc_result['invariant']} of {TWOPC['spec']} is violated after {len(trace)} steps"
+        message = (f"Invariant {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
                    if verdict == "violation" else "TLC produced no verdict: " + (tlc_result.get("problem") or "unknown"))
         findings.append({"ruleId": "invariant-violated" if verdict == "violation" else "unverifiable", "level": "error",
                          "message": {"text": message},
@@ -642,7 +679,7 @@ def run_quorum_tlc(folder, example, root, module, result):
         "statesExplored": states,
         "invariant": tlc_result.get("invariant"),
         "domain": model,
-        "stateMachine": quorum_state_machine(root, TWOPC["symbol"]),
+        "stateMachine": tool_state_machine(app, root, model_files["symbol"]),
         "proof": (f"{tlc_result['version']} explored {states:,} distinct states"
                   f"{' to depth ' + str(tlc_result['depth']) if tlc_result.get('depth') is not None else ''}"
                   f"{' in ' + str(tlc_result['seconds']) + ' s' if tlc_result.get('seconds') is not None else ''}, for the model {model}") if states is not None else None,
@@ -655,10 +692,11 @@ def run_quorum_tlc(folder, example, root, module, result):
     }[verdict]
 
 
+TOOL_RUNNERS = {"B8": run_tool_contracts, "B9": run_tool_equivalence, "B10": run_tool_contracts,
+                "B11": run_tool_property, "D1": run_tool_tlc}
 RUNNERS = {
     "boxoffice": {"B8": run_contracts, "B9": run_equivalence, "B10": run_contracts, "D1": run_tlc},
-    "quorum": {"B8": run_quorum_contracts, "B9": run_quorum_equivalence, "B10": run_quorum_contracts,
-               "B11": run_quorum_property, "D1": run_quorum_tlc},
+    **{app: TOOL_RUNNERS for app in TOOL_APPS},
 }
 
 
@@ -729,9 +767,15 @@ def module_of(file):
 # Parsing the verifiers' output
 
 
-def cases_total(output):
-    m = re.search(r"\((\d+) cases,", output) or re.search(r" of (\d+) cases", output)
-    return int(m.group(1)) if m else None
+def cases_total(output, symbol=None):
+    """The number of cases in the symbol's contract, from the output line that names it (a module with several
+    contracts prints one line each), or the first count printed."""
+    lines = [l for l in output.splitlines() if symbol is None or symbol in l] or output.splitlines()
+    for line in lines:
+        m = re.search(r" of (\d+) cases", line) or re.search(r"\((\d+) cases,", line)
+        if m:
+            return int(m.group(1))
+    return None
 
 
 def trusted_calls(output):
@@ -1060,6 +1104,14 @@ MODELS = {
         "invariants": TWOPC["invariants"],
         "machine": "The coordinator's decision rule inside the model is generated from the behavioural contract of "
                    "the patched code, so the model checks the decisions the coordinator really makes.",
+    },
+    "crosscut": {
+        "parts": IDEMPOTENCY["parts"],
+        "initial": IDEMPOTENCY["initial"],
+        "actions": IDEMPOTENCY["actions"],
+        "invariants": IDEMPOTENCY["invariants"],
+        "machine": "The receiver's decision rule inside the model is generated from the behavioural contract of "
+                   "the patched code, so the model checks the decisions the receiver really makes.",
     },
 }
 

@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "startLine": 15,
+    "code": "        if (skewSeconds < 0) {\n            throw new IllegalArgumentException(\"the clock skew tolerance is not negative\");\n        }\n        return nowSeconds >= notBefore - skewSeconds && nowSeconds < expiresAt + skewSeconds;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "startLine": 15,
+    "code": "        if (skewSeconds < 0) {\n            throw new IllegalArgumentException(\"the clock skew tolerance is not negative\");\n        }\n        // Tolerate skew on the expiry side only: a token must never be accepted before it says it is valid.\n        return nowSeconds >= notBefore + skewSeconds && nowSeconds < expiresAt + skewSeconds;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long",
+  "counterexamples": [
+    {
+      "input": "valid(nowSeconds=5, notBefore=0, expiresAt=7, skewSeconds=16)",
+      "contract": "(!valid(nowSeconds, notBefore, expiresAt, 0) || result) && (nowSeconds < notBefore || nowSeconds >= expiresAt || result)",
+      "actual": "false"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "(!valid(nowSeconds, notBefore, expiresAt, 0) || result) && (nowSeconds < notBefore || nowSeconds >= expiresAt || result)",
+    "assume": "skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,6 @@
+✗ Property of net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter violated: `result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)` where periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity:
+  lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8)
+    outcome: 10
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.

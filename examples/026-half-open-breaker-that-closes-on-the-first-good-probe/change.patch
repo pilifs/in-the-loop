@@ -1,0 +1,14 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java
+@@ -44,9 +44,8 @@ public final class CircuitBreaker {
+                     if (call.failed()) {
+                         yield transition(OPEN, START_WAIT);
+                     }
+-                    if (!call.windowComplete()) {
+-                        yield unchanged("more probes to go");
+-                    }
++                    // A probe that came back is proof enough that the backend is up again: close without holding
++                    // the callers back for the remaining probes.
+                     yield call.thresholdExceeded() ? transition(OPEN, START_WAIT) : transition(CLOSED, RESET_METRICS);
+                 }
+             };

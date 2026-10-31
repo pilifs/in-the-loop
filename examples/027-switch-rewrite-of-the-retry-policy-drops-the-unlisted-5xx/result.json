@@ -1,0 +1,42 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "startLine": 14,
+    "code": "     * idempotent request only, that it may not have (408, and the 5xx range except 501, which no retry will fix).\n     */\n    public static boolean shouldRetry(int status, boolean idempotent, int attempt, int maxAttempts) {\n        if (attempt >= maxAttempts) {\n            return false;\n        }\n        if (status == 429 || status == 503) {\n            return true;\n        }\n        if (!idempotent) {\n            return false;\n        }\n        return status == 408 || (status >= 500 && status <= 599 && status != 501);\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "startLine": 14,
+    "code": "     * idempotent request only, that it may not have (408, and the 5xx range except 501, which no retry will fix).\n     */\n    public static boolean shouldRetry(int status, boolean idempotent, int attempt, int maxAttempts) {\n        return attempt < maxAttempts && switch (status) {\n            case 429, 503 -> true;\n            case 408, 500, 502, 504 -> idempotent;\n            default -> false;\n        };\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "status: int × idempotent: boolean × attempt: int × maxAttempts: int",
+  "counterexamples": [
+    {
+      "input": "shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)",
+      "contract": "true",
+      "actual": "false"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

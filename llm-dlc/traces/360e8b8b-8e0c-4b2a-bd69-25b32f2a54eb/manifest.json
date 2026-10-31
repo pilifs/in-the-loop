@@ -12,32 +12,34 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-10-31T20:36:09.034Z",
-  "duration_seconds": 14774,
+  "ended": "2026-10-31T21:36:29.712Z",
+  "duration_seconds": 18394,
   "stats": {
-    "turns": 6,
-    "api_calls": 102,
-    "tool_calls": 332,
-    "tool_errors": 5,
-    "compactions": 1,
+    "turns": 11,
+    "api_calls": 142,
+    "tool_calls": 476,
+    "tool_errors": 6,
+    "compactions": 2,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 3204,
-      "output_tokens": 507986,
-      "cache_read_input_tokens": 33748859,
-      "cache_creation_input_tokens": 880588
+      "input_tokens": 4364,
+      "output_tokens": 666144,
+      "cache_read_input_tokens": 43761797,
+      "cache_creation_input_tokens": 1209131
     }
   },
   "tools": {
-    "Edit": 102,
-    "Bash": 99,
-    "Write": 78,
-    "Read": 47,
+    "Edit": 142,
+    "Bash": 140,
+    "Write": 130,
+    "Read": 56,
     "WebFetch": 5,
-    "ToolSearch": 1
+    "ToolSearch": 2,
+    "TaskStop": 1
   },
   "files_touched": [
     "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/make_patches.py",
+    "/tmp/claude-1000/-home-user-code-java-formal-verification/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/scratchpad/make_patches_crosscut.py",
     "README.md",
     "examples/013-longest-log-wins-breaks-election-safety/example.json",
     "examples/014-leader-that-ignores-newer-terms-in-replies/example.json",
@@ -49,8 +51,57 @@
     "examples/020-coordinator-that-presumes-commit-on-timeout/example.json",
     "examples/021-aborting-on-the-first-no-proved-safe/example.json",
     "examples/022-skew-tolerant-tie-break-splits-the-replicas/example.json",
+    "examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/example.json",
+    "examples/024-clock-skew-applied-on-the-wrong-side-of-not-before/example.json",
+    "examples/025-transaction-that-commits-after-an-error/example.json",
+    "examples/026-half-open-breaker-that-closes-on-the-first-good-probe/example.json",
+    "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/example.json",
+    "examples/028-retry-that-sleeps-on-the-caller-thread/example.json",
+    "examples/029-retry-in-progress-executes-twice/example.json",
+    "examples/030-stored-failures-proved-at-most-once/example.json",
+    "examples/031-rate-limiter-that-never-refills-under-steady-polling/example.json",
+    "examples/032-batch-listener-that-commits-past-a-failed-record/example.json",
+    "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/example.json",
     "examples/README.md",
     "examples/approaches.md",
+    "examples/apps/crosscut/README.md",
+    "examples/apps/crosscut/spec/IdempotentReceiver.cfg",
+    "examples/apps/crosscut/spec/IdempotentReceiver.tla",
+    "examples/apps/crosscut/spec/README.md",
+    "examples/apps/crosscut/src/contract/properties.contract",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/Decision.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/KeyState.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/ReceiverEffect.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/ReceiverEvent.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/money/Allocation.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/BreakerEffect.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/BreakerEvent.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/BreakerState.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/Completion.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/Enlistment.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/Propagation.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
+    "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionOutcome.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/cache/ExpiryTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchCommitTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/PartitionerTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/money/AllocationTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/TokenBucketTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/resilience/CircuitBreakerTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/RetryPolicyTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/security/JwtTimestampsTest.java",
+    "examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/tx/TransactionBoundaryTest.java",
+    "examples/apps/crosscut/verify.sh",
     "examples/apps/quorum/README.md",
     "examples/apps/quorum/spec/README.md",
     "examples/apps/quorum/spec/TwoPhaseCommit.cfg",
@@ -140,24 +191,38 @@
     {
       "index": 1,
       "started": "2026-10-31T18:37:39.351Z",
-      "ended": "2026-10-31T20:36:09.034Z",
-      "turns": 2,
-      "api_calls": 39,
+      "ended": "2026-10-31T20:42:20.822Z",
+      "turns": 3,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 1218,
-        "output_tokens": 168319,
-        "cache_read_input_tokens": 10762921,
-        "cache_creation_input_tokens": 372354
+        "input_tokens": 1314,
+        "output_tokens": 173353,
+        "cache_read_input_tokens": 11975753,
+        "cache_creation_input_tokens": 381671
       },
-      "peak_context_tokens": 399966
+      "peak_context_tokens": 409283
+    },
+    {
+      "index": 2,
+      "started": "2026-10-31T20:44:07.237Z",
+      "ended": "2026-10-31T21:36:29.712Z",
+      "turns": 4,
+      "api_calls": 37,
+      "usage": {
+        "input_tokens": 1064,
+        "output_tokens": 153124,
+        "cache_read_input_tokens": 8800106,
+        "cache_creation_input_tokens": 319226
+      },
+      "peak_context_tokens": 350644
     }
   ],
   "log": {
-    "sha256": "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc",
-    "bytes": 8425676,
-    "lines": 2046,
-    "gzip_bytes": 1501541,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz"
+    "sha256": "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f",
+    "bytes": 11665144,
+    "lines": 2931,
+    "gzip_bytes": 2102178,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -176,6 +241,14 @@
       "summary": "Add Quorum, ten distributed-systems examples, and property proofs to jvmcontract",
       "body": "A second subject system, examples/apps/quorum: the pure decision kernels of a replicated system (Raft's vote rule and role machine, majority quorums, exponential backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator with a TLA+ model of the protocol around it). It is plain javac with a reflective test runner, no Gradle, and it is verified by the Rust tool: behavioural, capability and API contracts, a properties file, and TLC on the model; verify.sh runs all of it in seconds.\n\njvmcontract gains 'prove', a property proof by bounded model checking: a Java boolean expression over a method's parameters, its result and calls of the method itself (so laws such as commutativity or antisymmetry can be stated), optionally restricted by an assumption, generated as a bytecode harness and proved by JBMC over every input or refuted with an input replayed in the interpreter. 'prove --properties FILE' proves every block of a committed properties.contract as a build step. The expression language gained calls and a comma token; the verifier skips the properties file; a new SARIF rule property-violated. A bug found on the way: JBMC runs in the work directory, so a relative class path entry silently became a stub with an arbitrary result and every property was refuted with nonsense witnesses; class path entries are now made absolute and JBMC's 'failed to access directory' warning is an unverifiable verdict, with unit tests for both.\n\nExamples 013 to 022 run the Rust tool over Quorum: a longest-log-wins vote rule refuted by regression proof over 2^448 inputs (013); a leader that ignores newer terms in replies, one changed case of 52 with the state machine drawn (014); (n+1)/2 refuted as a majority at n=2 (015); a backoff cleanup whose shift overflows into a negative delay (016); a hybrid logical clock refactor proved monotonic and symmetric (017) and one that drops a case, refuted (018); jitter that gives the module a randomness capability (019); a 2PC coordinator that presumes commit on timeout, a three-step TLC trace where the one vote cast is a no still in flight (020); abort-on-first-no proved safe in 644 states (021); and a skew-tolerant last-writer-wins tie-break that breaks antisymmetry (022). build.py got a runner table per subject app, the B11 approach, a Mermaid state-machine view for state-machine contracts, and TLC through 'jvmcontract tlc --json'. Verified by running the generator (all ten verdicts as expected, about 20 s in all), cargo test (30 unit, 18 integration tests), clippy clean, and verify.sh.",
       "log_sha256": "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc"
+    },
+    {
+      "change_id": "svxmqsyryrtvqsrxsqqxxkmsrrouxmvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add Crosscut, eleven Spring Boot examples verified by jvmcontract",
+      "body": "A third subject system, examples/apps/crosscut: the pure kernels behind a Spring Boot service's cross-cutting concerns, written so that jvmcontract can prove them. TransactionBoundary (the propagation and rollback rules of a transaction interceptor, two behavioural contracts of 16 and 22 cases), CircuitBreaker (44 cases, drawn as a state machine), RetryPolicy, TokenBucket, IdempotentReceiver (24 cases, plus a TLA+ model of a client retrying against it, 168 states), a Kafka Partitioner and BatchCommit, JwtTimestamps and cache Expiry. The module has capability and API contracts, seven properties proved by JBMC in about forty seconds, plain javac tests and a verify.sh.\n\nExamples 023 to 033 run eleven changes to it through the tool: Math.abs in a partitioner (023, B11), clock skew on the wrong side of nbf (024, B11), a rollback rule that commits after an Error (025, B8), a half-open breaker that closes on the first good probe (026, B8), a switch rewrite of the retry policy that drops the unlisted 5xx (027, B9), a Thread.sleep added to the retry policy (028, B10), an idempotency key that executes a retry while the first attempt is in flight (029, D1, five-step trace), stored failures proved at-most-once (030, D1, verified), a token bucket that stamps refills with now (031, B11, caught by one test), a batch listener that commits past a failed record (032, B11) and a cache expiry rewritten as a deadline proved on every nanosecond (033, B11, verified). Nine of the eleven are missed by the module's tests.\n\nbuild.py now has a table of javac apps (TOOL_APPS, TOOL_MODELS) instead of Quorum-specific functions, and reads a contract's case count from the output line that names the symbol, since a module with several contracts prints one line each. A money-allocation kernel was tried and dropped: JBMC's SAT backend cannot prove identities between divisions and multiplications (the sum of floorDiv shares) in minutes; approaches.md and the lib README record the limit. Verified by running the eleven examples (all verdicts as expected, about 20 seconds), examples/apps/crosscut/verify.sh (39 tests, 4 contracts, 7 properties, TLC), and three Quorum examples through the refactored generator.",
+      "log_sha256": "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f"
     }
   ],
   "logs": {
@@ -183,6 +256,12 @@
       "bytes": 8425676,
       "lines": 2046,
       "gzip_bytes": 1501541,
+      "url": null
+    },
+    "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f": {
+      "bytes": 11665144,
+      "lines": 2931,
+      "gzip_bytes": 2102178,
       "url": null
     },
     "e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b": {
