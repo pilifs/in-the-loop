@@ -94,6 +94,14 @@
       "summary": "Stop flagging versions as IPs and grade check output",
       "body": "Four-part Java versions such as those in openjdk and java.base@ output were reported as public IPs, and the all-zero MAC literal in sync.py as an IPv6 address, so harmless warnings kept appearing before pushes. The public-ip warning now skips an address-shaped value only when the text around it says it is a version; a bare @ does not count, so root@<ip> still warns. All-zero IPv6 matches are ignored.\n\ncheck now reports three levels: ERROR must be fixed, warn is for a person to judge, note needs no action. Notes are grouped per session, which took a full run from 38 lines to 4. The 13 reviewed policy 3 logs are listed by hash in ACCEPTED_LOGS and appear as a note. Any other published log with findings warns, so logs flagged by a future policy are not accepted without review.\n\nVerified with 8 made-up strings that must stay quiet and 8 that must warn, and by emptying ACCEPTED_LOGS in memory, which turned the 13 logs back into warnings with exit 0. check reports 0 errors and 0 warnings; scan keeps warning only on two DNS answers and one auth-header match, all in the first session.",
       "log_sha256": "8864a17c4a1b53a2fec1ba2fab0160e61026f4574824bcc9b6c334dcd0797c90"
+    },
+    {
+      "change_id": "lowrlswrmmozysomtkvmqllryxzoqmrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6"
     }
   ],
   "logs": {
@@ -119,7 +127,7 @@
       "bytes": 1024505,
       "lines": 310,
       "gzip_bytes": 209581,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz"
     },
     "ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e": {
       "bytes": 631217,

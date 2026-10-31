@@ -50,6 +50,12 @@ check now reports three levels: ERROR must be fixed, warn is for a person to jud
 
 Verified with 8 made-up strings that must stay quiet and 8 that must warn, and by emptying ACCEPTED_LOGS in memory, which turned the 13 logs back into warnings with exit 0. check reports 0 errors and 0 warnings; scan keeps warning only on two DNS answers and one auth-header match, all in the first session.
 
+### Record session traces
+
+change `lowrlswrmmoz` · [log `a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz) has every step in between: reasoning, tool calls and their results.
