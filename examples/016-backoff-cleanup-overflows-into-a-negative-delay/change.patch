@@ -1,0 +1,15 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/backoff/Backoff.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/backoff/Backoff.java
+@@ -16,11 +16,6 @@ public final class Backoff {
+         if (attempt < 0 || baseMillis <= 0 || capMillis < baseMillis) {
+             throw new IllegalArgumentException("attempt >= 0, base > 0 and cap >= base are required");
+         }
+-        // Doubling base 2^attempt times exceeds the cap exactly when base exceeds cap / 2^attempt, and that test
+-        // cannot overflow. From attempt 62 on, any base does.
+-        if (attempt >= 62 || baseMillis > (capMillis >> attempt)) {
+-            return capMillis;
+-        }
+-        return baseMillis << attempt;
++        return Math.min(capMillis, baseMillis << attempt);
+     }
+ }

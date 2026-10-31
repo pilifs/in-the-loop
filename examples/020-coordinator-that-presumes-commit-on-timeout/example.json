@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "020",
+  "title": "A 2PC coordinator that presumes commit on timeout splits the participants",
+  "summary": "When the vote collection times out, the coordinator aborts: a participant that has not answered may have given up. A developer softens this: if every vote that did arrive was yes, the missing ones are slow, not opposed, so commit. The one-line contract diff is reviewed and approved. The model checker finds a three-step run in which a participant votes no, its vote is still in flight when the timer fires, \"everyone who answered said yes\" is true of nobody, and the coordinator commits a transaction that participant has already aborted.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "On timeout, commit if the votes counted so far are unanimous, else abort. The behavioural contract of the coordinator is regenerated and its diff is one line, the case `decide(COLLECTING, Timeout[unanimousSoFar=true])`, which is exactly what the developer meant to change. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "Two-phase commit's only promise is atomicity: every participant that decides, decides the same way. A coordinator that commits without a yes from every participant breaks it the first time a participant is slow to vote no, or aborts on its own after a timeout of its own. One participant commits and releases its locks, another has rolled back, and the transaction is half applied across two databases with nothing left to reconcile it. The contract diff did not help here, and could not: it shows that the coordinator's rule changed in one case, which is precisely what was intended. Whether the new rule is safe is a question about every interleaving of the participants, the network and two timers, and only the model answers it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The TLA+ model has one action per operation of each part: a participant votes, a participant that has not voted gives up, a participant applies the decision, the coordinator counts a vote, the coordinator's timer fires. The coordinator's decision rule inside the model is not hand-written: it is generated from the behavioural contract of `Coordinator#decide`, which the tool proves the bytecode satisfies on all 28 inputs, so the model decides exactly as the Java does. TLC explores every interleaving for three participants and reports the shortest run that violates atomicity. It is three steps long, and the step that matters is the timer firing with the one vote cast still in flight: \"all votes counted so far are yes\" is vacuously true of an empty tally. A case the developer, the reviewer and the test suite all read as \"the slow participant was going to say yes\" is, for the model, also the case where nobody has said anything.",
+  "resolution": "Revert to presumed abort. The timeout exists because an unanswered prepare means the participant may have aborted unilaterally; no amount of optimism about the votes that did arrive changes that. Any change to the coordinator's rule reaches the model through its contract, so the next idea of this kind is checked the same way before it is merged.",
+  "provenance": "Constructed from the presumed-abort rule of two-phase commit, by replacing it with the optimistic variant that a reviewer would plausibly accept.",
+  "references": [
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (the two-phase commit protocol)",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit (the TLA+ specification of 2PC this model follows)",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    }
+  ]
+}

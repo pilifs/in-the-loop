@@ -293,8 +293,8 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
         files.sort();
         for file in files {
             let name = file.file_name().and_then(|n| n.to_str()).unwrap_or("");
-            if name == capabilities::FILE_NAME || name == crate::api::FILE_NAME {
-                continue;
+            if name == capabilities::FILE_NAME || name == crate::api::FILE_NAME || name == crate::property::FILE_NAME {
+                continue; // the module-level contracts; properties are proved by `prove --properties`
             }
             let contract = Contract::read(&file)?;
             targets.insert(contract.target, file);

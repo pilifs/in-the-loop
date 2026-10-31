@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "018",
+  "title": "A hybrid logical clock that drops one case stamps a receive before the message",
+  "summary": "The same rewrite as example 017, with the case where the last timestamp and the message share a physical part collapsed into the other two: continue whichever counter is checked first. The property that a receive event's timestamp is later than the message's is refuted with a message whose counter is ahead of the clock's. A transaction stamped with that clock would be ordered before an event it causally follows.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
+    "symbol": "net.terminalvalue.quorum.clock.HybridLogicalClock#receive"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Compute the physical part as the maximum of the three, then return early: the last timestamp's counter plus one if the last timestamp had that physical part, else the message's counter plus one if the message had it, else zero. Three cases instead of four; the `max` of the two counters looked like it was covered by the first branch.",
+    "patch": "change.patch"
+  },
+  "risk": "A hybrid logical clock is used to order transactions across nodes: a node that receives a message takes a timestamp later than the message's, so that whatever it does next is ordered after what it just learned. With this change, when the two timestamps fall in the same millisecond and the message's counter is ahead, the node continues its own counter and stamps the next transaction before the message. A snapshot read at that timestamp sees the effect and not the cause. In a database that uses the clock for consistent snapshots this is a serializability violation that happens only under load, when many events share a millisecond, and leaves no trace but an inconsistent read.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property is the same as in example 017. JBMC searches small inputs first and finds a wall clock at 0, a last timestamp of 0 and a message with physical part 0 and a counter ahead of the clock's; the new code returns a timestamp whose counter is one more than the clock's, which is not later than the message's. The tool replays the input on the method to show the value. The unit test that covers equal physical parts also fails, so here the proof and a well-chosen test agree; the difference is that the proof would also have caught the variants that the test's two data points miss, such as an off-by-one in only the message's branch.",
+  "resolution": "Keep the `max` of the two counters when the physical parts are equal, as example 017's version does. The properties file is unchanged by either refactor.",
+  "provenance": "Constructed from the receive rule of Kulkarni et al., by dropping the case the paper's algorithm spells out separately.",
+  "references": [
+    {
+      "title": "Kulkarni, Demirbas, Madappa, Avva and Leone, Logical Physical Clocks and Consistent Snapshots in Globally Distributed Databases",
+      "url": "https://cse.buffalo.edu/tech-reports/2014-04.pdf"
+    }
+  ]
+}

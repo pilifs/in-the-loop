@@ -1,0 +1,32 @@
+# Property contract, proved by jvmcontract (`jvmcontract prove --properties`). Do not edit the proofs: edit the code.
+# Each block names a static method, the inputs the property is about (assume) and the property (assert), a Java
+# boolean expression over the parameters, `result`, and the method itself. JBMC proves each one over every
+# input, or the build fails with an input that violates it.
+kind: properties
+module: quorum
+
+# Any two majorities of the same cluster share a node.
+net.terminalvalue.quorum.Quorum#majority
+  assume: n > 0
+  assert: 2L * result > n && result <= n
+
+# A retry never waits less than the base, never more than the cap, and never waits less than the previous attempt.
+net.terminalvalue.quorum.backoff.Backoff#delayMillis
+  assume: attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis
+  assert: result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))
+
+# A local event's timestamp is later than the last one and never behind the physical clock.
+net.terminalvalue.quorum.clock.HybridLogicalClock#tick
+  assume: nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && (last & 0xFFFF) < 0xFFFF
+  assert: result > last && (result >>> 16) >= nowMillis
+
+# A receive event's timestamp is later than both the last one and the message's, never behind the physical clock,
+# and the same whichever of the two timestamps is called "last".
+net.terminalvalue.quorum.clock.HybridLogicalClock#receive
+  assume: nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF
+  assert: result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)
+
+# Two replicas that see two distinct writes in either order pick the same winner.
+net.terminalvalue.quorum.replication.LastWriterWins#winner
+  assume: tsA != tsB || nodeA != nodeB
+  assert: result == 1 - winner(tsB, nodeB, tsA, nodeA)

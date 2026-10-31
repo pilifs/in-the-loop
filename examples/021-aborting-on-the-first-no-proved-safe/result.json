@@ -1,0 +1,36 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants hold in 644 states",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 23,
+    "code": "public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {\n    return switch (event) {\n        case Tally tally -> switch (phase) {\n            case COLLECTING -> !tally.complete()\n                    ? unchanged(\"waiting for the remaining votes\")\n                    : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n            case COMMITTED, ABORTED -> unchanged(\"already decided\");\n        };\n        case Timeout _ -> switch (phase) {\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 23,
+    "code": "public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {\n    return switch (event) {\n        case Tally tally -> switch (phase) {\n            // One no decides the outcome: abort at once instead of keeping the other participants' locks\n            // until the last vote or the timeout.\n            case COLLECTING -> !tally.unanimous()\n                    ? transition(ABORTED, SEND_ABORT)\n                    : tally.complete() ? transition(COMMITTED, SEND_COMMIT) : unchanged(\"waiting for the remaining votes\");\n            case COMMITTED, ABORTED -> unchanged(\"already decided\");\n        };\n        case Timeout _ -> switch (phase) {\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -4,7 +4,7 @@\n target: net.terminalvalue.quorum.twopc.Coordinator#decide\n domain: Phase (4) × CoordinatorEvent (7) = 28 cases\n \n-decide(COLLECTING, Tally[complete=false, unanimous=false]) => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(COLLECTING, Tally[complete=false, unanimous=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=false, unanimous=true])  => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n",
+  "proof": "TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 644,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=false, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

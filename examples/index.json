@@ -182,6 +182,159 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "013",
+      "path": "013-longest-log-wins-breaks-election-safety",
+      "title": "A \"longest log wins\" vote rule lets a Raft leader overwrite committed entries",
+      "summary": "Raft's election restriction compares the last log entry's term first and its index second. A developer rewrites it the intuitive way round: the candidate with more entries has seen more history, so index first, term to break ties. Every unit test passes. The prover finds a voter and a candidate for which the old rule refuses the vote and the new one grants it, which is the configuration in which a leader can overwrite an entry the cluster already committed.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#grant",
+      "approach": "B9",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "014",
+      "path": "014-leader-that-ignores-newer-terms-in-replies",
+      "title": "A leader that ignores newer terms in replies keeps serving a term the cluster has left",
+      "summary": "Raft's rule for every server is one line: a message from a newer term makes you a follower. A developer narrows it for leaders, reasoning that a leader learns of a new term from the new leader's heartbeats, not from replies to its own RPCs. The behavioural contract of the role machine, 52 cases derived from the bytecode, changes in exactly one of them, and that one is the deposed-leader case.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "B8",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "015",
+      "path": "015-rounded-half-is-not-a-majority",
+      "title": "A majority rewritten as \"half, rounded up\" lets two quorums miss each other",
+      "summary": "The property that every quorum system rests on is that two majorities always share a node. The module states it next to the code, as `2 * majority(n) > n`, and the build proves it for every cluster size with a bounded model checker. A developer simplifies `n / 2 + 1` to `(n + 1) / 2`, which agrees on every odd size the tests use. The prover answers with n = 2: two \"majorities\" of one node each, which need not overlap.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.Quorum#majority",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "016",
+      "path": "016-backoff-cleanup-overflows-into-a-negative-delay",
+      "title": "A backoff cleanup that removes the overflow guard turns the delay negative",
+      "summary": "Exponential backoff is `min(cap, base << attempt)`, and the three lines that guard the shift against overflow look like paranoia, so a developer removes them. The module's properties file says a delay is never below the base, never above the cap, and never shorter than the previous attempt's. The prover finds an attempt count and a base for which the shift overflows into a negative delay, which a scheduler treats as \"retry now\", forever.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.backoff.Backoff#delayMillis",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "017",
+      "path": "017-hybrid-logical-clock-refactor-proved-monotonic",
+      "title": "A hybrid logical clock rewritten with max(), proved to never go backwards on any input",
+      "summary": "The receive rule of a hybrid logical clock has four branches; a developer rewrites it as one `max` and two conditionals. The property the clock exists for, that the new timestamp is later than both the last one and the message's and never behind the physical clock, is proved for every pair of 64-bit timestamps and every wall-clock reading. The refactor is merged on the strength of the proof, not of a review of the branches.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.clock.HybridLogicalClock#receive",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "018",
+      "path": "018-hybrid-logical-clock-that-goes-backwards",
+      "title": "A hybrid logical clock that drops one case stamps a receive before the message",
+      "summary": "The same rewrite as example 017, with the case where the last timestamp and the message share a physical part collapsed into the other two: continue whichever counter is checked first. The property that a receive event's timestamp is later than the message's is refuted with a message whose counter is ahead of the clock's. A transaction stamped with that clock would be ordered before an event it causally follows.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.clock.HybridLogicalClock#receive",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": false
+    },
+    {
+      "id": "019",
+      "path": "019-jitter-makes-the-kernel-unsimulatable",
+      "title": "Adding jitter inside the backoff kernel gives a pure module a random number generator",
+      "summary": "The kernels in this module are pure so that a deterministic simulator can drive the whole cluster through thousands of seeded runs and replay any failure exactly. A developer adds jitter to the backoff, the textbook improvement, by calling `ThreadLocalRandom` inside the kernel, and updates the tests to accept a range. The module's capability contract, which lists every JDK capability its bytecode can reach, gains `randomness`, and the build fails: the module can no longer be replayed.",
+      "categories": [
+        "determinism",
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.backoff.Backoff#delayMillis",
+      "approach": "B10",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "020",
+      "path": "020-coordinator-that-presumes-commit-on-timeout",
+      "title": "A 2PC coordinator that presumes commit on timeout splits the participants",
+      "summary": "When the vote collection times out, the coordinator aborts: a participant that has not answered may have given up. A developer softens this: if every vote that did arrive was yes, the missing ones are slow, not opposed, so commit. The one-line contract diff is reviewed and approved. The model checker finds a three-step run in which a participant votes no, its vote is still in flight when the timer fires, \"everyone who answered said yes\" is true of nobody, and the coordinator commits a transaction that participant has already aborted.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "021",
+      "path": "021-aborting-on-the-first-no-proved-safe",
+      "title": "Aborting on the first no vote, proved safe for every interleaving of three participants",
+      "summary": "The coordinator used to wait for every vote before deciding, holding every participant's locks until the last straggler or the timeout. The developer makes it abort as soon as one no arrives. The regenerated contract changes in one case, the model checker runs every interleaving of three participants, the coordinator, the votes in flight and both timeouts, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of the protocol.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "022",
+      "path": "022-skew-tolerant-tie-break-splits-the-replicas",
+      "title": "A skew-tolerant tie-break for last-writer-wins lets replicas keep different values",
+      "summary": "Last-writer-wins resolution must be a total order on writes, or replicas that see the same two writes in different orders keep different values forever. The module states this as a law: `winner(a, b) == 1 - winner(b, a)` for distinct writes. A developer makes the tie-break tolerate clock skew, treating timestamps within five milliseconds as simultaneous and letting the node id decide. The prover finds two writes from the same node a couple of milliseconds apart that each replica resolves in favour of the one it saw first.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

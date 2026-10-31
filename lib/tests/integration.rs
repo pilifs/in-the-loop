@@ -8,7 +8,7 @@ use std::sync::OnceLock;
 use jvmcontract::classpath::ClassPath;
 use jvmcontract::contract::Contract;
 use jvmcontract::verifier::{self, ContractsRun, Verifier};
-use jvmcontract::{capabilities, equivalence, tla, Verdict};
+use jvmcontract::{capabilities, equivalence, property, tla, Verdict};
 
 fn has(program: &str) -> bool {
     Command::new(program).arg("--version").output().map(|o| o.status.success()).unwrap_or(false)
@@ -329,6 +329,65 @@ fn a_reference_parameter_is_refused_by_the_symbolic_verifier() {
     let outcome = equivalence_run(&classes, &classes, None, "string");
     assert_eq!(outcome.verdict, Verdict::Unverifiable);
     assert!(outcome.output.contains("cannot be verified: parameter code has type java.lang.String"), "{}", outcome.output);
+}
+
+fn prove(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str) -> Option<property::Outcome> {
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return None;
+    }
+    let classes = fixtures()?;
+    let mut options = property::Options::new(&[classes.to_path_buf()], target);
+    options.assume = assume.map(str::to_string);
+    options.assert = assert.map(str::to_string);
+    let work = target_tmp().join(format!("property-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    options.report = Some(work.join("report"));
+    Some(property::run(&options).unwrap())
+}
+
+#[test]
+fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
+    // In int arithmetic `2 * result` overflows near Integer.MAX_VALUE, and the prover says so; the property is
+    // stated in long arithmetic.
+    let Some(overflow) = prove("fixtures.Laws#majority", Some("n > 0"), Some("2 * result > n"), "majority-overflow") else { return };
+    assert_eq!(overflow.verdict, Verdict::Violation, "{}", overflow.output);
+    assert!(overflow.counterexample.unwrap().values[0].parse::<i32>().unwrap() > i32::MAX / 2);
+    let proved = prove("fixtures.Laws#majority", Some("n > 0"), Some("2L * result > n && result <= n"), "majority").unwrap();
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+    assert!(proved.output.contains("✓ fixtures.Laws#majority satisfies `2L * result > n && result <= n` on every input where n > 0"), "{}", proved.output);
+    assert!(proved.statement.unwrap().exists());
+
+    let refuted = prove("fixtures.Laws#roundedHalf", Some("n > 0"), Some("2 * result > n"), "rounded-half").unwrap();
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    let witness = refuted.counterexample.unwrap();
+    assert_eq!(witness.input, "roundedHalf(n=2)", "the smallest even cluster");
+    assert_eq!(witness.outcome, "1");
+    assert!(std::fs::read_to_string(refuted.work.join("report/property.sarif")).unwrap().contains("property-violated"));
+
+    // Without the assumption, the exception on n <= 0 violates the property.
+    let throws = prove("fixtures.Laws#majority", None, Some("2 * result > n"), "majority-throws").unwrap();
+    assert_eq!(throws.verdict, Verdict::Violation, "{}", throws.output);
+    assert!(throws.counterexample.unwrap().outcome.starts_with("throws IllegalArgumentException"), "{}", throws.output);
+}
+
+#[test]
+fn a_law_may_call_the_method_and_a_boolean_method_is_its_own_property() {
+    let Some(law) = prove("fixtures.Laws#maxOf", None, Some("result == maxOf(b, a) && result >= a && result >= b && maxOf(result, a) == result"), "max-law") else { return };
+    assert_eq!(law.verdict, Verdict::Verified, "{}", law.output);
+    assert!(std::fs::read_to_string(law.statement.unwrap()).unwrap().contains("result == fixtures.Laws.maxOf(b, a)"));
+
+    let strict = prove("fixtures.Laws#maxIsStrict", None, None, "max-strict").unwrap();
+    assert_eq!(strict.verdict, Verdict::Violation, "{}", strict.output);
+    assert_eq!(strict.assert.as_deref(), Some("result"));
+    let witness = strict.counterexample.unwrap();
+    assert_eq!(witness.values[0], witness.values[1], "the witness has a = b: {}", witness.input);
+    assert_eq!(witness.outcome, "false");
+
+    let malformed = prove("fixtures.Laws#maxOf", None, Some("result == maxOf(a)"), "max-malformed").unwrap();
+    assert_eq!(malformed.verdict, Verdict::Unverifiable);
+    assert!(malformed.output.contains("maxOf takes 2 arguments, 1 given"), "{}", malformed.output);
 }
 
 /// The Box Office domain module of this repository, when the crate sits inside it.

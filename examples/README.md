@@ -1,22 +1,27 @@
 # Examples
 
-> **Start with examples 006 to 012.** Examples 001 to 005 were created by Opus 5.5, and examples 006 to 012 by Fable 5.1.
-> The Fable examples may be the more interesting ones, as they go significantly beyond what can be achieved with type checking.
+> **Start with examples 013 to 022**, then 006 to 012. Examples 001 to 005 were created by Opus 5.5, the rest by Fable 5.1.
+> The later examples go significantly beyond what can be achieved with type checking.
 
-Each example is one code change to [Box Office](apps/boxoffice/README.md), the demo ticketing system, run through a formal verifier, with the verdict and why it matters.
+Each example is one code change to a subject system, run through a formal verifier, with the verdict and why it matters.
 Together they show what verification catches that code review and tests miss, and what it lets through.
-None of it needs the reader to write a specification: each verifier derives its statement from the code, the types, or the previous version.
+None of it needs the reader to write a specification: each verifier derives its statement from the code, the types, the previous version, or a one-line property committed next to the code.
 
-The examples use four approaches, numbered as in [`approaches.md`](approaches.md). The common principle is that a checked-in artifact may change only where the developer intends a change, and the diff of that artifact is what the reviewer approves.
+There are two subject systems. [Box Office](apps/boxoffice/README.md) (examples 001 to 012) is a ticketing system of two Spring Boot services over Kafka, verified by the Java proof of concept in [`tools/contracts`](tools/contracts/README.md).
+[Quorum](apps/quorum/README.md) (examples 013 to 022) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator, verified by [`jvmcontract`](../lib/README.md), the Rust tool, with no JVM in the loop.
+
+The examples use five approaches, numbered as in [`approaches.md`](approaches.md). The common principle is that a checked-in artifact may change only where the developer intends a change, and the diff of that artifact is what the reviewer approves.
 
 | Approach | What is checked | How it is proved | Examples |
 |---|---|---|---|
-| [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | 001 to 005 |
-| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008 |
-| [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, reflection, class loading, ... | Closed-world inspection of every call site in the compiled classes | 009 and 010 |
-| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of the two services, Kafka and the clock, over every interleaving within bounds | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011 and 012 |
+| [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | 001 to 005, 014 |
+| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008, 013 |
+| [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, ... | Closed-world inspection of every call site in the compiled classes | 009, 010, 019 |
+| [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, replayed by the tool | 015 to 018, 022 |
+| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011, 012, 020, 021 |
 
 A type system could do some of what 001 to 005 do. It could not find a one-cent rounding drift across 2^96 inputs (006), prove that a pricing change touches only the groups it says it touches (007), notice that a codec started loading classes named by Kafka messages (009), or produce the nine-step interleaving in which a paid customer loses their seat and their refund (011).
+Nor could it tell that a Raft vote rule rewritten as "longest log wins" will elect a leader that overwrites committed entries (013), that `(n + 1) / 2` is not a majority (015), that a hybrid logical clock with one branch folded away hands out a timestamp older than the message it just received (018), or that a two-phase-commit coordinator which presumes commit on timeout commits over a participant's no vote that is still in flight (020).
 
 <!-- examples:begin (generated by examples/tools/build.py) -->
 | # | Example | Approach | Verdict | Existing tests | Categories | Severity if shipped | Change |
@@ -33,6 +38,16 @@ A type system could do some of what 001 to 005 do. It could not find a one-cent 
 | 010 | [A codec setting that changes payloads but not what the module can do](010-sorted-payload-keeps-capabilities/README.md) | B10 | ✓ Verified: capabilities unchanged | pass | no-false-positive | none | configuration |
 | 011 | [Skipping one query in a Kafka listener strands a customer's money](011-skipped-seat-check-strands-the-money/README.md) | D1 | ✗ Violation: NoMoneyStranded, 9-step trace | **missed** | functional | high | refactor |
 | 012 | [Deleting the hold sweeper, proved safe for every interleaving](012-deleting-the-sweeper-is-safe/README.md) | D1 | ✓ Verified: all invariants hold in 3,604 states | pass | no-false-positive | none | cleanup |
+| 013 | [A "longest log wins" vote rule lets a Raft leader overwrite committed entries](013-longest-log-wins-breaks-election-safety/README.md) | B9 | ✗ Violation: counterexample found | **missed** | functional | critical | refactor |
+| 014 | [A leader that ignores newer terms in replies keeps serving a term the cluster has left](014-leader-that-ignores-newer-terms-in-replies/README.md) | B8 | ✗ Violation: 1 of 52 cases changed | **missed** | functional | high | refactor |
+| 015 | [A majority rewritten as "half, rounded up" lets two quorums miss each other](015-rounded-half-is-not-a-majority/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | critical | cleanup |
+| 016 | [A backoff cleanup that removes the overflow guard turns the delay negative](016-backoff-cleanup-overflows-into-a-negative-delay/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | cleanup |
+| 017 | [A hybrid logical clock rewritten with max(), proved to never go backwards on any input](017-hybrid-logical-clock-refactor-proved-monotonic/README.md) | B11 | ✓ Verified: property holds on every input | pass | functional, no-false-positive | none | refactor |
+| 018 | [A hybrid logical clock that drops one case stamps a receive before the message](018-hybrid-logical-clock-that-goes-backwards/README.md) | B11 | ✗ Violation: counterexample found | caught | functional | critical | refactor |
+| 019 | [Adding jitter inside the backoff kernel gives a pure module a random number generator](019-jitter-makes-the-kernel-unsimulatable/README.md) | B10 | ✗ Violation: 2 capability changes | **missed** | determinism, functional | high | feature |
+| 020 | [A 2PC coordinator that presumes commit on timeout splits the participants](020-coordinator-that-presumes-commit-on-timeout/README.md) | D1 | ✗ Violation: Atomicity, 3-step trace | **missed** | functional | critical | feature |
+| 021 | [Aborting on the first no vote, proved safe for every interleaving of three participants](021-aborting-on-the-first-no-proved-safe/README.md) | D1 | ✓ Verified: all invariants hold in 644 states | pass | functional, no-false-positive | none | feature |
+| 022 | [A skew-tolerant tie-break for last-writer-wins lets replicas keep different values](022-skew-tolerant-tie-break-splits-the-replicas/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | feature |
 <!-- examples:end -->
 
 The *Existing tests* column is measured, not claimed: the generator runs the module's unit tests against each patch. A **missed** entry means the tests pass and the change would have shipped.
@@ -58,6 +73,8 @@ Each example's page has the same sections:
 | What to do | The resolution |
 | Evidence | The verifier's console output and SARIF report, unedited; the JDK APIs a proof trusted; for a symbolic proof, the generated statement the prover checked |
 
+For a state machine (014, 020, 021), the page also draws the machine the patched code implements, from its derived contract, with unreachable and terminal states marked.
+
 ## Layout
 
 ```
@@ -76,12 +93,15 @@ examples/
     example.schema.json      the format of example.json
     result.schema.json       the format of result.json
   approaches.md              the verification approaches by level, and the plan for the demos
-  apps/boxoffice/            the subject system the examples change
+  apps/boxoffice/            the first subject system (001 to 012): the ticketing services
   apps/boxoffice/spec/       its TLA+ model (D1)
-  tools/contracts/           the verifier for B8, B9 and B10: behavioural, regression and capability contracts
+  apps/quorum/               the second subject system (013 to 022): the distributed-systems kernels, with their contracts and properties
+  apps/quorum/spec/          its TLA+ model of two-phase commit (D1)
+  tools/contracts/           the Java verifier for B8, B9 and B10, used by 001 to 012
   tools/tla/                 the generator of the model's state machine from the B8 contract, and the TLA+ standard modules TLC parses
   tools/build.py             the generator: runs every example and writes the generated files
   setup/                     the toolchain installer
+../lib/                      jvmcontract, the Rust verifier for B8 to B11 and D1, used by 013 to 022
 ```
 
 Everything a verifier says is generated by running it, so no example can claim a result the tool did not produce.
@@ -92,15 +112,16 @@ The generator also fails when a verdict differs from the example's `expected.ver
 ```bash
 python3 examples/tools/build.py          # run every example, then rewrite the pages and the table
 python3 examples/tools/build.py 002      # run one
+python3 examples/tools/build.py 013 014 015 016 017 018 019 020 021 022   # the Quorum examples, about 20 seconds in all
 ```
 
-It needs Java 25, JBMC for the B9 examples and TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for the D1 examples; no Docker.
-Each example takes from a few seconds to a minute: the patch is applied to a temporary copy of the repo, which is then compiled, tested and verified.
+It needs Java 25, JBMC for the B9 and B11 examples, TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for the D1 examples, and `cargo` (or a built `lib/target/release/jvmcontract`, or `JVMCONTRACT` pointing at one) for the Quorum examples; no Docker.
+A Box Office example takes from a few seconds to a minute, because its patch is applied to a temporary copy of the Gradle build, which is then compiled, tested and verified. A Quorum example takes a second or two: `javac`, the tests, and `jvmcontract`.
 
 To add an example:
 
 1. Make the change in your working copy, and save it with `jj diff --git > examples/NNN-short-name/change.patch`. Then undo the change.
-   A D1 example changes the Java and the matching action of [`apps/boxoffice/spec/BoxOffice.tla`](apps/boxoffice/spec/BoxOffice.tla) in the same patch.
+   A Box Office D1 example changes the Java and the matching action of [`apps/boxoffice/spec/BoxOffice.tla`](apps/boxoffice/spec/BoxOffice.tla) in the same patch; a Quorum D1 example changes the coordinator, and the model picks the change up through the regenerated contract.
 2. Write `examples/NNN-short-name/example.json`, following [`schema/example.schema.json`](schema/example.schema.json). An editor that understands JSON Schema will complete and check the fields.
-   The `approach.id` picks the verifier. For B9, `change.intendedInputs` declares the inputs the change is meant to affect.
+   The `approach.id` picks the verifier, and the `subject.file` picks the subject system. For B9, `change.intendedInputs` declares the inputs the change is meant to affect. For B11, the property is the one declared for the symbol in [`apps/quorum/src/contract/properties.contract`](apps/quorum/src/contract/properties.contract).
 3. Run `python3 examples/tools/build.py NNN`, and read the generated page.

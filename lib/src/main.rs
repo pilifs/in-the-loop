@@ -5,7 +5,7 @@ use std::process::ExitCode;
 
 use clap::{Args, Parser, Subcommand};
 
-use jvmcontract::{capabilities, classpath::ClassPath, equivalence, statemachine, tla, verifier, Error};
+use jvmcontract::{capabilities, classpath::ClassPath, equivalence, property, statemachine, tla, verifier, Error};
 
 #[derive(Parser)]
 #[command(name = "jvmcontract", version, about = "Formal verification of JVM bytecode as contracts: behavioural, regression, capability and API contracts, and TLA+ models generated from them.", long_about = None)]
@@ -38,6 +38,8 @@ enum Command {
     },
     /// Prove two compiled versions of a method equivalent with JBMC, or show an input on which they differ.
     Equivalence(EquivalenceArgs),
+    /// Prove a property of a method on every input with JBMC, or show an input that violates it.
+    Prove(ProveArgs),
     /// Print the capability contract of a module (directories or jars), without touching any file.
     Capabilities {
         /// Directories of classes or jars. Each is analysed as one module unless --each is given.
@@ -196,6 +198,48 @@ struct EquivalenceArgs {
     json: bool,
 }
 
+#[derive(Args)]
+struct ProveArgs {
+    /// `pkg.Class#method`, a static method with primitive parameters. With --properties, only this target's
+    /// properties are proved.
+    target: Option<String>,
+    #[command(flatten)]
+    classes: ClassesArgs,
+    /// A properties file (`properties.contract`): every property in it is proved, and the exit code is 1 if any
+    /// is violated or cannot be verified.
+    #[arg(long)]
+    properties: Option<PathBuf>,
+    /// The inputs the property is about: a Java boolean expression over the parameters (every input by default).
+    #[arg(long)]
+    assume: Option<String>,
+    /// The property: a Java boolean expression over the parameters, `result`, and calls of the method itself,
+    /// such as `result == merge(b, a)`. A boolean method's property is `result` by default.
+    #[arg(long = "assert")]
+    assert_: Option<String>,
+    /// A working directory for the harness and JBMC logs (a temporary one by default).
+    #[arg(long)]
+    work: Option<PathBuf>,
+    /// Write `property.sarif` into this directory.
+    #[arg(long)]
+    report: Option<PathBuf>,
+    #[arg(long = "sources")]
+    sources: Vec<PathBuf>,
+    #[arg(long)]
+    base: Option<PathBuf>,
+    /// Loop unwinding bound for JBMC.
+    #[arg(long, default_value_t = 16)]
+    unwind: u32,
+    /// Seconds before each JBMC run is given up.
+    #[arg(long, default_value_t = 600)]
+    timeout: u64,
+    /// The `jbmc` executable.
+    #[arg(long, default_value = "jbmc")]
+    jbmc: String,
+    /// Print JSON.
+    #[arg(long)]
+    json: bool,
+}
+
 fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code as u8),
@@ -265,6 +309,54 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 print!("{}", outcome.output);
             }
             Ok(outcome.verdict.exit_code())
+        }
+        Command::Prove(args) => {
+            let declarations = match (&args.properties, &args.target) {
+                (Some(file), only) => {
+                    let all = property::read_declarations(file)?;
+                    let selected: Vec<_> = all.into_iter().filter(|d| only.as_ref().is_none_or(|t| &d.target == t)).collect();
+                    if selected.is_empty() {
+                        return Err(Error::new(format!("no properties{} in {}", only.as_ref().map(|t| format!(" of {t}")).unwrap_or_default(), file.display())));
+                    }
+                    selected
+                }
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone() }],
+                (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
+            };
+            let mut outcomes = Vec::new();
+            let mut findings = Vec::new();
+            let mut exit = 0;
+            for (i, declaration) in declarations.iter().enumerate() {
+                let mut options = property::Options::new(&args.classes.classes, &declaration.target);
+                options.classpath = args.classes.classpath_entries();
+                options.assume = declaration.assume.clone();
+                options.assert = declaration.assert.clone();
+                options.work = args.work.as_ref().map(|w| if declarations.len() > 1 { w.join(format!("property-{}", i + 1)) } else { w.clone() });
+                options.report = if declarations.len() > 1 { None } else { args.report.clone() };
+                options.sources = args.sources.clone();
+                if let Some(base) = &args.base {
+                    options.base = base.clone();
+                }
+                options.unwind = args.unwind;
+                options.timeout_seconds = args.timeout;
+                options.jbmc = args.jbmc.clone();
+                let outcome = property::run(&options)?;
+                exit = exit.max(outcome.verdict.exit_code());
+                if !args.json {
+                    print!("{}", outcome.output);
+                }
+                findings.extend(outcome.findings.iter().cloned());
+                outcomes.push(outcome);
+            }
+            if declarations.len() > 1 {
+                if let Some(report) = &args.report {
+                    jvmcontract::sarif::write(&report.join("property.sarif"), &findings)?;
+                }
+            }
+            if args.json {
+                println!("{}", serde_json::to_string_pretty(&outcomes).expect("serializable"));
+            }
+            Ok(exit)
         }
         Command::Capabilities { paths, each, json, module } => {
             if each {

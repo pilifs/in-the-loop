@@ -32,6 +32,7 @@ pub mod interp;
 pub mod jbmc;
 pub mod jdk_facts;
 pub mod jimage;
+pub mod property;
 pub mod purity;
 pub mod relocate;
 pub mod sarif;

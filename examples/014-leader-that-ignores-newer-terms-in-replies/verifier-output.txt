@@ -1,0 +1,10 @@
+✓ module quorum matches its capability contract (27 classes, 100 methods, 0 capability uses, 0 libraries)
+✓ module quorum matches its API contract (25 public types, 97 members)
+✗ Behaviour of net.terminalvalue.quorum.raft.RoleMachine#decide differs from its contract in 1 of 52 cases:
+  decide(LEADER, Response[term=NEWER])
+    contract: Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+    actual:   Unchanged[reason="a reply from the current or an older term changes no role"]
+  (52 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.quorum.twopc.Coordinator#decide matches its contract (28 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+
+If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.

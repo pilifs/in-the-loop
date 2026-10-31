@@ -6,6 +6,10 @@
 //! Supported: `int`/`long`/`short`/`byte`/`char`/`boolean` parameters, integer literals (decimal, hex, binary,
 //! with `L` and `_`), `true`/`false`, parentheses, casts `(int)`/`(long)`, unary `- ! ~`, and the binary
 //! operators `* / % + - << >> >>> < > <= >= == != & ^ | && ||` and `?:`.
+//!
+//! A property ([`crate::property`]) also sees the method's `result`, which is just another named value, and may
+//! call the method under proof itself (`result == merge(b, a)`), which is how a law such as commutativity or
+//! idempotence is stated. The call is compiled to an `invokestatic` in the harness; it cannot be evaluated here.
 
 use crate::classfile::writer::{CodeBuilder, PoolBuilder};
 use crate::classfile::{Cond, Kind, Type};
@@ -56,6 +60,27 @@ pub enum Expr {
     Cast(Ty, Box<Expr>),
     Binary(BinOp, Box<Expr>, Box<Expr>),
     Ternary(Box<Expr>, Box<Expr>, Box<Expr>),
+    /// A call of the method under proof, with its arguments.
+    Call(Callee, Vec<Expr>),
+}
+
+/// A static method an expression may call: the method under proof, in a property.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Callee {
+    pub name: String,
+    /// The internal name of the class (`net/example/Clock`).
+    pub owner: String,
+    pub descriptor: String,
+    pub params: Vec<Ty>,
+    pub ret: Ty,
+}
+
+impl Callee {
+    /// The callee for a static method, if its parameters and result are all integral or boolean.
+    pub fn of(owner: &str, name: &str, descriptor: &str, params: &[Type], ret: &Type) -> Option<Callee> {
+        let params = params.iter().map(ty_of).collect::<Option<Vec<Ty>>>()?;
+        Some(Callee { name: name.to_string(), owner: owner.to_string(), descriptor: descriptor.to_string(), params, ret: ty_of(ret)? })
+    }
 }
 
 impl Expr {
@@ -66,6 +91,7 @@ impl Expr {
             Expr::Long(_) => Ty::Long,
             Expr::Bool(_) => Ty::Boolean,
             Expr::Var(_, t, _) => *t,
+            Expr::Call(callee, _) => callee.ret,
             Expr::Neg(e) | Expr::BitNot(e) => e.ty(),
             Expr::Not(_) => Ty::Boolean,
             Expr::Cast(t, _) => *t,
@@ -121,7 +147,7 @@ enum Token {
     End,
 }
 
-const OPS: &[&str] = &[">>>=", ">>>", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "(", ")", "+", "-", "*", "/", "%", "<", ">", "!", "~", "&", "^", "|", "?", ":"];
+const OPS: &[&str] = &[">>>=", ">>>", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "(", ")", ",", "+", "-", "*", "/", "%", "<", ">", "!", "~", "&", "^", "|", "?", ":"];
 
 fn lex(src: &str) -> Result<Vec<Token>, Error> {
     let chars: Vec<char> = src.chars().collect();
@@ -187,6 +213,7 @@ struct Parser<'a> {
     tokens: Vec<Token>,
     pos: usize,
     params: &'a [Param],
+    callee: Option<&'a Callee>,
 }
 
 impl Parser<'_> {
@@ -323,8 +350,34 @@ impl Parser<'_> {
             Token::Ident(name) => match name.as_str() {
                 "true" => Ok(Expr::Bool(true)),
                 "false" => Ok(Expr::Bool(false)),
+                _ if self.callee.is_some_and(|c| c.name == name) && self.peek() == &Token::Op("(") => {
+                    let callee = self.callee.expect("checked");
+                    self.next();
+                    let mut args = Vec::new();
+                    if !self.eat(")") {
+                        loop {
+                            args.push(self.ternary()?);
+                            if self.eat(")") {
+                                break;
+                            }
+                            if !self.eat(",") {
+                                return Err(Error::new(format!("expected \",\" or \")\" in the arguments of {name}, found {:?}", self.peek())));
+                            }
+                        }
+                    }
+                    require(args.len() == callee.params.len(), &format!("{name} takes {} arguments, {} given", callee.params.len(), args.len()))?;
+                    for (i, (arg, param)) in args.iter().zip(&callee.params).enumerate() {
+                        let ok = match param {
+                            Ty::Boolean => arg.ty() == Ty::Boolean,
+                            Ty::Int => arg.ty() == Ty::Int,
+                            Ty::Long => arg.ty() != Ty::Boolean,
+                        };
+                        require(ok, &format!("argument {} of {name} must be {}", i + 1, match param { Ty::Boolean => "boolean", Ty::Int => "int", Ty::Long => "a number" }))?;
+                    }
+                    Ok(Expr::Call(callee.clone(), args))
+                }
                 _ => {
-                    let param = self.params.iter().find(|p| p.name == name).ok_or_else(|| Error::new(format!("unknown name {name:?}; the parameters are {}", self.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))))?;
+                    let param = self.params.iter().find(|p| p.name == name).ok_or_else(|| Error::new(format!("unknown name {name:?}; the names are {}", self.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))))?;
                     let t = ty_of(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only integral and boolean parameters can appear in the expression", param.ty.java_name())))?;
                     Ok(Expr::Var(name, t, param.slot))
                 }
@@ -358,8 +411,13 @@ fn check_binary(op: BinOp, l: &Expr, r: &Expr) -> Result<(), Error> {
 
 /// Parses and type-checks an expression; it must be boolean.
 pub fn parse(src: &str, params: &[Param]) -> Result<Expr, Error> {
+    parse_with(src, params, None)
+}
+
+/// As [`parse`], with a method the expression may call.
+pub fn parse_with(src: &str, params: &[Param], callee: Option<&Callee>) -> Result<Expr, Error> {
     let tokens = lex(src)?;
-    let mut parser = Parser { tokens, pos: 0, params };
+    let mut parser = Parser { tokens, pos: 0, params, callee };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
@@ -391,6 +449,7 @@ pub fn eval(expr: &Expr, locals: &[Value]) -> Result<Value, Error> {
             v => v,
         },
         Expr::Not(e) => Value::Int((eval(e, locals)?.as_int() == 0) as i32),
+        Expr::Call(callee, _) => return Err(Error::new(format!("a call of {} can only be evaluated in the harness", callee.name))),
         Expr::BitNot(e) => match eval(e, locals)? {
             Value::Int(x) => Value::Int(!x),
             Value::Long(x) => Value::Long(!x),
@@ -485,6 +544,13 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
         Expr::Bool(b) => code.iconst(*b as i32),
         Expr::Var(_, Ty::Long, slot) => code.load(Kind::Long, *slot),
         Expr::Var(_, _, slot) => code.load(Kind::Int, *slot),
+        Expr::Call(callee, args) => {
+            for (arg, param) in args.iter().zip(&callee.params) {
+                emit_promoted(arg, *param, code, pool);
+            }
+            let index = pool.method_ref(&callee.owner, &callee.name, &callee.descriptor);
+            code.op_u16(0xb8, index); // invokestatic
+        }
         Expr::Neg(e) => {
             emit(e, code, pool);
             code.op(if e.ty() == Ty::Long { 0x75 } else { 0x74 });
@@ -680,5 +746,20 @@ mod tests {
         assert!(parse("vip > 1", &params()).is_err(), "boolean compared with number");
         assert!(parse("seats && vip", &params()).is_err(), "&& on a number");
         assert!(parse("seats >= 8)", &params()).is_err(), "trailing token");
+        assert!(parse("total(priceCents, seats) > 0", &params()).is_err(), "no callee");
+    }
+
+    #[test]
+    fn parses_and_types_calls_of_the_method_under_proof() {
+        let callee = Callee::of("net/example/Pricing", "total", "(JIZ)J", &[Type::Long, Type::Int, Type::Boolean], &Type::Long).unwrap();
+        let mut params = params();
+        params.push(Param { name: "result".into(), ty: Type::Long, slot: 4 });
+        let e = parse_with("result == total(priceCents, seats, vip) && total(seats, 1, !vip) >= 0", &params, Some(&callee)).unwrap();
+        assert!(matches!(&e, Expr::Binary(BinOp::LogAnd, _, _)));
+        assert!(eval(&e, &[]).is_err(), "calls are not evaluated outside the harness");
+        assert!(parse_with("total(priceCents, seats) == 0", &params, Some(&callee)).is_err(), "arity");
+        assert!(parse_with("total(priceCents, priceCents, vip) == 0", &params, Some(&callee)).is_err(), "long for int");
+        assert!(parse_with("total(1, 2, 3) == 0", &params, Some(&callee)).is_err(), "number for boolean");
+        assert!(Callee::of("X", "f", "(D)J", &[Type::Double], &Type::Long).is_none(), "a double parameter is not expressible");
     }
 }

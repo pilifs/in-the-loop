@@ -20,14 +20,15 @@ The folder also holds everything the examples need:
 | [`examples/approaches.md`](examples/approaches.md) | The approaches by level (source, bytecode, native, distributed), and the plan for the demos |
 | [`examples/apps/boxoffice/`](examples/apps/boxoffice/README.md) | The subject system: concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep |
 | [`examples/apps/boxoffice/spec/`](examples/apps/boxoffice/spec/README.md) | Its TLA+ model: the two services, Kafka and the clock, checked by TLC over every interleaving |
-| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The verifiers: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
+| [`examples/apps/quorum/`](examples/apps/quorum/README.md) | The second subject system (examples 013 to 022): the pure kernels of a replicated system, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins and a two-phase-commit coordinator, each with a contract, a property or a TLA+ model, verified by `jvmcontract` |
+| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The Java verifiers of examples 001 to 012: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
 | [`examples/tools/build.py`](examples/tools/build.py) | Runs every example and generates its page |
 | [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
 
 ## [`lib/`](lib/README.md): the verifiers as a Rust library
 
-`jvmcontract`, a Rust crate and command line that ports the verifiers of the examples (behavioural, regression and capability contracts, and the TLA+ generator) and goes further: it derives contracts without a JVM, by interpreting the bytecode under an effect monitor that makes the purity proof complete over the domain; it generates its JBMC harnesses as bytecode, so no Java compiler is in the proof pipeline; and it adds API contracts, per-dependency capability contracts, a TLC runner and a state-machine view of a contract.
-It reproduces the contracts the Java tool committed for Box Office, which its tests check.
+`jvmcontract`, a Rust crate and command line that ports the verifiers of the examples (behavioural, regression and capability contracts, and the TLA+ generator) and goes further: it derives contracts without a JVM, by interpreting the bytecode under an effect monitor that makes the purity proof complete over the domain; it generates its JBMC harnesses as bytecode, so no Java compiler is in the proof pipeline; and it adds property proofs (a postcondition or a law, stated next to the code and proved over every input), API contracts, per-dependency capability contracts, a TLC runner and a state-machine view of a contract.
+It reproduces the contracts the Java tool committed for Box Office, which its tests check, and it is the verifier behind examples 013 to 022.
 
 | Path | Content |
 |---|---|

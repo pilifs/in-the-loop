@@ -62,9 +62,19 @@ pub fn available(executable: &str) -> bool {
     std::process::Command::new(executable).arg("--version").output().map(|o| o.status.success()).unwrap_or(false)
 }
 
+/// An absolute path: JBMC runs in the work directory, so class path entries given relative to the current
+/// directory must be resolved before they reach it.
+pub fn absolute(path: &Path) -> PathBuf {
+    if path.is_absolute() {
+        return path.to_path_buf();
+    }
+    std::fs::canonicalize(path).unwrap_or_else(|_| std::env::current_dir().map(|d| d.join(path)).unwrap_or_else(|_| path.to_path_buf()))
+}
+
 /// The command line, for logs.
 pub fn command(run: &JbmcRun) -> Vec<String> {
-    let classpath = std::env::join_paths(&run.classpath).map(|p| p.to_string_lossy().into_owned()).unwrap_or_default();
+    let entries: Vec<PathBuf> = run.classpath.iter().map(|p| absolute(p)).collect();
+    let classpath = std::env::join_paths(&entries).map(|p| p.to_string_lossy().into_owned()).unwrap_or_default();
     let mut cmd = vec![
         run.executable.clone(),
         run.class.clone(),
@@ -128,6 +138,11 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
         log: PathBuf::new(),
         seconds: 0.0,
     };
+    // A class path entry JBMC could not read makes every method in it a stub with an arbitrary result, and the
+    // harness assertion then fails for no reason; that is no verdict.
+    if let Some(c) = Regex::new(r"(?m)^Warning: failed to access directory '([^']*)'").unwrap().captures(output) {
+        return base(Verdict::Unverifiable, 0, Some(format!("JBMC could not read the class path entry {}", &c[1])));
+    }
     let Some(failed) = Regex::new(r"\*\* (\d+) of (\d+) failed").unwrap().captures(output) else {
         let tail = output.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("no output");
         return base(Verdict::Unverifiable, 0, Some(format!("JBMC produced no verdict: {tail}")));
@@ -201,5 +216,30 @@ mod tests {
 
         let r = parse_output("JBMC version 6.11.0\nsomething went wrong\n", "EquivalenceHarness", "check", 16, None);
         assert_eq!(r.verdict, Verdict::Unverifiable);
+
+        // A missing class path entry would otherwise look like a counterexample.
+        let unreadable = "JBMC version 6.11.0\nParsing ...\nWarning: failed to access directory 'build/main'\n[PropertyHarness.check:(I)V.assertion.1] assertion: FAILURE\n  INPUT arg0a: 1\n** 1 of 2 failed\n";
+        let r = parse_output(unreadable, "PropertyHarness", "check", 16, None);
+        assert_eq!(r.verdict, Verdict::Unverifiable);
+        assert_eq!(r.problem.as_deref(), Some("JBMC could not read the class path entry build/main"));
+    }
+
+    #[test]
+    fn class_path_entries_are_made_absolute() {
+        let run = JbmcRun {
+            executable: "jbmc".into(),
+            class: "PropertyHarness".into(),
+            function: "check".into(),
+            classpath: vec![PathBuf::from("build/main"), PathBuf::from("/tmp/work/harness")],
+            unwind: 16,
+            timeout: Duration::from_secs(1),
+            stage: None,
+            log: PathBuf::from("/tmp/work/jbmc.log"),
+            extra_args: Vec::new(),
+        };
+        let cmd = command(&run);
+        let classpath = &cmd[cmd.iter().position(|a| a == "--classpath").unwrap() + 1];
+        assert!(classpath.starts_with('/'), "{classpath}");
+        assert!(classpath.contains("/build/main") && classpath.ends_with("/tmp/work/harness"), "{classpath}");
     }
 }
