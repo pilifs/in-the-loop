@@ -275,14 +275,15 @@ def run_tlc(folder, example, tmp, module, result):
     spec = build / SPEC
     subprocess.run([sys.executable, str(EXAMPLES / "tools/tla/contract_to_tla.py"),
                     str(build / CONTRACT_FILE), str(spec / "OrderLifecycleContract.tla")], check=True, capture_output=True)
+    library = EXAMPLES / "tools/tla/standard-modules"
     try:
         # One worker, so that the trace TLC reports is the same on every run.
-        proc = subprocess.run(tlc() + ["-workers", "1", "-deadlock", "-cleanup", "BoxOffice.tla"],
+        proc = subprocess.run(tlc(library) + ["-workers", "1", "-deadlock", "-cleanup", "BoxOffice.tla"],
                               cwd=spec, text=True, capture_output=True, timeout=1800)
         raw = proc.stdout + proc.stderr
     except subprocess.TimeoutExpired:
         raw = "Error: TLC did not finish within 30 minutes"
-    output = "\n".join(l for l in raw.replace(str(tmp) + "/", "").splitlines() if not l.startswith("Progress("))
+    output = "\n".join(l for l in raw.replace(str(tmp) + "/", "").replace(str(REPO) + "/", "").splitlines() if not l.startswith("Progress("))
     (folder / "verifier-output.txt").write_text(output + "\n")
 
     violated = re.search(r"^Error: Invariant (\w+) is violated", output, re.M)
@@ -331,10 +332,11 @@ def run_tlc(folder, example, tmp, module, result):
     }[verdict]
 
 
-def tlc():
+def tlc(library):
+    """The TLC command line. TLA-Library makes it parse the committed standard modules, not temporary copies."""
     jar = os.environ.get("TLA2TOOLS_JAR") or str(Path.home() / "tools/tla2tools.jar")
     if Path(jar).exists():
-        return [java(), "-XX:+UseParallelGC", "-cp", jar, "tlc2.TLC"]
+        return [java(), "-XX:+UseParallelGC", f"-DTLA-Library={library}", "-cp", jar, "tlc2.TLC"]
     if shutil.which("tlc"):
         return ["tlc"]
     sys.exit("TLC not found: install tla2tools.jar in ~/tools or set TLA2TOOLS_JAR")

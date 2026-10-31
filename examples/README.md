@@ -1,5 +1,8 @@
 # Examples
 
+> **Start with examples 006 to 012.** Examples 001 to 005 were created by Opus 5.5, and examples 006 to 012 by Fable 5.1.
+> The Fable examples may be the more interesting ones: they prove things no type system could, so we suggest reading them first.
+
 Each example is one code change to [Box Office](apps/boxoffice/README.md), the demo ticketing system, run through a formal verifier, with the verdict and why it matters.
 Together they show what verification catches that code review and tests miss, and what it lets through.
 None of it needs the reader to write a specification: each verifier derives its statement from the code, the types, or the previous version.
@@ -76,7 +79,7 @@ examples/
   apps/boxoffice/            the subject system the examples change
   apps/boxoffice/spec/       its TLA+ model (D1)
   tools/contracts/           the verifier for B8, B9 and B10: behavioural, regression and capability contracts
-  tools/tla/                 the generator of the model's state machine from the B8 contract
+  tools/tla/                 the generator of the model's state machine from the B8 contract, and the TLA+ standard modules TLC parses
   tools/build.py             the generator: runs every example and writes the generated files
   setup/                     the toolchain installer
 ```
