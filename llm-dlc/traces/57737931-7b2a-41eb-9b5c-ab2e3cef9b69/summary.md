@@ -34,6 +34,12 @@ Verified end to end in a throwaway clone with a local bare remote and a stubbed 
 
 Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.
 
+### Record session traces
+
+change `wwszokpyuvon` · [log `3bec5f22f194`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/3bec5f22f19446d5889b0ae4345b373ad34907af0a9e008e36c0f164f84d40b7.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/3bec5f22f19446d5889b0ae4345b373ad34907af0a9e008e36c0f164f84d40b7.jsonl.gz) has every step in between: reasoning, tool calls and their results.

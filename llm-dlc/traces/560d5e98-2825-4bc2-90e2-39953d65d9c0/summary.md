@@ -159,6 +159,12 @@ D1, protocol model checking (examples 011 and 012): examples/apps/boxoffice/spec
 
 Verified by running the verifier's 17 unit tests (jbmc installed) and python3 examples/tools/build.py for all twelve examples, each reaching its expected verdict; the first five pages regenerate unchanged apart from the new table column. Documentation updated: examples/README.md (approach table and intro), approaches.md (B9, B10, D1 and the JBMC finding), the contracts README (three contract kinds, limits), the spec README, the Box Office README, the root README and the setup README. These land in one commit because the generator, schemas and tables are shared by all three approaches.
 
+### Record session traces
+
+change `wwszokpyuvon` · [log `343beeb22f52`](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/343beeb22f5214722aa6fc33f89f93cb2a986ee96f3350b1d86d748adf698a04.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/343beeb22f5214722aa6fc33f89f93cb2a986ee96f3350b1d86d748adf698a04.jsonl.gz) has every step in between: reasoning, tool calls and their results.

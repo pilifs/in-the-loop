@@ -100,6 +100,12 @@ Brings the published traces up to this point: conversation that came after a ses
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
+### Record session traces
+
+change `wwszokpyuvon` · [log `5c7af483c8d0`](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz) has every step in between: reasoning, tool calls and their results.
