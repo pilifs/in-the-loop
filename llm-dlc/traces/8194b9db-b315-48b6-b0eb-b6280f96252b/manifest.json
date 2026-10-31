@@ -13,24 +13,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T01:39:26.314Z",
-  "ended": "2026-10-31T11:26:05.575Z",
-  "duration_seconds": 35199,
+  "ended": "2026-10-31T11:37:51.849Z",
+  "duration_seconds": 35906,
   "stats": {
-    "turns": 16,
-    "api_calls": 76,
-    "tool_calls": 189,
+    "turns": 17,
+    "api_calls": 82,
+    "tool_calls": 194,
     "tool_errors": 11,
     "compactions": 1,
     "peak_context_tokens": 439795,
     "usage": {
-      "input_tokens": 1860,
-      "output_tokens": 231334,
-      "cache_read_input_tokens": 19944697,
-      "cache_creation_input_tokens": 601933
+      "input_tokens": 1874,
+      "output_tokens": 240136,
+      "cache_read_input_tokens": 20427703,
+      "cache_creation_input_tokens": 631034
     }
   },
   "tools": {
-    "Bash": 94,
+    "Bash": 99,
     "Edit": 57,
     "Write": 21,
     "Read": 14,
@@ -92,24 +92,24 @@
     {
       "index": 1,
       "started": "2026-10-31T09:24:42.292Z",
-      "ended": "2026-10-31T11:26:05.575Z",
-      "turns": 4,
-      "api_calls": 6,
+      "ended": "2026-10-31T11:37:51.849Z",
+      "turns": 5,
+      "api_calls": 12,
       "usage": {
-        "input_tokens": 12,
-        "output_tokens": 7469,
-        "cache_read_input_tokens": 335789,
-        "cache_creation_input_tokens": 43273
+        "input_tokens": 26,
+        "output_tokens": 16271,
+        "cache_read_input_tokens": 818795,
+        "cache_creation_input_tokens": 72374
       },
-      "peak_context_tokens": 70739
+      "peak_context_tokens": 100586
     }
   ],
   "log": {
-    "sha256": "c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72",
-    "bytes": 4424080,
-    "lines": 1424,
-    "gzip_bytes": 746269,
-    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72.jsonl.gz"
+    "sha256": "97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141",
+    "bytes": 4613328,
+    "lines": 1474,
+    "gzip_bytes": 778996,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -128,6 +128,14 @@
       "summary": "Credit example authors and commit the TLA+ standard modules",
       "body": "examples/README.md now opens with a note that examples 001 to 005 were created by Opus 5.5 and 006 to 012 by Fable 5.1, and suggests reading the Fable examples first.\n\nThe /tmp/Naturals.tla, /tmp/Sequences.tla and /tmp/FiniteSets.tla paths in the verifier output of examples 011 and 012 were never lost work: TLC unpacks its standard modules from tla2tools.jar into a temporary directory and deletes them on exit. Unmodified copies from TLC 2.19 (rev 5a47802), with the MIT licence, now live in examples/tools/tla/standard-modules, and build.py passes that directory as -DTLA-Library so TLC parses them and the evidence names files that exist. The fallback to a tlc wrapper on PATH does not pass the library and still prints temporary paths.\n\nVerified by regenerating examples 011 and 012, which keep their expected verdicts, and by comparing the three modules byte for byte with the jar.",
       "log_sha256": "c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72"
+    },
+    {
+      "change_id": "qnukuwrtmzzusknpynmokzqrsozlnqxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Reword the note on which examples to read first",
+      "body": "The maintainer reworded the opening note of examples/README.md to say that the Fable examples go significantly beyond what type checking can achieve. All twelve examples were regenerated before this commit and kept their expected verdicts; the regenerated evidence differed only in per-run values and was not kept.",
+      "log_sha256": "97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141"
     }
   ],
   "logs": {
@@ -135,6 +143,12 @@
       "bytes": 3788464,
       "lines": 1303,
       "gzip_bytes": 600481,
+      "url": null
+    },
+    "97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141": {
+      "bytes": 4613328,
+      "lines": 1474,
+      "gzip_bytes": 778996,
       "url": null
     },
     "c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72": {

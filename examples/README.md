@@ -1,7 +1,7 @@
 # Examples
 
 > **Start with examples 006 to 012.** Examples 001 to 005 were created by Opus 5.5, and examples 006 to 012 by Fable 5.1.
-> The Fable examples may be the more interesting ones: they prove things no type system could, so we suggest reading them first.
+> The Fable examples may be the more interesting ones, as they go significantly beyond what can be achieved with type checking.
 
 Each example is one code change to [Box Office](apps/boxoffice/README.md), the demo ticketing system, run through a formal verifier, with the verdict and why it matters.
 Together they show what verification catches that code review and tests miss, and what it lets through.
