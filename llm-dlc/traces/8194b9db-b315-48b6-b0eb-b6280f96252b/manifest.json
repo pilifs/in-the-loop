@@ -13,24 +13,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T01:39:26.314Z",
-  "ended": "2026-10-31T12:09:51.123Z",
-  "duration_seconds": 37825,
+  "ended": "2026-10-31T12:10:37.244Z",
+  "duration_seconds": 37871,
   "stats": {
     "turns": 20,
-    "api_calls": 105,
-    "tool_calls": 215,
+    "api_calls": 106,
+    "tool_calls": 216,
     "tool_errors": 11,
     "compactions": 1,
     "peak_context_tokens": 439795,
     "usage": {
-      "input_tokens": 1926,
-      "output_tokens": 297693,
-      "cache_read_input_tokens": 23829854,
-      "cache_creation_input_tokens": 733660
+      "input_tokens": 1928,
+      "output_tokens": 298786,
+      "cache_read_input_tokens": 24035700,
+      "cache_creation_input_tokens": 737701
     }
   },
   "tools": {
-    "Bash": 120,
+    "Bash": 121,
     "Edit": 57,
     "Write": 21,
     "Read": 14,
@@ -92,24 +92,24 @@
     {
       "index": 1,
       "started": "2026-10-31T09:24:42.292Z",
-      "ended": "2026-10-31T12:09:51.123Z",
+      "ended": "2026-10-31T12:10:37.244Z",
       "turns": 8,
-      "api_calls": 35,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 73828,
-        "cache_read_input_tokens": 4220946,
-        "cache_creation_input_tokens": 175000
+        "input_tokens": 80,
+        "output_tokens": 74921,
+        "cache_read_input_tokens": 4426792,
+        "cache_creation_input_tokens": 179041
       },
-      "peak_context_tokens": 205848
+      "peak_context_tokens": 209889
     }
   ],
   "log": {
-    "sha256": "28ca8de051b59e14e31add5ae2346d28f5e7e99fd072cac2fad6a5854fcd7c64",
-    "bytes": 5276808,
-    "lines": 1675,
-    "gzip_bytes": 874283,
-    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/28ca8de051b59e14e31add5ae2346d28f5e7e99fd072cac2fad6a5854fcd7c64.jsonl.gz"
+    "sha256": "f520573d72c195d614b712aaa3cde585fd4c27157ad8a64db956919825a3ec3e",
+    "bytes": 5305646,
+    "lines": 1685,
+    "gzip_bytes": 879206,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/f520573d72c195d614b712aaa3cde585fd4c27157ad8a64db956919825a3ec3e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -168,6 +168,14 @@
       "summary": "Run the trace pipeline on commit and push, not on every turn",
       "body": "The Stop hook rewrote tracked files and stamped @ after every turn, and each push recorded its own commit's SHA afterwards, so the repo could never be clean. A session's tail, and a session with no commits, also had no log a commit pointed at: nothing uploaded them, so their summaries linked to a 404.\n\nTracked trace files now change only on commit and push. Stop and SessionEnd only feed Langfuse. A PostToolUse hook traces a plain jj commit or git commit by reopening the new commit and syncing into it, so it carries its trailer and manifest however it was made. sync.py push records everything outstanding in one last Record session traces commit, moves the bookmark to it, uploads, checks and pushes, then writes nothing, leaving @ empty. It refuses to run over uncommitted work, and a repeat push makes no commit. A manifest cannot contain its own commit's SHA, so the next commit records it. The /publish skill, run only by the user, wraps commit and push.\n\nVerified end to end in a throwaway clone with a local bare remote and a stubbed CDN upload: the Stop hook left the repo unchanged; plain jj commit, a partial jj commit and git commit were each traced, and re-running the hook changed nothing; push refused uncommitted work, published a tail and a session with no commits, left @ empty, and a second push was a no-op. That test found and fixed a bug: jj abandons an empty @ when another change is edited. No real push or upload was made.",
       "log_sha256": "28ca8de051b59e14e31add5ae2346d28f5e7e99fd072cac2fad6a5854fcd7c64"
+    },
+    {
+      "change_id": "mwqnvwnkrlzmyyoypyvyzpwrqxlyovro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Correct the definition of session status",
+      "body": "Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.",
+      "log_sha256": "f520573d72c195d614b712aaa3cde585fd4c27157ad8a64db956919825a3ec3e"
     }
   ],
   "logs": {
@@ -200,6 +208,12 @@
       "lines": 1424,
       "gzip_bytes": 746269,
       "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72.jsonl.gz"
+    },
+    "f520573d72c195d614b712aaa3cde585fd4c27157ad8a64db956919825a3ec3e": {
+      "bytes": 5305646,
+      "lines": 1685,
+      "gzip_bytes": 879206,
+      "url": null
     },
     "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955": {
       "bytes": 4739987,

@@ -28,6 +28,12 @@ Tracked trace files now change only on commit and push. Stop and SessionEnd only
 
 Verified end to end in a throwaway clone with a local bare remote and a stubbed CDN upload: the Stop hook left the repo unchanged; plain jj commit, a partial jj commit and git commit were each traced, and re-running the hook changed nothing; push refused uncommitted work, published a tail and a session with no commits, left @ empty, and a second push was a no-op. That test found and fixed a bug: jj abandons an empty @ when another change is edited. No real push or upload was made.
 
+### Correct the definition of session status
+
+change `mwqnvwnkrlzm` · [log `2b4b169fff20`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz)
+
+Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/2b4b169fff20576844bdd82884dfcf8797ec32d1359f2b91fc725ecce1e1c21d.jsonl.gz) has every step in between: reasoning, tool calls and their results.

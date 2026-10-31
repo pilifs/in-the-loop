@@ -67,7 +67,7 @@ A new policy produces new log IDs. Logs that commits already point at are kept.
 | Field | Content |
 |---|---|
 | `schema` | `llm-trace-manifest/v1` |
-| `session_id`, `status` | `open` while the session runs, `ended` after `SessionEnd` |
+| `session_id`, `status` | `open` if the transcript changed in the last 10 minutes when last synced, otherwise `ended` |
 | `title`, `first_prompt`, `client`, `models` | What the session was and what ran it. `client` is `{tool, version}`, for example `claude-code` |
 | `started`, `ended`, `duration_seconds` | Time span |
 | `stats` | Turns, API calls, tool calls and errors, compactions, peak context tokens, and token usage (input, output, cache read, cache write) |
