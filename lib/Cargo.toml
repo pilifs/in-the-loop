@@ -1,0 +1,34 @@
+[package]
+name = "jvmcontract"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+description = "Formal verification of JVM bytecode as contracts: behavioural (every input of a finite domain, executed), regression (two versions proved equivalent with JBMC), capability (what a module can reach), and protocol models (TLA+ generated from a contract)."
+license = "Apache-2.0"
+repository = "https://github.com/pilifs/in-the-loop"
+keywords = ["jvm", "bytecode", "formal-verification", "contracts", "sarif"]
+categories = ["development-tools", "development-tools::testing"]
+readme = "README.md"
+
+[lib]
+name = "jvmcontract"
+path = "src/lib.rs"
+
+[[bin]]
+name = "jvmcontract"
+path = "src/main.rs"
+
+[dependencies]
+flate2 = "1"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+stacker = "0.1"
+clap = { version = "4", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = true
+codegen-units = 1

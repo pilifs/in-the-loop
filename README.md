@@ -24,6 +24,17 @@ The folder also holds everything the examples need:
 | [`examples/tools/build.py`](examples/tools/build.py) | Runs every example and generates its page |
 | [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
 
+## [`lib/`](lib/README.md): the verifiers as a Rust library
+
+`jvmcontract`, a Rust crate and command line that ports the verifiers of the examples (behavioural, regression and capability contracts, and the TLA+ generator) and goes further: it derives contracts without a JVM, by interpreting the bytecode under an effect monitor that makes the purity proof complete over the domain; it generates its JBMC harnesses as bytecode, so no Java compiler is in the proof pipeline; and it adds API contracts, per-dependency capability contracts, a TLC runner and a state-machine view of a contract.
+It reproduces the contracts the Java tool committed for Box Office, which its tests check.
+
+| Path | Content |
+|---|---|
+| [`lib/README.md`](lib/README.md) | What it verifies, how each verdict is proved, the commands, and the library API |
+| [`lib/src/`](lib/src) | The crate: a class-file reader, the JDK image reader, the interpreter, and one module per contract kind |
+| [`lib/tests/`](lib/tests) | Integration tests over Java fixtures compiled at test time, and against the committed Box Office contracts |
+
 ## [`llm-dlc/`](llm-dlc/README.md): the LLM development lifecycle
 
 A meta example. This repo is written with an LLM, and every commit is published with the session that made it: what was asked, what the agent did, what it cost, and the full redacted transcript.

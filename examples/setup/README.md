@@ -15,7 +15,7 @@ Components are listed below. You can install any subset, for example `install.sh
 
 | Component | Installs |
 |---|---|
-| `devtools` | jj (Jujutsu, colocated with git) and gh |
+| `devtools` | jj (Jujutsu, colocated with git), gh, Node.js, and Rust (rustup, for [`lib/`](../../lib/README.md)) |
 | `system` | apt build tools, Docker Engine, CBMC/JBMC, Z3, .NET 8, opam, the RISC-V cross-compiler, qemu-user with binfmt, and kernel limits for kind |
 | `jvm` | SDKMAN with Temurin 25 (default), Temurin 21, GraalVM CE 25 (native-image), Gradle and Maven |
 | `k8s` | kubectl, kind, Helm and k9s |

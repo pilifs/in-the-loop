@@ -223,6 +223,10 @@ Every demo should guard against this:
 ## Proposed demo sequence
 
 Done so far, as the numbered [examples](README.md): B8 (001 to 005), B9 (006 to 008), B10 (009 and 010) and D1 (011 and 012).
+The four verifiers behind them are also a Rust library and command line, [`lib/`](../lib/README.md) (`jvmcontract`), which derives
+behavioural contracts without a JVM by interpreting the bytecode (a first, small step towards the executable semantics of B1 and B2),
+proves purity dynamically over the executed domain, generates its JBMC harnesses as bytecode, and adds API contracts, per-dependency
+capability contracts and a TLC runner.
 Still to do:
 
 | # | Demo | Level | Tools |

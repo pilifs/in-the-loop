@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "24d088fa-8a2f-419c-9283-2557487b7d9f",
-  "status": "open",
+  "status": "ended",
   "title": "Trace data pipeline for llm-dlc",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T15:07:14.486Z",
-  "ended": "2026-10-31T16:19:51.043Z",
-  "duration_seconds": 4357,
+  "ended": "2026-10-31T16:28:20.355Z",
+  "duration_seconds": 4866,
   "stats": {
     "turns": 6,
-    "api_calls": 29,
-    "tool_calls": 43,
+    "api_calls": 31,
+    "tool_calls": 44,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 373822,
+    "peak_context_tokens": 377849,
     "usage": {
-      "input_tokens": 72,
-      "output_tokens": 94451,
-      "cache_read_input_tokens": 6035291,
-      "cache_creation_input_tokens": 341326
+      "input_tokens": 76,
+      "output_tokens": 95754,
+      "cache_read_input_tokens": 6786174,
+      "cache_creation_input_tokens": 345353
     }
   },
   "tools": {
-    "Bash": 27,
+    "Bash": 28,
     "Read": 8,
     "Write": 3,
     "Edit": 2,
@@ -47,24 +47,24 @@
     {
       "index": 0,
       "started": "2026-10-31T15:07:14.486Z",
-      "ended": "2026-10-31T16:19:51.043Z",
+      "ended": "2026-10-31T16:28:20.355Z",
       "turns": 6,
-      "api_calls": 29,
+      "api_calls": 31,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 94451,
-        "cache_read_input_tokens": 6035291,
-        "cache_creation_input_tokens": 341326
+        "input_tokens": 76,
+        "output_tokens": 95754,
+        "cache_read_input_tokens": 6786174,
+        "cache_creation_input_tokens": 345353
       },
-      "peak_context_tokens": 373822
+      "peak_context_tokens": 377849
     }
   ],
   "log": {
-    "sha256": "63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581",
-    "bytes": 2694168,
-    "lines": 387,
-    "gzip_bytes": 597043,
-    "path": "llm-dlc/traces/24d088fa-8a2f-419c-9283-2557487b7d9f/logs/63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581.jsonl.gz"
+    "sha256": "405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d",
+    "bytes": 2713714,
+    "lines": 399,
+    "gzip_bytes": 600173,
+    "path": "llm-dlc/traces/24d088fa-8a2f-419c-9283-2557487b7d9f/logs/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -103,21 +103,27 @@
     {
       "change_id": "xvtmpkultpnxrqtqyvmqlzknxzzqnxlx",
       "commit_id": "4e47aee071187981445c0fdd64fb21298c3f0e2f",
-      "immutable": false,
+      "immutable": true,
       "summary": "Let a person mark findings as false positives",
       "body": "Warnings came back with every log snapshot, because the only way to quiet one was to accept a whole log by hash, and each new snapshot has a new hash. sync.py now keeps a published list of reviewed findings. An entry covers one kind and one exact value, stored as a hash with the reason, who decided and when, so it lasts across snapshots while a different value of that kind is still raised. check, scan, push and the upload guard all honour it, for errors as well as warnings, and check notes how many findings it left out. Local secrets and account identifiers can never be waived.\n\nRecording a finding needs a person: the accept command shows the real value, asks for a typed confirmation, and refuses a shell with no terminal or one Claude Code started. The project settings deny agents direct edits, and CLAUDE.md tells them to ask. These guard against accidents, not determined evasion; the published history of the list is the record. Listing open findings stays open, masked.\n\nThe list starts with the four findings the maintainer authorized in chat: the Authorization: Bearer sentence from the API skill documentation, the made-up home path from the metrics tests, and two Cloudflare addresses in dig output for the CDN domain. Each was located with masked output first. Verified with 10 new tests in test_review.py, by accept being refused from this agent's shell, and by review reporting no open findings.",
       "log_sha256": "aea563c89ba52dcda61b1df8d91037858f74902f41987825ed54232596cd7e0c"
     },
     {
       "change_id": "ukwylpnpmslkuvmqztyxlqklkrlnqzus",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0f2aea73cf91810fcca0f847a6e20942558a7c55",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581"
     }
   ],
   "logs": {
+    "405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d": {
+      "bytes": 2713714,
+      "lines": 399,
+      "gzip_bytes": 600173,
+      "url": null
+    },
     "41ffa390f5caa1110ac80d2aa90c2ea92182ca39d6fa0045cfa0d7f892665dfc": {
       "bytes": 1882751,
       "lines": 312,

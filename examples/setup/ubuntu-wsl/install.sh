@@ -136,6 +136,14 @@ install_devtools() {
   curl -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$node_arch.tar.xz" \
     | tar -xJ -C "$TOOLS/node" --strip-components=1
   for b in node npm npx; do ln -sf "$TOOLS/node/bin/$b" "$BIN/$b"; done
+
+  step "Rust (rustup, stable; for lib/, the jvmcontract crate)"
+  if [[ -x $HOME/.cargo/bin/rustup ]]; then
+    "$HOME/.cargo/bin/rustup" update stable
+  else
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path
+  fi
+  for b in cargo rustc rustup; do ln -sf "$HOME/.cargo/bin/$b" "$BIN/$b"; done
 }
 
 # --------------------------------------------------------------------------- Kubernetes
