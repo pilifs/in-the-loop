@@ -13,24 +13,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T01:39:26.314Z",
-  "ended": "2026-10-31T12:12:26.480Z",
-  "duration_seconds": 37980,
+  "ended": "2026-10-31T12:13:55.577Z",
+  "duration_seconds": 38069,
   "stats": {
     "turns": 21,
-    "api_calls": 108,
-    "tool_calls": 217,
+    "api_calls": 110,
+    "tool_calls": 218,
     "tool_errors": 11,
     "compactions": 1,
     "peak_context_tokens": 439795,
     "usage": {
-      "input_tokens": 1934,
-      "output_tokens": 300498,
-      "cache_read_input_tokens": 24457963,
-      "cache_creation_input_tokens": 739368
+      "input_tokens": 1938,
+      "output_tokens": 301576,
+      "cache_read_input_tokens": 24884767,
+      "cache_creation_input_tokens": 741586
     }
   },
   "tools": {
-    "Bash": 122,
+    "Bash": 123,
     "Edit": 57,
     "Write": 21,
     "Read": 14,
@@ -92,24 +92,24 @@
     {
       "index": 1,
       "started": "2026-10-31T09:24:42.292Z",
-      "ended": "2026-10-31T12:12:26.480Z",
+      "ended": "2026-10-31T12:13:55.577Z",
       "turns": 9,
-      "api_calls": 38,
+      "api_calls": 40,
       "usage": {
-        "input_tokens": 86,
-        "output_tokens": 76633,
-        "cache_read_input_tokens": 4849055,
-        "cache_creation_input_tokens": 180708
+        "input_tokens": 90,
+        "output_tokens": 77711,
+        "cache_read_input_tokens": 5275859,
+        "cache_creation_input_tokens": 182926
       },
-      "peak_context_tokens": 212727
+      "peak_context_tokens": 214943
     }
   ],
   "log": {
-    "sha256": "544ef498191234d1e30f812d98dfce015e740afb50b63cb20bab5e09e0686160",
-    "bytes": 5343124,
-    "lines": 1702,
-    "gzip_bytes": 884853,
-    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/544ef498191234d1e30f812d98dfce015e740afb50b63cb20bab5e09e0686160.jsonl.gz"
+    "sha256": "03b62d87f733f85120fd1f04a6fdcf2e94a4b50ae6f096903019ac728bcb6d67",
+    "bytes": 5396816,
+    "lines": 1723,
+    "gzip_bytes": 893722,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/03b62d87f733f85120fd1f04a6fdcf2e94a4b50ae6f096903019ac728bcb6d67.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -156,7 +156,7 @@
     {
       "change_id": "tmwpqnxylpyskpltyosunrnslroswxkz",
       "commit_id": "e5859c085671a236624e10f764b05203473b5621",
-      "immutable": false,
+      "immutable": true,
       "summary": "Generate a traces overview at llm-dlc/traces/README.md",
       "body": "The session index gave one row per session and nothing across them. The new page adds every session up: totals, a table per session, tokens and cache share, tool use, every commit with its sessions and logs, log storage, and the session notes. It closes with how to read the numbers.\n\nsync.py renders it on every sync from llm-dlc/traces-readme-template.md, using only the manifests and session notes, so it needs no logs and comes out the same on each run. check now fails if the file does not match the manifests. Commit totals count a commit shared by two sessions once. There are no dollar figures, because manifests do not record what a call was billed.\n\nVerified by comparing the totals with an independent sum over the manifests (75 prompts, 459 model calls, 643 tool calls, 17 unique commits against 18 listed per session) and by appending a line to the page and seeing check report one error, then pass once it was restored.",
       "log_sha256": "facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3"
@@ -164,7 +164,7 @@
     {
       "change_id": "nmzlvwzkkymwnqozwmyyzrpluyvsykzx",
       "commit_id": "27db4f065afa08fab62179fb901f9a1d2861a96b",
-      "immutable": false,
+      "immutable": true,
       "summary": "Run the trace pipeline on commit and push, not on every turn",
       "body": "The Stop hook rewrote tracked files and stamped @ after every turn, and each push recorded its own commit's SHA afterwards, so the repo could never be clean. A session's tail, and a session with no commits, also had no log a commit pointed at: nothing uploaded them, so their summaries linked to a 404.\n\nTracked trace files now change only on commit and push. Stop and SessionEnd only feed Langfuse. A PostToolUse hook traces a plain jj commit or git commit by reopening the new commit and syncing into it, so it carries its trailer and manifest however it was made. sync.py push records everything outstanding in one last Record session traces commit, moves the bookmark to it, uploads, checks and pushes, then writes nothing, leaving @ empty. It refuses to run over uncommitted work, and a repeat push makes no commit. A manifest cannot contain its own commit's SHA, so the next commit records it. The /publish skill, run only by the user, wraps commit and push.\n\nVerified end to end in a throwaway clone with a local bare remote and a stubbed CDN upload: the Stop hook left the repo unchanged; plain jj commit, a partial jj commit and git commit were each traced, and re-running the hook changed nothing; push refused uncommitted work, published a tail and a session with no commits, left @ empty, and a second push was a no-op. That test found and fixed a bug: jj abandons an empty @ when another change is edited. No real push or upload was made.",
       "log_sha256": "28ca8de051b59e14e31add5ae2346d28f5e7e99fd072cac2fad6a5854fcd7c64"
@@ -172,21 +172,35 @@
     {
       "change_id": "mwqnvwnkrlzmyyoypyvyzpwrqxlyovro",
       "commit_id": "b6c67e7d80cac0a53f5e715ad53b747be233d52c",
-      "immutable": false,
+      "immutable": true,
       "summary": "Correct the definition of session status",
       "body": "Sessions are now marked ended by the next sync once their transcript has been idle for 10 minutes, because the SessionEnd hook no longer writes the manifest. The specification still described the old rule.",
       "log_sha256": "f520573d72c195d614b712aaa3cde585fd4c27157ad8a64db956919825a3ec3e"
     },
     {
       "change_id": "psksvmzrplmsnluwzzsyomlrsqztlxkm",
+      "commit_id": "fbeba20c6aa4c178a47f80edd8c046f1ff0b3f5b",
+      "immutable": true,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "544ef498191234d1e30f812d98dfce015e740afb50b63cb20bab5e09e0686160"
+    },
+    {
+      "change_id": "xpuzrqsqqrmkomzlmztoxqprpqwknzlr",
       "commit_id": null,
       "immutable": false,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
-      "log_sha256": "544ef498191234d1e30f812d98dfce015e740afb50b63cb20bab5e09e0686160"
+      "log_sha256": "03b62d87f733f85120fd1f04a6fdcf2e94a4b50ae6f096903019ac728bcb6d67"
     }
   ],
   "logs": {
+    "03b62d87f733f85120fd1f04a6fdcf2e94a4b50ae6f096903019ac728bcb6d67": {
+      "bytes": 5396816,
+      "lines": 1723,
+      "gzip_bytes": 893722,
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/03b62d87f733f85120fd1f04a6fdcf2e94a4b50ae6f096903019ac728bcb6d67.jsonl.gz"
+    },
     "1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4": {
       "bytes": 3788464,
       "lines": 1303,
