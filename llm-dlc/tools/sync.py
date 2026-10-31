@@ -4,6 +4,7 @@
 Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the procedure):
 
   llm-dlc/index.json                                 checked in: one row per session, for lookups
+  llm-dlc/traces/README.md                           checked in: every session added up (llm-dlc/traces-readme-template.md)
   llm-dlc/traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
   llm-dlc/traces/<session-id>/summary.md             checked in: readable summary (llm-dlc/summary-template.md)
   llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz gitignored: immutable redacted log snapshots
@@ -63,6 +64,8 @@ INDEX = CHANGES / "index.json"
 CHANGES_README = CHANGES / "README.md"
 SUMMARY_TEMPLATE = CHANGES / "summary-template.md"
 SESSION_NOTES = CHANGES / "session-notes"
+TRACES_README = TRACES / "README.md"
+TRACES_README_TEMPLATE = CHANGES / "traces-readme-template.md"
 INDEX_SCHEMA = "llm-trace-index/v1"
 LANGFUSE_ENV = CHANGES / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
@@ -714,6 +717,120 @@ def write_index() -> None:
         start, end = readme.find(INDEX_BEGIN), readme.find(INDEX_END)
         if 0 <= start < end:
             CHANGES_README.write_text(readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
+    TRACES_README.write_text(render_traces_readme())
+
+
+def _table(header: list[str], rows: list[list]) -> str:
+    """A Markdown table; a header cell ending in `>` right-aligns its numeric column."""
+    names = [h.rstrip(">") for h in header]
+    rules = ["---:" if h.endswith(">") else "---" for h in header]
+    return "\n".join("| " + " | ".join(str(c) for c in row) + " |" for row in [names, rules, *rows])
+
+
+def _elapsed(seconds: int | None) -> str:
+    if seconds is None:
+        return "?"
+    minutes = seconds // 60
+    days, hours, mins = minutes // 1440, minutes // 60 % 24, minutes % 60
+    return f"{days} d {hours} h" if days else f"{hours} h {mins} min" if hours else f"{mins} min"
+
+
+def _cached_share(u: dict) -> str:
+    read = u["input_tokens"] + u["cache_read_input_tokens"] + u["cache_creation_input_tokens"]
+    return f"{u['cache_read_input_tokens'] / read:.1%}" if read else "n/a"
+
+
+def render_traces_readme() -> str:
+    """llm-dlc/traces/README.md: every session added up. It is a function of the manifests and the
+    session notes alone, so a sync rewrites it identically and `check` can tell when it is stale."""
+    manifests = {sid: m for sid, m in all_manifests().items() if m.get("schema") == SCHEMA}
+    ordered = sorted(manifests.items(), key=lambda kv: kv[1].get("started") or "")
+    active = [(sid, m) for sid, m in ordered if m["stats"]["turns"]]
+    idle = [sid for sid, m in ordered if not m["stats"]["turns"]]
+    repo = repo_web_url()
+    short = lambda sid: f"[`{sid[:8]}`]({sid}/summary.md)"
+    title = lambda sid, m: (m.get("title") or sid).replace("|", "\\|")
+
+    usage = {k: sum(m["stats"]["usage"][k] for _, m in active) for k in
+             ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")}
+    total = lambda key: sum(m["stats"][key] for _, m in active)
+
+    commits: dict[str, dict] = {}  # by change id, in order of first appearance
+    for sid, m in active:
+        for c in m.get("commits", []):
+            if c.get("summary"):  # not the working copy
+                entry = commits.setdefault(c["change_id"], {**c, "sessions": []})
+                entry["commit_id"] = entry.get("commit_id") or c.get("commit_id")
+                entry["sessions"].append((sid, c.get("log_sha256")))
+    rows = []
+    for n, c in enumerate(commits.values(), 1):
+        ref = f"[`{c['commit_id'][:8]}`]({repo}/commit/{c['commit_id']})" if c.get("commit_id") and repo \
+            else f"change `{c['change_id'][:8]}`"
+        traces = ", ".join(short(sid) + (f" ([log]({log_url(sid, sha)}))" if sha else "") for sid, sha in c["sessions"])
+        rows.append([n, ref, _escape_html(c["summary"]).replace("|", "\\|"), traces])
+
+    tools: dict[str, list[int]] = {}
+    for _, m in active:
+        for name, calls in m.get("tools", {}).items():
+            tools.setdefault(name, [0, 0])
+            tools[name][0] += calls
+            tools[name][1] += 1
+    calls = sum(c for c, _ in tools.values())
+
+    logs = {(sid, sha): info for sid, m in active for sha, info in m.get("logs", {}).items()}
+    gzip_mb = lambda sizes: f"{sum(sizes) / 1e6:.1f} MB"
+    notes = [(sid, notes_path(sid).read_text().strip().split("\n")[0]) for sid in manifests if notes_path(sid).exists()]
+    dates = [m[k] for _, m in active for k in ("started", "ended") if m.get(k)]
+
+    values = {
+        "glance": "\n".join(f"| {k} | {v} |" for k, v in [
+            ("Sessions", f"{len(active)}" + (f", plus {len(idle)} empty" if idle else "")),
+            ("Period", f"{_when(min(dates))} to {_when(max(dates))}" if dates else "?"),
+            ("Prompts", f"{total('turns'):,}"),
+            ("Model calls", f"{total('api_calls'):,}"),
+            ("Tool calls", f"{total('tool_calls'):,} ({total('tool_errors'):,} failed)"),
+            ("Compactions", f"{total('compactions'):,}"),
+            ("Subagents", f"{sum(len(m.get('subagents', [])) for _, m in active):,}"),
+            ("Tokens written", f"{usage['output_tokens']:,}"),
+            ("Tokens read", f"{usage['input_tokens'] + usage['cache_read_input_tokens'] + usage['cache_creation_input_tokens']:,}"
+                            f" ({_cached_share(usage)} from cache)"),
+            ("Commits with a trace", f"{len(commits):,}"),
+            ("Log snapshots", f"{len(logs):,} ({gzip_mb(i.get('gzip_bytes', 0) for i in logs.values())} gzipped, "
+                              f"{sum(1 for i in logs.values() if i.get('url')):,} uploaded)"),
+        ]),
+        "sessions": _table(
+            ["Started", "Session", "Status", "Elapsed", "Models", "Prompts>", "Model calls>", "Tool calls>", "Failed>",
+             "Compactions>", "Peak context>", "Commits>"],
+            [[_when(m.get("started")), f"[{title(sid, m)}]({sid}/summary.md)", m["status"],
+              _elapsed(m.get("duration_seconds")), ", ".join(f"`{x}`" for x in m.get("models", [])) or "?",
+              f"{m['stats']['turns']:,}", f"{m['stats']['api_calls']:,}", f"{m['stats']['tool_calls']:,}",
+              f"{m['stats']['tool_errors']:,}", f"{m['stats']['compactions']:,}",
+              f"{m['stats']['peak_context_tokens']:,}", sum(1 for c in m.get("commits", []) if c.get("summary"))]
+             for sid, m in active]),
+        "empty": ("Empty sessions, with no prompts: " + ", ".join(short(sid) for sid in idle) + ".") if idle else "",
+        "tokens": _table(
+            ["Session", "Written>", "Fresh input>", "Cache write>", "Cache read>", "Cached>", "Read per token written>"],
+            [[short(sid), f"{u['output_tokens']:,}", f"{u['input_tokens']:,}", f"{u['cache_creation_input_tokens']:,}",
+              f"{u['cache_read_input_tokens']:,}", _cached_share(u),
+              f"{(u['input_tokens'] + u['cache_read_input_tokens'] + u['cache_creation_input_tokens']) / u['output_tokens']:,.0f}"
+              if u["output_tokens"] else "n/a"]
+             for sid, u in ((sid, m["stats"]["usage"]) for sid, m in active)]),
+        "tools": _table(["Tool", "Calls>", "Share>", "Sessions>"],
+                        [[f"`{name}`", f"{c:,}", f"{c / calls:.1%}", s]
+                         for name, (c, s) in sorted(tools.items(), key=lambda kv: (-kv[1][0], kv[0]))]),
+        "commits": _table(["#>", "Commit", "Summary", "Sessions"], rows) if rows else "*No commits yet.*",
+        "logs": _table(
+            ["Session", "Snapshots>", "Uploaded>", "Size>", "Latest log"],
+            [[short(sid), len(m.get("logs", {})), sum(1 for i in m.get("logs", {}).values() if i.get("url")),
+              gzip_mb(i.get("gzip_bytes", 0) for i in m.get("logs", {}).values()),
+              f"[`{m['log']['sha256'][:12]}`]({log_url(sid, m['log']['sha256'])})"
+              if m["log"]["sha256"] in m.get("logs", {}) and m["logs"][m["log"]["sha256"]].get("url")
+              else f"`{m['log']['sha256'][:12]}`, not uploaded"]
+             for sid, m in active]),
+        "notes": "\n".join(f"- [`{sid[:8]}`](../session-notes/{sid}.md): {line}" for sid, line in notes) or "*None.*",
+    }
+    text = string.Template(TRACES_README_TEMPLATE.read_text()).safe_substitute(values)
+    return re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n"
 
 
 # --------------------------------------------------------------------------- Langfuse (OTLP/JSON)
@@ -1091,6 +1208,8 @@ def cmd_check(remote: bool = False) -> int:
         print("ERROR", e)
     if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
+    if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme():
+        errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
     print(f"{len(manifests)} session(s), {len(errors)} error(s), {len(notes)} note(s)")
     return 1 if errors else 0
 

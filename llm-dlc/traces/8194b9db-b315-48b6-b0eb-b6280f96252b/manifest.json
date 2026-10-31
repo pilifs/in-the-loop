@@ -13,24 +13,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T01:39:26.314Z",
-  "ended": "2026-10-31T11:46:10.025Z",
-  "duration_seconds": 36404,
+  "ended": "2026-10-31T11:55:38.637Z",
+  "duration_seconds": 36972,
   "stats": {
-    "turns": 18,
-    "api_calls": 87,
-    "tool_calls": 198,
+    "turns": 19,
+    "api_calls": 92,
+    "tool_calls": 202,
     "tool_errors": 11,
     "compactions": 1,
     "peak_context_tokens": 439795,
     "usage": {
-      "input_tokens": 1886,
-      "output_tokens": 246925,
-      "cache_read_input_tokens": 20962448,
-      "cache_creation_input_tokens": 641791
+      "input_tokens": 1898,
+      "output_tokens": 260171,
+      "cache_read_input_tokens": 21557317,
+      "cache_creation_input_tokens": 667335
     }
   },
   "tools": {
-    "Bash": 103,
+    "Bash": 107,
     "Edit": 57,
     "Write": 21,
     "Read": 14,
@@ -92,24 +92,24 @@
     {
       "index": 1,
       "started": "2026-10-31T09:24:42.292Z",
-      "ended": "2026-10-31T11:46:10.025Z",
-      "turns": 6,
-      "api_calls": 17,
+      "ended": "2026-10-31T11:55:38.637Z",
+      "turns": 7,
+      "api_calls": 22,
       "usage": {
-        "input_tokens": 38,
-        "output_tokens": 23060,
-        "cache_read_input_tokens": 1353540,
-        "cache_creation_input_tokens": 83131
+        "input_tokens": 50,
+        "output_tokens": 36306,
+        "cache_read_input_tokens": 1948409,
+        "cache_creation_input_tokens": 108675
       },
-      "peak_context_tokens": 112308
+      "peak_context_tokens": 138767
     }
   ],
   "log": {
-    "sha256": "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955",
-    "bytes": 4739987,
-    "lines": 1516,
-    "gzip_bytes": 797793,
-    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955.jsonl.gz"
+    "sha256": "facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3",
+    "bytes": 4907401,
+    "lines": 1563,
+    "gzip_bytes": 825892,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -147,11 +147,19 @@
     },
     {
       "change_id": "pyvnvqtoztywwqxvpynyvnnxtxlmsnrt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "33f6d560a9c0d68e6d4ec7697a26a4094f338146",
+      "immutable": true,
       "summary": "Link the blog post now that it is on GitHub",
       "body": "The note on session 560d5e98 named the Terminal-Value commit that holds the blog post in plain text because that commit was not yet on GitHub. It is now, so the note links to the commit and the post's folder, pinned to that commit so the links keep showing what the session wrote. This commit also carries the trace metadata recorded by the previous push. Both URLs returned 200 before committing.",
       "log_sha256": "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955"
+    },
+    {
+      "change_id": "tmwpqnxylpyskpltyosunrnslroswxkz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Generate a traces overview at llm-dlc/traces/README.md",
+      "body": "The session index gave one row per session and nothing across them. The new page adds every session up: totals, a table per session, tokens and cache share, tool use, every commit with its sessions and logs, log storage, and the session notes. It closes with how to read the numbers.\n\nsync.py renders it on every sync from llm-dlc/traces-readme-template.md, using only the manifests and session notes, so it needs no logs and comes out the same on each run. check now fails if the file does not match the manifests. Commit totals count a commit shared by two sessions once. There are no dollar figures, because manifests do not record what a call was billed.\n\nVerified by comparing the totals with an independent sum over the manifests (75 prompts, 459 model calls, 643 tool calls, 17 unique commits against 18 listed per session) and by appending a line to the page and seeing check report one error, then pass once it was restored.",
+      "log_sha256": "facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3"
     }
   ],
   "logs": {
@@ -183,6 +191,12 @@
       "bytes": 4739987,
       "lines": 1516,
       "gzip_bytes": 797793,
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955.jsonl.gz"
+    },
+    "facb16ca1c04946810373d08927b7ba31106166dfc917b1ce9d44d0b6d1a16d3": {
+      "bytes": 4907401,
+      "lines": 1563,
+      "gzip_bytes": 825892,
       "url": null
     }
   },
