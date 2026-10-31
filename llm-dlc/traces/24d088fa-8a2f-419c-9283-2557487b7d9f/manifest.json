@@ -1,0 +1,86 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "24d088fa-8a2f-419c-9283-2557487b7d9f",
+  "status": "open",
+  "title": "Trace data pipeline for llm-dlc",
+  "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.316"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-10-31T15:07:14.486Z",
+  "ended": "2026-10-31T15:23:36.026Z",
+  "duration_seconds": 982,
+  "stats": {
+    "turns": 2,
+    "api_calls": 10,
+    "tool_calls": 21,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 231596,
+    "usage": {
+      "input_tokens": 22,
+      "output_tokens": 59952,
+      "cache_read_input_tokens": 1167494,
+      "cache_creation_input_tokens": 202005
+    }
+  },
+  "tools": {
+    "Bash": 11,
+    "Read": 6,
+    "Write": 3,
+    "Skill": 1
+  },
+  "files_touched": [
+    "/tmp/claude-1000/-home-user-code-java-formal-verification/24d088fa-8a2f-419c-9283-2557487b7d9f/scratchpad/compare_blog.py",
+    "llm-dlc/pricing.json",
+    "llm-dlc/tools/metrics.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-10-31T15:07:14.486Z",
+      "ended": "2026-10-31T15:23:36.026Z",
+      "turns": 2,
+      "api_calls": 10,
+      "usage": {
+        "input_tokens": 22,
+        "output_tokens": 59952,
+        "cache_read_input_tokens": 1167494,
+        "cache_creation_input_tokens": 202005
+      },
+      "peak_context_tokens": 231596
+    }
+  ],
+  "log": {
+    "sha256": "7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488",
+    "bytes": 1563443,
+    "lines": 178,
+    "gzip_bytes": 404341,
+    "path": "llm-dlc/traces/24d088fa-8a2f-419c-9283-2557487b7d9f/logs/7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "rkstsnyunkzpypvkxztprzrprssvnqxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Generate chart data from session logs on every sync",
+      "body": "Add llm-dlc/tools/metrics.py, which turns each redacted log into llm-dlc/traces/<session-id>/metrics.json: every prompt, model call, tool call, compaction, pause and large cache write as tables, with list-price costs from the new hand-written llm-dlc/pricing.json. llm-dlc/traces/metrics.json adds them up over all sessions, by model, effort, tool, day, session and commit. This is the data layer for charts like the ones in the reading-the-trace blog post, which came from one-off scripts run on one log with hand-typed prices, labels and annotations.\n\nBeyond what those scripts did: work is attributed to commits by the line count of each commit's log; cache writes get a derived cause and every other factor present, which replaces the hand-written notes; time uses interval unions, because parallel tool calls overlap; prompts are told apart from commands and tool results; and Claude Code's own cost-state record is kept beside the computed cost, because compaction and Haiku side calls are missing from logs.\n\nsync.py writes the files on every commit and push. check rebuilds each one from its log, fails if it differs or if its token totals differ from the manifest, scans it for leaks, and warns about models with no price. Verified on the post's log prefix: 327 calls, 364 tool calls, 25 prompts, every token total and the $39.35 / $284.85 costs match its session.json exactly. Computed costs reproduce cost-state to the cent per model. Usage sums to the totals across prompts, windows and commits on all sessions. test_metrics.py has 21 tests on made-up sessions.",
+      "log_sha256": "7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488"
+    }
+  ],
+  "logs": {
+    "7e414e54d4f3ec4b1b6e1c8f73ca2c4d8ec26c683d91f0513ae4767830199488": {
+      "bytes": 1563443,
+      "lines": 178,
+      "gzip_bytes": 404341,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

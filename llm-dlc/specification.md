@@ -11,11 +11,14 @@ This page is the specification. [`llm-dlc/README.md`](README.md) has the procedu
 ```
 llm-dlc/index.json                                        checked in; one row per session
 llm-dlc/traces/README.md                                  checked in; every session added up
+llm-dlc/traces/metrics.json                               checked in; every session added up, as data
+llm-dlc/pricing.json                                      checked in; list prices, written by hand
 llm-dlc/traces-readme-template.md                         checked in; the template for that README
 llm-dlc/summary-template.md                               checked in; the template for summary.md
 llm-dlc/session-notes/<session-id>.md                     checked in; optional, written by hand
 llm-dlc/traces/<session-id>/manifest.json                 checked in
 llm-dlc/traces/<session-id>/summary.md                    checked in
+llm-dlc/traces/<session-id>/metrics.json                  checked in
 llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
 ```
 
@@ -82,13 +85,62 @@ A new policy produces new log IDs. Logs that commits already point at are kept.
 
 The manifest is derived data. It is rebuilt from the transcript on every sync, and `summarize()` runs on the redacted entries, so it can also be rebuilt from a published log. Changing its schema is cheap; the identifiers above are not.
 
+## Metrics
+
+`metrics.json` holds what a chart needs, so nobody has to parse a log to draw one. `sync.py` writes it on every commit and push, using `tools/metrics.py`, next to the summary it belongs to. Like the manifest it is derived data, and changing its schema is cheap.
+
+It is a function of three inputs and nothing else: the session's current log, its manifest, and `llm-dlc/pricing.json`. So it contains no clock, and `check` rebuilds it and fails if it differs. `check` also fails if its token totals differ from the manifest's, which are counted by separate code, and warns about a model with no price. Free text (prompts, tool labels, error heads) is cut to 200 characters and redacted again after the cut, and the file is scanned like the summary. The file is JSON with one table row per line, so a commit's diff is the rows it added.
+
+**Session file** (`llm-trace-metrics/v1`):
+
+| Field | Content |
+|---|---|
+| `source`, `pricing_as_of` | The log the file was built from, and the price list used |
+| `totals` | Prompts, commands, commits, compactions, subagents, tool errors, peak context, and the usage block below |
+| `after_last_commit` | The usage block for work no commit points at yet |
+| `time` | `elapsed_ms`, `agent_ms`, `model_ms`, `tool_ms`, `busy_ms`, `compaction_ms`, `paused_ms` (see *Time*) |
+| `reported` | What Claude Code itself counted, or null (see *Cost*) |
+| `by_model`, `by_effort`, `by_tool`, `by_bash_family`, `by_cache_cause` | Group totals, most expensive or most used first |
+| `windows[]` | One row per context window: span, prompts, peak context, usage |
+| `compactions[]` | `ts`, `line`, `window` (the one it starts), `trigger`, `pre_tokens`, `post_tokens`, `ms` |
+| `pauses[]` | Gaps of 30 minutes or more between records: `start`, `end`, `ms`, `after_prompt` |
+| `commits[]` | Oldest first: `change_id`, `summary`, log sizes, `ts`, and the prompts, agent time and usage since the commit before |
+| `prompts[]` | Each thing that started work: `kind` (`human`, `command`, `task_notification`), `text`, `chars`, `window`, `commit`, its usage, models and time |
+| `calls[]` | Each model call: `seq`, `agent`, `line`, `start`, `end`, `window`, `prompt`, `commit`, `model`, `effort`, `stop_reason`, `context_tokens`, usage, `thinking_ms`, `tools` |
+| `tools[]` | Each tool call: `seq`, `agent`, `line`, `name`, `call`, `prompt`, `commit`, `start`, `end`, `ms`, `status` (`ok`, `error`, `no_result`), `error_kind`, `result_chars`, `family` (the program, for Bash), `label`, `error` |
+| `cache_events[]` | Each large cache write and why it happened (see *Cache events*) |
+
+The **usage block** is the same everywhere: `api_calls`, `tool_calls`, `input_tokens`, `output_tokens`, `thinking_tokens` (part of the output), `cache_read_tokens`, `cache_write_tokens` (which is `cache_write_5m_tokens` plus `cache_write_1h_tokens`), `usd`, `uncached_usd` and `unpriced_calls`. A row's numbers add up: the usage of `prompts[]`, of `windows[]`, and of `commits[]` plus `after_last_commit` each equal `totals`.
+
+**Rollup** (`llm-dlc/traces/metrics.json`, `llm-trace-metrics-rollup/v1`): the same totals, time and groups over all sessions, plus `by_day`, `sessions[]` and `commits[]`, where a commit that several sessions worked on is one row naming each of them. It is a function of the session files and the manifests. It leaves out the per-call tables, so a page can load it alone.
+
+**How rows connect.** `prompt`, `commit`, `window`, `call` and `seq` are indexes into the tables of the same file. `line` is the line of the session's log, counted from 1, so any row can be found in the log. A commit's log is a prefix of the session's log and redaction works line by line, so the line count of that log says which calls came before the commit, even when the two logs were made under different redaction policies. A commit whose log was withdrawn has no line count and shows no work; that work moves to the next commit. Subagent rows have an `agent` id. Their `line` is in the subagent's own log, and they are placed in a prompt by time.
+
+**Cost.** `usd` is tokens times the list price, and `uncached_usd` is what the same calls would cost if nothing were cached. Both are estimates of list price, not a bill: fast mode and web search are not priced. Logs leave out some calls, namely compactions and Haiku side calls, so the sum of `calls[]` is lower than the real cost. Claude Code writes its own count in a `cost-state` record when a session stops, and `reported` keeps the last one: `usd`, per-model usage, `api_ms`, `tool_ms`, lines changed, and `unattributed_usd`, the part of that cost that no call in the log explains. A session that has not stopped yet has no `reported`.
+
+**Time.** `agent_ms` is the span from a prompt to the last record of its turn, summed over prompts. `model_ms` is the time covered by at least one model call, from the request to the last block of the response. `tool_ms` is the same for tool calls, and `busy_ms` for either. These are unions because tool calls run in parallel, so a sum would count overlapping time twice. `tool_ms` comes from timestamps, so it includes time spent waiting for a person to approve a call; `reported.tool_ms` does not.
+
+**Cache events.** A call starts an event if it read under half of the previous call's context, which means the cached prefix was lost, or if it wrote 20,000 tokens or more with the prefix intact. `cause` is the first of these that applies, and `also` lists the others:
+
+| Cause | Meaning |
+|---|---|
+| `session_start` | The first call of a session or subagent |
+| `compaction` | A compaction came between this call and the last |
+| `model_switch` | The model changed; caches belong to one model |
+| `cache_expired` | The last call started longer ago than the TTL: an hour once the session has written a 1-hour entry, otherwise 5 minutes |
+| `effort_change` | The effort level changed |
+| `unexplained` | The prefix was lost and the log does not say why |
+| `large_input` | One large input, such as a skill or a big tool result. `after_tools` names what the previous call ran, `later_calls` counts the calls in the window that read it again, and `reread_usd` is what those reads cost |
+
+`tokens` is the size of the write, `write_usd` its cost, and `excess_usd` what it cost above reading the same tokens from the cache.
+
 ## Workflow
 
 `.claude/settings.json` runs two hooks, and `sync.py` does the rest:
 
 - **End of a turn or session** (`Stop`, `SessionEnd`, `sync.py hook`): sends finished turns to Langfuse (`http://localhost:3000`), if it is running, and leaves the repo alone. Nothing depends on this: a transcript stays on disk until a commit or push records it.
 - **After a shell command** (`PostToolUse`, `sync.py hook-commit`): if the command was a plain `jj commit`, `jj new` or `git commit`, traces the new commit as below.
-- **On a commit** (`sync.py commit`): redacts each transcript, stores a new log snapshot, rewrites the manifest, the summary, the index and the overview, stamps the `LLM-Trace` lines, and deletes logs that nothing points at. Earlier changes made in a session get a line only if they lack one.
+- **On a commit** (`sync.py commit`): redacts each transcript, stores a new log snapshot, rewrites the manifest, the summary, the metrics, the index and the overview, stamps the `LLM-Trace` lines, and deletes logs that nothing points at. Earlier changes made in a session get a line only if they lack one.
 - **On a push** (`sync.py push`): does the same, stamping `@` for every session with log that no commit points at, runs `check`, uploads the logs, runs `check` again, and freezes `@` as a *Record session traces* commit. It makes that commit only if a log or upload is new, so a repeated push changes nothing. The first `check` runs before anything is uploaded, and the upload itself refuses a log in which the current redaction rules would still change something, so a leak that the rules know about cannot reach the CDN.
 
 ```bash
