@@ -81,7 +81,7 @@
     },
     {
       "change_id": "mzwpyorqmwsqryzmzwrrslvzqklwukto",
-      "commit_id": null,
+      "commit_id": "cdb0953813d14eed90bef37dc9219e072317469e",
       "immutable": false,
       "summary": "Record that findings in published logs are accepted",
       "body": "The stricter redaction rules flag 13 policy 3 logs from the first session that are already on the CDN. They were reviewed and judged innocuous, and the maintainer decided not to withdraw them, so CLAUDE.md and the history note in the specification now tell future agents to treat those check notes as warnings that need no action. Logs not yet uploaded are still held to the rules. Docs only; verified with sync.py check.",
@@ -89,7 +89,7 @@
     },
     {
       "change_id": "xxvmmlpxntprnoqxnrylspolnvqnvnsq",
-      "commit_id": null,
+      "commit_id": "f4dada1f80f07773b2322f9f54f37fff028ae6c3",
       "immutable": false,
       "summary": "Stop flagging versions as IPs and grade check output",
       "body": "Four-part Java versions such as those in openjdk and java.base@ output were reported as public IPs, and the all-zero MAC literal in sync.py as an IPv6 address, so harmless warnings kept appearing before pushes. The public-ip warning now skips an address-shaped value only when the text around it says it is a version; a bare @ does not count, so root@<ip> still warns. All-zero IPv6 matches are ignored.\n\ncheck now reports three levels: ERROR must be fixed, warn is for a person to judge, note needs no action. Notes are grouped per session, which took a full run from 38 lines to 4. The 13 reviewed policy 3 logs are listed by hash in ACCEPTED_LOGS and appear as a note. Any other published log with findings warns, so logs flagged by a future policy are not accepted without review.\n\nVerified with 8 made-up strings that must stay quiet and 8 that must warn, and by emptying ACCEPTED_LOGS in memory, which turned the 13 logs back into warnings with exit 0. check reports 0 errors and 0 warnings; scan keeps warning only on two DNS answers and one auth-header match, all in the first session.",
@@ -107,13 +107,13 @@
       "bytes": 1004497,
       "lines": 300,
       "gzip_bytes": 206274,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/8864a17c4a1b53a2fec1ba2fab0160e61026f4574824bcc9b6c334dcd0797c90.jsonl.gz"
     },
     "89e28dc2f956134efb5e91e87913ad5bbbc7db0b292eafa3258ce4764526d905": {
       "bytes": 807627,
       "lines": 207,
       "gzip_bytes": 178024,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/89e28dc2f956134efb5e91e87913ad5bbbc7db0b292eafa3258ce4764526d905.jsonl.gz"
     },
     "ee02fa2f89d49d41c7e4935ccad9c0840eefe8a27900188c47f8a37ddcc0f33e": {
       "bytes": 631217,

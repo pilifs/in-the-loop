@@ -36,13 +36,13 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Record that findings in published logs are accepted
 
-change `mzwpyorqmwsq` · [log `89e28dc2f956`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/89e28dc2f956134efb5e91e87913ad5bbbc7db0b292eafa3258ce4764526d905.jsonl.gz)
+[`cdb0953813d1`](https://github.com/pilifs/in-the-loop/commit/cdb0953813d14eed90bef37dc9219e072317469e) · [log `89e28dc2f956`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/89e28dc2f956134efb5e91e87913ad5bbbc7db0b292eafa3258ce4764526d905.jsonl.gz)
 
 The stricter redaction rules flag 13 policy 3 logs from the first session that are already on the CDN. They were reviewed and judged innocuous, and the maintainer decided not to withdraw them, so CLAUDE.md and the history note in the specification now tell future agents to treat those check notes as warnings that need no action. Logs not yet uploaded are still held to the rules. Docs only; verified with sync.py check.
 
 ### Stop flagging versions as IPs and grade check output
 
-change `xxvmmlpxntpr` · [log `8864a17c4a1b`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/8864a17c4a1b53a2fec1ba2fab0160e61026f4574824bcc9b6c334dcd0797c90.jsonl.gz)
+[`f4dada1f80f0`](https://github.com/pilifs/in-the-loop/commit/f4dada1f80f07773b2322f9f54f37fff028ae6c3) · [log `8864a17c4a1b`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/8864a17c4a1b53a2fec1ba2fab0160e61026f4574824bcc9b6c334dcd0797c90.jsonl.gz)
 
 Four-part Java versions such as those in openjdk and java.base@ output were reported as public IPs, and the all-zero MAC literal in sync.py as an IPv6 address, so harmless warnings kept appearing before pushes. The public-ip warning now skips an address-shaped value only when the text around it says it is a version; a bare @ does not count, so root@&lt;ip> still warns. All-zero IPv6 matches are ignored.
 
