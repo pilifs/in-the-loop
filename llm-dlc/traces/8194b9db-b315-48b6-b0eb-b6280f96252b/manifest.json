@@ -13,24 +13,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T01:39:26.314Z",
-  "ended": "2026-10-31T11:38:24.340Z",
-  "duration_seconds": 35938,
+  "ended": "2026-10-31T11:46:10.025Z",
+  "duration_seconds": 36404,
   "stats": {
-    "turns": 17,
-    "api_calls": 83,
-    "tool_calls": 195,
+    "turns": 18,
+    "api_calls": 87,
+    "tool_calls": 198,
     "tool_errors": 11,
     "compactions": 1,
     "peak_context_tokens": 439795,
     "usage": {
-      "input_tokens": 1876,
-      "output_tokens": 242679,
-      "cache_read_input_tokens": 20528287,
-      "cache_creation_input_tokens": 634907
+      "input_tokens": 1886,
+      "output_tokens": 246925,
+      "cache_read_input_tokens": 20962448,
+      "cache_creation_input_tokens": 641791
     }
   },
   "tools": {
-    "Bash": 100,
+    "Bash": 103,
     "Edit": 57,
     "Write": 21,
     "Read": 14,
@@ -92,58 +92,66 @@
     {
       "index": 1,
       "started": "2026-10-31T09:24:42.292Z",
-      "ended": "2026-10-31T11:38:24.340Z",
-      "turns": 5,
-      "api_calls": 13,
+      "ended": "2026-10-31T11:46:10.025Z",
+      "turns": 6,
+      "api_calls": 17,
       "usage": {
-        "input_tokens": 28,
-        "output_tokens": 18814,
-        "cache_read_input_tokens": 919379,
-        "cache_creation_input_tokens": 76247
+        "input_tokens": 38,
+        "output_tokens": 23060,
+        "cache_read_input_tokens": 1353540,
+        "cache_creation_input_tokens": 83131
       },
-      "peak_context_tokens": 104459
+      "peak_context_tokens": 112308
     }
   ],
   "log": {
-    "sha256": "8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79",
-    "bytes": 4645579,
-    "lines": 1483,
-    "gzip_bytes": 782990,
-    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79.jsonl.gz"
+    "sha256": "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955",
+    "bytes": 4739987,
+    "lines": 1516,
+    "gzip_bytes": 797793,
+    "path": "llm-dlc/traces/8194b9db-b315-48b6-b0eb-b6280f96252b/logs/f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "pqkrtxsktnwttqvwprxslwnklqrtvtuz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "68f6567ca4e36d524cf74d031be494b6c75e9973",
+      "immutable": true,
       "summary": "Add symbolic, capability and TLA+ verification examples 006 to 012",
       "body": "The first five examples enumerate a finite state machine, which a type system could approximate. This adds three approaches that a type system cannot, each with examples aimed at cloud Java developers: B9 regression verification, B10 capability contracts and D1 protocol model checking. The examples generator (examples/tools/build.py) now has one runner per approach id, the result schema gained verdictLabel, domain, proof, statement, trace and related fields, and the table of contents shows the approach.\n\nB9, regression verification (examples 006 to 008): Equivalence.java in examples/tools/contracts compares two compiled versions of a method with unbounded inputs. It relocates the old classes into a 'before' package by rewriting constant pools (Relocate.java), generates a harness that asserts both versions agree on every input outside an optional --unchanged-unless Java expression, and runs JBMC on the bytecode with java.lang.Math's real class on the classpath. A counterexample is replayed on the JVM; small inputs are searched first so the witness is readable. HoldPolicy.totalCents gained a 10% group discount for six seats or more to have realistic arithmetic to verify. 006 refutes a per-seat rounding refactor, 007 proves a doubled discount confined to seats >= 6 over all 2^96 inputs in 13 s, 008 shows a declared scope (seats >= 8) that a one-formula rewrite violates. Measured limit, recorded in the README: an unchanged region with a 64-bit division on each side does not finish in 10 min with MiniSat, Z3, cvc5 or --refine.\n\nB10, capability contracts (examples 009 and 010): Capabilities.java derives, from a module's compiled classes, every call to a JDK entry point of a capability (clock, console, environment, filesystem, JNDI, native, network, process, randomness, reflection, scripting, serialization, threads) and the libraries called, as src/contract/capabilities.contract, checked by the same verifyContracts task (the Gradle plugin now passes --classes and --module; -Ptarget=capabilities adds the contract). The contracts and ticketing-domain modules have baseline contracts with no capabilities. 009 catches MessageCodec resolving a class named in a Kafka payload with Class.forName, the shape of the Jackson deserialization CVEs; 010 shows a serialization setting that changes nothing.\n\nD1, protocol model checking (examples 011 and 012): examples/apps/boxoffice/spec/BoxOffice.tla models the two services, their outbox relays, Kafka topics, the sweeper and the clock, one action per transaction, with the README's safety invariants. Its order state machine, OrderLifecycleContract.tla, is generated by examples/tools/tla/contract_to_tla.py from the B8 behavioural contract, so the model runs the decisions the bytecode is proven to make. 011 removes the heldBy query in PaymentEventHandler and TLC produces a nine-step trace in which a paid customer's capture event is dead-lettered after the hold expires; 012 deletes the hold sweeper and TLC confirms every invariant in 3,604 states. The generator runs TLC with one worker so the trace is stable.\n\nVerified by running the verifier's 17 unit tests (jbmc installed) and python3 examples/tools/build.py for all twelve examples, each reaching its expected verdict; the first five pages regenerate unchanged apart from the new table column. Documentation updated: examples/README.md (approach table and intro), approaches.md (B9, B10, D1 and the JBMC finding), the contracts README (three contract kinds, limits), the spec README, the Box Office README, the root README and the setup README. These land in one commit because the generator, schemas and tables are shared by all three approaches.",
       "log_sha256": "1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4"
     },
     {
       "change_id": "oxumuuukwzstsvmotsrltxkulrruulnw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "94edaf9a9369b57ee1438e9f45033aafb700a4f7",
+      "immutable": true,
       "summary": "Credit example authors and commit the TLA+ standard modules",
       "body": "examples/README.md now opens with a note that examples 001 to 005 were created by Opus 5.5 and 006 to 012 by Fable 5.1, and suggests reading the Fable examples first.\n\nThe /tmp/Naturals.tla, /tmp/Sequences.tla and /tmp/FiniteSets.tla paths in the verifier output of examples 011 and 012 were never lost work: TLC unpacks its standard modules from tla2tools.jar into a temporary directory and deletes them on exit. Unmodified copies from TLC 2.19 (rev 5a47802), with the MIT licence, now live in examples/tools/tla/standard-modules, and build.py passes that directory as -DTLA-Library so TLC parses them and the evidence names files that exist. The fallback to a tlc wrapper on PATH does not pass the library and still prints temporary paths.\n\nVerified by regenerating examples 011 and 012, which keep their expected verdicts, and by comparing the three modules byte for byte with the jar.",
       "log_sha256": "c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72"
     },
     {
       "change_id": "qnukuwrtmzzusknpynmokzqrsozlnqxw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "582c96cb23427ab844375635dd773eb860edfd68",
+      "immutable": true,
       "summary": "Reword the note on which examples to read first",
       "body": "The maintainer reworded the opening note of examples/README.md to say that the Fable examples go significantly beyond what type checking can achieve. All twelve examples were regenerated before this commit and kept their expected verdicts; the regenerated evidence differed only in per-run values and was not kept.",
       "log_sha256": "97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141"
     },
     {
       "change_id": "qpplrqkwlytqzlotyxwmnqzlwkppzrrk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "74ba0f5b0d58bb283f2627823611e9d45f2bd9b7",
+      "immutable": true,
       "summary": "Add hand-written session notes to the trace summaries",
       "body": "One session's trace needed explaining and its generated summary cannot be edited: session 560d5e98 wrote a blog post that was committed to the Terminal-Value repo, and its Changes section lists the 006 to 012 commit, which another session made, because that commit carries the only trailer linking the log with the blog work.\n\nAn optional llm-dlc/session-notes/<session-id>.md now appears as a Notes section near the top of that session's summary, and check scans it for secrets. Commits and trailers are left as they are. Summaries of sessions without a note come out byte for byte the same, confirmed by re-syncing them. The first note records the blog work and the misattributed entry.",
       "log_sha256": "8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79"
+    },
+    {
+      "change_id": "pyvnvqtoztywwqxvpynyvnnxtxlmsnrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Link the blog post now that it is on GitHub",
+      "body": "The note on session 560d5e98 named the Terminal-Value commit that holds the blog post in plain text because that commit was not yet on GitHub. It is now, so the note links to the commit and the post's folder, pinned to that commit so the links keep showing what the session wrote. This commit also carries the trace metadata recorded by the previous push. Both URLs returned 200 before committing.",
+      "log_sha256": "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955"
     }
   ],
   "logs": {
@@ -151,24 +159,30 @@
       "bytes": 3788464,
       "lines": 1303,
       "gzip_bytes": 600481,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/1f22d00afa176b0d6c1d28d057f9a01f28c326b1f588114a8e3f0d6770172bc4.jsonl.gz"
     },
     "8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79": {
       "bytes": 4645579,
       "lines": 1483,
       "gzip_bytes": 782990,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/8c39193dc93f8ffae94b454a9a94027b82523704acb5849e932d571323b8aa79.jsonl.gz"
     },
     "97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141": {
       "bytes": 4613328,
       "lines": 1474,
       "gzip_bytes": 778996,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/97ee1e5429229159d101459e42ec8d87c88dc8c1ed3622a26a111eb17514c141.jsonl.gz"
     },
     "c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72": {
       "bytes": 4424080,
       "lines": 1424,
       "gzip_bytes": 746269,
+      "url": "https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/c0f55d5185eaf52dbfd3952008c087ee9b1b0d23b72a6cb284639e2ea75eba72.jsonl.gz"
+    },
+    "f8406e5647f98f9ec5cd58eab2811d1c74a7e9d63d595c825506d89a654a7955": {
+      "bytes": 4739987,
+      "lines": 1516,
+      "gzip_bytes": 797793,
       "url": null
     }
   },
