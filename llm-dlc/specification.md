@@ -11,6 +11,7 @@ This page is the specification. [`llm-dlc/README.md`](README.md) has the procedu
 ```
 llm-dlc/index.json                                        checked in; one row per session
 llm-dlc/summary-template.md                               checked in; the template for summary.md
+llm-dlc/session-notes/<session-id>.md                     checked in; optional, written by hand
 llm-dlc/traces/<session-id>/manifest.json                 checked in
 llm-dlc/traces/<session-id>/summary.md                    checked in
 llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded to blob storage
@@ -19,6 +20,7 @@ llm-dlc/traces/<session-id>/logs/<sha256>.jsonl.gz        gitignored; uploaded t
 - **Index:** the global manifest, a light list of every session with its title, time span, current log and the commits it made.
   It answers "which session made this commit" and "what happened in October" without opening every manifest.
   The same rows appear as a table in `llm-dlc/README.md`.
+- **Session note:** a correction or context that the log and commits cannot give, such as work committed to another repo. It is written by hand, and appears as *Notes* near the top of `summary.md`.
 - **Manifest:** the detailed metadata of one session, meaning one context window plus any windows after a compaction.
   It holds stats, the commits with their full messages, and every referenced log.
 - **Summary:** the human-readable view of the session, rendered from `llm-dlc/summary-template.md`: each commit with the message the agent wrote, then each prompt with the final reply.

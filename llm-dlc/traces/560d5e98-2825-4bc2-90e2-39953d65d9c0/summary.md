@@ -14,6 +14,13 @@
 | Log | [`5026337d0f6681bed96ec275fe879101ddcb9e348353838a4481f8ad488bf38b`](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/5026337d0f6681bed96ec275fe879101ddcb9e348353838a4481f8ad488bf38b.jsonl.gz) |
 | Metadata | [manifest.json](manifest.json) |
 
+## Notes
+
+This session also did work that is not in this repo, and one entry under *Changes* below is not its own.
+
+- **Turn 26 was committed elsewhere.** It mined this repo's trace data to write the blog post *What a six-day agent session looks like from the inside*. The post is in the `pilifs/Terminal-Value` repo, commit `3c76511`, under `blog/posts/reading-the-trace/`, so it has no entry under *Changes*. That is why `~/code/Terminal-Value` paths appear under *Files touched*.
+- **The last entry under *Changes* came from another session.** *Add symbolic, capability and TLA+ verification examples 006 to 012* was made by session [`8194b9db`](../8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md). It carries this session's `LLM-Trace` line only because the log gained turn 26 after this session's own last commit, `2533b1b2`. That line is the only commit link to the log containing turn 26, so it is the way to find the blog work from this repo's history.
+
 ## Changes
 
 The commits this session made, oldest first, with the message the agent wrote for each.

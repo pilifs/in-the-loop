@@ -14,6 +14,8 @@
 | Log | [`${log_sha256}`](${log_url}) |
 | Metadata | [manifest.json](manifest.json) |
 
+${notes}
+
 ## Changes
 
 The commits this session made, oldest first, with the message the agent wrote for each.

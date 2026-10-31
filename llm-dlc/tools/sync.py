@@ -62,6 +62,7 @@ LEGACY_TRACES = ("traces", "changes/traces")
 INDEX = CHANGES / "index.json"
 CHANGES_README = CHANGES / "README.md"
 SUMMARY_TEMPLATE = CHANGES / "summary-template.md"
+SESSION_NOTES = CHANGES / "session-notes"
 INDEX_SCHEMA = "llm-trace-index/v1"
 LANGFUSE_ENV = CHANGES / "infra" / "langfuse" / ".env"
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
@@ -554,6 +555,11 @@ def finalize_logs(sid: str, m: dict) -> None:
 
 # --------------------------------------------------------------------------- summary and index
 
+def notes_path(sid: str) -> Path:
+    """An optional hand-written note on a session, for what its log and commits cannot say."""
+    return SESSION_NOTES / f"{sid}.md"
+
+
 def summary_path(sid: str) -> Path:
     return session_dir(sid) / "summary.md"
 
@@ -623,8 +629,9 @@ def _turn_md(n: int, turn: list[dict], repo_prefix: str) -> str | None:
 
 
 def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> None:
-    """Write summary.md from the template. It is derived only from the redacted log and the
-    manifest, so it is safe to publish and can be rebuilt from a published log."""
+    """Write summary.md from the template. It is derived from the redacted log, the manifest and
+    the session's optional hand-written note, which `check` scans for secrets, so it is safe to
+    publish and can be rebuilt from a published log and this repo."""
     s, u = m["stats"], m["stats"]["usage"]
     repo = repo_web_url()
     changes = []
@@ -644,7 +651,9 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
             turns.append(md)
     subagents = "".join(f"\n- `{a['agent']}`: {a['stats']['turns']} turns, {a['stats']['tool_calls']} tool calls, "
                         f"[log]({log_url(sid, a['log']['sha256'])})" for a in m.get("subagents", []))
+    note = notes_path(sid)
     values = {
+        "notes": f"## Notes\n\n{note.read_text().strip()}" if note.exists() else "",
         "title": m.get("title") or (m.get("first_prompt") or "Untitled session").split("\n")[0][:80],
         "session_id": sid, "status": m["status"],
         "when": f"{_when(m.get('started'))} to {_when(m.get('ended'))}"
@@ -1049,6 +1058,8 @@ def cmd_check(remote: bool = False) -> int:
                 errors.append(f"{sid}: unredacted {leaks} in log {sha[:12]}")
         if not summary_path(sid).exists():
             errors.append(f"{sid}: summary.md is missing (run: python3 llm-dlc/tools/sync.py sync {sid})")
+        if notes_path(sid).exists() and (leaks := redact.leaks(notes_path(sid).read_text())):
+            errors.append(f"{sid}: unredacted {leaks} in its session note")
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         current = load_log(sid, m["log"]["sha256"]) or b""
         for c in m.get("commits", []):
