@@ -36,7 +36,7 @@ Sessions are now marked ended by the next sync once their transcript has been id
 
 ### Record session traces
 
-change `wwszokpyuvon` · [log `3bec5f22f194`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/3bec5f22f19446d5889b0ae4345b373ad34907af0a9e008e36c0f164f84d40b7.jsonl.gz)
+[`205acad30b4c`](https://github.com/pilifs/in-the-loop/commit/205acad30b4cdcf30c3e53006bba6bacb2eca270) · [log `3bec5f22f194`](https://terminalvalue.net/raw-traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/3bec5f22f19446d5889b0ae4345b373ad34907af0a9e008e36c0f164f84d40b7.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

@@ -161,7 +161,7 @@ Verified by running the verifier's 17 unit tests (jbmc installed) and python3 ex
 
 ### Record session traces
 
-change `wwszokpyuvon` · [log `343beeb22f52`](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/343beeb22f5214722aa6fc33f89f93cb2a986ee96f3350b1d86d748adf698a04.jsonl.gz)
+[`205acad30b4c`](https://github.com/pilifs/in-the-loop/commit/205acad30b4cdcf30c3e53006bba6bacb2eca270) · [log `343beeb22f52`](https://terminalvalue.net/raw-traces/560d5e98-2825-4bc2-90e2-39953d65d9c0/343beeb22f5214722aa6fc33f89f93cb2a986ee96f3350b1d86d748adf698a04.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
