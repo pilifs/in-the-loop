@@ -1,7 +1,9 @@
 //! The statement of a regression proof, as a class file JBMC can check: a harness that calls the old and the new
 //! version of a method on the same symbolic arguments, catches what each throws, and asserts that the results and
-//! the exception types agree. With a scope expression (`--unchanged-unless`), the harness returns early on the
-//! inputs the developer meant to change, so the proof covers everything else.
+//! the exception types agree. An array argument is copied first, so that each version writes into its own, and
+//! what the two leave is compared element by element, as an array result is. With a scope expression
+//! (`--unchanged-unless`), the harness returns early on the inputs the developer meant to change, so the proof
+//! covers everything else.
 //!
 //! The harness is written as bytecode directly, with no Java compiler in the loop: the statement is generated,
 //! not transcribed, and the tool needs only JBMC. A Java rendering of the same statement is produced alongside it
@@ -14,7 +16,7 @@
 
 pub mod expr;
 
-use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+use crate::classfile::writer::{ClassWriter, CodeBuilder, Label, MethodWriter};
 use crate::classfile::{flags, Cond, Kind, Type};
 use crate::Error;
 
@@ -84,21 +86,44 @@ fn kind_of(t: &Type) -> Kind {
 }
 
 /// Generates the harness for `class_internal.method(params) -> ret`, comparing it with `before/class_internal`.
-pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>) -> Result<Harness, Error> {
-    let scope = match unchanged_unless {
-        Some(src) => Some(expr::parse(src, params)?),
-        None => None,
-    };
+/// Each array parameter is copied before the calls, exactly as long, so that the version before writes into the
+/// copy and the version after into the array itself, and the two are compared element by element afterwards;
+/// `max_array_length` bounds the copying and comparing loops. An array result is compared the same way.
+pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32) -> Result<Harness, Error> {
     let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
+
+    // Locals after the parameters: a copy of each array parameter, then a, ea, b, eb, then the index of the
+    // copying and comparing loops, which the scope's quantifiers reuse.
+    let copies: Vec<(u16, u16, Type)> = params
+        .iter()
+        .filter_map(|p| match &p.ty {
+            Type::Array(element) => Some((p.slot, (**element).clone())),
+            _ => None,
+        })
+        .enumerate()
+        .map(|(i, (slot, element))| (slot, arg_slots + i as u16, element))
+        .collect();
+    let is_void = *ret == Type::Void;
+    let ret_kind = kind_of(ret);
+    let a = arg_slots + copies.len() as u16;
+    let ea = a + if is_void { 0 } else { ret.slots() };
+    let b = ea + 1;
+    let eb = b + if is_void { 0 } else { ret.slots() };
+    let index = eb + 1;
+    let scope = match unchanged_unless {
+        Some(src) => Some(expr::parse_in(src, params, None, index)?),
+        None => None,
+    };
+    let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
 
     let mut writer = ClassWriter::new(CLASS);
     writer.source_file = Some(format!("{CLASS}.java"));
     writer.default_constructor();
     let mut code = CodeBuilder::new();
     code.max_locals = arg_slots;
-    code.max_stack = arg_slots.max(4) + 2;
+    code.max_stack = 16 + 4 * arg_slots;
 
     // The scope: return early on the inputs the developer meant to change.
     if let Some(scope) = &scope {
@@ -109,15 +134,37 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         code.bind(proceed);
     }
 
-    // Locals after the parameters: a, ea, b, eb.
-    let is_void = *ret == Type::Void;
-    let ret_kind = kind_of(ret);
-    let a = arg_slots;
-    let ea = a + if is_void { 0 } else { ret.slots() };
-    let b = ea + 1;
-    let eb = b + if is_void { 0 } else { ret.slots() };
+    // The copies: as long as the array, filled by a loop of at most the bound's iterations.
+    for (slot, copy, element) in &copies {
+        code.load(Kind::Ref, *slot);
+        code.op(0xbe); // arraylength
+        code.op_u8(0xbc, newarray_code(element)); // newarray
+        code.store(Kind::Ref, *copy);
+        let loop_ = code.label();
+        let done = code.label();
+        code.iconst(0);
+        code.store(Kind::Int, index);
+        code.bind(loop_);
+        code.load(Kind::Int, index);
+        code.iconst(bound);
+        code.if_icmp(Cond::Ge, done);
+        code.load(Kind::Int, index);
+        code.load(Kind::Ref, *slot);
+        code.op(0xbe); // arraylength
+        code.if_icmp(Cond::Ge, done);
+        code.load(Kind::Ref, *copy);
+        code.load(Kind::Int, index);
+        code.load(Kind::Ref, *slot);
+        code.load(Kind::Int, index);
+        code.op(array_load(element));
+        code.op(array_store(element));
+        code.iinc(index, 1);
+        code.goto(loop_);
+        code.bind(done);
+    }
+
     let before_owner = format!("before/{class_internal}");
-    for (owner, value_slot, flag_slot) in [(before_owner.as_str(), a, ea), (class_internal, b, eb)] {
+    for (owner, value_slot, flag_slot, on_copies) in [(before_owner.as_str(), a, ea, true), (class_internal, b, eb, false)] {
         if !is_void {
             match ret_kind {
                 Kind::Int => code.iconst(0),
@@ -135,13 +182,14 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         let join = code.label();
         code.bind(try_start);
         for p in params {
-            code.load(kind_of(&p.ty), p.slot);
+            match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
+                Some((_, copy, _)) if on_copies => code.load(Kind::Ref, *copy),
+                _ => code.load(kind_of(&p.ty), p.slot),
+            }
         }
         let target = writer.pool.method_ref(owner, method, &descriptor);
         code.op_u16(0xb8, target); // invokestatic
-        if is_void {
-            // nothing to store
-        } else {
+        if !is_void {
             code.store(ret_kind, value_slot);
         }
         code.bind(try_end);
@@ -159,40 +207,49 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         code.bind(join);
     }
 
-    // The assertion: ea == eb && (ea != 0 || a == b).
+    // The assertion: ea == eb && (ea != 0 || a == b) && each array parameter is left as its copy was.
     let fail = code.label();
     let ok = code.label();
     code.load(Kind::Int, ea);
     code.load(Kind::Int, eb);
     code.if_icmp(Cond::Ne, fail);
     if !is_void {
+        let arrays = code.label();
         code.load(Kind::Int, ea);
-        code.if_zero(Cond::Ne, ok);
-        code.load(ret_kind, a);
-        code.load(ret_kind, b);
-        match ret_kind {
-            Kind::Int => code.if_icmp(Cond::Eq, ok),
-            Kind::Long => {
-                code.op(0x94); // lcmp
-                code.if_zero(Cond::Eq, ok);
+        code.if_zero(Cond::Ne, arrays);
+        match ret {
+            Type::Array(element) => {
+                let compare = code.label();
+                code.load(Kind::Ref, a);
+                code.if_nonnull(compare);
+                code.load(Kind::Ref, b);
+                code.if_null(arrays);
+                code.goto(fail);
+                code.bind(compare);
+                code.load(Kind::Ref, b);
+                code.if_null(fail);
+                code.load(Kind::Ref, a);
+                code.op(0xbe); // arraylength
+                code.load(Kind::Ref, b);
+                code.op(0xbe); // arraylength
+                code.if_icmp(Cond::Ne, fail);
+                compare_arrays(&mut code, a, b, element, None, index, fail);
             }
-            Kind::Float => {
-                code.op(0x95); // fcmpl
-                code.if_zero(Cond::Eq, ok);
-            }
-            Kind::Double => {
-                code.op(0x97); // dcmpl
-                code.if_zero(Cond::Eq, ok);
-            }
-            Kind::Ref => {
+            Type::Object(_) => {
                 let equals = writer.pool.method_ref("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z");
+                code.load(Kind::Ref, a);
+                code.load(Kind::Ref, b);
                 code.op_u16(0xb8, equals);
-                code.if_zero(Cond::Ne, ok);
+                code.if_zero(Cond::Eq, fail);
             }
+            _ => compare_values(&mut code, ret, fail, &|code, side| code.load(ret_kind, if side == 0 { a } else { b })),
         }
-    } else {
-        code.goto(ok);
+        code.bind(arrays);
     }
+    for (slot, copy, element) in &copies {
+        compare_arrays(&mut code, *slot, *copy, element, Some(bound), index, fail);
+    }
+    code.goto(ok);
     code.bind(fail);
     let assertion_error = writer.pool.class("java/lang/AssertionError");
     let init = writer.pool.method_ref("java/lang/AssertionError", "<init>", "()V");
@@ -202,20 +259,79 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
     code.op(0xbf); // athrow
     code.bind(ok);
     code.return_(None);
-    code.max_locals = code.max_locals.max(eb + 1);
+    code.max_locals = code.max_locals.max(index + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = source(class_internal, method, params, ret, unchanged_unless);
     Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec() })
 }
 
+/// Emits a jump to `fail` unless the two values `push` loads (`push(code, 0)` the first, `push(code, 1)` the
+/// second, of the primitive type `ty`) are equal, where two NaNs count as equal: the versions agree.
+fn compare_values(code: &mut CodeBuilder, ty: &Type, fail: Label, push: &dyn Fn(&mut CodeBuilder, u8)) {
+    push(code, 0);
+    push(code, 1);
+    match kind_of(ty) {
+        Kind::Int => code.if_icmp(Cond::Ne, fail),
+        Kind::Long => {
+            code.op(0x94); // lcmp
+            code.if_zero(Cond::Ne, fail);
+        }
+        Kind::Float | Kind::Double => {
+            let cmp = if kind_of(ty) == Kind::Float { 0x95 } else { 0x97 }; // fcmpl, dcmpl
+            let equal = code.label();
+            code.op(cmp);
+            code.if_zero(Cond::Eq, equal);
+            push(code, 0);
+            push(code, 0);
+            code.op(cmp);
+            code.if_zero(Cond::Eq, fail); // the first is a number, so they differ
+            push(code, 1);
+            push(code, 1);
+            code.op(cmp);
+            code.if_zero(Cond::Eq, fail); // the first is NaN and the second is not
+            code.bind(equal);
+        }
+        Kind::Ref => unreachable!("compared by Objects.equals"),
+    }
+}
+
+/// Emits a loop over the arrays in `x` and `y` (of `element`s, as long as each other) that jumps to `fail` at the
+/// first index where they differ: up to `bound` indices when given, else up to the length of `x`.
+fn compare_arrays(code: &mut CodeBuilder, x: u16, y: u16, element: &Type, bound: Option<i32>, index: u16, fail: Label) {
+    let loop_ = code.label();
+    let done = code.label();
+    code.iconst(0);
+    code.store(Kind::Int, index);
+    code.bind(loop_);
+    if let Some(bound) = bound {
+        code.load(Kind::Int, index);
+        code.iconst(bound);
+        code.if_icmp(Cond::Ge, done);
+    }
+    code.load(Kind::Int, index);
+    code.load(Kind::Ref, x);
+    code.op(0xbe); // arraylength
+    code.if_icmp(Cond::Ge, done);
+    compare_values(code, element, fail, &|code, side| {
+        code.load(Kind::Ref, if side == 0 { x } else { y });
+        code.load(Kind::Int, index);
+        code.op(array_load(element));
+    });
+    code.iinc(index, 1);
+    code.goto(loop_);
+    code.bind(done);
+}
+
 /// The statement as Java source, for readers.
 pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>) -> String {
     let class = class_internal.replace('/', ".");
     let param_list = params.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
+    let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
     let args = params.iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
+    let args_before = params.iter().map(|p| if is_array(p) { format!("{}_before", p.name) } else { p.name.clone() }).collect::<Vec<_>>().join(", ");
     let is_void = *ret == Type::Void;
-    let type_name = if ret.is_primitive() { ret.java_name() } else { "Object".to_string() };
+    let type_name = if ret.is_primitive() || matches!(ret, Type::Array(_)) { ret.java_name() } else { "Object".to_string() };
     let zero = match ret {
         Type::Boolean => "false",
         t if t.is_primitive() => "0",
@@ -228,7 +344,10 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
     if let Some(scope) = unchanged_unless {
         s.push_str(&format!("        if ({scope}) {{ return; }} // the inputs the developer meant to change\n"));
     }
-    for (side, owner) in [("before", format!("before.{class}")), ("after", class.clone())] {
+    for p in params.iter().filter(|p| is_array(p)) {
+        s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
+    }
+    for (side, owner, args) in [("before", format!("before.{class}"), &args_before), ("after", class.clone(), &args)] {
         let var = if side == "before" { "a" } else { "b" };
         if !is_void {
             s.push_str(&format!("        {type_name} {var} = {zero};\n"));
@@ -242,7 +361,16 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
     }
     s.push_str("        assert ea == eb");
     if !is_void {
-        s.push_str(&format!(" && (ea != 0 || {})", if ret.is_primitive() { "a == b" } else { "java.util.Objects.equals(a, b)" }));
+        let equal = match ret {
+            Type::Float | Type::Double => "a == b || (a != a && b != b)",
+            Type::Array(_) => "java.util.Arrays.equals(a, b)",
+            t if t.is_primitive() => "a == b",
+            _ => "java.util.Objects.equals(a, b)",
+        };
+        s.push_str(&format!(" && (ea != 0 || {equal})"));
+    }
+    for p in params.iter().filter(|p| is_array(p)) {
+        s.push_str(&format!(" && java.util.Arrays.equals({}, {}_before)", p.name, p.name));
     }
     s.push_str(";\n    }\n}\n");
     s
@@ -752,7 +880,7 @@ mod tests {
     #[test]
     fn generates_a_well_formed_harness() {
         let params = params(&["priceCents".into(), "seats".into()], &[Type::Long, Type::Int]);
-        let harness = generate("net/example/Pricing", "total", &params, &Type::Long, Some("seats >= 8")).unwrap();
+        let harness = generate("net/example/Pricing", "total", &params, &Type::Long, Some("seats >= 8"), 8).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         assert_eq!(class.name, CLASS);
         let check = class.method(METHOD, "(JI)V").expect("check method");
@@ -771,5 +899,44 @@ mod tests {
                 assert!(pcs.contains(&t), "target {t} is not an instruction");
             }
         }
+    }
+
+    #[test]
+    fn generates_an_equivalence_harness_over_arrays() {
+        let params = params(&["chars".into(), "out".into()], &[Type::Array(Box::new(Type::Char)), Type::Array(Box::new(Type::Byte))]);
+        let harness = generate("net/example/Utf8", "encodeInto", &params, &Type::Int, None, 6).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "([C[B)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        // Slots: chars, out, their copies, a, ea, b, eb, the loop index.
+        assert_eq!(code.max_locals, 9);
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        // Each copy is as long as its array (arraylength, newarray) and the loops stop at the bound.
+        assert!(code.bytes.windows(3).any(|w| w == [0xbe, 0xbc, 5]), "newarray char of the array's length");
+        assert!(code.bytes.windows(3).any(|w| w == [0xbe, 0xbc, 8]), "newarray byte of the array's length");
+        assert_eq!(code.bytes.windows(2).filter(|w| *w == [0x10, 6]).count(), 6, "bipush 6 in two copying and two comparing loops, and in the sixth exception handler of each version");
+        assert!(code.bytes.contains(&0x55) && code.bytes.contains(&0x54), "castore and bastore");
+        assert!(harness.source.contains("byte[] out_before = java.util.Arrays.copyOf(out, out.length);"), "{}", harness.source);
+        assert!(harness.source.contains("a = before.net.example.Utf8.encodeInto(chars_before, out_before);"), "{}", harness.source);
+        assert!(harness.source.contains("assert ea == eb && (ea != 0 || a == b) && java.util.Arrays.equals(chars, chars_before) && java.util.Arrays.equals(out, out_before);"), "{}", harness.source);
+
+        // An array result is compared element by element; a float result allows two NaNs.
+        let one = super::params(&["a".into()], &[Type::Array(Box::new(Type::Int))]);
+        let returning = generate("net/example/Copies", "prefix", &one, &Type::Array(Box::new(Type::Int)), Some("\\exists int i; 0 <= i && i < a.length; a[i] < 0"), 8).unwrap();
+        assert!(returning.source.contains("(ea != 0 || java.util.Arrays.equals(a, b))"), "{}", returning.source);
+        assert!(returning.source.contains("if (\\exists int i; 0 <= i && i < a.length; a[i] < 0) { return; }"), "{}", returning.source);
+        let class = ClassFile::parse(&returning.bytes).unwrap();
+        assert!(class.method(METHOD, "([I)V").unwrap().code.as_ref().unwrap().bytes.contains(&0xc6), "ifnull on the results");
+        let scalar = super::params(&["x".into()], &[Type::Float]);
+        let floating = generate("net/example/Maths", "f", &scalar, &Type::Float, None, 8).unwrap();
+        assert!(floating.source.contains("(ea != 0 || a == b || (a != a && b != b))"), "{}", floating.source);
+        assert_eq!(ClassFile::parse(&floating.bytes).unwrap().method(METHOD, "(F)V").unwrap().code.as_ref().unwrap().bytes.iter().filter(|b| **b == 0x95).count(), 3, "three fcmpl");
+        assert!(generate("net/example/Utf8", "encodeInto", &params, &Type::Int, Some("chars.length"), 6).unwrap_err().to_string().contains("boolean"));
     }
 }

@@ -439,6 +439,14 @@
       "summary": "Cap the feature loop's memory with a systemd scope",
       "body": "The feature loop ran as part of init.scope, the cgroup WSL shells start in, so a memory-hungry proof could exhaust the machine and take the WSL instance down. feature-loop.sh now re-executes itself in feature-loop.scope with a 4 GB cap (FEATURE_LOOP_MEMORY_MAX) and no swap. It sets OOMPolicy=continue because the default stops the entire scope on the first kill, which would take claude down with the proof. It refuses to start when less memory than the cap is available or when the scope is still active.\n\nVerified by running the real script with a stub claude on PATH under a 100M cap: the memory hog was killed with status 137, the stub survived, and the loop exited 1 through its usual no-commit path. Also checked refusal for a cap above available memory, an invalid cap and a second concurrent loop, exit 130 on systemctl stop, and that the scope unloads afterwards. A real proof run under the cap was not tested. The separate lib/ work in progress is left out of this commit.",
       "log_sha256": "f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c"
+    },
+    {
+      "change_id": "rmrslsqnnwntwprwlrtxpqzssuxwuqlk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add regression proofs over arrays",
+      "body": "jvmcontract equivalence now accepts methods with array parameters and results. The harness copies each array argument exactly as long, runs the previous version on the copies and the new one on the originals, and compares results, exceptions and what each version leaves in the arrays, element by element, with two NaN results counting as equal. The scope in --unchanged-unless may quantify over an array. A differing input is shrunk in the interpreter and reported with what each version left behind. Replay and shrinking moved out of property.rs into a shared witness module. New options are --max-array-length and --no-shrink.\n\nVerified with javac and jbmc on the PATH: all 71 tests pass, including the regression test over arrays, and clippy is clean. Written by the unattended feature loop before the crash; committed separately after the memory limits.",
+      "log_sha256": "f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c"
     }
   ],
   "logs": {

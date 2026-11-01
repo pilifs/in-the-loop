@@ -118,6 +118,14 @@ The feature loop ran as part of init.scope, the cgroup WSL shells start in, so a
 
 Verified by running the real script with a stub claude on PATH under a 100M cap: the memory hog was killed with status 137, the stub survived, and the loop exited 1 through its usual no-commit path. Also checked refusal for a cap above available memory, an invalid cap and a second concurrent loop, exit 130 on systemctl stop, and that the scope unloads afterwards. A real proof run under the cap was not tested. The separate lib/ work in progress is left out of this commit.
 
+### Add regression proofs over arrays
+
+change `rmrslsqnnwnt` · [log `f61f985aeeaf`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c.jsonl.gz)
+
+jvmcontract equivalence now accepts methods with array parameters and results. The harness copies each array argument exactly as long, runs the previous version on the copies and the new one on the originals, and compares results, exceptions and what each version leaves in the arrays, element by element, with two NaN results counting as equal. The scope in --unchanged-unless may quantify over an array. A differing input is shrunk in the interpreter and reported with what each version left behind. Replay and shrinking moved out of property.rs into a shared witness module. New options are --max-array-length and --no-shrink.
+
+Verified with javac and jbmc on the PATH: all 71 tests pass, including the regression test over arrays, and clippy is clean. Written by the unattended feature loop before the crash; committed separately after the memory limits.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c.jsonl.gz) has every step in between: reasoning, tool calls and their results.

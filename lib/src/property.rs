@@ -31,10 +31,10 @@ use crate::classfile::Type;
 use crate::classpath::ClassPath;
 use crate::equivalence::{extract_jdk_classes, STAGES};
 use crate::harness::{self, Signal};
-use crate::interp::{render, Fault, Machine, Object, Value};
+use crate::interp::Value;
 use crate::jbmc::{self, Argument, JbmcRun};
 use crate::sarif::{self, Finding};
-use crate::{Error, Verdict};
+use crate::{witness, Error, Verdict};
 
 #[derive(Debug, Clone)]
 pub struct Options {
@@ -298,8 +298,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let replayed = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &found)?;
-            let (outcome_found, returned, result_array, arrays_after) = (replayed.outcome, replayed.returned, replayed.result_array, replayed.arrays_after);
+            let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?;
+            let replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).
             let applying = |arguments: &[Argument]| -> Option<usize> {
@@ -321,11 +321,6 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                     }
                 }
                 harness.signals.iter().position(|(_, when)| matches!(harness::expr::eval_with(when, &locals, &arrays), Ok(Value::Int(1))))
-            };
-            let render_input = |arguments: &[Argument]| -> (Vec<String>, String) {
-                let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| render_argument(a, &p.ty)).collect();
-                let rendered = format!("{method_name}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
-                (witnesses, rendered)
             };
             // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
             // given an arbitrary result to a method it had no bytecode for. (A property that calls the method
@@ -366,15 +361,15 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 harness::expr::eval_with(&harness.assertion, &locals, &arrays)
             };
             let evaluable = !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
-            let holds_on_found = match (applying(&found), returned, replayed.thrown.as_deref()) {
+            let holds_on_found = match (applying(&found), replayed.returned, replayed.thrown.as_deref()) {
                 (Some(i), _, Some(thrown)) => cp.is_subtype(thrown, &harness.signals[i].0.class),
                 (Some(_), _, None) => false,
-                (None, Some(result), _) => matches!(assertion_on(&found, result, &result_array, &arrays_after), Ok(Value::Int(1))),
+                (None, Some(result), _) => matches!(assertion_on(&found, result, &replayed.result_array, &replayed.arrays_after), Ok(Value::Int(1))),
                 (None, None, _) => false,
             };
             if evaluable && holds_on_found {
-                let (_, rendered) = render_input(&found);
-                let did = if replayed.thrown.is_some() { outcome_found.clone() } else { format!("returns {outcome_found}") };
+                let (rendered, _) = witness::call(&method_name, &params, &found);
+                let did = if replayed.thrown.is_some() { replayed.outcome.clone() } else { format!("returns {}", replayed.outcome) };
                 let p = format!("JBMC's counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
@@ -390,38 +385,28 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let mut shrink_runs = 0;
             let mut arguments = found.clone();
             if options.shrink {
-                let shrunk = shrink_in_harness(options, &harness_dir, &descriptor.params, found.clone())?;
+                let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?;
+                let shrunk = witness::shrink_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, found.clone());
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }
             let shrunk = arguments != found;
-            let (mut outcome, returned, result_array, arrays_after, thrown) = if shrunk {
-                let r = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?;
-                (r.outcome, r.returned, r.result_array, r.arrays_after, r.thrown)
-            } else {
-                (outcome_found, returned, result_array, arrays_after, replayed.thrown)
-            };
+            let replayed = if shrunk { witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments) } else { replayed };
+            let (mut outcome, returned, result_array, arrays_after, thrown) = (replayed.with_leftovers(&params, &arguments), replayed.returned, &replayed.result_array, &replayed.arrays_after, &replayed.thrown);
             // What a throws clause required of this input, when that is what failed.
-            let expected = match (applying(&arguments), &thrown) {
+            let expected = match (applying(&arguments), thrown) {
                 (Some(i), _) => Some(format!("throws {}, since {}", harness.signals[i].0.java_name(), harness.signals[i].0.when)),
                 (None, Some(_)) if !harness.signals.is_empty() => Some("a normal return: no throws clause applies to this input".to_string()),
                 _ => None,
             };
             // An assertion that cannot be evaluated on the outcome (an index out of bounds) is what failed.
             if let Some(result) = returned.filter(|_| evaluable) {
-                if let Err(e) = assertion_on(&arguments, result, &result_array, &arrays_after) {
+                if let Err(e) = assertion_on(&arguments, result, result_array, arrays_after) {
                     outcome = format!("{outcome}; the assertion itself cannot be evaluated on it ({e})");
                 }
             }
-            for (p, a) in params.iter().zip(&arguments) {
-                if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
-                    if let Some((_, after)) = arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
-                        outcome = format!("{outcome}, leaving {}={}", p.name, render_array(after, element));
-                    }
-                }
-            }
-            let (witnesses, rendered) = render_input(&arguments);
-            let (_, rendered_found) = render_input(&found);
+            let (rendered, witnesses) = witness::call(&method_name, &params, &arguments);
+            let (rendered_found, _) = witness::call(&method_name, &params, &found);
             let expected_line = expected.as_ref().map(|e| format!("\n    expected: {e}")).unwrap_or_default();
             let claimed = if claim == "returns" { "returns".to_string() } else { format!("`{assertion}`") };
             let message = format!("Property of {} violated: {claimed}{where_}{and_throws}:\n  {rendered}\n    outcome: {outcome}{expected_line}", options.target);
@@ -533,84 +518,6 @@ pub fn read_declarations(file: &std::path::Path) -> Result<Vec<Declaration>, Err
     parse_declarations(&text, &file.display().to_string())
 }
 
-/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`.
-fn render_argument(argument: &Argument, t: &Type) -> String {
-    match (argument, t) {
-        (Argument::Scalar(v), _) => render::witness(*v, t),
-        (Argument::Array(data), Type::Array(element)) => render_array(data, element),
-        (Argument::Array(_), _) => "<array>".into(),
-        (Argument::Null, _) => "null".into(),
-    }
-}
-
-fn render_array(data: &[Value], element: &Type) -> String {
-    format!("[{}]", data.iter().map(|v| render::witness(*v, element)).collect::<Vec<_>>().join(", "))
-}
-
-/// The elements of the arrays among `values`, by parameter slot, as they are now.
-fn arrays_of(m: &Machine, values: &[Value], signature: &crate::classfile::MethodDescriptor) -> Vec<(u16, Vec<Value>)> {
-    let mut out = Vec::new();
-    let mut slot = 0;
-    for (v, t) in values.iter().zip(&signature.params) {
-        if let Value::Ref(r) = v {
-            if let Object::Array { data, .. } = m.heap.get(*r) {
-                out.push((slot, data.clone()));
-            }
-        }
-        slot += t.slots();
-    }
-    out
-}
-
-/// How many smaller inputs the shrinker may try.
-const SHRINK_BUDGET: u32 = 4000;
-
-/// Shrinks a counterexample with the harness as the oracle: the generated class in `harness_dir`, run in the
-/// interpreter, violates the property on an input exactly when it throws `AssertionError` on it (the assumption
-/// is part of the harness, so an input outside it passes). An input the interpreter cannot run is not accepted.
-fn shrink_in_harness(options: &Options, harness_dir: &std::path::Path, types: &[Type], found: Vec<Argument>) -> Result<crate::shrink::Shrunk, Error> {
-    let mut cp = ClassPath::new();
-    cp.add(harness_dir)?;
-    for path in options.classes.iter().chain(&options.classpath) {
-        if path.exists() {
-            cp.add(path)?;
-        }
-    }
-    let cp = cp.with_default_jdk();
-    let mut m = Machine::new(&cp);
-    m.monitor = false;
-    let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
-    let mut fails = |arguments: &[Argument]| -> Option<bool> {
-        let mark = m.begin_case();
-        let mut values = Vec::new();
-        for (argument, t) in arguments.iter().zip(types) {
-            values.push(match argument {
-                Argument::Scalar(v) => *v,
-                Argument::Null => Value::Null,
-                Argument::Array(data) => {
-                    let element = match t {
-                        Type::Array(e) => (**e).clone(),
-                        _ => Type::Int,
-                    };
-                    m.new_array_of(element, data.clone())
-                }
-            });
-        }
-        let verdict = match m.call_static(harness::PROPERTY_CLASS, harness::METHOD, &check_descriptor, values) {
-            Ok(_) => Some(false),
-            Err(Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => Some(true),
-            Err(_) => None,
-        };
-        m.end_case(mark);
-        verdict
-    };
-    // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
-    if fails(&found) != Some(true) {
-        return Ok(crate::shrink::Shrunk { arguments: found, runs: 0 });
-    }
-    Ok(crate::shrink::shrink(types, found, SHRINK_BUDGET, fails))
-}
-
 /// Copies the declared exceptions that are JDK classes, and their superclasses up to one JBMC has a model of,
 /// out of the JDK image into `dir`.
 fn extract_exception_classes(dir: &std::path::Path, cp: &ClassPath, signals: &[Signal]) -> Result<(), Error> {
@@ -632,71 +539,6 @@ fn extract_exception_classes(dir: &std::path::Path, cp: &ClassPath, signals: &[S
         }
     }
     Ok(())
-}
-
-/// The method's behaviour on a counterexample, replayed in the interpreter.
-struct Replayed {
-    /// The outcome as text: the result, or the exception thrown.
-    outcome: String,
-    /// The value returned, if the method returned a primitive or an array.
-    returned: Option<Value>,
-    /// The elements of a returned array.
-    result_array: Option<Vec<Value>>,
-    /// The elements of the array arguments after the call.
-    arrays_after: Vec<(u16, Vec<Value>)>,
-    /// The class of the exception thrown, as an internal name.
-    thrown: Option<String>,
-}
-
-/// Runs the counterexample through the method in the interpreter, with the effect monitor off.
-fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, signature: &crate::classfile::MethodDescriptor, arguments: &[Argument]) -> Result<Replayed, Error> {
-    let mut cp = ClassPath::new();
-    for path in options.classes.iter().chain(&options.classpath) {
-        if path.exists() {
-            cp.add(path)?;
-        }
-    }
-    let cp = cp.with_default_jdk();
-    let mut m = Machine::new(&cp);
-    m.monitor = false;
-    let _ = m.begin_case();
-    let ret = &signature.ret;
-    let mut values = Vec::new();
-    for (argument, t) in arguments.iter().zip(&signature.params) {
-        values.push(match argument {
-            Argument::Scalar(v) => *v,
-            Argument::Null => Value::Null,
-            Argument::Array(data) => {
-                let element = match t {
-                    Type::Array(e) => (**e).clone(),
-                    _ => Type::Int,
-                };
-                m.new_array_of(element, data.clone())
-            }
-        });
-    }
-    let outcome = m.call_static(class_internal, method, descriptor, values.clone());
-    let after = arrays_of(&m, &values, signature);
-    Ok(match outcome {
-        Ok(Some(v)) => {
-            let array = match v {
-                Value::Ref(r) => match m.heap.get(r) {
-                    Object::Array { data, .. } => Some(data.clone()),
-                    _ => None,
-                },
-                _ => None,
-            };
-            let text = match (&array, ret) {
-                (Some(data), Type::Array(element)) => render_array(data, element),
-                _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
-            };
-            let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, arrays_after: after, thrown: None }
-        }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, arrays_after: after, thrown: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, arrays_after: after, thrown: Some(m.class_of(r)) },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, arrays_after: after, thrown: None },
-    })
 }
 
 #[cfg(test)]

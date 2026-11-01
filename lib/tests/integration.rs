@@ -322,6 +322,113 @@ fn a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_de
     assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
 }
 
+const BUFFERS_BEFORE: &str = r#"package fixtures;
+public final class Buffers {
+    /** Writes v into the first n elements of a, or all of them, and returns how many it wrote. */
+    public static int fill(int[] a, int n, int v) {
+        int k = 0;
+        for (int i = 0; i < a.length && k < n; i++) { a[i] = v; k++; }
+        return k;
+    }
+    /** The first n elements of a, or all of them. */
+    public static int[] prefix(int[] a, int n) {
+        int[] r = new int[Math.max(0, Math.min(n, a.length))];
+        for (int i = 0; i < r.length; i++) { r[i] = a[i]; }
+        return r;
+    }
+}
+"#;
+
+fn compile_buffers(name: &str, source: &str) -> Option<PathBuf> {
+    let dir = target_tmp().join(format!("buffers-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("Buffers.java");
+    std::fs::write(&file, source).unwrap();
+    compile(&format!("buffers-{name}"), &[file])
+}
+
+fn buffers_run(before: &Path, after: &Path, scope: Option<&str>, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, "fixtures.Buffers#fill");
+    options.unchanged_unless = scope.map(str::to_string);
+    let work = target_tmp().join(format!("equivalence-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    equivalence::run(&options).unwrap()
+}
+
+#[test]
+fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
+    // Comparing the result and the array each version leaves needs no JBMC: the harness class, run in the
+    // interpreter, throws AssertionError exactly on the inputs where the versions differ.
+    let shorter = BUFFERS_BEFORE.replace("int[] r = new int[Math.max(0, Math.min(n, a.length))];", "int[] r = new int[Math.max(0, Math.min(n, a.length) - 1)];");
+    let (Some(before), Some(after)) = (compile_buffers("before", BUFFERS_BEFORE), compile_buffers("shorter", &shorter)) else { return };
+    let relocated = target_tmp().join("buffers-relocated");
+    let _ = std::fs::remove_dir_all(&relocated);
+    jvmcontract::relocate::directory(&before, &relocated, "before").unwrap();
+    let harness_dir = target_tmp().join("buffers-harness");
+    let _ = std::fs::remove_dir_all(&harness_dir);
+    std::fs::create_dir_all(&harness_dir).unwrap();
+    let params = jvmcontract::harness::params(&["a".into(), "n".into()], &[jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), jvmcontract::classfile::Type::Int]);
+    let harness = jvmcontract::harness::generate("fixtures/Buffers", "prefix", &params, &jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), None, 8).unwrap();
+    std::fs::write(harness_dir.join("EquivalenceHarness.class"), &harness.bytes).unwrap();
+    let cp = jvmcontract::witness::classpath([harness_dir.as_path(), after.as_path(), relocated.as_path()]).unwrap();
+    let mut m = jvmcontract::interp::Machine::new(&cp);
+    m.monitor = false;
+    let mut check = |data: Vec<i32>, n: i32| -> bool {
+        let _ = m.begin_case();
+        let a = m.new_array_of(jvmcontract::classfile::Type::Int, data.into_iter().map(jvmcontract::interp::Value::Int).collect());
+        match m.call_static("EquivalenceHarness", "check", "([II)V", vec![a, jvmcontract::interp::Value::Int(n)]) {
+            Ok(_) => true,
+            Err(jvmcontract::interp::Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => false,
+            Err(f) => panic!("{f:?}"),
+        }
+    };
+    assert!(check(vec![], 0), "both return an empty array");
+    assert!(check(vec![5, 6], -3), "both return an empty array for a negative count");
+    assert!(!check(vec![5, 6], 2), "the version after returns one element fewer");
+
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    // A rewrite that is equal on every array, count and value is proved so, with the copies in the statement.
+    let clamped = BUFFERS_BEFORE.replace("int k = 0;\n        for (int i = 0; i < a.length && k < n; i++) { a[i] = v; k++; }\n        return k;", "int k = Math.max(0, Math.min(n, a.length));\n        for (int i = 0; i < k; i++) { a[i] = v; }\n        return k;");
+    assert_ne!(clamped, BUFFERS_BEFORE);
+    let Some(clamped) = compile_buffers("clamped", &clamped) else { return };
+    let proved = buffers_run(&before, &clamped, None, "buffers-clamped");
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+    assert!(proved.output.contains("over a: int[] of length ≤ 8 × n: int × v: int"), "{}", proved.output);
+    let statement = std::fs::read_to_string(proved.statement.unwrap()).unwrap();
+    assert!(statement.contains("int[] a_before = java.util.Arrays.copyOf(a, a.length);"), "{statement}");
+    assert!(statement.contains("&& java.util.Arrays.equals(a, a_before);"), "{statement}");
+
+    // A rewrite that returns a negative count differs on an input the shrinker brings down to the empty array.
+    let unclamped = BUFFERS_BEFORE.replace("int k = 0;\n        for (int i = 0; i < a.length && k < n; i++) { a[i] = v; k++; }\n        return k;", "int k = Math.min(n, a.length);\n        for (int i = 0; i < k; i++) { a[i] = v; }\n        return k;");
+    let Some(unclamped) = compile_buffers("unclamped", &unclamped) else { return };
+    let refuted = buffers_run(&before, &unclamped, None, "buffers-unclamped");
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    let witness = refuted.counterexample.unwrap();
+    assert_eq!(witness.input, "fill(a=[], n=-1, v=0)", "{}", refuted.output);
+    assert_eq!((witness.before.as_str(), witness.after.as_str()), ("0", "-1"));
+
+    // A rewrite that writes from the other end returns the same count and leaves a different array; declared as
+    // changing only the arrays whose elements are not all v already (a quantifier in the scope), it is proved equal.
+    let backwards = BUFFERS_BEFORE.replace("for (int i = 0; i < a.length && k < n; i++) { a[i] = v; k++; }", "for (int i = a.length - 1; i >= 0 && k < n; i--) { a[i] = v; k++; }");
+    let Some(backwards) = compile_buffers("backwards", &backwards) else { return };
+    let refuted = buffers_run(&before, &backwards, None, "buffers-backwards");
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    let witness = refuted.counterexample.unwrap();
+    // On the shrunk witness one version changes the array and the other leaves it as it was.
+    assert!(witness.before.contains(", leaving a=[") || witness.after.contains(", leaving a=["), "{}", refuted.output);
+    assert_ne!(witness.before, witness.after);
+    assert!(witness.found.is_some() && witness.shrink_runs > 0, "{}", refuted.output);
+    assert!(refuted.output.contains("shrunk to the input above"), "{}", refuted.output);
+    let scoped = buffers_run(&before, &backwards, Some("(\\exists int i; 0 <= i && i < a.length; a[i] != v)"), "buffers-backwards-scoped");
+    assert_eq!(scoped.verdict, Verdict::Verified, "{}", scoped.output);
+    assert!(scoped.output.contains("on every input where !((\\exists int i; 0 <= i && i < a.length; a[i] != v))"), "{}", scoped.output);
+}
+
 #[test]
 fn a_reference_parameter_is_refused_by_the_symbolic_verifier() {
     let with_string = PRICING_BEFORE.replace("long priceCents, int seats", "String code, int seats").replace("priceCents < 0 || ", "").replace("Math.multiplyExact(priceCents, seats)", "seats");

@@ -169,10 +169,11 @@ struct EquivalenceArgs {
     /// The new version's classes.
     #[arg(long)]
     after: PathBuf,
-    /// `pkg.Class#method`, a static method with primitive parameters.
+    /// `pkg.Class#method`, a static method with primitive or array parameters.
     #[arg(long)]
     target: String,
-    /// A Java boolean expression over the parameters naming the inputs the change is meant to affect.
+    /// A Java boolean expression over the parameters naming the inputs the change is meant to affect; JML's
+    /// quantifiers may range over an array parameter.
     #[arg(long = "unchanged-unless")]
     unchanged_unless: Option<String>,
     /// Further class path entries (PATH-separated or repeatable).
@@ -191,6 +192,12 @@ struct EquivalenceArgs {
     /// Loop unwinding bound for JBMC.
     #[arg(long, default_value_t = 16)]
     unwind: u32,
+    /// The longest array an array parameter is given; the copying and comparing loops must fit the unwinding bound.
+    #[arg(long, default_value_t = 8)]
+    max_array_length: u32,
+    /// Report the counterexample as JBMC found it, without shrinking it in the interpreter.
+    #[arg(long)]
+    no_shrink: bool,
     /// Seconds before each JBMC run is given up.
     #[arg(long, default_value_t = 600)]
     timeout: u64,
@@ -315,6 +322,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.base = base;
             }
             options.unwind = args.unwind;
+            options.max_array_length = args.max_array_length;
+            options.shrink = !args.no_shrink;
             options.timeout_seconds = args.timeout;
             options.jbmc = args.jbmc;
             let outcome = equivalence::run(&options)?;
