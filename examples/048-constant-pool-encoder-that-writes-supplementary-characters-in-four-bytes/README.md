@@ -175,7 +175,7 @@ Revert, including the test. The encoder of a constant pool is not an encoder of 
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 1.8 s searching inputs in [0:20] as encodeInto(chars=['\ud843', '\udc00'], out=[0, -64, 0, 1, -128, -127]), shrunk to the input above in 330 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
+How the verdict was reached: found by JBMC 6.11.0 in 1.6 s searching inputs in [0:20] as encodeInto(chars=['\ud883', '\udc20'], out=[0, 0, 0, 0, -127, -127, 1, 1]), shrunk to the input above in 443 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
 
 <details><summary>Verifier output</summary>
 
@@ -183,9 +183,9 @@ How the verdict was reached: found by JBMC 6.11.0 in 1.8 s searching inputs in [
 ✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0)` where out.length >= 3 * chars.length:
   encodeInto(chars=['\ud800', '\udc00'], out=[0, 0, 0, 0, 0, 0])
     outcome: 4, leaving out=[-16, -112, -128, -128, 0, 0]
-  (found by JBMC 6.11.0 in 1.8 s searching inputs in [0:20] as encodeInto(chars=['\ud843', '\udc00'], out=[0, -64, 0, 1, -128, -127]), shrunk to the input above in 330 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+  (found by JBMC 6.11.0 in 1.6 s searching inputs in [0:20] as encodeInto(chars=['\ud883', '\udc20'], out=[0, 0, 0, 0, -127, -127, 1, 1]), shrunk to the input above in 443 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
 
 </details>

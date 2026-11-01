@@ -579,12 +579,14 @@ def run_tool_property(folder, example, root, module, result):
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"))
     write_evidence(folder, output, build / "build/reports/property.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
-    m = (re.search(r"satisfies `(.*)` on every input(?: where (.*?))? \(JBMC", output)
-         or re.search(r"violated: `(.*)`(?: where (.*?))?:$", output, re.M))
-    result["property"] = {"assert": m.group(1), "assume": m.group(2)} if m else None
-    witness = re.search(r"^  (\S.*)\n    outcome: (.*)$", output, re.M)
+    m = (re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \(JBMC", output)
+         or re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M))
+    throws = [t for t in m.group(3).split(", and throws ") if t] if m else []
+    result["property"] = {"assert": m.group(1), "assume": m.group(2), **({"throws": throws} if throws else {})} if m else None
+    witness = re.search(r"^  (\S.*)\n    outcome: (.*)$(?:\n    expected: (.*)$)?", output, re.M)
     if witness:
-        result["counterexamples"] = [{"input": witness.group(1), "contract": m.group(1) if m else None, "actual": witness.group(2)}]
+        result["counterexamples"] = [{"input": witness.group(1), "contract": m.group(1) if m else None, "actual": witness.group(2),
+                                      **({"expected": witness.group(3)} if witness.group(3) else {})}]
     finish_symbolic(folder, example, result, output, work, "PropertyHarness.java", {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: property holds on every input",
@@ -1096,25 +1098,31 @@ def findings_capabilities(ex, res):
 def findings_property(ex, res):
     prop = res.get("property") or {}
     assume = prop.get("assume")
+    throws = prop.get("throws") or []
     domain = res.get("domain") or "all inputs"
     where = f" on every input where `{assume}` holds" if assume else " on every input"
+    clauses = "".join(f", and throws `{t.split(' when ', 1)[0]}` exactly when `{t.split(' when ', 1)[1]}`" for t in throws)
+    holds = f"`{prop['assert']}` holds" if prop.get("assert") else "the method returns"
     if res["verdict"] == "violation":
+        with_expected = any(c.get("expected") for c in res["counterexamples"])
         out = [
-            f"The property `{prop.get('assert')}` does not hold{where}. The prover found this input, and the tool "
-            "replayed it on the method to show what it does:",
+            (f"The property does not hold: that {holds}{where}{clauses}." if throws
+             else f"The property `{prop.get('assert')}` does not hold{where}.")
+            + " The prover found this input, and the tool replayed it on the method to show what it does:",
             "",
-            "| Input | The method's outcome |",
-            "|---|---|",
+            "| Input | The method's outcome |" + (" What the property requires |" if with_expected else ""),
+            "|---|---|" + ("---|" if with_expected else ""),
         ]
         for c in res["counterexamples"]:
-            out.append(f"| {code(c['input'])} | {code(c['actual'])} |")
+            out.append(f"| {code(c['input'])} | {code(c['actual'])} |" + (f" {c.get('expected') or 'the assertion'} |" if with_expected else ""))
         out += ["", f"One input is enough to fail the build. The domain is `{domain}`; the search tries small values "
                     "first so that the witness is readable, and would have covered all of it."]
         return out
     if res["verdict"] == "unverifiable":
         return ["The verifier refused to produce a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
     return [
-        f"The method returns without throwing and `{prop.get('assert')}` holds{where}.",
+        (f"The method returns without throwing and `{prop.get('assert')}` holds{where}{clauses}." if prop.get("assert")
+         else f"The method returns without throwing{where}{clauses}."),
         "",
         f"This is a proof over the whole domain ({domain}), not a sample. JBMC turned the statement into a "
         "satisfiability problem over the bytecode and showed that it has no solution: no input violates the property.",

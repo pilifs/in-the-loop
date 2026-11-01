@@ -183,7 +183,12 @@ the range: the stack map frame offsets as `k` plus the sum of the deltas (with a
 previous frame), the length of a `Code` attribute, constant pool numbering around a `long`, and `max_stack` as the largest
 prefix sum, a `\max` over a `\sum`. The refuting inputs of 050 and 051 are shrunk by the tool, which runs the harness
 class in its own interpreter on smaller inputs until none fails, so the witness on the page is one nested attribute of
-length zero, and one `long` constant at position 0.
+length zero, and one `long` constant at position 0. [Examples 053 and 054](README.md) declare the exceptional behaviour,
+as JML's `signals` clause does: `throws: ArithmeticException when divisor == 0` says that the method throws exactly
+there and returns everywhere else, and the prover covers both paths, so that an `idiv` which drops its zero check is
+proved to throw where the check did, and a class file check which rejects a handler range ending at `code_length` is
+refuted on a method of one byte. Until then the exception was assumed away (`assume: divisor != 0`), and the
+exceptional path was the tests' alone.
 
 A limit found while writing them: JBMC's SAT backend proves linear arithmetic, comparisons, shifts and a single
 division quickly, and gets stuck on identities between divisions and multiplications, such as "the parts of an
@@ -275,7 +280,7 @@ role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wi
 Examples 023 to 033 run it over [Crosscut](apps/crosscut/README.md), the kernels inside a Spring Boot service's cross-cutting concerns:
 the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an idempotent receiver with its TLA+ model, a Kafka
 partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
-Examples 034 to 052 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
+Examples 034 to 054 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
 with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, the
 exception table's handler lookup, stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`,
 javac's switch heuristic, a power-of-two table size and modified UTF-8.

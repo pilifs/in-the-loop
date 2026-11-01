@@ -1,6 +1,6 @@
 # Examples
 
-> **Start with examples 034 to 052** if you work on the JVM itself or on the libraries closest to it, **023 to 033** if you build services on Spring Boot, or **013 to 022** if you build the replicated systems under them, then 006 to 012. Examples 001 to 005 were created by Opus 5.5, the rest by Fable 5.1.
+> **Start with examples 034 to 054** if you work on the JVM itself or on the libraries closest to it, **023 to 033** if you build services on Spring Boot, or **013 to 022** if you build the replicated systems under them, then 006 to 012. Examples 001 to 005 were created by Opus 5.5, the rest by Fable 5.1.
 > The later examples go significantly beyond what can be achieved with type checking.
 
 Each example is one code change to a subject system, run through a formal verifier, with the verdict and why it matters.
@@ -10,7 +10,7 @@ None of it needs the reader to write a specification: each verifier derives its 
 There are four subject systems. [Box Office](apps/boxoffice/README.md) (examples 001 to 012) is a ticketing system of two Spring Boot services over Kafka, verified by the Java proof of concept in [`tools/contracts`](tools/contracts/README.md).
 [Quorum](apps/quorum/README.md) (examples 013 to 022) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator.
 [Crosscut](apps/crosscut/README.md) (examples 023 to 033) is the kernels behind the cross-cutting concerns of a Spring Boot service: the transaction interceptor's rollback rule, a circuit breaker, a retry policy, a rate limiter, an `Idempotency-Key` receiver, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
-[Mica](apps/mica/README.md) (examples 034 to 052) is the decision kernels of a small JVM written in Java: the class initialization procedure of JVMS §5.5, the type checker's assignability relation, access control, `idiv` and `fcmp` with their corner cases, a `lookupswitch` bisection, the exception table's handler lookup, the stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and the modified UTF-8 of the constant pool.
+[Mica](apps/mica/README.md) (examples 034 to 054) is the decision kernels of a small JVM written in Java: the class initialization procedure of JVMS §5.5, the type checker's assignability relation, access control, `idiv` and `fcmp` with their corner cases, a `lookupswitch` bisection, the exception table's handler lookup and its well-formedness check, the stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and the modified UTF-8 of the constant pool.
 The three are verified by [`jvmcontract`](../lib/README.md), the Rust tool, with no JVM in the loop: a bytecode interpreter checking the kernels of a bytecode interpreter.
 
 The examples use five approaches, numbered as in [`approaches.md`](approaches.md). The common principle is that a checked-in artifact may change only where the developer intends a change, and the diff of that artifact is what the reviewer approves.
@@ -20,7 +20,7 @@ The examples use five approaches, numbered as in [`approaches.md`](approaches.md
 | [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | 001 to 005, 014, 025, 026, 038 to 040 |
 | [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008, 013, 027, 035 to 037 |
 | [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, threads, ... | Closed-world inspection of every call site in the compiled classes | 009, 010, 019, 028, 041 |
-| [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, which the tool shrinks and replays; arrays are quantified over with JML's `\forall`, `\exists`, `\sum`, `\num_of`, `\max` and `\min` | 015 to 018, 022 to 024, 031 to 034, 044 to 052 |
+| [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, which the tool shrinks and replays; arrays are quantified over with JML's `\forall`, `\exists`, `\sum`, `\num_of`, `\max` and `\min`; a throws clause (JML's `signals`) brings the exceptional path under the proof | 015 to 018, 022 to 024, 031 to 034, 044 to 054 |
 | [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds, and freedom from deadlock | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011, 012, 020, 021, 029, 030, 042, 043 |
 
 A type system could do some of what 001 to 005 do. It could not find a one-cent rounding drift across 2^96 inputs (006), prove that a pricing change touches only the groups it says it touches (007), notice that a codec started loading classes named by Kafka messages (009), or produce the nine-step interleaving in which a paid customer loses their seat and their refund (011).
@@ -29,6 +29,7 @@ Nor that a transaction rollback rule rewritten as "a RuntimeException rolls back
 Nor that a verifier which answers "everything is an `Object`" one line too early lets an uninitialized object through (038), that a NaN check written as `== Float.NaN` turns `fcmpl` into `fcmpg` (035), that an `idiv` with an overflow check throws where the specification says to return `Integer.MIN_VALUE` (034), or that a class initialization with one rule for every requester deadlocks on its own thread (043).
 Nor that a rewritten binary search still finds every key in every sorted table (046), that an exception table whose `end_pc` is read as inclusive hands an exception to the wrong handler (047), or that a constant-pool encoder which writes supplementary characters in four bytes produces a class no JVM will load (048).
 Nor that a stack map offset loop with its first-frame special case removed still places every frame (049), that a `Code` attribute length which leaves out its nested attributes' headers is six bytes short per attribute (050), that a constant-pool numbering which counts the `long` entry itself points one past it (051), or that `max_stack` is still the deepest point when the depth is checked only after a push (052), the refutations shrunk to a witness of one element.
+Nor that an `idiv` which leaves division by zero to the host throws exactly where the check it removed did (053), or that a class file check which compares `end_pc` like the other offsets rejects every handler that covers the last instruction of a method (054), both on the exceptional path a throws clause brings under the proof.
 
 <!-- examples:begin (generated by examples/tools/build.py) -->
 | # | Example | Approach | Verdict | Existing tests | Categories | Severity if shipped | Change |
@@ -85,6 +86,8 @@ Nor that a stack map offset loop with its first-frame special case removed still
 | 050 | [A Code attribute length that omits the nested attributes' headers truncates the method](050-code-attribute-length-that-leaves-out-the-nested-attribute-headers/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional, compatibility | high | cleanup |
 | 051 | [A constant-pool index that counts the long entry itself points one past the entry](051-constant-pool-index-that-counts-the-long-entry-itself/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | refactor |
 | 052 | [A max_stack that checks the depth only after a push, proved to find the deepest point](052-max-stack-that-checks-the-depth-only-after-a-push/README.md) | B11 | ✓ Verified: property holds on every input | pass | functional, performance, no-false-positive | none | refactor |
+| 053 | [An idiv that leaves division by zero to the host, proved to throw exactly there](053-idiv-that-leaves-division-by-zero-to-the-host/README.md) | B11 | ✓ Verified: property holds on every input | pass | functional, no-false-positive | none | cleanup |
+| 054 | [An exception table check that rejects a handler range ending at code_length](054-exception-table-check-that-rejects-a-range-ending-at-code-length/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional, compatibility | critical | cleanup |
 <!-- examples:end -->
 
 The *Existing tests* column is measured, not claimed: the generator runs the module's unit tests against each patch. A **missed** entry means the tests pass and the change would have shipped.
@@ -136,13 +139,13 @@ examples/
   apps/quorum/spec/          its TLA+ model of two-phase commit (D1)
   apps/crosscut/             the third subject system (023 to 033): the kernels of a Spring Boot service's cross-cutting concerns
   apps/crosscut/spec/        its TLA+ model of an idempotent receiver (D1)
-  apps/mica/                 the fourth subject system (034 to 052): the decision kernels of a small JVM written in Java
+  apps/mica/                 the fourth subject system (034 to 054): the decision kernels of a small JVM written in Java
   apps/mica/spec/            its TLA+ model of class initialization, checked for deadlock as well (D1)
   tools/contracts/           the Java verifier for B8, B9 and B10, used by 001 to 012
   tools/tla/                 the generator of the model's state machine from the B8 contract, and the TLA+ standard modules TLC parses
   tools/build.py             the generator: runs every example and writes the generated files
   setup/                     the toolchain installer
-../lib/                      jvmcontract, the Rust verifier for B8 to B11 and D1, used by 013 to 052
+../lib/                      jvmcontract, the Rust verifier for B8 to B11 and D1, used by 013 to 054
 ```
 
 Everything a verifier says is generated by running it, so no example can claim a result the tool did not produce.
@@ -155,7 +158,7 @@ python3 examples/tools/build.py          # run every example, then rewrite the p
 python3 examples/tools/build.py 002      # run one
 python3 examples/tools/build.py 013 014 015 016 017 018 019 020 021 022   # the Quorum examples, about 20 seconds in all
 python3 examples/tools/build.py 023 024 025 026 027 028 029 030 031 032 033   # the Crosscut examples, about 20 seconds in all
-python3 examples/tools/build.py 034 035 036 037 038 039 040 041 042 043 044 045 046 047 048 049 050 051 052   # the Mica examples, about two minutes in all
+python3 examples/tools/build.py 034 035 036 037 038 039 040 041 042 043 044 045 046 047 048 049 050 051 052 053 054   # the Mica examples, about two minutes in all
 ```
 
 It needs Java 25, JBMC for the B9 and B11 examples, TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for the D1 examples, and `cargo` (or a built `lib/target/release/jvmcontract`, or `JVMCONTRACT` pointing at one) for the Quorum, Crosscut and Mica examples; no Docker.

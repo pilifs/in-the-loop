@@ -120,7 +120,7 @@ Revert. A virtual machine implements the class-file format as it is, mistakes in
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0), shrunk to the input above in 80 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[-2147483648, 0, 0, 0, 0, 0, 0, 1], endPc=[0, 0, 0, 0, 0, 2, 67108864, 0], pc=2), shrunk to the input above in 88 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int.
 
 <details><summary>Verifier output</summary>
 
@@ -128,9 +128,9 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
 ✗ Property of net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex violated: `result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])` where startPc.length == endPc.length:
   handlerIndex(startPc=[0], endPc=[0], pc=0)
     outcome: 0
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0), shrunk to the input above in 80 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[-2147483648, 0, 0, 0, 0, 0, 0, 1], endPc=[0, 0, 0, 0, 0, 2, 67108864, 0], pc=2), shrunk to the input above in 88 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
 
 </details>
@@ -218,7 +218,7 @@ public final class PropertyHarness {
                   "uri": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java"
                 },
                 "region": {
-                  "startLine": 20
+                  "startLine": 32
                 }
               }
             }

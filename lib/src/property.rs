@@ -12,6 +12,11 @@
 //! `null`, and the property may quantify over it (`\forall int i; 0 <= i && i < a.length; a[i] != key`); so may
 //! an array `result`.
 //!
+//! A method that throws by design declares it: `throws: java.lang.ArithmeticException when divisor == 0` (JML's
+//! `signals`) says that on the inputs where the condition holds the method throws that exception, and that
+//! elsewhere it returns and the assertion holds. The exceptional path is then proved like the normal one, instead
+//! of being assumed away.
+//!
 //! The counterexample JBMC finds is whatever satisfied the solver. Before it is reported it is shrunk
 //! ([`crate::shrink`]) by running the harness class itself in the interpreter on smaller inputs, so the witness
 //! shown is small and the same on every run; the solver's own is kept alongside it.
@@ -25,7 +30,7 @@ use serde::Serialize;
 use crate::classfile::Type;
 use crate::classpath::ClassPath;
 use crate::equivalence::{extract_jdk_classes, STAGES};
-use crate::harness;
+use crate::harness::{self, Signal};
 use crate::interp::{render, Fault, Machine, Object, Value};
 use crate::jbmc::{self, Argument, JbmcRun};
 use crate::sarif::{self, Finding};
@@ -43,6 +48,9 @@ pub struct Options {
     /// The property: a boolean expression over the parameters, `result`, and calls of the method; `result` itself
     /// for a boolean method when `None`.
     pub assert: Option<String>,
+    /// The exceptional behaviour: `<exception class> when <condition>`, each; the method throws that exception
+    /// (or a subclass) exactly on the inputs where the condition holds.
+    pub throws: Vec<String>,
     pub work: Option<PathBuf>,
     pub report: Option<PathBuf>,
     pub sources: Vec<PathBuf>,
@@ -65,6 +73,7 @@ impl Options {
             target: target.to_string(),
             assume: None,
             assert: None,
+            throws: Vec::new(),
             work: None,
             report: None,
             sources: Vec::new(),
@@ -85,6 +94,9 @@ pub struct Counterexample {
     pub input: String,
     /// What the method did: its result, or the exception it threw.
     pub outcome: String,
+    /// What a throws clause required instead, when one applies to the input or the method threw with none applying.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expected: Option<String>,
     pub values: Vec<String>,
     /// The input as JBMC found it, when `input` is the shrunk one.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -102,6 +114,8 @@ pub struct Outcome {
     pub assume: Option<String>,
     /// The assertion, as checked.
     pub assert: Option<String>,
+    /// The throws clauses, as given.
+    pub throws: Vec<String>,
     pub counterexample: Option<Counterexample>,
     pub proof: Option<String>,
     pub problem: Option<String>,
@@ -137,6 +151,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             domain: None,
             assume: options.assume.clone(),
             assert: options.assert.clone(),
+            throws: options.throws.clone(),
             counterexample: None,
             proof: None,
             problem: Some(problem),
@@ -184,11 +199,34 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         .collect::<Vec<_>>()
         .join(" × ");
 
-    // 2. The statement.
-    let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref()) {
+    // 2. The statement. A declared exception is named as in Java, `java.lang.ArithmeticException`, or by its simple
+    // name when it is in java.lang or the target's package.
+    let cp = cp.with_default_jdk();
+    let mut signals = Vec::new();
+    for clause in &options.throws {
+        let mut signal = match Signal::parse(clause) {
+            Ok(s) => s,
+            Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
+        };
+        if !signal.class.contains('/') {
+            let package = class_internal.rsplit_once('/').map(|(p, _)| format!("{p}/")).unwrap_or_default();
+            match [format!("java/lang/{}", signal.class), format!("{package}{}", signal.class)].into_iter().find(|c| cp.exists(c)) {
+                Some(c) => signal.class = c,
+                None => return refuse(&mut out, line, format!("the property is not well-formed: in the throws clause `{}`: no class {} in java.lang or the target's package", signal.render(), signal.class)),
+            }
+        } else if !cp.exists(&signal.class) {
+            return refuse(&mut out, line, format!("the property is not well-formed: in the throws clause `{}`: class not found", signal.render()));
+        }
+        if !cp.is_subtype(&signal.class, "java/lang/Throwable") {
+            return refuse(&mut out, line, format!("the property is not well-formed: in the throws clause `{}`: {} is not a Throwable", signal.render(), signal.java_name()));
+        }
+        signals.push(signal);
+    }
+    let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals) {
         Ok(h) => h,
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
+    let throws_text = signals.iter().map(Signal::render).collect::<Vec<_>>();
     let harness_dir = work.join("harness");
     std::fs::create_dir_all(&harness_dir)?;
     std::fs::write(harness_dir.join(format!("{}.class", harness::PROPERTY_CLASS)), &harness.bytes)?;
@@ -200,6 +238,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let jdk_dir = work.join("jdk");
     if let Err(e) = extract_jdk_classes(&jdk_dir, options.java_home.as_deref()) {
         let _ = writeln!(out, "note: {e}; JBMC will use its own models of java.lang.Math");
+    }
+    // A declared JDK exception JBMC has no model of (a ClassFormatError, say) is taken from the JDK image with its
+    // superclasses up to one JBMC models, so that the harness's handler for it and the method's `new` of it agree.
+    if let Err(e) = extract_exception_classes(&jdk_dir, &cp, &signals) {
+        let _ = writeln!(out, "note: {e}");
     }
 
     // 4. Prove, or search for a counterexample: small inputs first, then all of them.
@@ -238,6 +281,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
+    let and_throws = if throws_text.is_empty() { String::new() } else { format!(", and {}", throws_text.join(", and ")) };
+    // A property that is its throws clauses alone claims that the method returns elsewhere.
+    let claim = if assertion == "true" && !signals.is_empty() { "returns".to_string() } else { format!("satisfies `{assertion}`") };
 
     let mut findings = Vec::new();
     let mut counterexample = None;
@@ -247,12 +293,35 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
-            let _ = writeln!(out, "✓ {} satisfies `{assertion}` on every input{where_} ({how})", options.target);
+            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws} ({how})", options.target);
             proof = Some(how);
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let (outcome_found, returned, result_array, arrays_after) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &found)?;
+            let replayed = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &found)?;
+            let (outcome_found, returned, result_array, arrays_after) = (replayed.outcome, replayed.returned, replayed.result_array, replayed.arrays_after);
+            // The throws clause that applies to an input: the first whose condition holds; `None` when none does
+            // or a condition cannot be evaluated outside the harness (it calls the method).
+            let applying = |arguments: &[Argument]| -> Option<usize> {
+                let mut locals = Vec::new();
+                let mut arrays = Vec::new();
+                for (a, p) in arguments.iter().zip(&params) {
+                    match a {
+                        Argument::Scalar(v) => {
+                            locals.push(*v);
+                            if v.is_wide() {
+                                locals.push(Value::Int(0));
+                            }
+                        }
+                        Argument::Array(data) => {
+                            locals.push(Value::Null);
+                            arrays.push((p.slot, data.clone()));
+                        }
+                        Argument::Null => locals.push(Value::Null),
+                    }
+                }
+                harness.signals.iter().position(|(_, when)| matches!(harness::expr::eval_with(when, &locals, &arrays), Ok(Value::Int(1))))
+            };
             let render_input = |arguments: &[Argument]| -> (Vec<String>, String) {
                 let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| render_argument(a, &p.ty)).collect();
                 let rendered = format!("{method_name}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
@@ -292,21 +361,26 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
                 harness::expr::eval_with(&harness.assertion, &locals, &arrays)
             };
-            let evaluable = !harness.assertion.has_call();
-            if let Some(result) = returned.filter(|_| evaluable) {
-                if let Ok(Value::Int(1)) = assertion_on(&found, result, &result_array, &arrays_after) {
-                    let (_, rendered) = render_input(&found);
-                    let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome_found} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
-                    let message = format!("{} cannot be verified: {p}", options.target);
-                    let _ = writeln!(out, "✗ {message}");
-                    findings.push(Finding::new("unverifiable", message, uri.clone(), line));
-                    problem = Some(p);
-                    verdict = Verdict::Unverifiable;
-                    if let Some(report) = &options.report {
-                        sarif::write(&report.join("property.sarif"), &findings)?;
-                    }
-                    return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+            let evaluable = !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
+            let holds_on_found = match (applying(&found), returned, replayed.thrown.as_deref()) {
+                (Some(i), _, Some(thrown)) => cp.is_subtype(thrown, &harness.signals[i].0.class),
+                (Some(_), _, None) => false,
+                (None, Some(result), _) => matches!(assertion_on(&found, result, &result_array, &arrays_after), Ok(Value::Int(1))),
+                (None, None, _) => false,
+            };
+            if evaluable && holds_on_found {
+                let (_, rendered) = render_input(&found);
+                let did = if replayed.thrown.is_some() { outcome_found.clone() } else { format!("returns {outcome_found}") };
+                let p = format!("JBMC's counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                problem = Some(p);
+                verdict = Verdict::Unverifiable;
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("property.sarif"), &findings)?;
                 }
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -317,10 +391,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 arguments = shrunk.arguments;
             }
             let shrunk = arguments != found;
-            let (mut outcome, returned, result_array, arrays_after) = if shrunk {
-                replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?
+            let (mut outcome, returned, result_array, arrays_after, thrown) = if shrunk {
+                let r = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?;
+                (r.outcome, r.returned, r.result_array, r.arrays_after, r.thrown)
             } else {
-                (outcome_found, returned, result_array, arrays_after)
+                (outcome_found, returned, result_array, arrays_after, replayed.thrown)
+            };
+            // What a throws clause required of this input, when that is what failed.
+            let expected = match (applying(&arguments), &thrown) {
+                (Some(i), _) => Some(format!("throws {}, since {}", harness.signals[i].0.java_name(), harness.signals[i].0.when)),
+                (None, Some(_)) if !harness.signals.is_empty() => Some("a normal return: no throws clause applies to this input".to_string()),
+                _ => None,
             };
             // An assertion that cannot be evaluated on the outcome (an index out of bounds) is what failed.
             if let Some(result) = returned.filter(|_| evaluable) {
@@ -337,7 +418,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             }
             let (witnesses, rendered) = render_input(&arguments);
             let (_, rendered_found) = render_input(&found);
-            let message = format!("Property of {} violated: `{assertion}`{}:\n  {rendered}\n    outcome: {outcome}", options.target, where_);
+            let expected_line = expected.as_ref().map(|e| format!("\n    expected: {e}")).unwrap_or_default();
+            let claimed = if claim == "returns" { "returns".to_string() } else { format!("`{assertion}`") };
+            let message = format!("Property of {} violated: {claimed}{where_}{and_throws}:\n  {rendered}\n    outcome: {outcome}{expected_line}", options.target);
             let _ = writeln!(out, "✗ {message}");
             let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
             let shrinking = if shrunk {
@@ -349,7 +432,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
+            counterexample = Some(Counterexample { input: rendered, outcome, expected, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
@@ -363,7 +446,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         sarif::write(&report.join("property.sarif"), &findings)?;
     }
     if verdict == Verdict::Violation {
-        let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.");
+        let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.{}", if signals.is_empty() { " If the method throws there by design, declare it with --throws." } else { "" });
     }
     Ok(Outcome {
         verdict,
@@ -371,6 +454,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         domain: Some(domain),
         assume: options.assume.clone(),
         assert: Some(assertion),
+        throws: options.throws.clone(),
         counterexample,
         proof,
         problem,
@@ -390,12 +474,14 @@ pub struct Declaration {
     pub target: String,
     pub assume: Option<String>,
     pub assert: Option<String>,
+    /// `throws:` lines, `<exception class> when <condition>`, in order.
+    pub throws: Vec<String>,
     /// `arrays:` the longest array an array parameter is given for this property, overriding the command line.
     pub max_array_length: Option<u32>,
 }
 
 /// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:`,
-/// `assert:` and `arrays:` lines; `#` comments and `key: value` headers are skipped.
+/// `assert:`, `throws:` and `arrays:` lines; `#` comments and `key: value` headers are skipped.
 pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, Error> {
     let mut out: Vec<Declaration> = Vec::new();
     for (number, raw) in text.lines().enumerate() {
@@ -407,7 +493,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         let body = line.trim();
         if !indented {
             if body.contains('#') && !body.contains(':') {
-                out.push(Declaration { target: body.to_string(), assume: None, assert: None, max_array_length: None });
+                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None });
                 continue;
             }
             if body.split_once(':').is_some() {
@@ -421,10 +507,14 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         match body.split_once(':') {
             Some(("assume", value)) => last.assume = Some(value.trim().to_string()),
             Some(("assert", value)) => last.assert = Some(value.trim().to_string()),
+            Some(("throws", value)) => {
+                Signal::parse(value).map_err(|e| Error::new(format!("{origin}:{}: {e}", number + 1)))?;
+                last.throws.push(value.trim().to_string());
+            }
             Some(("arrays", value)) => {
                 last.max_array_length = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `arrays:` needs a number of elements, found {:?}", number + 1, value.trim())))?)
             }
-            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:` or `arrays:`, found {body:?}", number + 1))),
+            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:` or `arrays:`, found {body:?}", number + 1))),
         }
     }
     Ok(out)
@@ -513,11 +603,45 @@ fn shrink_in_harness(options: &Options, harness_dir: &std::path::Path, types: &[
     Ok(crate::shrink::shrink(types, found, SHRINK_BUDGET, fails))
 }
 
-/// Runs the counterexample through the method in the interpreter, with the effect monitor off: the outcome as
-/// text, the value returned if the method returned a primitive or an array, the elements of a returned array,
-/// and the elements of the array arguments after the call.
-#[allow(clippy::type_complexity)]
-fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, signature: &crate::classfile::MethodDescriptor, arguments: &[Argument]) -> Result<(String, Option<Value>, Option<Vec<Value>>, Vec<(u16, Vec<Value>)>), Error> {
+/// Copies the declared exceptions that are JDK classes, and their superclasses up to one JBMC has a model of,
+/// out of the JDK image into `dir`.
+fn extract_exception_classes(dir: &std::path::Path, cp: &ClassPath, signals: &[Signal]) -> Result<(), Error> {
+    const MODELLED: &[&str] = &["java/lang/Object", "java/lang/Throwable", "java/lang/Exception", "java/lang/Error", "java/lang/RuntimeException"];
+    let mut done = std::collections::HashSet::new();
+    for signal in signals {
+        let mut current = Some(signal.class.clone());
+        while let Some(name) = current {
+            if MODELLED.contains(&name.as_str()) || harness::EXCEPTIONS.contains(&name.as_str()) || cp.is_application(&name) || !done.insert(name.clone()) {
+                break;
+            }
+            let bytes = cp.jdk().and_then(|jdk| jdk.read_class(&name).ok().flatten()).ok_or_else(|| Error::new(format!("{} is not in the JDK image; JBMC will treat it as an unknown class", name.replace('/', "."))))?;
+            let target = dir.join(format!("{name}.class"));
+            if let Some(parent) = target.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            std::fs::write(target, bytes)?;
+            current = cp.superclass(&name);
+        }
+    }
+    Ok(())
+}
+
+/// The method's behaviour on a counterexample, replayed in the interpreter.
+struct Replayed {
+    /// The outcome as text: the result, or the exception thrown.
+    outcome: String,
+    /// The value returned, if the method returned a primitive or an array.
+    returned: Option<Value>,
+    /// The elements of a returned array.
+    result_array: Option<Vec<Value>>,
+    /// The elements of the array arguments after the call.
+    arrays_after: Vec<(u16, Vec<Value>)>,
+    /// The class of the exception thrown, as an internal name.
+    thrown: Option<String>,
+}
+
+/// Runs the counterexample through the method in the interpreter, with the effect monitor off.
+fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, signature: &crate::classfile::MethodDescriptor, arguments: &[Argument]) -> Result<Replayed, Error> {
     let mut cp = ClassPath::new();
     for path in options.classes.iter().chain(&options.classpath) {
         if path.exists() {
@@ -559,11 +683,11 @@ fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &st
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            (text, returned, array, after)
+            Replayed { outcome: text, returned, result_array: array, arrays_after: after, thrown: None }
         }
-        Ok(None) => ("void".to_string(), None, None, after),
-        Err(Fault::Throw(r)) => (render::thrown(&m, r), None, None, after),
-        Err(f) => (format!("<could not replay: {}>", render::fault(&m, &f)), None, None, after),
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, arrays_after: after, thrown: None },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, arrays_after: after, thrown: Some(m.class_of(r)) },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, arrays_after: after, thrown: None },
     })
 }
 
@@ -580,7 +704,10 @@ mod tests {
         assert_eq!(declarations[0].assume.as_deref(), Some("n > 0"));
         assert_eq!(declarations[0].assert.as_deref(), Some("2L * result > n"));
         assert_eq!(declarations[0].max_array_length, Some(4));
-        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, max_array_length: None });
+        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None });
+        let signals = parse_declarations("net.example.A#div\n  throws: java.lang.ArithmeticException when b == 0\n  throws: IllegalArgumentException when a < 0\n", "f").unwrap();
+        assert_eq!(signals[0].throws, vec!["java.lang.ArithmeticException when b == 0".to_string(), "IllegalArgumentException when a < 0".to_string()]);
+        assert!(parse_declarations("net.example.A#b\n  throws: ArithmeticException\n", "f").is_err(), "a throws clause needs a condition");
         assert!(parse_declarations("  assume: x > 0\n", "f").is_err(), "no target");
         assert!(parse_declarations("net.example.A#b\n  require: x\n", "f").is_err(), "unknown key");
         assert!(parse_declarations("net.example.A#b\n  arrays: many\n", "f").is_err(), "not a number");

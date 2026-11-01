@@ -1,6 +1,6 @@
 ✗ Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:
   delayMillis(attempt=48, baseMillis=32768, capMillis=32768)
     outcome: -9223372036854775808
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000] as delayMillis(attempt=112, baseMillis=63488, capMillis=64512), shrunk to the input above in 227 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
+  (found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000] as delayMillis(attempt=176, baseMillis=63488, capMillis=64512), shrunk to the input above in 234 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

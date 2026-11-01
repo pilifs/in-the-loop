@@ -2,7 +2,8 @@
 //! an eight-element array of large numbers as often as not. Given an oracle that says whether an input still
 //! violates the property, the shrinker makes the input smaller one step at a time, as a property-based testing
 //! library does, until no single step keeps it a counterexample: an array loses an element, a number moves
-//! towards zero (to zero, or by a power of two, the largest first), a `true` becomes `false`.
+//! towards zero (to zero, or by a power of two, the largest first; the values of a sign together, too, for an end
+//! tied to a length), a `true` becomes `false`.
 //!
 //! The result is a local minimum, not the smallest counterexample there is, but it is small, and it is the same
 //! one on every run, where the solver's is not. Every candidate is checked by the oracle, so the shrunk input is a
@@ -82,6 +83,39 @@ fn candidates(types: &[Type], current: &[Argument]) -> Vec<Vec<Argument>> {
             }
         }
     }
+    // Values a property ties together (an end equal to a length, a pc equal to an entry's end) shrink together:
+    // every positive integral value, scalar or element, moves down by the same amount, the smallest to zero
+    // first, and every negative one up.
+    for sign in [1i128, -1] {
+        let tied: Vec<(usize, Option<usize>, i128)> = current
+            .iter()
+            .zip(types)
+            .enumerate()
+            .flat_map(|(i, (a, t))| match (a, t) {
+                (Argument::Scalar(v), t) => integral(*v, t).map(|x| (i, None, x)).into_iter().collect::<Vec<_>>(),
+                (Argument::Array(data), Type::Array(element)) => data.iter().enumerate().filter_map(|(j, v)| integral(*v, element).map(|x| (i, Some(j), x))).collect(),
+                _ => Vec::new(),
+            })
+            .filter(|(_, _, x)| x.signum() == sign)
+            .collect();
+        if tied.len() < 2 {
+            continue;
+        }
+        let nearest = tied.iter().map(|(_, _, x)| x.abs()).min().unwrap_or(0);
+        for value in towards_zero(nearest) {
+            let delta = (nearest - value) * sign;
+            let mut c = current.to_vec();
+            for (i, j, x) in &tied {
+                let moved = x - delta;
+                match (&mut c[*i], j) {
+                    (Argument::Scalar(v), None) => *v = narrowed(*v, moved),
+                    (Argument::Array(data), Some(j)) => data[*j] = narrowed(data[*j], moved),
+                    _ => {}
+                }
+            }
+            out.push(c);
+        }
+    }
     for (i, (argument, t)) in current.iter().zip(types).enumerate() {
         if let (Argument::Array(data), Type::Array(element)) = (argument, t) {
             for (j, v) in data.iter().enumerate() {
@@ -94,6 +128,23 @@ fn candidates(types: &[Type], current: &[Argument]) -> Vec<Vec<Argument>> {
         }
     }
     out
+}
+
+/// An integral value as a number, for the values that move together; a boolean is not one.
+fn integral(v: Value, t: &Type) -> Option<i128> {
+    match v {
+        Value::Int(x) if *t != Type::Boolean => Some(i128::from(x)),
+        Value::Long(x) => Some(i128::from(x)),
+        _ => None,
+    }
+}
+
+/// `x` in the width of `like`.
+fn narrowed(like: Value, x: i128) -> Value {
+    match like {
+        Value::Long(_) => Value::Long(x as i64),
+        _ => Value::Int(x as i32),
+    }
 }
 
 /// The values one step closer to zero than `v`, nearest zero first.
@@ -177,8 +228,29 @@ mod tests {
             _ => None,
         };
         let shrunk = shrink(&types, vec![ints(&[4, 7, 7, 1]), ints(&[5, 7, 9, 1])], 10_000, fails);
-        // One row is left; its two values move down together only as far as single steps allow.
-        assert_eq!(shrunk.arguments, vec![ints(&[1]), ints(&[1])]);
+        // One row is left, and its two equal values move down to zero together.
+        assert_eq!(shrunk.arguments, vec![ints(&[0]), ints(&[0])]);
+    }
+
+    #[test]
+    fn moves_tied_scalars_together() {
+        // "end == length, and the range is not empty": each alone cannot move, so they move together.
+        let types = [Type::Int, Type::Int, Type::Int];
+        let fails = |args: &[Argument]| match (&args[0], &args[1], &args[2]) {
+            (Argument::Scalar(Value::Int(start)), Argument::Scalar(Value::Int(end)), Argument::Scalar(Value::Int(length))) => Some(end == length && start < end),
+            _ => None,
+        };
+        let shrunk = shrink(&types, vec![Argument::Scalar(Value::Int(12)), Argument::Scalar(Value::Int(15)), Argument::Scalar(Value::Int(15))], 1000, fails);
+        assert_eq!(shrunk.arguments, vec![Argument::Scalar(Value::Int(0)), Argument::Scalar(Value::Int(1)), Argument::Scalar(Value::Int(1))]);
+        let negative = shrink(&[Type::Long, Type::Long], vec![Argument::Scalar(Value::Long(-40)), Argument::Scalar(Value::Long(-40))], 1000, |args| Some(args[0] == args[1] && args[0] != Argument::Scalar(Value::Long(0))));
+        assert_eq!(negative.arguments, vec![Argument::Scalar(Value::Long(-1)), Argument::Scalar(Value::Long(-1))]);
+        // An element and a scalar: "pc equals the entry's end", which moves to zero together.
+        let types = [Type::Array(Box::new(Type::Int)), Type::Int];
+        let tied = shrink(&types, vec![ints(&[2]), Argument::Scalar(Value::Int(2))], 1000, |args| match (&args[0], &args[1]) {
+            (Argument::Array(d), Argument::Scalar(Value::Int(pc))) => Some(d.len() == 1 && d[0].as_int() == *pc),
+            _ => None,
+        });
+        assert_eq!(tied.arguments, vec![ints(&[0]), Argument::Scalar(Value::Int(0))]);
     }
 
     #[test]

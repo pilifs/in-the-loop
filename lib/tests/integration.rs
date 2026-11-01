@@ -340,6 +340,10 @@ fn prove_arrays(target: &str, assume: Option<&str>, assert: Option<&str>, name: 
 }
 
 fn prove_with(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str, max_array_length: u32, shrink: bool) -> Option<property::Outcome> {
+    prove_throws(target, assume, assert, &[], name, max_array_length, shrink)
+}
+
+fn prove_throws(target: &str, assume: Option<&str>, assert: Option<&str>, throws: &[&str], name: &str, max_array_length: u32, shrink: bool) -> Option<property::Outcome> {
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return None;
@@ -348,6 +352,7 @@ fn prove_with(target: &str, assume: Option<&str>, assert: Option<&str>, name: &s
     let mut options = property::Options::new(&[classes.to_path_buf()], target);
     options.assume = assume.map(str::to_string);
     options.assert = assert.map(str::to_string);
+    options.throws = throws.iter().map(|t| t.to_string()).collect();
     options.max_array_length = max_array_length;
     options.shrink = shrink;
     let work = target_tmp().join(format!("property-{name}"));
@@ -380,6 +385,61 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     let throws = prove("fixtures.Laws#majority", None, Some("2 * result > n"), "majority-throws").unwrap();
     assert_eq!(throws.verdict, Verdict::Violation, "{}", throws.output);
     assert!(throws.counterexample.unwrap().outcome.starts_with("throws IllegalArgumentException"), "{}", throws.output);
+}
+
+#[test]
+fn throws_clauses_prove_the_exceptional_path() {
+    // The exception on n <= 0 is declared, so the whole domain is covered: no assumption.
+    let Some(declared) = prove_throws("fixtures.Laws#majority", None, Some("2L * result > n && result <= n"), &["IllegalArgumentException when n <= 0"], "majority-declared", 8, true) else { return };
+    assert_eq!(declared.verdict, Verdict::Verified, "{}", declared.output);
+    assert!(declared.output.contains("satisfies `2L * result > n && result <= n` on every input, and throws java.lang.IllegalArgumentException when n <= 0 (JBMC"), "{}", declared.output);
+    let statement = std::fs::read_to_string(declared.statement.unwrap()).unwrap();
+    assert!(statement.contains("if (n <= 0) { expected = 1; } // java.lang.IllegalArgumentException"), "{statement}");
+    assert!(statement.contains("catch (java.lang.IllegalArgumentException t) { e = -1; }"), "{statement}");
+
+    // A clause the method does not honour: it returns on n == 1 where the clause says it throws.
+    let too_wide = prove_throws("fixtures.Laws#majority", None, Some("2L * result > n"), &["java.lang.IllegalArgumentException when n <= 1"], "majority-too-wide", 8, true).unwrap();
+    assert_eq!(too_wide.verdict, Verdict::Violation, "{}", too_wide.output);
+    let witness = too_wide.counterexample.unwrap();
+    assert_eq!(witness.input, "majority(n=1)");
+    assert_eq!(witness.outcome, "1");
+    assert_eq!(witness.expected.as_deref(), Some("throws java.lang.IllegalArgumentException, since n <= 1"));
+    assert!(too_wide.output.contains("violated: `2L * result > n`, and throws java.lang.IllegalArgumentException when n <= 1:\n  majority(n=1)\n    outcome: 1\n    expected: throws java.lang.IllegalArgumentException, since n <= 1"), "{}", too_wide.output);
+
+    // A clause narrower than the method: it throws on n == 0 where no clause applies. A void method's property
+    // can be its clauses alone.
+    let too_narrow = prove_throws("fixtures.Checks#count", None, None, &["IllegalArgumentException when n < 0"], "count-too-narrow", 8, true).unwrap();
+    assert_eq!(too_narrow.verdict, Verdict::Violation, "{}", too_narrow.output);
+    let witness = too_narrow.counterexample.unwrap();
+    assert_eq!(witness.input, "count(n=0)");
+    assert!(witness.outcome.starts_with("throws IllegalArgumentException"), "{}", witness.outcome);
+    assert_eq!(witness.expected.as_deref(), Some("a normal return: no throws clause applies to this input"));
+    let exact = prove_throws("fixtures.Checks#count", None, None, &["IllegalArgumentException when n <= 0"], "count-exact", 8, true).unwrap();
+    assert_eq!(exact.verdict, Verdict::Verified, "{}", exact.output);
+    assert!(exact.output.contains("✓ fixtures.Checks#count returns on every input, and throws java.lang.IllegalArgumentException when n <= 0 (JBMC"), "{}", exact.output);
+    assert!(too_narrow.output.contains("violated: returns, and throws java.lang.IllegalArgumentException when n < 0:"), "{}", too_narrow.output);
+
+    // An exception JBMC has no model of is taken from the JDK image, with its superclass (LinkageError).
+    let u2 = "0 <= startPc && startPc <= 65535 && 0 <= endPc && endPc <= 65535 && 0 <= handlerPc && handlerPc <= 65535 && 0 <= codeLength && codeLength <= 65535";
+    let range = "ClassFormatError when startPc >= endPc || endPc > codeLength || handlerPc >= codeLength";
+    let entry = prove_throws("fixtures.Checks#protectedLength", Some(u2), Some("result == endPc - startPc && result >= 1"), &[range], "entry", 8, true).unwrap();
+    assert_eq!(entry.verdict, Verdict::Verified, "{}", entry.output);
+    assert!(entry.work.join("jdk/java/lang/ClassFormatError.class").exists());
+    assert!(entry.work.join("jdk/java/lang/LinkageError.class").exists());
+    assert!(!entry.work.join("jdk/java/lang/Error.class").exists(), "JBMC models Error itself");
+    let off_by_one = prove_throws("fixtures.Checks#protectedLength", Some(u2), Some("result == endPc - startPc"), &["java.lang.ClassFormatError when startPc >= endPc || endPc >= codeLength || handlerPc >= codeLength"], "entry-off-by-one", 8, true).unwrap();
+    assert_eq!(off_by_one.verdict, Verdict::Violation, "{}", off_by_one.output);
+    let witness = off_by_one.counterexample.unwrap();
+    assert_eq!(witness.input, "protectedLength(startPc=0, endPc=1, handlerPc=0, codeLength=1)", "{}", off_by_one.output);
+    assert_eq!(witness.outcome, "1");
+    assert_eq!(witness.expected.as_deref(), Some("throws java.lang.ClassFormatError, since startPc >= endPc || endPc >= codeLength || handlerPc >= codeLength"));
+
+    // Clauses are checked when the property is read.
+    let unknown = prove_throws("fixtures.Checks#count", None, None, &["NoSuchError when n < 0"], "count-unknown", 8, true).unwrap();
+    assert_eq!(unknown.verdict, Verdict::Unverifiable);
+    assert!(unknown.problem.unwrap().contains("no class NoSuchError in java.lang or the target's package"));
+    let not_throwable = prove_throws("fixtures.Checks#count", None, None, &["java.lang.String when n < 0"], "count-string", 8, true).unwrap();
+    assert!(not_throwable.problem.unwrap().contains("is not a Throwable"));
 }
 
 #[test]

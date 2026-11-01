@@ -248,6 +248,35 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
     s
 }
 
+/// An exceptional behaviour clause of a property: the method throws `class` (an internal name, an instance of it
+/// counts) exactly when `when`, a boolean expression over the parameters, holds; JML's `signals`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Signal {
+    pub class: String,
+    pub when: String,
+}
+
+impl Signal {
+    /// `java.lang.ArithmeticException when divisor == 0`.
+    pub fn parse(text: &str) -> Result<Signal, Error> {
+        let (class, when) = text.trim().split_once(" when ").ok_or_else(|| Error::new(format!("a throws clause is `<exception class> when <condition>`, found {text:?}")))?;
+        let class = class.trim();
+        if class.is_empty() || when.trim().is_empty() || class.contains(char::is_whitespace) {
+            return Err(Error::new(format!("a throws clause is `<exception class> when <condition>`, found {text:?}")));
+        }
+        Ok(Signal { class: class.replace('.', "/"), when: when.trim().to_string() })
+    }
+
+    pub fn java_name(&self) -> String {
+        self.class.replace('/', ".")
+    }
+
+    /// `throws java.lang.ArithmeticException when divisor == 0`, the clause as the report prints it.
+    pub fn render(&self) -> String {
+        format!("throws {} when {}", self.java_name(), self.when)
+    }
+}
+
 /// The generated property harness.
 #[derive(Debug, Clone)]
 pub struct PropertyHarness {
@@ -257,16 +286,20 @@ pub struct PropertyHarness {
     pub source: String,
     pub assume: Option<Expr>,
     pub assertion: Expr,
-    /// The assertion as text: as given, or `result` for a boolean method with no assertion given.
+    /// The assertion as text: as given, `result` for a boolean method with no assertion given, or `true` for a
+    /// method whose property is its throws clauses alone.
     pub assertion_text: String,
+    /// The throws clauses, with their conditions parsed; the first whose condition holds is the one expected.
+    pub signals: Vec<(Signal, Expr)>,
     pub params: Vec<Param>,
 }
 
 /// Generates the harness of a property of `class_internal.method(params) -> ret`: on every input where `assume`
-/// holds (every input, when `None`), the method returns without throwing and `assertion` holds. The assertion
-/// may name the parameters, `result`, and the method itself; when it is `None`, the method must return `boolean`
-/// and the property is that it returns `true`.
-pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>) -> Result<PropertyHarness, Error> {
+/// holds (every input, when `None`), the method returns without throwing and `assertion` holds; where the
+/// condition of one of the `signals` holds instead, it throws that clause's exception. The assertion may name the
+/// parameters, `result`, and the method itself; when it is `None`, the method must return `boolean` and the
+/// property is that it returns `true`, or have throws clauses, and the property is that it returns at all.
+pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]) -> Result<PropertyHarness, Error> {
     let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
@@ -281,17 +314,28 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     let assertion_text = match assertion {
         Some(a) => a.to_string(),
         None if *ret == Type::Boolean => RESULT.to_string(),
+        None if !signals.is_empty() => "true".to_string(),
         None => return Err(Error::new(format!("the method returns {}, so the property needs an assertion (--assert) over the parameters and `result`", ret.java_name()))),
     };
-    // Locals after the parameters: result, e; quantifiers take their variables after those.
+    // Locals after the parameters: result, e, expected; quantifiers take their variables after those.
     let ret_kind = kind_of(ret);
     let result = arg_slots;
     let e = result + if is_void { 0 } else { ret.slots() };
+    let expected = e + 1;
+    let first_free = expected + 1;
     let assume_expr = match assume {
-        Some(src) => Some(expr::parse_in(src, params, callee.as_ref(), e + 1).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
+        Some(src) => Some(expr::parse_in(src, params, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
-    let assertion_expr = expr::parse_in(&assertion_text, &names, callee.as_ref(), e + 1).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    let assertion_expr = expr::parse_in(&assertion_text, &names, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    let mut signal_exprs = Vec::new();
+    for signal in signals {
+        if signal.class.is_empty() || signal.class.contains(|c: char| c.is_whitespace() || c == ';' || c == '[') {
+            return Err(Error::new(format!("in the throws clause: {:?} is not a class name", signal.java_name())));
+        }
+        let when = expr::parse_in(&signal.when, params, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the throws clause `{}`: {e}", signal.render())))?;
+        signal_exprs.push((signal.clone(), when));
+    }
 
     let mut writer = ClassWriter::new(PROPERTY_CLASS);
     writer.source_file = Some(format!("{PROPERTY_CLASS}.java"));
@@ -321,6 +365,22 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     }
     code.iconst(0);
     code.store(Kind::Int, e);
+    // Which throws clause applies: the first whose condition holds, numbered from 1; 0 for none.
+    code.iconst(0);
+    code.store(Kind::Int, expected);
+    if !signal_exprs.is_empty() {
+        let decided = code.label();
+        for (i, (_, when)) in signal_exprs.iter().enumerate() {
+            let next = code.label();
+            expr::emit(when, &mut code, &mut writer.pool);
+            code.if_zero(Cond::Eq, next);
+            code.iconst(i as i32 + 1);
+            code.store(Kind::Int, expected);
+            code.goto(decided);
+            code.bind(next);
+        }
+        code.bind(decided);
+    }
     let try_start = code.label();
     let try_end = code.label();
     let join = code.label();
@@ -335,6 +395,18 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     }
     code.bind(try_end);
     code.goto(join);
+    // The declared exceptions are caught first, each as -(its number), so that a declared supertype of a listed
+    // exception takes its subclasses.
+    for (i, (signal, _)) in signal_exprs.iter().enumerate() {
+        let handler = code.label();
+        code.bind(handler);
+        code.op(0x57); // pop the exception
+        code.iconst(-(i as i32 + 1));
+        code.store(Kind::Int, e);
+        code.goto(join);
+        let catch_type = writer.pool.class(&signal.class);
+        code.handler(try_start, try_end, handler, Some(catch_type));
+    }
     for (i, exception) in EXCEPTIONS.iter().enumerate() {
         let handler = code.label();
         code.bind(handler);
@@ -347,10 +419,21 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     }
     code.bind(join);
 
-    // The assertion: e == 0 && (assertion). An exception while evaluating the assertion (an index out of bounds,
-    // say) fails it.
+    // The assertion: e == 0 && (assertion), or e == -expected when a throws clause applies. An exception while
+    // evaluating the assertion (an index out of bounds, say) fails it.
     let fail = code.label();
     let ok = code.label();
+    if !signal_exprs.is_empty() {
+        let normal = code.label();
+        code.load(Kind::Int, expected);
+        code.if_zero(Cond::Eq, normal);
+        code.load(Kind::Int, e);
+        code.load(Kind::Int, expected);
+        code.op(0x60); // iadd
+        code.if_zero(Cond::Eq, ok);
+        code.goto(fail);
+        code.bind(normal);
+    }
     code.load(Kind::Int, e);
     code.if_zero(Cond::Ne, fail);
     let assertion_start = code.label();
@@ -376,15 +459,15 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     code.op(0xbf); // athrow
     code.bind(ok);
     code.return_(None);
-    code.max_locals = code.max_locals.max(e + 1);
+    code.max_locals = code.max_locals.max(first_free);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
-    let source = property_source(class_internal, method, params, ret, assume, &assertion_text);
-    Ok(PropertyHarness { bytes: writer.to_bytes(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, params: params.to_vec() })
+    let source = property_source(class_internal, method, params, ret, assume, &assertion_text, signals);
+    Ok(PropertyHarness { bytes: writer.to_bytes(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec() })
 }
 
 /// The property as Java source, for readers.
-pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: &str) -> String {
+pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: &str, signals: &[Signal]) -> String {
     let class = class_internal.replace('/', ".");
     let param_list = params.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
     let args = params.iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
@@ -398,7 +481,7 @@ pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret
     let qualify = |text: &str| qualify_calls(text, method, &class);
     let mut s = String::new();
     s.push_str("/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */\n");
-    if assertion.contains('\\') || assume.is_some_and(|a| a.contains('\\')) {
+    if assertion.contains('\\') || assume.is_some_and(|a| a.contains('\\')) || signals.iter().any(|s| s.when.contains('\\')) {
         s.push_str("/* \\forall, \\exists, \\sum, \\num_of, \\max and \\min are JML's quantifiers; the class file evaluates each as a loop over its range. */\n");
     }
     s.push_str(&format!("public final class {PROPERTY_CLASS} {{\n"));
@@ -410,12 +493,25 @@ pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret
         s.push_str(&format!("        {type_name} {RESULT} = {zero};\n"));
     }
     s.push_str("        int e = 0;\n");
+    if !signals.is_empty() {
+        s.push_str("        int expected = 0; // the throws clause that applies: the first whose condition holds\n");
+        for (i, signal) in signals.iter().enumerate() {
+            s.push_str(&format!("        {}if ({}) {{ expected = {}; }} // {}\n", if i == 0 { "" } else { "else " }, qualify(&signal.when), i + 1, signal.java_name()));
+        }
+    }
     s.push_str(&format!("        try {{ {}{class}.{method}({args}); }}", if is_void { String::new() } else { format!("{RESULT} = ") }));
+    for (i, signal) in signals.iter().enumerate() {
+        s.push_str(&format!(" catch ({} t) {{ e = -{}; }}", signal.java_name(), i + 1));
+    }
     for (i, exception) in EXCEPTIONS.iter().enumerate() {
         s.push_str(&format!(" catch ({} t) {{ e = {}; }}", exception.replace('/', "."), i + 1));
     }
     s.push('\n');
-    s.push_str(&format!("        assert e == 0 && ({}); // no exception, and the property\n", qualify(assertion)));
+    if signals.is_empty() {
+        s.push_str(&format!("        assert e == 0 && ({}); // no exception, and the property\n", qualify(assertion)));
+    } else {
+        s.push_str(&format!("        assert expected != 0 ? e == -expected : e == 0 && ({}); // the declared exception where its condition holds; elsewhere no exception, and the property\n", qualify(assertion)));
+    }
     s.push_str("    }\n}\n");
     s
 }
@@ -450,7 +546,7 @@ mod tests {
     #[test]
     fn generates_a_well_formed_property_harness() {
         let params = params(&["now".into(), "last".into(), "message".into()], &[Type::Long, Type::Long, Type::Long]);
-        let harness = generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("now >= 0"), Some("result > last && result == receive(now, message, last)")).unwrap();
+        let harness = generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("now >= 0"), Some("result > last && result == receive(now, message, last)"), &[]).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         assert_eq!(class.name, PROPERTY_CLASS);
         let check = class.method(METHOD, "(JJJ)V").expect("check method");
@@ -467,16 +563,48 @@ mod tests {
         assert!(harness.source.contains("if (!(now >= 0)) { return; }"), "{}", harness.source);
         assert!(harness.source.contains("assert e == 0 && (result > last && result == net.example.Clock.receive(now, message, last));"), "{}", harness.source);
 
-        let boolean = generate_property("net/example/Laws", "holds", &params, &Type::Boolean, None, None).unwrap();
+        let boolean = generate_property("net/example/Laws", "holds", &params, &Type::Boolean, None, None, &[]).unwrap();
         assert_eq!(boolean.assertion_text, "result");
-        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, None, None).is_err(), "a long result needs an assertion");
-        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("result > 0"), Some("true")).is_err(), "no result in the assumption");
+        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, None, None, &[]).is_err(), "a long result needs an assertion");
+        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("result > 0"), Some("true"), &[]).is_err(), "no result in the assumption");
+    }
+
+    #[test]
+    fn generates_a_property_harness_with_throws_clauses() {
+        let params = params(&["dividend".into(), "divisor".into()], &[Type::Int, Type::Int]);
+        let signals = vec![Signal::parse("java.lang.ArithmeticException when divisor == 0").unwrap()];
+        assert_eq!(signals[0], Signal { class: "java/lang/ArithmeticException".into(), when: "divisor == 0".into() });
+        let harness = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("divisor != -1 || result == -dividend"), &signals).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(II)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        assert_eq!(code.exception_table.len(), 2 * EXCEPTIONS.len() + 1, "the declared exception's handler comes first");
+        assert_eq!(code.exception_table[0].catch_type.as_deref(), Some("java/lang/ArithmeticException"));
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        assert!(harness.source.contains("if (divisor == 0) { expected = 1; } // java.lang.ArithmeticException"), "{}", harness.source);
+        assert!(harness.source.contains("catch (java.lang.ArithmeticException t) { e = -1; }"), "{}", harness.source);
+        assert!(harness.source.contains("assert expected != 0 ? e == -expected : e == 0 && (divisor != -1 || result == -dividend);"), "{}", harness.source);
+        assert_eq!(harness.signals.len(), 1);
+
+        // A void method's property can be its throws clauses alone.
+        let void = generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &signals).unwrap();
+        assert_eq!(void.assertion_text, "true");
+        assert!(generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &[]).is_err(), "a void method with no throws clause has no property");
+        let bad = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("true"), &[Signal::parse("java.lang.ArithmeticException when result == 0").unwrap()]);
+        assert!(bad.unwrap_err().to_string().contains("in the throws clause"), "no result before the call");
+        assert!(Signal::parse("ArithmeticException").is_err());
     }
 
     #[test]
     fn generates_a_property_harness_over_arrays() {
         let params = params(&["matches".into(), "key".into()], &[Type::Array(Box::new(Type::Int)), Type::Int]);
-        let harness = generate_property("net/example/Search", "find", &params, &Type::Int, Some("\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]"), Some("result == -1 || matches[result] == key")).unwrap();
+        let harness = generate_property("net/example/Search", "find", &params, &Type::Int, Some("\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]"), Some("result == -1 || matches[result] == key"), &[]).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let check = class.method(METHOD, "([II)V").expect("check method");
         let code = check.code.as_ref().unwrap();

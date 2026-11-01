@@ -124,7 +124,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
     outcome: 1
   (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
 
 </details>

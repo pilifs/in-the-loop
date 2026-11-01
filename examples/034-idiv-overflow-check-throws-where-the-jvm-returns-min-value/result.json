@@ -23,7 +23,8 @@
     {
       "input": "idiv(dividend=-2147483648, divisor=-1)",
       "contract": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
-      "actual": "throws ArithmeticException(\"integer overflow\")"
+      "actual": "throws ArithmeticException(\"integer overflow\")",
+      "expected": "a normal return: no throws clause applies to this input"
     }
   ],
   "purityViolations": [],
@@ -37,7 +38,10 @@
   "invariant": null,
   "property": {
     "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
-    "assume": "divisor != 0"
+    "assume": null,
+    "throws": [
+      "java.lang.ArithmeticException when divisor == 0"
+    ]
   },
   "stateMachine": null,
   "sarif": "result.sarif",

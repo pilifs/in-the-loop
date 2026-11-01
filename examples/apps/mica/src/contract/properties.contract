@@ -1,19 +1,29 @@
 # Property contract: what the build proves of each kernel on every input, by bounded model checking of the
 # bytecode (jvmcontract prove --properties). Each block names a static method, the inputs the property is about
-# (assume: every input when absent) and the property (assert: over the parameters and the result). A property
-# that fails is reported with the input that violates it.
+# (assume: every input when absent), the property (assert: over the parameters and the result), and the
+# exceptions the kernel throws by design (throws: an exception class and the condition under which it is thrown,
+# and under which nothing else is asserted). A property that fails is reported with the input that violates it.
 kind: properties
 module: mica
 
-# JVMS 6.5, idiv: dividing by -1 negates, and Integer.MIN_VALUE / -1 is Integer.MIN_VALUE without an exception.
+# JVMS 6.5, idiv: division by zero throws ArithmeticException and nothing else does; dividing by -1 negates, and
+# Integer.MIN_VALUE / -1 is Integer.MIN_VALUE without an exception.
 net.terminalvalue.mica.interp.Arithmetic#idiv
-  assume: divisor != 0
+  throws: ArithmeticException when divisor == 0
   assert: (divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)
 
-# JVMS 6.5, irem: the remainder of a division by 1 or -1 is zero, Integer.MIN_VALUE % -1 included.
+# JVMS 6.5, irem: division by zero throws ArithmeticException; the remainder of a division by 1 or -1 is zero,
+# Integer.MIN_VALUE % -1 included.
 net.terminalvalue.mica.interp.Arithmetic#irem
-  assume: divisor != 0
+  throws: ArithmeticException when divisor == 0
   assert: (divisor != -1 && divisor != 1) || result == 0
+
+# JVMS 4.7.3, the exception table: an entry is malformed, a ClassFormatError, exactly when start_pc is not before
+# end_pc, end_pc is past the end of the code (end_pc == code_length is allowed: the range is half-open), or
+# handler_pc is not inside the code. The fields are u2.
+net.terminalvalue.mica.classfile.ExceptionTable#checkEntry
+  assume: startPc >= 0 && startPc <= 65535 && endPc >= 0 && endPc <= 65535 && handlerPc >= 0 && handlerPc <= 65535 && codeLength >= 1 && codeLength <= 65535
+  throws: ClassFormatError when startPc >= endPc || endPc > codeLength || handlerPc >= codeLength
 
 # JVMS 4.4.7: no byte of a CONSTANT_Utf8 is zero, and the first byte says whether the character took one byte.
 net.terminalvalue.mica.classfile.ModifiedUtf8#firstByte

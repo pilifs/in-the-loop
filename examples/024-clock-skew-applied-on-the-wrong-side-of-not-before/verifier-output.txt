@@ -1,6 +1,6 @@
 ✗ Property of net.terminalvalue.crosscut.security.JwtTimestamps#valid violated: `(!valid(nowSeconds, notBefore, expiresAt, 0) || result) && (nowSeconds < notBefore || nowSeconds >= expiresAt || result)` where skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L:
   valid(nowSeconds=0, notBefore=0, expiresAt=1, skewSeconds=1)
     outcome: false
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as valid(nowSeconds=5, notBefore=0, expiresAt=7, skewSeconds=16), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as valid(nowSeconds=5, notBefore=0, expiresAt=7, skewSeconds=16), shrunk to the input above in 20 interpreter runs, replayed in the interpreter; domain nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

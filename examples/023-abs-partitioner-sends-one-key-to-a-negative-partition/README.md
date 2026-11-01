@@ -106,7 +106,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the inte
     outcome: -2
   (found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain hash: int × numPartitions: int)
 
-The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
 
 </details>

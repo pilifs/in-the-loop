@@ -220,6 +220,11 @@ struct ProveArgs {
     /// such as `result == merge(b, a)`. A boolean method's property is `result` by default.
     #[arg(long = "assert")]
     assert_: Option<String>,
+    /// The exceptional behaviour, `<exception class> when <condition>`: the method throws that exception exactly on
+    /// the inputs where the condition holds, such as `java.lang.ArithmeticException when divisor == 0`. May be
+    /// repeated; the first clause whose condition holds is the one expected.
+    #[arg(long = "throws")]
+    throws: Vec<String>,
     /// A working directory for the harness and JBMC logs (a temporary one by default).
     #[arg(long)]
     work: Option<PathBuf>,
@@ -330,7 +335,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), max_array_length: None }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -341,6 +346,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.classpath = args.classes.classpath_entries();
                 options.assume = declaration.assume.clone();
                 options.assert = declaration.assert.clone();
+                options.throws = declaration.throws.clone();
                 options.work = args.work.as_ref().map(|w| if declarations.len() > 1 { w.join(format!("property-{}", i + 1)) } else { w.clone() });
                 options.report = if declarations.len() > 1 { None } else { args.report.clone() };
                 options.sources = args.sources.clone();

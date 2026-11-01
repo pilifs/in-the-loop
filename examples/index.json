@@ -806,6 +806,38 @@
       "approach": "B11",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "053",
+      "path": "053-idiv-that-leaves-division-by-zero-to-the-host",
+      "title": "An idiv that leaves division by zero to the host, proved to throw exactly there",
+      "summary": "The interpreter's `idiv` checks for a zero divisor and throws `ArithmeticException` before dividing on the host. A developer notices that the host is itself a JVM, whose division throws the same exception on the same input, and removes the check from `idiv` and `irem`. The property committed for each kernel now declares the exceptional behaviour as JML does, `throws: ArithmeticException when divisor == 0`, instead of assuming the zero divisor away; the prover covers the exceptional path with the normal one and proves that the host throws exactly where the check did.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.interp.Arithmetic#idiv",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "054",
+      "path": "054-exception-table-check-that-rejects-a-range-ending-at-code-length",
+      "title": "An exception table check that rejects a handler range ending at code_length",
+      "summary": "The class file reader checks each exception table entry as JVMS §4.7.3 requires: `start_pc` before `end_pc`, `end_pc` at most `code_length`, `handler_pc` inside the code. A developer makes the three offsets uniform, all of them less than `code_length`, reasoning that an offset into the code is an offset into the code. The property committed for the check is a throws clause, the specification's three conditions as the condition under which the reader throws `ClassFormatError`; the prover refutes the uniform check on the smallest method there is, one byte of code covered by a handler that ends where the code ends, which the patched reader rejects as malformed.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.classfile.ExceptionTable#checkEntry",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

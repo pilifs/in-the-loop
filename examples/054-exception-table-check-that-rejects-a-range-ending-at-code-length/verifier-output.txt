@@ -1,0 +1,7 @@
+✗ Property of net.terminalvalue.mica.classfile.ExceptionTable#checkEntry violated: returns where startPc >= 0 && startPc <= 65535 && endPc >= 0 && endPc <= 65535 && handlerPc >= 0 && handlerPc <= 65535 && codeLength >= 1 && codeLength <= 65535, and throws java.lang.ClassFormatError when startPc >= endPc || endPc > codeLength || handlerPc >= codeLength:
+  checkEntry(startPc=0, endPc=1, handlerPc=0, codeLength=1)
+    outcome: throws ClassFormatError("Illegal exception table range in class file")
+    expected: a normal return: no throws clause applies to this input
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain startPc: int × endPc: int × handlerPc: int × codeLength: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.

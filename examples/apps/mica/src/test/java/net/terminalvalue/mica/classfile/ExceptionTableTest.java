@@ -31,4 +31,30 @@ public final class ExceptionTableTest {
         equal(2, ExceptionTable.handlerIndex(START, END, 30));
         equal(-1, ExceptionTable.handlerIndex(START, END, 41));
     }
+
+    // The entries javac emits for the nested try above, in a method of 48 bytes.
+    public static void wellFormedEntriesAreAccepted() {
+        ExceptionTable.checkEntry(4, 12, 15, 48);
+        ExceptionTable.checkEntry(0, 20, 23, 48);
+        ExceptionTable.checkEntry(30, 40, 43, 48);
+    }
+
+    public static void anEmptyOrInvertedRangeIsRejected() {
+        throwsClassFormat(() -> ExceptionTable.checkEntry(12, 12, 15, 48));
+        throwsClassFormat(() -> ExceptionTable.checkEntry(12, 4, 15, 48));
+    }
+
+    public static void aRangeOrHandlerOutsideTheCodeIsRejected() {
+        throwsClassFormat(() -> ExceptionTable.checkEntry(30, 49, 43, 48));
+        throwsClassFormat(() -> ExceptionTable.checkEntry(30, 40, 48, 48));
+    }
+
+    private static void throwsClassFormat(Runnable action) {
+        try {
+            action.run();
+        } catch (ClassFormatError e) {
+            return;
+        }
+        throw new AssertionError("expected ClassFormatError");
+    }
 }
