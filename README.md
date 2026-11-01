@@ -38,6 +38,17 @@ It reproduces the contracts the Java tool committed for Box Office, which its te
 | [`lib/src/`](lib/src) | The crate: a class-file reader, the JDK image reader, the interpreter, and one module per contract kind |
 | [`lib/tests/`](lib/tests) | Integration tests over Java fixtures compiled at test time, and against the committed Box Office contracts |
 
+## [`plugins/`](plugins/jvmcontract/README.md): the verifier as a Claude Code skill
+
+`/verify-bytecode <pull request>`, a Claude Code skill that compiles a Java pull request before and after, runs `jvmcontract` over the bytecode, and reports what was proved, what was refuted (with the input) and what it could not check. One-command install, as a personal skill or as a plugin from this repository's marketplace.
+
+| Path | Content |
+|---|---|
+| [`plugins/jvmcontract/README.md`](plugins/jvmcontract/README.md) | Install, what it proves, and libraries to try it on |
+| [`plugins/jvmcontract/skills/verify-bytecode/`](plugins/jvmcontract/skills/verify-bytecode/SKILL.md) | The skill: the procedure, the tool reference for the agent, the report template, and the fetch and build scripts |
+| [`plugins/jvmcontract/install.sh`](plugins/jvmcontract/install.sh) | The installer behind `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh \| bash` |
+| [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | The marketplace, for `claude plugin install jvmcontract --marketplace pilifs/in-the-loop` |
+
 ## [`llm-dlc/`](llm-dlc/README.md): the LLM development lifecycle
 
 A meta example. This repo is written with an LLM, and every commit is published with the session that made it: what was asked, what the agent did, what it cost, and the full redacted transcript.

@@ -1,0 +1,18 @@
+// A Gradle init script (-I) that adds `jvmcontractClasspath` to every Java project: it compiles the main source set
+// and prints where its classes are and what they compile against, for `jvmcontract --classes` and `--classpath`.
+// Only file collections are captured, so the task is compatible with the configuration cache.
+allprojects {
+  afterEvaluate { project ->
+    def sourceSets = project.extensions.findByName('sourceSets')
+    if (sourceSets == null || sourceSets.findByName('main') == null) return
+    def classesDirs = sourceSets.main.output.classesDirs
+    def compileClasspath = sourceSets.main.compileClasspath
+    project.tasks.register('jvmcontractClasspath') {
+      dependsOn sourceSets.main.output
+      doLast {
+        println "CLASSES=" + classesDirs.files.findAll { it.isDirectory() }.join(File.pathSeparator)
+        println "CLASSPATH=" + compileClasspath.files.findAll { it.exists() }.join(File.pathSeparator)
+      }
+    }
+  }
+}
