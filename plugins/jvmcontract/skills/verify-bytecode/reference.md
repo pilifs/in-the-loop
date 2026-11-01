@@ -34,7 +34,7 @@ jvmcontract inspect path/to/Class.class [--code]
 
 `--report DIR` writes SARIF (`equivalence.sarif`, `property.sarif`) if the user wants it for code scanning. `--work DIR` keeps the harness, the relocated classes, the statement as Java source and JBMC's logs; use one directory per proof under the pull request's working directory, so everything is reproducible.
 
-Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`, 0 for no limit) and dies as *unverifiable* beyond it.
+Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`, 0 for no limit) and dies as *unverifiable* beyond it. A run counts as proved only if JBMC itself ends with `VERIFICATION SUCCESSFUL`: a solver that gives up prints `** 0 of N failed` too, and that is no proof.
 
 ## What each proof needs
 
@@ -51,7 +51,7 @@ Refusals you will see, and what they mean:
 - `input domain is not finite` (from `derive`): an `int`, `long`, `String`, ... parameter. If static and primitive, use `equivalence`/`prove` instead.
 - `... is not known to be pure` / `writes static field` / `open to implementations outside the analysed code`: `derive` cannot prove purity; the method's behaviour depends on more than its arguments.
 - `cannot be verified: ... both versions agree on it` (equivalence) or a property witness on which the replay finds the property holding: JBMC had no bytecode for a method the target calls (a native method such as `Float.floatToRawIntBits`, or a class missing from `--classpath`) and treated its result as arbitrary. Add the classpath entry, or report a tool limit.
-- JBMC timed out or was killed: the domain is too hard (64-bit division or multiplication on both sides, long loops, large arrays). Retry with smaller bounds (`--max-array-length 4 --unwind 8`) and report the bounds as what was proved; or report it as not finished.
+- JBMC timed out or was killed: the domain is too hard (64-bit division or multiplication on both sides, long loops, large arrays). Retry with smaller bounds and report the bounds as what was proved, or report it as not finished. Lower `--unwind` along with `--max-array-length`, or the smaller arrays save little: start at the array length plus 2, which is `--max-array-length 4 --unwind 6`, and the tool says so if a loop needs more. On one array method, 4 and 6 was proved in 275 s and 664 MB, while 4 and 8 had not finished at 170 s and 4 and 16 ran out of memory.
 
 ## The expression language
 
