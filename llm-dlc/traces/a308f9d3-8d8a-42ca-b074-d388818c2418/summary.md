@@ -94,6 +94,12 @@ change `mnvqzqmytlpm` · [log `ce7ed5a6e273`](https://terminalvalue.net/raw-trac
 
 The install hint in the preflight step now passes --locked, as the installer does, and the note on dependency changes points at the per-jar capability contracts of step 5 instead of claiming the module's own contract covers them (it stops at the module's bytecode). Text only; the suite passed on the previous commit (49 unit and 24 integration tests).
 
+### Record the finished confined-change proof on commons-numbers#223
+
+change `powwtmwlwnyq` · [log `ce7ed5a6e273`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)
+
+The full-domain regression proof of ArithmeticUtils.pow(int, int) with --unchanged-unless 'k == -2 && e == 31', which timed out at 300 s, was verified by JBMC in 1083.5 s with --timeout 1500: the new pow behaves as the old one on every input but the declared one. The plugin README now states that result and the skill's reference carries the measured times as budgeting guidance (finding the witness 185 s, Javadoc property 1.4 s, narrow property 1.0 s and its refutation on the old version 0.7 s, full-domain proof 1083 s). Text only; the matching sentence on the landing page is in the Terminal-Value repository.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz) has every step in between: reasoning, tool calls and their results.

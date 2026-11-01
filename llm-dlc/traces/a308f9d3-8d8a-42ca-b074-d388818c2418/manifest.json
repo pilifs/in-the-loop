@@ -195,6 +195,14 @@
       "summary": "Tighten two lines of the verify-bytecode skill",
       "body": "The install hint in the preflight step now passes --locked, as the installer does, and the note on dependency changes points at the per-jar capability contracts of step 5 instead of claiming the module's own contract covers them (it stops at the module's bytecode). Text only; the suite passed on the previous commit (49 unit and 24 integration tests).",
       "log_sha256": "ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23"
+    },
+    {
+      "change_id": "powwtmwlwnyqzvrxwtlyszqtksxkxmyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the finished confined-change proof on commons-numbers#223",
+      "body": "The full-domain regression proof of ArithmeticUtils.pow(int, int) with --unchanged-unless 'k == -2 && e == 31', which timed out at 300 s, was verified by JBMC in 1083.5 s with --timeout 1500: the new pow behaves as the old one on every input but the declared one. The plugin README now states that result and the skill's reference carries the measured times as budgeting guidance (finding the witness 185 s, Javadoc property 1.4 s, narrow property 1.0 s and its refutation on the old version 0.7 s, full-domain proof 1083 s). Text only; the matching sentence on the landing page is in the Terminal-Value repository.",
+      "log_sha256": "ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23"
     }
   ],
   "logs": {
