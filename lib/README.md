@@ -43,6 +43,8 @@ jvmcontract update --contracts src/contract --classes build/classes/java/main --
 
 # One contract, printed (add --json for tooling, --cost for the execution cost).
 jvmcontract derive 'net.example.OrderLifecycle#decide' --classes build/classes/java/main
+# A target is `pkg.Class#method`; an overloaded method is named with its parameter types, in Java's spelling.
+jvmcontract derive 'net.example.Pricing#discount(Tier, boolean)' --classes build/classes/java/main
 
 # A regression proof between two builds, for a method whose inputs are not finite.
 jvmcontract equivalence --before base/classes --after head/classes --target 'net.example.HoldPolicy#totalCents' \

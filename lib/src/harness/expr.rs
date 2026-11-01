@@ -519,6 +519,11 @@ impl Parser<'_> {
 
     fn unary(&mut self) -> Result<Expr, Error> {
         if self.eat("-") {
+            // `-2147483648` is Java's `Integer.MIN_VALUE`: the one int literal that exists only negated.
+            if matches!(self.peek(), Token::Int(v, false) if *v == i32::MAX as i64 + 1) {
+                self.next();
+                return Ok(Expr::Int(i32::MIN));
+            }
             let e = self.unary()?;
             require(e.ty() != Ty::Boolean, "unary - needs a number")?;
             return Ok(match e {
@@ -1296,6 +1301,9 @@ mod tests {
         assert_eq!(eval(&e, &locals(3, 3, false)).unwrap(), Value::Int(1));
         let e = parse("-seats < 0x10 && ~seats != 0 && seats << 2 == 8", &params()).unwrap();
         assert_eq!(eval(&e, &locals(0, 2, false)).unwrap(), Value::Int(1));
+        let e = parse("seats == -2147483648", &params()).unwrap();
+        assert_eq!(eval(&e, &locals(0, i32::MIN, false)).unwrap(), Value::Int(1));
+        assert!(parse("seats == 2147483648", &params()).is_err());
         assert_eq!(parse("seats >= 8 && priceCents > 0L || vip", &params()).unwrap().ty(), Ty::Boolean);
     }
 

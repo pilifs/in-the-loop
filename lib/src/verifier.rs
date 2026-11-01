@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 use serde::Serialize;
 
 use crate::capabilities;
-use crate::classfile::{MethodDescriptor, Type};
+use crate::classfile::{ClassFile, Method, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::contract::Contract;
 use crate::domain;
@@ -78,13 +78,56 @@ pub struct Verifier<'a> {
     pub options: Options,
 }
 
-/// Splits `pkg.Class#method` into the internal class name and the method name.
+/// Splits `pkg.Class#method`, or `pkg.Class#method(int, long[])`, into the internal class name and the method name.
+/// The parameter types, when given, pick one of several overloads; [`select_method`] applies them.
 pub fn parse_target(target: &str) -> Option<(String, String)> {
-    let (class, method) = target.split_once('#')?;
+    let (class, method) = target.trim().split_once('#')?;
+    let method = method.split_once('(').map_or(method, |(name, _)| name).trim();
     if class.is_empty() || method.is_empty() {
         return None;
     }
     Some((class.replace('.', "/"), method.to_string()))
+}
+
+/// The parameter types a target names, `pkg.Class#pow(int, int)` giving `["int", "int"]`, with their whitespace
+/// removed; `None` when the target names the method alone.
+pub fn target_parameters(target: &str) -> Option<Vec<String>> {
+    let (_, method) = target.trim().split_once('#')?;
+    let (_, rest) = method.split_once('(')?;
+    let inside = rest.trim().strip_suffix(')')?.trim();
+    Some(if inside.is_empty() { Vec::new() } else { inside.split(',').map(|p| p.split_whitespace().collect()).collect() })
+}
+
+/// The one method a target names: the method of that name, or, when the name is overloaded, the one whose
+/// parameter types the target lists (`pow(int, int)`, in Java's spelling, simple or qualified). The error names
+/// the overloads found, so that the caller can pick one.
+pub fn select_method<'c>(class: &'c ClassFile, target: &str) -> Result<&'c Method, String> {
+    let (_, name) = parse_target(target).ok_or("target must be <class>#<method>")?;
+    let wanted = target_parameters(target);
+    let named: Vec<&Method> = class.methods.iter().filter(|m| m.name == name && !m.is_synthetic() && !m.is_bridge()).collect();
+    let signature = |m: &Method| match m.parsed_descriptor() {
+        Ok(d) => format!("{name}({})", d.params.iter().map(|t| t.java_name()).collect::<Vec<_>>().join(", ")),
+        Err(_) => format!("{name}(?)"),
+    };
+    let found = |methods: &[&Method]| methods.iter().map(|m| signature(m)).collect::<Vec<_>>().join(", ");
+    let matches: Vec<&Method> = match &wanted {
+        None => named.clone(),
+        Some(types) => named
+            .iter()
+            .copied()
+            .filter(|m| {
+                m.parsed_descriptor().is_ok_and(|d| {
+                    d.params.len() == types.len() && d.params.iter().zip(types).all(|(t, w)| t.java_name() == *w || t.java_name().replace('$', ".") == *w || t.simple_name() == *w)
+                })
+            })
+            .collect(),
+    };
+    match (matches.as_slice(), wanted) {
+        ([one], _) => Ok(one),
+        ([], Some(types)) if !named.is_empty() => Err(format!("no method {name}({}); found {}", types.join(", "), found(&named))),
+        ([], _) => Err(format!("expected one method named {name}, found 0")),
+        (several, _) => Err(format!("expected one method named {name}, found {}: {}; name one as {}", several.len(), found(several), signature(several[0]))),
+    }
 }
 
 impl<'a> Verifier<'a> {
@@ -102,11 +145,10 @@ impl<'a> Verifier<'a> {
             Ok(None) => return Derivation::failed(target, format!("class not found: {}", owner.replace('/', ".")), None, None),
             Err(e) => return Derivation::failed(target, e.to_string(), None, None),
         };
-        let candidates: Vec<_> = class.methods.iter().filter(|m| m.name == name && !m.is_synthetic() && !m.is_bridge()).collect();
-        if candidates.len() != 1 {
-            return Derivation::failed(target, format!("expected one method named {name}, found {}", candidates.len()), None, Some(owner));
-        }
-        let method = candidates[0].clone();
+        let method = match select_method(&class, target) {
+            Ok(m) => m.clone(),
+            Err(problem) => return Derivation::failed(target, problem, None, Some(owner)),
+        };
         let descriptor = match method.parsed_descriptor() {
             Ok(d) => d,
             Err(e) => return Derivation::failed(target, e.to_string(), None, Some(owner)),

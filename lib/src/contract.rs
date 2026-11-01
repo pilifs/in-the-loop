@@ -63,10 +63,24 @@ impl Contract {
         Contract { target: target.to_string(), domain, cases, extras: BTreeMap::new() }
     }
 
-    /// The file name for a target: `OrderLifecycle.decide.contract` for `pkg.OrderLifecycle#decide`.
+    /// The file name for a target: `OrderLifecycle.decide.contract` for `pkg.OrderLifecycle#decide`, and
+    /// `Arithmetic.pow-int-int.contract` for the overload `pkg.Arithmetic#pow(int, int)`.
     pub fn file_name(target: &str) -> String {
-        let simple = target.rsplit('.').next().unwrap_or(target);
-        format!("{}.contract", simple.replace('#', "."))
+        let (class, method) = target.trim().split_once('#').unwrap_or((target.trim(), ""));
+        let simple = class.rsplit('.').next().unwrap_or(class);
+        let (name, params) = method.split_once('(').unwrap_or((method, ""));
+        let params: Vec<String> = params
+            .trim_end_matches(')')
+            .split(',')
+            .map(|p| p.split_whitespace().collect::<String>())
+            .filter(|p| !p.is_empty())
+            .map(|p| p.rsplit('.').next().unwrap_or(&p).to_string())
+            .collect();
+        if params.is_empty() {
+            format!("{simple}.{}.contract", name.trim())
+        } else {
+            format!("{simple}.{}-{}.contract", name.trim(), params.join("-"))
+        }
     }
 
     pub fn outcome(&self, input: &str) -> Option<&str> {

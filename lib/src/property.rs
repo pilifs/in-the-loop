@@ -169,11 +169,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let Some(class) = cp.application(&class_internal)? else {
         return refuse(&mut out, 1, format!("class not found: {}", class_internal.replace('/', ".")));
     };
-    let candidates: Vec<_> = class.methods.iter().filter(|m| m.name == method_name && !m.is_synthetic() && !m.is_bridge()).collect();
-    if candidates.len() != 1 {
-        return refuse(&mut out, 1, format!("expected one method named {method_name}, found {}", candidates.len()));
-    }
-    let method = candidates[0].clone();
+    let method = match crate::verifier::select_method(&class, &options.target) {
+        Ok(m) => m.clone(),
+        Err(problem) => return refuse(&mut out, 1, problem),
+    };
     let line = method.first_line().map(u32::from).unwrap_or(1);
     if !method.is_static() {
         return refuse(&mut out, line, "only static methods are supported".into());

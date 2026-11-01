@@ -122,6 +122,21 @@ fn impure_or_unbounded_methods_are_refused_with_the_reason() {
 }
 
 #[test]
+fn an_overloaded_method_is_named_by_its_parameter_types() {
+    let Some(dir) = fixtures() else { return };
+    let p = problem(dir, "fixtures.Overloads#pick");
+    assert!(p.contains("found 2: pick(boolean), pick(fixtures.TrafficLight$Light); name one as pick(boolean)"), "{p}");
+    assert_eq!(contract(dir, "fixtures.Overloads#pick(boolean)").cases.len(), 2);
+    assert_eq!(contract(dir, "fixtures.Overloads#pick( Light )").cases.len(), 4);
+    assert_eq!(contract(dir, "fixtures.Overloads#pick(fixtures.TrafficLight.Light)").cases.len(), 4);
+    let p = problem(dir, "fixtures.Overloads#twice(long, int)");
+    assert!(p.contains("no method twice(long, int); found twice(int), twice(long)"), "{p}");
+    assert!(problem(dir, "fixtures.Overloads#twice(long)").contains("input domain is not finite"));
+    assert_eq!(Contract::file_name("fixtures.Overloads#pick(fixtures.TrafficLight.Light)"), "Overloads.pick-Light.contract");
+    assert_eq!(Contract::file_name("fixtures.Overloads#pick"), "Overloads.pick.contract");
+}
+
+#[test]
 fn the_interpreter_models_strings_records_switches_lambdas_and_exceptions() {
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.Features#quote");

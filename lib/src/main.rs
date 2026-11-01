@@ -22,7 +22,7 @@ enum Command {
     Update(ContractArgs),
     /// Derive the contract of one method and print it, without touching any file.
     Derive {
-        /// `pkg.Class#method`.
+        /// `pkg.Class#method`, or `pkg.Class#method(int, long[])` to name one of several overloads.
         target: String,
         #[command(flatten)]
         classes: ClassesArgs,
@@ -169,7 +169,8 @@ struct EquivalenceArgs {
     /// The new version's classes.
     #[arg(long)]
     after: PathBuf,
-    /// `pkg.Class#method`, a static method with primitive or array parameters.
+    /// `pkg.Class#method`, a static method with primitive or array parameters; `pkg.Class#method(int, long[])`
+    /// names one of several overloads.
     #[arg(long)]
     target: String,
     /// A Java boolean expression over the parameters naming the inputs the change is meant to affect; JML's
@@ -211,8 +212,8 @@ struct EquivalenceArgs {
 
 #[derive(Args)]
 struct ProveArgs {
-    /// `pkg.Class#method`, a static method with primitive or array parameters. With --properties, only this
-    /// target's properties are proved.
+    /// `pkg.Class#method`, a static method with primitive or array parameters; `pkg.Class#method(int, long[])`
+    /// names one of several overloads. With --properties, only this target's properties are proved.
     target: Option<String>,
     #[command(flatten)]
     classes: ClassesArgs,
