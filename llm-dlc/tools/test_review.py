@@ -3,12 +3,15 @@
 Values are split in the source so that this file's own transcript raises no finding."""
 import io
 import json
+import os
 import re
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
 
+import redaction_rules
 import sync
 
 HOME_A, HOME_B = "/ho" + "me/alpha", "/ho" + "me/bravo"
@@ -104,6 +107,81 @@ class Problems(unittest.TestCase):
     def test_a_list_cannot_waive_a_secret(self):
         self.assertTrue(any("no review can" in p for p in self.problems(
             {"a" * 32: {"kind": "local-secret", "reason": "r", "authorized_by": "x", "date": "2000-01-01"}})))
+
+
+class Stamp(unittest.TestCase):
+    current = redaction_rules.source_hash()
+
+    def old_and_new_files(self, directory):
+        old, new = Path(directory) / "old", Path(directory) / "new"
+        old.write_text("x")
+        new.write_text("x")
+        os.utime(old, (1000, 1000))
+        os.utime(new, (3000, 3000))
+        return old, new
+
+    def stamped(self, rules_hash):
+        generated = datetime.fromtimestamp(2000, timezone.utc).isoformat()
+        return (mock.patch.object(redaction_rules, "RULES_HASH", rules_hash),
+                mock.patch.object(redaction_rules, "RULES_GENERATED", generated))
+
+    def test_a_file_older_than_the_stamp_counts_as_checked(self):
+        with tempfile.TemporaryDirectory() as d:
+            old, new = self.old_and_new_files(d)
+            hash_patch, date_patch = self.stamped(self.current)
+            with hash_patch, date_patch:
+                self.assertTrue(redaction_rules.older_than_stamp(old))
+                self.assertFalse(redaction_rules.older_than_stamp(new))
+
+    def test_rules_edited_since_the_stamp_void_its_date(self):
+        with tempfile.TemporaryDirectory() as d:
+            old, _ = self.old_and_new_files(d)
+            hash_patch, date_patch = self.stamped("0" * 64)
+            with hash_patch, date_patch:
+                self.assertFalse(redaction_rules.older_than_stamp(old))
+
+    def test_a_stamp_replaces_the_last_one_and_is_not_hashed(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = Path(d) / "rules.py"
+            copy.write_text(Path(redaction_rules.__file__).read_text())
+            with mock.patch.object(redaction_rules, "__file__", str(copy)):
+                redaction_rules.write_stamp()
+                redaction_rules.write_stamp()
+                self.assertEqual(redaction_rules.source_hash(), self.current)
+            text = copy.read_text()
+            self.assertEqual(len(re.findall(r'^RULES_GENERATED = "\d', text, re.M)), 1)
+            self.assertIn(f'RULES_HASH = "{self.current}"', text)
+
+    def test_an_edit_above_the_stamp_changes_the_hash(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = Path(d) / "rules.py"
+            text = Path(redaction_rules.__file__).read_text()
+            copy.write_text(text.replace("REDACTION_POLICY = 4", "REDACTION_POLICY = 5"))
+            with mock.patch.object(redaction_rules, "__file__", str(copy)):
+                self.assertNotEqual(redaction_rules.source_hash(), self.current)
+
+
+class Excerpts(unittest.TestCase):
+    def setUp(self):
+        self.r = sync.Redactor()
+
+    def test_a_finding_and_its_neighbours_are_masked(self):
+        text = f"before {HOME_A}/x and {HOME_B}/y after"
+        excerpt = sync.masked_excerpt(self.r, text, text.index(HOME_A), len(HOME_A))
+        self.assertNotIn(HOME_A, excerpt)
+        self.assertNotIn(HOME_B, excerpt)
+        self.assertIn("before", excerpt)
+
+    def test_a_word_cut_by_the_edge_is_dropped(self):
+        text = "x" * 100 + " kept " + HOME_A + " kept " + "y" * 100
+        excerpt = sync.masked_excerpt(self.r, text, text.index(HOME_A), len(HOME_A), reach=20)
+        self.assertNotIn("xx", excerpt)
+        self.assertNotIn("yy", excerpt)
+        self.assertIn("kept", excerpt)
+
+    def test_a_repeated_line_is_counted_each_time(self):
+        _, reviewable = self.r.hits_of_text(line(HOME_A) + "\n" + line(HOME_A) + "\n")
+        self.assertEqual(reviewable["other-home-dir"][HOME_A], 2)
 
 
 if __name__ == "__main__":

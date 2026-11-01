@@ -33,13 +33,17 @@ Commands:
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
   sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
-  sync.py scan [--all | ID...]  preview a publish: what the redactor changed and what it left to judge
+  sync.py scan [--all | ID...]  preview a publish: what the redactor changed and what it left to judge;
+                                a session named by ID is scanned whatever its age
   sync.py unpublish SID SHA [--reason TEXT]
                                 delete one log from R2 and purge it from the CDN cache (for leaks);
                                 with a reason, record the log as withdrawn in the manifest
   sync.py review                list what `check` would flag, masked, with an id for each finding
+  sync.py review show ID        where one finding occurs, masked
   sync.py review accept ID... --reason TEXT
                                 record findings as false positives; a person at a terminal only
+  sync.py stamp                 after a change to redaction_rules.py: rescan everything, then
+                                record the rules as applied, so older files aren't scanned again
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
 
 Standard library only. The hook never fails a session; errors go to
@@ -68,6 +72,8 @@ from datetime import datetime
 from pathlib import Path
 
 import metrics  # llm-dlc/tools/metrics.py
+import redaction_rules  # llm-dlc/tools/redaction_rules.py
+from redaction_rules import NEVER_REVIEWED, REDACTION_POLICY, older_than_stamp
 
 REPO = Path(__file__).resolve().parents[2]
 CHANGES = REPO / "llm-dlc"
@@ -89,14 +95,9 @@ EXTRA_REDACTIONS = Path.home() / ".config" / "llm-traces" / "redact.txt"
 # Cloudflare API token with Zone:Read and Cache Purge on the CDN zone; only `unpublish` uses it.
 PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
 SCHEMA = "llm-trace-manifest/v1"
-REDACTION_POLICY = 4           # bump when redaction changes the bytes it produces
-REDACT_KEYS = {"organizationUuid", "accountUuid", "userID"}  # account identifiers Claude Code records
 # Wrangler keeps its OAuth tokens here; the spec forbids printing them, redaction removes them anyway.
 WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.toml",
                     Path.home() / ".wrangler" / "config" / "default.toml")
-# Email addresses that are public by design or placeholders; every other address is redacted.
-PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
-                 "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
 # Published logs (SHA-256 prefixes) whose findings a person reviewed and left up, so `check` does
 # not raise them again. Listed by hash, not by policy: when a new policy flags other published
 # logs, nobody has reviewed those yet, and they should warn. See the specification's history note.
@@ -105,11 +106,9 @@ ACCEPTED_LOGS = frozenset({
     "9aa1dc1182d6", "9b6989b99898", "ad2f8907be5d", "c57cac191c00", "d0d9da508c7a", "dbfac310a6e0",
 })
 # False positives a person has reviewed. An entry covers one kind and one exact value, so it survives
-# new log snapshots and a different value still warns. These kinds are real by construction: a match
-# is this machine's secret or account, so no review can waive them.
+# new log snapshots and a different value still warns.
 REVIEWED = CHANGES / "reviewed-findings.json"
 REVIEWED_SCHEMA = "llm-trace-reviewed/v1"
-NEVER_REVIEWED = frozenset({"local-secret", "account-id"})
 CONFIRMATION = "false positive"
 TRAILER = "LLM-Trace"
 TRAILER_RE =re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
@@ -126,87 +125,6 @@ CDN_BUCKET = "llm-traces"
 CDN_DIR = CHANGES / "infra" / "cdn"
 NODE = shutil.which("node") or str(Path.home() / ".local" / "bin" / "node")
 WRANGLER = CDN_DIR / "node_modules" / "wrangler" / "bin" / "wrangler.js"  # pinned in llm-dlc/infra/cdn/package.json
-
-
-# --------------------------------------------------------------------------- redaction
-
-# Credential formats that are recognisable on sight, applied after the personal literals.
-# An entry is (kind, pattern), replaced by "[REDACTED:<kind>]", or (kind, pattern, replacement)
-# when part of the match must survive: the key of a KEY=VALUE pair, the user of a URL.
-# Patterns never match their own replacement, so redaction is idempotent and `leaks` can
-# run the same rules over a finished log.
-SECRET_PATTERNS = [
-    ("anthropic-key", r"sk-ant-[A-Za-z0-9_\-]{20,}"),
-    ("langfuse-key", r"[ps]k-lf-[A-Za-z0-9\-]{16,}"),
-    ("api-key", r"\bsk-[A-Za-z0-9_\-]{20,}"),  # OpenAI and other sk- keys
-    ("github-token", r"\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})"),
-    ("gitlab-token", r"\bglpat-[A-Za-z0-9_\-]{20,}"),
-    ("aws-key", r"\bAKIA[0-9A-Z]{16}\b"),
-    ("google-key", r"\bAIza[0-9A-Za-z_\-]{35}\b"),
-    ("google-oauth", r"\bya29\.[0-9A-Za-z_\-]{20,}"),
-    ("slack-token", r"\bxox[abprs]-[A-Za-z0-9\-]{10,}"),
-    ("slack-webhook", r"https://hooks\.slack\.com/services/[A-Za-z0-9/]+"),
-    ("discord-webhook", r"https://(?:[a-z]+\.)?discord(?:app)?\.com/api/webhooks/\d+/[A-Za-z0-9_\-]+"),
-    ("npm-token", r"\bnpm_[A-Za-z0-9]{36}\b"),
-    ("huggingface-token", r"\bhf_[A-Za-z0-9]{30,}\b"),
-    ("stripe-key", r"\b[sr]k_(?:live|test)_[A-Za-z0-9]{20,}"),
-    ("sendgrid-key", r"\bSG\.[A-Za-z0-9_\-]{22}\.[A-Za-z0-9_\-]{43}"),
-    ("jwt", r"\beyJ[A-Za-z0-9_\-]{8,}\.eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}"),
-    ("private-key", r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----"),
-    ("bearer", r"(?i)\bbearer\s+[A-Za-z0-9._\-]{20,}"),
-    ("basic-auth", r"(?i)(authorization[\"']?\s*[:=]\s*[\"']?basic\s+)[A-Za-z0-9+/]{16,}={0,2}",
-     r"\1[REDACTED:basic-auth]"),
-    # Credentials in URLs and curl arguments: scheme://user:password@host, -u user:password
-    ("url-password", r"\b([a-z][a-z0-9+.\-]*://[^/\s:@\"'\\]+):([^@\s/\"'\\\[\$<{%][^@\s/\"'\\]*)@",
-     r"\1:[REDACTED:url-password]@"),
-    ("curl-user", r"((?:^|\s)(?:-u|--user)[ =])(?![\[\$])([^\s:\"']+:[^\s\"']+)", r"\1[REDACTED:curl-user]"),
-    # Account identifiers inside strings (a transcript or ~/.claude.json echoed by a tool),
-    # where the structural rule in _scrub cannot see the key.
-    ("account-id", r"((?:accountUuid|organizationUuid|userID)\\*[\"']?\s*[:=]\s*\\*[\"']?)([0-9A-Fa-f\-]{32,64})",
-     r"\1[REDACTED:account-id]"),
-    # KEY=VALUE and "key": "value" pairs whose key says it is a secret: .env files, shell exports,
-    # YAML, JSON. Templates (${VAR}, <placeholder>, {{ }}), ${VAR:-defaults}, expressions, paths,
-    # flags and short values are left.
-    ("env-secret", r"(?i)(\b[A-Z0-9_]*(?:PASSWORD|PASSWD|PASSPHRASE|SECRET|TOKEN|CREDENTIALS?|"
-                   r"(?:SECRET|PRIVATE|API|ACCESS|ENCRYPTION|SIGNING|AUTH|LICENSE|SSH)[_-]?KEY|APIKEY|_AUTH|AUTHORIZATION)"
-                   r"[\"']?\s*[=:]\s*[\"']?)(?![\[\$<{%(\-~/])([^\s\"'`()\[\]{}<>,;]{8,})(?=$|[\s\"'`)\]}>,;])",
-     r"\1[REDACTED:env-secret]"),
-]
-
-EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}(?![A-Za-z0-9\-])")
-# Windows account names in paths seen from WSL: /mnt/c/Users/<name>, C:\Users\<name>.
-WIN_USER_RE = re.compile(r"((?:/mnt/[A-Za-z]/Users/|[A-Za-z]:\\+Users\\+)(?:[^/\\\s\"'<>|]+))")
-WIN_SHARED = {"public", "default", "default user", "all users", "user", "desktop.ini"}
-
-# Findings the redactor does not act on, for a person to judge before a push (`scan`, `check`).
-# Each is (kind, pattern, keep): keep(match) says whether the match is worth a warning.
-_RESERVED_IP = re.compile(r"^(?:0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\."
-                          r"|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|22[4-9]\.|2[3-5]\d\."
-                          r"|1\.1\.1\.1$|1\.0\.0\.1$|8\.8\.[48]\.[48]$|9\.9\.9\.9$|255\.)")
-# A four-part version looks exactly like an IP address, so only its surroundings tell them apart:
-# `openjdk version "...`, `java.base@...` (not any `@`: root@<ip> must still warn), or an SDK
-# listing whose row goes on to an identifier such as `| ...-graalce`.
-VERSION_BEFORE = re.compile(r"(?i)(?:\b(?:version|ver\.?|openjdk|jdk|javac?|adoptium|temurin|corretto|graalvm(?: ce)?)"
-                            r"|\b(?:java|jdk)\.[a-z.]+@)[\s\"'=:_\-]*$")
-VERSION_AFTER = re.compile(r"\s*\|\s*[\d.]+(?:\+\d+)?-[a-z]")
-REVIEW_PATTERNS = [
-    ("public-ip",r"(?<![\w.\-+])(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\w.\-+])",
-     lambda s: not _RESERVED_IP.match(s)),
-    ("ipv6", r"(?<![\w:.])(?:[0-9a-fA-F]{1,4}:){5,7}[0-9a-fA-F]{1,4}(?![\w:])",
-     lambda s: s.strip("0:") and not s.lower().startswith(("fe80:", "fd", "fc", "::1", "2001:db8:"))),
-    ("mac-address", r"\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\b", lambda s: s.lower() != "00:00:00:00:00:00"),
-    ("other-home-dir", r"(?<![\w.])/(?:home|Users)/(?!user\b)[A-Za-z][\w.\-]*", lambda s: True),
-    ("auth-header", r"(?i)\b(?:authorization|cookie|set-cookie|x-api-key|proxy-authorization)[\"']?\s*[:=]\s*[\"']?[^\s\"']{8,}",
-     lambda s: "[REDACTED" not in s),
-    # Long mixed-case strings with digits: API keys of unknown formats, base64 blobs. Hashes
-    # (hex, lower case) and UUIDs do not match; integrity hashes, file paths and embedded images
-    # (base64 PNG, JPEG, GIF, PDF, WEBP, or anything over 1000 characters) are skipped.
-    ("long-token", r"(?<![\w/+=\-])(?!sha(?:1|256|384|512)-)(?=[A-Za-z0-9+/_\-]*\d)(?=[A-Za-z0-9+/_\-]*[a-z])"
-                   r"(?=[A-Za-z0-9+/_\-]*[A-Z])[A-Za-z0-9+/_\-]{40,}={0,2}(?![\w/+=\-])",
-     lambda s: len(s) < 1000 and not s.startswith(("iVBORw0KGgo", "/9j/", "R0lGOD", "JVBERi0", "UklGR"))
-     and ("/" not in s or "+" in s or s.endswith("="))),
-]
-ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 
 
 def _cmd(*args: str) -> str:
@@ -278,12 +196,6 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
     return pairs, user
 
 
-def _is_version(m: re.Match) -> bool:
-    """Whether an address-shaped match is a version number, judged by the text around it."""
-    return bool(VERSION_BEFORE.search(m.string, max(0, m.start() - 40), m.start())
-                or VERSION_AFTER.match(m.string, m.end()))
-
-
 def _mask(s: str) -> str:
     """Enough of a finding to recognise it, not enough to repeat it: scan output lands in transcripts."""
     return s if len(s) <= 4 else s[:3] + "…" + s[-2:] + f" ({len(s)} chars)" if len(s) > 12 else s[:2] + "…" + s[-1]
@@ -298,96 +210,37 @@ def load_reviewed() -> dict[str, dict]:
     return json.loads(REVIEWED.read_text())["findings"] if REVIEWED.exists() else {}
 
 
-class Redactor:
+class Redactor(redaction_rules.Rules):
+    """The rules with this machine's literals, less the false positives a person has reviewed."""
+
     def __init__(self) -> None:
+        super().__init__(*personal_literals())
         self.reviewed = load_reviewed()
         self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
-        pairs, user = personal_literals()
-        self.literals = [(kind, re.compile(rf"(?<![A-Za-z0-9]){re.escape(lit)}(?![A-Za-z0-9])" if kind == "hostname"
-                                           else re.escape(lit), flags), rep)
-                         for lit, rep, flags, kind in pairs]
-        # Also match right after a literal backslash-n/t/r: JSON echoed inside a tool result
-        # keeps its escapes, so there is no word boundary before the name.
-        self.user_re = (re.compile(rf"(?:(?<=\\[nrt])|(?<![A-Za-z0-9_])){re.escape(user)}\b")
-                        if len(user) >= 3 else None)
-        self.secret_res = [(p[0], re.compile(p[1], re.S), p[2] if len(p) > 2 else f"[REDACTED:{p[0]}]")
-                           for p in SECRET_PATTERNS]
-        self.review_res = [(kind, re.compile(pattern), keep) for kind, pattern, keep in REVIEW_PATTERNS]
-
-    @staticmethod
-    def _public_email(address: str) -> bool:
-        return address.lower().endswith(PUBLIC_EMAILS)
-
-    @staticmethod
-    def _win_user(m: re.Match) -> str:
-        path = m.group(1)
-        prefix, name = re.match(r"(.*[/\\])([^/\\]*)$", path).groups()
-        return path if name.lower() in WIN_SHARED else prefix + "user"
-
-    def string(self, text: str) -> str:
-        for _kind, rx, rep in self.literals:
-            text = rx.sub(lambda _m, r=rep: r, text)
-        for _kind, rx, rep in self.secret_res:
-            text = rx.sub(rep, text)
-        text = EMAIL_RE.sub(lambda m: m.group(0) if self._public_email(m.group(0)) else "[REDACTED:email]", text)
-        text = WIN_USER_RE.sub(self._win_user, text)
-        if self.user_re:
-            text = self.user_re.sub("user", text)
-        return text
-
-    def __call__(self, jsonl: str) -> bytes:
-        """Redact every string (keys included) of every JSON line. Working on decoded
-        strings matters: in raw JSON "\\nname" hides the word boundary before "name".
-        Deterministic and line-local, so an append-only transcript gives an append-only log."""
-        out = []
-        for line in jsonl.splitlines():
-            try:
-                obj = json.loads(line)
-            except ValueError:
-                out.append(self.string(line))
-                continue
-            out.append(json.dumps(_walk(_scrub(obj), self.string), ensure_ascii=False, separators=(",", ":")))
-        return ("\n".join(out) + "\n" if out else "").encode()
+        self._latest: tuple[str, tuple] | None = None  # callers ask about one text twice
 
     def _unreviewed(self, kind: str, value: str) -> bool:
-        if kind in NEVER_REVIEWED or finding_id(kind, value) not in self.reviewed:
-            return True
-        self.skipped[kind] += 1
-        return False
+        return kind in NEVER_REVIEWED or finding_id(kind, value) not in self.reviewed
+
+    def _without_reviewed(self, hits: dict[str, Counter]) -> dict[str, Counter]:
+        kept: dict[str, Counter] = {}
+        for kind, values in hits.items():
+            for value, n in values.items():
+                if self._unreviewed(kind, value):
+                    kept.setdefault(kind, Counter())[value] = n
+                else:
+                    self.skipped[kind] += n
+        return kept
+
+    def _hits(self, text: str) -> tuple:
+        if self._latest is None or self._latest[0] is not text:
+            self._latest = (text, self.hits_of_text(text))
+        return self._latest[1]
 
     def leak_hits(self, text: str) -> dict[str, Counter]:
         """What the redactor would still change in this text, by kind, without reviewed false
         positives. Empty for its own output."""
-        hits: dict[str, Counter] = {}
-
-        def add(kind: str, value: str) -> None:
-            if self._unreviewed(kind, value):
-                hits.setdefault(kind, Counter())[value] += 1
-
-        def scan(s: str) -> str:
-            for kind, rx, _ in self.literals + self.secret_res:
-                for m in rx.finditer(s):
-                    add(kind, m.group(0))
-            for m in EMAIL_RE.finditer(s):
-                if not self._public_email(m.group(0)):
-                    add("email", m.group(0))
-            for m in WIN_USER_RE.finditer(s):
-                if self._win_user(m) != m.group(0):
-                    add("windows-user", m.group(0))
-            for m in self.user_re.finditer(s) if self.user_re else ():
-                add("username", m.group(0))
-            return s
-
-        for line in text.splitlines():
-            try:
-                obj = json.loads(line)
-            except ValueError:
-                scan(line)
-                continue
-            _walk(obj, scan)
-            if _unscrubbed(obj):
-                hits.setdefault("account-id", Counter())["account identifier under a known key"] += 1
-        return hits
+        return self._without_reviewed(self._hits(text)[0])
 
     def leaks(self, text: str) -> list[str]:
         """Kinds of thing the redactor would still change in this text."""
@@ -396,58 +249,12 @@ class Redactor:
     def review_hits(self, text: str) -> dict[str, Counter]:
         """Things that may identify someone or something and that no rule removes, by kind, without
         reviewed false positives. Public IPs, foreign home directories, unknown token formats."""
-        hits: dict[str, Counter] = {}
-
-        def scan(s: str) -> str:
-            s = ANSI_RE.sub("", s)  # colour codes glue digits onto the words they precede
-            for kind, rx, keep in self.review_res:
-                for m in rx.finditer(s):
-                    if (keep(m.group(0)) and not (kind == "public-ip" and _is_version(m))
-                            and self._unreviewed(kind, m.group(0))):
-                        hits.setdefault(kind, Counter())[m.group(0)] += 1
-            return s
-
-        for line in text.splitlines():
-            try:
-                _walk(json.loads(line), scan)
-            except ValueError:
-                scan(line)
-        return hits
+        return self._without_reviewed(self._hits(text)[1])
 
     def review(self, text: str) -> list[str]:
         """The same, as masked warning lines with counts."""
         return [f"{kind} ×{sum(c.values())}: " + ", ".join(_mask(v) for v, _ in c.most_common(3))
                 + (f", +{len(c) - 3} more" if len(c) > 3 else "") for kind, c in sorted(self.review_hits(text).items())]
-
-
-def _walk(obj, fn):
-    if isinstance(obj, str):
-        return fn(obj)
-    if isinstance(obj, list):
-        return [_walk(v, fn) for v in obj]
-    if isinstance(obj, dict):
-        return {fn(k): _walk(v, fn) for k, v in obj.items()}
-    return obj
-
-
-def _scrub(obj):
-    """Rules that act on JSON structure rather than on strings: account identifiers that
-    Claude Code records under known keys, and thinking-block signatures (opaque bytes)."""
-    if isinstance(obj, list):
-        return [_scrub(v) for v in obj]
-    if isinstance(obj, dict):
-        return {k: "[REDACTED:account-id]" if k in REDACT_KEYS and isinstance(v, str) else _scrub(v)
-                for k, v in obj.items() if not (k == "signature" and obj.get("type") == "thinking")}
-    return obj
-
-
-def _unscrubbed(obj) -> bool:
-    if isinstance(obj, list):
-        return any(_unscrubbed(v) for v in obj)
-    if isinstance(obj, dict):
-        return any((k in REDACT_KEYS and isinstance(v, str) and not v.startswith("[REDACTED")) or _unscrubbed(v)
-                   for k, v in obj.items())
-    return False
 
 
 # --------------------------------------------------------------------------- transcripts
@@ -614,17 +421,26 @@ def all_manifests() -> dict[str, dict]:
     return {p.parent.name: json.loads(p.read_text()) for p in sorted(TRACES.glob("*/manifest.json"))}
 
 
+def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor) -> bytes:
+    """A transcript's log. One older than the rules' stamp was redacted by them when `known`, its
+    last log, was stored."""
+    if known and older_than_stamp(transcript) and (data := load_log(sid, known)) is not None:
+        return data
+    return redact(transcript.read_text(errors="replace"))
+
+
 def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, dict, list[dict]]:
     """Snapshot one session's log (and subagent logs) and rewrite its manifest."""
     sid = transcript.stem
-    data = redact(transcript.read_text(errors="replace"))
-    entries = read_jsonl(data)
     old = load_manifest(sid)
+    data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact)
+    entries = read_jsonl(data)
     log = store_log(sid, data)
+    known_subagents = {s["agent"]: s["log"]["sha256"] for s in old.get("subagents", [])}
     subagents = []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
-        sub_data = redact(sub.read_text(errors="replace"))
+        sub_data = redacted(sub, sid, known_subagents.get(sub.stem), redact)
         s = summarize(read_jsonl(sub_data), redact.string(str(REPO)))
         subagents.append({"agent": sub.stem, "models": s["models"], "stats": s["stats"],
                           "log": store_log(sid, sub_data)})
@@ -763,8 +579,8 @@ def finalize_logs(sid: str, m: dict) -> None:
     logs = {}
     for sha in sorted(keep):
         entry = {"bytes": None, "lines": None, "gzip_bytes": None, "url": None, **(m.get("logs", {}).get(sha) or {})}
-        if log_path(sid, sha).exists():
-            entry.update(log_info(sid, sha))
+        if None in (entry["bytes"], entry["lines"], entry["gzip_bytes"]) and log_path(sid, sha).exists():
+            entry.update(log_info(sid, sha))  # a log never changes: its name is its hash
         logs[sha] = entry
     m["logs"] = logs
     for path in (session_dir(sid) / "logs").glob("*.jsonl.gz"):
@@ -1447,13 +1263,16 @@ def cmd_scan(args: list[str]) -> int:
     idempotent) and what it leaves for a person to judge. Output is masked, because it lands in
     the transcript of the session that runs it."""
     src = claude_project_dir()
-    paths = sorted(src.glob("*.jsonl")) if args in ([], ["--all"]) else [src / f"{a}.jsonl" for a in args]
+    named = args not in ([], ["--all"])
+    paths = [src / f"{a}.jsonl" for a in args] if named else sorted(src.glob("*.jsonl"))
     redact, errors = Redactor(), 0
     for p in paths:
         subdir = p.parent / p.stem / "subagents"
         transcripts = [(p.stem, p)] + ([(f"{p.stem} agent {s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))]
                                        if subdir.is_dir() else [])
         for name, path in transcripts:
+            if not named and older_than_stamp(path):
+                continue
             raw = path.read_text(errors="replace")
             data = redact(raw).decode()
             kinds = Counter(re.findall(r"\[REDACTED:([a-z.\-]+)\]", data))
@@ -1473,24 +1292,34 @@ def _skipped(redact: Redactor) -> str:
     return ", ".join(f"{kind} ×{n}" for kind, n in sorted(redact.skipped.items()))
 
 
-def open_findings(redact: Redactor) -> dict[str, dict]:
-    """Everything `check` or `scan` would raise now, by id: what a push would publish, plus the
-    tracked files that are published with it. Holds real values: never print one unmasked to an agent."""
-    texts = []
+def texts_to_check(redact: Redactor, everything: bool = False):
+    """(session, text) for what a push would publish, plus the tracked files published with it.
+    A transcript or log older than the rules' stamp has been checked by them and is left out,
+    with whatever it was found to hold, unless `everything` asks for it."""
+    def due(path: Path) -> bool:
+        return everything or not older_than_stamp(path)
+
     src = claude_project_dir()
     for p in sorted(src.glob("*.jsonl")):
         subdir = p.parent / p.stem / "subagents"
         for path in [p] + (sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []):
-            texts.append((p.stem[:8], redact(path.read_text(errors="replace")).decode()))
+            if due(path):
+                yield p.stem[:8], redact(path.read_text(errors="replace")).decode()
     for sid, m in all_manifests().items():
         for sha, info in m.get("logs", {}).items():
-            if not info.get("url") and (data := load_log(sid, sha)) is not None:
-                texts.append((sid[:8], data.decode(errors="replace")))
+            path = log_path(sid, sha)
+            if not info.get("url") and path.exists() and due(path):
+                yield sid[:8], load_log(sid, sha).decode(errors="replace")
         for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):
             if path.exists():
-                texts.append((sid[:8], path.read_text()))
+                yield sid[:8], path.read_text()
+
+
+def open_findings(redact: Redactor, everything: bool = False) -> dict[str, dict]:
+    """Everything `check` or `scan` would raise now, by id. Holds real values: never print one
+    unmasked to an agent."""
     found: dict[str, dict] = {}
-    for where, text in texts:
+    for where, text in texts_to_check(redact, everything):
         for level, hits in (("ERROR", redact.leak_hits(text)), ("warn", redact.review_hits(text))):
             for kind, values in hits.items():
                 for value, n in values.items():
@@ -1511,6 +1340,58 @@ def save_reviewed(findings: dict[str, dict]) -> None:
                                    indent=2, ensure_ascii=False) + "\n")
 
 
+def masked_excerpt(redact: Redactor, line: str, at: int, length: int, reach: int = 80) -> str:
+    """The words around a finding, safe for a transcript: every finding in them is masked, and a
+    word the cut left partial is dropped, since a piece of a secret no longer looks like one."""
+    start, end = max(0, at - reach), at + length + reach
+    excerpt = line[start:end]
+    if start:
+        excerpt = re.sub(r"^\S*\s?", "", excerpt)
+    if end < len(line):
+        excerpt = re.sub(r"\s?\S*$", "", excerpt)
+    leaks, reviewable = redact.hits_of_line(excerpt)
+    for _, value in sorted(leaks + reviewable, key=lambda hit: -len(hit[1])):
+        excerpt = excerpt.replace(value, _mask(value))
+    return excerpt
+
+
+def show_finding(prefix: str, limit: int = 4) -> int:
+    """Where a finding occurs, masked, so that an agent can help judge it."""
+    redact = Redactor()
+    found = open_findings(redact)
+    matches = [fid for fid in found if fid.startswith(prefix)]
+    if len(matches) != 1:
+        print(f"{prefix} matches {len(matches)} open finding(s)", file=sys.stderr)
+        return 1
+    f = found[matches[0]]
+    print(f"{matches[0][:8]}  {f['level']}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+    excerpts: Counter = Counter()
+    for _, text in texts_to_check(redact):
+        for line in text.splitlines():
+            if (at := line.find(f["value"])) >= 0:
+                excerpts[masked_excerpt(redact, line, at, len(f["value"]))] += 1
+    for excerpt, n in excerpts.most_common(limit):
+        print(f"  ×{n}  {excerpt}")
+    if len(excerpts) > limit:
+        print(f"  and {len(excerpts) - limit} other place(s)")
+    return 0
+
+
+def cmd_stamp() -> int:
+    """After a change to the rules: apply them to everything, then record that, so that the files
+    of this moment aren't scanned again. Findings in those files stop being reported at that
+    point, so any that are open have to be settled first."""
+    found = open_findings(Redactor(), everything=True)
+    for fid, f in sorted(found.items()):
+        print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+    if found:
+        print(f"refused: {len(found)} open finding(s) would stop being reported; settle them first", file=sys.stderr)
+        return 1
+    redaction_rules.write_stamp()
+    print(f"stamped {redaction_rules.source_hash()[:12]}")
+    return 0
+
+
 def cmd_review(args: list[str]) -> int:
     """List open findings, masked, or record some as false positives. Listing is open to anyone.
     Accepting is a person's decision, so it shows the real value and asks for it to be confirmed
@@ -1521,6 +1402,8 @@ def cmd_review(args: list[str]) -> int:
             print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
         print(f"{len(found)} open finding(s)")
         return 0
+    if args[0] == "show" and len(args) == 2:
+        return show_finding(args[1])
     ids = args[1:args.index("--reason")] if "--reason" in args else []
     reason = " ".join(args[args.index("--reason") + 1:]).strip() if "--reason" in args else ""
     if args[0] != "accept" or not ids or not reason:
@@ -1642,6 +1525,7 @@ def cmd_push(args: list[str]) -> int:
 def cmd_check(remote: bool = False) -> int:
     redact, errors, notes, warnings = Redactor(), [], [], []
     errors += reviewed_problems()
+    left_out = 0
     manifests = all_manifests()
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
@@ -1667,6 +1551,9 @@ def cmd_check(remote: bool = False) -> int:
                 continue
             if hashlib.sha256(data).hexdigest() != sha:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
+            if older_than_stamp(log_path(sid, sha)):
+                left_out += 1
+                continue
             text = data.decode(errors="replace")
             if leaks := redact.leaks(text):
                 # A log that is not public yet is an error. One that is cannot be fixed, only
@@ -1728,6 +1615,12 @@ def cmd_check(remote: bool = False) -> int:
         errors.append(f"unredacted {leaks} in {REVIEWED.relative_to(REPO)}")
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
+    if redaction_rules.RULES_HASH != redaction_rules.source_hash():
+        notes.append("the redaction rules changed since their stamp, so every file was scanned; "
+                     "run: python3 llm-dlc/tools/sync.py stamp")
+    elif left_out:
+        notes.append(f"{left_out} log(s) older than the rules' stamp of {redaction_rules.RULES_GENERATED} were not "
+                     f"scanned: they count as checked, and any findings in them are not reported")
     for n in notes:
         print("note ", n)
     for w in warnings:
@@ -1781,6 +1674,8 @@ def main(argv: list[str]) -> int:
         return cmd_scan(args)
     elif cmd == "review":
         return cmd_review(args)
+    elif cmd == "stamp":
+        return cmd_stamp()
     elif cmd == "init":
         cmd_init()
     else:
