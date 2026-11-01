@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Add jvmcontract, a Rust library and CLI for the verifiers
 
-change `pkonklwrnkkz` · [log `e3f0a086ef4e`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz)
+[`9c742ae6cdab`](https://github.com/pilifs/in-the-loop/commit/9c742ae6cdab2574e7626e5d8b0eee169c141333) · [log `e3f0a086ef4e`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz)
 
 New top-level lib/: the jvmcontract crate, a port of the Java contract verifier (behavioural, regression and capability contracts) and of the TLA+ generator and TLC runner in the examples tooling, with enhancements. Behavioural contracts are now derived without a JVM: the crate parses class files, reads the JDK's own classes from its lib/modules image, and executes every input of the finite domain in a built-in bytecode interpreter that models the JDK natively and refuses anything it does not model. The interpreter carries a dynamic effect monitor (every heap object remembers the epoch it was allocated in; a write to an older object makes the method unverifiable), which makes the purity proof complete over the executed domain and closes the array/collection-store gap the Java tool documented. Regression proofs generate the JBMC harness directly as bytecode, with the --unchanged-unless expression parsed, type-checked and compiled by the crate, so no Java compiler is in the pipeline; counterexamples are replayed in the interpreter. New contract kinds and views: instance methods of finite types (the receiver as a domain dimension), API contracts (the public surface of a module), per-dependency capability contracts, a Mermaid/Graphviz state-machine view of a contract, a TLC runner that parses verdicts and traces into data, JSON output, execution cost and step/depth budgets. The setup installer and doctor gain the Rust toolchain; the main README and approaches.md point at lib/.
 
@@ -28,7 +28,7 @@ Verified: cargo test (27 unit tests, 16 integration tests over javac-compiled fi
 
 ### Add Quorum, ten distributed-systems examples, and property proofs to jvmcontract
 
-change `tnrplopplyrt` · [log `60d86acb58f4`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz)
+[`3ce18250a348`](https://github.com/pilifs/in-the-loop/commit/3ce18250a348ef68dde6c1fd3786a8abe6525576) · [log `60d86acb58f4`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz)
 
 A second subject system, examples/apps/quorum: the pure decision kernels of a replicated system (Raft's vote rule and role machine, majority quorums, exponential backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator with a TLA+ model of the protocol around it). It is plain javac with a reflective test runner, no Gradle, and it is verified by the Rust tool: behavioural, capability and API contracts, a properties file, and TLC on the model; verify.sh runs all of it in seconds.
 
@@ -38,7 +38,7 @@ Examples 013 to 022 run the Rust tool over Quorum: a longest-log-wins vote rule 
 
 ### Add Crosscut, eleven Spring Boot examples verified by jvmcontract
 
-change `svxmqsyryrtv` · [log `a1f98f08719c`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz)
+[`c9ff761a7aea`](https://github.com/pilifs/in-the-loop/commit/c9ff761a7aeaaa082efefe67192bdf8bcf77f462) · [log `a1f98f08719c`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz)
 
 A third subject system, examples/apps/crosscut: the pure kernels behind a Spring Boot service's cross-cutting concerns, written so that jvmcontract can prove them. TransactionBoundary (the propagation and rollback rules of a transaction interceptor, two behavioural contracts of 16 and 22 cases), CircuitBreaker (44 cases, drawn as a state machine), RetryPolicy, TokenBucket, IdempotentReceiver (24 cases, plus a TLA+ model of a client retrying against it, 168 states), a Kafka Partitioner and BatchCommit, JwtTimestamps and cache Expiry. The module has capability and API contracts, seven properties proved by JBMC in about forty seconds, plain javac tests and a verify.sh.
 
@@ -48,7 +48,7 @@ build.py now has a table of javac apps (TOOL_APPS, TOOL_MODELS) instead of Quoru
 
 ### Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes
 
-change `qqnvnsyysztx` · [log `dc606bccc33d`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz)
+[`172a4d4331e3`](https://github.com/pilifs/in-the-loop/commit/172a4d4331e34875d89054b0a25c25da51ac7022) · [log `dc606bccc33d`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz)
 
 Mica (examples/apps/mica) is a fourth subject system: the decision kernels of a small JVM written in Java, each the few lines where the JVM specification says exactly what must happen. Class initialization (JVMS 5.5) as a state machine with a TLA+ model of threads racing for one class, checked by TLC with deadlock detection; the type checker's isAssignable over sixteen verification types (289-case contract); access control at resolution (5.4.4, 120 cases, with and without nestmates); idiv and irem at Integer.MIN_VALUE / -1; fcmpg/fcmpl with NaN; the bisection of a lookupswitch; javac's tableswitch/lookupswitch cost heuristic; a power-of-two table size; and the modified UTF-8 of the constant pool. Six properties prove in under two seconds; the whole verify.sh runs in about three.
 
@@ -60,7 +60,7 @@ Verified by: the Mica tests (47) and verify.sh; build.py for 034 to 045 (every v
 
 ### Add feature-loop.sh to grow jvmcontract unattended
 
-change `movtrrpolvsw` · [log `a49b2b117643`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz)
+[`b54c0ed3a341`](https://github.com/pilifs/in-the-loop/commit/b54c0ed3a341338599f0e088589f226c23d06b68) · [log `a49b2b117643`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz)
 
 llm-dlc/tools/feature-loop.sh resumes session 360e8b8b on Fable 5.1 at high effort and repeats one instruction from the repo root: add more advanced features and examples to jvmcontract. Each cycle that produces a commit is followed by /compact and another cycle. A cycle with no new commit stops the loop with exit 1, before compacting, so the session keeps its full context for whoever looks into it. A commit is detected by the change ID of @-, which survives a rewrite of the commit. The README describes the loop.
 

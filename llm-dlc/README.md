@@ -113,7 +113,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](traces/b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 5 | 2 | open |
 | 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 20 | 5 | ended |
-| 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](traces/24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 6 | ended |
+| 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](traces/24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 7 | ended |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | ended |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](traces/8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 21 | 11 | ended |
 | 2026-10-31 00:53 UTC | [Formal verification example 004 proof](traces/57737931-7b2a-41eb-9b5c-ab2e3cef9b69/summary.md) | 6 | 3 | ended |

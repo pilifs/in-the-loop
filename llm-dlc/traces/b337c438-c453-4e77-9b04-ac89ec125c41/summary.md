@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Add feature-loop.sh to grow jvmcontract unattended
 
-change `movtrrpolvsw` · [log `f0cb07435bcd`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df.jsonl.gz)
+[`b54c0ed3a341`](https://github.com/pilifs/in-the-loop/commit/b54c0ed3a341338599f0e088589f226c23d06b68) · [log `f0cb07435bcd`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df.jsonl.gz)
 
 llm-dlc/tools/feature-loop.sh resumes session 360e8b8b on Fable 5.1 at high effort and repeats one instruction from the repo root: add more advanced features and examples to jvmcontract. Each cycle that produces a commit is followed by /compact and another cycle. A cycle with no new commit stops the loop with exit 1, before compacting, so the session keeps its full context for whoever looks into it. A commit is detected by the change ID of @-, which survives a rewrite of the commit. The README describes the loop.
 
@@ -28,7 +28,7 @@ Verified with a stub claude in a temporary jj repo: two commits then none gave i
 
 ### Show live progress in feature-loop.sh
 
-change `nyxuyprrxnqu` · [log `582b4cfa3f0c`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)
+[`26835fe0b07f`](https://github.com/pilifs/in-the-loop/commit/26835fe0b07fc520777a6ca10485738c88b4061b) · [log `582b4cfa3f0c`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)
 
 claude -p in text mode prints nothing until a turn ends, so the loop looked hung for hours. It now reads stream-json and prints one timestamped line for each message and tool call, and a closing line with steps, minutes and cost for each turn. The filter skips lines it cannot read, so it cannot kill claude by closing the pipe.
 

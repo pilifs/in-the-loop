@@ -306,7 +306,7 @@
   "commits": [
     {
       "change_id": "pkonklwrnkkzwstylvrrtnqznkywqztl",
-      "commit_id": null,
+      "commit_id": "9c742ae6cdab2574e7626e5d8b0eee169c141333",
       "immutable": false,
       "summary": "Add jvmcontract, a Rust library and CLI for the verifiers",
       "body": "New top-level lib/: the jvmcontract crate, a port of the Java contract verifier (behavioural, regression and capability contracts) and of the TLA+ generator and TLC runner in the examples tooling, with enhancements. Behavioural contracts are now derived without a JVM: the crate parses class files, reads the JDK's own classes from its lib/modules image, and executes every input of the finite domain in a built-in bytecode interpreter that models the JDK natively and refuses anything it does not model. The interpreter carries a dynamic effect monitor (every heap object remembers the epoch it was allocated in; a write to an older object makes the method unverifiable), which makes the purity proof complete over the executed domain and closes the array/collection-store gap the Java tool documented. Regression proofs generate the JBMC harness directly as bytecode, with the --unchanged-unless expression parsed, type-checked and compiled by the crate, so no Java compiler is in the pipeline; counterexamples are replayed in the interpreter. New contract kinds and views: instance methods of finite types (the receiver as a domain dimension), API contracts (the public surface of a module), per-dependency capability contracts, a Mermaid/Graphviz state-machine view of a contract, a TLC runner that parses verdicts and traces into data, JSON output, execution cost and step/depth budgets. The setup installer and doctor gain the Rust toolchain; the main README and approaches.md point at lib/.\n\nVerified: cargo test (27 unit tests, 16 integration tests over javac-compiled fixtures) passes with zero clippy warnings. The integration tests derive the Box Office OrderLifecycle#decide contract and the ticketing-domain capability contract and check them identical to the files the Java tool committed, generate the TLA+ operator and check it identical to the one the Python generator wrote, run TLC on the Box Office model (verified, 4,732 states), and run the three JBMC scenarios of the Java tests (a rounding refactor refuted with a replayed counterexample, a scoped change proved, the same change refuted without the scope). The generated harness was also run on HotSpot with -Xverify:all. A release-build derivation of the 36-case contract takes about 15 ms.",
@@ -314,7 +314,7 @@
     },
     {
       "change_id": "tnrplopplyrtoskkqplyukurnsymplqw",
-      "commit_id": null,
+      "commit_id": "3ce18250a348ef68dde6c1fd3786a8abe6525576",
       "immutable": false,
       "summary": "Add Quorum, ten distributed-systems examples, and property proofs to jvmcontract",
       "body": "A second subject system, examples/apps/quorum: the pure decision kernels of a replicated system (Raft's vote rule and role machine, majority quorums, exponential backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator with a TLA+ model of the protocol around it). It is plain javac with a reflective test runner, no Gradle, and it is verified by the Rust tool: behavioural, capability and API contracts, a properties file, and TLC on the model; verify.sh runs all of it in seconds.\n\njvmcontract gains 'prove', a property proof by bounded model checking: a Java boolean expression over a method's parameters, its result and calls of the method itself (so laws such as commutativity or antisymmetry can be stated), optionally restricted by an assumption, generated as a bytecode harness and proved by JBMC over every input or refuted with an input replayed in the interpreter. 'prove --properties FILE' proves every block of a committed properties.contract as a build step. The expression language gained calls and a comma token; the verifier skips the properties file; a new SARIF rule property-violated. A bug found on the way: JBMC runs in the work directory, so a relative class path entry silently became a stub with an arbitrary result and every property was refuted with nonsense witnesses; class path entries are now made absolute and JBMC's 'failed to access directory' warning is an unverifiable verdict, with unit tests for both.\n\nExamples 013 to 022 run the Rust tool over Quorum: a longest-log-wins vote rule refuted by regression proof over 2^448 inputs (013); a leader that ignores newer terms in replies, one changed case of 52 with the state machine drawn (014); (n+1)/2 refuted as a majority at n=2 (015); a backoff cleanup whose shift overflows into a negative delay (016); a hybrid logical clock refactor proved monotonic and symmetric (017) and one that drops a case, refuted (018); jitter that gives the module a randomness capability (019); a 2PC coordinator that presumes commit on timeout, a three-step TLC trace where the one vote cast is a no still in flight (020); abort-on-first-no proved safe in 644 states (021); and a skew-tolerant last-writer-wins tie-break that breaks antisymmetry (022). build.py got a runner table per subject app, the B11 approach, a Mermaid state-machine view for state-machine contracts, and TLC through 'jvmcontract tlc --json'. Verified by running the generator (all ten verdicts as expected, about 20 s in all), cargo test (30 unit, 18 integration tests), clippy clean, and verify.sh.",
@@ -322,7 +322,7 @@
     },
     {
       "change_id": "svxmqsyryrtvqsrxsqqxxkmsrrouxmvr",
-      "commit_id": null,
+      "commit_id": "c9ff761a7aeaaa082efefe67192bdf8bcf77f462",
       "immutable": false,
       "summary": "Add Crosscut, eleven Spring Boot examples verified by jvmcontract",
       "body": "A third subject system, examples/apps/crosscut: the pure kernels behind a Spring Boot service's cross-cutting concerns, written so that jvmcontract can prove them. TransactionBoundary (the propagation and rollback rules of a transaction interceptor, two behavioural contracts of 16 and 22 cases), CircuitBreaker (44 cases, drawn as a state machine), RetryPolicy, TokenBucket, IdempotentReceiver (24 cases, plus a TLA+ model of a client retrying against it, 168 states), a Kafka Partitioner and BatchCommit, JwtTimestamps and cache Expiry. The module has capability and API contracts, seven properties proved by JBMC in about forty seconds, plain javac tests and a verify.sh.\n\nExamples 023 to 033 run eleven changes to it through the tool: Math.abs in a partitioner (023, B11), clock skew on the wrong side of nbf (024, B11), a rollback rule that commits after an Error (025, B8), a half-open breaker that closes on the first good probe (026, B8), a switch rewrite of the retry policy that drops the unlisted 5xx (027, B9), a Thread.sleep added to the retry policy (028, B10), an idempotency key that executes a retry while the first attempt is in flight (029, D1, five-step trace), stored failures proved at-most-once (030, D1, verified), a token bucket that stamps refills with now (031, B11, caught by one test), a batch listener that commits past a failed record (032, B11) and a cache expiry rewritten as a deadline proved on every nanosecond (033, B11, verified). Nine of the eleven are missed by the module's tests.\n\nbuild.py now has a table of javac apps (TOOL_APPS, TOOL_MODELS) instead of Quorum-specific functions, and reads a contract's case count from the output line that names the symbol, since a module with several contracts prints one line each. A money-allocation kernel was tried and dropped: JBMC's SAT backend cannot prove identities between divisions and multiplications (the sum of floorDiv shares) in minutes; approaches.md and the lib README record the limit. Verified by running the eleven examples (all verdicts as expected, about 20 seconds), examples/apps/crosscut/verify.sh (39 tests, 4 contracts, 7 properties, TLC), and three Quorum examples through the refactored generator.",
@@ -330,7 +330,7 @@
     },
     {
       "change_id": "qqnvnsyysztxumzswpzmurtrqxksvxqz",
-      "commit_id": null,
+      "commit_id": "172a4d4331e34875d89054b0a25c25da51ac7022",
       "immutable": false,
       "summary": "Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes",
       "body": "Mica (examples/apps/mica) is a fourth subject system: the decision kernels of a small JVM written in Java, each the few lines where the JVM specification says exactly what must happen. Class initialization (JVMS 5.5) as a state machine with a TLA+ model of threads racing for one class, checked by TLC with deadlock detection; the type checker's isAssignable over sixteen verification types (289-case contract); access control at resolution (5.4.4, 120 cases, with and without nestmates); idiv and irem at Integer.MIN_VALUE / -1; fcmpg/fcmpl with NaN; the bisection of a lookupswitch; javac's tableswitch/lookupswitch cost heuristic; a power-of-two table size; and the modified UTF-8 of the constant pool. Six properties prove in under two seconds; the whole verify.sh runs in about three.\n\nExamples 034 to 045 are one realistic change each, for readers who work on the JVM or the libraries closest to it: an idiv that throws where the specification returns the dividend (034), a NaN check written as == Float.NaN (035), javac's switch costs computed in int (036), the JDK 11 tableSizeFor rewrite proved equal on all 2^32 inputs (037), a verifier fast path that lets an uninitialized object pass as an Object (038), protected access without the receiver rule (039), JEP 181 nestmate access as a four-line contract diff (040), StrictMath intrinsics looked up through MethodHandles (041), a class initialization that lets other threads proceed during <clinit> (042) and one that waits on its own thread, which TLC reports as a deadlock (043), modified UTF-8 with a one-byte NUL (044), and (low + high) / 2 proved safe within a Code attribute's bounds (045). Nine violations, three verified; every violation is missed by the module's tests.\n\nThe tool needed four changes, found while writing the examples: JBMC's witness syntax for chars ('\\u0000') and floats (Float.NaN, the infinities) is parsed, and chars are shown as Java literals; java.lang.Integer, Long, Short and Byte join Math and StrictMath on JBMC's class path, taken from the JDK image, so Integer.numberOfLeadingZeros is analysed as written; a counterexample that the interpreter cannot reproduce (both versions agree, or the property holds on replay) is reported as unverifiable instead of a false violation, which is what a stubbed JDK method such as Float.compare produced before; and jvmcontract tlc gains --deadlock, with TLC's deadlock trace parsed and reported like an invariant violation. build.py gets the app and its model (with the deadlock flag and prose), and the docs the fourth system.\n\nVerified by: the Mica tests (47) and verify.sh; build.py for 034 to 045 (every verdict as expected) and for 013 to 033 rerun under the changed tool (unchanged apart from timestamps and TLC seeds, restored); cargo test (50 tests, JBMC and TLC included).",
@@ -338,7 +338,7 @@
     },
     {
       "change_id": "movtrrpolvswuqzwtvoxpxozzzyxknop",
-      "commit_id": null,
+      "commit_id": "b54c0ed3a341338599f0e088589f226c23d06b68",
       "immutable": false,
       "summary": "Add feature-loop.sh to grow jvmcontract unattended",
       "body": "llm-dlc/tools/feature-loop.sh resumes session 360e8b8b on Fable 5.1 at high effort and repeats one instruction from the repo root: add more advanced features and examples to jvmcontract. Each cycle that produces a commit is followed by /compact and another cycle. A cycle with no new commit stops the loop with exit 1, before compacting, so the session keeps its full context for whoever looks into it. A commit is detected by the change ID of @-, which survives a rewrite of the commit. The README describes the loop.\n\nVerified with a stub claude in a temporary jj repo: two commits then none gave instruction, compact, instruction, compact, instruction, exit 1; no commit on the first cycle stopped at once; a nonzero exit after a commit still continued; SIGTERM exited 130; the script ran at the repo root when started from elsewhere. Fable 5.1 at high effort in auto mode, and /compact in print mode (same session ID, one compact boundary), were checked against the real CLI on a throwaway session outside this repo. The loop itself has not been run against session 360e8b8b.",
@@ -350,31 +350,31 @@
       "bytes": 8425676,
       "lines": 2046,
       "gzip_bytes": 1501541,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz"
     },
     "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f": {
       "bytes": 11665144,
       "lines": 2931,
       "gzip_bytes": 2102178,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz"
     },
     "a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354": {
       "bytes": 15186498,
       "lines": 4093,
       "gzip_bytes": 2695168,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz"
     },
     "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c": {
       "bytes": 14970730,
       "lines": 4018,
       "gzip_bytes": 2654442,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz"
     },
     "e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b": {
       "bytes": 4898052,
       "lines": 1113,
       "gzip_bytes": 864621,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz"
     }
   },
   "redaction_policy": 4,
