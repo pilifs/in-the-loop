@@ -129,10 +129,7 @@ pub struct Outcome {
 pub fn run(options: &Options) -> Result<Outcome, Error> {
     let work = match &options.work {
         Some(w) => w.clone(),
-        None => {
-            let nanos = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
-            std::env::temp_dir().join(format!("jvmcontract-property-{}-{nanos}", std::process::id()))
-        }
+        None => crate::tla::tempfile_path("jvmcontract-property"),
     };
     std::fs::create_dir_all(&work)?;
     let mut out = String::new();

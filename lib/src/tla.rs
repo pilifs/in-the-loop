@@ -8,6 +8,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
@@ -337,9 +338,14 @@ fn killing_signal(_status: std::process::ExitStatus) -> Option<i32> {
     None
 }
 
-fn tempfile_path(prefix: &str) -> PathBuf {
+/// A path under the temporary directory that no other run shares. The clock is not enough: runs in two threads got the
+/// same nanosecond, so each read the other's output, a verdict included. The counter is what makes it unique in this
+/// process, and the process id and the clock across processes.
+pub(crate) fn tempfile_path(prefix: &str) -> PathBuf {
+    static NEXT: AtomicU64 = AtomicU64::new(0);
+    let n = NEXT.fetch_add(1, Ordering::Relaxed);
     let nanos = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
-    std::env::temp_dir().join(format!("{prefix}-{}-{nanos}.log", std::process::id()))
+    std::env::temp_dir().join(format!("{prefix}-{}-{nanos}-{n}", std::process::id()))
 }
 
 /// Parses TLC's console output.
@@ -404,6 +410,16 @@ pub fn parse_trace(output: &str) -> Vec<Step> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn temporary_paths_are_never_shared_between_threads() {
+        let threads: Vec<_> = (0..8).map(|_| std::thread::spawn(|| (0..1000).map(|_| tempfile_path("t")).collect::<Vec<_>>())).collect();
+        let mut paths: Vec<PathBuf> = threads.into_iter().flat_map(|t| t.join().unwrap()).collect();
+        let all = paths.len();
+        paths.sort();
+        paths.dedup();
+        assert_eq!(paths.len(), all);
+    }
 
     #[test]
     fn translates_a_contract_into_case_arms() {

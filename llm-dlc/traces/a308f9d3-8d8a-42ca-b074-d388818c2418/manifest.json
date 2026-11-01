@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-01T21:55:08.868Z",
-  "duration_seconds": 25935,
+  "ended": "2026-11-01T21:59:33.140Z",
+  "duration_seconds": 26200,
   "stats": {
     "turns": 9,
-    "api_calls": 50,
-    "tool_calls": 48,
+    "api_calls": 55,
+    "tool_calls": 53,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 175876,
+    "peak_context_tokens": 190606,
     "usage": {
-      "input_tokens": 120,
-      "output_tokens": 59627,
-      "cache_read_input_tokens": 5196298,
-      "cache_creation_input_tokens": 189884
+      "input_tokens": 130,
+      "output_tokens": 66995,
+      "cache_read_input_tokens": 6104152,
+      "cache_creation_input_tokens": 204614
     }
   },
   "tools": {
-    "Bash": 40,
+    "Bash": 45,
     "Read": 4,
     "Agent": 2,
     "SendMessage": 1,
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-01T14:42:53.464Z",
-      "ended": "2026-11-01T21:55:08.868Z",
+      "ended": "2026-11-01T21:59:33.140Z",
       "turns": 9,
-      "api_calls": 50,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 59627,
-        "cache_read_input_tokens": 5196298,
-        "cache_creation_input_tokens": 189884
+        "input_tokens": 130,
+        "output_tokens": 66995,
+        "cache_read_input_tokens": 6104152,
+        "cache_creation_input_tokens": 204614
       },
-      "peak_context_tokens": 175876
+      "peak_context_tokens": 190606
     }
   ],
   "log": {
-    "sha256": "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52",
-    "bytes": 1441095,
-    "lines": 543,
-    "gzip_bytes": 269901,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52.jsonl.gz"
+    "sha256": "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1",
+    "bytes": 1545321,
+    "lines": 594,
+    "gzip_bytes": 279764,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1.jsonl.gz"
   },
   "subagents": [
     {
@@ -147,6 +147,14 @@
       "summary": "Compare arrays in regression proofs, and share the witness code with property proofs",
       "body": "A regression proof (jvmcontract equivalence) now covers methods that take or return arrays: the harness copies each array parameter so that the version before writes into the copy and the version after into the original, and compares results, exception types and the arrays element by element after both calls (two NaN results agree). The --unchanged-unless expression may quantify over an array parameter with JML's quantifiers, and a differing input is shrunk in the interpreter before it is reported. The replay, shrinking and rendering of a counterexample moved from property.rs into a new witness.rs module shared by equivalence and property proofs. An integration test, arrays_are_compared_in_regression_proofs_as_left_by_each_version, proves two encoders equal and refutes a third; the whole suite (23 tests) passes with javac, jbmc and TLC present. The lib README documents the array comparison and its costs.",
       "log_sha256": "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52"
+    },
+    {
+      "change_id": "orwpokpozpmyuyslyrovrxnoxzvvouns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Stop reporting a proof when JBMC's solver gives up, or another run's output",
+      "body": "Two ways a run could report a proof it did not have. First, parse_output treated '** 0 of N failed' as verified, but a solver that runs out of memory leaves every property as ERROR, so nothing has failed and JBMC ends with VERIFICATION ERROR and exit 6. With --no-refine-strings added through a wrapper, jvmcontract printed a proof that an encoder returning k + 1 behaves as before, and exited 0. Only VERIFICATION SUCCESSFUL now counts, and the memory check no longer depends on capitalisation. In default mode six memory limits gave no false proof, but only because that path also happens to print 'Out of memory'.\n\nSecond, temporary paths were process id plus nanoseconds, and concurrent runs collided: one run read a file holding another's output, or found it deleted. A flaky test showed the spliced output. The single-threaded CLI was not exposed, but parallel library use and the integration tests were. Log files and the default work directories of property and regression proofs now take a counter as well.",
+      "log_sha256": "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1"
     }
   ],
   "logs": {
@@ -154,6 +162,12 @@
       "bytes": 318448,
       "lines": 34,
       "gzip_bytes": 92362,
+      "url": null
+    },
+    "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1": {
+      "bytes": 1545321,
+      "lines": 594,
+      "gzip_bytes": 279764,
       "url": null
     },
     "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52": {
