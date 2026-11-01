@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "a308f9d3-8d8a-42ca-b074-d388818c2418",
+  "status": "open",
+  "title": "Feature-loop memory safeguards",
+  "first_prompt": "There was a crash in here when experimenting with formal verification related to memory intensive tasks. This particular machine is running lightweight WSL on a small form factor laptop. We can try ru",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.316"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-01T14:42:53.464Z",
+  "ended": "2026-11-01T14:45:10.903Z",
+  "duration_seconds": 137,
+  "stats": {
+    "turns": 1,
+    "api_calls": 6,
+    "tool_calls": 9,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 64974,
+    "usage": {
+      "input_tokens": 12,
+      "output_tokens": 12796,
+      "cache_read_input_tokens": 288489,
+      "cache_creation_input_tokens": 37392
+    }
+  },
+  "tools": {
+    "Bash": 8,
+    "Read": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-01T14:42:53.464Z",
+      "ended": "2026-11-01T14:45:10.903Z",
+      "turns": 1,
+      "api_calls": 6,
+      "usage": {
+        "input_tokens": 12,
+        "output_tokens": 12796,
+        "cache_read_input_tokens": 288489,
+        "cache_creation_input_tokens": 37392
+      },
+      "peak_context_tokens": 64974
+    }
+  ],
+  "log": {
+    "sha256": "891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113",
+    "bytes": 494527,
+    "lines": 95,
+    "gzip_bytes": 116861,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wmmltomzspwxwvxrovzzqryxqvomwrkq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Cap the feature loop's memory with a systemd scope",
+      "body": "The feature loop ran as part of init.scope, the cgroup WSL shells start in, so a memory-hungry proof could exhaust the machine and take the WSL instance down. feature-loop.sh now re-executes itself in feature-loop.scope with a 4 GB cap (FEATURE_LOOP_MEMORY_MAX) and no swap. It sets OOMPolicy=continue because the default stops the entire scope on the first kill, which would take claude down with the proof. It refuses to start when less memory than the cap is available or when the scope is still active.\n\nVerified by running the real script with a stub claude on PATH under a 100M cap: the memory hog was killed with status 137, the stub survived, and the loop exited 1 through its usual no-commit path. Also checked refusal for a cap above available memory, an invalid cap and a second concurrent loop, exit 130 on systemctl stop, and that the scope unloads afterwards. A real proof run under the cap was not tested. The separate lib/ work in progress is left out of this commit.",
+      "log_sha256": "891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113"
+    }
+  ],
+  "logs": {
+    "891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113": {
+      "bytes": 494527,
+      "lines": 95,
+      "gzip_bytes": 116861,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

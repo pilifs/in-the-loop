@@ -5,8 +5,11 @@
 # A cycle that leaves no new commit stops the loop, before compacting, so the
 # session keeps its full context for the person who has to look at why.
 #
-# Usage: llm-dlc/tools/feature-loop.sh
-# Exits 1 when a cycle made no commit, and 130 if interrupted.
+# The loop re-executes itself in a systemd scope with a memory cap, so a proof
+# that runs away is killed alone and cannot exhaust the machine.
+#
+# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh
+# Exits 1 when a cycle made no commit or the scope cannot start, and 130 if interrupted.
 
 set -uo pipefail
 
@@ -14,6 +17,8 @@ SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
 INSTRUCTION="Add more advanced features along with examples to the jvmcontract library."
+MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
+SCOPE=feature-loop
 
 # Claude Code files a session under the directory it ran in, and the instruction
 # is meant for the root of the repo, so run there whatever the caller's directory.
@@ -22,6 +27,39 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
 trap 'exit 130' INT TERM
 
 log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*"; }
+
+# Shells on WSL sit in init.scope, where an out-of-memory kill can take the whole
+# instance down, so the loop moves to a scope of its own. Everything it starts
+# inherits the cap, including jbmc, TLC and any Gradle daemon. OOMPolicy=continue
+# matters: under the default, systemd stops the scope on the first kill, and
+# claude dies with the proof instead of seeing it fail. Without swap the cap is
+# exact, and a process over it is killed rather than left thrashing.
+contain() {
+  grep -q "/$SCOPE\.scope\$" /proc/self/cgroup && return
+
+  # The scope outlives the loop while anything in it runs, such as a Gradle daemon.
+  if systemctl --user is-active --quiet "$SCOPE.scope"; then
+    log "$SCOPE.scope is active: another loop, or processes left by the last one"
+    log "to clear it: systemctl --user stop $SCOPE.scope"
+    exit 1
+  fi
+
+  # A cap above what is free only protects the loop from itself.
+  local available wanted
+  available=$(awk '/^MemAvailable:/ { print $2 * 1024 }' /proc/meminfo)
+  wanted=$(numfmt --from=iec "$MEMORY_MAX") || exit 1
+  if (( available < wanted )); then
+    log "$MEMORY_MAX cap, but only $(numfmt --to=iec "$available") is available"
+    log "stop the Docker services, or lower FEATURE_LOOP_MEMORY_MAX"
+    exit 1
+  fi
+
+  log "starting in $SCOPE.scope with a $MEMORY_MAX cap"
+  exec systemd-run --user --scope --quiet --collect --unit="$SCOPE" \
+    -p MemoryMax="$MEMORY_MAX" -p MemorySwapMax=0 -p OOMPolicy=continue \
+    "$BASH" llm-dlc/tools/feature-loop.sh
+}
+contain
 
 # `auto` is the mode this session has always run in. With -p nobody can answer a
 # prompt, so anything auto mode would ask about is denied rather than left hanging.
