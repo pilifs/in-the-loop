@@ -10,14 +10,16 @@
 #
 # Settings, as environment variables:
 #   VERIFY_BYTECODE_REPO   the git repository (default https://github.com/pilifs/in-the-loop)
-#   VERIFY_BYTECODE_REF    the branch or tag (default main)
+#   VERIFY_BYTECODE_REF    the branch or tag (default main; empty for the repository's default branch)
 #   CLAUDE_SKILLS_DIR      where skills go (default ~/.claude/skills)
 #   JVMCONTRACT_UPGRADE=1  rebuild jvmcontract even if it is installed
 #   NO_RUST=1              never install Rust; skip jvmcontract if cargo is missing
 set -euo pipefail
 
 REPO=${VERIFY_BYTECODE_REPO:-https://github.com/pilifs/in-the-loop}
-REF=${VERIFY_BYTECODE_REF:-main}
+REF=${VERIFY_BYTECODE_REF-main}
+branch=()
+[ -n "$REF" ] && branch=(--branch "$REF")
 SKILLS_DIR=${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}
 SKILL_PATH=plugins/jvmcontract/skills/verify-bytecode
 
@@ -29,14 +31,14 @@ die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 command -v git >/dev/null || die "git is needed to fetch the skill (https://git-scm.com/downloads)"
 
 # 1. The skill.
-say "Fetching the skill from $REPO ($REF)"
+say "Fetching the skill from $REPO${REF:+ ($REF)}"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-if ! git clone --quiet --depth 1 --filter=blob:none --sparse --branch "$REF" "$REPO" "$tmp/repo" 2>/dev/null; then
-  git clone --quiet --depth 1 --branch "$REF" "$REPO" "$tmp/repo"
+if ! git clone --quiet --depth 1 --filter=blob:none --sparse "${branch[@]}" "$REPO" "$tmp/repo" 2>/dev/null; then
+  git clone --quiet --depth 1 "${branch[@]}" "$REPO" "$tmp/repo"
 fi
 git -C "$tmp/repo" sparse-checkout set "$SKILL_PATH" 2>/dev/null || true
-[ -f "$tmp/repo/$SKILL_PATH/SKILL.md" ] || die "$SKILL_PATH/SKILL.md is not in $REPO at $REF"
+[ -f "$tmp/repo/$SKILL_PATH/SKILL.md" ] || die "$SKILL_PATH/SKILL.md is not in $REPO${REF:+ at $REF}"
 commit=$(git -C "$tmp/repo" rev-parse --short HEAD)
 
 mkdir -p "$SKILLS_DIR"
@@ -55,7 +57,7 @@ if command -v jvmcontract >/dev/null && [ -z "${JVMCONTRACT_UPGRADE:-}" ]; then
 else
   if ! command -v cargo >/dev/null; then
     if [ -n "${NO_RUST:-}" ]; then
-      miss "cargo is missing and NO_RUST is set: jvmcontract was not installed. Install Rust (https://rustup.rs), then: cargo install --git $REPO --branch $REF --locked jvmcontract"
+      miss "cargo is missing and NO_RUST is set: jvmcontract was not installed. Install Rust (https://rustup.rs), then: cargo install --git $REPO${REF:+ --branch $REF} --locked jvmcontract"
     else
       say "Installing Rust with rustup (minimal profile, in ~/.cargo and ~/.rustup), to build jvmcontract"
       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --no-modify-path
@@ -63,8 +65,8 @@ else
     fi
   fi
   if command -v cargo >/dev/null; then
-    say "Building jvmcontract from $REPO ($REF); this compiles a Rust crate and takes a few minutes the first time"
-    cargo install --quiet --git "$REPO" --branch "$REF" --locked jvmcontract
+    say "Building jvmcontract from $REPO${REF:+ ($REF)}; this compiles a Rust crate and takes a few minutes the first time"
+    cargo install --quiet --git "$REPO" "${branch[@]}" --locked jvmcontract
     ok "$(jvmcontract --version 2>/dev/null || "$HOME/.cargo/bin/jvmcontract" --version) installed in $HOME/.cargo/bin"
     case ":$PATH:" in
       *":$HOME/.cargo/bin:"*) ;;

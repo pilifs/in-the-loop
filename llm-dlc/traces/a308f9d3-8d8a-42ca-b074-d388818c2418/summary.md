@@ -82,6 +82,12 @@ plugins/jvmcontract/ is a Claude Code plugin whose skill, /verify-bytecode &lt;p
 
 Two additions to the verifier came out of running the skill's pieces on a real pull request, apache/commons-numbers#223: a target may name an overload by its parameter types, 'pkg.Class#pow(int, int)' (verifier::select_method, used by derive, equivalence and prove; a bare overloaded name is refused with the list of overloads; Contract::file_name maps it to Class.pow-int-int.contract), and the expression language accepts -2147483648 as Java does. On that pull request the regression proof of pow(int, int) found the fix's input pow(k=-2, e=31) (before: ArithmeticException, after: -2147483648) in 185 s; the Javadoc property proved in 1.4 s; the MIN_VALUE property proved on head in 1.0 s and was refuted on base in 0.7 s; the confined-change proof did not finish in 300 s. The Maven build of the external project could not be run in this session (the permission classifier declined it), so the changed file was compiled with javac alone; build.sh's Gradle path was verified on examples/apps/boxoffice and its Maven path only by reading.
 
+### Let the installer take the repository's default branch
+
+change `kquontmrntwp` · [log `ce7ed5a6e273`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)
+
+install.sh accepted only a named branch; an empty VERIFY_BYTECODE_REF now means the repository's default branch, for both the sparse clone of the skill and the cargo install of jvmcontract, which is what a local clone needs. Verified by running the installer against file:///path/to/this/repository with an empty ref into a scratch skills directory: the skill's five files arrived with the commit recorded, jvmcontract was built and installed into ~/.cargo/bin in 40 s, and every tool check passed.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz) has every step in between: reasoning, tool calls and their results.
