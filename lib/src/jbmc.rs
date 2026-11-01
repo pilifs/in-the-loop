@@ -147,7 +147,7 @@ fn limited(cmd: Vec<String>, memory_mb: Option<u64>) -> Vec<String> {
 /// Why the run gives no verdict although its output may read like one: it died before it could stand behind it.
 fn abnormal_end(output: &str, memory_mb: Option<u64>) -> Option<String> {
     let limit = memory_mb.map(|mb| format!(" (the limit is {mb} MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)")).unwrap_or_default();
-    if output.contains("Out of memory") || output.contains("bad_alloc") {
+    if output.to_ascii_lowercase().contains("out of memory") || output.contains("bad_alloc") {
         return Some(format!("JBMC ran out of memory{limit}"));
     }
     if output.contains(crate::tla::KILLED_BY_SIGNAL) {
@@ -216,7 +216,13 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
     };
     let properties: u32 = failed[2].parse().unwrap_or(0);
     if failed[1].parse::<u32>().unwrap_or(1) == 0 {
-        return base(Verdict::Verified, properties, None);
+        // "0 failed" is not a proof. A solver that gives up leaves every property as ERROR, none of them failed, and
+        // JBMC ends with VERIFICATION ERROR; a run that stops after the count leaves no last line at all.
+        if Regex::new(r"(?m)^VERIFICATION SUCCESSFUL\s*$").unwrap().is_match(output) {
+            return base(Verdict::Verified, properties, None);
+        }
+        let tail = output.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("no output");
+        return base(Verdict::Unverifiable, properties, Some(format!("JBMC produced no verdict: {tail}")));
     }
     let failures: Vec<String> = Regex::new(r"(?m)^\[([^\]]+)\] .*: FAILURE$").unwrap().captures_iter(output).map(|c| c[1].to_string()).collect();
     if let Some(unwound) = failures.iter().find(|f| f.contains(".unwind.")) {
@@ -365,6 +371,16 @@ mod tests {
         assert_eq!(r.verdict, Verdict::Violation);
         assert_eq!(r.inputs(&[Type::Long, Type::Int]).unwrap(), vec![Value::Long(17), Value::Int(6)]);
 
+        // What JBMC prints when its solver runs out of memory: nothing failed, and nothing was proved.
+        let gave_up = "JBMC version 6.11.0\nSolver ran out of memory during propositional reduction.\n[EquivalenceHarness.check:(JI)V.assertion.1] assertion: ERROR\n** 0 of 4 failed (1 iterations)\nVERIFICATION ERROR\n";
+        let r = parse_output(gave_up, "EquivalenceHarness", "check", 16, None);
+        assert_eq!(r.verdict, Verdict::Unverifiable);
+        assert_eq!(r.problem.as_deref(), Some("JBMC produced no verdict: VERIFICATION ERROR"));
+
+        // A count with no last line is no proof either.
+        let cut_off = parse_output("** 0 of 4 failed (1 iterations)\n", "EquivalenceHarness", "check", 16, None);
+        assert_eq!(cut_off.verdict, Verdict::Unverifiable);
+
         let unwound = "[java::EquivalenceHarness.check:(JI)V.unwind.0] unwinding assertion loop 0: FAILURE\n** 1 of 37 failed\n";
         let r = parse_output(unwound, "EquivalenceHarness", "check", 16, None);
         assert_eq!(r.verdict, Verdict::Unverifiable);
@@ -469,10 +485,10 @@ mod tests {
     #[test]
     fn a_run_that_dies_gives_no_verdict_whatever_it_printed() {
         let dir = tempfile::tempdir().unwrap();
-        let proved = "echo '** 0 of 3 failed (1 iterations)'";
+        let proved = "echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION SUCCESSFUL'";
 
         let r = stand_in(dir.path(), "fine", proved);
-        assert_eq!(r.verdict, Verdict::Verified);
+        assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
 
         let r = stand_in(dir.path(), "killed", &format!("{proved}\nkill -9 $$"));
         assert_eq!(r.verdict, Verdict::Unverifiable);
@@ -481,14 +497,19 @@ mod tests {
         let r = stand_in(dir.path(), "starved", &format!("{proved}\necho 'Out of memory'\nexit 6"));
         assert_eq!(r.verdict, Verdict::Unverifiable);
         assert!(r.problem.unwrap().contains("ran out of memory"));
+
+        let solver = "echo 'SAT checker ran out of memory'; echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION ERROR'; exit 6";
+        let r = stand_in(dir.path(), "solver", solver);
+        assert_eq!(r.verdict, Verdict::Unverifiable);
+        assert!(r.problem.unwrap().contains("ran out of memory"));
     }
 
     #[cfg(unix)]
     #[test]
     fn a_run_is_limited_and_goes_first_when_memory_runs_out() {
         let dir = tempfile::tempdir().unwrap();
-        let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; echo '** 0 of 1 failed'");
-        assert_eq!(r.verdict, Verdict::Verified);
+        let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; echo '** 0 of 1 failed'; echo 'VERIFICATION SUCCESSFUL'");
+        assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
         let log = std::fs::read_to_string(&r.log).unwrap();
         assert!(log.lines().next().unwrap().parse::<u64>().unwrap() < u64::MAX / 1024, "{log}");
         assert_eq!(log.lines().nth(1), Some("1000"), "{log}");

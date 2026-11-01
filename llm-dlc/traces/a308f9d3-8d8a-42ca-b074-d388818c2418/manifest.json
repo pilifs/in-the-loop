@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-01T21:49:00.917Z",
-  "duration_seconds": 25567,
+  "ended": "2026-11-01T21:55:08.868Z",
+  "duration_seconds": 25935,
   "stats": {
     "turns": 9,
-    "api_calls": 44,
-    "tool_calls": 42,
+    "api_calls": 50,
+    "tool_calls": 48,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 162122,
+    "peak_context_tokens": 175876,
     "usage": {
-      "input_tokens": 108,
-      "output_tokens": 49585,
-      "cache_read_input_tokens": 4187448,
-      "cache_creation_input_tokens": 176130
+      "input_tokens": 120,
+      "output_tokens": 59627,
+      "cache_read_input_tokens": 5196298,
+      "cache_creation_input_tokens": 189884
     }
   },
   "tools": {
-    "Bash": 34,
+    "Bash": 40,
     "Read": 4,
     "Agent": 2,
     "SendMessage": 1,
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-01T14:42:53.464Z",
-      "ended": "2026-11-01T21:49:00.917Z",
+      "ended": "2026-11-01T21:55:08.868Z",
       "turns": 9,
-      "api_calls": 44,
+      "api_calls": 50,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 49585,
-        "cache_read_input_tokens": 4187448,
-        "cache_creation_input_tokens": 176130
+        "input_tokens": 120,
+        "output_tokens": 59627,
+        "cache_read_input_tokens": 5196298,
+        "cache_creation_input_tokens": 189884
       },
-      "peak_context_tokens": 162122
+      "peak_context_tokens": 175876
     }
   ],
   "log": {
-    "sha256": "f0a55adc344bf687db361879b86365a807d25b0aa3b1118b7a30597a93f9629f",
-    "bytes": 1323854,
-    "lines": 475,
-    "gzip_bytes": 257370,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/f0a55adc344bf687db361879b86365a807d25b0aa3b1118b7a30597a93f9629f.jsonl.gz"
+    "sha256": "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52",
+    "bytes": 1441095,
+    "lines": 543,
+    "gzip_bytes": 269901,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52.jsonl.gz"
   },
   "subagents": [
     {
@@ -139,6 +139,14 @@
       "summary": "Add regression proofs over arrays",
       "body": "jvmcontract equivalence now accepts methods with array parameters and results. The harness copies each array argument exactly as long, runs the previous version on the copies and the new one on the originals, and compares results, exceptions and what each version leaves in the arrays, element by element, with two NaN results counting as equal. The scope in --unchanged-unless may quantify over an array. A differing input is shrunk in the interpreter and reported with what each version left behind. Replay and shrinking moved out of property.rs into a shared witness module. New options are --max-array-length and --no-shrink.\n\nVerified with javac and jbmc on the PATH: all 71 tests pass, including the regression test over arrays, and clippy is clean. Written by the unattended feature loop before the crash; committed separately after the memory limits.",
       "log_sha256": "f0a55adc344bf687db361879b86365a807d25b0aa3b1118b7a30597a93f9629f"
+    },
+    {
+      "change_id": "rkokwqwynkqlmxmqtwoypvkxmqllkkxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Compare arrays in regression proofs, and share the witness code with property proofs",
+      "body": "A regression proof (jvmcontract equivalence) now covers methods that take or return arrays: the harness copies each array parameter so that the version before writes into the copy and the version after into the original, and compares results, exception types and the arrays element by element after both calls (two NaN results agree). The --unchanged-unless expression may quantify over an array parameter with JML's quantifiers, and a differing input is shrunk in the interpreter before it is reported. The replay, shrinking and rendering of a counterexample moved from property.rs into a new witness.rs module shared by equivalence and property proofs. An integration test, arrays_are_compared_in_regression_proofs_as_left_by_each_version, proves two encoders equal and refutes a third; the whole suite (23 tests) passes with javac, jbmc and TLC present. The lib README documents the array comparison and its costs.",
+      "log_sha256": "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52"
     }
   ],
   "logs": {
@@ -146,6 +154,12 @@
       "bytes": 318448,
       "lines": 34,
       "gzip_bytes": 92362,
+      "url": null
+    },
+    "5b85100099cc9215cea9a67fdac266195cac8777d42786abea7ec3389c463d52": {
+      "bytes": 1441095,
+      "lines": 543,
+      "gzip_bytes": 269901,
       "url": null
     },
     "891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113": {
