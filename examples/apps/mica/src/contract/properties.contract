@@ -2,7 +2,8 @@
 # bytecode (jvmcontract prove --properties). Each block names a static method, the inputs the property is about
 # (assume: every input when absent), the property (assert: over the parameters and the result), and the
 # exceptions the kernel throws by design (throws: an exception class and the condition under which it is thrown,
-# and under which nothing else is asserted). A property that fails is reported with the input that violates it.
+# and under which nothing else is asserted). An array parameter is read after the call, and \old(a[i]) is the
+# element as the call received it. A property that fails is reported with the input that violates it.
 kind: properties
 module: mica
 
@@ -54,10 +55,11 @@ net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex
   assert: result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])
 
 # JVMS 4.4.7: no byte of the encoding is zero, and none lies in 0xf0 to 0xff, since the four-byte form of standard
-# UTF-8 is not used; a supplementary character is its two surrogates, three bytes each. The buffer is the caller's.
+# UTF-8 is not used; a supplementary character is its two surrogates, three bytes each. The buffer is the caller's,
+# and the bytes past the encoding stay as they were (\old is JML's: the element before the call).
 net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto
   assume: out.length >= 3 * chars.length
-  assert: result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0)
+  assert: result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))
 
 # The capacity is a power of two, at least the requested one, and the smallest such, up to the maximum.
 net.terminalvalue.mica.rt.SymbolTable#tableSizeFor
@@ -90,3 +92,13 @@ net.terminalvalue.mica.classfile.ConstantPool#indexOf
 net.terminalvalue.mica.asm.MaxStack#of
   assume: (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)
   assert: result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))
+
+# JVMS 6.5, lookupswitch: the match-offset pairs are sorted by match value, and the sort is a permutation that
+# keeps each offset with its key: every pair as the call received it (\old) is among the pairs after it, and
+# every key is at most the next. A table of fewer offsets than keys is rejected. Tables of up to four pairs, with
+# the loops unwound just past that: a sort is quadratic, and so is the pairing quantifier.
+net.terminalvalue.mica.asm.SwitchLowering#sortPairs
+  arrays: 4
+  unwind: 5
+  throws: IllegalArgumentException when keys.length != offsets.length
+  assert: (\forall int i; 0 < i && i < keys.length; keys[i - 1] <= keys[i]) && (\forall int i; 0 <= i && i < keys.length; (\exists int j; 0 <= j && j < keys.length; keys[j] == \old(keys[i]) && offsets[j] == \old(offsets[i])))

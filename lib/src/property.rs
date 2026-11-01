@@ -222,7 +222,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         signals.push(signal);
     }
-    let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals) {
+    let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref(), &signals, options.max_array_length) {
         Ok(h) => h,
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
@@ -347,6 +347,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                             locals.push(Value::Null);
                             let after = arrays_after.iter().find(|(slot, _)| *slot == p.slot).map(|(_, d)| d.clone());
                             arrays.push((p.slot, after.unwrap_or_else(|| data.clone())));
+                            // What \old(a) reads: the array as the call received it.
+                            if let Some((_, copy)) = harness.old.iter().find(|(slot, _)| *slot == p.slot) {
+                                arrays.push((*copy, data.clone()));
+                            }
                         }
                         Argument::Null => locals.push(Value::Null),
                     }
@@ -478,10 +482,13 @@ pub struct Declaration {
     pub throws: Vec<String>,
     /// `arrays:` the longest array an array parameter is given for this property, overriding the command line.
     pub max_array_length: Option<u32>,
+    /// `unwind:` the loop unwinding bound for this property, overriding the command line: the bound a sort of
+    /// four elements needs is five, and what the solver does with the sixteen the default unwinds is paid for.
+    pub unwind: Option<u32>,
 }
 
 /// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:`,
-/// `assert:`, `throws:` and `arrays:` lines; `#` comments and `key: value` headers are skipped.
+/// `assert:`, `throws:`, `arrays:` and `unwind:` lines; `#` comments and `key: value` headers are skipped.
 pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, Error> {
     let mut out: Vec<Declaration> = Vec::new();
     for (number, raw) in text.lines().enumerate() {
@@ -493,7 +500,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         let body = line.trim();
         if !indented {
             if body.contains('#') && !body.contains(':') {
-                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None });
+                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None });
                 continue;
             }
             if body.split_once(':').is_some() {
@@ -514,7 +521,8 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
             Some(("arrays", value)) => {
                 last.max_array_length = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `arrays:` needs a number of elements, found {:?}", number + 1, value.trim())))?)
             }
-            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:` or `arrays:`, found {body:?}", number + 1))),
+            Some(("unwind", value)) => last.unwind = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `unwind:` needs a number of loop iterations, found {:?}", number + 1, value.trim())))?),
+            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:`, `arrays:` or `unwind:`, found {body:?}", number + 1))),
         }
     }
     Ok(out)
@@ -697,14 +705,16 @@ mod tests {
 
     #[test]
     fn parses_a_properties_file() {
-        let text = "# Property contract\nkind: properties\nmodule: quorum\n\nnet.example.Quorum#majority\n  assume: n > 0\n  assert: 2L * result > n\n  arrays: 4\n\nnet.example.Laws#holds\n";
+        let text = "# Property contract\nkind: properties\nmodule: quorum\n\nnet.example.Quorum#majority\n  assume: n > 0\n  assert: 2L * result > n\n  arrays: 4\n  unwind: 5\n\nnet.example.Laws#holds\n";
         let declarations = parse_declarations(text, "properties.contract").unwrap();
         assert_eq!(declarations.len(), 2);
         assert_eq!(declarations[0].target, "net.example.Quorum#majority");
         assert_eq!(declarations[0].assume.as_deref(), Some("n > 0"));
         assert_eq!(declarations[0].assert.as_deref(), Some("2L * result > n"));
         assert_eq!(declarations[0].max_array_length, Some(4));
-        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None });
+        assert_eq!(declarations[0].unwind, Some(5));
+        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None });
+        assert!(parse_declarations("net.example.A#b\n  unwind: many\n", "f").is_err(), "a number");
         let signals = parse_declarations("net.example.A#div\n  throws: java.lang.ArithmeticException when b == 0\n  throws: IllegalArgumentException when a < 0\n", "f").unwrap();
         assert_eq!(signals[0].throws, vec!["java.lang.ArithmeticException when b == 0".to_string(), "IllegalArgumentException when a < 0".to_string()]);
         assert!(parse_declarations("net.example.A#b\n  throws: ArithmeticException\n", "f").is_err(), "a throws clause needs a condition");

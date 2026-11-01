@@ -10,7 +10,7 @@
 //! The second kind of harness states a *property* of one version ([`generate_property`]): on every input that
 //! satisfies an assumption, the method returns without throwing and its result satisfies an assertion, which may
 //! call the method again to state a law. Array parameters are symbolic arrays of bounded length, and a quantifier
-//! in the assertion becomes a loop in the harness.
+//! in the assertion becomes a loop in the harness; `\old(a[i])` reads a copy of the array taken before the call.
 
 pub mod expr;
 
@@ -292,6 +292,9 @@ pub struct PropertyHarness {
     /// The throws clauses, with their conditions parsed; the first whose condition holds is the one expected.
     pub signals: Vec<(Signal, Expr)>,
     pub params: Vec<Param>,
+    /// By the slot of each array parameter the assertion reads under `\old`, the slot of the copy the harness
+    /// takes before the call.
+    pub old: Vec<(u16, u16)>,
 }
 
 /// Generates the harness of a property of `class_internal.method(params) -> ret`: on every input where `assume`
@@ -299,7 +302,9 @@ pub struct PropertyHarness {
 /// condition of one of the `signals` holds instead, it throws that clause's exception. The assertion may name the
 /// parameters, `result`, and the method itself; when it is `None`, the method must return `boolean` and the
 /// property is that it returns `true`, or have throws clauses, and the property is that it returns at all.
-pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]) -> Result<PropertyHarness, Error> {
+/// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
+#[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
+pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
     let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
@@ -317,17 +322,23 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
         None if !signals.is_empty() => "true".to_string(),
         None => return Err(Error::new(format!("the method returns {}, so the property needs an assertion (--assert) over the parameters and `result`", ret.java_name()))),
     };
-    // Locals after the parameters: result, e, expected; quantifiers take their variables after those.
+    // Locals after the parameters: result, e, expected, a copy of each array parameter for \old (taken only when
+    // the assertion reads it); quantifiers take their variables after those.
     let ret_kind = kind_of(ret);
     let result = arg_slots;
     let e = result + if is_void { 0 } else { ret.slots() };
     let expected = e + 1;
-    let first_free = expected + 1;
+    let copies: Vec<(u16, u16)> = params.iter().filter(|p| matches!(p.ty, Type::Array(_))).enumerate().map(|(i, p)| (p.slot, expected + 1 + i as u16)).collect();
+    let first_free = expected + 1 + copies.len() as u16;
     let assume_expr = match assume {
         Some(src) => Some(expr::parse_in(src, params, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
-    let assertion_expr = expr::parse_in(&assertion_text, &names, callee.as_ref(), first_free).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    let assertion_expr = expr::parse_after(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies)).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    if assertion_expr.ty() != expr::Ty::Boolean {
+        return Err(Error::new("in the assertion: the expression must be boolean"));
+    }
+    let old: Vec<(u16, u16)> = copies.iter().copied().filter(|(_, copy)| assertion_expr.mentions(*copy)).collect();
     let mut signal_exprs = Vec::new();
     for signal in signals {
         if signal.class.is_empty() || signal.class.contains(|c: char| c.is_whitespace() || c == ';' || c == '[') {
@@ -380,6 +391,49 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
             code.bind(next);
         }
         code.bind(decided);
+    }
+    // The copies for \old: as long as the bound on the arrays (a copy of the array's own, symbolic, length costs
+    // the solver far more), copied element by element in a loop of that many iterations; exactly as long as the
+    // array only when the assertion passes the copy to a call, which would see the padding. The index is the
+    // first quantifier slot, which is free until the assertion.
+    for (slot, copy) in &old {
+        let element = match &params.iter().find(|p| p.slot == *slot).expect("an array parameter").ty {
+            Type::Array(element) => (**element).clone(),
+            _ => unreachable!(),
+        };
+        let index = first_free;
+        let loop_ = code.label();
+        let skip = code.label();
+        let done = code.label();
+        let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
+        if assertion_expr.passes(*copy) {
+            code.load(Kind::Ref, *slot);
+            code.op(0xbe); // arraylength
+        } else {
+            code.iconst(bound);
+        }
+        code.op_u8(0xbc, newarray_code(&element)); // newarray
+        code.store(Kind::Ref, *copy);
+        code.iconst(0);
+        code.store(Kind::Int, index);
+        code.bind(loop_);
+        code.load(Kind::Int, index);
+        code.iconst(bound);
+        code.if_icmp(Cond::Ge, done);
+        code.load(Kind::Int, index);
+        code.load(Kind::Ref, *slot);
+        code.op(0xbe); // arraylength
+        code.if_icmp(Cond::Ge, skip);
+        code.load(Kind::Ref, *copy);
+        code.load(Kind::Int, index);
+        code.load(Kind::Ref, *slot);
+        code.load(Kind::Int, index);
+        code.op(array_load(&element));
+        code.op(array_store(&element));
+        code.bind(skip);
+        code.iinc(index, 1);
+        code.goto(loop_);
+        code.bind(done);
     }
     let try_start = code.label();
     let try_end = code.label();
@@ -459,11 +513,45 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     code.op(0xbf); // athrow
     code.bind(ok);
     code.return_(None);
-    code.max_locals = code.max_locals.max(first_free);
+    code.max_locals = code.max_locals.max(first_free + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = property_source(class_internal, method, params, ret, assume, &assertion_text, signals);
-    Ok(PropertyHarness { bytes: writer.to_bytes(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec() })
+    Ok(PropertyHarness { bytes: writer.to_bytes(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec(), old })
+}
+
+/// The `newarray` type code of a primitive element type.
+fn newarray_code(element: &Type) -> u8 {
+    match element {
+        Type::Boolean => 4,
+        Type::Char => 5,
+        Type::Float => 6,
+        Type::Double => 7,
+        Type::Byte => 8,
+        Type::Short => 9,
+        Type::Long => 11,
+        _ => 10, // int
+    }
+}
+
+fn array_load(element: &Type) -> u8 {
+    match element {
+        Type::Long => 0x2f,                 // laload
+        Type::Byte | Type::Boolean => 0x33, // baload
+        Type::Char => 0x34,                 // caload
+        Type::Short => 0x35,                // saload
+        _ => 0x2e,                          // iaload
+    }
+}
+
+fn array_store(element: &Type) -> u8 {
+    match element {
+        Type::Long => 0x50,                 // lastore
+        Type::Byte | Type::Boolean => 0x54, // bastore
+        Type::Char => 0x55,                 // castore
+        Type::Short => 0x56,                // sastore
+        _ => 0x4f,                          // iastore
+    }
 }
 
 /// The property as Java source, for readers.
@@ -483,6 +571,9 @@ pub fn property_source(class_internal: &str, method: &str, params: &[Param], ret
     s.push_str("/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */\n");
     if assertion.contains('\\') || assume.is_some_and(|a| a.contains('\\')) || signals.iter().any(|s| s.when.contains('\\')) {
         s.push_str("/* \\forall, \\exists, \\sum, \\num_of, \\max and \\min are JML's quantifiers; the class file evaluates each as a loop over its range. */\n");
+    }
+    if assertion.contains("\\old") {
+        s.push_str("/* \\old(a) is the array a as it was before the call: the class file copies it first. */\n");
     }
     s.push_str(&format!("public final class {PROPERTY_CLASS} {{\n"));
     s.push_str(&format!("    public static void {METHOD}({param_list}) {{\n"));
@@ -546,7 +637,7 @@ mod tests {
     #[test]
     fn generates_a_well_formed_property_harness() {
         let params = params(&["now".into(), "last".into(), "message".into()], &[Type::Long, Type::Long, Type::Long]);
-        let harness = generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("now >= 0"), Some("result > last && result == receive(now, message, last)"), &[]).unwrap();
+        let harness = generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("now >= 0"), Some("result > last && result == receive(now, message, last)"), &[], 8).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         assert_eq!(class.name, PROPERTY_CLASS);
         let check = class.method(METHOD, "(JJJ)V").expect("check method");
@@ -563,10 +654,10 @@ mod tests {
         assert!(harness.source.contains("if (!(now >= 0)) { return; }"), "{}", harness.source);
         assert!(harness.source.contains("assert e == 0 && (result > last && result == net.example.Clock.receive(now, message, last));"), "{}", harness.source);
 
-        let boolean = generate_property("net/example/Laws", "holds", &params, &Type::Boolean, None, None, &[]).unwrap();
+        let boolean = generate_property("net/example/Laws", "holds", &params, &Type::Boolean, None, None, &[], 8).unwrap();
         assert_eq!(boolean.assertion_text, "result");
-        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, None, None, &[]).is_err(), "a long result needs an assertion");
-        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("result > 0"), Some("true"), &[]).is_err(), "no result in the assumption");
+        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, None, None, &[], 8).is_err(), "a long result needs an assertion");
+        assert!(generate_property("net/example/Clock", "receive", &params, &Type::Long, Some("result > 0"), Some("true"), &[], 8).is_err(), "no result in the assumption");
     }
 
     #[test]
@@ -574,7 +665,7 @@ mod tests {
         let params = params(&["dividend".into(), "divisor".into()], &[Type::Int, Type::Int]);
         let signals = vec![Signal::parse("java.lang.ArithmeticException when divisor == 0").unwrap()];
         assert_eq!(signals[0], Signal { class: "java/lang/ArithmeticException".into(), when: "divisor == 0".into() });
-        let harness = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("divisor != -1 || result == -dividend"), &signals).unwrap();
+        let harness = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("divisor != -1 || result == -dividend"), &signals, 8).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let check = class.method(METHOD, "(II)V").expect("check method");
         let code = check.code.as_ref().unwrap();
@@ -593,18 +684,55 @@ mod tests {
         assert_eq!(harness.signals.len(), 1);
 
         // A void method's property can be its throws clauses alone.
-        let void = generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &signals).unwrap();
+        let void = generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &signals, 8).unwrap();
         assert_eq!(void.assertion_text, "true");
-        assert!(generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &[]).is_err(), "a void method with no throws clause has no property");
-        let bad = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("true"), &[Signal::parse("java.lang.ArithmeticException when result == 0").unwrap()]);
+        assert!(generate_property("net/example/Table", "check", &params, &Type::Void, None, None, &[], 8).is_err(), "a void method with no throws clause has no property");
+        let bad = generate_property("net/example/Arithmetic", "idiv", &params, &Type::Int, None, Some("true"), &[Signal::parse("java.lang.ArithmeticException when result == 0").unwrap()], 8);
         assert!(bad.unwrap_err().to_string().contains("in the throws clause"), "no result before the call");
         assert!(Signal::parse("ArithmeticException").is_err());
     }
 
     #[test]
+    fn generates_a_property_harness_with_old() {
+        let params = params(&["a".into(), "n".into()], &[Type::Array(Box::new(Type::Byte)), Type::Int]);
+        let harness = generate_property("net/example/InPlace", "zeroFrom", &params, &Type::Void, Some("0 <= n && n <= a.length"), Some("\\forall int i; 0 <= i && i < n; a[i] == \\old(a[i])"), &[], 8).unwrap();
+        // Slots: a, n, e, expected, the copy of a; then the index of the copying loop, which the quantifier's
+        // variable reuses, and the accumulator.
+        assert_eq!(harness.old, vec![(0, 4)]);
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "([BI)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        assert_eq!(code.max_locals, 7);
+        let insns = code.instructions().unwrap();
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        assert!(code.bytes.windows(3).any(|w| w == [0x10, 8, 0xbc]), "newarray as long as the bound");
+        assert!(code.bytes.windows(2).any(|w| w == [0xbc, 8]), "newarray byte");
+        assert!(code.bytes.contains(&0x54), "bastore");
+        assert!(harness.source.contains("\\old(a) is the array a as it was before the call"), "{}", harness.source);
+
+        let plain = generate_property("net/example/InPlace", "zeroFrom", &params, &Type::Void, None, Some("a.length >= n"), &[], 8).unwrap();
+        assert!(plain.old.is_empty(), "no copy unless the assertion reads it");
+        assert!(!plain.source.contains("\\old"));
+        let err = generate_property("net/example/InPlace", "zeroFrom", &params, &Type::Void, Some("\\old(a.length) > 0"), Some("true"), &[], 8).unwrap_err();
+        assert!(err.to_string().contains("in the assumption: \\old is only meaningful in the assertion"), "{err}");
+        // A copy passed to a call is exactly as long as the array.
+        let one = super::params(&["a".into()], &[Type::Array(Box::new(Type::Int))]);
+        let passed = generate_property("net/example/InPlace", "sum", &one, &Type::Int, None, Some("sum(\\old(a)) == result"), &[], 8).unwrap();
+        assert_eq!(passed.old, vec![(0, 4)]);
+        let class = ClassFile::parse(&passed.bytes).unwrap();
+        let code = class.method(METHOD, "([I)V").unwrap().code.as_ref().unwrap();
+        assert!(code.bytes.windows(3).any(|w| w == [0xbe, 0xbc, 10]), "newarray int of the array's length");
+    }
+
+    #[test]
     fn generates_a_property_harness_over_arrays() {
         let params = params(&["matches".into(), "key".into()], &[Type::Array(Box::new(Type::Int)), Type::Int]);
-        let harness = generate_property("net/example/Search", "find", &params, &Type::Int, Some("\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]"), Some("result == -1 || matches[result] == key"), &[]).unwrap();
+        let harness = generate_property("net/example/Search", "find", &params, &Type::Int, Some("\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]"), Some("result == -1 || matches[result] == key"), &[], 8).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let check = class.method(METHOD, "([II)V").expect("check method");
         let code = check.code.as_ref().unwrap();

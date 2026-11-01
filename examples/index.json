@@ -838,6 +838,36 @@
       "approach": "B11",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "055",
+      "path": "055-encoder-that-zero-terminates-into-the-callers-buffer",
+      "title": "An encoder that zero-terminates the string into the caller's buffer",
+      "summary": "`encodeInto` writes the modified UTF-8 encoding of a `char[]` into a buffer the caller provides and returns how many bytes it wrote. A developer adds a zero byte after the encoding when the buffer has room, so that the bytes can be handed to native code as a C string, which is what the encoding's zero-free form exists for. The property committed for the encoder now has a frame condition in JML's `\\old`: the bytes past what it wrote are as the call received them. The prover refutes the patched encoder on an empty string and a one-byte buffer, whose byte it zeroes.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "056",
+      "path": "056-switch-pair-sort-that-compares-keys-by-difference",
+      "title": "A lookupswitch pair sort that compares keys by difference",
+      "summary": "The assembler sorts the match-offset pairs of a `lookupswitch` by key, as JVMS §6.5 requires, with an insertion sort that keeps each offset with its key. A developer factors the comparison into a `compare` method that returns the difference of the two keys, the comparator idiom. The property committed for the sort says that the keys come out sorted and that every pair the call received is among the pairs it left, in JML's `\\old`. The prover refutes the patched sort on two keys in order whose difference overflows, `Integer.MIN_VALUE + 271` and `272`, which it swaps.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.asm.SwitchLowering#sortPairs",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

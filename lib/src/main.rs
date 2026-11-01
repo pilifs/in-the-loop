@@ -335,7 +335,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -353,7 +353,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 if let Some(base) = &args.base {
                     options.base = base.clone();
                 }
-                options.unwind = args.unwind;
+                options.unwind = declaration.unwind.unwrap_or(args.unwind);
                 options.max_array_length = declaration.max_array_length.unwrap_or(args.max_array_length);
                 options.shrink = !args.no_shrink;
                 options.timeout_seconds = args.timeout;

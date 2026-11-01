@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "056",
+  "title": "A lookupswitch pair sort that compares keys by difference",
+  "summary": "The assembler sorts the match-offset pairs of a `lookupswitch` by key, as JVMS §6.5 requires, with an insertion sort that keeps each offset with its key. A developer factors the comparison into a `compare` method that returns the difference of the two keys, the comparator idiom. The property committed for the sort says that the keys come out sorted and that every pair the call received is among the pairs it left, in JML's `\\old`. The prover refutes the patched sort on two keys in order whose difference overflows, `Integer.MIN_VALUE + 271` and `272`, which it swaps.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java",
+    "symbol": "net.terminalvalue.mica.asm.SwitchLowering#sortPairs"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace `keys[j - 1] > key` in the inner loop with `compare(keys[j - 1], key) > 0`, where the new `compare` returns `a - b`, documented as a comparator's result: negative, zero or positive. The tests of the sort pass: three pairs in reverse order, three in order, and a table with a missing offset.",
+    "patch": "change.patch"
+  },
+  "risk": "`a - b` is the sign of `a` compared with `b` only when the subtraction does not overflow, and the case labels of a `switch` are any `int`: a `switch` on a hash code, or on `Integer.MIN_VALUE` as a sentinel, has labels whose difference wraps. A pair the sort leaves out of order is a table the `lookupswitch` bisection searches wrongly: the key is in the table and the search returns the default, so the guest program takes the wrong branch, with no exception and no diagnostic, on a class file that passes verification. The tests use labels between 10 and 300.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `sortPairs` is two quantifiers: `(\\forall int i; 0 < i && i < keys.length; keys[i - 1] <= keys[i])`, the keys are sorted, and `(\\forall int i; 0 <= i && i < keys.length; (\\exists int j; 0 <= j && j < keys.length; keys[j] == \\old(keys[i]) && offsets[j] == \\old(offsets[i])))`, every pair as the call received it is among the pairs after it, which with the lengths equal makes the sort a permutation that keeps each offset with its key. `\\old` is JML's pre-state operator; the tool copies the arrays in the generated harness before the call and reads the copies under it. The block also sets `arrays: 4` and `unwind: 5`: a sort of four pairs and the pairing quantifier are both quadratic, and the proof of the committed sort takes about fifteen seconds with the loops unwound five times, where the default of sixteen takes minutes. JBMC refutes the patched sort in the first search stage, and the tool shrinks the witness to `sortPairs(keys=[-2147483377, 272], offsets=[0, 0])`: two keys already in order, `Integer.MIN_VALUE + 271` and `272`, whose difference is `-2147483649`, which wraps to `Integer.MAX_VALUE`, positive, so the sort shifts the first past the second and leaves `keys=[272, -2147483377]`, and the sortedness conjunct fails. The witness is a table of two keys just over `2^31` apart, the smallest distance at which a comparator by difference lies; the shrinking stops there because any smaller distance is a difference that fits.",
+  "resolution": "Revert to the comparison, or make `compare` return `Integer.compare(a, b)`, and keep the property in the build: it is the test that `compare` on every pair of `int` labels is a total order, which no table of sample labels is.",
+  "provenance": "Constructed from the comparator-by-difference idiom, which Java's own `Integer.compare` exists to replace, applied to the sort an assembler needs for JVMS §6.5.",
+  "references": [
+    {
+      "title": "JVMS §6.5, lookupswitch: the match-offset pairs must be sorted in increasing numerical order by match",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.lookupswitch"
+    },
+    {
+      "title": "Integer.compare: the comparison the difference idiom gets wrong on overflow",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html#compare(int,int)"
+    },
+    {
+      "title": "JML reference manual, predicates and specification expressions: \\old, the value of an expression in the pre-state",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html"
+    }
+  ]
+}

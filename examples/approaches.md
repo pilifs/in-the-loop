@@ -189,6 +189,13 @@ there and returns everywhere else, and the prover covers both paths, so that an 
 proved to throw where the check did, and a class file check which rejects a handler range ending at `code_length` is
 refuted on a method of one byte. Until then the exception was assumed away (`assume: divisor != 0`), and the
 exceptional path was the tests' alone.
+[Examples 055 and 056](README.md) state what a method that writes into an array did to it, against what it received,
+with JML's `\old`: `(\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` is a frame condition, the
+bytes past what the encoder wrote are as they were, which refutes an encoder that zero-terminates the string into the
+caller's buffer; and `keys[j] == \old(keys[i]) && offsets[j] == \old(offsets[i])` under a `\forall` and an `\exists`,
+with the keys sorted, is an in-place sort proved a permutation that keeps each offset with its key, which refutes a
+sort whose comparison is a difference, on two keys just over 2^31 apart. The harness copies the arrays before the
+call, as long as the bound on them, and the block sets the unwinding bound a sort of four pairs needs (`unwind: 5`).
 
 A limit found while writing them: JBMC's SAT backend proves linear arithmetic, comparisons, shifts and a single
 division quickly, and gets stuck on identities between divisions and multiplications, such as "the parts of an
@@ -280,9 +287,9 @@ role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wi
 Examples 023 to 033 run it over [Crosscut](apps/crosscut/README.md), the kernels inside a Spring Boot service's cross-cutting concerns:
 the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an idempotent receiver with its TLA+ model, a Kafka
 partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
-Examples 034 to 054 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
-with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, the
-exception table's handler lookup, stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`,
+Examples 034 to 056 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
+with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection and the
+sort of its pairs, the exception table's handler lookup, stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`,
 javac's switch heuristic, a power-of-two table size and modified UTF-8.
 Still to do:
 

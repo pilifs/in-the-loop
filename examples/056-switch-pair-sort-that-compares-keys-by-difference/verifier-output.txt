@@ -1,0 +1,6 @@
+✗ Property of net.terminalvalue.mica.asm.SwitchLowering#sortPairs violated: `(\forall int i; 0 < i && i < keys.length; keys[i - 1] <= keys[i]) && (\forall int i; 0 <= i && i < keys.length; (\exists int j; 0 <= j && j < keys.length; keys[j] == \old(keys[i]) && offsets[j] == \old(offsets[i])))`, and throws java.lang.IllegalArgumentException when keys.length != offsets.length:
+  sortPairs(keys=[-2147483377, 272], offsets=[0, 0])
+    outcome: void, leaving keys=[272, -2147483377]
+  (found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as sortPairs(keys=[1041, -2147483648, 1, 272], offsets=[-1091355143, -1091355143, -1944199553, -474718690]), shrunk to the input above in 389 interpreter runs, replayed in the interpreter; domain keys: int[] of length ≤ 4 × offsets: int[] of length ≤ 4)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.

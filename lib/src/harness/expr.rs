@@ -22,6 +22,12 @@
 //! a[i])` adds (an `int` or a `long`, wrapping as Java does), `\num_of` counts the values of `i` for which a boolean
 //! body holds (an `int`), and `\max` and `\min` take the extreme of a numeric body; over an empty range they are
 //! 0, 0, the smallest value of the body's type and the largest, as in JML.
+//!
+//! A property reads an array parameter after the call, so `\old(a[i])` and `\old(a.length)` (JML's `\old`) are
+//! the element and the length before it, from a copy the harness takes before the call; `\old(a)` passes that
+//! copy to a call. That is how a method that writes into an array is held to what it changed and what it left:
+//! `(\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` is a frame condition, and
+//! `(\exists int j; 0 <= j && j < keys.length; keys[j] == \old(keys[i]))` says an element is kept.
 
 use crate::classfile::writer::{CodeBuilder, PoolBuilder};
 use crate::classfile::{Cond, Kind, Type};
@@ -257,8 +263,24 @@ impl Expr {
         }
     }
 
+    /// Whether the expression passes the array in `slot` to a call, which sees its whole length.
+    pub fn passes(&self, slot: u16) -> bool {
+        match self {
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Index(_, _, _, index) => index.passes(slot),
+            Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
+            Expr::Binary(_, l, r) => l.passes(slot) || r.passes(slot),
+            Expr::Ternary(c, t, e) => c.passes(slot) || t.passes(slot) || e.passes(slot),
+            Expr::Call(_, args) => args.iter().any(|a| match a {
+                CallArg::Value(e) => e.passes(slot),
+                CallArg::Array(_, s) => *s == slot,
+            }),
+            Expr::Quantifier(q) => q.lo.passes(slot) || q.hi.passes(slot) || q.body.passes(slot) || q.filter.as_ref().is_some_and(|f| f.passes(slot)),
+        }
+    }
+
     /// Whether the expression reads the local in `slot`.
-    fn mentions(&self, slot: u16) -> bool {
+    pub fn mentions(&self, slot: u16) -> bool {
         match self {
             Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => false,
             Expr::Var(_, _, s) | Expr::Length(_, s) => *s == slot,
@@ -306,6 +328,8 @@ enum Token {
     Op(&'static str),
     /// `\forall`, `\exists`, `\sum`, `\num_of`, `\max` or `\min`.
     Quantifier(Quant),
+    /// `\old`.
+    Old,
     End,
 }
 
@@ -370,7 +394,8 @@ fn lex(src: &str) -> Result<Vec<Token>, Error> {
                 "num_of" => tokens.push(Token::Quantifier(Quant::NumOf)),
                 "max" => tokens.push(Token::Quantifier(Quant::Max)),
                 "min" => tokens.push(Token::Quantifier(Quant::Min)),
-                _ => return Err(Error::new(format!("unknown \\{word} in expression; the quantifiers are \\forall, \\exists, \\sum, \\num_of, \\max and \\min"))),
+                "old" => tokens.push(Token::Old),
+                _ => return Err(Error::new(format!("unknown \\{word} in expression; the quantifiers are \\forall, \\exists, \\sum, \\num_of, \\max and \\min, and \\old(a[i]) is an element before the call"))),
             }
             continue;
         }
@@ -398,6 +423,11 @@ struct Parser<'a> {
     scope: Vec<Param>,
     /// The first local-variable slot free for a quantifier's variable.
     next_slot: u16,
+    /// Where `\old` is allowed, the slot of the copy of each array parameter taken before the call, by the
+    /// parameter's slot.
+    old: Option<&'a [(u16, u16)]>,
+    /// Whether the parser is inside `\old(...)`.
+    in_old: bool,
 }
 
 impl Parser<'_> {
@@ -426,6 +456,16 @@ impl Parser<'_> {
         } else {
             Err(Error::new(format!("expected {op:?} in expression, found {:?}", self.peek())))
         }
+    }
+
+    /// The name and slot an array parameter is read from: its own, or inside `\old`, its copy's, shown as
+    /// `\old(a)`.
+    fn array_state(&self, name: String, slot: u16) -> Result<(String, u16), Error> {
+        if !self.in_old {
+            return Ok((name, slot));
+        }
+        let copy = self.old.and_then(|old| old.iter().find(|(s, _)| *s == slot)).map(|(_, copy)| *copy).ok_or_else(|| Error::new(format!("no copy of {name} is taken before the call")))?;
+        Ok((format!("\\old({name})"), copy))
     }
 
     fn ternary(&mut self) -> Result<Expr, Error> {
@@ -504,6 +544,18 @@ impl Parser<'_> {
             self.next();
             return self.quantifier(kind);
         }
+        if self.peek() == &Token::Old {
+            self.next();
+            require(self.old.is_some(), "\\old is only meaningful in the assertion, which is checked after the call")?;
+            require(!self.in_old, "\\old inside \\old")?;
+            self.expect("(")?;
+            self.in_old = true;
+            let e = self.ternary();
+            self.in_old = false;
+            let e = e?;
+            self.expect(")")?;
+            return Ok(e);
+        }
         if self.peek() == &Token::Op("(") {
             // A cast, or a parenthesised expression.
             if let Token::Ident(name) = &self.tokens[self.pos + 1] {
@@ -549,12 +601,26 @@ impl Parser<'_> {
                                 (Token::Ident(a), Token::Op(",") | Token::Op(")")) => self.params.iter().find(|p| p.name == *a && matches!(p.ty, Type::Array(_))).map(|p| (p.name.clone(), p.slot, p.ty.clone())),
                                 _ => None,
                             };
-                            match array {
-                                Some((a, slot, ty)) => {
+                            let old = match (&self.tokens[self.pos], self.tokens.get(self.pos + 1), self.tokens.get(self.pos + 2), self.tokens.get(self.pos + 3)) {
+                                (Token::Old, Some(Token::Op("(")), Some(Token::Ident(a)), Some(Token::Op(")"))) if !self.in_old => self.params.iter().find(|p| p.name == *a && matches!(p.ty, Type::Array(_))).map(|p| (p.name.clone(), p.slot, p.ty.clone())),
+                                _ => None,
+                            };
+                            match (array, old) {
+                                (Some((a, slot, ty)), _) => {
                                     self.next();
+                                    let (a, slot) = self.array_state(a, slot)?;
                                     args.push((CallArg::Array(a, slot), Some(ty)));
                                 }
-                                None => args.push((CallArg::Value(self.ternary()?), None)),
+                                (None, Some((a, slot, ty))) => {
+                                    require(self.old.is_some(), "\\old is only meaningful in the assertion, which is checked after the call")?;
+                                    self.pos += 4;
+                                    self.in_old = true;
+                                    let state = self.array_state(a, slot);
+                                    self.in_old = false;
+                                    let (a, slot) = state?;
+                                    args.push((CallArg::Array(a, slot), Some(ty)));
+                                }
+                                (None, None) => args.push((CallArg::Value(self.ternary()?), None)),
                             }
                             if self.eat(")") {
                                 break;
@@ -582,20 +648,27 @@ impl Parser<'_> {
                         return Ok(Expr::Var(name, Ty::Int, bound.slot));
                     }
                     let param = self.params.iter().find(|p| p.name == name).ok_or_else(|| Error::new(format!("unknown name {name:?}; the names are {}", self.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))))?;
+                    if self.in_old && name == "result" {
+                        return Err(Error::new("result has no value before the call; \\old applies to the parameters"));
+                    }
                     if let Type::Array(element) = &param.ty {
                         let element = (**element).clone();
                         element_ty(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only arrays of integral or boolean elements can appear in the expression", param.ty.java_name())))?;
+                        let (shown, slot) = self.array_state(name.clone(), param.slot)?;
                         if self.eat(".") {
                             match self.next() {
+                                // A length does not change, so \old(a.length) is a.length, read from the array itself.
                                 Token::Ident(field) if field == "length" => return Ok(Expr::Length(name, param.slot)),
                                 other => return Err(Error::new(format!("expected {name}.length, found {other:?}"))),
                             }
                         }
                         if self.eat("[") {
+                            // The index is a value of the pre-state too, but every value it can name is unchanged
+                            // by the call, so it is parsed as any other expression.
                             let index = self.ternary()?;
                             require(index.ty() == Ty::Int, &format!("the index of {name} must be an int"))?;
                             self.expect("]")?;
-                            return Ok(Expr::Index(name, param.slot, element, Box::new(index)));
+                            return Ok(Expr::Index(shown, slot, element, Box::new(index)));
                         }
                         return Err(Error::new(format!("{name} is an array; use {name}.length, {name}[index], or a quantifier over it")));
                     }
@@ -741,8 +814,15 @@ pub fn parse_in(src: &str, params: &[Param], callee: Option<&Callee>, first_free
 
 /// As [`parse_in`], for an expression of any type.
 pub fn parse_value(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16) -> Result<Expr, Error> {
+    parse_after(src, params, callee, first_free_slot, None)
+}
+
+/// As [`parse_value`], for an expression checked after a call: `old` gives, by an array parameter's slot, the
+/// slot of the copy of it taken before the call, which `\old(a[i])` and `\old(a.length)` read; without it,
+/// `\old` is an error.
+pub fn parse_after(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>) -> Result<Expr, Error> {
     let tokens = lex(src)?;
-    let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot };
+    let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot, old, in_old: false };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
@@ -1195,6 +1275,8 @@ mod tests {
         ]
     }
 
+    const RESULT_NAME: &str = "result";
+
     fn locals(price: i64, seats: i32, vip: bool) -> Vec<Value> {
         vec![Value::Long(price), Value::Int(0), Value::Int(seats), Value::Int(vip as i32)]
     }
@@ -1258,6 +1340,35 @@ mod tests {
         assert!(parse_in("a[1L] == 0", &params, None, 2).is_err(), "a long index");
         let floats = vec![Param { name: "f".into(), ty: Type::Array(Box::new(Type::Float)), slot: 0 }];
         assert!(parse_in("f.length > 0", &floats, None, 1).is_err(), "float elements are not expressible");
+    }
+
+    #[test]
+    fn reads_the_pre_state_under_old() {
+        let params = vec![Param { name: "a".into(), ty: Type::Array(Box::new(Type::Int)), slot: 0 }, Param { name: "n".into(), ty: Type::Int, slot: 1 }, Param { name: RESULT_NAME.into(), ty: Type::Int, slot: 2 }];
+        let copies = [(0u16, 4u16)];
+        let locals = |n, r| vec![Value::Null, Value::Int(n), Value::Int(r), Value::Int(0), Value::Null];
+        let arrays = |after: &[i32], before: &[i32]| vec![(0u16, after.iter().map(|v| Value::Int(*v)).collect::<Vec<_>>()), (4u16, before.iter().map(|v| Value::Int(*v)).collect::<Vec<_>>())];
+        let reversed = parse_after("\\forall int i; 0 <= i && i < a.length; a[i] == \\old(a[a.length - 1 - i])", &params, None, 5, Some(&copies)).unwrap();
+        assert!(reversed.mentions(4) && !reversed.mentions(3));
+        assert_eq!(eval_with(&reversed, &locals(0, 0), &arrays(&[3, 2, 1], &[1, 2, 3])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&reversed, &locals(0, 0), &arrays(&[1, 2, 3], &[1, 2, 3])).unwrap(), Value::Int(0));
+        let frame = parse_after("(\\forall int i; n <= i && i < \\old(a.length); a[i] == \\old(a[i])) && \\old(n) == n", &params, None, 5, Some(&copies)).unwrap();
+        assert!(!parse_after("\\old(a.length) == n", &params, None, 5, Some(&copies)).unwrap().mentions(4), "a length is read from the array itself");
+        assert_eq!(eval_with(&frame, &locals(1, 0), &arrays(&[0, 2], &[1, 2])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&frame, &locals(1, 0), &arrays(&[1, 0], &[1, 2])).unwrap(), Value::Int(0));
+        let kept = parse_after("\\forall int i; 0 <= i && i < a.length; \\exists int j; 0 <= j && j < a.length; a[j] == \\old(a[i])", &params, None, 5, Some(&copies)).unwrap();
+        assert_eq!(eval_with(&kept, &locals(0, 0), &arrays(&[2, 1], &[1, 2])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&kept, &locals(0, 0), &arrays(&[2, 2], &[1, 2])).unwrap(), Value::Int(0));
+        let plain = parse_after("a[0] == 1", &params, None, 5, Some(&copies)).unwrap();
+        assert!(!plain.mentions(4), "no copy is needed");
+        assert!(parse_after("\\old(a[0]) == 1", &params, None, 5, None).unwrap_err().to_string().contains("after the call"), "not in an assumption");
+        assert!(parse_after("\\old(\\old(a[0])) == 1", &params, None, 5, Some(&copies)).is_err(), "nested");
+        assert!(parse_after("\\old(result) == 1", &params, None, 5, Some(&copies)).unwrap_err().to_string().contains("result has no value before the call"));
+        assert!(parse_after("\\old a[0] == 1", &params, None, 5, Some(&copies)).is_err(), "parentheses");
+        let callee = Callee::of("net/example/InPlace", "sum", "([I)I", &[Type::Array(Box::new(Type::Int))], &Type::Int).unwrap();
+        let law = parse_after("sum(\\old(a)) == sum(a)", &params, Some(&callee), 5, Some(&copies)).unwrap();
+        assert_eq!(law, Expr::Binary(BinOp::Eq, Box::new(Expr::Call(callee.clone(), vec![CallArg::Array("\\old(a)".into(), 4)])), Box::new(Expr::Call(callee, vec![CallArg::Array("a".into(), 0)]))));
+        assert!(law.passes(4) && !reversed.passes(4));
     }
 
     #[test]

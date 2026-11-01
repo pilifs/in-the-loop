@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 7, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-01 02:51 UTC |
-| Prompts | 124 |
-| Model calls | 964 |
-| Tool calls | 1,718 (50 failed) |
-| Compactions | 13 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-01 03:43 UTC |
+| Prompts | 128 |
+| Model calls | 1,037 |
+| Tool calls | 1,790 (53 failed) |
+| Compactions | 14 |
 | Subagents | 0 |
-| Tokens written | 2,342,653 |
-| Tokens read | 205,114,824 (97.4% from cache) |
-| Commits with a trace | 42 |
-| Log snapshots | 50 (72.5 MB gzipped, 46 uploaded) |
+| Tokens written | 2,436,173 |
+| Tokens read | 216,686,889 (97.5% from cache) |
+| Commits with a trace | 43 |
+| Log snapshots | 51 (76.6 MB gzipped, 46 uploaded) |
 
 ## Sessions
 
@@ -32,7 +32,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | ended | 10 h 34 min | `claude-fable-5-1`, `claude-opus-5-5` | 21 | 110 | 218 | 11 | 1 | 439,795 | 11 |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | ended | 41 min | `claude-opus-5-5` | 5 | 21 | 43 | 0 | 0 | 124,779 | 5 |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | ended | 1 h 21 min | `claude-opus-5-5` | 6 | 31 | 44 | 0 | 0 | 377,849 | 7 |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | open | 10 h 21 min | `claude-fable-5-1` | 29 | 407 | 940 | 19 | 6 | 535,846 | 8 |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | open | 11 h 13 min | `claude-fable-5-1` | 33 | 480 | 1,012 | 22 | 7 | 535,846 | 9 |
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | ended | 1 h 31 min | `claude-opus-5-5` | 7 | 27 | 31 | 3 | 0 | 91,838 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -48,21 +48,21 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 301,576 | 1,938 | 741,586 | 24,884,767 | 97.1% | 85 |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 35,495 | 46 | 95,343 | 1,829,859 | 95.0% | 54 |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 95,754 | 76 | 345,353 | 6,786,174 | 95.2% | 74 |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 1,231,742 | 12,304 | 2,344,876 | 95,580,695 | 97.6% | 80 |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 1,325,262 | 14,580 | 2,573,527 | 106,921,833 | 97.6% | 83 |
 | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 26,481 | 64 | 62,108 | 1,866,383 | 96.8% | 73 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 1,000 | 58.2% | 7 |
-| `Edit` | 319 | 18.6% | 6 |
-| `Write` | 238 | 13.9% | 5 |
-| `Read` | 126 | 7.3% | 6 |
-| `WebFetch` | 13 | 0.8% | 2 |
-| `ToolSearch` | 10 | 0.6% | 5 |
+| `Bash` | 1,069 | 59.7% | 7 |
+| `Edit` | 319 | 17.8% | 6 |
+| `Write` | 238 | 13.3% | 5 |
+| `Read` | 126 | 7.0% | 6 |
+| `WebFetch` | 13 | 0.7% | 2 |
+| `ToolSearch` | 12 | 0.7% | 5 |
 | `Skill` | 5 | 0.3% | 2 |
-| `TaskStop` | 3 | 0.2% | 2 |
+| `TaskStop` | 4 | 0.2% | 2 |
 | `AskUserQuestion` | 2 | 0.1% | 1 |
 | `WebSearch` | 2 | 0.1% | 1 |
 
@@ -113,7 +113,8 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 39 | change `unxuqlor` | Add array properties with JML quantifiers, and three Mica examples | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/84b6ab145c657124fdeb46d451eb2164188f77324398cc25e32ca2ebfe026b09.jsonl.gz)) |
 | 40 | change `pzplzmvs` | Add generalized JML quantifiers, witness shrinking, and four Mica examples | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e2060f74aa0e5c5f33cd23f62dde6188b8ac3ee9e0aca7244b319efab8d75f9c.jsonl.gz)) |
 | 41 | change `sknvotsp` | Add throws clauses to property proofs, and two Mica examples | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2.jsonl.gz)) |
-| 42 | [`26835fe0`](https://github.com/pilifs/in-the-loop/commit/26835fe0b07fc520777a6ca10485738c88b4061b) | Show live progress in feature-loop.sh | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) ([log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)) |
+| 42 | change `lrptsmzx` | Add JML \old to property proofs, and two Mica examples | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9282ed25a83ab4efe045a2ab1e83991102abb2bc96554fecad2dc8f0f2f9b47c.jsonl.gz)) |
+| 43 | [`26835fe0`](https://github.com/pilifs/in-the-loop/commit/26835fe0b07fc520777a6ca10485738c88b4061b) | Show live progress in feature-loop.sh | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) ([log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)) |
 
 ## Logs
 
@@ -126,7 +127,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 11 | 11 | 9.0 MB | [`5c7af483c8d0`](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz) |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | 0.9 MB | [`a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz) |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 7 | 7 | 3.6 MB | [`405010b8bb85`](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz) |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 8 | 5 | 20.2 MB | `40223b5f7138`, not uploaded |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 9 | 5 | 24.3 MB | `9282ed25a83a`, not uploaded |
 | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 3 | 2 | 0.5 MB | `09aa3322da07`, not uploaded |
 
 ## Session notes

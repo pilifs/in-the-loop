@@ -388,6 +388,40 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
 }
 
 #[test]
+fn old_reads_an_array_as_the_call_received_it() {
+    // A reversal: every element after the call is the mirrored element before it.
+    let Some(reversed) = prove_throws("fixtures.InPlace#reverse", None, Some("\\forall int i; 0 <= i && i < a.length; a[i] == \\old(a[a.length - 1 - i])"), &[], "reverse", 6, true) else { return };
+    assert_eq!(reversed.verdict, Verdict::Verified, "{}", reversed.output);
+    let statement = std::fs::read_to_string(reversed.statement.unwrap()).unwrap();
+    assert!(statement.contains("\\old(a) is the array a as it was before the call"), "{statement}");
+
+    // A frame condition: the elements before n are left alone. The method zeroes one too many.
+    let frame = prove_throws("fixtures.InPlace#zeroFrom", Some("0 <= n && n <= a.length"), Some("\\forall int i; 0 <= i && i < n; a[i] == \\old(a[i])"), &[], "zero-from", 6, true).unwrap();
+    assert_eq!(frame.verdict, Verdict::Violation, "{}", frame.output);
+    let witness = frame.counterexample.unwrap();
+    // The shrunk witness keeps the sign of the element JBMC found.
+    assert!(witness.input == "zeroFrom(a=[1], n=1)" || witness.input == "zeroFrom(a=[-1], n=1)", "{}", frame.output);
+    assert_eq!(witness.outcome, "void, leaving a=[0]");
+
+    // A permutation that keeps each key with its value: sorted after, and every pair before is a pair after. The
+    // unwinding bound is the arrays' bound plus one; the default sixteen costs minutes here.
+    let mut options = property::Options::new(&[fixtures().unwrap().to_path_buf()], "fixtures.InPlace#sortPairs");
+    options.assume = Some("keys.length == values.length".into());
+    options.assert = Some("(\\forall int i; 0 < i && i < keys.length; keys[i - 1] <= keys[i]) && (\\forall int i; 0 <= i && i < keys.length; (\\exists int j; 0 <= j && j < keys.length; keys[j] == \\old(keys[i]) && values[j] == \\old(values[i])))".into());
+    options.max_array_length = 3;
+    options.unwind = 4;
+    options.work = Some(target_tmp().join("property-sort-pairs"));
+    let sorted = property::run(&options).unwrap();
+    assert_eq!(sorted.verdict, Verdict::Verified, "{}", sorted.output);
+    assert!(sorted.output.contains("loops unwound 4 times"), "{}", sorted.output);
+
+    // \old belongs to the assertion.
+    let misplaced = prove_throws("fixtures.InPlace#reverse", Some("\\old(a.length) > 0"), Some("true"), &[], "old-in-assume", 4, true).unwrap();
+    assert_eq!(misplaced.verdict, Verdict::Unverifiable, "{}", misplaced.output);
+    assert!(misplaced.output.contains("\\old is only meaningful in the assertion"), "{}", misplaced.output);
+}
+
+#[test]
 fn throws_clauses_prove_the_exceptional_path() {
     // The exception on n <= 0 is declared, so the whole domain is covered: no assumption.
     let Some(declared) = prove_throws("fixtures.Laws#majority", None, Some("2L * result > n && result <= n"), &["IllegalArgumentException when n <= 0"], "majority-declared", 8, true) else { return };
