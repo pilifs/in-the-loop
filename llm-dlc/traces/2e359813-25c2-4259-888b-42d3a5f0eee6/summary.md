@@ -108,6 +108,12 @@ change `xvwnwwtwsumy` · [log `fc5d2a0690ae`](https://terminalvalue.net/raw-trac
 
 masked_excerpt scanned raw JSON, where an escape glued to a value hides it from the rules, which read decoded strings. So review show printed a path straight after a newline escape unmasked. It now blanks escapes at any depth of quoting before it scans, and always masks the finding it was asked about. Found during the first /review-findings run; the values shown were documentation placeholders.
 
+### Record the first /review-findings decisions
+
+change `llvonvmwwwyz` · [log `fc5d2a0690ae`](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2.jsonl.gz)
+
+The user reviewed nine findings and recorded them as false positives from their own terminal: four JVMS and JLS section numbers taken for IP addresses, four documentation placeholder paths, and one home path cut off by masked output.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2.jsonl.gz) has every step in between: reasoning, tool calls and their results.
