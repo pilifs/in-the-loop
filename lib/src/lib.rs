@@ -36,6 +36,7 @@ pub mod property;
 pub mod purity;
 pub mod relocate;
 pub mod sarif;
+pub mod shrink;
 pub mod statemachine;
 pub mod tla;
 pub mod trusted;

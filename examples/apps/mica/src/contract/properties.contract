@@ -52,3 +52,31 @@ net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto
 # The capacity is a power of two, at least the requested one, and the smallest such, up to the maximum.
 net.terminalvalue.mica.rt.SymbolTable#tableSizeFor
   assert: result >= 1 && result <= 1073741824 && (result & (result - 1)) == 0 && (cap > 1073741824 || result >= cap) && (cap <= 1 || result / 2 < cap)
+
+# JVMS 4.7.4: the first frame applies at its offset_delta, every later one at the previous frame's offset plus
+# offset_delta + 1, so frame k is at k plus the sum of the deltas so far (\sum is JML's); and no two frames share an
+# offset, which the specification chose the + 1 to guarantee. The deltas are u2 values.
+net.terminalvalue.mica.classfile.StackMapTable#offsetOf
+  assume: 0 <= k && k < offsetDelta.length && (\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535)
+  assert: result == k + (\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))
+
+# JVMS 4.7.3: attribute_length counts everything after the Code attribute's own six-byte header, nested attributes'
+# headers included. The lengths are u2 and u4 values of real class files; the sum stays within an int.
+net.terminalvalue.mica.classfile.CodeAttribute#attributeLength
+  assume: codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)
+  assert: result == 12 + codeLength + 8 * exceptionTableLength + (\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])
+
+# JVMS 4.4.5: entries are numbered from 1, and each CONSTANT_Long or CONSTANT_Double before an entry pushes its
+# number one further (\num_of counts them).
+net.terminalvalue.mica.classfile.ConstantPool#indexOf
+  assume: 0 <= entry && entry < tags.length
+  assert: result == 1 + entry + (\num_of int i; 0 <= i && i < entry; tags[i] == 5 || tags[i] == 6)
+
+# JVMS 4.7.3: max_stack is the deepest the operand stack gets, which for a straight-line sequence starting empty is
+# the largest prefix sum of the stack effects, the empty prefix included (\max over \sum). The effects are those of
+# JVM instructions: an invoke pops at most the 255 slots a descriptor may take (JVMS 4.3.3) and nothing pushes more
+# than two, so the depth cannot wrap; stated over every int effect, the property is false of any loop that assumes
+# a pop cannot deepen the stack, on two effects whose sum wraps.
+net.terminalvalue.mica.asm.MaxStack#of
+  assume: (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)
+  assert: result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))

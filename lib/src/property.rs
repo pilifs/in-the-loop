@@ -11,6 +11,10 @@
 //! An array parameter is a symbolic array of every length up to a bound ([`Options::max_array_length`]), never
 //! `null`, and the property may quantify over it (`\forall int i; 0 <= i && i < a.length; a[i] != key`); so may
 //! an array `result`.
+//!
+//! The counterexample JBMC finds is whatever satisfied the solver. Before it is reported it is shrunk
+//! ([`crate::shrink`]) by running the harness class itself in the interpreter on smaller inputs, so the witness
+//! shown is small and the same on every run; the solver's own is kept alongside it.
 
 use std::fmt::Write as _;
 use std::path::PathBuf;
@@ -46,6 +50,8 @@ pub struct Options {
     pub unwind: u32,
     /// The longest array an array parameter is given.
     pub max_array_length: u32,
+    /// Whether to shrink a counterexample in the interpreter before reporting it.
+    pub shrink: bool,
     pub timeout_seconds: u64,
     pub jbmc: String,
     pub java_home: Option<PathBuf>,
@@ -65,6 +71,7 @@ impl Options {
             base: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
             unwind: 16,
             max_array_length: 8,
+            shrink: true,
             timeout_seconds: 600,
             jbmc: "jbmc".into(),
             java_home: None,
@@ -79,6 +86,11 @@ pub struct Counterexample {
     /// What the method did: its result, or the exception it threw.
     pub outcome: String,
     pub values: Vec<String>,
+    /// The input as JBMC found it, when `input` is the shrunk one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub found: Option<String>,
+    /// How many smaller inputs the interpreter tried while shrinking.
+    pub shrink_runs: u32,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -239,23 +251,19 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             proof = Some(how);
         }
         Verdict::Violation => {
-            let arguments = last.arguments(&descriptor.params)?;
-            let (mut outcome, returned, result_array, arrays_after) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?;
-            let witnesses: Vec<String> = params.iter().zip(&arguments).map(|(p, a)| render_argument(a, &p.ty)).collect();
-            for (p, a) in params.iter().zip(&arguments) {
-                if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
-                    if let Some((_, after)) = arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
-                        outcome = format!("{outcome}, leaving {}={}", p.name, render_array(after, element));
-                    }
-                }
-            }
-            let rendered = format!("{method_name}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
+            let found = last.arguments(&descriptor.params)?;
+            let (outcome_found, returned, result_array, arrays_after) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &found)?;
+            let render_input = |arguments: &[Argument]| -> (Vec<String>, String) {
+                let witnesses: Vec<String> = params.iter().zip(arguments).map(|(p, a)| render_argument(a, &p.ty)).collect();
+                let rendered = format!("{method_name}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
+                (witnesses, rendered)
+            };
             // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
             // given an arbitrary result to a method it had no bytecode for. (A property that calls the method
             // under proof is checked in the harness only, so it is taken at JBMC's word.) The assertion reads an
             // array parameter after the call, as the harness does, so a method that writes into it is held to
             // what it wrote.
-            if let Some(result) = returned.filter(|_| !harness.assertion.has_call()) {
+            let assertion_on = |arguments: &[Argument], result: Value, result_array: &Option<Vec<Value>>, arrays_after: &[(u16, Vec<Value>)]| -> Result<Value, Error> {
                 let mut locals = Vec::new();
                 let mut arrays = Vec::new();
                 for (a, p) in arguments.iter().zip(&params) {
@@ -280,31 +288,68 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                     locals.push(Value::Int(0));
                 }
                 if let Some(data) = result_array {
-                    arrays.push((result_slot, data));
+                    arrays.push((result_slot, data.clone()));
                 }
-                match harness::expr::eval_with(&harness.assertion, &locals, &arrays) {
-                    Err(e) => outcome = format!("{outcome}; the assertion itself cannot be evaluated on it ({e})"),
-                    Ok(holds) => if holds == Value::Int(1) {
-                        let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
-                        let message = format!("{} cannot be verified: {p}", options.target);
-                        let _ = writeln!(out, "✗ {message}");
-                        findings.push(Finding::new("unverifiable", message, uri.clone(), line));
-                        problem = Some(p);
-                        verdict = Verdict::Unverifiable;
-                        if let Some(report) = &options.report {
-                            sarif::write(&report.join("property.sarif"), &findings)?;
-                        }
-                        return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
-                    },
+                harness::expr::eval_with(&harness.assertion, &locals, &arrays)
+            };
+            let evaluable = !harness.assertion.has_call();
+            if let Some(result) = returned.filter(|_| evaluable) {
+                if let Ok(Value::Int(1)) = assertion_on(&found, result, &result_array, &arrays_after) {
+                    let (_, rendered) = render_input(&found);
+                    let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome_found} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                    let message = format!("{} cannot be verified: {p}", options.target);
+                    let _ = writeln!(out, "✗ {message}");
+                    findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                    problem = Some(p);
+                    verdict = Verdict::Unverifiable;
+                    if let Some(report) = &options.report {
+                        sarif::write(&report.join("property.sarif"), &findings)?;
+                    }
+                    return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
                 }
             }
+            // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
+            let mut shrink_runs = 0;
+            let mut arguments = found.clone();
+            if options.shrink {
+                let shrunk = shrink_in_harness(options, &harness_dir, &descriptor.params, found.clone())?;
+                shrink_runs = shrunk.runs;
+                arguments = shrunk.arguments;
+            }
+            let shrunk = arguments != found;
+            let (mut outcome, returned, result_array, arrays_after) = if shrunk {
+                replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?
+            } else {
+                (outcome_found, returned, result_array, arrays_after)
+            };
+            // An assertion that cannot be evaluated on the outcome (an index out of bounds) is what failed.
+            if let Some(result) = returned.filter(|_| evaluable) {
+                if let Err(e) = assertion_on(&arguments, result, &result_array, &arrays_after) {
+                    outcome = format!("{outcome}; the assertion itself cannot be evaluated on it ({e})");
+                }
+            }
+            for (p, a) in params.iter().zip(&arguments) {
+                if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
+                    if let Some((_, after)) = arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
+                        outcome = format!("{outcome}, leaving {}={}", p.name, render_array(after, element));
+                    }
+                }
+            }
+            let (witnesses, rendered) = render_input(&arguments);
+            let (_, rendered_found) = render_input(&found);
             let message = format!("Property of {} violated: `{assertion}`{}:\n  {rendered}\n    outcome: {outcome}", options.target, where_);
             let _ = writeln!(out, "✗ {message}");
-            let how = format!("found by {} in {seconds:.1} s{}, replayed in the interpreter; domain {domain}", last.version, last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default());
+            let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
+            let shrinking = if shrunk {
+                format!(" as {rendered_found}, shrunk to the input above in {shrink_runs} interpreter runs")
+            } else {
+                String::new()
+            };
+            let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}", last.version);
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, outcome, values: witnesses });
+            counterexample = Some(Counterexample { input: rendered, outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
@@ -417,6 +462,55 @@ fn arrays_of(m: &Machine, values: &[Value], signature: &crate::classfile::Method
         slot += t.slots();
     }
     out
+}
+
+/// How many smaller inputs the shrinker may try.
+const SHRINK_BUDGET: u32 = 4000;
+
+/// Shrinks a counterexample with the harness as the oracle: the generated class in `harness_dir`, run in the
+/// interpreter, violates the property on an input exactly when it throws `AssertionError` on it (the assumption
+/// is part of the harness, so an input outside it passes). An input the interpreter cannot run is not accepted.
+fn shrink_in_harness(options: &Options, harness_dir: &std::path::Path, types: &[Type], found: Vec<Argument>) -> Result<crate::shrink::Shrunk, Error> {
+    let mut cp = ClassPath::new();
+    cp.add(harness_dir)?;
+    for path in options.classes.iter().chain(&options.classpath) {
+        if path.exists() {
+            cp.add(path)?;
+        }
+    }
+    let cp = cp.with_default_jdk();
+    let mut m = Machine::new(&cp);
+    m.monitor = false;
+    let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
+    let mut fails = |arguments: &[Argument]| -> Option<bool> {
+        let mark = m.begin_case();
+        let mut values = Vec::new();
+        for (argument, t) in arguments.iter().zip(types) {
+            values.push(match argument {
+                Argument::Scalar(v) => *v,
+                Argument::Null => Value::Null,
+                Argument::Array(data) => {
+                    let element = match t {
+                        Type::Array(e) => (**e).clone(),
+                        _ => Type::Int,
+                    };
+                    m.new_array_of(element, data.clone())
+                }
+            });
+        }
+        let verdict = match m.call_static(harness::PROPERTY_CLASS, harness::METHOD, &check_descriptor, values) {
+            Ok(_) => Some(false),
+            Err(Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => Some(true),
+            Err(_) => None,
+        };
+        m.end_case(mark);
+        verdict
+    };
+    // The interpreter must agree that the input found is a counterexample before it is trusted on smaller ones.
+    if fails(&found) != Some(true) {
+        return Ok(crate::shrink::Shrunk { arguments: found, runs: 0 });
+    }
+    Ok(crate::shrink::shrink(types, found, SHRINK_BUDGET, fails))
 }
 
 /// Runs the counterexample through the method in the interpreter, with the effect monitor off: the outcome as

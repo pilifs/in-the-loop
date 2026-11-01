@@ -88,7 +88,7 @@ The property `result == 1 - winner(tsB, nodeB, tsA, nodeA)` does not hold on eve
 
 | Input | The method's outcome |
 |---|---|
-| `winner(tsA=2, nodeA=0, tsB=0, nodeB=0)` | `0` |
+| `winner(tsA=1, nodeA=0, tsB=0, nodeB=0)` | `0` |
 
 One input is enough to fail the build. The domain is `tsA: long × nodeA: int × tsB: long × nodeB: int`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -110,15 +110,15 @@ Do not put the skew window in the resolution rule. If close timestamps should no
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as winner(tsA=2, nodeA=0, tsB=0, nodeB=0), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Property of net.terminalvalue.quorum.replication.LastWriterWins#winner violated: `result == 1 - winner(tsB, nodeB, tsA, nodeA)` where tsA != tsB || nodeA != nodeB:
-  winner(tsA=2, nodeA=0, tsB=0, nodeB=0)
+  winner(tsA=1, nodeA=0, tsB=0, nodeB=0)
     outcome: 0
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as winner(tsA=2, nodeA=0, tsB=0, nodeB=0), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
 ```
@@ -199,7 +199,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.replication.LastWriterWins#winner violated: `result == 1 - winner(tsB, nodeB, tsA, nodeA)` where tsA != tsB || nodeA != nodeB:\n  winner(tsA=2, nodeA=0, tsB=0, nodeB=0)\n    outcome: 0"
+            "text": "Property of net.terminalvalue.quorum.replication.LastWriterWins#winner violated: `result == 1 - winner(tsB, nodeB, tsA, nodeA)` where tsA != tsB || nodeA != nodeB:\n  winner(tsA=1, nodeA=0, tsB=0, nodeB=0)\n    outcome: 0"
           },
           "locations": [
             {

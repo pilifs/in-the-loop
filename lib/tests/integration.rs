@@ -336,6 +336,10 @@ fn prove(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str) -
 }
 
 fn prove_arrays(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str, max_array_length: u32) -> Option<property::Outcome> {
+    prove_with(target, assume, assert, name, max_array_length, true)
+}
+
+fn prove_with(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str, max_array_length: u32, shrink: bool) -> Option<property::Outcome> {
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return None;
@@ -345,6 +349,7 @@ fn prove_arrays(target: &str, assume: Option<&str>, assert: Option<&str>, name: 
     options.assume = assume.map(str::to_string);
     options.assert = assert.map(str::to_string);
     options.max_array_length = max_array_length;
+    options.shrink = shrink;
     let work = target_tmp().join(format!("property-{name}"));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work.clone());
@@ -418,6 +423,43 @@ fn arrays_are_quantified_over_and_witnessed() {
     let malformed = prove("fixtures.Search#find", None, Some("\\forall int i; i < sorted.length; sorted[i] != key"), "find-malformed").unwrap();
     assert_eq!(malformed.verdict, Verdict::Unverifiable);
     assert!(malformed.output.contains("must bound it below and above"), "{}", malformed.output);
+}
+
+#[test]
+fn generalized_quantifiers_fold_and_counterexamples_shrink() {
+    // The deepest point of a stack is the largest prefix sum, the empty prefix included: \max over \sum.
+    let depth = "result == (\\max int k; 0 <= k && k <= deltas.length; (\\sum int i; 0 <= i && i < k; deltas[i]))";
+    let Some(deepest) = prove("fixtures.Search#maxDepth", None, Some(depth), "max-depth") else { return };
+    assert_eq!(deepest.verdict, Verdict::Verified, "{}", deepest.output);
+    assert!(std::fs::read_to_string(deepest.statement.unwrap()).unwrap().contains("\\max and \\min are JML's quantifiers"));
+
+    // A sum of longs, proved; a \sum over int elements is an int sum, which wraps as Java's does, and the witness
+    // of the difference is shrunk to two elements that still overflow.
+    let total = prove("fixtures.Search#total", None, Some("result == (\\sum int i; 0 <= i && i < xs.length; (long) xs[i])"), "total").unwrap();
+    assert_eq!(total.verdict, Verdict::Verified, "{}", total.output);
+    let narrow = prove("fixtures.Search#total", None, Some("result == (\\sum int i; 0 <= i && i < xs.length; xs[i])"), "total-narrow").unwrap();
+    assert_eq!(narrow.verdict, Verdict::Violation, "{}", narrow.output);
+    let witness = narrow.counterexample.unwrap();
+    assert!(witness.found.is_some() && witness.shrink_runs > 0 && witness.shrink_runs < 4000, "{}", narrow.output);
+    assert!(narrow.output.contains("shrunk to the input above in"), "{}", narrow.output);
+    let xs: Vec<i64> = witness.values[0].trim_matches(['[', ']']).split(", ").map(|v| v.parse().unwrap()).collect();
+    assert!(xs.len() <= 2 && xs.iter().sum::<i64>().abs() > i64::from(i32::MAX), "{}", witness.input);
+
+    // A count: \num_of. The miscount is on a negative odd number, and the shrunk witness is the one nearest zero.
+    let evens = prove("fixtures.Search#evens", None, Some("result == (\\num_of int i; 0 <= i && i < xs.length; xs[i] % 2 == 0)"), "evens").unwrap();
+    assert_eq!(evens.verdict, Verdict::Violation, "{}", evens.output);
+    let witness = evens.counterexample.unwrap();
+    assert_eq!(witness.input, "evens(xs=[-1])", "{}", evens.output);
+    assert_eq!(witness.outcome, "1");
+    assert!(witness.found.as_deref().unwrap().starts_with("evens(xs=["), "{:?}", witness.found);
+    let unshrunk = prove_with("fixtures.Search#evens", None, Some("result == (\\num_of int i; 0 <= i && i < xs.length; xs[i] % 2 == 0)"), "evens-unshrunk", 8, false).unwrap();
+    let witness = unshrunk.counterexample.unwrap();
+    assert!(witness.found.is_none() && witness.shrink_runs == 0 && !unshrunk.output.contains("shrunk"), "{}", unshrunk.output);
+
+    // The scalar witnesses of the earlier tests shrink too: the smallest even cluster is found by shrinking from
+    // whatever JBMC gave, and a witness of an exception is the smallest input that throws.
+    let throws = prove("fixtures.Laws#majority", None, Some("2 * result > n"), "majority-throws-shrunk").unwrap();
+    assert_eq!(throws.counterexample.unwrap().input, "majority(n=0)", "{}", throws.output);
 }
 
 #[test]

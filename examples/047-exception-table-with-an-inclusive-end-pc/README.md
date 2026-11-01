@@ -7,7 +7,7 @@
 |---|---|---|---|---|---|
 | **✗ Violation: counterexample found** | functional, compatibility | high | cleanup, behaviour change not intended | [`ExceptionTable#handlerIndex`](../../examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java) | [B11: Property proofs](../../lib/README.md) |
 
-> The interpreter finds the handler for a thrown exception in the `Code` attribute's exception table: the first entry, in table order, whose range covers the pc of the throwing instruction. The range is `[start_pc, end_pc)`, and the specification itself calls the exclusive end a historical mistake. A developer building a JVM decides not to repeat the mistake and makes the end inclusive, so that a handler can cover the last instruction of a method. The property the build proves of the lookup, stated over the table's columns as arrays, is refuted on a table with an entry whose `end_pc` is the pc of the throwing instruction, which the patched lookup hands to a handler that does not cover it.
+> The interpreter finds the handler for a thrown exception in the `Code` attribute's exception table: the first entry, in table order, whose range covers the pc of the throwing instruction. The range is `[start_pc, end_pc)`, and the specification itself calls the exclusive end a historical mistake. A developer building a JVM decides not to repeat the mistake and makes the end inclusive, so that a handler can cover the last instruction of a method. The property the build proves of the lookup, stated over the table's columns as arrays, is refuted, and the counterexample is shrunk to a table of one entry whose `end_pc` is the pc of the throwing instruction, which the patched lookup hands to a handler that does not cover it.
 
 ## The change
 
@@ -98,7 +98,7 @@ The property `result == -1 || (result >= 0 && result < startPc.length && startPc
 
 | Input | The method's outcome |
 |---|---|
-| `handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0)` | `1` |
+| `handlerIndex(startPc=[0], endPc=[0], pc=0)` | `0` |
 
 One input is enough to fail the build. The domain is `startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -112,7 +112,7 @@ Every class file ever compiled was written for the exclusive `end_pc`: javac emi
 
 ## Why the verdict is right
 
-The property committed for `handlerIndex` is stated over the columns of the table, two arrays the prover fills with every content up to eight entries: when the result is an index, the entry at it covers the pc, `startPc[result] <= pc && pc < endPc[result]`. JBMC finds a refutation at once: a table with an entry whose `end_pc` equals the pc, which the patched lookup returns although the entry does not cover it; the tool replays the input in its interpreter and shows the index returned. The witness is the boundary the specification defines, and the property as committed is the sentence of §4.7.3 the change set out to correct. Two halves of the full specification are not in the property, and the file says why: that the entry is the first in table order, and that -1 comes only when no entry covers the pc, are quantifiers that repeat the scan's own comparisons, and JBMC's SAT backend did not finish them in minutes on tables of four entries, while the half above is proved of the unpatched lookup in under a second. The property states what the solver can check, and the comment records what it could not, which is itself the kind of statement a reviewer wants to see.
+The property committed for `handlerIndex` is stated over the columns of the table, two arrays the prover fills with every content up to eight entries: when the result is an index, the entry at it covers the pc, `startPc[result] <= pc && pc < endPc[result]`. JBMC finds a refutation at once, on a table of eight entries with the solver's numbers in it, and the tool shrinks that in its interpreter to the smallest table that still fails: one entry with `start_pc` and `end_pc` both 0, and a throw at pc 0. The range `[0, 0)` is empty and covers nothing; read inclusively it covers pc 0, and the patched lookup hands the exception to its handler. The witness is the boundary the specification defines, and the property as committed is the sentence of §4.7.3 the change set out to correct. Two halves of the full specification are not in the property, and the file says why: that the entry is the first in table order, and that -1 comes only when no entry covers the pc, are quantifiers that repeat the scan's own comparisons, and JBMC's SAT backend did not finish them in minutes on tables of four entries, while the half above is proved of the unpatched lookup in under a second. The property states what the solver can check, and the comment records what it could not, which is itself the kind of statement a reviewer wants to see.
 
 ## What to do
 
@@ -120,15 +120,15 @@ Revert. A virtual machine implements the class-file format as it is, mistakes in
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0), shrunk to the input above in 80 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Property of net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex violated: `result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])` where startPc.length == endPc.length:
-  handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0)
-    outcome: 1
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int)
+  handlerIndex(startPc=[0], endPc=[0], pc=0)
+    outcome: 0
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0), shrunk to the input above in 80 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
 ```
@@ -209,7 +209,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex violated: `result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])` where startPc.length == endPc.length:\n  handlerIndex(startPc=[536870912, 0, 0, 0, 0, 0, 0, 0], endPc=[134217728, 0, 0, 0, 0, 0, 0, 0], pc=0)\n    outcome: 1"
+            "text": "Property of net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex violated: `result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])` where startPc.length == endPc.length:\n  handlerIndex(startPc=[0], endPc=[0], pc=0)\n    outcome: 0"
           },
           "locations": [
             {

@@ -73,7 +73,7 @@ The property `result >= lastNanos && result <= nowNanos && nowNanos - result < p
 
 | Input | The method's outcome |
 |---|---|
-| `lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8)` | `10` |
+| `lastAfter(tokens=0, lastNanos=0, nowNanos=1, periodNanos=2, capacity=1)` | `1` |
 
 One input is enough to fail the build. The domain is `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -95,15 +95,15 @@ Keep the remainder, or keep the credited time as a count of whole periods. The t
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8), shrunk to the input above in 107 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Property of net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter violated: `result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)` where periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity:
-  lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8)
-    outcome: 10
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+  lastAfter(tokens=0, lastNanos=0, nowNanos=1, periodNanos=2, capacity=1)
+    outcome: 1
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8), shrunk to the input above in 107 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
 ```
@@ -184,7 +184,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter violated: `result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)` where periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity:\n  lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8)\n    outcome: 10"
+            "text": "Property of net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter violated: `result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)` where periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity:\n  lastAfter(tokens=0, lastNanos=0, nowNanos=1, periodNanos=2, capacity=1)\n    outcome: 1"
           },
           "locations": [
             {

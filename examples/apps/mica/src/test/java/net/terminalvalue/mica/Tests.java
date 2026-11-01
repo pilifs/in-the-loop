@@ -24,7 +24,11 @@ public final class Tests {
             net.terminalvalue.mica.interp.IntrinsicsTest.class,
             net.terminalvalue.mica.classfile.ModifiedUtf8Test.class,
             net.terminalvalue.mica.classfile.ExceptionTableTest.class,
+            net.terminalvalue.mica.classfile.StackMapTableTest.class,
+            net.terminalvalue.mica.classfile.CodeAttributeTest.class,
+            net.terminalvalue.mica.classfile.ConstantPoolTest.class,
             net.terminalvalue.mica.asm.SwitchLoweringTest.class,
+            net.terminalvalue.mica.asm.MaxStackTest.class,
             net.terminalvalue.mica.rt.SymbolTableTest.class);
 
     private Tests() {}

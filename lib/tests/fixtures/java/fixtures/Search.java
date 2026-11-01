@@ -33,6 +33,39 @@ public final class Search {
         return out;
     }
 
+    /** The deepest the operand stack gets when the instructions push and pop by {@code deltas}, starting empty. */
+    public static int maxDepth(int[] deltas) {
+        int depth = 0;
+        int max = 0;
+        for (int i = 0; i < deltas.length; i++) {
+            depth += deltas[i];
+            if (depth > max) {
+                max = depth;
+            }
+        }
+        return max;
+    }
+
+    /** The sum of {@code xs}, in long arithmetic. */
+    public static long total(int[] xs) {
+        long sum = 0;
+        for (int i = 0; i < xs.length; i++) {
+            sum += xs[i];
+        }
+        return sum;
+    }
+
+    /** How many of {@code xs} are even, miscounting a negative odd number as even. */
+    public static int evens(int[] xs) {
+        int n = 0;
+        for (int i = 0; i < xs.length; i++) {
+            if (xs[i] % 2 != 1) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** Overwrites every element of {@code xs} that equals {@code from} with {@code to}, returning how many. */
     public static int replace(int[] xs, int from, int to) {
         int n = 0;

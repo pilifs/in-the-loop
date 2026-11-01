@@ -715,7 +715,7 @@
       "id": "047",
       "path": "047-exception-table-with-an-inclusive-end-pc",
       "title": "An exception table read with an inclusive end_pc hands an exception to the wrong handler",
-      "summary": "The interpreter finds the handler for a thrown exception in the `Code` attribute's exception table: the first entry, in table order, whose range covers the pc of the throwing instruction. The range is `[start_pc, end_pc)`, and the specification itself calls the exclusive end a historical mistake. A developer building a JVM decides not to repeat the mistake and makes the end inclusive, so that a handler can cover the last instruction of a method. The property the build proves of the lookup, stated over the table's columns as arrays, is refuted on a table with an entry whose `end_pc` is the pc of the throwing instruction, which the patched lookup hands to a handler that does not cover it.",
+      "summary": "The interpreter finds the handler for a thrown exception in the `Code` attribute's exception table: the first entry, in table order, whose range covers the pc of the throwing instruction. The range is `[start_pc, end_pc)`, and the specification itself calls the exclusive end a historical mistake. A developer building a JVM decides not to repeat the mistake and makes the end inclusive, so that a handler can cover the last instruction of a method. The property the build proves of the lookup, stated over the table's columns as arrays, is refuted, and the counterexample is shrunk to a table of one entry whose `end_pc` is the pc of the throwing instruction, which the patched lookup hands to a handler that does not cover it.",
       "categories": [
         "functional",
         "compatibility"
@@ -741,6 +741,70 @@
       "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
       "approach": "B11",
       "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "049",
+      "path": "049-stack-map-offset-loop-without-the-first-frame-special-case",
+      "title": "A stack map offset loop without the first-frame special case, proved to place every frame",
+      "summary": "A `StackMapTable` frame carries an `offset_delta`, not an offset: the first frame applies at `offset_delta`, every later one at the previous frame's offset plus `offset_delta + 1`. The class file reader's loop says so, with a special case for the first frame. A developer removes the special case by starting the count one byte before the code, so that every frame, the first included, is `offset_delta + 1` past the previous one. The property committed for the reader is the specification's own arithmetic, stated with JML's `\\sum`, and a law stated with a call of the reader itself: no two frames share an offset. The prover checks the rewritten loop against both on every table up to the bound.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.classfile.StackMapTable#offsetOf",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "050",
+      "path": "050-code-attribute-length-that-leaves-out-the-nested-attribute-headers",
+      "title": "A Code attribute length that omits the nested attributes' headers truncates the method",
+      "summary": "The writer of a class file computes the `attribute_length` of a `Code` attribute: twelve fixed bytes, the code, eight per exception table entry, and the nested attributes, each a six-byte header followed by its own `attribute_length` bytes. A developer reads in JVMS §4.7 that an attribute's length does not include its initial six bytes, and makes the loop add each nested attribute's length and nothing else. The property committed for the computation, stated with JML's `\\sum` over the nested lengths, is refuted at once; the counterexample JBMC finds is an eight-attribute table of large numbers, which the tool shrinks in its interpreter to one nested attribute of length zero, six bytes short.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.classfile.CodeAttribute#attributeLength",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "051",
+      "path": "051-constant-pool-index-that-counts-the-long-entry-itself",
+      "title": "A constant-pool index that counts the long entry itself points one past the entry",
+      "summary": "Constant pool entries are numbered from 1, and a `CONSTANT_Long` or `CONSTANT_Double` entry takes two numbers, the one after it being unusable: the specification calls this, in retrospect, a poor choice. The class file reader maps an entry's position to its number by walking the entries before it. A developer rewrites the walk as a count of the two-number entries, and counts up to and including the entry itself. The property committed for the mapping, stated with JML's `\\num_of`, is refuted on a pool of one long constant, whose number comes out as 2 instead of 1.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.classfile.ConstantPool#indexOf",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "052",
+      "path": "052-max-stack-that-checks-the-depth-only-after-a-push",
+      "title": "A max_stack that checks the depth only after a push, proved to find the deepest point",
+      "summary": "The assembler computes `max_stack` for a `Code` attribute: the deepest the operand stack gets, which for a straight-line sequence is the largest running sum of the instructions' stack effects. The loop compares the depth with the maximum after every instruction. A developer compares it only after an instruction that pushes more than it pops, since no other instruction can leave the stack deeper than it was. The property committed for the computation is the definition itself, `\\max` over the prefix sums, written as nested JML quantifiers, under the assumption that the effects are those of JVM instructions. The prover checks the changed loop against it on every such sequence up to the bound; stated over every `int` effect instead, the same property refutes the change, on two effects whose sum wraps, which is the premise the developer's argument did not state.",
+      "categories": [
+        "functional",
+        "performance",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.asm.MaxStack#of",
+      "approach": "B11",
+      "verdict": "verified",
       "existingTestsPassed": true
     }
   ]

@@ -23,15 +23,15 @@
   "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
   "counterexamples": [
     {
-      "input": "lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8)",
+      "input": "lastAfter(tokens=0, lastNanos=0, nowNanos=1, periodNanos=2, capacity=1)",
       "contract": "result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)",
-      "actual": "10"
+      "actual": "1"
     }
   ],
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": null,
-  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as lastAfter(tokens=0, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8), shrunk to the input above in 107 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
   "problem": null,
   "statement": "statement.java",
   "trace": null,

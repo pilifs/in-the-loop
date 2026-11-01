@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: mica, 24 public types, 105 members
+module: mica, 28 public types, 111 members
 
 net.terminalvalue.mica.Decision: public sealed interface permits net.terminalvalue.mica.Decision$Transition, net.terminalvalue.mica.Decision$Unchanged, net.terminalvalue.mica.Decision$Rejected
   public static net.terminalvalue.mica.Decision rejected(java.lang.String)
@@ -31,8 +31,19 @@ net.terminalvalue.mica.Decision$Unchanged: public final record implements net.te
   public final java.lang.String toString()
   public java.lang.String reason()
 
+net.terminalvalue.mica.asm.MaxStack: public final class
+  public static int of(int[])
+
 net.terminalvalue.mica.asm.SwitchLowering: public final class
   public static boolean useTable(int, int, int)
+
+net.terminalvalue.mica.classfile.CodeAttribute: public final class
+  public static int attributeLength(int, int, int[])
+
+net.terminalvalue.mica.classfile.ConstantPool: public final class
+  public static final CONSTANT_DOUBLE: int
+  public static final CONSTANT_LONG: int
+  public static int indexOf(byte[], int)
 
 net.terminalvalue.mica.classfile.ExceptionTable: public final class
   public static int handlerIndex(int[], int[], int)
@@ -42,6 +53,9 @@ net.terminalvalue.mica.classfile.ModifiedUtf8: public final class
   public static int encodedLength(char)
   public static int encodedLengthOf(java.lang.CharSequence)
   public static int firstByte(char)
+
+net.terminalvalue.mica.classfile.StackMapTable: public final class
+  public static int offsetOf(int[], int)
 
 net.terminalvalue.mica.init.ClassInitialization: public final class
   public static net.terminalvalue.mica.Decision decide(net.terminalvalue.mica.init.InitState, net.terminalvalue.mica.init.InitEvent)

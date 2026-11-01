@@ -248,7 +248,7 @@ fn parse_arrays(output: &str) -> BTreeMap<u32, Option<Vec<String>>> {
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
     // An array element carries its type as a cast: `(byte)-128`, `(short)7`.
     let raw = match raw.strip_prefix('(').and_then(|r| r.split_once(')')) {
-        Some((cast, rest)) if matches!(cast, "byte" | "short" | "char" | "int" | "long") => rest.trim_start(),
+        Some(("byte" | "short" | "char" | "int" | "long", rest)) => rest.trim_start(),
         _ => raw,
     };
     let s = raw.trim_end_matches(['L', 'l', 'F', 'f', 'D', 'd']);

@@ -110,7 +110,7 @@ Revert, and keep the comment that says why: `idiv` and `ldiv` overflow silently 
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.3 s, replayed in the interpreter; domain dividend: int × divisor: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain dividend: int × divisor: int.
 
 <details><summary>Verifier output</summary>
 
@@ -118,7 +118,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.3 s, replayed in the inte
 ✗ Property of net.terminalvalue.mica.interp.Arithmetic#idiv violated: `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` where divisor != 0:
   idiv(dividend=-2147483648, divisor=-1)
     outcome: throws ArithmeticException("integer overflow")
-  (found by JBMC 6.11.0 in 0.3 s, replayed in the interpreter; domain dividend: int × divisor: int)
+  (found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain dividend: int × divisor: int)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
 ```
