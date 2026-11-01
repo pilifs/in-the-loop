@@ -12,25 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-10-31T22:46:14.600Z",
-  "ended": "2026-10-31T22:51:29.813Z",
-  "duration_seconds": 315,
+  "ended": "2026-11-01T00:02:58.384Z",
+  "duration_seconds": 4604,
   "stats": {
-    "turns": 3,
-    "api_calls": 8,
-    "tool_calls": 13,
-    "tool_errors": 2,
+    "turns": 5,
+    "api_calls": 21,
+    "tool_calls": 26,
+    "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 64851,
+    "peak_context_tokens": 84217,
     "usage": {
-      "input_tokens": 16,
-      "output_tokens": 11539,
-      "cache_read_input_tokens": 393405,
-      "cache_creation_input_tokens": 37269
+      "input_tokens": 48,
+      "output_tokens": 22289,
+      "cache_read_input_tokens": 1342542,
+      "cache_creation_input_tokens": 55661
     }
   },
   "tools": {
-    "Bash": 9,
-    "Edit": 3,
+    "Bash": 19,
+    "Edit": 5,
+    "ToolSearch": 1,
     "Write": 1
   },
   "files_touched": [
@@ -41,24 +42,24 @@
     {
       "index": 0,
       "started": "2026-10-31T22:46:14.600Z",
-      "ended": "2026-10-31T22:51:29.813Z",
-      "turns": 3,
-      "api_calls": 8,
+      "ended": "2026-11-01T00:02:58.384Z",
+      "turns": 5,
+      "api_calls": 21,
       "usage": {
-        "input_tokens": 16,
-        "output_tokens": 11539,
-        "cache_read_input_tokens": 393405,
-        "cache_creation_input_tokens": 37269
+        "input_tokens": 48,
+        "output_tokens": 22289,
+        "cache_read_input_tokens": 1342542,
+        "cache_creation_input_tokens": 55661
       },
-      "peak_context_tokens": 64851
+      "peak_context_tokens": 84217
     }
   ],
   "log": {
-    "sha256": "f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df",
-    "bytes": 550038,
-    "lines": 121,
-    "gzip_bytes": 122917,
-    "path": "llm-dlc/traces/b337c438-c453-4e77-9b04-ac89ec125c41/logs/f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df.jsonl.gz"
+    "sha256": "582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610",
+    "bytes": 833064,
+    "lines": 245,
+    "gzip_bytes": 182029,
+    "path": "llm-dlc/traces/b337c438-c453-4e77-9b04-ac89ec125c41/logs/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -69,9 +70,23 @@
       "summary": "Add feature-loop.sh to grow jvmcontract unattended",
       "body": "llm-dlc/tools/feature-loop.sh resumes session 360e8b8b on Fable 5.1 at high effort and repeats one instruction from the repo root: add more advanced features and examples to jvmcontract. Each cycle that produces a commit is followed by /compact and another cycle. A cycle with no new commit stops the loop with exit 1, before compacting, so the session keeps its full context for whoever looks into it. A commit is detected by the change ID of @-, which survives a rewrite of the commit. The README describes the loop.\n\nVerified with a stub claude in a temporary jj repo: two commits then none gave instruction, compact, instruction, compact, instruction, exit 1; no commit on the first cycle stopped at once; a nonzero exit after a commit still continued; SIGTERM exited 130; the script ran at the repo root when started from elsewhere. Fable 5.1 at high effort in auto mode, and /compact in print mode (same session ID, one compact boundary), were checked against the real CLI on a throwaway session outside this repo. The loop itself has not been run against session 360e8b8b.",
       "log_sha256": "f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df"
+    },
+    {
+      "change_id": "nyxuyprrxnqurvkyyxxtzrryykllqupm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Show live progress in feature-loop.sh",
+      "body": "claude -p in text mode prints nothing until a turn ends, so the loop looked hung for hours. It now reads stream-json and prints one timestamped line for each message and tool call, and a closing line with steps, minutes and cost for each turn. The filter skips lines it cannot read, so it cannot kill claude by closing the pipe.\n\nVerified with a stub claude emitting stream-json in a temporary jj repo: progress lines appeared as events arrived, malformed lines were skipped, the stub's exit status 3 was still reported, and commit detection and the stop on no commit behaved as before. The real CLI's result fields were confirmed from a saved run; the stream itself was not run against the real model.",
+      "log_sha256": "582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610"
     }
   ],
   "logs": {
+    "582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610": {
+      "bytes": 833064,
+      "lines": 245,
+      "gzip_bytes": 182029,
+      "url": null
+    },
     "f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df": {
       "bytes": 550038,
       "lines": 121,
