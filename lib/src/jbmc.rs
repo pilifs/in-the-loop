@@ -123,9 +123,43 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
     cmd
 }
 
+/// The address space, in MiB, a JBMC run may use. One proof of a small method has reached 5.7 GB, and nothing in the
+/// solver stops it short of the whole machine.
+const DEFAULT_MEMORY_MB: u64 = 3072;
+
+/// The limit on a JBMC run in MiB: `JVMCONTRACT_JBMC_MEMORY_MB`, or the default. 0 turns it off.
+fn memory_limit_mb() -> Option<u64> {
+    let configured = std::env::var("JVMCONTRACT_JBMC_MEMORY_MB").ok().and_then(|v| v.trim().parse().ok());
+    Some(configured.unwrap_or(DEFAULT_MEMORY_MB)).filter(|mb| *mb > 0)
+}
+
+/// The command under a memory limit: past it allocation fails, and JBMC stops by itself. The shell then replaces
+/// itself with JBMC, so a timeout's kill reaches it. Should the kernel run out of memory anyway, the raised
+/// `oom_score_adj` makes JBMC its first choice, ahead of whatever launched it.
+fn limited(cmd: Vec<String>, memory_mb: Option<u64>) -> Vec<String> {
+    let Some(mb) = memory_mb.filter(|_| cfg!(unix)) else { return cmd };
+    let script = r#"ulimit -v "$0" || exit 125; echo 1000 > /proc/self/oom_score_adj 2>/dev/null; exec "$@""#;
+    let mut limited = vec!["sh".to_string(), "-c".into(), script.into(), (mb * 1024).to_string()];
+    limited.extend(cmd);
+    limited
+}
+
+/// Why the run gives no verdict although its output may read like one: it died before it could stand behind it.
+fn abnormal_end(output: &str, memory_mb: Option<u64>) -> Option<String> {
+    let limit = memory_mb.map(|mb| format!(" (the limit is {mb} MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)")).unwrap_or_default();
+    if output.contains("Out of memory") || output.contains("bad_alloc") {
+        return Some(format!("JBMC ran out of memory{limit}"));
+    }
+    if output.contains(crate::tla::KILLED_BY_SIGNAL) {
+        return Some(format!("JBMC was killed before it finished, possibly for lack of memory{limit}"));
+    }
+    None
+}
+
 /// Runs JBMC and parses its output.
 pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
-    let cmd = command(run);
+    let memory_mb = memory_limit_mb();
+    let cmd = limited(command(run), memory_mb);
     if !available(&run.executable) {
         return Ok(JbmcResult {
             verdict: Verdict::Unverifiable,
@@ -150,6 +184,9 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
     if output.contains("did not finish within") {
         result.verdict = Verdict::Unverifiable;
         result.problem = Some(format!("JBMC did not finish within {} s", run.timeout.as_secs()));
+    } else if let Some(problem) = abnormal_end(&output, memory_mb) {
+        result.verdict = Verdict::Unverifiable;
+        result.problem = Some(problem);
     }
     Ok(result)
 }
@@ -405,5 +442,60 @@ mod tests {
         let classpath = &cmd[cmd.iter().position(|a| a == "--classpath").unwrap() + 1];
         assert!(classpath.starts_with('/'), "{classpath}");
         assert!(classpath.contains("/build/main") && classpath.ends_with("/tmp/work/harness"), "{classpath}");
+    }
+
+    /// A run of a stand-in for JBMC, whose body follows the answer to `--version`.
+    #[cfg(unix)]
+    fn stand_in(dir: &Path, name: &str, body: &str) -> JbmcResult {
+        use std::os::unix::fs::PermissionsExt;
+        let executable = dir.join(name);
+        std::fs::write(&executable, format!("#!/bin/sh\n[ \"$1\" = --version ] && exit 0\n{body}\n")).unwrap();
+        std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o755)).unwrap();
+        run(&JbmcRun {
+            executable: executable.to_string_lossy().into_owned(),
+            class: "PropertyHarness".into(),
+            function: "check".into(),
+            classpath: Vec::new(),
+            unwind: 16,
+            timeout: Duration::from_secs(30),
+            stage: None,
+            log: dir.join(format!("{name}.log")),
+            extra_args: Vec::new(),
+        })
+        .unwrap()
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_run_that_dies_gives_no_verdict_whatever_it_printed() {
+        let dir = tempfile::tempdir().unwrap();
+        let proved = "echo '** 0 of 3 failed (1 iterations)'";
+
+        let r = stand_in(dir.path(), "fine", proved);
+        assert_eq!(r.verdict, Verdict::Verified);
+
+        let r = stand_in(dir.path(), "killed", &format!("{proved}\nkill -9 $$"));
+        assert_eq!(r.verdict, Verdict::Unverifiable);
+        assert!(r.problem.unwrap().contains("killed before it finished"));
+
+        let r = stand_in(dir.path(), "starved", &format!("{proved}\necho 'Out of memory'\nexit 6"));
+        assert_eq!(r.verdict, Verdict::Unverifiable);
+        assert!(r.problem.unwrap().contains("ran out of memory"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_run_is_limited_and_goes_first_when_memory_runs_out() {
+        let dir = tempfile::tempdir().unwrap();
+        let r = stand_in(dir.path(), "probe", "ulimit -v; cat /proc/self/oom_score_adj; echo '** 0 of 1 failed'");
+        assert_eq!(r.verdict, Verdict::Verified);
+        let log = std::fs::read_to_string(&r.log).unwrap();
+        assert!(log.lines().next().unwrap().parse::<u64>().unwrap() < u64::MAX / 1024, "{log}");
+        assert_eq!(log.lines().nth(1), Some("1000"), "{log}");
+    }
+
+    #[test]
+    fn the_limit_is_left_out_when_turned_off() {
+        assert_eq!(limited(vec!["jbmc".into()], None), vec!["jbmc".to_string()]);
     }
 }

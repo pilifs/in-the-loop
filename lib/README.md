@@ -30,6 +30,8 @@ It needs nothing else to derive behavioural, capability and API contracts: no JV
 It reads the JDK's own class files from the `lib/modules` image of the JDK found through `JAVA_HOME` or `java` on the `PATH`, to know the shape of JDK types (a built-in table of `java.base` facts covers the common ones when no JDK is found).
 Regression proofs need [JBMC](https://github.com/diffblue/cbmc) on the `PATH`. Model checking needs TLC (`~/tools/tla2tools.jar`, `$TLA2TOOLS_JAR`, or `tlc` on the `PATH`).
 
+Each JBMC run is limited to 3 GiB of address space, so a proof that runs away ends as "cannot be verified" rather than exhausting the machine. `JVMCONTRACT_JBMC_MEMORY_MB` changes the limit, and 0 turns it off. Don't pass `--no-refine-strings` to JBMC to save memory: it has proved methods that differ.
+
 ## Commands
 
 ```bash

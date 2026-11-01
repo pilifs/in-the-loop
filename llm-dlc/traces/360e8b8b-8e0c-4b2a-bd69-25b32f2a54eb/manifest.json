@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-01T04:27:37.263Z",
-  "duration_seconds": 43062,
+  "ended": "2026-11-01T15:01:37.336Z",
+  "duration_seconds": 81102,
   "stats": {
-    "turns": 37,
-    "api_calls": 515,
-    "tool_calls": 1056,
-    "tool_errors": 23,
+    "turns": 39,
+    "api_calls": 518,
+    "tool_calls": 1060,
+    "tool_errors": 24,
     "compactions": 8,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 15670,
-      "output_tokens": 1397388,
-      "cache_read_input_tokens": 112052245,
-      "cache_creation_input_tokens": 2767263
+      "input_tokens": 15704,
+      "output_tokens": 1399319,
+      "cache_read_input_tokens": 112288718,
+      "cache_creation_input_tokens": 2982749
     }
   },
   "tools": {
-    "Bash": 594,
+    "Bash": 598,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -339,24 +339,24 @@
     {
       "index": 8,
       "started": "2026-11-01T03:51:10.704Z",
-      "ended": "2026-11-01T04:27:37.263Z",
-      "turns": 4,
-      "api_calls": 33,
+      "ended": "2026-11-01T15:01:37.336Z",
+      "turns": 6,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 1026,
-        "output_tokens": 70745,
-        "cache_read_input_tokens": 4647120,
-        "cache_creation_input_tokens": 191695
+        "input_tokens": 1060,
+        "output_tokens": 72676,
+        "cache_read_input_tokens": 4883593,
+        "cache_creation_input_tokens": 407181
       },
-      "peak_context_tokens": 206640
+      "peak_context_tokens": 226784
     }
   ],
   "log": {
-    "sha256": "540effc2e5cbe12ef4de65bdc2a192bc9858715ae3a625a6c21bcd93a46a01c9",
-    "bytes": 25805139,
-    "lines": 8220,
-    "gzip_bytes": 4367055,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/540effc2e5cbe12ef4de65bdc2a192bc9858715ae3a625a6c21bcd93a46a01c9.jsonl.gz"
+    "sha256": "f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c",
+    "bytes": 26055534,
+    "lines": 8284,
+    "gzip_bytes": 4442670,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -431,6 +431,14 @@
       "summary": "Add JML \\old to property proofs, and two Mica examples",
       "body": "Property proofs can now state what a method did to an array parameter against what it received, with JML's pre-state operator: \\old(a[i]) is the element before the call, from a copy the generated harness takes first, so a frame condition such as (\\forall int i; result <= i && i < out.length; out[i] == \\old(out[i])) and a permutation property for an in-place sort are expressible. \\old(a.length) reads the array itself (lengths do not change), \\old(x) of a scalar is x, and \\old of result or inside an assumption or throws condition is an error. The copy is allocated at the bound on the arrays rather than the array's symbolic length, which the solver handles about thirty times faster (a six-element reversal: 98 s with an exact copy, 2.8 s with the bounded one); only a copy passed to a call of the method under proof is exact. The replay guard evaluates \\old over the input as JBMC gave it.\n\nA block of properties.contract may now set unwind: N, the loop unwinding bound for that property, because a quadratic method under a quadratic quantifier (an insertion sort of four pairs proved a pair-preserving permutation) finishes in fifteen seconds unwound five times and not in minutes at the default sixteen.\n\nMica gained SwitchLowering.sortPairs, the sort of a lookupswitch's match-offset pairs (JVMS 6.5), with a throws clause, arrays: 4 and unwind: 5, and the encoder's property gained the frame conjunct; the API and capability contracts were regenerated for the new method. Example 055 is an encoder that zero-terminates the string into the caller's buffer, refuted on encodeInto(chars=[], out=[-1]); example 056 is a sort whose comparison is the difference of the keys, refuted on two keys just over 2^31 apart that it swaps. Both pass the existing tests. Example 048's page was regenerated with the extended property; the other B11 pages were regenerated and differ only in timings, so they were restored.\n\nVerified with cargo test (44 unit tests, 22 integration tests, one new over a fixture with an in-place reversal, a buggy zeroing and a pair sort), clippy clean, Mica's verify.sh (71 tests, three contracts, sixteen properties in about a minute and a half, TLC 37 states, no deadlock) and build.py over every B11 example, each with its expected verdict.",
       "log_sha256": "9282ed25a83ab4efe045a2ab1e83991102abb2bc96554fecad2dc8f0f2f9b47c"
+    },
+    {
+      "change_id": "wmmltomzspwxwvxrovzzqryxqvomwrkq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Cap the feature loop's memory with a systemd scope",
+      "body": "The feature loop ran as part of init.scope, the cgroup WSL shells start in, so a memory-hungry proof could exhaust the machine and take the WSL instance down. feature-loop.sh now re-executes itself in feature-loop.scope with a 4 GB cap (FEATURE_LOOP_MEMORY_MAX) and no swap. It sets OOMPolicy=continue because the default stops the entire scope on the first kill, which would take claude down with the proof. It refuses to start when less memory than the cap is available or when the scope is still active.\n\nVerified by running the real script with a stub claude on PATH under a 100M cap: the memory hog was killed with status 137, the stub survived, and the loop exited 1 through its usual no-commit path. Also checked refusal for a cap above available memory, an invalid cap and a second concurrent loop, exit 130 on systemctl stop, and that the scope unloads afterwards. A real proof run under the cap was not tested. The separate lib/ work in progress is left out of this commit.",
+      "log_sha256": "f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c"
     }
   ],
   "logs": {
@@ -438,12 +446,6 @@
       "bytes": 22203837,
       "lines": 6862,
       "gzip_bytes": 3782528,
-      "url": null
-    },
-    "540effc2e5cbe12ef4de65bdc2a192bc9858715ae3a625a6c21bcd93a46a01c9": {
-      "bytes": 25805139,
-      "lines": 8220,
-      "gzip_bytes": 4367055,
       "url": null
     },
     "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc": {
@@ -493,6 +495,12 @@
       "lines": 1113,
       "gzip_bytes": 864621,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz"
+    },
+    "f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c": {
+      "bytes": 26055534,
+      "lines": 8284,
+      "gzip_bytes": 4442670,
+      "url": null
     }
   },
   "redaction_policy": 4,

@@ -286,7 +286,8 @@ pub fn run_tlc(options: &TlcOptions) -> Result<TlcResult, Error> {
     Ok(parse_tlc_output(&raw))
 }
 
-/// Runs a command, capturing stdout and stderr together; on timeout the output so far is returned with a note.
+/// Runs a command, capturing stdout and stderr together; on timeout, or if a signal kills it, the output so far is
+/// returned with a note.
 pub fn run_with_timeout(command: &[String], cwd: &Path, timeout: Duration) -> Result<String, Error> {
     let log = tempfile_path("jvmcontract-tlc");
     let file = std::fs::File::create(&log)?;
@@ -299,23 +300,41 @@ pub fn run_with_timeout(command: &[String], cwd: &Path, timeout: Duration) -> Re
         .spawn()
         .map_err(|e| Error::new(format!("cannot run {}: {e}", command[0])))?;
     let started = Instant::now();
-    let timed_out = loop {
-        if child.try_wait()?.is_some() {
-            break false;
+    let status = loop {
+        if let Some(status) = child.try_wait()? {
+            break Some(status);
         }
         if started.elapsed() > timeout {
             let _ = child.kill();
             let _ = child.wait();
-            break true;
+            break None;
         }
         std::thread::sleep(Duration::from_millis(50));
     };
     let mut output = std::fs::read_to_string(&log).unwrap_or_default();
     let _ = std::fs::remove_file(&log);
-    if timed_out {
-        output.push_str(&format!("\nError: {} did not finish within {} s\n", command[0], timeout.as_secs()));
+    match status {
+        None => output.push_str(&format!("\nError: {} did not finish within {} s\n", command[0], timeout.as_secs())),
+        Some(status) => {
+            if let Some(signal) = killing_signal(status) {
+                output.push_str(&format!("\nError: {} {KILLED_BY_SIGNAL} {signal}\n", command[0]));
+            }
+        }
     }
     Ok(output)
+}
+
+/// How [`run_with_timeout`] says that a signal ended the command, the kernel's out-of-memory killer's SIGKILL above all.
+pub const KILLED_BY_SIGNAL: &str = "was killed by signal";
+
+#[cfg(unix)]
+fn killing_signal(status: std::process::ExitStatus) -> Option<i32> {
+    std::os::unix::process::ExitStatusExt::signal(&status)
+}
+
+#[cfg(not(unix))]
+fn killing_signal(_status: std::process::ExitStatus) -> Option<i32> {
+    None
 }
 
 fn tempfile_path(prefix: &str) -> PathBuf {
