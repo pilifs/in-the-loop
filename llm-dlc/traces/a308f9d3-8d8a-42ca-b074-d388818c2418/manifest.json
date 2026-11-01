@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-01T22:02:29.077Z",
-  "duration_seconds": 26376,
+  "ended": "2026-11-01T22:06:38.611Z",
+  "duration_seconds": 26625,
   "stats": {
     "turns": 9,
-    "api_calls": 58,
-    "tool_calls": 56,
+    "api_calls": 63,
+    "tool_calls": 61,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 199300,
+    "peak_context_tokens": 212742,
     "usage": {
-      "input_tokens": 136,
-      "output_tokens": 75120,
-      "cache_read_input_tokens": 6682597,
-      "cache_creation_input_tokens": 213308
+      "input_tokens": 146,
+      "output_tokens": 82806,
+      "cache_read_input_tokens": 7702354,
+      "cache_creation_input_tokens": 226750
     }
   },
   "tools": {
-    "Bash": 48,
+    "Bash": 53,
     "Read": 4,
     "Agent": 2,
     "SendMessage": 1,
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-01T14:42:53.464Z",
-      "ended": "2026-11-01T22:02:29.077Z",
+      "ended": "2026-11-01T22:06:38.611Z",
       "turns": 9,
-      "api_calls": 58,
+      "api_calls": 63,
       "usage": {
-        "input_tokens": 136,
-        "output_tokens": 75120,
-        "cache_read_input_tokens": 6682597,
-        "cache_creation_input_tokens": 213308
+        "input_tokens": 146,
+        "output_tokens": 82806,
+        "cache_read_input_tokens": 7702354,
+        "cache_creation_input_tokens": 226750
       },
-      "peak_context_tokens": 199300
+      "peak_context_tokens": 212742
     }
   ],
   "log": {
-    "sha256": "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be",
-    "bytes": 1624182,
-    "lines": 632,
-    "gzip_bytes": 289416,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be.jsonl.gz"
+    "sha256": "703d2a06f61f1e5a0fa45d3b5f08e720d077da65540f78c8222abd3ce20d0e86",
+    "bytes": 1718040,
+    "lines": 682,
+    "gzip_bytes": 300097,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/703d2a06f61f1e5a0fa45d3b5f08e720d077da65540f78c8222abd3ce20d0e86.jsonl.gz"
   },
   "subagents": [
     {
@@ -163,6 +163,14 @@
       "summary": "Mark the encodeInto regression proof as pending, with a way to run it",
       "body": "The regression proof of a fast path in ModifiedUtf8#encodeInto can't finish at the default bounds on this machine, and its patches had been lost with /tmp. examples/apps/mica/pending now holds both patches, a script that runs either one, what was measured, what a bounded proof doesn't say, and how to pick it up on a larger machine. It's linked from the examples index, the Mica README, the library's limits and the source comment on the memory limit.\n\nThe earlier belief that smaller arrays didn't reduce memory was wrong: lowering --unwind as well is what helps. At 3 and 6 the correct version is proved in 94 s and 600 MB, at 4 and 6 in 275 s and 664 MB, and the bug is found at 2 and 6 in 6 s. Only the default bound of 8 runs out of memory at 3 GiB.",
       "log_sha256": "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be"
+    },
+    {
+      "change_id": "sxnxlxoumsxkzqowxwvmqrxntxxovwms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Fail integration tests when a tool they need is missing",
+      "body": "A test that skips passes, so a run with a broken PATH was green while proving little: javac missing skipped most of the suite in silence. A missing javac, jbmc or TLC now fails the tests that need it, naming the tool, and JVMCONTRACT_SKIP_MISSING_TOOLS=1 asks for the skip. The check that a test is running inside the repository still skips, because that isn't a broken setup.\n\nVerified by running the suite with an empty PATH (22 tests fail, naming javac and jbmc), the same with the skip set (exit 0), with javac but no jbmc (9 tests fail, naming jbmc), and with every tool present (all pass). Committed by hand under the working copy, because a concurrent session's uncommitted work is there; the matching sentence in lib/README.md's Tests section is still in the working copy beside that session's edit to the same file.",
+      "log_sha256": "703d2a06f61f1e5a0fa45d3b5f08e720d077da65540f78c8222abd3ce20d0e86"
     }
   ],
   "logs": {
@@ -182,6 +190,12 @@
       "bytes": 1441095,
       "lines": 543,
       "gzip_bytes": 269901,
+      "url": null
+    },
+    "703d2a06f61f1e5a0fa45d3b5f08e720d077da65540f78c8222abd3ce20d0e86": {
+      "bytes": 1718040,
+      "lines": 682,
+      "gzip_bytes": 300097,
       "url": null
     },
     "891d58bb4741cfc4975a702efa0d4705b1cfde5a4d7ab4b4fc55958571e0e113": {

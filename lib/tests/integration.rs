@@ -1,5 +1,6 @@
-//! End-to-end tests over Java fixtures compiled with `javac` at test time. They are skipped (with a note) when no
-//! JDK is on the path; the tests that need JBMC or TLC skip without those too.
+//! End-to-end tests over Java fixtures compiled with `javac` at test time; some also need JBMC or TLC. A missing tool
+//! fails the test that needs it, unless JVMCONTRACT_SKIP_MISSING_TOOLS=1 asks for the skip: a test that skips passes, so
+//! a green run on a broken PATH would otherwise prove nothing.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -11,7 +12,17 @@ use jvmcontract::verifier::{self, ContractsRun, Verifier};
 use jvmcontract::{capabilities, equivalence, property, tla, Verdict};
 
 fn has(program: &str) -> bool {
-    Command::new(program).arg("--version").output().map(|o| o.status.success()).unwrap_or(false)
+    let found = Command::new(program).arg("--version").output().map(|o| o.status.success()).unwrap_or(false);
+    if !found {
+        missing(program);
+    }
+    found
+}
+
+/// Fails the test, unless skipping was asked for. A test that gets past this has to return without checking anything.
+fn missing(tool: &str) {
+    let skip = std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1");
+    assert!(skip, "{tool} not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip the tests that need it");
 }
 
 fn target_tmp() -> PathBuf {
@@ -728,8 +739,13 @@ fn generates_the_tla_operator_the_python_generator_wrote() {
 #[test]
 fn tlc_checks_the_box_office_model() {
     let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/spec");
-    if !spec.exists() || tla::tlc_command(&tla::TlcOptions::new(&spec.join("BoxOffice.tla"))).is_err() {
-        eprintln!("no spec or no TLC; skipping");
+    if !spec.exists() {
+        eprintln!("not inside the repository; skipping");
+        return;
+    }
+    if tla::tlc_command(&tla::TlcOptions::new(&spec.join("BoxOffice.tla"))).is_err() {
+        missing("TLC");
+        eprintln!("TLC not found; skipping");
         return;
     }
     let work = target_tmp().join("spec");
