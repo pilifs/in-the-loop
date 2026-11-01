@@ -36,7 +36,7 @@ Say in one line what you are about to do before each step that takes time. Build
 
 Check `jvmcontract --version`, `jbmc --version`, `javac -version`, `gh auth status`, and whether `mvn` or `gradle` is on the `PATH` (a wrapper in the repository is preferred anyway).
 
-- No `jvmcontract`: install it with `cargo install --git https://github.com/pilifs/in-the-loop jvmcontract` (needs Rust; `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh | bash` installs everything), then continue.
+- No `jvmcontract`: install it with `cargo install --git https://github.com/pilifs/in-the-loop --locked jvmcontract` (needs Rust; `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh | bash` installs everything), then continue.
 - No `jbmc`: regression and property proofs are off. Say so, and still do behavioural contracts and the module-level diffs. Linux: a `.deb` from https://github.com/diffblue/cbmc/releases; macOS: `brew install cbmc`.
 - No JDK: stop; nothing can be compiled.
 
@@ -54,7 +54,7 @@ The two checkouts are untrusted code from the internet. Do not run anything from
 
 From `CHANGED`, take the `.java` files under a main source set (not `src/test`, `**/test/**`, `**/it/**`, generated sources). For each, the module is the nearest directory up the tree with a `pom.xml` or `build.gradle(.kts)`; a project with one such file at the root is one module (`.`).
 
-For each changed file, read its hunks in `diff.patch` and the file in `HEAD_DIR` and list every method whose body, signature or annotations changed, every method added, and every method removed. Note changed constructors, fields and static initializers too (they are reported, not proved). Changes outside Java (build files, dependency versions, resources) are listed in the report; a dependency change is covered by the capability contract of the module's classpath (see step 5) and otherwise out of scope.
+For each changed file, read its hunks in `diff.patch` and the file in `HEAD_DIR` and list every method whose body, signature or annotations changed, every method added, and every method removed. Note changed constructors, fields and static initializers too (they are reported, not proved). Changes outside Java (build files, dependency versions, resources) are listed in the report; a changed dependency gets a capability contract of its old and new jar in step 5, and is otherwise out of scope.
 
 Restrict to `--only` targets when given.
 

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "a308f9d3-8d8a-42ca-b074-d388818c2418",
-  "status": "open",
+  "status": "ended",
   "title": "Feature-loop memory safeguards",
   "first_prompt": "There was a crash in here when experimenting with formal verification related to memory intensive tasks. This particular machine is running lightweight WSL on a small form factor laptop. We can try ru",
   "client": {
@@ -186,6 +186,14 @@
       "immutable": false,
       "summary": "Let the installer take the repository's default branch",
       "body": "install.sh accepted only a named branch; an empty VERIFY_BYTECODE_REF now means the repository's default branch, for both the sparse clone of the skill and the cargo install of jvmcontract, which is what a local clone needs. Verified by running the installer against file:///path/to/this/repository with an empty ref into a scratch skills directory: the skill's five files arrived with the commit recorded, jvmcontract was built and installed into ~/.cargo/bin in 40 s, and every tool check passed.",
+      "log_sha256": "ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23"
+    },
+    {
+      "change_id": "mnvqzqmytlpmwozlzolznuwstottzklp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Tighten two lines of the verify-bytecode skill",
+      "body": "The install hint in the preflight step now passes --locked, as the installer does, and the note on dependency changes points at the per-jar capability contracts of step 5 instead of claiming the module's own contract covers them (it stops at the module's bytecode). Text only; the suite passed on the previous commit (49 unit and 24 integration tests).",
       "log_sha256": "ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23"
     }
   ],

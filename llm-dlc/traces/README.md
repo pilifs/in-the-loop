@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 10, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-01 22:22 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-01 22:25 UTC |
 | Prompts | 147 |
-| Model calls | 1,189 |
-| Tool calls | 1,976 (59 failed) |
+| Model calls | 1,192 |
+| Tool calls | 1,980 (59 failed) |
 | Compactions | 15 |
 | Subagents | 3 |
-| Tokens written | 2,699,360 |
-| Tokens read | 238,041,465 (97.3% from cache) |
-| Commits with a trace | 52 |
-| Log snapshots | 71 (85.6 MB gzipped, 46 uploaded) |
+| Tokens written | 2,701,958 |
+| Tokens read | 238,770,277 (97.3% from cache) |
+| Commits with a trace | 53 |
+| Log snapshots | 72 (86.0 MB gzipped, 46 uploaded) |
 
 ## Sessions
 
@@ -35,8 +35,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | ended | 22 h 31 min | `claude-fable-5-1` | 39 | 518 | 1,060 | 24 | 8 | 535,846 | 11 |
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | ended | 1 h 31 min | `claude-opus-5-5` | 7 | 27 | 31 | 3 | 0 | 91,838 | 2 |
 | 2026-11-01 11:13 UTC | [Feature loop cycle recovery](8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | ended | 16 min | `claude-opus-5-5` | 3 | 4 | 6 | 0 | 0 | 49,401 | 0 |
-| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | open | 7 h 31 min | `claude-opus-5-5` | 9 | 64 | 61 | 1 | 0 | 216,972 | 9 |
-| 2026-11-01 21:47 UTC | [JVM contract bytecode verification skill](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | open | 34 min | `claude-fable-5-1` | 1 | 46 | 71 | 3 | 0 | 236,767 | 7 |
+| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | ended | 7 h 31 min | `claude-opus-5-5` | 9 | 64 | 61 | 1 | 0 | 216,972 | 10 |
+| 2026-11-01 21:47 UTC | [JVM contract bytecode verification skill](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | open | 37 min | `claude-fable-5-1` | 1 | 49 | 75 | 3 | 0 | 245,367 | 8 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -55,13 +55,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 26,481 | 64 | 62,108 | 1,866,383 | 96.8% | 73 |
 | [`8316bdd0`](8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 1,824 | 6 | 13,980 | 76,907 | 84.6% | 50 |
 | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 85,035 | 148 | 230,980 | 7,915,094 | 97.2% | 96 |
-| [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 102,271 | 1,292 | 209,301 | 7,129,637 | 97.1% | 72 |
+| [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 104,869 | 1,358 | 217,871 | 7,849,813 | 97.3% | 77 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 1,242 | 62.9% | 10 |
+| `Bash` | 1,246 | 62.9% | 10 |
 | `Edit` | 319 | 16.1% | 6 |
 | `Write` | 240 | 12.1% | 6 |
 | `Read` | 132 | 6.7% | 9 |
@@ -132,6 +132,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 50 | change `sxnxlxou` | Fail integration tests when a tool they need is missing | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/703d2a06f61f1e5a0fa45d3b5f08e720d077da65540f78c8222abd3ce20d0e86.jsonl.gz)), [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) ([log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/cfd145eac85efb764d983a21a709865bacd981c72ac8f76a5a1b494abf2d78a3.jsonl.gz)) |
 | 51 | change `sypzolsv` | Add the /verify-bytecode Claude Code skill, as a plugin with a one-command installer | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)), [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) ([log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/55abdd123c57197876cc70f0f039c4e23d9e2dca4ac708bb3e37907e3abb5763.jsonl.gz)) |
 | 52 | change `kquontmr` | Let the installer take the repository's default branch | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)), [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) ([log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/9e9b9d2ea2437a3a88ead08dea2ce3d2139c25824654b9712e6ac5b2a16a8afb.jsonl.gz)) |
+| 53 | change `mnvqzqmy` | Tighten two lines of the verify-bytecode skill | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)), [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) ([log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/7073dfff538006cd4a480c1b6b2d8053343e03cacd2e722b3399bd4e48862d48.jsonl.gz)) |
 
 ## Logs
 
@@ -148,7 +149,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 3 | 2 | 0.5 MB | `09aa3322da07`, not uploaded |
 | [`8316bdd0`](8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 1 | 0 | 0.1 MB | `d3e31bbd02d5`, not uploaded |
 | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 10 | 0 | 2.1 MB | `ce7ed5a6e273`, not uploaded |
-| [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 8 | 0 | 2.3 MB | `9e9b9d2ea243`, not uploaded |
+| [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 9 | 0 | 2.7 MB | `7073dfff5380`, not uploaded |
 
 ## Session notes
 

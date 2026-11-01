@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `a308f9d3-8d8a-42ca-b074-d388818c2418` (open) |
+| Session | `a308f9d3-8d8a-42ca-b074-d388818c2418` (ended) |
 | When | 2026-11-01 14:42 UTC to 2026-11-01 22:14 UTC (451 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.316 |
@@ -87,6 +87,12 @@ Two additions to the verifier came out of running the skill's pieces on a real p
 change `kquontmrntwp` · [log `ce7ed5a6e273`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)
 
 install.sh accepted only a named branch; an empty VERIFY_BYTECODE_REF now means the repository's default branch, for both the sparse clone of the skill and the cargo install of jvmcontract, which is what a local clone needs. Verified by running the installer against file:///path/to/this/repository with an empty ref into a scratch skills directory: the skill's five files arrived with the commit recorded, jvmcontract was built and installed into ~/.cargo/bin in 40 s, and every tool check passed.
+
+### Tighten two lines of the verify-bytecode skill
+
+change `mnvqzqmytlpm` · [log `ce7ed5a6e273`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23.jsonl.gz)
+
+The install hint in the preflight step now passes --locked, as the installer does, and the note on dependency changes points at the per-jar capability contracts of step 5 instead of claiming the module's own contract covers them (it stops at the module's bytecode). Text only; the suite passed on the previous commit (49 unit and 24 integration tests).
 
 ## Conversation
 
