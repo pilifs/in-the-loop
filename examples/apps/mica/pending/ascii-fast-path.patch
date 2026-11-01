@@ -1,0 +1,17 @@
+--- a/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
++++ b/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
+@@ -46,7 +46,13 @@
+      */
+     public static int encodeInto(char[] chars, byte[] out) {
+         int k = 0;
+-        for (char c : chars) {
++        int i = 0;
++        // Most constants are ASCII: copy the leading run of one-byte characters without the general test.
++        while (i < chars.length && (char) (chars[i] - 1) < 0x7f) {
++            out[k++] = (byte) chars[i++];
++        }
++        for (; i < chars.length; i++) {
++            char c = chars[i];
+             if (c >= 0x0001 && c <= 0x007f) {
+                 out[k++] = (byte) c;
+             } else if (c <= 0x07ff) {

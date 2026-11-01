@@ -12,6 +12,7 @@ There are four subject systems. [Box Office](apps/boxoffice/README.md) (examples
 [Crosscut](apps/crosscut/README.md) (examples 023 to 033) is the kernels behind the cross-cutting concerns of a Spring Boot service: the transaction interceptor's rollback rule, a circuit breaker, a retry policy, a rate limiter, an `Idempotency-Key` receiver, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
 [Mica](apps/mica/README.md) (examples 034 to 056) is the decision kernels of a small JVM written in Java: the class initialization procedure of JVMS §5.5, the type checker's assignability relation, access control, `idiv` and `fcmp` with their corner cases, a `lookupswitch` bisection and the sort of its pairs, the exception table's handler lookup and its well-formedness check, the stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and the modified UTF-8 of the constant pool.
 The three are verified by [`jvmcontract`](../lib/README.md), the Rust tool, with no JVM in the loop: a bytecode interpreter checking the kernels of a bytecode interpreter.
+One proof is unfinished: [a regression proof of `ModifiedUtf8#encodeInto`](apps/mica/pending/README.md) is proved up to 4 characters, and needs a machine with more memory at the default of 8.
 
 The examples use five approaches, numbered as in [`approaches.md`](approaches.md). The common principle is that a checked-in artifact may change only where the developer intends a change, and the diff of that artifact is what the reviewer approves.
 
@@ -144,6 +145,7 @@ examples/
   apps/crosscut/spec/        its TLA+ model of an idempotent receiver (D1)
   apps/mica/                 the fourth subject system (034 to 056): the decision kernels of a small JVM written in Java
   apps/mica/spec/            its TLA+ model of class initialization, checked for deadlock as well (D1)
+  apps/mica/pending/         a proof waiting for a larger machine, and the two planned examples that depend on it
   tools/contracts/           the Java verifier for B8, B9 and B10, used by 001 to 012
   tools/tla/                 the generator of the model's state machine from the B8 contract, and the TLA+ standard modules TLC parses
   tools/build.py             the generator: runs every example and writes the generated files

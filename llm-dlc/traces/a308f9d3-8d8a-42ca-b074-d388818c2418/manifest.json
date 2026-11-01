@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-01T21:59:33.140Z",
-  "duration_seconds": 26200,
+  "ended": "2026-11-01T22:02:29.077Z",
+  "duration_seconds": 26376,
   "stats": {
     "turns": 9,
-    "api_calls": 55,
-    "tool_calls": 53,
+    "api_calls": 58,
+    "tool_calls": 56,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 190606,
+    "peak_context_tokens": 199300,
     "usage": {
-      "input_tokens": 130,
-      "output_tokens": 66995,
-      "cache_read_input_tokens": 6104152,
-      "cache_creation_input_tokens": 204614
+      "input_tokens": 136,
+      "output_tokens": 75120,
+      "cache_read_input_tokens": 6682597,
+      "cache_creation_input_tokens": 213308
     }
   },
   "tools": {
-    "Bash": 45,
+    "Bash": 48,
     "Read": 4,
     "Agent": 2,
     "SendMessage": 1,
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-01T14:42:53.464Z",
-      "ended": "2026-11-01T21:59:33.140Z",
+      "ended": "2026-11-01T22:02:29.077Z",
       "turns": 9,
-      "api_calls": 55,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 130,
-        "output_tokens": 66995,
-        "cache_read_input_tokens": 6104152,
-        "cache_creation_input_tokens": 204614
+        "input_tokens": 136,
+        "output_tokens": 75120,
+        "cache_read_input_tokens": 6682597,
+        "cache_creation_input_tokens": 213308
       },
-      "peak_context_tokens": 190606
+      "peak_context_tokens": 199300
     }
   ],
   "log": {
-    "sha256": "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1",
-    "bytes": 1545321,
-    "lines": 594,
-    "gzip_bytes": 279764,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1.jsonl.gz"
+    "sha256": "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be",
+    "bytes": 1624182,
+    "lines": 632,
+    "gzip_bytes": 289416,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be.jsonl.gz"
   },
   "subagents": [
     {
@@ -155,6 +155,14 @@
       "summary": "Stop reporting a proof when JBMC's solver gives up, or another run's output",
       "body": "Two ways a run could report a proof it did not have. First, parse_output treated '** 0 of N failed' as verified, but a solver that runs out of memory leaves every property as ERROR, so nothing has failed and JBMC ends with VERIFICATION ERROR and exit 6. With --no-refine-strings added through a wrapper, jvmcontract printed a proof that an encoder returning k + 1 behaves as before, and exited 0. Only VERIFICATION SUCCESSFUL now counts, and the memory check no longer depends on capitalisation. In default mode six memory limits gave no false proof, but only because that path also happens to print 'Out of memory'.\n\nSecond, temporary paths were process id plus nanoseconds, and concurrent runs collided: one run read a file holding another's output, or found it deleted. A flaky test showed the spliced output. The single-threaded CLI was not exposed, but parallel library use and the integration tests were. Log files and the default work directories of property and regression proofs now take a counter as well.",
       "log_sha256": "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1"
+    },
+    {
+      "change_id": "zuuzotpskotxztzmsywtnkwnwtstxysy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Mark the encodeInto regression proof as pending, with a way to run it",
+      "body": "The regression proof of a fast path in ModifiedUtf8#encodeInto can't finish at the default bounds on this machine, and its patches had been lost with /tmp. examples/apps/mica/pending now holds both patches, a script that runs either one, what was measured, what a bounded proof doesn't say, and how to pick it up on a larger machine. It's linked from the examples index, the Mica README, the library's limits and the source comment on the memory limit.\n\nThe earlier belief that smaller arrays didn't reduce memory was wrong: lowering --unwind as well is what helps. At 3 and 6 the correct version is proved in 94 s and 600 MB, at 4 and 6 in 275 s and 664 MB, and the bug is found at 2 and 6 in 6 s. Only the default bound of 8 runs out of memory at 3 GiB.",
+      "log_sha256": "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be"
     }
   ],
   "logs": {
@@ -192,6 +200,12 @@
       "bytes": 894350,
       "lines": 271,
       "gzip_bytes": 195484,
+      "url": null
+    },
+    "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be": {
+      "bytes": 1624182,
+      "lines": 632,
+      "gzip_bytes": 289416,
       "url": null
     },
     "f0a55adc344bf687db361879b86365a807d25b0aa3b1118b7a30597a93f9629f": {
