@@ -10,6 +10,12 @@
 //! A property ([`crate::property`]) also sees the method's `result`, which is just another named value, and may
 //! call the method under proof itself (`result == merge(b, a)`), which is how a law such as commutativity or
 //! idempotence is stated. The call is compiled to an `invokestatic` in the harness; it cannot be evaluated here.
+//!
+//! An array parameter (or an array `result`) of an integral or boolean element type is used as `a.length` and
+//! `a[index]`, and quantified over with JML's syntax: `(\forall int i; 0 <= i && i < a.length; a[i] != key)` and
+//! `(\exists int i; 0 <= i && i < a.length; a[i] == key)`. The range must bound the variable below and above
+//! (`lo <= i`, `i < hi`, `i <= hi`, and so on, with `&&`); any other conjunct of the range filters. A quantifier
+//! is compiled to a loop in the harness, which bounded model checking unwinds, and evaluated as a loop here.
 
 use crate::classfile::writer::{CodeBuilder, PoolBuilder};
 use crate::classfile::{Cond, Kind, Type};
@@ -62,6 +68,29 @@ pub enum Expr {
     Ternary(Box<Expr>, Box<Expr>, Box<Expr>),
     /// A call of the method under proof, with its arguments.
     Call(Callee, Vec<Expr>),
+    /// `a.length` of an array parameter: its name and slot.
+    Length(String, u16),
+    /// `a[index]` of an array parameter: its name, slot, element type and the index.
+    Index(String, u16, Type, Box<Expr>),
+    /// `\forall int i; range; body` or `\exists ...`.
+    Quantifier(Box<Quantifier>),
+}
+
+/// A bounded quantifier over an `int` variable.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Quantifier {
+    pub forall: bool,
+    pub var: String,
+    /// The slot of the variable, and of the accumulator next to it.
+    pub slot: u16,
+    /// The lower bound, inclusive; it does not mention the variable.
+    pub lo: Expr,
+    /// The upper bound, exclusive unless `inclusive`; it does not mention the variable.
+    pub hi: Expr,
+    pub inclusive: bool,
+    /// The conjuncts of the range that are not bounds.
+    pub filter: Option<Expr>,
+    pub body: Expr,
 }
 
 /// A static method an expression may call: the method under proof, in a property.
@@ -92,6 +121,9 @@ impl Expr {
             Expr::Bool(_) => Ty::Boolean,
             Expr::Var(_, t, _) => *t,
             Expr::Call(callee, _) => callee.ret,
+            Expr::Length(..) => Ty::Int,
+            Expr::Index(_, _, t, _) => ty_of(t).unwrap_or(Ty::Int),
+            Expr::Quantifier(_) => Ty::Boolean,
             Expr::Neg(e) | Expr::BitNot(e) => e.ty(),
             Expr::Not(_) => Ty::Boolean,
             Expr::Cast(t, _) => *t,
@@ -120,6 +152,61 @@ fn promote(a: Ty, b: Ty) -> Ty {
     }
 }
 
+impl Expr {
+    /// One past the highest local-variable slot the expression uses, including its quantifiers' variables.
+    pub fn slots_used(&self) -> u16 {
+        match self {
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => 0,
+            Expr::Var(_, Ty::Long, slot) => slot + 2,
+            Expr::Var(_, _, slot) | Expr::Length(_, slot) => slot + 1,
+            Expr::Index(_, slot, _, index) => (slot + 1).max(index.slots_used()),
+            Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.slots_used(),
+            Expr::Binary(_, l, r) => l.slots_used().max(r.slots_used()),
+            Expr::Ternary(c, t, e) => c.slots_used().max(t.slots_used()).max(e.slots_used()),
+            Expr::Call(_, args) => args.iter().map(Expr::slots_used).max().unwrap_or(0),
+            Expr::Quantifier(q) => {
+                let inner = q.lo.slots_used().max(q.hi.slots_used()).max(q.body.slots_used()).max(q.filter.as_ref().map(Expr::slots_used).unwrap_or(0));
+                (q.slot + 2).max(inner)
+            }
+        }
+    }
+
+    /// Whether the expression calls the method under proof, which only the harness can evaluate.
+    pub fn has_call(&self) -> bool {
+        match self {
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) => false,
+            Expr::Call(..) => true,
+            Expr::Index(_, _, _, index) => index.has_call(),
+            Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.has_call(),
+            Expr::Binary(_, l, r) => l.has_call() || r.has_call(),
+            Expr::Ternary(c, t, e) => c.has_call() || t.has_call() || e.has_call(),
+            Expr::Quantifier(q) => q.lo.has_call() || q.hi.has_call() || q.body.has_call() || q.filter.as_ref().is_some_and(Expr::has_call),
+        }
+    }
+
+    /// Whether the expression reads the local in `slot`.
+    fn mentions(&self, slot: u16) -> bool {
+        match self {
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) => false,
+            Expr::Var(_, _, s) | Expr::Length(_, s) => *s == slot,
+            Expr::Index(_, s, _, index) => *s == slot || index.mentions(slot),
+            Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.mentions(slot),
+            Expr::Binary(_, l, r) => l.mentions(slot) || r.mentions(slot),
+            Expr::Ternary(c, t, e) => c.mentions(slot) || t.mentions(slot) || e.mentions(slot),
+            Expr::Call(_, args) => args.iter().any(|a| a.mentions(slot)),
+            Expr::Quantifier(q) => q.lo.mentions(slot) || q.hi.mentions(slot) || q.body.mentions(slot) || q.filter.as_ref().is_some_and(|f| f.mentions(slot)),
+        }
+    }
+}
+
+/// The element type of an array parameter, if the expression language can read it.
+pub fn element_ty(t: &Type) -> Option<Ty> {
+    match t {
+        Type::Array(inner) => ty_of(inner),
+        _ => None,
+    }
+}
+
 /// A parameter available to the expression.
 #[derive(Debug, Clone)]
 pub struct Param {
@@ -144,10 +231,12 @@ enum Token {
     Int(i64, bool), // value, is_long
     Ident(String),
     Op(&'static str),
+    /// `\forall` or `\exists`.
+    Quantifier(bool),
     End,
 }
 
-const OPS: &[&str] = &[">>>=", ">>>", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "(", ")", ",", "+", "-", "*", "/", "%", "<", ">", "!", "~", "&", "^", "|", "?", ":"];
+const OPS: &[&str] = &[">>>=", ">>>", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "(", ")", "[", "]", ",", ";", ".", "+", "-", "*", "/", "%", "<", ">", "!", "~", "&", "^", "|", "?", ":"];
 
 fn lex(src: &str) -> Result<Vec<Token>, Error> {
     let chars: Vec<char> = src.chars().collect();
@@ -194,6 +283,20 @@ fn lex(src: &str) -> Result<Vec<Token>, Error> {
             tokens.push(Token::Ident(chars[start..i].iter().collect()));
             continue;
         }
+        if c == '\\' {
+            let start = i + 1;
+            i += 1;
+            while i < chars.len() && chars[i].is_ascii_alphabetic() {
+                i += 1;
+            }
+            let word: String = chars[start..i].iter().collect();
+            match word.as_str() {
+                "forall" => tokens.push(Token::Quantifier(true)),
+                "exists" => tokens.push(Token::Quantifier(false)),
+                _ => return Err(Error::new(format!("unknown \\{word} in expression; the quantifiers are \\forall and \\exists"))),
+            }
+            continue;
+        }
         let rest: String = chars[i..].iter().take(4).collect();
         match OPS.iter().find(|op| rest.starts_with(**op)) {
             Some(op) => {
@@ -214,6 +317,10 @@ struct Parser<'a> {
     pos: usize,
     params: &'a [Param],
     callee: Option<&'a Callee>,
+    /// The variables of the enclosing quantifiers.
+    scope: Vec<Param>,
+    /// The first local-variable slot free for a quantifier's variable.
+    next_slot: u16,
 }
 
 impl Parser<'_> {
@@ -316,6 +423,10 @@ impl Parser<'_> {
         if self.eat("+") {
             return self.unary();
         }
+        if let Token::Quantifier(forall) = self.peek().clone() {
+            self.next();
+            return self.quantifier(forall);
+        }
         if self.peek() == &Token::Op("(") {
             // A cast, or a parenthesised expression.
             if let Token::Ident(name) = &self.tokens[self.pos + 1] {
@@ -377,13 +488,119 @@ impl Parser<'_> {
                     Ok(Expr::Call(callee.clone(), args))
                 }
                 _ => {
+                    if let Some(bound) = self.scope.iter().rev().find(|p| p.name == name) {
+                        return Ok(Expr::Var(name, Ty::Int, bound.slot));
+                    }
                     let param = self.params.iter().find(|p| p.name == name).ok_or_else(|| Error::new(format!("unknown name {name:?}; the names are {}", self.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))))?;
+                    if let Type::Array(element) = &param.ty {
+                        let element = (**element).clone();
+                        element_ty(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only arrays of integral or boolean elements can appear in the expression", param.ty.java_name())))?;
+                        if self.eat(".") {
+                            match self.next() {
+                                Token::Ident(field) if field == "length" => return Ok(Expr::Length(name, param.slot)),
+                                other => return Err(Error::new(format!("expected {name}.length, found {other:?}"))),
+                            }
+                        }
+                        if self.eat("[") {
+                            let index = self.ternary()?;
+                            require(index.ty() == Ty::Int, &format!("the index of {name} must be an int"))?;
+                            self.expect("]")?;
+                            return Ok(Expr::Index(name, param.slot, element, Box::new(index)));
+                        }
+                        return Err(Error::new(format!("{name} is an array; use {name}.length, {name}[index], or a quantifier over it")));
+                    }
                     let t = ty_of(&param.ty).ok_or_else(|| Error::new(format!("parameter {name} has type {}; only integral and boolean parameters can appear in the expression", param.ty.java_name())))?;
                     Ok(Expr::Var(name, t, param.slot))
                 }
             },
             other => Err(Error::new(format!("unexpected {other:?} in expression"))),
         }
+    }
+
+    /// `int i; range; body`, after `\forall` or `\exists`.
+    fn quantifier(&mut self, forall: bool) -> Result<Expr, Error> {
+        let keyword = if forall { "\\forall" } else { "\\exists" };
+        match self.next() {
+            Token::Ident(t) if t == "int" => {}
+            other => return Err(Error::new(format!("expected `int` after {keyword}, found {other:?}"))),
+        }
+        let var = match self.next() {
+            Token::Ident(name) => name,
+            other => return Err(Error::new(format!("expected the variable of {keyword}, found {other:?}"))),
+        };
+        if self.scope.iter().any(|p| p.name == var) || self.params.iter().any(|p| p.name == var) {
+            return Err(Error::new(format!("the variable {var} of {keyword} is already a name")));
+        }
+        self.expect(";")?;
+        let slot = self.next_slot;
+        self.next_slot += 2;
+        self.scope.push(Param { name: var.clone(), ty: Type::Int, slot });
+        let range = self.ternary();
+        let body = range.as_ref().ok().map(|_| self.expect(";").and_then(|()| self.ternary()));
+        self.scope.pop();
+        let range = range?;
+        let body = body.expect("parsed after the range")?;
+        require(range.ty() == Ty::Boolean, &format!("the range of {var} must be boolean"))?;
+        require(body.ty() == Ty::Boolean, &format!("the body of {keyword} must be boolean"))?;
+        let (lo, hi, inclusive, filter) = bounds(range, &var, slot)?;
+        Ok(Expr::Quantifier(Box::new(Quantifier { forall, var, slot, lo, hi, inclusive, filter, body })))
+    }
+}
+
+/// Splits the range of a quantifier into a lower bound, an upper bound and a filter.
+fn bounds(range: Expr, var: &str, slot: u16) -> Result<(Expr, Expr, bool, Option<Expr>), Error> {
+    let mut conjuncts = Vec::new();
+    flatten_and(range, &mut conjuncts);
+    let mut lo = None;
+    let mut hi: Option<(Expr, bool)> = None;
+    let mut filter: Option<Expr> = None;
+    for conjunct in conjuncts {
+        let bound = match &conjunct {
+            Expr::Binary(op, l, r) if matches!(op, BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge) => {
+                let is_var = |e: &Expr| matches!(e, Expr::Var(_, _, s) if *s == slot);
+                if is_var(l) && !r.mentions(slot) && r.ty() == Ty::Int {
+                    Some((*op, (**r).clone()))
+                } else if is_var(r) && !l.mentions(slot) && l.ty() == Ty::Int {
+                    let flipped = match op {
+                        BinOp::Lt => BinOp::Gt,
+                        BinOp::Le => BinOp::Ge,
+                        BinOp::Gt => BinOp::Lt,
+                        _ => BinOp::Le,
+                    };
+                    Some((flipped, (**l).clone()))
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        };
+        // The bound is now `var <op> e`.
+        match bound {
+            Some((BinOp::Ge, e)) if lo.is_none() => lo = Some(e),
+            Some((BinOp::Gt, e)) if lo.is_none() => lo = Some(Expr::Binary(BinOp::Add, Box::new(e), Box::new(Expr::Int(1)))),
+            Some((BinOp::Lt, e)) if hi.is_none() => hi = Some((e, false)),
+            Some((BinOp::Le, e)) if hi.is_none() => hi = Some((e, true)),
+            _ => {
+                filter = Some(match filter {
+                    Some(f) => Expr::Binary(BinOp::LogAnd, Box::new(f), Box::new(conjunct)),
+                    None => conjunct,
+                })
+            }
+        }
+    }
+    match (lo, hi) {
+        (Some(lo), Some((hi, inclusive))) => Ok((lo, hi, inclusive, filter)),
+        _ => Err(Error::new(format!("the range of {var} must bound it below and above, as in `0 <= {var} && {var} < a.length`"))),
+    }
+}
+
+fn flatten_and(e: Expr, out: &mut Vec<Expr>) {
+    match e {
+        Expr::Binary(BinOp::LogAnd, l, r) => {
+            flatten_and(*l, out);
+            flatten_and(*r, out);
+        }
+        other => out.push(other),
     }
 }
 
@@ -416,8 +633,13 @@ pub fn parse(src: &str, params: &[Param]) -> Result<Expr, Error> {
 
 /// As [`parse`], with a method the expression may call.
 pub fn parse_with(src: &str, params: &[Param], callee: Option<&Callee>) -> Result<Expr, Error> {
+    parse_in(src, params, callee, params.iter().map(|p| p.slot + p.ty.slots()).max().unwrap_or(0))
+}
+
+/// As [`parse_with`], with the first local-variable slot a quantifier may use for its variable.
+pub fn parse_in(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16) -> Result<Expr, Error> {
     let tokens = lex(src)?;
-    let mut parser = Parser { tokens, pos: 0, params, callee };
+    let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
@@ -432,7 +654,48 @@ pub fn parse_with(src: &str, params: &[Param], callee: Option<&Callee>) -> Resul
 
 /// Evaluates the expression over parameter values (by slot). Division by zero is an error.
 pub fn eval(expr: &Expr, locals: &[Value]) -> Result<Value, Error> {
+    eval_with(expr, locals, &[])
+}
+
+/// As [`eval`], with the elements of the array parameters by slot. A quantifier's variable is written into its
+/// slot, so the locals are extended as needed.
+pub fn eval_with(expr: &Expr, locals: &[Value], arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
+    let mut locals = locals.to_vec();
+    locals.resize(locals.len().max(usize::from(expr.slots_used())), Value::Int(0));
+    eval_in(expr, &mut locals, arrays)
+}
+
+fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)]) -> Result<Value, Error> {
+    let array = |name: &str, slot: u16| arrays.iter().find(|(s, _)| *s == slot).map(|(_, data)| data).ok_or_else(|| Error::new(format!("no elements for the array {name}")));
     Ok(match expr {
+        Expr::Length(name, slot) => Value::Int(array(name, *slot)?.len() as i32),
+        Expr::Index(name, slot, t, index) => {
+            let i = eval_in(index, locals, arrays)?.as_int();
+            let data = array(name, *slot)?;
+            let v = *usize::try_from(i).ok().and_then(|i| data.get(i)).ok_or_else(|| Error::new(format!("{name}[{i}] is out of bounds for length {}", data.len())))?;
+            match (t, v) {
+                (Type::Long, Value::Int(x)) => Value::Long(i64::from(x)),
+                _ => v,
+            }
+        }
+        Expr::Quantifier(q) => {
+            let lo = eval_in(&q.lo, locals, arrays)?.as_int();
+            let hi = eval_in(&q.hi, locals, arrays)?.as_int();
+            let end = if q.inclusive { i64::from(hi) + 1 } else { i64::from(hi) };
+            let mut i = i64::from(lo);
+            while i < end {
+                locals[usize::from(q.slot)] = Value::Int(i as i32);
+                let selected = match &q.filter {
+                    Some(f) => eval_in(f, locals, arrays)?.as_int() != 0,
+                    None => true,
+                };
+                if selected && (eval_in(&q.body, locals, arrays)?.as_int() != 0) != q.forall {
+                    return Ok(Value::Int((!q.forall) as i32));
+                }
+                i += 1;
+            }
+            Value::Int(q.forall as i32)
+        }
         Expr::Int(v) => Value::Int(*v),
         Expr::Long(v) => Value::Long(*v),
         Expr::Bool(b) => Value::Int(*b as i32),
@@ -443,35 +706,35 @@ pub fn eval(expr: &Expr, locals: &[Value]) -> Result<Value, Error> {
                 _ => v,
             }
         }
-        Expr::Neg(e) => match eval(e, locals)? {
+        Expr::Neg(e) => match eval_in(e, locals, arrays)? {
             Value::Int(x) => Value::Int(x.wrapping_neg()),
             Value::Long(x) => Value::Long(x.wrapping_neg()),
             v => v,
         },
-        Expr::Not(e) => Value::Int((eval(e, locals)?.as_int() == 0) as i32),
+        Expr::Not(e) => Value::Int((eval_in(e, locals, arrays)?.as_int() == 0) as i32),
         Expr::Call(callee, _) => return Err(Error::new(format!("a call of {} can only be evaluated in the harness", callee.name))),
-        Expr::BitNot(e) => match eval(e, locals)? {
+        Expr::BitNot(e) => match eval_in(e, locals, arrays)? {
             Value::Int(x) => Value::Int(!x),
             Value::Long(x) => Value::Long(!x),
             v => v,
         },
-        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval(e, locals)?) as i32),
-        Expr::Cast(_, e) => Value::Long(as_i64(eval(e, locals)?)),
+        Expr::Cast(Ty::Int, e) => Value::Int(as_i64(eval_in(e, locals, arrays)?) as i32),
+        Expr::Cast(_, e) => Value::Long(as_i64(eval_in(e, locals, arrays)?)),
         Expr::Ternary(c, t, e) => {
-            if eval(c, locals)?.as_int() != 0 {
-                eval(t, locals)?
+            if eval_in(c, locals, arrays)?.as_int() != 0 {
+                eval_in(t, locals, arrays)?
             } else {
-                eval(e, locals)?
+                eval_in(e, locals, arrays)?
             }
         }
         Expr::Binary(op, l, r) => {
             if *op == BinOp::LogAnd {
-                return Ok(Value::Int((eval(l, locals)?.as_int() != 0 && eval(r, locals)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 && eval_in(r, locals, arrays)?.as_int() != 0) as i32));
             }
             if *op == BinOp::LogOr {
-                return Ok(Value::Int((eval(l, locals)?.as_int() != 0 || eval(r, locals)?.as_int() != 0) as i32));
+                return Ok(Value::Int((eval_in(l, locals, arrays)?.as_int() != 0 || eval_in(r, locals, arrays)?.as_int() != 0) as i32));
             }
-            let (a, b) = (eval(l, locals)?, eval(r, locals)?);
+            let (a, b) = (eval_in(l, locals, arrays)?, eval_in(r, locals, arrays)?);
             let wide = expr.ty() == Ty::Long || (matches!(op, BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge | BinOp::Eq | BinOp::Ne) && promote(l.ty(), r.ty()) == Ty::Long);
             let (x, y) = (as_i64(a), as_i64(b));
             let wrap = |v: i64| if wide { Value::Long(v) } else { Value::Int(v as i32) };
@@ -544,6 +807,49 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
         Expr::Bool(b) => code.iconst(*b as i32),
         Expr::Var(_, Ty::Long, slot) => code.load(Kind::Long, *slot),
         Expr::Var(_, _, slot) => code.load(Kind::Int, *slot),
+        Expr::Length(_, slot) => {
+            code.load(Kind::Ref, *slot);
+            code.op(0xbe); // arraylength
+        }
+        Expr::Index(_, slot, t, index) => {
+            code.load(Kind::Ref, *slot);
+            emit_promoted(index, Ty::Int, code, pool);
+            code.op(match t {
+                Type::Long => 0x2f,                 // laload
+                Type::Byte | Type::Boolean => 0x33, // baload
+                Type::Char => 0x34,                 // caload
+                Type::Short => 0x35,                // saload
+                _ => 0x2e,                          // iaload
+            });
+        }
+        Expr::Quantifier(q) => {
+            let acc = q.slot + 1;
+            let loop_ = code.label();
+            let next = code.label();
+            let end = code.label();
+            code.iconst(q.forall as i32);
+            code.store(Kind::Int, acc);
+            emit_promoted(&q.lo, Ty::Int, code, pool);
+            code.store(Kind::Int, q.slot);
+            code.bind(loop_);
+            code.load(Kind::Int, q.slot);
+            emit_promoted(&q.hi, Ty::Int, code, pool);
+            code.if_icmp(if q.inclusive { Cond::Gt } else { Cond::Ge }, end);
+            if let Some(filter) = &q.filter {
+                emit(filter, code, pool);
+                code.if_zero(Cond::Eq, next);
+            }
+            emit(&q.body, code, pool);
+            code.if_zero(if q.forall { Cond::Ne } else { Cond::Eq }, next);
+            code.iconst((!q.forall) as i32);
+            code.store(Kind::Int, acc);
+            code.goto(end);
+            code.bind(next);
+            code.iinc(q.slot, 1);
+            code.goto(loop_);
+            code.bind(end);
+            code.load(Kind::Int, acc);
+        }
         Expr::Call(callee, args) => {
             for (arg, param) in args.iter().zip(&callee.params) {
                 emit_promoted(arg, *param, code, pool);
@@ -747,6 +1053,39 @@ mod tests {
         assert!(parse("seats && vip", &params()).is_err(), "&& on a number");
         assert!(parse("seats >= 8)", &params()).is_err(), "trailing token");
         assert!(parse("total(priceCents, seats) > 0", &params()).is_err(), "no callee");
+    }
+
+    #[test]
+    fn parses_arrays_and_quantifiers() {
+        let params = vec![Param { name: "a".into(), ty: Type::Array(Box::new(Type::Int)), slot: 0 }, Param { name: "key".into(), ty: Type::Int, slot: 1 }];
+        let arrays = |data: &[i32]| vec![(0u16, data.iter().map(|v| Value::Int(*v)).collect::<Vec<_>>())];
+        let locals = |key| vec![Value::Null, Value::Int(key)];
+        let absent = parse_in("(\\forall int i; 0 <= i && i < a.length; a[i] != key)", &params, None, 2).unwrap();
+        assert_eq!(eval_with(&absent, &locals(5), &arrays(&[1, 2, 3])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&absent, &locals(2), &arrays(&[1, 2, 3])).unwrap(), Value::Int(0));
+        assert_eq!(eval_with(&absent, &locals(2), &arrays(&[])).unwrap(), Value::Int(1), "vacuous");
+        let sorted = parse_in("\\forall int i; 0 < i && i < a.length; a[i - 1] < a[i]", &params, None, 2).unwrap();
+        assert_eq!(eval_with(&sorted, &locals(0), &arrays(&[1, 2, 3])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&sorted, &locals(0), &arrays(&[1, 3, 2])).unwrap(), Value::Int(0));
+        // An inclusive upper bound, a filter, and the bound written with the variable on the right.
+        let even = parse_in("(\\exists int i; 0 <= i && a.length - 1 >= i && i % 2 == 0; a[i] == key)", &params, None, 2).unwrap();
+        assert_eq!(eval_with(&even, &locals(3), &arrays(&[1, 2, 3])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&even, &locals(2), &arrays(&[1, 2, 3])).unwrap(), Value::Int(0), "index 1 is filtered out");
+        assert_eq!(even.slots_used(), 4);
+        let distinct = parse_in("\\forall int i; 0 <= i && i < a.length; \\forall int j; i < j && j < a.length; a[i] != a[j]", &params, None, 2).unwrap();
+        assert_eq!(eval_with(&distinct, &locals(0), &arrays(&[1, 2, 3])).unwrap(), Value::Int(1));
+        assert_eq!(eval_with(&distinct, &locals(0), &arrays(&[1, 2, 1])).unwrap(), Value::Int(0));
+        assert_eq!(distinct.slots_used(), 6);
+        assert!(eval_with(&parse_in("a[key] == 0", &params, None, 2).unwrap(), &locals(7), &arrays(&[1])).is_err(), "out of bounds");
+
+        assert!(parse_in("a == 0", &params, None, 2).is_err(), "an array is not a value");
+        assert!(parse_in("\\forall int i; i < a.length; a[i] != key", &params, None, 2).is_err(), "no lower bound");
+        assert!(parse_in("\\forall int key; 0 <= key && key < 3; true", &params, None, 2).is_err(), "shadows a parameter");
+        assert!(parse_in("\\forall long i; 0 <= i && i < 3; true", &params, None, 2).is_err(), "int variables only");
+        assert!(parse_in("\\some int i; 0 <= i && i < 3; true", &params, None, 2).is_err(), "unknown quantifier");
+        assert!(parse_in("a[1L] == 0", &params, None, 2).is_err(), "a long index");
+        let floats = vec![Param { name: "f".into(), ty: Type::Array(Box::new(Type::Float)), slot: 0 }];
+        assert!(parse_in("f.length > 0", &floats, None, 1).is_err(), "float elements are not expressible");
     }
 
     #[test]

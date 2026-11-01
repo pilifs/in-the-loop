@@ -7,6 +7,10 @@
 //! It is the theorem a property-based test states and samples; here the solver covers every input. The harness is
 //! generated as bytecode ([`crate::harness::generate_property`]), JBMC turns it into a satisfiability problem, and a
 //! satisfying assignment is replayed in the interpreter to show the outcome that violates the property.
+//!
+//! An array parameter is a symbolic array of every length up to a bound ([`Options::max_array_length`]), never
+//! `null`, and the property may quantify over it (`\forall int i; 0 <= i && i < a.length; a[i] != key`); so may
+//! an array `result`.
 
 use std::fmt::Write as _;
 use std::path::PathBuf;
@@ -18,8 +22,8 @@ use crate::classfile::Type;
 use crate::classpath::ClassPath;
 use crate::equivalence::{extract_jdk_classes, STAGES};
 use crate::harness;
-use crate::interp::{render, Fault, Machine, Value};
-use crate::jbmc::{self, JbmcRun};
+use crate::interp::{render, Fault, Machine, Object, Value};
+use crate::jbmc::{self, Argument, JbmcRun};
 use crate::sarif::{self, Finding};
 use crate::{Error, Verdict};
 
@@ -40,6 +44,8 @@ pub struct Options {
     pub sources: Vec<PathBuf>,
     pub base: PathBuf,
     pub unwind: u32,
+    /// The longest array an array parameter is given.
+    pub max_array_length: u32,
     pub timeout_seconds: u64,
     pub jbmc: String,
     pub java_home: Option<PathBuf>,
@@ -58,6 +64,7 @@ impl Options {
             sources: Vec::new(),
             base: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
             unwind: 16,
+            max_array_length: 8,
             timeout_seconds: 600,
             jbmc: "jbmc".into(),
             java_home: None,
@@ -150,12 +157,20 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
     for (name, t) in names.iter().zip(&descriptor.params) {
-        if !t.is_primitive() {
-            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters only. Finite types (enums, booleans, records) are covered by behavioural contracts.", t.java_name()));
+        if !t.is_primitive() && harness::expr::element_ty(t).is_none() {
+            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters and arrays of integral or boolean elements. Finite types (enums, booleans, records) are covered by behavioural contracts.", t.java_name()));
         }
     }
     let params = harness::params(&names, &descriptor.params);
-    let domain = params.iter().map(|p| format!("{}: {}", p.name, p.ty.java_name())).collect::<Vec<_>>().join(" × ");
+    let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
+    let domain = params
+        .iter()
+        .map(|p| match p.ty {
+            Type::Array(_) => format!("{}: {} of length ≤ {}", p.name, p.ty.java_name(), options.max_array_length),
+            _ => format!("{}: {}", p.name, p.ty.java_name()),
+        })
+        .collect::<Vec<_>>()
+        .join(" × ");
 
     // 2. The statement.
     let harness = match harness::generate_property(&class_internal, &method_name, &params, &descriptor.ret, options.assume.as_deref(), options.assert.as_deref()) {
@@ -182,6 +197,13 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     classpath.extend(options.classpath.iter().cloned());
     let started = std::time::Instant::now();
     let mut last = None;
+    // An array parameter is never null, and is bounded in length: a quantifier over it is a loop the unwinding
+    // bound must cover.
+    let extra_args = if has_arrays {
+        vec!["--java-assume-inputs-non-null".to_string(), "--max-nondet-array-length".to_string(), options.max_array_length.to_string()]
+    } else {
+        Vec::new()
+    };
     for stage in STAGES {
         let run = JbmcRun {
             executable: options.jbmc.clone(),
@@ -192,7 +214,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             timeout: Duration::from_secs(options.timeout_seconds),
             stage: stage.map(str::to_string),
             log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
-            extra_args: Vec::new(),
+            extra_args: extra_args.clone(),
         };
         let result = jbmc::run(&run)?;
         let stop = result.verdict != Verdict::Verified;
@@ -217,31 +239,63 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             proof = Some(how);
         }
         Verdict::Violation => {
-            let values = last.inputs(&descriptor.params)?;
-            let (outcome, returned) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor.ret, &values)?;
-            let rendered = format!("{method_name}({})", params.iter().zip(&values).map(|(p, v)| format!("{}={}", p.name, render::witness(*v, &p.ty))).collect::<Vec<_>>().join(", "));
-            // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
-            // given an arbitrary result to a method it had no bytecode for. (A property that calls the method
-            // under proof is checked in the harness only, so it is taken at JBMC's word.)
-            if let Some(result) = returned {
-                let mut locals = Vec::new();
-                for v in values.iter().chain(std::iter::once(&result)) {
-                    locals.push(*v);
-                    if v.is_wide() {
-                        locals.push(Value::Int(0));
+            let arguments = last.arguments(&descriptor.params)?;
+            let (mut outcome, returned, result_array, arrays_after) = replay(options, &class_internal, &method_name, &method.descriptor, &descriptor, &arguments)?;
+            let witnesses: Vec<String> = params.iter().zip(&arguments).map(|(p, a)| render_argument(a, &p.ty)).collect();
+            for (p, a) in params.iter().zip(&arguments) {
+                if let (Argument::Array(before), Type::Array(element)) = (a, &p.ty) {
+                    if let Some((_, after)) = arrays_after.iter().find(|(slot, after)| *slot == p.slot && after != before) {
+                        outcome = format!("{outcome}, leaving {}={}", p.name, render_array(after, element));
                     }
                 }
-                if let Ok(Value::Int(1)) = harness::expr::eval(&harness.assertion, &locals) {
-                    let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
-                    let message = format!("{} cannot be verified: {p}", options.target);
-                    let _ = writeln!(out, "✗ {message}");
-                    findings.push(Finding::new("unverifiable", message, uri.clone(), line));
-                    problem = Some(p);
-                    verdict = Verdict::Unverifiable;
-                    if let Some(report) = &options.report {
-                        sarif::write(&report.join("property.sarif"), &findings)?;
+            }
+            let rendered = format!("{method_name}({})", params.iter().zip(&witnesses).map(|(p, w)| format!("{}={w}", p.name)).collect::<Vec<_>>().join(", "));
+            // A counterexample on which the interpreter finds the property holding is no counterexample: JBMC has
+            // given an arbitrary result to a method it had no bytecode for. (A property that calls the method
+            // under proof is checked in the harness only, so it is taken at JBMC's word.) The assertion reads an
+            // array parameter after the call, as the harness does, so a method that writes into it is held to
+            // what it wrote.
+            if let Some(result) = returned.filter(|_| !harness.assertion.has_call()) {
+                let mut locals = Vec::new();
+                let mut arrays = Vec::new();
+                for (a, p) in arguments.iter().zip(&params) {
+                    match a {
+                        Argument::Scalar(v) => {
+                            locals.push(*v);
+                            if v.is_wide() {
+                                locals.push(Value::Int(0));
+                            }
+                        }
+                        Argument::Array(data) => {
+                            locals.push(Value::Null);
+                            let after = arrays_after.iter().find(|(slot, _)| *slot == p.slot).map(|(_, d)| d.clone());
+                            arrays.push((p.slot, after.unwrap_or_else(|| data.clone())));
+                        }
+                        Argument::Null => locals.push(Value::Null),
                     }
-                    return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+                }
+                let result_slot = locals.len() as u16;
+                locals.push(result);
+                if result.is_wide() {
+                    locals.push(Value::Int(0));
+                }
+                if let Some(data) = result_array {
+                    arrays.push((result_slot, data));
+                }
+                match harness::expr::eval_with(&harness.assertion, &locals, &arrays) {
+                    Err(e) => outcome = format!("{outcome}; the assertion itself cannot be evaluated on it ({e})"),
+                    Ok(holds) => if holds == Value::Int(1) {
+                        let p = format!("JBMC's counterexample {rendered} does not reproduce: the method returns {outcome} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                        let message = format!("{} cannot be verified: {p}", options.target);
+                        let _ = writeln!(out, "✗ {message}");
+                        findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                        problem = Some(p);
+                        verdict = Verdict::Unverifiable;
+                        if let Some(report) = &options.report {
+                            sarif::write(&report.join("property.sarif"), &findings)?;
+                        }
+                        return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+                    },
                 }
             }
             let message = format!("Property of {} violated: `{assertion}`{}:\n  {rendered}\n    outcome: {outcome}", options.target, where_);
@@ -250,7 +304,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, outcome, values: values.iter().zip(&params).map(|(v, p)| render::witness(*v, &p.ty)).collect() });
+            counterexample = Some(Counterexample { input: rendered, outcome, values: witnesses });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
@@ -291,10 +345,12 @@ pub struct Declaration {
     pub target: String,
     pub assume: Option<String>,
     pub assert: Option<String>,
+    /// `arrays:` the longest array an array parameter is given for this property, overriding the command line.
+    pub max_array_length: Option<u32>,
 }
 
-/// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:` and
-/// `assert:` lines; `#` comments and `key: value` headers are skipped.
+/// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:`,
+/// `assert:` and `arrays:` lines; `#` comments and `key: value` headers are skipped.
 pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, Error> {
     let mut out: Vec<Declaration> = Vec::new();
     for (number, raw) in text.lines().enumerate() {
@@ -306,7 +362,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         let body = line.trim();
         if !indented {
             if body.contains('#') && !body.contains(':') {
-                out.push(Declaration { target: body.to_string(), assume: None, assert: None });
+                out.push(Declaration { target: body.to_string(), assume: None, assert: None, max_array_length: None });
                 continue;
             }
             if body.split_once(':').is_some() {
@@ -320,7 +376,10 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         match body.split_once(':') {
             Some(("assume", value)) => last.assume = Some(value.trim().to_string()),
             Some(("assert", value)) => last.assert = Some(value.trim().to_string()),
-            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:` or `assert:`, found {body:?}", number + 1))),
+            Some(("arrays", value)) => {
+                last.max_array_length = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `arrays:` needs a number of elements, found {:?}", number + 1, value.trim())))?)
+            }
+            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:` or `arrays:`, found {body:?}", number + 1))),
         }
     }
     Ok(out)
@@ -331,9 +390,40 @@ pub fn read_declarations(file: &std::path::Path) -> Result<Vec<Declaration>, Err
     parse_declarations(&text, &file.display().to_string())
 }
 
+/// A witness argument as Java would write it: `17`, `'a'`, `[3, 5, 8]`, `null`.
+fn render_argument(argument: &Argument, t: &Type) -> String {
+    match (argument, t) {
+        (Argument::Scalar(v), _) => render::witness(*v, t),
+        (Argument::Array(data), Type::Array(element)) => render_array(data, element),
+        (Argument::Array(_), _) => "<array>".into(),
+        (Argument::Null, _) => "null".into(),
+    }
+}
+
+fn render_array(data: &[Value], element: &Type) -> String {
+    format!("[{}]", data.iter().map(|v| render::witness(*v, element)).collect::<Vec<_>>().join(", "))
+}
+
+/// The elements of the arrays among `values`, by parameter slot, as they are now.
+fn arrays_of(m: &Machine, values: &[Value], signature: &crate::classfile::MethodDescriptor) -> Vec<(u16, Vec<Value>)> {
+    let mut out = Vec::new();
+    let mut slot = 0;
+    for (v, t) in values.iter().zip(&signature.params) {
+        if let Value::Ref(r) = v {
+            if let Object::Array { data, .. } = m.heap.get(*r) {
+                out.push((slot, data.clone()));
+            }
+        }
+        slot += t.slots();
+    }
+    out
+}
+
 /// Runs the counterexample through the method in the interpreter, with the effect monitor off: the outcome as
-/// text, and the value returned if the method returned a primitive.
-fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, ret: &Type, values: &[Value]) -> Result<(String, Option<Value>), Error> {
+/// text, the value returned if the method returned a primitive or an array, the elements of a returned array,
+/// and the elements of the array arguments after the call.
+#[allow(clippy::type_complexity)]
+fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &str, signature: &crate::classfile::MethodDescriptor, arguments: &[Argument]) -> Result<(String, Option<Value>, Option<Vec<Value>>, Vec<(u16, Vec<Value>)>), Error> {
     let mut cp = ClassPath::new();
     for path in options.classes.iter().chain(&options.classpath) {
         if path.exists() {
@@ -344,11 +434,42 @@ fn replay(options: &Options, class_internal: &str, method: &str, descriptor: &st
     let mut m = Machine::new(&cp);
     m.monitor = false;
     let _ = m.begin_case();
-    Ok(match m.call_static(class_internal, method, descriptor, values.to_vec()) {
-        Ok(Some(v)) => (render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)), ret.is_primitive().then_some(v)),
-        Ok(None) => ("void".to_string(), None),
-        Err(Fault::Throw(r)) => (render::thrown(&m, r), None),
-        Err(f) => (format!("<could not replay: {}>", render::fault(&m, &f)), None),
+    let ret = &signature.ret;
+    let mut values = Vec::new();
+    for (argument, t) in arguments.iter().zip(&signature.params) {
+        values.push(match argument {
+            Argument::Scalar(v) => *v,
+            Argument::Null => Value::Null,
+            Argument::Array(data) => {
+                let element = match t {
+                    Type::Array(e) => (**e).clone(),
+                    _ => Type::Int,
+                };
+                m.new_array_of(element, data.clone())
+            }
+        });
+    }
+    let outcome = m.call_static(class_internal, method, descriptor, values.clone());
+    let after = arrays_of(&m, &values, signature);
+    Ok(match outcome {
+        Ok(Some(v)) => {
+            let array = match v {
+                Value::Ref(r) => match m.heap.get(r) {
+                    Object::Array { data, .. } => Some(data.clone()),
+                    _ => None,
+                },
+                _ => None,
+            };
+            let text = match (&array, ret) {
+                (Some(data), Type::Array(element)) => render_array(data, element),
+                _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
+            };
+            let returned = (ret.is_primitive() || array.is_some()).then_some(v);
+            (text, returned, array, after)
+        }
+        Ok(None) => ("void".to_string(), None, None, after),
+        Err(Fault::Throw(r)) => (render::thrown(&m, r), None, None, after),
+        Err(f) => (format!("<could not replay: {}>", render::fault(&m, &f)), None, None, after),
     })
 }
 
@@ -358,14 +479,16 @@ mod tests {
 
     #[test]
     fn parses_a_properties_file() {
-        let text = "# Property contract\nkind: properties\nmodule: quorum\n\nnet.example.Quorum#majority\n  assume: n > 0\n  assert: 2L * result > n\n\nnet.example.Laws#holds\n";
+        let text = "# Property contract\nkind: properties\nmodule: quorum\n\nnet.example.Quorum#majority\n  assume: n > 0\n  assert: 2L * result > n\n  arrays: 4\n\nnet.example.Laws#holds\n";
         let declarations = parse_declarations(text, "properties.contract").unwrap();
         assert_eq!(declarations.len(), 2);
         assert_eq!(declarations[0].target, "net.example.Quorum#majority");
         assert_eq!(declarations[0].assume.as_deref(), Some("n > 0"));
         assert_eq!(declarations[0].assert.as_deref(), Some("2L * result > n"));
-        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None });
+        assert_eq!(declarations[0].max_array_length, Some(4));
+        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, max_array_length: None });
         assert!(parse_declarations("  assume: x > 0\n", "f").is_err(), "no target");
         assert!(parse_declarations("net.example.A#b\n  require: x\n", "f").is_err(), "unknown key");
+        assert!(parse_declarations("net.example.A#b\n  arrays: many\n", "f").is_err(), "not a number");
     }
 }

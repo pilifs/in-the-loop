@@ -251,6 +251,19 @@ impl CodeBuilder {
         }
     }
 
+    /// `iinc`: adds `delta` to the int in `slot`.
+    pub fn iinc(&mut self, slot: u16, delta: i8) {
+        if slot > 255 {
+            self.op(0xc4);
+            self.op_u16(0x84, slot);
+            self.code.extend((delta as i16).to_be_bytes());
+        } else {
+            self.op_u8(0x84, slot as u8);
+            self.code.push(delta as u8);
+        }
+        self.max_locals = self.max_locals.max(slot + 1);
+    }
+
     pub fn return_(&mut self, kind: Option<Kind>) {
         self.op(match kind {
             None => 0xb1,

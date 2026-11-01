@@ -694,6 +694,54 @@
       "approach": "B11",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "046",
+      "path": "046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key",
+      "title": "A lookupswitch bisection rewritten half-open, proved to find every key in a sorted table",
+      "summary": "The interpreter searches the sorted match-offset pairs of a `lookupswitch` by bisection, written the classic way: a closed range, two comparisons per step, three exits. A developer rewrites it in the half-open form, one comparison per step and one equality test at the end. The property committed for the search is its specification: on every strictly sorted table, the result is the index of the key when the key is in the table and -1 exactly when it is not, stated with JML's quantifiers over the array. The prover checks the rewritten bytecode against it on every sorted array up to the bound, and the proof goes through in a few seconds.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find",
+      "approach": "B11",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "047",
+      "path": "047-exception-table-with-an-inclusive-end-pc",
+      "title": "An exception table read with an inclusive end_pc hands an exception to the wrong handler",
+      "summary": "The interpreter finds the handler for a thrown exception in the `Code` attribute's exception table: the first entry, in table order, whose range covers the pc of the throwing instruction. The range is `[start_pc, end_pc)`, and the specification itself calls the exclusive end a historical mistake. A developer building a JVM decides not to repeat the mistake and makes the end inclusive, so that a handler can cover the last instruction of a method. The property the build proves of the lookup, stated over the table's columns as arrays, is refuted on a table with an entry whose `end_pc` is the pc of the throwing instruction, which the patched lookup hands to a handler that does not cover it.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "048",
+      "path": "048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes",
+      "title": "A constant-pool encoder that writes supplementary characters in four bytes, as UTF-8 does",
+      "summary": "The class-file writer encodes `CONSTANT_Utf8_info` in modified UTF-8, which has two differences from standard UTF-8: U+0000 takes two bytes, and a supplementary character is written as its two surrogates, three bytes each, never in the four-byte form. A developer who knows the second difference as CESU-8, the encoding every other tool deprecates, makes the encoder write the four-byte form for a surrogate pair, with a test for it. The property the build proves of the encoder is the sentence of JVMS §4.4.7 that forbids it: no byte of the encoding is zero, and none lies in `0xf0` to `0xff`. It is refuted on the first array that holds a surrogate pair.",
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

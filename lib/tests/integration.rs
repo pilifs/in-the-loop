@@ -332,6 +332,10 @@ fn a_reference_parameter_is_refused_by_the_symbolic_verifier() {
 }
 
 fn prove(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str) -> Option<property::Outcome> {
+    prove_arrays(target, assume, assert, name, 8)
+}
+
+fn prove_arrays(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str, max_array_length: u32) -> Option<property::Outcome> {
     if !has("jbmc") {
         eprintln!("jbmc not found; skipping");
         return None;
@@ -340,6 +344,7 @@ fn prove(target: &str, assume: Option<&str>, assert: Option<&str>, name: &str) -
     let mut options = property::Options::new(&[classes.to_path_buf()], target);
     options.assume = assume.map(str::to_string);
     options.assert = assert.map(str::to_string);
+    options.max_array_length = max_array_length;
     let work = target_tmp().join(format!("property-{name}"));
     let _ = std::fs::remove_dir_all(&work);
     options.work = Some(work.clone());
@@ -370,6 +375,49 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     let throws = prove("fixtures.Laws#majority", None, Some("2 * result > n"), "majority-throws").unwrap();
     assert_eq!(throws.verdict, Verdict::Violation, "{}", throws.output);
     assert!(throws.counterexample.unwrap().outcome.starts_with("throws IllegalArgumentException"), "{}", throws.output);
+}
+
+#[test]
+fn arrays_are_quantified_over_and_witnessed() {
+    // Binary search is correct on every sorted array up to the bound: the key's index, or -1 when absent.
+    let sorted = "(\\forall int i; 0 < i && i < sorted.length; sorted[i - 1] < sorted[i])";
+    let correct = "(result == -1 && (\\forall int i; 0 <= i && i < sorted.length; sorted[i] != key)) || (result >= 0 && result < sorted.length && sorted[result] == key)";
+    let Some(found) = prove("fixtures.Search#find", Some(sorted), Some(correct), "find") else { return };
+    assert_eq!(found.verdict, Verdict::Verified, "{}", found.output);
+    assert!(found.domain.as_deref().unwrap().contains("sorted: int[] of length ≤ 8"), "{:?}", found.domain);
+    assert!(std::fs::read_to_string(found.statement.unwrap()).unwrap().contains("int[] sorted, int key"));
+
+    // Without the sortedness assumption the search misses keys, and the witness is an array.
+    let unsorted = prove("fixtures.Search#find", None, Some(correct), "find-unsorted").unwrap();
+    assert_eq!(unsorted.verdict, Verdict::Violation, "{}", unsorted.output);
+    let witness = unsorted.counterexample.unwrap();
+    assert!(witness.values[0].starts_with('[') && witness.values[0].ends_with(']'), "{}", witness.input);
+    assert!(witness.input.starts_with("find(sorted=["), "{}", witness.input);
+
+    // An assertion that indexes out of bounds fails the property, and says so.
+    let unguarded = prove("fixtures.Search#find", None, Some("sorted[result] == key"), "find-unguarded").unwrap();
+    assert_eq!(unguarded.verdict, Verdict::Violation, "{}", unguarded.output);
+    assert!(unguarded.counterexample.unwrap().outcome.contains("out of bounds"), "{}", unguarded.output);
+
+    // An array result, quantified over; and a refutation in which the result array is shown.
+    let sums = prove("fixtures.Search#prefixSums", Some("(\\forall int i; 0 <= i && i < xs.length; xs[i] >= 0)"), Some("result.length == xs.length && (\\forall int i; 0 < i && i < result.length; result[i] >= result[i - 1])"), "sums").unwrap();
+    assert_eq!(sums.verdict, Verdict::Verified, "{}", sums.output);
+    let negative = prove("fixtures.Search#prefixSums", None, Some("(\\forall int i; 0 < i && i < result.length; result[i] >= result[i - 1])"), "sums-negative").unwrap();
+    assert_eq!(negative.verdict, Verdict::Violation, "{}", negative.output);
+    assert!(negative.counterexample.unwrap().outcome.starts_with('['), "{}", negative.output);
+
+    // An array parameter the method writes into is read after the call, in the harness and in the replay. (Eight
+    // symbolic writes at symbolic positions take the SAT solver minutes; three take a second.)
+    let replaced = prove_arrays("fixtures.Search#replace", Some("from != to"), Some("(\\forall int i; 0 <= i && i < xs.length; xs[i] != from)"), "replace", 3).unwrap();
+    assert_eq!(replaced.verdict, Verdict::Verified, "{}", replaced.output);
+    assert!(replaced.domain.as_deref().unwrap().contains("xs: int[] of length ≤ 3"), "{:?}", replaced.domain);
+    let writes = prove("fixtures.Search#replace", Some("from != to"), Some("result == 0"), "replace-writes").unwrap();
+    assert_eq!(writes.verdict, Verdict::Violation, "{}", writes.output);
+    assert!(writes.counterexample.unwrap().outcome.contains("leaving xs=["), "{}", writes.output);
+
+    let malformed = prove("fixtures.Search#find", None, Some("\\forall int i; i < sorted.length; sorted[i] != key"), "find-malformed").unwrap();
+    assert_eq!(malformed.verdict, Verdict::Unverifiable);
+    assert!(malformed.output.contains("must bound it below and above"), "{}", malformed.output);
 }
 
 #[test]

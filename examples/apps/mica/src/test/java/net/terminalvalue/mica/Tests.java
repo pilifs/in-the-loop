@@ -23,6 +23,7 @@ public final class Tests {
             net.terminalvalue.mica.interp.LookupSwitchTest.class,
             net.terminalvalue.mica.interp.IntrinsicsTest.class,
             net.terminalvalue.mica.classfile.ModifiedUtf8Test.class,
+            net.terminalvalue.mica.classfile.ExceptionTableTest.class,
             net.terminalvalue.mica.asm.SwitchLoweringTest.class,
             net.terminalvalue.mica.rt.SymbolTableTest.class);
 

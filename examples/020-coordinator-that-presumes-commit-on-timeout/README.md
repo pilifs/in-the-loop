@@ -128,7 +128,7 @@ How the verdict was reached: TLC 2.19 explored 27 distinct states to depth 3 in 
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 45 and seed 2444387760377903285 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1068566] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 130 and seed -39777766411100630 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1752362] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -139,9 +139,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-10-31 16:35:55)
+Starting... (2026-10-31 21:22:05)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 16:35:56.
+Finished computing initial states: 1 distinct state generated at 2026-10-31 21:22:05.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -168,7 +168,7 @@ State 3: <CoordinatorTimeout line 87, col 5 to line 90, col 41 of module TwoPhas
 27 states generated, 27 distinct states found, 23 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 9 (minimum is 8, the maximum 10 and the 95th percentile is 10).
-Finished in 00s at (2026-10-31 16:35:56)
+Finished in 00s at (2026-10-31 21:22:05)
 ```
 
 </details>
@@ -188,7 +188,7 @@ Finished in 00s at (2026-10-31 16:35:56)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant."
+                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
               }
             },
             {

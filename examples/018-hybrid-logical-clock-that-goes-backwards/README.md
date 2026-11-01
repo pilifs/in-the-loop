@@ -92,7 +92,7 @@ The property `result > last && result > message && (result >>> 16) >= nowMillis 
 
 | Input | The method's outcome |
 |---|---|
-| `receive(nowMillis=0, last=0, message=1)` | `1` |
+| `receive(nowMillis=0, last=0, message=16)` | `1` |
 
 One input is enough to fail the build. The domain is `nowMillis: long × last: long × message: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -120,7 +120,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
 
 ```text
 ✗ Property of net.terminalvalue.quorum.clock.HybridLogicalClock#receive violated: `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF:
-  receive(nowMillis=0, last=0, message=1)
+  receive(nowMillis=0, last=0, message=16)
     outcome: 1
   (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain nowMillis: long × last: long × message: long)
 
@@ -203,7 +203,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.clock.HybridLogicalClock#receive violated: `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF:\n  receive(nowMillis=0, last=0, message=1)\n    outcome: 1"
+            "text": "Property of net.terminalvalue.quorum.clock.HybridLogicalClock#receive violated: `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF:\n  receive(nowMillis=0, last=0, message=16)\n    outcome: 1"
           },
           "locations": [
             {

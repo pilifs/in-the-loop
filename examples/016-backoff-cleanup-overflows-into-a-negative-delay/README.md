@@ -68,7 +68,7 @@ The property `result >= baseMillis && result <= capMillis && (attempt == 0 || re
 
 | Input | The method's outcome |
 |---|---|
-| `delayMillis(attempt=49, baseMillis=63488, capMillis=64512)` | `-1152921504606846976` |
+| `delayMillis(attempt=112, baseMillis=63488, capMillis=64512)` | `-576460752303423488` |
 
 One input is enough to fail the build. The domain is `attempt: int × baseMillis: long × capMillis: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -90,15 +90,15 @@ Keep the guard, or write the cap test as the old code did (`base > cap >> attemp
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000], replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:
-  delayMillis(attempt=49, baseMillis=63488, capMillis=64512)
-    outcome: -1152921504606846976
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000], replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
+  delayMillis(attempt=112, baseMillis=63488, capMillis=64512)
+    outcome: -576460752303423488
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000], replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
 ```
@@ -179,7 +179,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:\n  delayMillis(attempt=49, baseMillis=63488, capMillis=64512)\n    outcome: -1152921504606846976"
+            "text": "Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:\n  delayMillis(attempt=112, baseMillis=63488, capMillis=64512)\n    outcome: -576460752303423488"
           },
           "locations": [
             {

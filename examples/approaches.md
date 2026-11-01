@@ -174,7 +174,10 @@ JWT validator's clock skew, a token bucket's refill, a batch listener's commit a
 and 045](README.md) state three sentences of the JVM specification as properties: `idiv` by -1 negates (so
 `Integer.MIN_VALUE / -1` returns the dividend without an exception), no byte of a modified UTF-8 constant is zero, and the
 bisection of a `lookupswitch` stays in bounds for every size a `Code` attribute allows, which is the assumption that makes
-`(low + high) / 2` safe there and nowhere else.
+`(low + high) / 2` safe there and nowhere else. [Examples 046 to 048](README.md) quantify over arrays, in JML's syntax
+(`\forall int i; 0 <= i && i < a.length; ...`), which the tool compiles to loops in the harness: the full correctness of
+the `lookupswitch` bisection on every sorted table up to a bound, which entry of an exception table a thrown exception
+reaches, and that no byte an encoder writes is zero or in `0xf0` to `0xff`, read from the buffer after the call.
 
 A limit found while writing them: JBMC's SAT backend proves linear arithmetic, comparisons, shifts and a single
 division quickly, and gets stuck on identities between divisions and multiplications, such as "the parts of an
@@ -266,9 +269,9 @@ role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wi
 Examples 023 to 033 run it over [Crosscut](apps/crosscut/README.md), the kernels inside a Spring Boot service's cross-cutting concerns:
 the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an idempotent receiver with its TLA+ model, a Kafka
 partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
-Examples 034 to 045 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
-with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, javac's
-switch heuristic, a power-of-two table size and modified UTF-8.
+Examples 034 to 048 run it over [Mica](apps/mica/README.md), the decision kernels of a small JVM written in Java: class initialization
+with its TLA+ model, the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, the
+exception table's handler lookup, javac's switch heuristic, a power-of-two table size and modified UTF-8.
 Still to do:
 
 | # | Demo | Level | Tools |

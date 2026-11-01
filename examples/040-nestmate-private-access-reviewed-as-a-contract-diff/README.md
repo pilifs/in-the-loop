@@ -125,8 +125,8 @@ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lan
 <details><summary>Verifier output</summary>
 
 ```text
-✓ module mica matches its capability contract (25 classes, 93 methods, 0 capability uses, 0 libraries)
-✓ module mica matches its API contract (23 public types, 103 members)
+✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+✓ module mica matches its API contract (24 public types, 105 members)
 ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
 ✓ net.terminalvalue.mica.verify.Assignability#isAssignable matches its contract (289 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalArgumentException.<init>, java.lang.String.valueOf, java.lang.invoke.StringConcatFactory.makeConcatWithConstants)

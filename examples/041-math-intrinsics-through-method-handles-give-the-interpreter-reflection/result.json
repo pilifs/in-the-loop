@@ -18,7 +18,7 @@
     "code": "package net.terminalvalue.mica.interp;\n\nimport java.lang.invoke.MethodHandle;\nimport java.lang.invoke.MethodHandles;\nimport java.lang.invoke.MethodType;\nimport java.util.OptionalDouble;\n\n/**\n * The interpreter's substitutes for the native methods of the guest's {@code java.lang.StrictMath}: computed on\n * the host, by name. Any unary double function of the host's {@code StrictMath} is found by its name, so the\n * list no longer has to be kept in step with the JDK.\n */\npublic final class Intrinsics {\n\n    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();\n    private static final MethodType UNARY = MethodType.methodType(double.class, double.class);\n\n    private Intrinsics() {}\n\n    /** The value of the unary function {@code name} of {@code java.lang.StrictMath} at {@code x}, if it is intrinsic. */\n    public static OptionalDouble unary(String name, double x) {\n        MethodHandle function;\n        try {\n            function = LOOKUP.findStatic(StrictMath.class, name, UNARY);\n        } catch (NoSuchMethodException | IllegalAccessException e) {\n            return OptionalDouble.empty();\n        }\n        try {\n            return OptionalDouble.of((double) function.invokeExact(x));\n        } catch (Throwable t) {\n            throw new IllegalStateException(name, t);\n        }\n    }\n}\n"
   },
   "casesTotal": 30,
-  "domain": "25 classes, 94 methods",
+  "domain": "26 classes, 97 methods",
   "counterexamples": [
     {
       "input": "reflection",

@@ -37,13 +37,41 @@ pub struct JbmcResult {
     pub properties: u32,
     /// The counterexample's inputs by local-variable slot, as JBMC prints them.
     pub raw_inputs: BTreeMap<u32, String>,
+    /// The counterexample's array inputs by slot: their elements as JBMC prints them, or `None` for `null`.
+    pub raw_arrays: BTreeMap<u32, Option<Vec<String>>>,
     pub stage: Option<String>,
     pub problem: Option<String>,
     pub log: PathBuf,
     pub seconds: f64,
 }
 
+/// An argument of a counterexample: a primitive, an array of primitives, or `null`.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Argument {
+    Scalar(Value),
+    Array(Vec<Value>),
+    Null,
+}
+
 impl JbmcResult {
+    /// The counterexample's arguments, in parameter order, arrays included.
+    pub fn arguments(&self, params: &[Type]) -> Result<Vec<Argument>, Error> {
+        let mut out = Vec::new();
+        let mut slot = 0;
+        for t in params {
+            out.push(match t {
+                Type::Array(element) => match self.raw_arrays.get(&slot) {
+                    Some(Some(raw)) => Argument::Array(raw.iter().map(|r| parse_value(element, r)).collect::<Result<Vec<_>, _>>()?),
+                    Some(None) => Argument::Null,
+                    None => Argument::Array(Vec::new()),
+                },
+                _ => Argument::Scalar(parse_value(t, self.raw_inputs.get(&slot).map(String::as_str).unwrap_or("0"))?),
+            });
+            slot += u32::from(t.slots());
+        }
+        Ok(out)
+    }
+
     /// The counterexample's arguments, in parameter order.
     pub fn inputs(&self, params: &[Type]) -> Result<Vec<Value>, Error> {
         let mut values = Vec::new();
@@ -104,6 +132,7 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
             version: "JBMC".into(),
             properties: 0,
             raw_inputs: BTreeMap::new(),
+            raw_arrays: BTreeMap::new(),
             stage: run.stage.clone(),
             problem: Some(format!("jbmc is not installed ({} not found)", run.executable)),
             log: run.log.clone(),
@@ -133,6 +162,7 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
         version: version.clone(),
         properties,
         raw_inputs: BTreeMap::new(),
+        raw_arrays: BTreeMap::new(),
         stage: stage.clone(),
         problem,
         log: PathBuf::new(),
@@ -165,12 +195,62 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
             result.raw_inputs.insert(slot, c[2].to_string());
         }
     }
+    result.raw_arrays = parse_arrays(output);
     result
 }
 
+/// The array inputs of a trace. JBMC prints an array argument as `INPUT arg0a: &dynamic_object` after assigning
+/// the object's `length` and `data` fields, and the data array's elements, both whole (`dynamic_object$0={ 1, 2 }`)
+/// and one by one (`dynamic_object$0[1L]=2`); the assignments before the `INPUT` line are the input.
+fn parse_arrays(output: &str) -> BTreeMap<u32, Option<Vec<String>>> {
+    let length = Regex::new(r"^\s*([A-Za-z0-9_$]+)\.length=(\d+)").unwrap();
+    let data = Regex::new(r"^\s*([A-Za-z0-9_$]+)\.data=&?([A-Za-z0-9_$]+)").unwrap();
+    let whole = Regex::new(r"^\s*([A-Za-z0-9_$]+)=\{ ?([^{}.]*?) ?\}").unwrap();
+    let element = Regex::new(r"^\s*([A-Za-z0-9_$]+)\[(\d+)L?\]=(.+?) \(").unwrap();
+    let input = Regex::new(r"^\s*INPUT arg(\d+)[a-z]: (?:&([A-Za-z0-9_$]+)|(null))").unwrap();
+    let mut lengths: BTreeMap<String, usize> = BTreeMap::new();
+    let mut datas: BTreeMap<String, String> = BTreeMap::new();
+    let mut elements: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut arrays = BTreeMap::new();
+    for line in output.lines() {
+        if let Some(c) = input.captures(line) {
+            let Ok(slot) = c[1].parse::<u32>() else { continue };
+            if c.get(3).is_some() {
+                arrays.insert(slot, None);
+                continue;
+            }
+            let object = &c[2];
+            let len = lengths.get(object).copied().unwrap_or(0);
+            let mut values = datas.get(object).and_then(|d| elements.get(d)).cloned().unwrap_or_default();
+            values.resize(len, "0".into());
+            arrays.insert(slot, Some(values));
+        } else if let Some(c) = length.captures(line) {
+            lengths.insert(c[1].to_string(), c[2].parse().unwrap_or(0));
+        } else if let Some(c) = data.captures(line) {
+            datas.insert(c[1].to_string(), c[2].to_string());
+        } else if let Some(c) = whole.captures(line) {
+            let values: Vec<String> = if c[2].trim().is_empty() { Vec::new() } else { c[2].split(", ").map(str::to_string).collect() };
+            elements.insert(c[1].to_string(), values);
+        } else if let Some(c) = element.captures(line) {
+            let Ok(index) = c[2].parse::<usize>() else { continue };
+            let values = elements.entry(c[1].to_string()).or_default();
+            if values.len() <= index {
+                values.resize(index + 1, "0".into());
+            }
+            values[index] = c[3].to_string();
+        }
+    }
+    arrays
+}
+
 /// Parses a primitive value as JBMC prints it in a trace (`17`, `-3l`, `'a'`, `'\u0000'`, `true`, `1.5f`,
-/// `Float.NaN`, `-Double.POSITIVE_INFINITY`).
+/// `Float.NaN`, `-Double.POSITIVE_INFINITY`, and an array element's `(byte)-128`).
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
+    // An array element carries its type as a cast: `(byte)-128`, `(short)7`.
+    let raw = match raw.strip_prefix('(').and_then(|r| r.split_once(')')) {
+        Some((cast, rest)) if matches!(cast, "byte" | "short" | "char" | "int" | "long") => rest.trim_start(),
+        _ => raw,
+    };
     let s = raw.trim_end_matches(['L', 'l', 'F', 'f', 'D', 'd']);
     let bad = || Error::new(format!("cannot parse {raw:?} as {}", t.java_name()));
     Ok(match t {
@@ -264,6 +344,32 @@ mod tests {
     }
 
     #[test]
+    fn parses_array_inputs() {
+        let trace = "JBMC version 6.11.0\n[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n\
+            Trace for java::PropertyHarness.check:([II)V.assertion.1:\n\
+            State 17 file PropertyHarness.java function __CPROVER__start line 12 thread 0\n\
+              dynamic_object={ .@java.lang.Object={ .@class_identifier=\"java::java.lang.Class\" },\n    .length=0, .data=null } ({ { ? }, 0, 0 })\n\
+              dynamic_object.length=0 (00000000)\n  dynamic_object.data=null (00000000)\n  arg0a=&dynamic_object (00000000)\n\
+              dynamic_object.length=3 (00000000 00000000 00000000 00000011)\n  dynamic_object.data=dynamic_array (00000000)\n\
+              dynamic_array={ 0, 0, 0 } ({ 0, 0, 0 })\n  dynamic_object$0={ 0, 0, 0 } ({ 0, 0, 0 })\n  dynamic_object$0[0L]=0 (0)\n\
+              dynamic_object$0={ -2147483646, 2, 19 } ({ 1, 1, 1 })\n  dynamic_object$0[0L]=-2147483646 (10000000)\n  dynamic_object$0[1L]=2 (00000010)\n  dynamic_object$0[2L]=19 (00010011)\n\
+              dynamic_object.data=dynamic_object$0 (00000100)\n  INPUT arg0a: &dynamic_object (00000010)\n  arg1i=19 (00010011)\n  INPUT arg1i: 19 (00010011)\n\
+              dynamic_object$0[1L]=7 (00000111)\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n";
+        let r = parse_output(trace, "PropertyHarness", "check", 16, None);
+        assert_eq!(r.verdict, Verdict::Violation);
+        let args = r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap();
+        assert_eq!(args, vec![Argument::Array(vec![Value::Int(-2147483646), Value::Int(2), Value::Int(19)]), Argument::Scalar(Value::Int(19))], "the elements before INPUT, not the store after it");
+
+        let null = "[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n  INPUT arg0a: null (00000000)\n  INPUT arg1i: 5 (00000101)\n** 1 of 2 failed\n";
+        let r = parse_output(null, "PropertyHarness", "check", 16, None);
+        assert_eq!(r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap(), vec![Argument::Null, Argument::Scalar(Value::Int(5))]);
+
+        let empty = "[PropertyHarness.check:([II)V.assertion.1] assertion: FAILURE\n  dynamic_object.length=0 (0)\n  dynamic_object.data=null (0)\n  INPUT arg0a: &dynamic_object (0)\n  INPUT arg1i: 5 (00000101)\n** 1 of 2 failed\n";
+        let r = parse_output(empty, "PropertyHarness", "check", 16, None);
+        assert_eq!(r.arguments(&[Type::Array(Box::new(Type::Int)), Type::Int]).unwrap(), vec![Argument::Array(Vec::new()), Argument::Scalar(Value::Int(5))]);
+    }
+
+    #[test]
     fn parses_the_values_jbmc_prints() {
         assert_eq!(parse_value(&Type::Char, "'a'").unwrap(), Value::Int(97));
         assert_eq!(parse_value(&Type::Char, "'\\u0000'").unwrap(), Value::Int(0));
@@ -271,6 +377,9 @@ mod tests {
         assert_eq!(parse_value(&Type::Char, "'\\n'").unwrap(), Value::Int(10));
         assert_eq!(parse_value(&Type::Char, "'\\\\'").unwrap(), Value::Int(92));
         assert_eq!(parse_value(&Type::Char, "65").unwrap(), Value::Int(65));
+        assert_eq!(parse_value(&Type::Char, "'\\b'").unwrap(), Value::Int(8));
+        assert_eq!(parse_value(&Type::Byte, "(byte)-128").unwrap(), Value::Int(-128), "an array element carries a cast");
+        assert_eq!(parse_value(&Type::Short, "(short)7").unwrap(), Value::Int(7));
         assert!(matches!(parse_value(&Type::Float, "Float.NaN").unwrap(), Value::Float(f) if f.is_nan()));
         assert!(matches!(parse_value(&Type::Float, "-Float.POSITIVE_INFINITY").unwrap(), Value::Float(f) if f == f32::NEG_INFINITY));
         assert!(matches!(parse_value(&Type::Double, "Double.NaN").unwrap(), Value::Double(f) if f.is_nan()));

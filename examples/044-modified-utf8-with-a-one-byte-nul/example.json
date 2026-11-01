@@ -21,7 +21,7 @@
   "change": {
     "kind": "bug-fix",
     "behaviourChangeIntended": false,
-    "description": "Encode a character up to U+007F as one byte, U+0000 included: the two-byte form for NUL is not UTF-8, and tools that read the constant pool with a standard decoder see `C0 80` as an invalid sequence. The test `nulTakesTwoBytes` is renamed `nulTakesOneByteAsInUtf8` and its expectations changed; the string-length test is adjusted by one. All tests pass.",
+    "description": "Encode a character up to U+007F as one byte, U+0000 included, in the length, the first byte and the encoder: the two-byte form for NUL is not UTF-8, and tools that read the constant pool with a standard decoder see `C0 80` as an invalid sequence. The tests `nulTakesTwoBytes` and `nulAndTheHigherPlanesAreEncodedAsTheSpecificationSays` are renamed and their expectations changed; the string-length test is adjusted by one. All tests pass.",
     "patch": "change.patch"
   },
   "risk": "A class file with a zero byte inside a `CONSTANT_Utf8_info` is rejected by every conforming class loader with a `ClassFormatError`, HotSpot's included: the specification says no byte may be zero, and HotSpot checks it when it parses the constant pool. A string constant with an embedded NUL (a C-style terminator in a protocol, a padding character, a `\\0` in a test fixture) now produces a class the virtual machine will not load, from source that compiled fine. The two-byte NUL is the reason modified UTF-8 exists: the runtime hands the bytes of a symbol to C code as a string, and counts its length without decoding, both of which a zero byte would end early. The developer read the encoding as a bug in the encoder, and the test that said otherwise as a bug in the test.",

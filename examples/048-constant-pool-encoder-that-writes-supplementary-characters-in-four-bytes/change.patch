@@ -1,0 +1,61 @@
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java
+@@ -2,10 +2,10 @@
+ 
+ /**
+  * The encoding of {@code CONSTANT_Utf8_info} (JVMS §4.4.7): UTF-8, except that the character U+0000 takes the
+- * two-byte form and supplementary characters are encoded as their two surrogates, three bytes each. The two
+- * exceptions have one purpose: no byte of an encoded string is zero, so that the virtual machine can hand the
+- * bytes to C code as a string and count them without decoding. A zero byte in a {@code CONSTANT_Utf8_info} is a
+- * {@code ClassFormatError}.
++ * two-byte form, so that no byte of an encoded string is zero and the virtual machine can hand the bytes to C
++ * code as a string and count them without decoding. A zero byte in a {@code CONSTANT_Utf8_info} is a
++ * {@code ClassFormatError}. A supplementary character is written in the four-byte form of UTF-8, as every
++ * other encoder writes it.
+  */
+ public final class ModifiedUtf8 {
+ 
+@@ -41,13 +41,21 @@
+ 
+     /**
+      * Writes the encoding of {@code chars} into {@code out}, which must hold {@code 3 * chars.length} bytes, and
+-     * returns how many bytes it wrote: the {@code bytes} of the constant. Each UTF-16 code unit is encoded on its
+-     * own, a surrogate included, so a supplementary character takes six bytes.
++     * returns how many bytes it wrote: the {@code bytes} of the constant. A surrogate pair is one supplementary
++     * character and takes four bytes, two fewer than its two code units would.
+      */
+     public static int encodeInto(char[] chars, byte[] out) {
+         int k = 0;
+-        for (char c : chars) {
+-            if (c >= 0x0001 && c <= 0x007f) {
++        for (int i = 0; i < chars.length; i++) {
++            char c = chars[i];
++            if (c >= 0xd800 && c <= 0xdbff && i + 1 < chars.length && chars[i + 1] >= 0xdc00 && chars[i + 1] <= 0xdfff) {
++                int codePoint = 0x10000 + ((c - 0xd800) << 10) + (chars[i + 1] - 0xdc00);
++                out[k++] = (byte) (0xf0 | (codePoint >> 18));
++                out[k++] = (byte) (0x80 | ((codePoint >> 12) & 0x3f));
++                out[k++] = (byte) (0x80 | ((codePoint >> 6) & 0x3f));
++                out[k++] = (byte) (0x80 | (codePoint & 0x3f));
++                i++;
++            } else if (c >= 0x0001 && c <= 0x007f) {
+                 out[k++] = (byte) c;
+             } else if (c <= 0x07ff) {
+                 out[k++] = (byte) (0xc0 | (c >> 6));
+--- a/examples/apps/mica/src/test/java/net/terminalvalue/mica/classfile/ModifiedUtf8Test.java
++++ b/examples/apps/mica/src/test/java/net/terminalvalue/mica/classfile/ModifiedUtf8Test.java
+@@ -54,6 +54,15 @@
+         equal((byte) 0x00, out[6]); // untouched
+     }
+ 
++    public static void aSupplementaryCharacterTakesFourBytes() {
++        byte[] out = new byte[6];
++        equal(4, ModifiedUtf8.encodeInto("\ud83d\ude00".toCharArray(), out)); // U+1F600
++        equal((byte) 0xf0, out[0]);
++        equal((byte) 0x9f, out[1]);
++        equal((byte) 0x98, out[2]);
++        equal((byte) 0x80, out[3]);
++    }
++
+     public static void noFirstByteIsZero() {
+         for (char c = 1; c < 256; c++) {
+             check(ModifiedUtf8.firstByte(c) != 0, "a zero byte for " + (int) c);

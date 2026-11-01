@@ -38,4 +38,26 @@ public final class ModifiedUtf8 {
         }
         return 0xe0 | (c >> 12);
     }
+
+    /**
+     * Writes the encoding of {@code chars} into {@code out}, which must hold {@code 3 * chars.length} bytes, and
+     * returns how many bytes it wrote: the {@code bytes} of the constant. Each UTF-16 code unit is encoded on its
+     * own, a surrogate included, so a supplementary character takes six bytes.
+     */
+    public static int encodeInto(char[] chars, byte[] out) {
+        int k = 0;
+        for (char c : chars) {
+            if (c >= 0x0001 && c <= 0x007f) {
+                out[k++] = (byte) c;
+            } else if (c <= 0x07ff) {
+                out[k++] = (byte) (0xc0 | (c >> 6));
+                out[k++] = (byte) (0x80 | (c & 0x3f));
+            } else {
+                out[k++] = (byte) (0xe0 | (c >> 12));
+                out[k++] = (byte) (0x80 | ((c >> 6) & 0x3f));
+                out[k++] = (byte) (0x80 | (c & 0x3f));
+            }
+        }
+        return k;
+    }
 }

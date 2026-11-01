@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 7, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-01 00:02 UTC |
-| Prompts | 113 |
-| Model calls | 740 |
-| Tool calls | 1,448 (41 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-01 01:27 UTC |
+| Prompts | 116 |
+| Model calls | 823 |
+| Tool calls | 1,579 (45 failed) |
 | Compactions | 11 |
 | Subagents | 0 |
-| Tokens written | 1,968,169 |
-| Tokens read | 163,580,242 (97.3% from cache) |
-| Commits with a trace | 39 |
-| Log snapshots | 46 (61.9 MB gzipped, 46 uploaded) |
+| Tokens written | 2,127,458 |
+| Tokens read | 181,852,266 (97.4% from cache) |
+| Commits with a trace | 40 |
+| Log snapshots | 48 (65.2 MB gzipped, 46 uploaded) |
 
 ## Sessions
 
@@ -32,8 +32,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | ended | 10 h 34 min | `claude-fable-5-1`, `claude-opus-5-5` | 21 | 110 | 218 | 11 | 1 | 439,795 | 11 |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | ended | 41 min | `claude-opus-5-5` | 5 | 21 | 43 | 0 | 0 | 124,779 | 5 |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | ended | 1 h 21 min | `claude-opus-5-5` | 6 | 31 | 44 | 0 | 0 | 377,849 | 7 |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | ended | 6 h 14 min | `claude-fable-5-1` | 20 | 189 | 675 | 10 | 4 | 535,846 | 5 |
-| 2026-10-31 22:46 UTC | [Llm-dlc loop script](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | open | 1 h 16 min | `claude-opus-5-5` | 5 | 21 | 26 | 3 | 0 | 84,217 | 2 |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | open | 8 h 57 min | `claude-fable-5-1` | 21 | 266 | 801 | 14 | 4 | 535,846 | 6 |
+| 2026-10-31 22:46 UTC | [Llm-dlc loop script](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | ended | 1 h 31 min | `claude-opus-5-5` | 7 | 27 | 31 | 3 | 0 | 91,838 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -48,19 +48,19 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 301,576 | 1,938 | 741,586 | 24,884,767 | 97.1% | 85 |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 35,495 | 46 | 95,343 | 1,829,859 | 95.0% | 54 |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 95,754 | 76 | 345,353 | 6,786,174 | 95.2% | 74 |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 861,450 | 5,838 | 1,558,141 | 55,369,618 | 97.3% | 66 |
-| [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 22,289 | 48 | 55,661 | 1,342,542 | 96.0% | 63 |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 1,016,547 | 7,912 | 1,877,057 | 72,790,348 | 97.5% | 73 |
+| [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 26,481 | 64 | 62,108 | 1,866,383 | 96.8% | 73 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 732 | 50.6% | 7 |
-| `Edit` | 319 | 22.0% | 6 |
-| `Write` | 238 | 16.4% | 5 |
-| `Read` | 126 | 8.7% | 6 |
-| `WebFetch` | 13 | 0.9% | 2 |
-| `ToolSearch` | 8 | 0.6% | 5 |
+| `Bash` | 861 | 54.5% | 7 |
+| `Edit` | 319 | 20.2% | 6 |
+| `Write` | 238 | 15.1% | 5 |
+| `Read` | 126 | 8.0% | 6 |
+| `WebFetch` | 13 | 0.8% | 2 |
+| `ToolSearch` | 10 | 0.6% | 5 |
 | `Skill` | 5 | 0.3% | 2 |
 | `TaskStop` | 3 | 0.2% | 2 |
 | `AskUserQuestion` | 2 | 0.1% | 1 |
@@ -104,13 +104,14 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 30 | [`2a395dd3`](https://github.com/pilifs/in-the-loop/commit/2a395dd34b0ff025826f1bbf68fc03caf702fcf4) | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/d65404ef1161699a79e78f7cdb112c8c6d5eeea5a7fd148a93d4120d7ab95088.jsonl.gz)) |
 | 31 | [`4e47aee0`](https://github.com/pilifs/in-the-loop/commit/4e47aee071187981445c0fdd64fb21298c3f0e2f) | Let a person mark findings as false positives | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/aea563c89ba52dcda61b1df8d91037858f74902f41987825ed54232596cd7e0c.jsonl.gz)) |
 | 32 | [`0f2aea73`](https://github.com/pilifs/in-the-loop/commit/0f2aea73cf91810fcca0f847a6e20942558a7c55) | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/63e24ed40c0e4774fa181845b21ccd4b1424420be4eeba9799f9736931fdb581.jsonl.gz)) |
-| 33 | change `sztllxvu` | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz)) |
+| 33 | [`def76fb5`](https://github.com/pilifs/in-the-loop/commit/def76fb5042895901e068b5480aa15f0c5e30b51) | Record session traces | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) ([log](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz)) |
 | 34 | [`9c742ae6`](https://github.com/pilifs/in-the-loop/commit/9c742ae6cdab2574e7626e5d8b0eee169c141333) | Add jvmcontract, a Rust library and CLI for the verifiers | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz)) |
 | 35 | [`3ce18250`](https://github.com/pilifs/in-the-loop/commit/3ce18250a348ef68dde6c1fd3786a8abe6525576) | Add Quorum, ten distributed-systems examples, and property proofs to jvmcontract | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz)) |
 | 36 | [`c9ff761a`](https://github.com/pilifs/in-the-loop/commit/c9ff761a7aeaaa082efefe67192bdf8bcf77f462) | Add Crosscut, eleven Spring Boot examples verified by jvmcontract | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f.jsonl.gz)) |
 | 37 | [`172a4d43`](https://github.com/pilifs/in-the-loop/commit/172a4d4331e34875d89054b0a25c25da51ac7022) | Add Mica, twelve JVM-kernel examples, and four jvmcontract fixes | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c.jsonl.gz)) |
 | 38 | [`b54c0ed3`](https://github.com/pilifs/in-the-loop/commit/b54c0ed3a341338599f0e088589f226c23d06b68) | Add feature-loop.sh to grow jvmcontract unattended | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz)), [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) ([log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/f0cb07435bcde894a45da27038b826a90122b1263f577c53ef7cdef38bdad6df.jsonl.gz)) |
-| 39 | [`26835fe0`](https://github.com/pilifs/in-the-loop/commit/26835fe0b07fc520777a6ca10485738c88b4061b) | Show live progress in feature-loop.sh | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) ([log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)) |
+| 39 | change `unxuqlor` | Add array properties with JML quantifiers, and three Mica examples | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) ([log](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/84b6ab145c657124fdeb46d451eb2164188f77324398cc25e32ca2ebfe026b09.jsonl.gz)) |
+| 40 | [`26835fe0`](https://github.com/pilifs/in-the-loop/commit/26835fe0b07fc520777a6ca10485738c88b4061b) | Show live progress in feature-loop.sh | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) ([log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz)) |
 
 ## Logs
 
@@ -123,8 +124,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8194b9db`](8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 11 | 11 | 9.0 MB | [`5c7af483c8d0`](https://terminalvalue.net/raw-traces/8194b9db-b315-48b6-b0eb-b6280f96252b/5c7af483c8d0b0d085f9469026f81e130ef8809b345cc418ce7a4b1252243e8c.jsonl.gz) |
 | [`451eff2d`](451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | 0.9 MB | [`a5bafcc273d8`](https://terminalvalue.net/raw-traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/a5bafcc273d8d99ff73a231705f082efff7b80db0b3050343394a7da8c83c1b6.jsonl.gz) |
 | [`24d088fa`](24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 7 | 7 | 3.6 MB | [`405010b8bb85`](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz) |
-| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 5 | 5 | 9.8 MB | [`a49b2b117643`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/a49b2b11764343dc1f353dd248b13b929ea0b92bd633c0a1ef6231ca65e5a354.jsonl.gz) |
-| [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 2 | 2 | 0.3 MB | [`582b4cfa3f0c`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610.jsonl.gz) |
+| [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 6 | 5 | 12.9 MB | `84b6ab145c65`, not uploaded |
+| [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 3 | 2 | 0.5 MB | `09aa3322da07`, not uploaded |
 
 ## Session notes
 

@@ -64,7 +64,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Record session traces
 
-change `sztllxvumywl` · [log `405010b8bb85`](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz)
+[`def76fb50428`](https://github.com/pilifs/in-the-loop/commit/def76fb5042895901e068b5480aa15f0c5e30b51) · [log `405010b8bb85`](https://terminalvalue.net/raw-traces/24d088fa-8a2f-419c-9283-2557487b7d9f/405010b8bb8597a71109ebdda7435037336c63b400678e6e50767124cfe05b4d.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

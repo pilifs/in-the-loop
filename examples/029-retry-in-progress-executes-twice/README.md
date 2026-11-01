@@ -121,7 +121,7 @@ How the verdict was reached: TLC 2.19 explored 28 distinct states to depth 5 in 
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 40 and seed -1010601337178639309 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1222407] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 117 and seed 8186873393731221441 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1753902] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -132,9 +132,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-10-31 17:33:54)
+Starting... (2026-10-31 21:22:20)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 17:33:54.
+Finished computing initial states: 1 distinct state generated at 2026-10-31 21:22:20.
 Error: Invariant OneExecutionAtATime is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -185,7 +185,7 @@ State 5: <Receive line 56, col 5 to line 65, col 44 of module IdempotentReceiver
 41 states generated, 28 distinct states found, 14 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
-Finished in 00s at (2026-10-31 17:33:54)
+Finished in 00s at (2026-10-31 21:22:20)
 ```
 
 </details>
@@ -205,7 +205,7 @@ Finished in 00s at (2026-10-31 17:33:54)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant."
+                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
               }
             },
             {

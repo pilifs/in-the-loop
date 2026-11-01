@@ -11,7 +11,7 @@
 
 ## The change
 
-Encode a character up to U+007F as one byte, U+0000 included: the two-byte form for NUL is not UTF-8, and tools that read the constant pool with a standard decoder see `C0 80` as an invalid sequence. The test `nulTakesTwoBytes` is renamed `nulTakesOneByteAsInUtf8` and its expectations changed; the string-length test is adjusted by one. All tests pass.
+Encode a character up to U+007F as one byte, U+0000 included, in the length, the first byte and the encoder: the two-byte form for NUL is not UTF-8, and tools that read the constant pool with a standard decoder see `C0 80` as an invalid sequence. The tests `nulTakesTwoBytes` and `nulAndTheHigherPlanesAreEncodedAsTheSpecificationSays` are renamed and their expectations changed; the string-length test is adjusted by one. All tests pass.
 
 **Before** ([`ModifiedUtf8.java`](../../examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java), line 1):
 
@@ -43,6 +43,14 @@ public final class ModifiedUtf8 {
             return c;
         }
         if (c <= 0x07ff) {
+    // ...
+    public static int encodeInto(char[] chars, byte[] out) {
+        int k = 0;
+        for (char c : chars) {
+            if (c >= 0x0001 && c <= 0x007f) {
+                out[k++] = (byte) c;
+            } else if (c <= 0x07ff) {
+                out[k++] = (byte) (0xc0 | (c >> 6));
 ```
 
 **After:**
@@ -73,6 +81,14 @@ public final class ModifiedUtf8 {
             return c;
         }
         if (c <= 0x07ff) {
+    // ...
+    public static int encodeInto(char[] chars, byte[] out) {
+        int k = 0;
+        for (char c : chars) {
+            if (c <= 0x007f) {
+                out[k++] = (byte) c;
+            } else if (c <= 0x07ff) {
+                out[k++] = (byte) (0xc0 | (c >> 6));
 ```
 
 <details><summary>Patch</summary>
@@ -95,7 +111,7 @@ public final class ModifiedUtf8 {
   */
  public final class ModifiedUtf8 {
  
-@@ -13,7 +11,7 @@ public final class ModifiedUtf8 {
+@@ -13,7 +11,7 @@
  
      /** How many bytes the UTF-16 code unit {@code c} takes: one, two or three. */
      public static int encodedLength(char c) {
@@ -104,7 +120,7 @@ public final class ModifiedUtf8 {
              return 1;
          }
          return c <= 0x07ff ? 2 : 3;
-@@ -30,7 +28,7 @@ public final class ModifiedUtf8 {
+@@ -30,7 +28,7 @@
  
      /** The first byte of the encoding of {@code c}, as an unsigned value. */
      public static int firstByte(char c) {
@@ -113,9 +129,18 @@ public final class ModifiedUtf8 {
              return c;
          }
          if (c <= 0x07ff) {
+@@ -47,7 +45,7 @@
+     public static int encodeInto(char[] chars, byte[] out) {
+         int k = 0;
+         for (char c : chars) {
+-            if (c >= 0x0001 && c <= 0x007f) {
++            if (c <= 0x007f) {
+                 out[k++] = (byte) c;
+             } else if (c <= 0x07ff) {
+                 out[k++] = (byte) (0xc0 | (c >> 6));
 --- a/examples/apps/mica/src/test/java/net/terminalvalue/mica/classfile/ModifiedUtf8Test.java
 +++ b/examples/apps/mica/src/test/java/net/terminalvalue/mica/classfile/ModifiedUtf8Test.java
-@@ -13,9 +13,9 @@ public final class ModifiedUtf8Test {
+@@ -13,9 +13,9 @@
          equal(97, ModifiedUtf8.firstByte('a'));
      }
  
@@ -128,12 +153,35 @@ public final class ModifiedUtf8 {
      }
  
      public static void latinAndCyrillicTakeTwoBytes() {
-@@ -33,7 +33,7 @@ public final class ModifiedUtf8Test {
+@@ -33,7 +33,7 @@
  
      public static void aStringsLengthIsTheSumOfItsCodeUnits() {
          equal(13, ModifiedUtf8.encodedLengthOf("java/lang/Obj"));
 -        equal(7, ModifiedUtf8.encodedLengthOf("a\u0000b字"));
 +        equal(6, ModifiedUtf8.encodedLengthOf("a\u0000b字"));
+     }
+ 
+     public static void theEncodingOfAsciiIsTheAsciiBytes() {
+@@ -43,15 +43,14 @@
+         equal((byte) 'c', out[2]);
+     }
+ 
+-    public static void nulAndTheHigherPlanesAreEncodedAsTheSpecificationSays() {
++    public static void nulAndTheHigherPlanesAreEncodedAsInUtf8() {
+         byte[] out = new byte[9];
+-        equal(6, ModifiedUtf8.encodeInto("a\u0000字".toCharArray(), out));
+-        equal((byte) 0xc0, out[1]);
+-        equal((byte) 0x80, out[2]);
+-        equal((byte) 0xe5, out[3]);
+-        equal((byte) 0xad, out[4]);
+-        equal((byte) 0x97, out[5]);
+-        equal((byte) 0x00, out[6]); // untouched
++        equal(5, ModifiedUtf8.encodeInto("a\u0000字".toCharArray(), out));
++        equal((byte) 0x00, out[1]);
++        equal((byte) 0xe5, out[2]);
++        equal((byte) 0xad, out[3]);
++        equal((byte) 0x97, out[4]);
++        equal((byte) 0x00, out[5]); // untouched
      }
  
      public static void noFirstByteIsZero() {

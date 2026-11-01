@@ -204,8 +204,8 @@ struct EquivalenceArgs {
 
 #[derive(Args)]
 struct ProveArgs {
-    /// `pkg.Class#method`, a static method with primitive parameters. With --properties, only this target's
-    /// properties are proved.
+    /// `pkg.Class#method`, a static method with primitive or array parameters. With --properties, only this
+    /// target's properties are proved.
     target: Option<String>,
     #[command(flatten)]
     classes: ClassesArgs,
@@ -233,6 +233,9 @@ struct ProveArgs {
     /// Loop unwinding bound for JBMC.
     #[arg(long, default_value_t = 16)]
     unwind: u32,
+    /// The longest array an array parameter is given; a quantifier's loop must fit the unwinding bound.
+    #[arg(long, default_value_t = 8)]
+    max_array_length: u32,
     /// Seconds before each JBMC run is given up.
     #[arg(long, default_value_t = 600)]
     timeout: u64,
@@ -324,7 +327,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone() }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), max_array_length: None }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -342,6 +345,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     options.base = base.clone();
                 }
                 options.unwind = args.unwind;
+                options.max_array_length = declaration.max_array_length.unwrap_or(args.max_array_length);
                 options.timeout_seconds = args.timeout;
                 options.jbmc = args.jbmc.clone();
                 let outcome = property::run(&options)?;

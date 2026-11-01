@@ -29,6 +29,26 @@ net.terminalvalue.mica.interp.LookupSwitch#midpoint
   assume: low >= 0 && low <= high && high < 8190
   assert: result >= low && result <= high
 
+# JVMS 6.5, lookupswitch: on a table sorted by match value (javac rejects duplicate case labels, so strictly), the
+# bisection finds the key's index when the key is in the table, and -1, the default, exactly when it is not.
+# Quantifiers are JML's; the arrays are symbolic, of every length up to the bound (8 by default).
+net.terminalvalue.mica.interp.LookupSwitch#find
+  assume: (\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i])
+  assert: (result == -1 && (\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)
+
+# JVMS 4.7.3: the handler found covers the pc, in the half-open range [start_pc, end_pc); -1 means the exception
+# propagates. (That the entry is the first in table order, and that -1 comes only when no entry covers the pc, are
+# quantifiers over the scan's own comparisons, which JBMC's SAT backend does not finish in minutes; see the README.)
+net.terminalvalue.mica.classfile.ExceptionTable#handlerIndex
+  assume: startPc.length == endPc.length
+  assert: result == -1 || (result >= 0 && result < startPc.length && startPc[result] <= pc && pc < endPc[result])
+
+# JVMS 4.4.7: no byte of the encoding is zero, and none lies in 0xf0 to 0xff, since the four-byte form of standard
+# UTF-8 is not used; a supplementary character is its two surrogates, three bytes each. The buffer is the caller's.
+net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto
+  assume: out.length >= 3 * chars.length
+  assert: result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0)
+
 # The capacity is a power of two, at least the requested one, and the smallest such, up to the maximum.
 net.terminalvalue.mica.rt.SymbolTable#tableSizeFor
   assert: result >= 1 && result <= 1073741824 && (result & (result - 1)) == 0 && (cap > 1073741824 || result >= cap) && (cap <= 1 || result / 2 < cap)
