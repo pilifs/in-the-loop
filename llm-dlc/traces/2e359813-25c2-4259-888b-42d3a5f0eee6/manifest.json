@@ -192,6 +192,14 @@
       "summary": "Move the redaction rules to their own file, skip checked files, and add /review-findings",
       "body": "llm-dlc/tools/redaction_rules.py now holds the rules and the engine that applies them, and ends with a stamp: a hash of the file above it and a generated date. A transcript or log older than that date counts as checked and isn't scanned again, so check, scan, review and sync leave it alone, and sync reuses its stored log. The first stamp was set directly, without a scan, because the user said every existing file has been checked by these rules. Editing the rules voids the date until sync.py stamp has rescanned everything; it refuses while findings are open. Upload still scans what it sends. Findings in files older than the stamp are no longer reported by check or review, and check says how many logs it left out.\n\nThe engine now makes one pass over each line, and a line seen in an earlier snapshot of a log isn't scanned again. sync.py review show ID prints where a finding occurs, masked. The /review-findings skill uses it to go through findings with the user and prepares the commands for them to run in their own terminal: the rule that a person records each decision is unchanged.",
       "log_sha256": "fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2"
+    },
+    {
+      "change_id": "xvwnwwtwsumypsrsyzkkmuwpusrymmnn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Mask values next to JSON escapes in review show",
+      "body": "masked_excerpt scanned raw JSON, where an escape glued to a value hides it from the rules, which read decoded strings. So review show printed a path straight after a newline escape unmasked. It now blanks escapes at any depth of quoting before it scans, and always masks the finding it was asked about. Found during the first /review-findings run; the values shown were documentation placeholders.",
+      "log_sha256": "fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2"
     }
   ],
   "logs": {

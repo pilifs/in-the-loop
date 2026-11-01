@@ -1344,14 +1344,18 @@ def masked_excerpt(redact: Redactor, line: str, at: int, length: int, reach: int
     """The words around a finding, safe for a transcript: every finding in them is masked, and a
     word the cut left partial is dropped, since a piece of a secret no longer looks like one."""
     start, end = max(0, at - reach), at + length + reach
+    value = line[at:at + length]
     excerpt = line[start:end]
     if start:
         excerpt = re.sub(r"^\S*\s?", "", excerpt)
     if end < len(line):
         excerpt = re.sub(r"\s?\S*$", "", excerpt)
+    # The line is raw JSON: an escape glued to a value, at any depth of quoting, hides it from the
+    # rules, which read decoded strings.
+    excerpt = re.sub(r'\\+[nrt"]?', " ", excerpt)
     leaks, reviewable = redact.hits_of_line(excerpt)
-    for _, value in sorted(leaks + reviewable, key=lambda hit: -len(hit[1])):
-        excerpt = excerpt.replace(value, _mask(value))
+    for _, hit in sorted(leaks + reviewable + [("", value)], key=lambda hit: -len(hit[1])):
+        excerpt = excerpt.replace(hit, _mask(hit))
     return excerpt
 
 

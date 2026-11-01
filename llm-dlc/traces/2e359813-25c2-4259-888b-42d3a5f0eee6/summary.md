@@ -102,6 +102,12 @@ llm-dlc/tools/redaction_rules.py now holds the rules and the engine that applies
 
 The engine now makes one pass over each line, and a line seen in an earlier snapshot of a log isn't scanned again. sync.py review show ID prints where a finding occurs, masked. The /review-findings skill uses it to go through findings with the user and prepares the commands for them to run in their own terminal: the rule that a person records each decision is unchanged.
 
+### Mask values next to JSON escapes in review show
+
+change `xvwnwwtwsumy` · [log `fc5d2a0690ae`](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2.jsonl.gz)
+
+masked_excerpt scanned raw JSON, where an escape glued to a value hides it from the rules, which read decoded strings. So review show printed a path straight after a newline escape unmasked. It now blanks escapes at any depth of quoting before it scans, and always masks the finding it was asked about. Found during the first /review-findings run; the values shown were documentation placeholders.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/fc5d2a0690ae37707632a1b4191f3fd90196ded892471ad0cd7b0125693861d2.jsonl.gz) has every step in between: reasoning, tool calls and their results.

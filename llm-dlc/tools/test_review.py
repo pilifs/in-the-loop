@@ -172,6 +172,13 @@ class Excerpts(unittest.TestCase):
         self.assertNotIn(HOME_B, excerpt)
         self.assertIn("before", excerpt)
 
+    def test_a_value_after_a_json_escape_is_masked_too(self):
+        for escape in ("\\n", "\\\\n", "\\\\\\n"):
+            text = "first" + escape + HOME_A + ": 0" + escape + HOME_B + ": 1"
+            excerpt = sync.masked_excerpt(self.r, text, text.index(HOME_A), len(HOME_A))
+            self.assertNotIn(HOME_A, excerpt)
+            self.assertNotIn(HOME_B, excerpt)
+
     def test_a_word_cut_by_the_edge_is_dropped(self):
         text = "x" * 100 + " kept " + HOME_A + " kept " + "y" * 100
         excerpt = sync.masked_excerpt(self.r, text, text.index(HOME_A), len(HOME_A), reach=20)
