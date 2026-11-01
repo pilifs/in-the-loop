@@ -78,6 +78,14 @@
       "summary": "Show live progress in feature-loop.sh",
       "body": "claude -p in text mode prints nothing until a turn ends, so the loop looked hung for hours. It now reads stream-json and prints one timestamped line for each message and tool call, and a closing line with steps, minutes and cost for each turn. The filter skips lines it cannot read, so it cannot kill claude by closing the pipe.\n\nVerified with a stub claude emitting stream-json in a temporary jj repo: progress lines appeared as events arrived, malformed lines were skipped, the stub's exit status 3 was still reported, and commit detection and the stop on no commit behaved as before. The real CLI's result fields were confirmed from a saved run; the stream itself was not run against the real model.",
       "log_sha256": "582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610"
+    },
+    {
+      "change_id": "nmtxwrlvsosrkppzursykuppssxtwxzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2"
     }
   ],
   "logs": {
@@ -85,7 +93,7 @@
       "bytes": 911196,
       "lines": 296,
       "gzip_bytes": 193284,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz"
     },
     "582b4cfa3f0c952e901aa159f278fd98091cbdb207987f3b9648f1728bd8b610": {
       "bytes": 833064,

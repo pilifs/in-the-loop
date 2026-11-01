@@ -34,6 +34,12 @@ claude -p in text mode prints nothing until a turn ends, so the loop looked hung
 
 Verified with a stub claude emitting stream-json in a temporary jj repo: progress lines appeared as events arrived, malformed lines were skipped, the stub's exit status 3 was still reported, and commit detection and the stop on no commit behaved as before. The real CLI's result fields were confirmed from a saved run; the stream itself was not run against the real model.
 
+### Record session traces
+
+change `nmtxwrlvsosr` · [log `09aa3322da07`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz) has every step in between: reasoning, tool calls and their results.
