@@ -1466,6 +1466,52 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "096",
+      "path": "096-follower-that-takes-entries-after-a-conflicting-previous-entry-breaks-log-matching",
+      "title": "A follower that takes entries after a conflicting previous entry breaks log matching",
+      "summary": "A Raft follower refuses a leader's entries unless it holds the entry before them, the consistency check of section 5.3, so that the leader backs up one entry at a time until the logs agree. A developer relaxes the check to the previous index existing, whatever entry is there: the leader's later entries overwrite the conflict in due course, the comment says, and a round trip is saved. The tests pass and the contract diff is eight rows. The replication model's first configuration, three servers, three terms and two entries, finds in twelve steps two logs that hold the same entry of term 3 at index 2 over different entries at index 1, which is what the log matching property forbids and what the check exists to prevent; the second, figure 8 of the paper, finds a follower that applies an entry nobody else committed.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "097",
+      "path": "097-leader-that-commits-an-earlier-terms-entry-by-counting-replicas-loses-it-to-a-rival",
+      "title": "A leader that commits an earlier term's entry by counting replicas loses it to a rival",
+      "summary": "A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "098",
+      "path": "098-follower-that-drops-a-conflicting-previous-entry-at-once-proved-safe",
+      "title": "A follower that drops a conflicting previous entry at once, proved safe",
+      "summary": "A Raft follower that holds an entry of another term at the index before the entries a leader sends refuses the request and keeps the entry: the leader backs up, sends from one entry earlier, and the conflicting entry is replaced then. A developer has the follower drop the conflicting entry and everything after it the moment it refuses, so that the leader's next try finds the index free. The contract's eight rows change from a rejection to a transition that truncates, the model's `Replicate` carries the truncation out and backs the leader up as before, and TLC checks the rule under both configurations: log matching, leader completeness and state machine safety hold in 18,963 and 8,578 states, no committed entry is ever overwritten, and six of the eight changed rows are taken under both, the two left being for an entry the follower already holds, which a one-step RPC never sends.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

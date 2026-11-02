@@ -809,6 +809,68 @@ RAFT = {
                "really grant.",
 }
 
+REPLICATION = {
+    "spec": "spec/RaftReplication.tla",
+    "cfg": "spec/RaftReplication.cfg",
+    "label": "three terms, two entries",
+    # The same model under a second configuration, run after the first; the README reports both.
+    "configurations": [
+        {"cfg": "spec/RaftReplicationFigureEight.cfg", "label": "figure 8",
+         "what": "every run of three servers over four terms with one entry per leader's log, the budget of figure 8 of the "
+                 "paper: a leader of term 1 appends an entry it never gets to replicate, a leader of term 2 appends its own "
+                 "at the same index, the first comes back as the leader of term 3 and replicates its entry of term 1 to a "
+                 "majority, and the second, whose last entry is from the later term, can still be elected in term 4 "
+                 "without it; three terms cannot show this, and the same invariants and action properties are checked"},
+    ],
+    "contract": "src/contract/AppendRule.decide.contract",
+    "operator": "spec/AppendRuleContract.tla",
+    "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+    # The model's other generated operators: the commit rule, the role machine and the vote rule, brought in as instances.
+    "operators": [{"contract": "src/contract/CommitRule.decide.contract", "operator": "spec/CommitRuleContract.tla",
+                   "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide"},
+                  {"contract": "src/contract/RoleMachine.decide.contract", "operator": "spec/RoleMachineContract.tla",
+                   "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"},
+                  {"contract": "src/contract/VoteRule.decide.contract", "operator": "spec/VoteRuleContract.tla",
+                   "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"}],
+    "parts": "the servers, their terms, votes and logs, and the AppendEntries RPCs between them",
+    "initial": "every server a follower in term 0 with an empty log, no vote cast, nothing committed",
+    "actions": {
+        "Initial predicate": "the initial state",
+        "Timeout": "`Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision",
+        "Canvass": "`Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply "
+                   "each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's "
+                   "term and log against its own, and the tally on the candidate",
+        "ClientRequest": "`Server.onClientRequest`: a leader appends an entry of its term to its own log",
+        "Replicate": "`Server.appendEntries`: a leader sends one server the entry at that server's next index, or a heartbeat "
+                     "if it is caught up, with the entry before it and the leader's commit index, and gets the answer; the "
+                     "request goes through the role machine, then the append rule on the follower's log as it stands against "
+                     "the leader's, and the reply through the role machine on the leader, which moves the server's next and "
+                     "match indices forward on success and backs the next index up by one on a refusal",
+        "AdvanceCommit": "`Server.advanceCommitIndex`: a leader asks the commit rule about the first entry it has not marked "
+                         "committed, given the entry's term against its own and whether a majority of the servers hold it, and "
+                         "marks it committed on a transition",
+    },
+    "invariants": {
+        "TypeOK": "every variable has a value of its type",
+        "KernelNeverThrows": "no timeout or RPC any reachable state allows makes the role machine, the vote rule, the append "
+                             "rule or the commit rule throw: the IllegalStateException the commit rule reserves for an entry "
+                             "from a term after the leader's never fires",
+        "ElectionSafety": "at most one leader per term",
+        "LogMatching": "if two logs hold an entry of the same term at the same index, they are the same through that index "
+                       "(figure 3 of the paper); the append rule's consistency check is what makes it so",
+        "LeaderCompleteness": "a leader holds every entry a server of its term or an earlier one knows committed (figure 3 of "
+                              "the paper); the election restriction and the commit rule together are what make it so",
+        "StateMachineSafety": "no two servers have committed different entries at one index (figure 3 of the paper)",
+        "CommittedEntriesNeverChange": "a committed entry is never overwritten and a commit index never goes backwards, in "
+                                       "any step: once a server has applied an entry, that entry stays at its index for good",
+        "TermsNeverDecrease": "a term never goes backwards on any server, in any step",
+        "LeaderAppendOnly": "a leader never truncates or overwrites its own entries, in any step (figure 3 of the paper)",
+    },
+    "machine": "The follower's append rule, the leader's commit rule, the role machine and the vote rule inside the model are "
+               "generated from the behavioural contracts of the patched code, so the model checks the entries the followers "
+               "really take, the commits the leaders really make, and the roles and votes behind them.",
+}
+
 IDEMPOTENCY = {
     "spec": "spec/IdempotentReceiver.tla",
     "cfg": "spec/IdempotentReceiver.cfg",
@@ -919,7 +981,7 @@ BREAKER = {
 }
 
 # The TLA+ models of each javac app, each built around the state machine of one symbol.
-TOOL_MODELS = {"quorum": [TWOPC, RAFT], "crosscut": [IDEMPOTENCY, BREAKER], "mica": [CLASSINIT]}
+TOOL_MODELS = {"quorum": [TWOPC, RAFT, REPLICATION], "crosscut": [IDEMPOTENCY, BREAKER], "mica": [CLASSINIT]}
 
 
 def model_of(example):

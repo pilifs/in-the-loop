@@ -18,6 +18,8 @@ public final class Tests {
             net.terminalvalue.quorum.QuorumTest.class,
             net.terminalvalue.quorum.raft.RoleMachineTest.class,
             net.terminalvalue.quorum.raft.VoteRuleTest.class,
+            net.terminalvalue.quorum.raft.AppendRuleTest.class,
+            net.terminalvalue.quorum.raft.CommitRuleTest.class,
             net.terminalvalue.quorum.backoff.BackoffTest.class,
             net.terminalvalue.quorum.clock.HybridLogicalClockTest.class,
             net.terminalvalue.quorum.replication.LastWriterWinsTest.class,

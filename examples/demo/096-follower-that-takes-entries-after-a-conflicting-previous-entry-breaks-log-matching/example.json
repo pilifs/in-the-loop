@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "096",
+  "title": "A follower that takes entries after a conflicting previous entry breaks log matching",
+  "summary": "A Raft follower refuses a leader's entries unless it holds the entry before them, the consistency check of section 5.3, so that the leader backs up one entry at a time until the logs agree. A developer relaxes the check to the previous index existing, whatever entry is there: the leader's later entries overwrite the conflict in due course, the comment says, and a round trip is saved. The tests pass and the contract diff is eight rows. The replication model's first configuration, three servers, three terms and two entries, finds in twelve steps two logs that hold the same entry of term 3 at index 2 over different entries at index 1, which is what the log matching property forbids and what the check exists to prevent; the second, figure 8 of the paper, finds a follower that applies an entry nobody else committed.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `AppendRule.decide`, the `CONFLICTING` arm, a follower that holds an entry of another term at the previous index, no longer returns `rejected`: it joins the `MATCHING` arm, so that the entry sent is appended after the conflicting one, with the comment that the leader's later entries overwrite the conflict in due course and a round trip is saved. The Javadoc's statement of the check is weakened to match, and the test that such a request is refused becomes one that it is taken. `CommitRule`, `RoleMachine` and `VoteRule` are untouched.",
+    "patch": "change.patch"
+  },
+  "risk": "High. The change reads as an optimisation of the slow path: a follower that has fallen behind a term's worth of entries is brought up to date in one round trip fewer, and the comment's claim that later entries overwrite the conflict is true of the entry sent, which does replace what the follower held at its own index. What it leaves in place is the entry before it, which is the one the check was about, and nothing in the module's tests holds two logs side by side.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The append rule in the model is generated from the regenerated contract, so `Replicate` does what the eight patched rows say. Under the first configuration, TLC reports `LogMatching` violated after twelve steps: s1 wins term 1 with s2's vote and s2 wins term 2 with s3's, each a leader while the other's term is unknown to it; s1 appends an entry of term 1 and s2 one of term 2, each at index 1 of its own log; s1's heartbeat to s2 is refused as a stale leader's and s1 steps down, times out into term 3, and wins it with s3's vote, since its log is ahead of s3's empty one; s1 appends an entry of term 3 at index 2 and sends it to s2 with index 1 as the previous entry. s2 holds its own entry of term 2 there, a conflict the committed rule refuses so that s1 backs up to index 1 and replaces it; the patched rule takes the entry of term 3 instead, and s2's log reads term 2 then term 3 against s1's term 1 then term 3: the same entry at index 2 over different entries at index 1. The second configuration, figure 8 of the paper, has one entry per log and cannot hold two at once, and finds the row another way, `LeaderCompleteness` after thirteen steps: s2, the leader of term 2, replicates its entry to s3, commits it, a majority holding an entry of its own term, and tells s3; s3 wins term 3 with s1's vote and sends s1 a heartbeat with index 1 as the previous entry, which s1 holds its own entry of term 1 at; the patched rule accepts the heartbeat and, since the leader's commit index is ahead, moves s1's commit index over the entry s1 holds there, an entry no other server has and the leader does not hold, which `StateMachineSafety` forbids as well. The committed rule refuses the heartbeat, s3 backs up, and the next one replaces the entry before anything is committed on s1.",
+  "resolution": "Reject. The consistency check is the induction step of the log matching property (Ongaro and Ousterhout, section 5.3): a follower takes an entry only after the entry before it, so two logs that agree on an entry agree on everything before it, back to the start. The round trip the change saves is the one that finds where the logs diverge, and a leader that wants fewer of them keeps the check and backs up by more than one entry at a time, the optimisation the paper suggests in the same section. Both configurations check the eight rows on every build.",
+  "provenance": "Constructed as the first example of the Raft replication model, to pair with 097 and 098: the textbook mistake on the follower's side, the consistency check dropped, found as a run of the smallest configuration that can hold two entries.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication and the consistency check; section 5.4, the election restriction, committing entries from previous terms, and figure 8",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, the log matching, leader completeness and state machine safety properties and their proof",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): AppendEntries, HandleAppendEntriesRequest and AdvanceCommitIndex, the actions this model's Replicate and AdvanceCommit stand for",
+      "url": "https://github.com/ongardie/raft.tla"
+    }
+  ]
+}

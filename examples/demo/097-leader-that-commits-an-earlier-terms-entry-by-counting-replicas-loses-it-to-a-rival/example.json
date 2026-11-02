@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "097",
+  "title": "A leader that commits an earlier term's entry by counting replicas loses it to a rival",
+  "summary": "A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/CommitRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In `CommitRule.decide`, the `OLDER` arm for a pending entry, which returned `unchanged` with the reason that an entry from an earlier term is committed only along with one of the current term, joins the `CURRENT` arm: a majority commits it, whatever its term, with the comment that a candidate without an entry a majority holds cannot win a majority. The Javadoc is rewritten to the same argument, and the test that such an entry is never committed by counting becomes one that it is. `AppendRule`, `RoleMachine` and `VoteRule` are untouched.",
+    "patch": "change.patch"
+  },
+  "risk": "High. The change fixes something that looks like a bug: a new leader that has replicated an inherited entry to every server leaves it uncommitted until a client sends something new, and the argument in the comment is the one most people give for why that is unnecessary. It is wrong in a way that takes four terms to show, which is more than a test of the rule's inputs can see and more than the model's first configuration explores; the rule's contract has no term numbers in it, only `OLDER` and `CURRENT`.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The commit rule in the model is generated from the regenerated contract, so `AdvanceCommit` commits what the patched row says. The first configuration, three terms, verifies the change in 25,666 states, more than the committed rule's 19,338, since more gets committed: every entry a majority holds within three terms is one the next leader holds too. The second, `RaftReplicationFigureEight.cfg`, has four terms and one entry per leader, and TLC reports `LeaderCompleteness` violated after sixteen steps, the paper's figure 8 with three servers: s1 wins term 1 and appends an entry of term 1 that stays on s1 alone; s2 wins term 2 with s3's vote and appends an entry of term 2 that stays on s2 alone; s1 hears of term 2 from s2's refusal of its heartbeat, times out into term 3, wins it with s3's vote, backs up once against s3's empty log and replicates its entry of term 1 to s3, so that a majority holds it; s2 times out into term 4 and wins it with s3's vote, since s2's log ends in term 2 and s3's in term 1, and the election restriction compares last terms, not holdings; and s1, still the leader of term 3, marks its entry committed on the patched row, with a majority holding it and a leader of a later term elected without it. The next steps, which TLC does not need, are s2's entry of term 2 replacing the committed entry on s1 and s3. The committed rule leaves the entry pending in that state, and commits it only once an entry of term 3 after it reaches a majority, which s2 could not then have been elected over.",
+  "resolution": "Reject. An entry from an earlier term is committed by the entry of the current term that follows it, never by counting the servers that hold it (Ongaro and Ousterhout, section 5.4.2); the argument in the comment fails because a voter that holds the entry grants its vote on the candidate's last term, not on the candidate holding what the voter holds. A leader that wants its inherited entries committed appends a no-op entry of its own term on taking office, which the paper's section 8 and the thesis recommend and the model would verify. The second configuration exists for this row, and checks it on every build.",
+  "provenance": "Constructed as the second example of the Raft replication model, to pair with 096 and 098: the mistake figure 8 of the paper is drawn for, verified by a configuration too small to show it and found by the one sized for it.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication and the consistency check; section 5.4, the election restriction, committing entries from previous terms, and figure 8",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, the log matching, leader completeness and state machine safety properties and their proof",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): AppendEntries, HandleAppendEntriesRequest and AdvanceCommitIndex, the actions this model's Replicate and AdvanceCommit stand for",
+      "url": "https://github.com/ongardie/raft.tla"
+    }
+  ]
+}

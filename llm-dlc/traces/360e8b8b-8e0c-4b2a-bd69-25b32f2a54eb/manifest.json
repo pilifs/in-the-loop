@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T10:36:14.886Z",
-  "duration_seconds": 151579,
+  "ended": "2026-11-02T11:07:49.240Z",
+  "duration_seconds": 153474,
   "stats": {
-    "turns": 106,
-    "api_calls": 1181,
-    "tool_calls": 1734,
-    "tool_errors": 34,
-    "compactions": 21,
+    "turns": 110,
+    "api_calls": 1224,
+    "tool_calls": 1776,
+    "tool_errors": 35,
+    "compactions": 22,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 35560,
-      "output_tokens": 2870235,
-      "cache_read_input_tokens": 221762572,
-      "cache_creation_input_tokens": 6245101
+      "input_tokens": 36906,
+      "output_tokens": 2989341,
+      "cache_read_input_tokens": 228829893,
+      "cache_creation_input_tokens": 6516557
     }
   },
   "tools": {
-    "Bash": 1257,
+    "Bash": 1299,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -522,24 +522,38 @@
     {
       "index": 21,
       "started": "2026-11-02T10:08:19.477Z",
-      "ended": "2026-11-02T10:36:14.886Z",
+      "ended": "2026-11-02T10:39:35.765Z",
       "turns": 4,
-      "api_calls": 56,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 1672,
-        "output_tokens": 121135,
-        "cache_read_input_tokens": 9706206,
-        "cache_creation_input_tokens": 258147
+        "input_tokens": 1704,
+        "output_tokens": 121844,
+        "cache_read_input_tokens": 9979266,
+        "cache_creation_input_tokens": 259731
       },
-      "peak_context_tokens": 273092
+      "peak_context_tokens": 274676
+    },
+    {
+      "index": 22,
+      "started": "2026-11-02T10:41:09.916Z",
+      "ended": "2026-11-02T11:07:49.240Z",
+      "turns": 4,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 1314,
+        "output_tokens": 118397,
+        "cache_read_input_tokens": 6794261,
+        "cache_creation_input_tokens": 269872
+      },
+      "peak_context_tokens": 284817
     }
   ],
   "log": {
-    "sha256": "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338",
-    "bytes": 50762865,
-    "lines": 17422,
-    "gzip_bytes": 8602283,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338.jsonl.gz"
+    "sha256": "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2",
+    "bytes": 52776707,
+    "lines": 18070,
+    "gzip_bytes": 8947182,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -742,6 +756,14 @@
       "summary": "Let the two-phase-commit participants crash and restart on a rule generated from their own contract, under two more configurations, with three new examples",
       "body": "The two-phase-commit model's participants now run on a third generated operator, Participant#decide (Participant.decide.contract, ParticipantContract.tla): what a participant does when asked to prepare, when it gives up, when it reads the decision, and when it restarts after a crash. The committed rule has a prepared participant hold its locks through a restart, since it cannot decide alone (the blocking property), and one that had not voted abort, since it logs its state before sending its vote. ParticipantNode is now glue around that rule, with a ParticipantLog and its own fault injector (Faults takes a process name; Network.send reports to the sender's). The model gained a constant MaxParticipantCrashes, the variables pup and pcrashes, an Act operator through which every participant action logs then sends and may crash after the log write with the vote lost or not, ParticipantCrash and ParticipantRecover actions, fairness for restarts, and two inductive conjuncts; the five existing configurations set the new budget to zero and keep their state counts, and two new ones, TwoPhaseCommitParticipantCrash.cfg (12,754 states) and TwoPhaseCommitParticipantCrashInductive.cfg (18,636 admitted states), check every run and the inductive step with crashes of either process. The trace writer records the two new variables and runs three more scenarios with participant crashes (eleven in all, 103 recorded states).\n\nExamples 093 to 095: a participant that releases its locks on restart aborts a transaction the coordinator committed on its yes vote, found in eight steps under participant crashes and as one step from an admitted state; a participant node that sends its vote before logging it is caught only by its recorded run, at the step where the vote is out and the log still says working; a restarted participant that votes no rather than wait for the coordinator's timer is proved safe and live under all seven configurations, with the changed row taken. Example 092 was regenerated as a change to the participant's rule, 058's patch against the changed model, and 089 to 091's texts for the seven configurations; the liveness counterexamples of 057 and 088 come out in a different order under the added fairness condition, and their texts follow. Verified by the quorum verify script (30 checks, 47 tests, exit 0), by building the three new examples and rebuilding the twelve older two-phase-commit ones, all with the expected verdicts and the older headline traces unchanged except 057 and 088 as described. The build tool's model entry, the spec and app READMEs, the demo and root READMEs, the approaches table, the plugin README and the add-tla-model reference are updated.",
       "log_sha256": "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338"
+    },
+    {
+      "change_id": "nwquutrorrwmlyktvrzzqpuqymqtomxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Model Raft log replication with the follower's append rule and the leader's commit rule as two more generated operators, under two configurations, with three new examples",
+      "body": "A third TLA+ model of the Quorum library, spec/RaftReplication.tla, has the Raft logs live where the election model keeps them fixed: leaders append entries on client requests, send a follower one entry per RPC with the entry before it and the leader's commit index, followers take or refuse them, and leaders mark entries committed. Two new Java kernels decide the two sides, raft.AppendRule#decide (the consistency check, the append in place of what the follower held, and the commit index following the leader's; 36 contract cases) and raft.CommitRule#decide (a majority holds the entry and it is from the leader's own term; 21 cases, with an IllegalStateException for an entry from a later term that the model proves unreachable). Their contracts are generated with jvmcontract update and their TLA+ operators with jvmcontract tla, brought into the model as the instances Entries (Append is a Sequences operator) and Commit, beside the role machine and the vote rule the election model already generates. The model checks the paper's log matching, leader completeness and state machine safety as invariants and, as action properties, that no committed entry is ever overwritten, that a leader's log only grows and that terms never decrease. RaftReplication.cfg has three servers, three terms and two entries under a symmetry set (19,338 states, four seconds), the smallest model in which two logs can share an entry over different histories; RaftReplicationFigureEight.cfg has four terms and one entry per leader (8,838 states), the budget of figure 8 of the paper, which three terms cannot show.\n\nThree examples: 096 relaxes the consistency check to the previous index existing, and TLC finds in twelve steps two logs that share an entry of term 3 over different entries at index 1, with the figure 8 configuration finding a follower that applies an entry nobody else committed; 097 has the leader commit any entry a majority holds, whatever its term, which three terms verify in 25,666 states and the figure 8 configuration catches in sixteen steps, a leader of term 3 committing an entry of term 1 while the leader of term 4, elected without it, is about to overwrite it; 098 has a follower drop a conflicting previous entry the moment it refuses the request, proved safe under both configurations with six of the eight changed rows taken. The build tool gains the REPLICATION model entry (placed after the election model, so that role machine examples still match it), verify.sh runs the two contracts and the two configurations, and the spec, app, demo and root READMEs, the approaches table, the plugin README and the add-tla-model reference describe the model; two links broken by the previous cycle's edit in approaches.md and the plugin README are repaired. Verified by examples/demo/apps/quorum/verify.sh (55 tests, every contract, property and TLC configuration green) and by building 096 to 098 with examples/demo/tools/build.py, each with the verdict its example.json expects.",
+      "log_sha256": "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2"
     }
   ],
   "logs": {
@@ -749,6 +771,12 @@
       "bytes": 44876360,
       "lines": 15257,
       "gzip_bytes": 7614298,
+      "url": null
+    },
+    "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2": {
+      "bytes": 52776707,
+      "lines": 18070,
+      "gzip_bytes": 8947182,
       "url": null
     },
     "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338": {
