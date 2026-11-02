@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "088",
+  "title": "A coordinator with nothing to redo on restart leaves a logged decision unsent forever",
+  "summary": "A restarted two-phase-commit coordinator sends a logged decision again, because the crash may have come between logging it and sending it. A developer sees only duplicate broadcasts come of it, since the coordinator cannot tell whether the first copy went out and so always sends a second, and makes a restart in a decided phase change nothing, as the decision rule does for any event in a decided phase. The contract diff is two rows, and the change mirrors the rule beside it. Under the two configurations the model had, nothing crashes and the rows are never taken; the inductive invariant is closed under the new rule as well, since every state the run passes through is one it admits. The third configuration, in which the coordinator may crash twice, finds the run in ten steps: one participant votes yes and two vote no, the coordinator crashes before counting, restarts, logs the abort that presumed abort calls for, and crashes again before sending it; the second restart finds a logged abort and the new rule has nothing to redo. The prepared participant holds its locks forever, a liveness failure, reported as a run that stays in its last state. The fourth configuration finds the step that makes it possible, a coordinator up and decided with nothing out.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In `Recovery.decide`, a restart in `COMMITTED` or `ABORTED` is unchanged, with the reason `already decided` and the comment that the decision was broadcast when it was made, that a decided coordinator has nothing to redo, and that sending again would hand every participant a second copy. The restart in `COLLECTING` presumes abort as before. The contract diff is two rows, `decide(COMMITTED, Restarted[])` and `decide(ABORTED, Restarted[])`, from a transition that stays in the phase and sends the decision to unchanged; the two tests for them become one.",
+    "patch": "change.patch"
+  },
+  "risk": "The resend looks redundant from inside the coordinator, where the decision is made and sent in one step, and the change is written to match the decision rule's own `already decided` arms, which are correct. What it forgets is the one case the recovery rule exists for: the step was logged and not finished, and the broadcast never went out. A participant that voted yes holds its locks until it hears the decision, and after this change it hears nothing, ever; a restart that crashes before sending what it decided, which the change's framing never considers, is enough. No invariant can report it: every state of the run is one the protocol allows, the participant is prepared and waiting, as a prepared participant is allowed to be. The question is whether it waits forever, which is a question about infinite behaviours, and the model's fairness conditions and liveness property are what answer it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The recovery rule in the model is generated from the regenerated contract, so the model runs the new rule. Under `TwoPhaseCommit.cfg` and `TwoPhaseCommitInductive.cfg` nothing changes: the coordinator never crashes, so the changed rows are never taken, and the page says so. Under `TwoPhaseCommitCrash.cfg`, where the coordinator may crash twice in a run, between steps or after logging a phase change and before sending, and restarts on the recovery rule under the fairness condition that it does, every invariant holds in every state and the refinement of transaction commit holds in every behaviour, and the liveness property `EveryParticipantDecides` does not. TLC reports the run: p3 votes no and aborts, p2 votes no and aborts, p1 votes yes and holds its locks; the coordinator crashes with the three votes still on their way; it restarts, finds no logged decision, and presumed abort has it log the abort, but the restart is cut short by the second crash before the abort is sent; it restarts again, finds the logged abort, and the new rule has nothing to redo, so it comes up with nothing out. It then counts the three votes, each of which the decision rule answers with `already decided`. Ten steps, after which nothing is enabled that changes the state: the coordinator is up and decided, no decision has been broadcast, and p1 is prepared, waiting for one, forever. TLC shows the behaviour as the ten steps and then stuttering in the last state. `TwoPhaseCommitCrashInductive.cfg` names the step: the conjunct `BroadcastOnceUp`, a coordinator that is up and decided has its decision out, fails one step after a state the invariant admits, the coordinator down with an unsent decision and the new rule bringing it up as it is.",
+  "resolution": "Revert: a restart in a decided phase sends the decision again. The duplicate broadcast is the cost of not knowing whether the first went out, and it is harmless, since a participant that has applied a decision ignores a second copy (the decision rule's own `already decided` arms are the same idea on the coordinator's side). A coordinator that wants to avoid it logs a completion record after the broadcast and skips the resend when it finds one, which is a rule the model can check the same way.",
+  "provenance": "Constructed from the recovery rule's one asymmetry with the decision rule beside it, a decided coordinator that still has something to do, removed for symmetry; the trace TLC finds, a restart that crashes before sending the abort it logged, is the second crash the configuration allows, and the reason it allows two.",
+  "references": [
+    {
+      "title": "Mohan, Lindsay and Obermarck, Transaction Management in the R* Distributed Database Management System (1986): presumed abort, what a coordinator does on restart with and without a logged decision",
+      "url": "https://dl.acm.org/doi/10.1145/7239.7266"
+    },
+    {
+      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: the coordinator's and participants' recovery procedures in two-phase commit",
+      "url": "https://www.microsoft.com/en-us/research/people/philbe/book/"
+    },
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit, the coordinator's log, and restart",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    }
+  ]
+}

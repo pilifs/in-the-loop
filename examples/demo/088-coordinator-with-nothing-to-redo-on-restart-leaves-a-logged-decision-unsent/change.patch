@@ -1,0 +1,54 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
+@@ -1,6 +1,7 @@
+ package net.terminalvalue.quorum.twopc;
+ 
+ import static net.terminalvalue.quorum.Decision.transition;
++import static net.terminalvalue.quorum.Decision.unchanged;
+ import static net.terminalvalue.quorum.twopc.CoordinatorEffect.SEND_ABORT;
+ import static net.terminalvalue.quorum.twopc.CoordinatorEffect.SEND_COMMIT;
+ import static net.terminalvalue.quorum.twopc.Phase.ABORTED;
+@@ -25,8 +26,10 @@
+         return switch (event) {
+             case Restarted _ -> switch (logged) {
+                 case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
+-                case COMMITTED -> transition(COMMITTED, SEND_COMMIT);
+-                case ABORTED -> transition(ABORTED, SEND_ABORT);
++                // The decision was broadcast when it was made, and the participants have applied it or will: a
++                // decided coordinator has nothing to redo, and sending again would hand every participant a second
++                // copy of a message it has already acted on.
++                case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+         };
+     }
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
+@@ -1,8 +1,10 @@
+ package net.terminalvalue.quorum.twopc;
+ 
++import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ 
+ import java.util.List;
++import net.terminalvalue.quorum.Decision;
+ import net.terminalvalue.quorum.Decision.Transition;
+ import net.terminalvalue.quorum.twopc.RecoveryEvent.Restarted;
+ 
+@@ -10,14 +12,9 @@
+ 
+     private RecoveryTest() {}
+ 
+-    public static void sendsALoggedCommitAgain() {
+-        equal(new Transition<>(Phase.COMMITTED, List.of(CoordinatorEffect.SEND_COMMIT)),
+-                Recovery.decide(Phase.COMMITTED, new Restarted()));
+-    }
+-
+-    public static void sendsALoggedAbortAgain() {
+-        equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
+-                Recovery.decide(Phase.ABORTED, new Restarted()));
++    public static void aDecidedCoordinatorHasNothingToRedo() {
++        check(Recovery.decide(Phase.COMMITTED, new Restarted()) instanceof Decision.Unchanged, "committed stays");
++        check(Recovery.decide(Phase.ABORTED, new Restarted()) instanceof Decision.Unchanged, "aborted stays");
+     }
+ 
+     public static void presumesAbortWithoutALoggedDecision() {

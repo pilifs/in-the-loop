@@ -21,7 +21,8 @@ public final class Tests {
             net.terminalvalue.quorum.backoff.BackoffTest.class,
             net.terminalvalue.quorum.clock.HybridLogicalClockTest.class,
             net.terminalvalue.quorum.replication.LastWriterWinsTest.class,
-            net.terminalvalue.quorum.twopc.CoordinatorTest.class);
+            net.terminalvalue.quorum.twopc.CoordinatorTest.class,
+            net.terminalvalue.quorum.twopc.RecoveryTest.class);
 
     private Tests() {}
 

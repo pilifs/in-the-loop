@@ -1,0 +1,46 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
+@@ -1,6 +1,7 @@
+ package net.terminalvalue.quorum.twopc;
+ 
+ import static net.terminalvalue.quorum.Decision.transition;
++import static net.terminalvalue.quorum.Decision.unchanged;
+ import static net.terminalvalue.quorum.twopc.CoordinatorEffect.SEND_ABORT;
+ import static net.terminalvalue.quorum.twopc.CoordinatorEffect.SEND_COMMIT;
+ import static net.terminalvalue.quorum.twopc.Phase.ABORTED;
+@@ -24,7 +25,10 @@
+     public static Decision<Phase, CoordinatorEffect> decide(Phase logged, RecoveryEvent event) {
+         return switch (event) {
+             case Restarted _ -> switch (logged) {
+-                case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
++                // The tally is logged with each vote counted, so a restart loses no vote: the coordinator carries on
++                // collecting, and the timer, which restarts with it, still aborts if the rest never arrive. Presumed
++                // abort is for a coordinator that cannot tell what it had counted; this one can.
++                case COLLECTING -> unchanged("the votes counted so far are logged; keep collecting");
+                 case COMMITTED -> transition(COMMITTED, SEND_COMMIT);
+                 case ABORTED -> transition(ABORTED, SEND_ABORT);
+             };
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
+@@ -1,8 +1,10 @@
+ package net.terminalvalue.quorum.twopc;
+ 
++import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ 
+ import java.util.List;
++import net.terminalvalue.quorum.Decision;
+ import net.terminalvalue.quorum.Decision.Transition;
+ import net.terminalvalue.quorum.twopc.RecoveryEvent.Restarted;
+ 
+@@ -20,8 +22,7 @@
+                 Recovery.decide(Phase.ABORTED, new Restarted()));
+     }
+ 
+-    public static void presumesAbortWithoutALoggedDecision() {
+-        equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
+-                Recovery.decide(Phase.COLLECTING, new Restarted()));
++    public static void resumesCollectingWithoutALoggedDecision() {
++        check(Recovery.decide(Phase.COLLECTING, new Restarted()) instanceof Decision.Unchanged, "keeps collecting");
+     }
+ }

@@ -873,7 +873,7 @@
       "id": "057",
       "path": "057-coordinator-that-waits-for-the-last-yes-vote-blocks-forever",
       "title": "A coordinator that waits for the last vote when every vote so far is yes blocks forever",
-      "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a five-step run after which the prepared participant holds its locks forever.",
+      "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a six-step run after which two prepared participants hold their locks forever.",
       "categories": [
         "functional"
       ],
@@ -1325,6 +1325,52 @@
       "severity": "none",
       "changeKind": "feature",
       "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "087",
+      "path": "087-coordinator-that-aborts-on-restart-reverses-a-commit-it-had-sent",
+      "title": "A coordinator that aborts the transaction on restart reverses a commit it had sent",
+      "summary": "A two-phase-commit coordinator logs each phase change before it acts on it, and a restart after a crash reads the log: a logged decision is sent again, since the crash may have come before the broadcast, and no logged decision means abort. A developer collapses the three cases of the recovery rule into one, abort: whatever the coordinator was doing, an abort releases the participants' locks, and a transaction that was about to commit can be retried. The contract diff is one row, a restart in `COMMITTED`, from sending the commit again to aborting. The two-phase-commit model is now checked under two more configurations, in which the coordinator may crash between steps or between logging a decision and sending it, and restarts on the recovery rule, generated from the contract like the decision rule. Under the two the model had, nothing crashes and the row is never taken. Under the third, TLC finds in ten steps a commit that is sent, applied by one participant, and then reversed by the restarted coordinator, which tells the other two to abort; the fourth finds the same step from a state its inductive invariant admits.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "088",
+      "path": "088-coordinator-with-nothing-to-redo-on-restart-leaves-a-logged-decision-unsent",
+      "title": "A coordinator with nothing to redo on restart leaves a logged decision unsent forever",
+      "summary": "A restarted two-phase-commit coordinator sends a logged decision again, because the crash may have come between logging it and sending it. A developer sees only duplicate broadcasts come of it, since the coordinator cannot tell whether the first copy went out and so always sends a second, and makes a restart in a decided phase change nothing, as the decision rule does for any event in a decided phase. The contract diff is two rows, and the change mirrors the rule beside it. Under the two configurations the model had, nothing crashes and the rows are never taken; the inductive invariant is closed under the new rule as well, since every state the run passes through is one it admits. The third configuration, in which the coordinator may crash twice, finds the run in ten steps: one participant votes yes and two vote no, the coordinator crashes before counting, restarts, logs the abort that presumed abort calls for, and crashes again before sending it; the second restart finds a logged abort and the new rule has nothing to redo. The prepared participant holds its locks forever, a liveness failure, reported as a run that stays in its last state. The fourth configuration finds the step that makes it possible, a coordinator up and decided with nothing out.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "089",
+      "path": "089-coordinator-that-resumes-collecting-on-restart-proved-safe-and-live",
+      "title": "A coordinator that resumes collecting votes on restart, proved safe and live",
+      "summary": "A restarted two-phase-commit coordinator without a logged decision aborts: presumed abort, the rule for a coordinator that cannot tell what it had counted. This coordinator logs its tally with each vote, so a developer has a restart in `COLLECTING` carry on instead, counting the votes still on their way and aborting on the timer if the rest never come, so that a crash no longer costs a transaction whose votes were all yes. The contract diff is one row. The model proves the change keeps the protocol safe and live under all four configurations: the two without crashes as before, and with crashes, every invariant in every reachable state, every participant deciding under the fairness conditions, every behaviour one transaction commit allows, and the inductive step closed under the new restart, with the changed row taken in both configurations that have a crash.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true

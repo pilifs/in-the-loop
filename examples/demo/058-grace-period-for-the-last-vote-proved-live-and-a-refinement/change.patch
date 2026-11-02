@@ -58,9 +58,20 @@
      public static void aDecisionIsFinal() {
          check(Coordinator.decide(Phase.COMMITTED, new Timeout(true)) instanceof Decision.Unchanged, "committed stays");
          check(Coordinator.decide(Phase.ABORTED, new Tally(true, true)) instanceof Decision.Unchanged, "aborted stays");
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
+@@ -24,7 +24,7 @@
+     public static Decision<Phase, CoordinatorEffect> decide(Phase logged, RecoveryEvent event) {
+         return switch (event) {
+             case Restarted _ -> switch (logged) {
+-                case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
++                case COLLECTING, GRACE -> transition(ABORTED, SEND_ABORT); // presumed abort
+                 case COMMITTED -> transition(COMMITTED, SEND_COMMIT);
+                 case ABORTED -> transition(ABORTED, SEND_ABORT);
+             };
 --- a/examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 +++ b/examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
-@@ -89,7 +89,7 @@
+@@ -115,7 +115,7 @@
  
  \* Coordinator.onTimeout: the collection timer fires while votes are missing.
  CoordinatorTimeout ==
@@ -69,7 +80,7 @@
      /\ Counted # Participants
      /\ Apply(Decide(phase, [kind |-> "Timeout", unanimousSoFar |-> \A p \in Counted : votes[p] = "YES"]))
      /\ UNCHANGED <<pstate, votes, inbox>>
-@@ -128,7 +128,7 @@
+@@ -177,7 +177,7 @@
  (***************************************************************************)
  
  TypeOK ==
@@ -78,16 +89,16 @@
      /\ \A p \in Participants : pstate[p] \in {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}
      /\ \A p \in Participants : votes[p] \in {"YES", "NO", "NONE"}
      /\ decision \in {"NONE", "COMMIT", "ABORT"}
-@@ -178,7 +178,7 @@
- 
- \* What the coordinator broadcast is what its phase says.
+@@ -232,7 +232,7 @@
+ \* decided coordinator may have nothing out yet: a crash can fall between the phase change, which it logs, and the
+ \* broadcast, which Recover then does.
  DecisionMatchesThePhase ==
--    decision = CASE phase = "COLLECTING" -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
-+    decision = CASE phase \in {"COLLECTING", "GRACE"} -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
+-    decision \in {"NONE", CASE phase = "COLLECTING" -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"}
++    decision \in {"NONE", CASE phase \in {"COLLECTING", "GRACE"} -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"}
  
- \* A participant's state agrees with its vote: working means it has not voted, prepared means it voted yes, a no vote
- \* means it aborted, and a yes voter that aborted did so on the coordinator's say-so.
-@@ -204,7 +204,7 @@
+ \* A coordinator that is up and decided has its decision out: it broadcast it when it decided, or on restarting.
+ BroadcastOnceUp == up /\ phase \in {"COMMITTED", "ABORTED"} => decision # "NONE"
+@@ -266,7 +266,7 @@
  \* Inductive as an initial predicate: every state it admits, enumerated variable by variable, with each conjunct right
  \* after the last variable it mentions, so that TLC discards a partial state as soon as a conjunct fails.
  InductiveInit ==

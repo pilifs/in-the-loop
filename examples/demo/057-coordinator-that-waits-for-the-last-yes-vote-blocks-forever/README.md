@@ -5,9 +5,9 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✗ Violation: EveryParticipantDecides, 5-step trace then forever** | functional | critical | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✗ Violation: EveryParticipantDecides, 6-step trace then forever** | functional | critical | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
-> When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a five-step run after which the prepared participant holds its locks forever.
+> When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a six-step run after which two prepared participants hold their locks forever.
 
 ## The change
 
@@ -82,35 +82,42 @@ On a `Timeout` in `COLLECTING`, answer `unchanged` when `unanimousSoFar` is true
 
 ## What the verifier found
 
-The model is checked under 2 configurations, and the verdict is the first that fails:
+The model is checked under 4 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
-| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3} | ✗ Violation: EveryParticipantDecides, 5-step trace then forever |
-| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3} | ✓ Verified: all invariants hold in 736 states |
+| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3}, MaxCrashes = 0 | ✗ Violation: EveryParticipantDecides, 6-step trace then forever |
+| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3}, MaxCrashes = 0 | ✓ Verified: all invariants hold in 736 states |
+| crashes (`spec/TwoPhaseCommitCrash.cfg`) | every run from the initial state in which the coordinator may crash, twice at most: between steps, or after logging a phase change and before the broadcast goes out, and restart on the recovery rule, generated from `Recovery#decide`; the same invariants and temporal properties, under the added fairness condition that a crashed coordinator restarts | Participants = {p1, p2, p3}, MaxCrashes = 2 | ✗ Violation: EveryParticipantDecides, 6-step trace then forever |
+| the inductive step with crashes (`spec/TwoPhaseCommitCrashInductive.cfg`) | that the invariant `Inductive` is closed under a crash and a restart as well: TLC starts from every state the invariant admits, the coordinator up or down, takes one step, and checks the invariant again | Participants = {p1, p2, p3}, MaxCrashes = 1 | ✓ Verified: all invariants hold in 2,728 states |
 
-TLC found a run of the system under three participants that violates the temporal property **EveryParticipantDecides** (every participant eventually commits or aborts, under the fairness the model assumes: participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, and participants apply a decision once made): after the 5 steps below, the system stays in that state forever, and the property never comes true. The run respects every fairness condition the model assumes; the parts that could act, do. Each step is one action of one part of the system:
+TLC found a run of the system under three participants that violates the temporal property **EveryParticipantDecides** (every participant eventually commits or aborts, under the fairness the model assumes: participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, and participants apply a decision once made): after the 6 steps below, the system stays in that state forever, and the property never comes true. The run respects every fairness condition the model assumes; the parts that could act, do. Each step is one action of one part of the system:
 
-1. **Initial state**: every participant working, no vote counted, no decision.
+1. **Initial state**: every participant working, no vote counted, no decision, the coordinator up.
 2. **Vote**, `Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts). `inbox = {[from |-> p1, vote |-> "YES"]}`, `pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")`
-3. **ReceiveVote**, `Coordinator.onVote`: the coordinator counts a vote and decides on the tally. `inbox = {}`, `votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")`
-4. **ParticipantTimeout**, `Participant.timeout`: a participant that has not voted gives up on its own. `pstate = (p1 :> "PREPARED" @@ p2 :> "ABORTED" @@ p3 :> "WORKING")`
-5. **ParticipantTimeout**, `Participant.timeout`: a participant that has not voted gives up on its own. `pstate = (p1 :> "PREPARED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")`
+3. **Vote**, `Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts). `inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}`, `pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "WORKING")`
+4. **ParticipantTimeout**, `Participant.timeout`: a participant that has not voted gives up on its own. `pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")`
+5. **ReceiveVote**, `Coordinator.onVote`: the coordinator counts a vote and decides on the tally. `inbox = {[from |-> p2, vote |-> "YES"]}`, `votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")`
+6. **ReceiveVote**, `Coordinator.onVote`: the coordinator counts a vote and decides on the tally. `inbox = {}`, `votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")`
 
-The model is small (Participants = {p1, p2, p3}), which is what keeps the trace readable. TLC explored every interleaving of the participants, the coordinator and the votes in flight within those bounds.
+The model is small (Participants = {p1, p2, p3}, MaxCrashes = 0), which is what keeps the trace readable. TLC explored every interleaving of the participants, the coordinator and the votes in flight within those bounds.
+
+Under crashes TLC found the same run, and reported it the same way.
 
 **What the verdict rests on.** TLC counted how often a step of the model took each row of the generated operators. A row no step takes is one the model says nothing about, whatever the verdict.
 
-| Configuration | Rows of `Coordinator#decide` taken |
-|---|---|
-| three participants | stopped at the counterexample |
-| the inductive step (from the states the invariant admits, not from a run) | 10 of 18 |
+| Configuration | Rows of `Coordinator#decide` taken | Rows of `Recovery#decide` taken |
+|---|---|---|
+| three participants | stopped at the counterexample | stopped at the counterexample |
+| the inductive step (from the states the invariant admits, not from a run) | 10 of 18 | 0 of 3 |
+| crashes | stopped at the counterexample | stopped at the counterexample |
+| the inductive step with crashes (from the states the invariant admits, not from a run) | 10 of 18 | 3 of 3 |
 
 The change alters 1 row of the contract:
 
-- `decide(COLLECTING, Timeout[unanimousSoFar=true])`: `Transition[next=ABORTED, effects=[SEND_ABORT]]` → `Unchanged[reason="every vote so far is yes; waiting for the rest"]`, taken under the inductive step
+- `decide(COLLECTING, Timeout[unanimousSoFar=true])`: `Transition[next=ABORTED, effects=[SEND_ABORT]]` → `Unchanged[reason="every vote so far is yes; waiting for the rest"]`, taken under the inductive step, the inductive step with crashes
 
-The run under three participants stopped at its counterexample, the steps above, and its counts are left out: the verdict rests on the counterexample.
+The run under three participants, crashes stopped at its counterexample, the steps above, and its counts are left out: the verdict rests on the counterexample.
 
 <details><summary>Rows no step takes under the inductive step</summary>
 
@@ -125,6 +132,14 @@ decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
 decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
 decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
 decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+```
+
+`net.terminalvalue.quorum.twopc.Recovery#decide`:
+
+```
+decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
+decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 ```
 
 </details>
@@ -166,7 +181,7 @@ A participant that voted yes is prepared: it holds its locks and cannot abort on
 
 ## Why the verdict is right
 
-The model gained two things in this cycle, both temporal: fairness conditions, which say what each part of the system is assumed to get round to (participants vote or give up, the coordinator counts every vote that reaches it and fires its timer while votes are missing, participants apply a decision once made), and the property `EveryParticipantDecides`, `\A p \in Participants : <>(pstate[p] \in {"COMMITTED", "ABORTED"})`, which TLC checks over every infinite behaviour that respects the fairness conditions. On the committed coordinator it holds in all 728 states. On the patched one TLC finds a counterexample: p1 votes yes and is counted; p2 and then p3 give up before voting. The coordinator's timer fires, and fires again, and each time the rule says to keep collecting; p1 is prepared, and stays prepared. TLC reports the five steps and that the system stays in that state forever, which is what a liveness counterexample is: a finite prefix and an infinite rest. The tool checks the model's two temporal properties one at a time to name the violated one, since TLC does not. Deadlock detection would not have found this: the coordinator's timer is always enabled, so some action can always be taken; it is just that none of them helps. That is the difference between a deadlock and a liveness failure, and why the model states both.
+The model gained two things in this cycle, both temporal: fairness conditions, which say what each part of the system is assumed to get round to (participants vote or give up, the coordinator counts every vote that reaches it and fires its timer while votes are missing, participants apply a decision once made), and the property `EveryParticipantDecides`, `\A p \in Participants : <>(pstate[p] \in {"COMMITTED", "ABORTED"})`, which TLC checks over every infinite behaviour that respects the fairness conditions. On the committed coordinator it holds in all 728 states. On the patched one TLC finds a counterexample: p1 and p2 vote yes, p3 gives up before voting, and the coordinator counts the two votes. Its timer fires, and fires again, and each time the rule says to keep collecting; p1 and p2 are prepared, and stay prepared. TLC reports the six steps and that the system stays in that state forever, which is what a liveness counterexample is: a finite prefix and an infinite rest. The tool checks the model's two temporal properties one at a time to name the violated one, since TLC does not. Deadlock detection would not have found this: the coordinator's timer is always enabled, so some action can always be taken; it is just that none of them helps. That is the difference between a deadlock and a liveness failure, and why the model states both.
 
 ## What to do
 
@@ -174,121 +189,151 @@ Revert. Gray's presumed-abort rule is the timeout's whole job: a participant tha
 
 ## Evidence
 
-How the verdict was reached: three participants: TLC 2.19 explored 385 distinct states in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}.
+How the verdict was reached: three participants: TLC 2.19 explored 385 distinct states in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 2,638 distinct states in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2305171] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2761272] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
 Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 01:45:37)
+Starting... (2026-11-02 04:27:14)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:37.
-Checking 3 branches of temporal properties for the complete state space with 1155 total distinct states at (2026-11-02 01:45:38)
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:27:14.
+Checking 3 branches of temporal properties for the complete state space with 1155 total distinct states at (2026-11-02 04:27:14)
 Error: Temporal properties were violated.
 
 Error: The following behavior constitutes a counter-example:
 
 State 1: <Initial predicate>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
 /\ pstate = (p1 :> "WORKING" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
-/\ decision = "NONE"
-/\ phase = "COLLECTING"
-/\ inbox = {}
+/\ crashes = 0
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {}
 
-State 2: <Vote line 46, col 5 to line 50, col 43 of module TwoPhaseCommit>
-/\ pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
-/\ decision = "NONE"
+State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
 /\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
 /\ inbox = {[from |-> p1, vote |-> "YES"]}
+
+State 3: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "WORKING")
+/\ crashes = 0
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}
 
-State 3: <ReceiveVote line 82, col 5 to line 90, col 23 of module TwoPhaseCommit>
-/\ pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
-/\ decision = "NONE"
+State 4: <ParticipantTimeout line 71, col 5 to line 73, col 63 of module TwoPhaseCommit>
 /\ phase = "COLLECTING"
-/\ inbox = {}
-/\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
-
-State 4: <ParticipantTimeout line 55, col 5 to line 57, col 50 of module TwoPhaseCommit>
-/\ pstate = (p1 :> "PREPARED" @@ p2 :> "ABORTED" @@ p3 :> "WORKING")
 /\ decision = "NONE"
-/\ phase = "COLLECTING"
-/\ inbox = {}
-/\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}
 
-State 5: <ParticipantTimeout line 55, col 5 to line 57, col 50 of module TwoPhaseCommit>
-/\ pstate = (p1 :> "PREPARED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
+State 5: <ReceiveVote line 106, col 5 to line 114, col 23 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
 /\ decision = "NONE"
-/\ phase = "COLLECTING"
-/\ inbox = {}
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
 /\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p2, vote |-> "YES"]}
 
-State 6: Stuttering
-Finished checking temporal properties in 00s at 2026-11-02 01:45:38
-The coverage statistics at 2026-11-02 01:45:38
-<Init line 103, col 1 to line 103, col 4 of module TwoPhaseCommit>: 2:2
-  line 104, col 5 to line 108, col 24 of module TwoPhaseCommit: 2
-<Vote line 45, col 1 to line 45, col 7 of module TwoPhaseCommit>: 42:316
-  line 46, col 8 to line 46, col 28 of module TwoPhaseCommit: 1322
-  |line 46, col 8 to line 46, col 16 of module TwoPhaseCommit: 1164
-  line 48, col 9 to line 49, col 57 of module TwoPhaseCommit: 316
-  line 47, col 17 to line 47, col 29 of module TwoPhaseCommit: 158:474
-  line 50, col 8 to line 50, col 43 of module TwoPhaseCommit: 316
-<ParticipantTimeout line 54, col 1 to line 54, col 21 of module TwoPhaseCommit>: 21:157
-  line 55, col 8 to line 55, col 28 of module TwoPhaseCommit: 1320
-  |line 55, col 8 to line 55, col 16 of module TwoPhaseCommit: 1163
-  line 56, col 8 to line 56, col 49 of module TwoPhaseCommit: 157
-  line 57, col 8 to line 57, col 50 of module TwoPhaseCommit: 157
-<Learn line 60, col 1 to line 60, col 8 of module TwoPhaseCommit>: 85:147
-  line 61, col 8 to line 61, col 24 of module TwoPhaseCommit: 1308
-  |line 61, col 8 to line 61, col 15 of module TwoPhaseCommit: 1161
-  line 62, col 8 to line 62, col 44 of module TwoPhaseCommit: 678
-  |line 62, col 8 to line 62, col 16 of module TwoPhaseCommit: 531
-  |line 62, col 22 to line 62, col 44 of module TwoPhaseCommit: 531
-  line 63, col 8 to line 63, col 94 of module TwoPhaseCommit: 147
-  line 64, col 8 to line 64, col 50 of module TwoPhaseCommit: 147
-<ReceiveVote line 81, col 1 to line 81, col 14 of module TwoPhaseCommit>: 152:352
-  line 82, col 8 to line 82, col 18 of module TwoPhaseCommit: 2663
-  |line 82, col 8 to line 82, col 8 of module TwoPhaseCommit: 2311
-  |line 82, col 14 to line 82, col 18 of module TwoPhaseCommit: 2311
-  line 83, col 8 to line 83, col 27 of module TwoPhaseCommit: 352
-  line 84, col 8 to line 84, col 49 of module TwoPhaseCommit: 352
-  line 74, col 8 to line 74, col 28 of module TwoPhaseCommit: 352
-  line 75, col 13 to line 75, col 27 of module TwoPhaseCommit: 24
-  line 76, col 13 to line 76, col 118 of module TwoPhaseCommit: 24
-  |line 76, col 25 to line 76, col 118 of module TwoPhaseCommit: 24
-  ||line 76, col 28 to line 76, col 48 of module TwoPhaseCommit: 24
-  ||line 76, col 69 to line 76, col 118 of module TwoPhaseCommit: 21
-  line 77, col 10 to line 77, col 38 of module TwoPhaseCommit: 328
-  line 89, col 17 to line 89, col 36 of module TwoPhaseCommit: 466
-  |line 13, col 3 to line 30, col 95 of module CoordinatorContract: 466
-  ||line 13, col 8 to line 13, col 128 of module CoordinatorContract: 466
-  |||line 13, col 8 to line 13, col 57 of module CoordinatorContract: 466
-  ||||line 13, col 9 to line 13, col 31 of module CoordinatorContract: 466
-  |||||line 13, col 27 to line 13, col 31 of module CoordinatorContract: 932
-  |||||line 13, col 18 to line 13, col 23 of module CoordinatorContract: 466:1398
-  ||||line 13, col 37 to line 13, col 57 of module CoordinatorContract: 466
-  |||line 13, col 62 to line 13, col 128 of module CoordinatorContract: 331
+State 6: <ReceiveVote line 106, col 5 to line 114, col 23 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
+/\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {}
+
+State 7: Stuttering
+Finished checking temporal properties in 00s at 2026-11-02 04:27:14
+The coverage statistics at 2026-11-02 04:27:14
+<Init line 144, col 1 to line 144, col 4 of module TwoPhaseCommit>: 2:2
+  line 145, col 5 to line 151, col 18 of module TwoPhaseCommit: 2
+<Vote line 61, col 1 to line 61, col 7 of module TwoPhaseCommit>: 42:312
+  line 62, col 8 to line 62, col 28 of module TwoPhaseCommit: 1323
+  |line 62, col 8 to line 62, col 16 of module TwoPhaseCommit: 1167
+  line 64, col 9 to line 65, col 57 of module TwoPhaseCommit: 312
+  line 63, col 17 to line 63, col 29 of module TwoPhaseCommit: 156:468
+  line 66, col 8 to line 66, col 56 of module TwoPhaseCommit: 312
+<ParticipantTimeout line 70, col 1 to line 70, col 21 of module TwoPhaseCommit>: 21:154
+  line 71, col 8 to line 71, col 28 of module TwoPhaseCommit: 1319
+  |line 71, col 8 to line 71, col 16 of module TwoPhaseCommit: 1165
+  line 72, col 8 to line 72, col 49 of module TwoPhaseCommit: 154
+  line 73, col 8 to line 73, col 63 of module TwoPhaseCommit: 154
+<Learn line 76, col 1 to line 76, col 8 of module TwoPhaseCommit>: 85:147
+  line 77, col 8 to line 77, col 24 of module TwoPhaseCommit: 1311
+  |line 77, col 8 to line 77, col 15 of module TwoPhaseCommit: 1164
+  line 78, col 8 to line 78, col 44 of module TwoPhaseCommit: 678
+  |line 78, col 8 to line 78, col 16 of module TwoPhaseCommit: 531
+  |line 78, col 22 to line 78, col 44 of module TwoPhaseCommit: 531
+  line 79, col 8 to line 79, col 94 of module TwoPhaseCommit: 147
+  line 80, col 8 to line 80, col 63 of module TwoPhaseCommit: 147
+<ReceiveVote line 105, col 1 to line 105, col 14 of module TwoPhaseCommit>: 152:353
+  line 106, col 8 to line 106, col 18 of module TwoPhaseCommit: 2667
+  |line 106, col 8 to line 106, col 8 of module TwoPhaseCommit: 2314
+  |line 106, col 14 to line 106, col 18 of module TwoPhaseCommit: 2314
+  line 107, col 8 to line 107, col 27 of module TwoPhaseCommit: 353
+  line 108, col 8 to line 108, col 49 of module TwoPhaseCommit: 353
+  line 101, col 13 to line 101, col 14 of module TwoPhaseCommit: 353
+  line 94, col 8 to line 94, col 28 of module TwoPhaseCommit: 353
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 24
+  line 96, col 16 to line 96, col 39 of module TwoPhaseCommit: 24
+  |line 96, col 28 to line 96, col 39 of module TwoPhaseCommit: 24
+  ||line 88, col 17 to line 88, col 110 of module TwoPhaseCommit: 24
+  |||line 88, col 20 to line 88, col 40 of module TwoPhaseCommit: 24
+  |||line 88, col 61 to line 88, col 110 of module TwoPhaseCommit: 21
+  line 96, col 44 to line 96, col 53 of module TwoPhaseCommit: 24
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 24
+  line 97, col 16 to line 97, col 35 of module TwoPhaseCommit: 24
+  line 97, col 40 to line 97, col 50 of module TwoPhaseCommit: 0
+  line 97, col 55 to line 97, col 76 of module TwoPhaseCommit: 0
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 0
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 329
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 329
+  line 113, col 17 to line 113, col 36 of module TwoPhaseCommit: 467
+  |line 13, col 3 to line 30, col 95 of module CoordinatorContract: 467
+  ||line 13, col 8 to line 13, col 128 of module CoordinatorContract: 467
+  |||line 13, col 8 to line 13, col 57 of module CoordinatorContract: 467
+  ||||line 13, col 9 to line 13, col 31 of module CoordinatorContract: 467
+  |||||line 13, col 27 to line 13, col 31 of module CoordinatorContract: 934
+  |||||line 13, col 18 to line 13, col 23 of module CoordinatorContract: 467:1401
+  ||||line 13, col 37 to line 13, col 57 of module CoordinatorContract: 467
+  |||line 13, col 62 to line 13, col 128 of module CoordinatorContract: 332
   ||line 13, col 133 to line 13, col 141 of module CoordinatorContract: 120
-  ||line 14, col 8 to line 14, col 98 of module CoordinatorContract: 346
-  |||line 14, col 8 to line 14, col 28 of module CoordinatorContract: 346
-  |||line 14, col 33 to line 14, col 98 of module CoordinatorContract: 211
-  ||line 14, col 103 to line 14, col 111 of module CoordinatorContract: 73
+  ||line 14, col 8 to line 14, col 98 of module CoordinatorContract: 347
+  |||line 14, col 8 to line 14, col 28 of module CoordinatorContract: 347
+  |||line 14, col 33 to line 14, col 98 of module CoordinatorContract: 212
+  ||line 14, col 103 to line 14, col 111 of module CoordinatorContract: 74
   ||line 15, col 8 to line 15, col 98 of module CoordinatorContract: 273
   |||line 15, col 8 to line 15, col 28 of module CoordinatorContract: 273
   |||line 15, col 33 to line 15, col 98 of module CoordinatorContract: 138
@@ -309,35 +354,43 @@ The coverage statistics at 2026-11-02 01:45:38
   ||line 25, col 101 to line 25, col 109 of module CoordinatorContract: 90
   ||line 26, col 8 to line 26, col 108 of module CoordinatorContract: 45
   ||line 27, col 8 to line 27, col 108 of module CoordinatorContract: 45
-  |line 89, col 24 to line 89, col 28 of module TwoPhaseCommit: 466
-  |line 89, col 31 to line 89, col 35 of module TwoPhaseCommit: 917
-  ||line 86, col 21 to line 88, col 72 of module TwoPhaseCommit: 917
-  |||line 87, col 35 to line 87, col 56 of module TwoPhaseCommit: 917
-  ||||line 87, col 35 to line 87, col 41 of module TwoPhaseCommit: 917
-  |||||line 85, col 23 to line 85, col 63 of module TwoPhaseCommit: 917
-  ||||||line 85, col 45 to line 85, col 62 of module TwoPhaseCommit: 2751
-  ||||||line 85, col 30 to line 85, col 41 of module TwoPhaseCommit: 917
-  ||||line 87, col 45 to line 87, col 56 of module TwoPhaseCommit: 917
-  |||line 88, col 36 to line 88, col 71 of module TwoPhaseCommit: 917
-  ||||line 88, col 55 to line 88, col 71 of module TwoPhaseCommit: 1421
-  ||||line 88, col 45 to line 88, col 51 of module TwoPhaseCommit: 917
-  |||||line 85, col 23 to line 85, col 63 of module TwoPhaseCommit: 917:2338
-  ||||||line 85, col 45 to line 85, col 62 of module TwoPhaseCommit: 2751
-  ||||||line 85, col 30 to line 85, col 41 of module TwoPhaseCommit: 917
-  line 90, col 8 to line 90, col 23 of module TwoPhaseCommit: 352
-<CoordinatorTimeout line 93, col 1 to line 93, col 18 of module TwoPhaseCommit>: 84:208
-  line 94, col 8 to line 94, col 27 of module TwoPhaseCommit: 593
-  |line 94, col 8 to line 94, col 12 of module TwoPhaseCommit: 385
-  line 95, col 8 to line 95, col 29 of module TwoPhaseCommit: 416
-  |line 95, col 8 to line 95, col 14 of module TwoPhaseCommit: 208
-  ||line 37, col 12 to line 37, col 51 of module TwoPhaseCommit: 208
-  |||line 37, col 34 to line 37, col 50 of module TwoPhaseCommit: 624
-  |||line 37, col 19 to line 37, col 30 of module TwoPhaseCommit: 208
-  |line 95, col 18 to line 95, col 29 of module TwoPhaseCommit: 208
-  line 74, col 8 to line 74, col 28 of module TwoPhaseCommit: 208
-  line 75, col 10 to line 76, col 118 of module TwoPhaseCommit: 84
-  line 77, col 10 to line 77, col 38 of module TwoPhaseCommit: 124
-  line 96, col 14 to line 96, col 104 of module TwoPhaseCommit: 208
+  |line 113, col 24 to line 113, col 28 of module TwoPhaseCommit: 467
+  |line 113, col 31 to line 113, col 35 of module TwoPhaseCommit: 919
+  ||line 110, col 21 to line 112, col 72 of module TwoPhaseCommit: 919
+  |||line 111, col 35 to line 111, col 56 of module TwoPhaseCommit: 919
+  ||||line 111, col 35 to line 111, col 41 of module TwoPhaseCommit: 919
+  |||||line 109, col 23 to line 109, col 63 of module TwoPhaseCommit: 919
+  ||||||line 109, col 45 to line 109, col 62 of module TwoPhaseCommit: 2757
+  ||||||line 109, col 30 to line 109, col 41 of module TwoPhaseCommit: 919
+  ||||line 111, col 45 to line 111, col 56 of module TwoPhaseCommit: 919
+  |||line 112, col 36 to line 112, col 71 of module TwoPhaseCommit: 919
+  ||||line 112, col 55 to line 112, col 71 of module TwoPhaseCommit: 1425
+  ||||line 112, col 45 to line 112, col 51 of module TwoPhaseCommit: 919
+  |||||line 109, col 23 to line 109, col 63 of module TwoPhaseCommit: 919:2344
+  ||||||line 109, col 45 to line 109, col 62 of module TwoPhaseCommit: 2757
+  ||||||line 109, col 30 to line 109, col 41 of module TwoPhaseCommit: 919
+  line 114, col 8 to line 114, col 23 of module TwoPhaseCommit: 353
+<CoordinatorTimeout line 117, col 1 to line 117, col 18 of module TwoPhaseCommit>: 84:208
+  line 118, col 8 to line 118, col 27 of module TwoPhaseCommit: 593
+  |line 118, col 8 to line 118, col 12 of module TwoPhaseCommit: 385
+  line 119, col 8 to line 119, col 29 of module TwoPhaseCommit: 416
+  |line 119, col 8 to line 119, col 14 of module TwoPhaseCommit: 208
+  ||line 53, col 12 to line 53, col 51 of module TwoPhaseCommit: 208
+  |||line 53, col 34 to line 53, col 50 of module TwoPhaseCommit: 624
+  |||line 53, col 19 to line 53, col 30 of module TwoPhaseCommit: 208
+  |line 119, col 18 to line 119, col 29 of module TwoPhaseCommit: 208
+  line 101, col 13 to line 101, col 14 of module TwoPhaseCommit: 208
+  line 94, col 8 to line 94, col 28 of module TwoPhaseCommit: 208
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 84
+  line 96, col 16 to line 96, col 53 of module TwoPhaseCommit: 84
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 84
+  line 97, col 16 to line 97, col 35 of module TwoPhaseCommit: 84
+  line 97, col 40 to line 97, col 50 of module TwoPhaseCommit: 0
+  line 97, col 55 to line 97, col 76 of module TwoPhaseCommit: 0
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 0
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 124
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 124
+  line 120, col 14 to line 120, col 104 of module TwoPhaseCommit: 208
   |line 13, col 3 to line 30, col 95 of module CoordinatorContract: 208
   ||line 13, col 8 to line 13, col 128 of module CoordinatorContract: 208
   |||line 13, col 8 to line 13, col 57 of module CoordinatorContract: 208
@@ -352,62 +405,83 @@ The coverage statistics at 2026-11-02 01:45:38
   ||line 17, col 8 to line 17, col 86 of module CoordinatorContract: 208
   ||line 17, col 91 to line 17, col 129 of module CoordinatorContract: 84
   ||line 18, col 8 to line 18, col 98 of module CoordinatorContract: 124
-  |line 96, col 21 to line 96, col 25 of module TwoPhaseCommit: 208
-  |line 96, col 28 to line 96, col 103 of module TwoPhaseCommit: 208
-  ||line 96, col 68 to line 96, col 102 of module TwoPhaseCommit: 208
-  |||line 96, col 87 to line 96, col 102 of module TwoPhaseCommit: 168
-  |||line 96, col 77 to line 96, col 83 of module TwoPhaseCommit: 208
-  ||||line 37, col 12 to line 37, col 51 of module TwoPhaseCommit: 208:376
-  |||||line 37, col 34 to line 37, col 50 of module TwoPhaseCommit: 624
-  |||||line 37, col 19 to line 37, col 30 of module TwoPhaseCommit: 208
-  line 97, col 8 to line 97, col 41 of module TwoPhaseCommit: 208
-<TypeOK line 132, col 1 to line 132, col 6 of module TwoPhaseCommit>
-  line 133, col 5 to line 136, col 47 of module TwoPhaseCommit: 385
-  |line 133, col 8 to line 133, col 55 of module TwoPhaseCommit: 385
-  |line 134, col 8 to line 134, col 92 of module TwoPhaseCommit: 385
-  ||line 134, col 32 to line 134, col 92 of module TwoPhaseCommit: 1155
-  ||line 134, col 17 to line 134, col 28 of module TwoPhaseCommit: 385
-  |line 135, col 8 to line 135, col 65 of module TwoPhaseCommit: 385
-  ||line 135, col 32 to line 135, col 65 of module TwoPhaseCommit: 1155
-  ||line 135, col 17 to line 135, col 28 of module TwoPhaseCommit: 385
-  |line 136, col 8 to line 136, col 47 of module TwoPhaseCommit: 385
-<Atomicity line 140, col 1 to line 140, col 9 of module TwoPhaseCommit>
-  line 141, col 5 to line 142, col 56 of module TwoPhaseCommit: 385
-  |line 141, col 6 to line 141, col 75 of module TwoPhaseCommit: 385
-  ||line 141, col 6 to line 141, col 24 of module TwoPhaseCommit: 385
-  ||line 141, col 29 to line 141, col 75 of module TwoPhaseCommit: 377
-  |||line 141, col 53 to line 141, col 75 of module TwoPhaseCommit: 1131
-  |||line 141, col 38 to line 141, col 49 of module TwoPhaseCommit: 377
-  |line 142, col 12 to line 142, col 56 of module TwoPhaseCommit: 8
-  ||line 142, col 36 to line 142, col 56 of module TwoPhaseCommit: 24
-  ||line 142, col 21 to line 142, col 32 of module TwoPhaseCommit: 8
-<CommitFollowsTheCoordinator line 145, col 1 to line 145, col 27 of module TwoPhaseCommit>
-  line 146, col 5 to line 146, col 94 of module TwoPhaseCommit: 385
-  |line 146, col 29 to line 146, col 94 of module TwoPhaseCommit: 1155
-  ||line 146, col 29 to line 146, col 51 of module TwoPhaseCommit: 1155
-  ||line 146, col 56 to line 146, col 94 of module TwoPhaseCommit: 12
-  |line 146, col 14 to line 146, col 25 of module TwoPhaseCommit: 385
+  |line 120, col 21 to line 120, col 25 of module TwoPhaseCommit: 208
+  |line 120, col 28 to line 120, col 103 of module TwoPhaseCommit: 208
+  ||line 120, col 68 to line 120, col 102 of module TwoPhaseCommit: 208
+  |||line 120, col 87 to line 120, col 102 of module TwoPhaseCommit: 168
+  |||line 120, col 77 to line 120, col 83 of module TwoPhaseCommit: 208
+  ||||line 53, col 12 to line 53, col 51 of module TwoPhaseCommit: 208:376
+  |||||line 53, col 34 to line 53, col 50 of module TwoPhaseCommit: 624
+  |||||line 53, col 19 to line 53, col 30 of module TwoPhaseCommit: 208
+  line 121, col 8 to line 121, col 41 of module TwoPhaseCommit: 208
+<Crash line 124, col 1 to line 124, col 5 of module TwoPhaseCommit>: 0:0
+  line 126, col 8 to line 126, col 27 of module TwoPhaseCommit: 385
+  line 127, col 8 to line 127, col 18 of module TwoPhaseCommit: 0
+  line 128, col 8 to line 128, col 29 of module TwoPhaseCommit: 0
+  line 129, col 8 to line 129, col 58 of module TwoPhaseCommit: 0
+<Recover line 135, col 1 to line 135, col 7 of module TwoPhaseCommit>: 0:0
+  line 136, col 8 to line 136, col 10 of module TwoPhaseCommit: 385
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 0
+  line 96, col 16 to line 96, col 39 of module TwoPhaseCommit: 0
+  line 96, col 44 to line 96, col 53 of module TwoPhaseCommit: 0
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 0
+  line 97, col 40 to line 97, col 50 of module TwoPhaseCommit: 0
+  line 97, col 55 to line 97, col 76 of module TwoPhaseCommit: 0
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 0
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 0
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 0
+  line 138, col 8 to line 138, col 41 of module TwoPhaseCommit: 0
+<TypeOK line 179, col 1 to line 179, col 6 of module TwoPhaseCommit>
+  line 180, col 5 to line 185, col 32 of module TwoPhaseCommit: 385
+  |line 180, col 8 to line 180, col 55 of module TwoPhaseCommit: 385
+  |line 181, col 8 to line 181, col 92 of module TwoPhaseCommit: 385
+  ||line 181, col 32 to line 181, col 92 of module TwoPhaseCommit: 1155
+  ||line 181, col 17 to line 181, col 28 of module TwoPhaseCommit: 385
+  |line 182, col 8 to line 182, col 65 of module TwoPhaseCommit: 385
+  ||line 182, col 32 to line 182, col 65 of module TwoPhaseCommit: 1155
+  ||line 182, col 17 to line 182, col 28 of module TwoPhaseCommit: 385
+  |line 183, col 8 to line 183, col 47 of module TwoPhaseCommit: 385
+  |line 184, col 8 to line 184, col 21 of module TwoPhaseCommit: 385
+  |line 185, col 8 to line 185, col 32 of module TwoPhaseCommit: 385
+<Atomicity line 189, col 1 to line 189, col 9 of module TwoPhaseCommit>
+  line 190, col 5 to line 191, col 56 of module TwoPhaseCommit: 385
+  |line 190, col 6 to line 190, col 75 of module TwoPhaseCommit: 385
+  ||line 190, col 6 to line 190, col 24 of module TwoPhaseCommit: 385
+  ||line 190, col 29 to line 190, col 75 of module TwoPhaseCommit: 377
+  |||line 190, col 53 to line 190, col 75 of module TwoPhaseCommit: 1131
+  |||line 190, col 38 to line 190, col 49 of module TwoPhaseCommit: 377
+  |line 191, col 12 to line 191, col 56 of module TwoPhaseCommit: 8
+  ||line 191, col 36 to line 191, col 56 of module TwoPhaseCommit: 24
+  ||line 191, col 21 to line 191, col 32 of module TwoPhaseCommit: 8
+<CommitFollowsTheCoordinator line 194, col 1 to line 194, col 27 of module TwoPhaseCommit>
+  line 195, col 5 to line 195, col 94 of module TwoPhaseCommit: 385
+  |line 195, col 29 to line 195, col 94 of module TwoPhaseCommit: 1155
+  ||line 195, col 29 to line 195, col 51 of module TwoPhaseCommit: 1155
+  ||line 195, col 56 to line 195, col 94 of module TwoPhaseCommit: 12
+  |line 195, col 14 to line 195, col 25 of module TwoPhaseCommit: 385
 End of statistics.
 1166 states generated, 385 distinct states found, 0 states left on queue.
-Finished in 00s at (2026-11-02 01:45:38)
+Finished in 00s at (2026-11-02 04:27:14)
 (jvmcontract checked the temporal properties one at a time to name the violated one: EveryParticipantDecides)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2305275] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2761377] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
 Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 01:45:38)
+Starting... (2026-11-02 04:27:15)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -418,7 +492,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-02 01:45:39.
+Finished computing initial states: 736 distinct states generated at 2026-11-02 04:27:16.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -432,10 +506,364 @@ Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model ta
   decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 0 of 3; never taken (3):
+  decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+  decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
+  decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 3224 states generated, 736 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 00s at (2026-11-02 01:45:39)
+Finished in 00s at (2026-11-02 04:27:16)
+
+== crashes: spec/TwoPhaseCommitCrash.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2761575] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 04:27:18)
+Implied-temporal checking--satisfiability problem has 3 branches.
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:27:19.
+Checking 3 branches of temporal properties for the complete state space with 7914 total distinct states at (2026-11-02 04:27:19)
+Error: Temporal properties were violated.
+
+Error: The following behavior constitutes a counter-example:
+
+State 1: <Initial predicate>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "WORKING" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {}
+
+State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p1, vote |-> "YES"]}
+
+State 3: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "WORKING")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}
+
+State 4: <ParticipantTimeout line 71, col 5 to line 73, col 63 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}
+
+State 5: <ReceiveVote line 106, col 5 to line 114, col 23 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
+/\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {[from |-> p2, vote |-> "YES"]}
+
+State 6: <ReceiveVote line 106, col 5 to line 114, col 23 of module TwoPhaseCommit>
+/\ phase = "COLLECTING"
+/\ decision = "NONE"
+/\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "ABORTED")
+/\ crashes = 0
+/\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")
+/\ up = TRUE
+/\ inbox = {}
+
+State 7: Stuttering
+Finished checking temporal properties in 00s at 2026-11-02 04:27:19
+The coverage statistics at 2026-11-02 04:27:19
+<Init line 144, col 1 to line 144, col 4 of module TwoPhaseCommit>: 2:2
+  line 145, col 5 to line 151, col 18 of module TwoPhaseCommit: 2
+<Vote line 61, col 1 to line 61, col 7 of module TwoPhaseCommit>: 42:2052
+  line 62, col 8 to line 62, col 28 of module TwoPhaseCommit: 8952
+  |line 62, col 8 to line 62, col 16 of module TwoPhaseCommit: 7926
+  line 64, col 9 to line 65, col 57 of module TwoPhaseCommit: 2052
+  line 63, col 17 to line 63, col 29 of module TwoPhaseCommit: 1026:3078
+  line 66, col 8 to line 66, col 56 of module TwoPhaseCommit: 2052
+<ParticipantTimeout line 70, col 1 to line 70, col 21 of module TwoPhaseCommit>: 21:1024
+  line 71, col 8 to line 71, col 28 of module TwoPhaseCommit: 8948
+  |line 71, col 8 to line 71, col 16 of module TwoPhaseCommit: 7924
+  line 72, col 8 to line 72, col 49 of module TwoPhaseCommit: 1024
+  line 73, col 8 to line 73, col 63 of module TwoPhaseCommit: 1024
+<Learn line 76, col 1 to line 76, col 8 of module TwoPhaseCommit>: 677:2058
+  line 77, col 8 to line 77, col 24 of module TwoPhaseCommit: 9981
+  |line 77, col 8 to line 77, col 15 of module TwoPhaseCommit: 7923
+  line 78, col 8 to line 78, col 44 of module TwoPhaseCommit: 7800
+  |line 78, col 8 to line 78, col 16 of module TwoPhaseCommit: 5742
+  |line 78, col 22 to line 78, col 44 of module TwoPhaseCommit: 5742
+  line 79, col 8 to line 79, col 94 of module TwoPhaseCommit: 2058
+  line 80, col 8 to line 80, col 63 of module TwoPhaseCommit: 2058
+<ReceiveVote line 105, col 1 to line 105, col 14 of module TwoPhaseCommit>: 176:1529
+  line 106, col 8 to line 106, col 18 of module TwoPhaseCommit: 17337
+  |line 106, col 8 to line 106, col 8 of module TwoPhaseCommit: 15832
+  |line 106, col 14 to line 106, col 18 of module TwoPhaseCommit: 15832
+  line 107, col 8 to line 107, col 27 of module TwoPhaseCommit: 1505
+  |line 107, col 17 to line 107, col 27 of module TwoPhaseCommit: 2714
+  line 108, col 8 to line 108, col 49 of module TwoPhaseCommit: 1505
+  |line 108, col 17 to line 108, col 49 of module TwoPhaseCommit: 2714
+  line 101, col 13 to line 101, col 14 of module TwoPhaseCommit: 1505
+  line 94, col 8 to line 94, col 28 of module TwoPhaseCommit: 1505
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 24
+  line 96, col 16 to line 96, col 39 of module TwoPhaseCommit: 24
+  |line 96, col 28 to line 96, col 39 of module TwoPhaseCommit: 24
+  ||line 88, col 17 to line 88, col 110 of module TwoPhaseCommit: 24
+  |||line 88, col 20 to line 88, col 40 of module TwoPhaseCommit: 24
+  |||line 88, col 61 to line 88, col 110 of module TwoPhaseCommit: 21
+  line 96, col 44 to line 96, col 53 of module TwoPhaseCommit: 24
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 24
+  line 97, col 16 to line 97, col 76 of module TwoPhaseCommit: 24
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 24
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 1481
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 1481
+  line 113, col 17 to line 113, col 36 of module TwoPhaseCommit: 1619
+  |line 13, col 3 to line 30, col 95 of module CoordinatorContract: 1619
+  ||line 13, col 8 to line 13, col 128 of module CoordinatorContract: 1619
+  |||line 13, col 8 to line 13, col 57 of module CoordinatorContract: 1619
+  ||||line 13, col 9 to line 13, col 31 of module CoordinatorContract: 1619
+  |||||line 13, col 27 to line 13, col 31 of module CoordinatorContract: 3238
+  |||||line 13, col 18 to line 13, col 23 of module CoordinatorContract: 1619:4857
+  ||||line 13, col 37 to line 13, col 57 of module CoordinatorContract: 1619
+  |||line 13, col 62 to line 13, col 128 of module CoordinatorContract: 332
+  ||line 13, col 133 to line 13, col 141 of module CoordinatorContract: 120
+  ||line 14, col 8 to line 14, col 98 of module CoordinatorContract: 1499
+  |||line 14, col 8 to line 14, col 28 of module CoordinatorContract: 1499
+  |||line 14, col 33 to line 14, col 98 of module CoordinatorContract: 212
+  ||line 14, col 103 to line 14, col 111 of module CoordinatorContract: 74
+  ||line 15, col 8 to line 15, col 98 of module CoordinatorContract: 1425
+  |||line 15, col 8 to line 15, col 28 of module CoordinatorContract: 1425
+  |||line 15, col 33 to line 15, col 98 of module CoordinatorContract: 138
+  ||line 15, col 103 to line 15, col 141 of module CoordinatorContract: 126
+  ||line 16, col 8 to line 16, col 97 of module CoordinatorContract: 1299
+  |||line 16, col 8 to line 16, col 28 of module CoordinatorContract: 1299
+  |||line 16, col 33 to line 16, col 97 of module CoordinatorContract: 12
+  ||line 16, col 102 to line 16, col 143 of module CoordinatorContract: 12
+  ||line 17, col 8 to line 17, col 129 of module CoordinatorContract: 1287
+  ||line 18, col 8 to line 18, col 98 of module CoordinatorContract: 1287
+  ||line 19, col 8 to line 19, col 111 of module CoordinatorContract: 1287
+  ||line 20, col 8 to line 20, col 110 of module CoordinatorContract: 1287
+  ||line 21, col 8 to line 21, col 110 of module CoordinatorContract: 1287
+  ||line 22, col 8 to line 22, col 109 of module CoordinatorContract: 1287
+  ||line 23, col 8 to line 23, col 98 of module CoordinatorContract: 1287
+  ||line 24, col 8 to line 24, col 97 of module CoordinatorContract: 1287
+  ||line 25, col 8 to line 25, col 96 of module CoordinatorContract: 1287
+  ||line 25, col 101 to line 25, col 109 of module CoordinatorContract: 540
+  ||line 26, col 8 to line 26, col 95 of module CoordinatorContract: 747
+  ||line 26, col 100 to line 26, col 108 of module CoordinatorContract: 540
+  ||line 27, col 8 to line 27, col 95 of module CoordinatorContract: 207
+  ||line 27, col 100 to line 27, col 108 of module CoordinatorContract: 159
+  ||line 28, col 8 to line 28, col 107 of module CoordinatorContract: 48
+  |line 113, col 24 to line 113, col 28 of module TwoPhaseCommit: 1619
+  |line 113, col 31 to line 113, col 35 of module TwoPhaseCommit: 2983
+  ||line 110, col 21 to line 112, col 72 of module TwoPhaseCommit: 2983
+  |||line 111, col 35 to line 111, col 56 of module TwoPhaseCommit: 2983
+  ||||line 111, col 35 to line 111, col 41 of module TwoPhaseCommit: 2983
+  |||||line 109, col 23 to line 109, col 63 of module TwoPhaseCommit: 2983
+  ||||||line 109, col 45 to line 109, col 62 of module TwoPhaseCommit: 8949
+  ||||||line 109, col 30 to line 109, col 41 of module TwoPhaseCommit: 2983
+  ||||line 111, col 45 to line 111, col 56 of module TwoPhaseCommit: 2983
+  |||line 112, col 36 to line 112, col 71 of module TwoPhaseCommit: 2983
+  ||||line 112, col 55 to line 112, col 71 of module TwoPhaseCommit: 4725
+  ||||line 112, col 45 to line 112, col 51 of module TwoPhaseCommit: 2983
+  |||||line 109, col 23 to line 109, col 63 of module TwoPhaseCommit: 2983:7708
+  ||||||line 109, col 45 to line 109, col 62 of module TwoPhaseCommit: 8949
+  ||||||line 109, col 30 to line 109, col 41 of module TwoPhaseCommit: 2983
+  line 114, col 8 to line 114, col 23 of module TwoPhaseCommit: 1529
+<CoordinatorTimeout line 117, col 1 to line 117, col 18 of module TwoPhaseCommit>: 168:292
+  line 118, col 8 to line 118, col 27 of module TwoPhaseCommit: 2846
+  |line 118, col 8 to line 118, col 12 of module TwoPhaseCommit: 2638
+  line 119, col 8 to line 119, col 29 of module TwoPhaseCommit: 624
+  |line 119, col 8 to line 119, col 14 of module TwoPhaseCommit: 416
+  ||line 53, col 12 to line 53, col 51 of module TwoPhaseCommit: 416
+  |||line 53, col 34 to line 53, col 50 of module TwoPhaseCommit: 1248
+  |||line 53, col 19 to line 53, col 30 of module TwoPhaseCommit: 416
+  |line 119, col 18 to line 119, col 29 of module TwoPhaseCommit: 416
+  line 101, col 13 to line 101, col 14 of module TwoPhaseCommit: 208
+  line 94, col 8 to line 94, col 28 of module TwoPhaseCommit: 208
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 84
+  line 96, col 16 to line 96, col 53 of module TwoPhaseCommit: 84
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 84
+  line 97, col 16 to line 97, col 76 of module TwoPhaseCommit: 84
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 84
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 124
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 124
+  line 120, col 14 to line 120, col 104 of module TwoPhaseCommit: 208
+  |line 13, col 3 to line 30, col 95 of module CoordinatorContract: 208
+  ||line 13, col 8 to line 13, col 128 of module CoordinatorContract: 208
+  |||line 13, col 8 to line 13, col 57 of module CoordinatorContract: 208
+  ||||line 13, col 9 to line 13, col 31 of module CoordinatorContract: 208
+  |||||line 13, col 27 to line 13, col 31 of module CoordinatorContract: 416
+  |||||line 13, col 18 to line 13, col 23 of module CoordinatorContract: 208:624
+  ||||line 13, col 37 to line 13, col 57 of module CoordinatorContract: 208
+  |||line 13, col 62 to line 13, col 128 of module CoordinatorContract: 208
+  ||line 14, col 8 to line 14, col 111 of module CoordinatorContract: 208
+  ||line 15, col 8 to line 15, col 141 of module CoordinatorContract: 208
+  ||line 16, col 8 to line 16, col 143 of module CoordinatorContract: 208
+  ||line 17, col 8 to line 17, col 86 of module CoordinatorContract: 208
+  ||line 17, col 91 to line 17, col 129 of module CoordinatorContract: 84
+  ||line 18, col 8 to line 18, col 98 of module CoordinatorContract: 124
+  |line 120, col 21 to line 120, col 25 of module TwoPhaseCommit: 208
+  |line 120, col 28 to line 120, col 103 of module TwoPhaseCommit: 208
+  ||line 120, col 68 to line 120, col 102 of module TwoPhaseCommit: 208
+  |||line 120, col 87 to line 120, col 102 of module TwoPhaseCommit: 168
+  |||line 120, col 77 to line 120, col 83 of module TwoPhaseCommit: 208
+  ||||line 53, col 12 to line 53, col 51 of module TwoPhaseCommit: 208:376
+  |||||line 53, col 34 to line 53, col 50 of module TwoPhaseCommit: 624
+  |||||line 53, col 19 to line 53, col 30 of module TwoPhaseCommit: 208
+  line 121, col 8 to line 121, col 41 of module TwoPhaseCommit: 292
+<Crash line 124, col 1 to line 124, col 5 of module TwoPhaseCommit>: 728:905
+  line 125, col 8 to line 125, col 9 of module TwoPhaseCommit: 905
+  line 126, col 8 to line 126, col 27 of module TwoPhaseCommit: 905
+  |line 126, col 8 to line 126, col 14 of module TwoPhaseCommit: 1425
+  |line 126, col 18 to line 126, col 27 of module TwoPhaseCommit: 1425
+  line 127, col 8 to line 127, col 18 of module TwoPhaseCommit: 905
+  line 128, col 8 to line 128, col 29 of module TwoPhaseCommit: 905
+  line 129, col 8 to line 129, col 58 of module TwoPhaseCommit: 905
+<Recover line 135, col 1 to line 135, col 7 of module TwoPhaseCommit>: 825:1690
+  line 136, col 8 to line 136, col 10 of module TwoPhaseCommit: 3851
+  |line 136, col 9 to line 136, col 10 of module TwoPhaseCommit: 2638
+  line 94, col 8 to line 94, col 28 of module TwoPhaseCommit: 1213
+  line 95, col 13 to line 95, col 27 of module TwoPhaseCommit: 1213
+  line 96, col 16 to line 96, col 39 of module TwoPhaseCommit: 1213
+  |line 96, col 28 to line 96, col 39 of module TwoPhaseCommit: 1213
+  ||line 88, col 17 to line 88, col 110 of module TwoPhaseCommit: 1213
+  |||line 88, col 20 to line 88, col 40 of module TwoPhaseCommit: 1213
+  |||line 88, col 61 to line 88, col 110 of module TwoPhaseCommit: 1195
+  line 96, col 44 to line 96, col 53 of module TwoPhaseCommit: 1213
+  line 96, col 58 to line 96, col 74 of module TwoPhaseCommit: 1213
+  line 97, col 16 to line 97, col 35 of module TwoPhaseCommit: 477
+  |line 97, col 16 to line 97, col 22 of module TwoPhaseCommit: 1213
+  |line 97, col 26 to line 97, col 35 of module TwoPhaseCommit: 1213
+  line 97, col 40 to line 97, col 50 of module TwoPhaseCommit: 477
+  line 97, col 55 to line 97, col 76 of module TwoPhaseCommit: 477
+  line 97, col 81 to line 97, col 98 of module TwoPhaseCommit: 477
+  line 98, col 10 to line 98, col 47 of module TwoPhaseCommit: 0
+  line 98, col 52 to line 98, col 61 of module TwoPhaseCommit: 0
+  line 137, col 16 to line 137, col 61 of module TwoPhaseCommit: 1213
+  |line 13, col 3 to line 15, col 102 of module RecoveryContract: 1213
+  ||line 13, col 8 to line 13, col 91 of module RecoveryContract: 1213
+  |||line 13, col 8 to line 13, col 57 of module RecoveryContract: 1213
+  ||||line 13, col 9 to line 13, col 31 of module RecoveryContract: 1213
+  |||||line 13, col 27 to line 13, col 31 of module RecoveryContract: 2426
+  |||||line 13, col 18 to line 13, col 23 of module RecoveryContract: 1213:3639
+  ||||line 13, col 37 to line 13, col 57 of module RecoveryContract: 1213
+  |||line 13, col 62 to line 13, col 91 of module RecoveryContract: 208
+  ||line 13, col 96 to line 13, col 134 of module RecoveryContract: 208
+  ||line 14, col 8 to line 14, col 61 of module RecoveryContract: 1005
+  |||line 14, col 8 to line 14, col 27 of module RecoveryContract: 1005
+  |||line 14, col 32 to line 14, col 61 of module RecoveryContract: 18
+  ||line 14, col 66 to line 14, col 107 of module RecoveryContract: 18
+  ||line 15, col 8 to line 15, col 102 of module RecoveryContract: 987
+  |line 137, col 32 to line 137, col 36 of module TwoPhaseCommit: 1213
+  |line 137, col 39 to line 137, col 60 of module TwoPhaseCommit: 1213
+  line 138, col 8 to line 138, col 41 of module TwoPhaseCommit: 1690
+<TypeOK line 179, col 1 to line 179, col 6 of module TwoPhaseCommit>
+  line 180, col 5 to line 185, col 32 of module TwoPhaseCommit: 2638
+  |line 180, col 8 to line 180, col 55 of module TwoPhaseCommit: 2638
+  |line 181, col 8 to line 181, col 92 of module TwoPhaseCommit: 2638
+  ||line 181, col 32 to line 181, col 92 of module TwoPhaseCommit: 7914
+  ||line 181, col 17 to line 181, col 28 of module TwoPhaseCommit: 2638
+  |line 182, col 8 to line 182, col 65 of module TwoPhaseCommit: 2638
+  ||line 182, col 32 to line 182, col 65 of module TwoPhaseCommit: 7914
+  ||line 182, col 17 to line 182, col 28 of module TwoPhaseCommit: 2638
+  |line 183, col 8 to line 183, col 47 of module TwoPhaseCommit: 2638
+  |line 184, col 8 to line 184, col 21 of module TwoPhaseCommit: 2638
+  |line 185, col 8 to line 185, col 32 of module TwoPhaseCommit: 2638
+<Atomicity line 189, col 1 to line 189, col 9 of module TwoPhaseCommit>
+  line 190, col 5 to line 191, col 56 of module TwoPhaseCommit: 2638
+  |line 190, col 6 to line 190, col 75 of module TwoPhaseCommit: 2638
+  ||line 190, col 6 to line 190, col 24 of module TwoPhaseCommit: 2638
+  ||line 190, col 29 to line 190, col 75 of module TwoPhaseCommit: 2596
+  |||line 190, col 53 to line 190, col 75 of module TwoPhaseCommit: 7788
+  |||line 190, col 38 to line 190, col 49 of module TwoPhaseCommit: 2596
+  |line 191, col 12 to line 191, col 56 of module TwoPhaseCommit: 42
+  ||line 191, col 36 to line 191, col 56 of module TwoPhaseCommit: 126
+  ||line 191, col 21 to line 191, col 32 of module TwoPhaseCommit: 42
+<CommitFollowsTheCoordinator line 194, col 1 to line 194, col 27 of module TwoPhaseCommit>
+  line 195, col 5 to line 195, col 94 of module TwoPhaseCommit: 2638
+  |line 195, col 29 to line 195, col 94 of module TwoPhaseCommit: 7914
+  ||line 195, col 29 to line 195, col 51 of module TwoPhaseCommit: 7914
+  ||line 195, col 56 to line 195, col 94 of module TwoPhaseCommit: 60
+  |line 195, col 14 to line 195, col 25 of module TwoPhaseCommit: 2638
+End of statistics.
+9542 states generated, 2638 distinct states found, 0 states left on queue.
+Finished in 01s at (2026-11-02 04:27:19)
+(jvmcontract checked the temporal properties one at a time to name the violated one: EveryParticipantDecides)
+
+== the inductive step with crashes: spec/TwoPhaseCommitCrashInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2761732] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 04:27:20)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Computed 1024 initial states...
+Computed 2048 initial states...
+Finished computing initial states: 2728 distinct states generated at 2026-11-02 04:27:21.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.4E-12
+Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model takes: 10 of 18; never taken (8):
+  decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 3 of 3.
+11868 states generated, 2728 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 00s at (2026-11-02 04:27:21)
 ```
 
 </details>
@@ -472,7 +900,26 @@ Finished in 00s at (2026-11-02 01:45:39)
           "ruleId": "invariant-violated",
           "level": "error",
           "message": {
-            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla (three participants) is violated: after 5 steps the system stays in that state forever"
+            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla (three participants) is violated: after 6 steps the system stays in that state forever"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java"
+                },
+                "region": {
+                  "startLine": 28
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla (crashes) is violated: after 6 steps the system stays in that state forever"
           },
           "locations": [
             {

@@ -1,0 +1,67 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "jvmcontract tlc",
+          "rules": [
+            {
+              "id": "invariant-violated",
+              "shortDescription": {
+                "text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."
+              }
+            },
+            {
+              "id": "unverifiable",
+              "shortDescription": {
+                "text": "TLC could not check the model."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla (crashes) is violated: after 10 steps the system stays in that state forever"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Invariant BroadcastOnceUp of spec/TwoPhaseCommit.tla (the inductive step with crashes) is violated after 2 steps"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

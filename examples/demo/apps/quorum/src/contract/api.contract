@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: quorum, 29 public types, 117 members
+module: quorum, 32 public types, 122 members
 
 net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected
   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)
@@ -178,4 +178,15 @@ net.terminalvalue.quorum.twopc.Phase: public final enum
   public static final COMMITTED: net.terminalvalue.quorum.twopc.Phase
   public static net.terminalvalue.quorum.twopc.Phase valueOf(java.lang.String)
   public static net.terminalvalue.quorum.twopc.Phase[] values()
+
+net.terminalvalue.quorum.twopc.Recovery: public final class
+  public static net.terminalvalue.quorum.Decision decide(net.terminalvalue.quorum.twopc.Phase, net.terminalvalue.quorum.twopc.RecoveryEvent)
+
+net.terminalvalue.quorum.twopc.RecoveryEvent: public sealed interface permits net.terminalvalue.quorum.twopc.RecoveryEvent$Restarted
+
+net.terminalvalue.quorum.twopc.RecoveryEvent$Restarted: public final record implements net.terminalvalue.quorum.twopc.RecoveryEvent
+  public Restarted()
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
 

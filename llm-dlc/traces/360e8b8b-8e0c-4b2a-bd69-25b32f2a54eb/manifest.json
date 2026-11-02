@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T08:43:09.021Z",
-  "duration_seconds": 144794,
+  "ended": "2026-11-02T09:27:40.322Z",
+  "duration_seconds": 147465,
   "stats": {
-    "turns": 93,
-    "api_calls": 1022,
-    "tool_calls": 1579,
+    "turns": 98,
+    "api_calls": 1067,
+    "tool_calls": 1622,
     "tool_errors": 32,
-    "compactions": 18,
+    "compactions": 19,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 30680,
-      "output_tokens": 2512326,
-      "cache_read_input_tokens": 196708705,
-      "cache_creation_input_tokens": 5552527
+      "input_tokens": 32062,
+      "output_tokens": 2624856,
+      "cache_read_input_tokens": 203298093,
+      "cache_creation_input_tokens": 5760728
     }
   },
   "tools": {
-    "Bash": 1102,
+    "Bash": 1145,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -480,24 +480,38 @@
     {
       "index": 18,
       "started": "2026-11-02T08:19:06.820Z",
-      "ended": "2026-11-02T08:43:09.021Z",
+      "ended": "2026-11-02T08:46:11.413Z",
       "turns": 4,
-      "api_calls": 51,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 1482,
-        "output_tokens": 80984,
-        "cache_read_input_tokens": 6612756,
-        "cache_creation_input_tokens": 174846
+        "input_tokens": 1514,
+        "output_tokens": 81532,
+        "cache_read_input_tokens": 6802515,
+        "cache_creation_input_tokens": 177041
       },
-      "peak_context_tokens": 189791
+      "peak_context_tokens": 191986
+    },
+    {
+      "index": 19,
+      "started": "2026-11-02T08:47:26.626Z",
+      "ended": "2026-11-02T09:27:40.322Z",
+      "turns": 5,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 1350,
+        "output_tokens": 111982,
+        "cache_read_input_tokens": 6399629,
+        "cache_creation_input_tokens": 206006
+      },
+      "peak_context_tokens": 220951
     }
   ],
   "log": {
-    "sha256": "04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a",
-    "bytes": 44876360,
-    "lines": 15257,
-    "gzip_bytes": 7614298,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a.jsonl.gz"
+    "sha256": "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07",
+    "bytes": 46480955,
+    "lines": 15881,
+    "gzip_bytes": 7889404,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -676,6 +690,14 @@
       "summary": "Check the Raft paper's run-wide claims, one leader per term and one vote per server per term, with history variables under a seventh configuration, with three new examples",
       "body": "The Raft election model (examples/demo/apps/quorum/spec/RaftElection.tla) stated election safety as a state invariant: no two servers lead one term at once. The paper's property is about the whole run, at most one leader can be elected in a given term, and so is the rule it rests on, a server votes for at most one candidate per term; a state invariant cannot see either, since a server's vote is gone the moment it moves to a newer term and a leader that has stepped down is a follower like any other. The model gained two history variables, elected (every pair of a server and a term it has led) and voted (every triple of a voter, a term and a candidate), which each step extends with the leaders and votes of the state it lands in, a constant History that switches the recording on, and the invariants AtMostOneLeaderPerTerm and AtMostOneVotePerTerm. A seventh configuration, RaftElectionHistory.cfg (three servers, three terms, History = TRUE, 4,798 states in a second), checks them; the six others set History = FALSE and keep their state counts, and build.py runs the new one last, so every older example keeps its headline. The history is left out of the inductive configuration, since the state does not determine it.\n\nThree new examples change the role machine's row for a vote request from the server's own term. 084 has a candidate stand down for a rival of its term (as a remedy for split votes): the six state-based configurations verify it, because the candidate also drops its own tally, and the history configuration reports AtMostOneVotePerTerm in four steps, the rule the paper's argument rests on. 085 has a leader yield to a candidate of its own term: every state invariant holds, one leader after the other, and AtMostOneLeaderPerTerm fails in five steps, the leader's freed vote being the one the candidate wins with. 086 has the leader answer such a candidate with its heartbeats instead, verified under all seven configurations with the changed row taken under each. The 13 older Raft pages were rebuilt with the seventh configuration and all keep their verdicts; 059's and 065's bugs also show as double votes under the history column. Verified by the quorum verify.sh (tests, contracts, proofs, all TLC configurations and the ENABLED check, green), by build.py on the 16 Raft examples (all as expected), and by the prototype runs under /tmp/cycle11. Docs updated: the spec, quorum and demo READMEs, the top-level README and examples index (86 examples), approaches.md, the plugin README, and the add-tla-model skill reference, which gained a paragraph on history variables of the set kind.",
       "log_sha256": "04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a"
+    },
+    {
+      "change_id": "psxurpynkysvvmunzwpluvkusuryllvw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let the two-phase-commit coordinator crash and restart on a recovery rule generated from its own contract, under two more configurations, with three new examples",
+      "body": "The two-phase-commit model (examples/demo/apps/quorum/spec/TwoPhaseCommit.tla) now has a coordinator that may crash and restart. A new kernel, twopc.Recovery#decide(Phase logged, Restarted), says what a restarted coordinator does with the phase it logged: presumed abort, a logged decision is sent again and no logged decision aborts. Its behavioural contract is derived like the others, and jvmcontract tla generates spec/RecoveryContract.tla, which the model brings in as an instance, its second generated operator. The model gains a MaxCrashes constant and up and crashes variables; applying a decision now logs the phase change and then either broadcasts or, while crashes remain, crashes with the broadcast lost; Crash is a crash between steps and Recover feeds the logged phase to the recovery rule and applies its decision the same way, so a restart can be cut short too. The inductive invariant's conjunct tying the broadcast to the phase is weakened to allow nothing out, and two conjuncts are added: a coordinator that is up and decided has its decision out, and the coordinator is down only after a crash, which keeps the existing configurations at their 728 and 736 states. Two configurations are added: TwoPhaseCommitCrash.cfg (two crashes, 3,448 states, the same invariants, liveness property and refinement, with the fairness condition that a crashed coordinator restarts) and TwoPhaseCommitCrashInductive.cfg (2,728 admitted states, the coordinator up or down). verify.sh runs both, and build.py lists them after the inductive one with the recovery operator under the model's operators, so older examples keep their headlines.\n\nExamples 087 to 089 change the recovery rule. 087: a restart that aborts whatever was logged, which under crashes reverses a commit one participant has already applied, found as a ten-step run (CommitFollowsTheCoordinator) and as one step from a state the inductive invariant admits. 088: a restart with nothing to redo in a decided phase, which leaves an abort logged and unsent when the restart that logged it is cut short by a second crash, so a prepared participant waits forever: EveryParticipantDecides, a ten-step run then stuttering, with the crash-inductive configuration naming BroadcastOnceUp. 089: a restart that resumes collecting, since the tally is logged, verified under all four configurations with the changed row taken under both that have a crash. Example 058's patch, which adds a phase, was regenerated against the new model and now also teaches the recovery rule the new phase; examples 020, 021, 057, 058, 067 and 068 were rebuilt for the two new columns, all as expected, and 057's text now describes the six-step liveness counterexample TLC reports for it under the reshaped next-state relation. Verified by the quorum verify.sh (tests, contracts, proofs, all eleven TLC runs green) and by build.py on the nine examples. Docs: the spec, quorum, demo, root, examples and plugin READMEs, approaches.md, and the add-tla-model skill reference, which gains a paragraph on modelling a crash of a part that logs its state.",
+      "log_sha256": "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07"
     }
   ],
   "logs": {
@@ -749,6 +771,12 @@
       "bytes": 32696099,
       "lines": 10661,
       "gzip_bytes": 5560311,
+      "url": null
+    },
+    "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07": {
+      "bytes": 46480955,
+      "lines": 15881,
+      "gzip_bytes": 7889404,
       "url": null
     },
     "a1f98f08719cef459d009ebf2b94c6fc91023fbcaea37a277e60ea9f5fee185f": {

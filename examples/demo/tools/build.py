@@ -611,12 +611,24 @@ TWOPC = {
                  "counterexample is one step from a state that need not be reachable",
          "initial": "a state the invariant `Inductive` admits, which need not be reachable",
          "startsAnywhere": True},
+        {"cfg": "spec/TwoPhaseCommitCrash.cfg", "label": "crashes",
+         "what": "every run from the initial state in which the coordinator may crash, twice at most: between steps, or "
+                 "after logging a phase change and before the broadcast goes out, and restart on the recovery rule, generated "
+                 "from `Recovery#decide`; the same invariants and temporal properties, under the added fairness condition that "
+                 "a crashed coordinator restarts"},
+        {"cfg": "spec/TwoPhaseCommitCrashInductive.cfg", "label": "the inductive step with crashes",
+         "what": "that the invariant `Inductive` is closed under a crash and a restart as well: TLC starts from every state the "
+                 "invariant admits, the coordinator up or down, takes one step, and checks the invariant again",
+         "initial": "a state the invariant `Inductive` admits, the coordinator up or down, which need not be reachable",
+         "startsAnywhere": True},
     ],
     "contract": "src/contract/Coordinator.decide.contract",
     "operator": "spec/CoordinatorContract.tla",
     "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+    "operators": [{"contract": "src/contract/Recovery.decide.contract", "operator": "spec/RecoveryContract.tla",
+                   "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide"}],
     "parts": "the participants, the coordinator and the votes in flight",
-    "initial": "every participant working, no vote counted, no decision",
+    "initial": "every participant working, no vote counted, no decision, the coordinator up",
     "actions": {
         "Initial predicate": "the initial state",
         "Vote": "`Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts)",
@@ -624,13 +636,19 @@ TWOPC = {
         "Learn": "`Participant.learn`: a participant applies the coordinator's decision",
         "ReceiveVote": "`Coordinator.onVote`: the coordinator counts a vote and decides on the tally",
         "CoordinatorTimeout": "`Coordinator.onTimeout`: the collection timer fires with votes missing",
+        "Crash": "the coordinator crashes between steps: it loses nothing it logged, and takes no step until it restarts",
+        "Recover": "`Recovery.decide`: the coordinator restarts with the phase it logged and acts on the recovery rule's "
+                   "decision, which a crash can cut short like any other",
     },
     "invariants": {
         "TypeOK": "every variable has a value of its type",
         "Atomicity": "once the coordinator or any participant has committed, no participant has aborted",
         "CommitFollowsTheCoordinator": "a participant commits only on the coordinator's decision, and only after voting yes",
         "VotesInFlightAreUncounted": "a vote on its way to the coordinator has not been counted, and a participant votes once",
-        "DecisionMatchesThePhase": "what the coordinator broadcast is what its phase says",
+        "DecisionMatchesThePhase": "what the coordinator broadcast, if anything, is what its phase says: a crash can fall "
+                                   "between the logged phase change and the broadcast",
+        "BroadcastOnceUp": "a coordinator that is up and decided has its decision out, broadcast when it decided or on restarting",
+        "DownOnlyAfterACrash": "the coordinator is down only after a crash",
         "ParticipantsAgreeWithTheirVotes": "a working participant has not voted, a prepared one voted yes, a no voter has aborted, "
                                            "and a yes voter that aborted did so on the coordinator's say-so",
         "CommitNeedsEveryVote": "the coordinator commits only once every vote is counted and yes",
@@ -641,8 +659,9 @@ TWOPC = {
                                        "(Lamport and Gray's TCommit) allows: a participant commits only once every participant is prepared or "
                                        "committed, and aborts only while none has committed",
     },
-    "machine": "The coordinator's decision rule inside the model is generated from the behavioural contract of "
-               "the patched code, so the model checks the decisions the coordinator really makes.",
+    "machine": "The coordinator's decision rule and its recovery rule inside the model are generated from the behavioural "
+               "contracts of the patched code, so the model checks the decisions the coordinator really makes, on a vote, "
+               "a timeout and a restart.",
 }
 
 RAFT = {

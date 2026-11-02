@@ -5,7 +5,7 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✓ Verified: all invariants and properties hold in 644 states, and under 1 more configuration** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✓ Verified: all invariants and properties hold in 644 states, and under 3 more configurations** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
 > The coordinator used to wait for every vote before deciding, holding every participant's locks until the last straggler or the timeout. The developer makes it abort as soon as one no arrives. The regenerated contract changes in one case, the model checker runs every interleaving of three participants, the coordinator, the votes in flight and both timeouts, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of the protocol.
 
@@ -69,29 +69,33 @@ public static Decision<Phase, CoordinatorEffect> decide(Phase phase, Coordinator
 
 ## What the verifier found
 
-The model is checked under 2 configurations, and the verdict is the first that fails:
+The model is checked under 4 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
-| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3} | ✓ Verified: all invariants and properties hold in 644 states |
-| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3} | ✓ Verified: all invariants hold in 736 states |
+| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3}, MaxCrashes = 0 | ✓ Verified: all invariants and properties hold in 644 states |
+| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3}, MaxCrashes = 0 | ✓ Verified: all invariants hold in 736 states |
+| crashes (`spec/TwoPhaseCommitCrash.cfg`) | every run from the initial state in which the coordinator may crash, twice at most: between steps, or after logging a phase change and before the broadcast goes out, and restart on the recovery rule, generated from `Recovery#decide`; the same invariants and temporal properties, under the added fairness condition that a crashed coordinator restarts | Participants = {p1, p2, p3}, MaxCrashes = 2 | ✓ Verified: all invariants and properties hold in 3,248 states |
+| the inductive step with crashes (`spec/TwoPhaseCommitCrashInductive.cfg`) | that the invariant `Inductive` is closed under a crash and a restart as well: TLC starts from every state the invariant admits, the coordinator up or down, takes one step, and checks the invariant again | Participants = {p1, p2, p3}, MaxCrashes = 1 | ✓ Verified: all invariants hold in 2,728 states |
 
-Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three participants: 644 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}).
+Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three participants: 644 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}, MaxCrashes = 0).
 
-The coordinator's decision rule inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the coordinator really makes.
+The coordinator's decision rule and its recovery rule inside the model are generated from the behavioural contracts of the patched code, so the model checks the decisions the coordinator really makes, on a vote, a timeout and a restart.
 
-The other configurations hold too, as the table says: the inductive step, 736 states.
+The other configurations hold too, as the table says: the inductive step, 736 states; crashes, 3,248 states; the inductive step with crashes, 2,728 states.
 
 **What the verdict rests on.** TLC counted how often a step of the model took each row of the generated operators. A row no step takes is one the model says nothing about, whatever the verdict.
 
-| Configuration | Rows of `Coordinator#decide` taken |
-|---|---|
-| three participants | 9 of 18 |
-| the inductive step (from the states the invariant admits, not from a run) | 10 of 18 |
+| Configuration | Rows of `Coordinator#decide` taken | Rows of `Recovery#decide` taken |
+|---|---|---|
+| three participants | 9 of 18 | 0 of 3 |
+| the inductive step (from the states the invariant admits, not from a run) | 10 of 18 | 0 of 3 |
+| crashes | 9 of 18 | 3 of 3 |
+| the inductive step with crashes (from the states the invariant admits, not from a run) | 10 of 18 | 3 of 3 |
 
 The change alters 1 row of the contract:
 
-- `decide(COLLECTING, Tally[complete=false, unanimous=false])`: `Unchanged[reason="waiting for the remaining votes"]` → `Transition[next=ABORTED, effects=[SEND_ABORT]]`, taken under three participants, the inductive step
+- `decide(COLLECTING, Tally[complete=false, unanimous=false])`: `Unchanged[reason="waiting for the remaining votes"]` → `Transition[next=ABORTED, effects=[SEND_ABORT]]`, taken under three participants, the inductive step, crashes, the inductive step with crashes
 
 Runs of the model take every row the change alters: the verdict rests on the change.
 
@@ -109,6 +113,14 @@ decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
 decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
 decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
 decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+```
+
+`net.terminalvalue.quorum.twopc.Recovery#decide`:
+
+```
+decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
+decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 ```
 
 </details>
@@ -158,32 +170,34 @@ Merge. The contract diff is committed with the change, and the model is checked 
 
 ## Evidence
 
-How the verdict was reached: three participants: TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}.
+How the verdict was reached: three participants: TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,248 distinct states to depth 13 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2303778] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719524] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
 Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 01:45:23)
+Starting... (2026-11-02 04:10:52)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:23.
-Checking 3 branches of temporal properties for the complete state space with 1932 total distinct states at (2026-11-02 01:45:24)
-Finished checking temporal properties in 00s at 2026-11-02 01:45:24
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:10:52.
+Checking 3 branches of temporal properties for the complete state space with 1932 total distinct states at (2026-11-02 04:10:53)
+Finished checking temporal properties in 00s at 2026-11-02 04:10:53
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -198,27 +212,33 @@ Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model ta
   decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 0 of 3; never taken (3):
+  decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+  decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
+  decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 2240 states generated, 644 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 11.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
-Finished in 00s at (2026-11-02 01:45:24)
+Finished in 00s at (2026-11-02 04:10:53)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2303902] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719619] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
 Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 01:45:25)
+Starting... (2026-11-02 04:10:54)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -229,7 +249,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-02 01:45:25.
+Finished computing initial states: 736 distinct states generated at 2026-11-02 04:10:54.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -243,10 +263,107 @@ Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model ta
   decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 0 of 3; never taken (3):
+  decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+  decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
+  decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 3224 states generated, 736 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 00s at (2026-11-02 01:45:25)
+Finished in 00s at (2026-11-02 04:10:54)
+
+== crashes: spec/TwoPhaseCommitCrash.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719703] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 04:10:55)
+Implied-temporal checking--satisfiability problem has 3 branches.
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:10:55.
+Checking 3 branches of temporal properties for the complete state space with 9744 total distinct states at (2026-11-02 04:10:56)
+Finished checking temporal properties in 00s at 2026-11-02 04:10:56
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.7E-12
+Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model takes: 9 of 18; never taken (9):
+  decide(COLLECTING, Timeout[unanimousSoFar=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+  decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 3 of 3.
+12677 states generated, 3248 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 13.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 12 and the 95th percentile is 3).
+Finished in 01s at (2026-11-02 04:10:56)
+
+== the inductive step with crashes: spec/TwoPhaseCommitCrashInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719838] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 04:10:57)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Computed 1024 initial states...
+Computed 2048 initial states...
+Finished computing initial states: 2728 distinct states generated at 2026-11-02 04:10:57.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.4E-12
+Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model takes: 10 of 18; never taken (8):
+  decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 3 of 3.
+12112 states generated, 2728 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 00s at (2026-11-02 04:10:57)
 ```
 
 </details>
