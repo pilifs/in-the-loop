@@ -97,15 +97,16 @@ case Response response -> response.term() == NEWER
 
 ## What the verifier found
 
-The model is checked under 5 configurations, and the verdict is the first that fails:
+The model is checked under 6 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
-| three servers (`spec/RaftElection.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {} | ✗ Violation: KernelNeverThrows, 4-step trace |
-| the inductive step (`spec/RaftElectionInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of election safety by induction, for any run of the cluster however long; a counterexample is one step from a state that need not be reachable | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {} | ✗ Violation: KernelNeverThrows, violated by a starting state |
-| four servers (`spec/RaftElectionFour.cfg`) | every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short of a majority, which three servers never show; under a symmetry set, so that of the states that differ only by the servers' names TLC explores one | Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {} | ✗ Violation: KernelNeverThrows, 5-step trace |
-| fairness (`spec/RaftElectionLive.cfg`) | the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {} | ✗ Violation: KernelNeverThrows, 4-step trace |
-| a server left behind (`spec/RaftElectionLogs.cfg`) | the election restriction: one server holds the log a deposed leader of term 1 left behind, three entries of its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant `LeaderCompleteness` besides the usual ones | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1} | ✗ Violation: KernelNeverThrows, 4-step trace |
+| three servers (`spec/RaftElection.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: KernelNeverThrows, 4-step trace |
+| the inductive step (`spec/RaftElectionInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of election safety by induction, for any run of the cluster however long; a counterexample is one step from a state that need not be reachable | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: KernelNeverThrows, violated by a starting state |
+| four servers (`spec/RaftElectionFour.cfg`) | every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short of a majority, which three servers never show; under a symmetry set, so that of the states that differ only by the servers' names TLC explores one | Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: KernelNeverThrows, 5-step trace |
+| fairness (`spec/RaftElectionLive.cfg`) | the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: KernelNeverThrows, 4-step trace |
+| a server left behind (`spec/RaftElectionLogs.cfg`) | the election restriction: one server holds the log a deposed leader of term 1 left behind, three entries of its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant `LeaderCompleteness` besides the usual ones | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE | ✗ Violation: KernelNeverThrows, 4-step trace |
+| delayed replies (`spec/RaftElectionDelayed.cfg`) | every run of three servers and two terms in which the reply to a vote request is a step of its own, which the candidate may take after it has timed out into a newer term, stepped down, or won; the one-step RPC of the other configurations never hands the role machine a reply from an older term than the server's own, and this one does, under the usual invariants and action properties | Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE | ✗ Violation: KernelNeverThrows, 5-step trace |
 
 TLC found a run of the system under three servers, 4 steps long, that violates the invariant **KernelNeverThrows** (no timeout or RPC any reachable state allows makes the role machine or the vote rule throw: the IllegalStateException the Java reserves for an input it holds impossible never fires). Each step is one action of one part of the system:
 
@@ -114,13 +115,13 @@ TLC found a run of the system under three servers, 4 steps long, that violates t
 3. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})`
 4. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)`, `role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)`, `votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})`
 
-The model is small (Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}), which is what keeps the trace readable. TLC explored every interleaving of the servers, their terms and votes, and the RPCs between them within those bounds.
+The model is small (Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE), which is what keeps the trace readable. TLC explored every interleaving of the servers, their terms and votes, and the RPCs between them within those bounds.
 
 <details><summary>The counterexample under the inductive step: invariant <b>KernelNeverThrows</b>, a starting state</summary>
 
 Invariant **KernelNeverThrows**: no timeout or RPC any reachable state allows makes the role machine or the vote rule throw: the IllegalStateException the Java reserves for an input it holds impossible never fires.
 
-1. **Starting state**, a state the invariant `Inductive` admits, which need not be reachable: `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)`, `role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "LEADER")`, `votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)`, `votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {s1, s3})`
+1. **Starting state**, a state the invariant `Inductive` admits, which need not be reachable: `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)`, `replies = {}`, `role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "LEADER")`, `votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)`, `votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {s1, s3})`
 
 </details>
 
@@ -146,6 +147,18 @@ Invariant **KernelNeverThrows**: no timeout or RPC any reachable state allows ma
 2. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})`
 3. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})`
 4. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)`, `votes = (s1 :> {s1} @@ s2 :> {s2, s3} @@ s3 :> {})`
+
+</details>
+
+<details><summary>The counterexample under delayed replies: invariant <b>KernelNeverThrows</b>, 5 steps</summary>
+
+Invariant **KernelNeverThrows**: no timeout or RPC any reachable state allows makes the role machine or the vote rule throw: the IllegalStateException the Java reserves for an input it holds impossible never fires.
+
+1. **Initial state**: every server a follower in term 0, no vote cast, no vote held.
+2. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})`
+3. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})`
+4. **Ask**, `Server.requestVote`, the request alone: a candidate asks one server for its vote, which the voter decides as in `Canvass`, and the reply waits on the wire with the term the voter answered in. `currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)`, `replies = {[term |-> 1, granted |-> TRUE, to |-> s1, from |-> s3]}`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)`
+5. **Answer**, `Server.onVote`: the candidate takes a reply that waited; its term goes through the role machine as it compares with the candidate's term now, a granted vote of the current term goes into the tally, and the tally through the role machine. `replies = {}`, `role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})`
 
 </details>
 
@@ -207,14 +220,14 @@ Revert to `unchanged`: the vote itself is the vote rule's to decide, and a leade
 
 ## Evidence
 
-How the verdict was reached: three servers: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 28 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 25 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}.
+How the verdict was reached: three servers: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; four servers: TLC 2.19 explored 28 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; fairness: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; a server left behind: TLC 2.19 explored 25 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 97 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2312607] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2532957] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -229,30 +242,34 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 01:47:25)
+Starting... (2026-11-02 03:06:38)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:47:25.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:06:39.
 Error: Invariant KernelNeverThrows is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 4: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
+State 4: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
@@ -317,11 +334,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 30 states generated, 24 distinct states found, 17 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 4 (minimum is 3, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 01:47:25)
+Finished in 00s at (2026-11-02 03:06:39)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2312669] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2533025] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -336,7 +353,7 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 01:47:26)
+Starting... (2026-11-02 03:06:40)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -348,16 +365,17 @@ Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
 Error: Invariant KernelNeverThrows is violated by the initial state:
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
 /\ votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {s1, s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)
 
-Finished in 01s at (2026-11-02 01:47:27)
+Finished in 01s at (2026-11-02 03:06:40)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2312776] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2533161] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -372,36 +390,41 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 01:47:28)
+Starting... (2026-11-02 03:06:41)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:47:28.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:06:41.
 Error: Invariant KernelNeverThrows is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
 
-State 2: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
 
-State 3: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none" @@ s4 :> "none")
 
-State 4: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
+State 4: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1 @@ s4 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> "none")
 
-State 5: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
+State 5: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1 @@ s4 :> 1)
 /\ votes = (s1 :> {s1, s3, s4} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
@@ -460,11 +483,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 78 states generated, 28 distinct states found, 17 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 3 (minimum is 1, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 01:47:28)
+Finished in 00s at (2026-11-02 03:06:42)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2312862] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2533244] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -479,31 +502,35 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 01:47:29)
+Starting... (2026-11-02 03:06:42)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:47:29.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:06:43.
 Error: Invariant KernelNeverThrows is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 4: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
+State 4: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
@@ -568,11 +595,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 30 states generated, 24 distinct states found, 17 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 4 (minimum is 3, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 01:47:29)
+Finished in 00s at (2026-11-02 03:06:43)
 
 == a server left behind: spec/RaftElectionLogs.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2312948] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2533310] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -587,30 +614,34 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 01:47:30)
+Starting... (2026-11-02 03:06:43)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:47:30.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:06:44.
 Error: Invariant KernelNeverThrows is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
+State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 4: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
+State 4: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2, s3} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
@@ -672,7 +703,122 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 31 states generated, 25 distinct states found, 18 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 4 (minimum is 3, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 01:47:30)
+Finished in 00s at (2026-11-02 03:06:44)
+
+== delayed replies: spec/RaftElectionDelayed.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2533413] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module VoteRuleContract
+Semantic processing of module RaftElection
+Starting... (2026-11-02 03:06:45)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:06:45.
+Error: Invariant KernelNeverThrows is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ replies = {}
+/\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+
+State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
+/\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
+
+State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
+/\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
+
+State 4: <Ask line 186, col 5 to line 191, col 26 of module RaftElection>
+/\ replies = {[term |-> 1, granted |-> TRUE, to |-> s1, from |-> s3]}
+/\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
+/\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
+
+State 5: <Answer line 212, col 5 to line 214, col 29 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
+/\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})
+/\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
+
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 9 of 36; never taken (27):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, ElectionTimeout[]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 3 of 27; never taken (24):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+135 states generated, 97 distinct states found, 71 states left on queue.
+The depth of the complete state graph search is 5.
+The average outdegree of the complete state graph is 4 (minimum is 1, the maximum 7 and the 95th percentile is 6).
+Finished in 00s at (2026-11-02 03:06:45)
 ```
 
 </details>
@@ -786,6 +932,25 @@ Finished in 00s at (2026-11-02 01:47:30)
           "level": "error",
           "message": {
             "text": "Invariant KernelNeverThrows of spec/RaftElection.tla (a server left behind) is violated after 4 steps"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java"
+                },
+                "region": {
+                  "startLine": 52
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Invariant KernelNeverThrows of spec/RaftElection.tla (delayed replies) is violated after 5 steps"
           },
           "locations": [
             {

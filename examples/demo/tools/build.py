@@ -671,6 +671,11 @@ RAFT = {
                  "its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so "
                  "that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant "
                  "`LeaderCompleteness` besides the usual ones"},
+        {"cfg": "spec/RaftElectionDelayed.cfg", "label": "delayed replies",
+         "what": "every run of three servers and two terms in which the reply to a vote request is a step of its own, which "
+                 "the candidate may take after it has timed out into a newer term, stepped down, or won; the one-step RPC "
+                 "of the other configurations never hands the role machine a reply from an older term than the server's "
+                 "own, and this one does, under the usual invariants and action properties"},
     ],
     "contract": "src/contract/RoleMachine.decide.contract",
     "operator": "spec/RoleMachineContract.tla",
@@ -686,6 +691,11 @@ RAFT = {
         "Canvass": "`Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply "
                    "each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's "
                    "term and log against its own, and the tally on the candidate",
+        "Ask": "`Server.requestVote`, the request alone: a candidate asks one server for its vote, which the voter decides "
+               "as in `Canvass`, and the reply waits on the wire with the term the voter answered in",
+        "Answer": "`Server.onVote`: the candidate takes a reply that waited; its term goes through the role machine as it "
+                  "compares with the candidate's term now, a granted vote of the current term goes into the tally, and the "
+                  "tally through the role machine",
         "Heartbeat": "`Server.appendEntries`: a leader sends one server a heartbeat and gets the answer; the server adopts a newer "
                      "term or yields to the leader of its own, and a stale leader is rejected and steps down",
     },

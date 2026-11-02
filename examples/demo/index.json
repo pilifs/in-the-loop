@@ -1236,6 +1236,52 @@
       "approach": "D1",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "081",
+      "path": "081-role-machine-that-adopts-the-term-of-a-stale-reply-sends-a-term-backwards",
+      "title": "A role machine that adopts the term of a stale reply sends a term backwards",
+      "summary": "A Raft server's role machine adopts the term of a reply to one of its own RPCs when that term is newer than its own, and otherwise leaves its role alone. A developer rewrites the rule as a switch over the reply's term, with the arm for the current term written out and every other term adopted, on the reasoning that a reply whose term differs from the server's own is a reply from a server out of step with it, and the term in the reply is the one to be in. The contract diff is three rows, one per role, for a reply from an older term, and the model checker had never taken any of them: an RPC in the model was one step, so a reply always carried the server's own term or a newer one. Under a sixth configuration in which a vote reply waits on the wire, TLC finds a five-step run in which a candidate that has moved on to term 2 takes the reply of term 1 and goes back to it, which the action property that terms never decrease reports.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "082",
+      "path": "082-role-machine-that-treats-a-stale-reply-as-impossible-crashes-on-a-late-reply",
+      "title": "A role machine that treats a stale reply as impossible crashes on a late reply",
+      "summary": "A Raft server's role machine leaves its role alone on a reply from the current term or an older one. A developer makes a reply from an older term throw `IllegalStateException`, the exception the kernel already reserves for an input it holds impossible, on the reasoning that a server answers with the term it has now and the asking server's term only grows while it waits, so a reply cannot carry a term older than the server's own. That reasoning is the model's own simplification written into the Java: an RPC in the model was one step, so no run had ever handed the role machine such a reply, and the three rows that now throw had never been taken. Under the sixth configuration, in which a vote reply waits on the wire, the invariant that no reachable state lets the kernel throw fails in four steps: a candidate asks for a vote, times out into the next term, and the reply of the old term is waiting for it.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "083",
+      "path": "083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them",
+      "title": "Logging of stale replies, verified by the configuration that delivers them",
+      "summary": "A Raft server's role machine leaves its role alone on a reply from the current term or an older one. A developer tuning election timeouts wants to know how often replies arrive after the server has left the term they answer, and makes the role machine return a `LOG_STALE_REPLY` effect on a reply from an older term, with the role unchanged. The contract diff is three rows, one per role, each from unchanged to a transition to the same role with the one effect. Under the five configurations the model had, no step takes any of the three rows, and the verdict would have been verified vacuously; under the sixth, in which a vote reply waits on the wire, every run takes them, and every invariant and action property holds in 20,351 states. The change is verified by the configuration that delivers the replies it is about.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "logging",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

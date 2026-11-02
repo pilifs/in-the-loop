@@ -31,4 +31,5 @@ java -ea -cp "build/main:build/test" net.terminalvalue.quorum.Tests
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionFour.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionLive.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionLogs.cfg --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionDelayed.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionEnabled.cfg --library ../../tools/tla/standard-modules

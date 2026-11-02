@@ -5,7 +5,7 @@
 (* RPCs between them. TLC explores every interleaving for the servers and  *)
 (* terms in RaftElection.cfg, checks the invariants in every state it      *)
 (* reaches, and checks the action properties on every step: that terms    *)
-(* never go backwards, and that a leader never campaigns. Three more       *)
+(* never go backwards, and that a leader never campaigns. Five more        *)
 (* configurations check the same model other ways: RaftElectionFour.cfg   *)
 (* has four servers, a cluster in which a tally can fall short of a       *)
 (* majority by more than one vote, under a symmetry set;                  *)
@@ -14,7 +14,10 @@
 (* RaftElectionLive.cfg checks the liveness properties at the end, under  *)
 (* the fairness conditions stated with them; and RaftElectionLogs.cfg     *)
 (* gives one server a log a deposed leader left behind, and checks that   *)
-(* the election restriction keeps it from being elected.                  *)
+(* the election restriction keeps it from being elected; and              *)
+(* RaftElectionDelayed.cfg lets the reply to a vote request wait on the    *)
+(* wire while the candidate goes on, so that it can arrive in a term the  *)
+(* candidate has left.                                                     *)
 (*                                                                         *)
 (* Neither a server's role transitions nor its vote are written here.     *)
 (* Decide(role, event) is generated from the behavioural contract of      *)
@@ -32,13 +35,15 @@
 (* Simplifications: the logs are fixed, Logs below, since the model has   *)
 (* no replication, so the election restriction is checked for the logs a *)
 (* configuration gives and not for every log a run could build; a        *)
-(* heartbeat carries no entries; an RPC is one step, the                  *)
-(* request and its reply together, so a server always answers with the    *)
-(* term it has now, and a stale server learns of a newer term the moment   *)
-(* it talks to one that has it; terms stop at MaxTerm, past which no timer *)
-(* fires; election timeouts fire whenever the model likes, and             *)
-(* RESET_ELECTION_TIMER matters only to the fairness conditions, which     *)
-(* assume that a timer no heartbeat resets fires eventually.               *)
+(* heartbeat carries no entries; an RPC is one step, the request and its  *)
+(* reply together, so a server always answers with the term it has now,   *)
+(* and a stale server learns of a newer term the moment it talks to one   *)
+(* that has it, except under RaftElectionDelayed.cfg, where a vote reply  *)
+(* is a step of its own and a candidate can take it in a later term;      *)
+(* terms stop at MaxTerm, past which no timer fires; election timeouts    *)
+(* fire whenever the model likes, and RESET_ELECTION_TIMER matters only   *)
+(* to the fairness conditions, which assume that a timer no heartbeat     *)
+(* resets fires eventually.                                                *)
 (***************************************************************************)
 EXTENDS Naturals, FiniteSets, Sequences, TLC, RoleMachineContract
 
@@ -47,15 +52,19 @@ Vote == INSTANCE VoteRuleContract
 CONSTANTS
     Servers,
     MaxTerm,
-    LeftBehind    \* the servers whose log a deposed leader left behind: see Logs
+    LeftBehind,     \* the servers whose log a deposed leader left behind: see Logs
+    DelayedReplies  \* whether a vote reply waits on the wire as a step of its own: see Ask and Answer
+
+ASSUME DelayedReplies \in BOOLEAN
 
 VARIABLES
     role,         \* server -> FOLLOWER, CANDIDATE or LEADER
     currentTerm,  \* server -> its term
     votedFor,     \* server -> the server it voted for in its term, or "none"
-    votes         \* server -> the servers whose vote it holds in its term
+    votes,        \* server -> the servers whose vote it holds in its term
+    replies       \* the replies to vote requests on the wire, with the voter's term and whether it granted
 
-vars == <<role, currentTerm, votedFor, votes>>
+vars == <<role, currentTerm, votedFor, votes, replies>>
 
 Majority(S) == Cardinality(S) * 2 > Cardinality(Servers)
 
@@ -93,10 +102,10 @@ TermAfter(s, d, t) == IF Adopts(d) THEN t ELSE currentTerm[s]
 VotedForAfter(s, d) == IF Adopts(d) THEN "none" ELSE votedFor[s]
 VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 
-\* Each action below computes its next state as a record of the four variables, so that the step it takes and
+\* Each action below computes its next state as a record of the five variables, so that the step it takes and
 \* whether the step changes anything (the fairness conditions need to know) are one computation.
-Step(n) == role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes
-Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes>> # vars
+Step(n) == role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes /\ replies' = n.replies
+Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.replies>> # vars
 
 (***************************************************************************)
 (* The servers.                                                            *)
@@ -114,11 +123,13 @@ TimeoutNext(s) ==
         role |-> [role EXCEPT ![s] = RoleAfter(s, d)],
         currentTerm |-> [currentTerm EXCEPT ![s] = t],
         votedFor |-> [votedFor EXCEPT ![s] = IF self THEN s ELSE IF t > currentTerm[s] THEN "none" ELSE @],
-        votes |-> [votes EXCEPT ![s] = IF self THEN {s} ELSE @]]
+        votes |-> [votes EXCEPT ![s] = IF self THEN {s} ELSE @],
+        replies |-> replies]
 
 Timeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Step(TimeoutNext(s))
 
-\* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer.
+\* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer (with DelayedReplies,
+\* the RPC is the two steps Ask and Answer below instead).
 \* On v, Server.onRequestVote: the role machine first (a candidate's newer term is adopted), then the vote rule on
 \* the server as it then is, given v's ballot as it stands for c (open, cast for c, cast for another) and c's term
 \* and log against v's own: a candidate from the past or with a log behind the voter's is refused, and otherwise
@@ -140,13 +151,67 @@ CanvassNext(c, v) ==
         role |-> [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
         currentTerm |-> [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)],
         votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)],
-        votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally]]
+        votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally],
+        replies |-> replies]
 
 Canvass(c, v) ==
+    /\ ~DelayedReplies
     /\ role[c] = "CANDIDATE"
     /\ v \notin votes[c] \cup {c}
     /\ ~CanvassNext(c, v).throws
     /\ Step(CanvassNext(c, v))
+
+\* The same RPC in two steps, with the reply on the wire in between (RaftElectionDelayed.cfg). Ask is v's half of
+\* Canvass: v decides as above, and its answer, with the term it answers in, waits in replies. By the time c takes
+\* it, c may have timed out into a newer term, stepped down, or won: the reply's term then compares with c's own
+\* as OLDER, which the one-step RPC never produces. One request per pair of servers is outstanding at a time, and
+\* a reply that c never takes is one the network lost.
+Outstanding(c, v) == \E m \in replies : m.to = c /\ m.from = v
+
+AskNext(c, v) ==
+    LET dv == Decide(role[v], [kind |-> "RequestVote", term |-> Order(v, currentTerm[c])])
+        tv == TermAfter(v, dv, currentTerm[c])
+        free == VotedForAfter(v, dv)
+        ballot == IF free = "none" THEN "OPEN" ELSE IF free = c THEN "FOR_THE_CANDIDATE" ELSE "FOR_ANOTHER"
+        dg == Vote!Decide(ballot, [kind |-> "VoteRequest", term |-> OrderOf(tv, currentTerm[c]), log |-> LogOrder(c, v)])
+        granted == dg.kind = "Transition" /\ Has(dg, "GRANT")
+    IN [throws |-> dv.kind = "Throws" \/ dg.kind = "Throws",
+        role |-> [role EXCEPT ![v] = RoleAfter(v, dv)],
+        currentTerm |-> [currentTerm EXCEPT ![v] = tv],
+        votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free],
+        votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv)],
+        replies |-> replies \cup {[to |-> c, from |-> v, term |-> tv, granted |-> granted]}]
+
+Ask(c, v) ==
+    /\ DelayedReplies
+    /\ role[c] = "CANDIDATE"
+    /\ v \notin votes[c] \cup {c}
+    /\ ~Outstanding(c, v)
+    /\ ~AskNext(c, v).throws
+    /\ Step(AskNext(c, v))
+
+\* Answer is c's half of Canvass, Server.onVote, for the reply from v that waited: the reply's term goes through the
+\* role machine as it compares with c's term now; a granted vote of c's current term goes into the tally, and the
+\* tally through the role machine; a grant from a term c has left counts for nothing, as the paper's rules drop a
+\* reply from an older term before the role machine sees it, and the role machine's own decision on such a reply
+\* is what the delayed configuration exercises.
+AnswerNext(c, v) ==
+    LET m == CHOOSE m \in replies : m.to = c /\ m.from = v
+        dc == Decide(role[c], [kind |-> "Response", term |-> Order(c, m.term)])
+        counts == m.granted /\ Order(c, m.term) = "CURRENT"
+        tally == IF Adopts(dc) THEN {} ELSE IF counts THEN votes[c] \cup {v} ELSE votes[c]
+        dt == Decide(RoleAfter(c, dc), [kind |-> "VotesCounted", majority |-> Majority(tally)])
+    IN [throws |-> dc.kind = "Throws" \/ dt.kind = "Throws",
+        role |-> [role EXCEPT ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
+        currentTerm |-> [currentTerm EXCEPT ![c] = TermAfter(c, dc, m.term)],
+        votedFor |-> [votedFor EXCEPT ![c] = VotedForAfter(c, dc)],
+        votes |-> [votes EXCEPT ![c] = tally],
+        replies |-> replies \ {m}]
+
+Answer(c, v) ==
+    /\ Outstanding(c, v)
+    /\ ~AnswerNext(c, v).throws
+    /\ Step(AnswerNext(c, v))
 
 \* Server.appendEntries, one RPC: leader l sends server s a heartbeat and gets the answer.
 \* On s, Server.onAppendEntries: a newer term is adopted, a candidate yields to the leader of its term, and a stale
@@ -161,7 +226,8 @@ HeartbeatNext(l, s) ==
         role |-> [role EXCEPT ![s] = RoleAfter(s, ds), ![l] = RoleAfter(l, dl)],
         currentTerm |-> [currentTerm EXCEPT ![s] = ts, ![l] = TermAfter(l, dl, ts)],
         votedFor |-> [votedFor EXCEPT ![s] = VotedForAfter(s, ds), ![l] = VotedForAfter(l, dl)],
-        votes |-> [votes EXCEPT ![s] = VotesAfter(s, ds), ![l] = VotesAfter(l, dl)]]
+        votes |-> [votes EXCEPT ![s] = VotesAfter(s, ds), ![l] = VotesAfter(l, dl)],
+        replies |-> replies]
 
 Heartbeat(l, s) ==
     /\ role[l] = "LEADER"
@@ -178,10 +244,11 @@ Init ==
     /\ currentTerm = [s \in Servers |-> 0]
     /\ votedFor = [s \in Servers |-> "none"]
     /\ votes = [s \in Servers |-> {}]
+    /\ replies = {}
 
 Next ==
     \/ \E s \in Servers : Timeout(s)
-    \/ \E c, v \in Servers : Canvass(c, v)
+    \/ \E c, v \in Servers : Canvass(c, v) \/ Ask(c, v) \/ Answer(c, v)
     \/ \E l, s \in Servers : Heartbeat(l, s)
 
 Spec == Init /\ [][Next]_vars
@@ -195,6 +262,8 @@ TypeOK ==
     /\ currentTerm \in [Servers -> 0..MaxTerm]
     /\ votedFor \in [Servers -> Servers \cup {"none"}]
     /\ votes \in [Servers -> SUBSET Servers]
+    /\ replies \subseteq [to : Servers, from : Servers, term : 0..MaxTerm, granted : BOOLEAN]
+    /\ ~DelayedReplies => replies = {}
 
 \* The kernels' exceptions. Each action's record says whether a call it makes to the role machine or the vote rule
 \* throws, and no action takes such a step; this invariant says there is none to take. The IllegalStateException
@@ -203,7 +272,9 @@ TypeOK ==
 \* violates it.
 KernelNeverThrows ==
     /\ \A s \in Servers : currentTerm[s] < MaxTerm => ~TimeoutNext(s).throws
-    /\ \A c, v \in Servers : role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
+    /\ \A c, v \in Servers : ~DelayedReplies /\ role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
+    /\ \A c, v \in Servers : DelayedReplies /\ role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ ~Outstanding(c, v) => ~AskNext(c, v).throws
+    /\ \A c, v \in Servers : Outstanding(c, v) => ~AnswerNext(c, v).throws
     /\ \A l, s \in Servers : role[l] = "LEADER" /\ s # l => ~HeartbeatNext(l, s).throws
 
 \* Election safety (Raft, figure 3): at most one leader per term.
@@ -289,6 +360,7 @@ InductiveInit ==
     /\ \A s \in Servers : currentTerm[s] = 0 => votedFor[s] = "none"
     /\ votes \in {f \in [Servers -> SUBSET Servers] : \A s \in Servers : f[s] = {} \/ s \in f[s]}
     /\ TalliesHoldTheirOwnersVote
+    /\ replies = {}
     /\ Inductive
 
 (***************************************************************************)

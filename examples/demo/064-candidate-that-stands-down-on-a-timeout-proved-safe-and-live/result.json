@@ -1,6 +1,6 @@
 {
   "verdict": "verified",
-  "verdictLabel": "✓ Verified: all invariants and properties hold in 879 states, and under 4 more configurations",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 879 states, and under 5 more configurations",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
@@ -18,12 +18,12 @@
     "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            // A candidate whose election timed out stands down. Its next timeout starts a fresh election, after\n            // a full randomized wait, so a split vote is retried by the candidates one at a time rather than by\n            // all of them at once.\n            case CANDIDATE -> transition(FOLLOWER);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
   },
   "casesTotal": null,
-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -17,7 +17,7 @@\n decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n-decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n+decide(CANDIDATE, ElectionTimeout[])            => Transition[next=FOLLOWER, effects=[]]\n decide(CANDIDATE, VotesCounted[majority=false]) => Unchanged[reason=\"no majority yet\"]\n decide(CANDIDATE, VotesCounted[majority=true])  => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(CANDIDATE, AppendEntries[term=OLDER])    => Rejected[reason=\"stale leader\"]\n",
-  "proof": "three servers: TLC 2.19 explored 879 distinct states to depth 13 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 1,868 distinct states to depth 15 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 879 distinct states to depth 13 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 754 distinct states to depth 11 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+  "proof": "three servers: TLC 2.19 explored 879 distinct states to depth 13 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; four servers: TLC 2.19 explored 1,868 distinct states to depth 15 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; fairness: TLC 2.19 explored 879 distinct states to depth 13 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; a server left behind: TLC 2.19 explored 754 distinct states to depth 11 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 27,210 distinct states to depth 16 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -287,6 +287,52 @@
             ]
           }
         ]
+      },
+      {
+        "label": "delayed replies",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 34,
+            "total": 36,
+            "never": [
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 4,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+            ]
+          }
+        ]
       }
     ],
     "changedRows": [
@@ -299,7 +345,8 @@
           "the inductive step",
           "four servers",
           "fairness",
-          "a server left behind"
+          "a server left behind",
+          "delayed replies"
         ]
       }
     ],
@@ -316,7 +363,7 @@
       "cfg": "spec/RaftElection.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 879 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 879,
@@ -328,7 +375,7 @@
       "cfg": "spec/RaftElectionInductive.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 17470,
@@ -340,7 +387,7 @@
       "cfg": "spec/RaftElectionFour.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 1,868 states",
-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 1868,
@@ -352,7 +399,7 @@
       "cfg": "spec/RaftElectionLive.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 879 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 879,
@@ -364,10 +411,22 @@
       "cfg": "spec/RaftElectionLogs.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 754 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 754,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "delayed replies",
+      "cfg": "spec/RaftElectionDelayed.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 27,210 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 27210,
       "trace": null,
       "forever": null
     }
