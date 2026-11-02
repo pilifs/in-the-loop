@@ -38,14 +38,15 @@ It reproduces the contracts the Java tool committed for Box Office, which its te
 | [`lib/src/`](lib/src) | The crate: a class-file reader, the JDK image reader, the interpreter, and one module per contract kind |
 | [`lib/tests/`](lib/tests) | Integration tests over Java fixtures compiled at test time, and against the committed Box Office contracts |
 
-## [`plugins/`](plugins/jvmcontract/README.md): the verifier as a Claude Code skill
+## [`plugins/`](plugins/jvmcontract/README.md): the verifier as Claude Code skills
 
-`/verify-bytecode <pull request>`, a Claude Code skill that compiles a Java pull request before and after, runs `jvmcontract` over the bytecode, and reports what was proved, what was refuted (with the input) and what it could not check. One-command install, as a personal skill or as a plugin from this repository's marketplace.
+`/verify-bytecode <pull request>`, a Claude Code skill that compiles a Java pull request before and after, runs `jvmcontract` over the bytecode, and reports what was proved, what was refuted (with the input) and what it could not check; and `/add-tla-model`, which adds a TLA+ model to a Java project around its decision kernel, derived from the bytecode, and checks the user's invariants with TLC. One-command install, as personal skills or as a plugin from this repository's marketplace.
 
 | Path | Content |
 |---|---|
-| [`plugins/jvmcontract/README.md`](plugins/jvmcontract/README.md) | Install, what it proves, and libraries to try it on |
-| [`plugins/jvmcontract/skills/verify-bytecode/`](plugins/jvmcontract/skills/verify-bytecode/SKILL.md) | The skill: the procedure, the tool reference for the agent, the report template, and the fetch and build scripts |
+| [`plugins/jvmcontract/README.md`](plugins/jvmcontract/README.md) | Install, what each skill proves, and libraries to try them on |
+| [`plugins/jvmcontract/skills/verify-bytecode/`](plugins/jvmcontract/skills/verify-bytecode/SKILL.md) | `/verify-bytecode`: verify a pull request. The procedure, the tool reference for the agent, the report template, and the fetch and build scripts |
+| [`plugins/jvmcontract/skills/add-tla-model/`](plugins/jvmcontract/skills/add-tla-model/SKILL.md) | `/add-tla-model`: add a TLA+ model to a Java project and check custom invariants with TLC. The procedure, the TLA+ reference for the agent, the `check.sh` and README templates, and the scripts that find classes and install TLC |
 | [`plugins/jvmcontract/install.sh`](plugins/jvmcontract/install.sh) | The installer behind `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh \| bash` |
 | [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | The marketplace, for `claude plugin install jvmcontract --marketplace pilifs/in-the-loop` |
 

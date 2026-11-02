@@ -36,7 +36,7 @@ Verified with a stub claude emitting stream-json in a temporary jj repo: progres
 
 ### Record session traces
 
-change `nmtxwrlvsosr` · [log `09aa3322da07`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz)
+[`c877432df1a4`](https://github.com/pilifs/in-the-loop/commit/c877432df1a48d831c12572edfd6abbd691dc667) · [log `09aa3322da07`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

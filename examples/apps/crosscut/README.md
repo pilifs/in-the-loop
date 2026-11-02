@@ -13,7 +13,7 @@ Every kernel here has a contract, a property or a model checked on every build.
 | Kernel | Where it lives in a service | What it decides | Verified by | Examples |
 |---|---|---|---|---|
 | [`tx.TransactionBoundary`](src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java) | `TransactionInterceptor` around a `@Transactional` method | How the method enlists in the running transaction (the seven propagations), and whether the transaction commits or rolls back when the method ends (runtime exception, error, checked exception, `rollbackFor`, `noRollbackFor`, rollback-only) | Behavioural contracts: all [16](src/contract/TransactionBoundary.enter.contract) and [22](src/contract/TransactionBoundary.exit.contract) cases | 025 |
-| [`resilience.CircuitBreaker`](src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java) | A Resilience4j `CircuitBreaker` (`@CircuitBreaker`) | The CLOSED, OPEN and HALF_OPEN transitions on each call requested and each call completed | A [behavioural contract](src/contract/CircuitBreaker.decide.contract): all 44 cases, drawn as a state machine | 026 |
+| [`resilience.CircuitBreaker`](src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java) | A Resilience4j `CircuitBreaker` (`@CircuitBreaker`) | The CLOSED, OPEN and HALF_OPEN transitions on each call requested and each call completed | A [behavioural contract](src/contract/CircuitBreaker.decide.contract): all 44 cases, drawn as a state machine, and a [TLA+ model](spec/README.md#the-circuit-breaker-model) of the component that owns the breaker, checked by TLC | 026 |
 | [`retry.RetryPolicy`](src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java) | A `RestClient` or `WebClient` retry filter, `@Retryable` | Whether a failed HTTP call may be retried, by status, idempotency and attempt | A property: never past the last attempt, never a non-idempotent request the server may have run, never 501; regression proofs against the previous version | 027, 028 |
 | [`ratelimit.TokenBucket`](src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java) | Spring Cloud Gateway's `RequestRateLimiter`, Bucket4j | The tokens and the credited time after a refill | Properties: never below the tokens held, never above the capacity, no part of a period forgotten | 031 |
 | [`idempotency.IdempotentReceiver`](src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java) | A `OncePerRequestFilter` for the `Idempotency-Key` header | Execute, replay the stored response, or refuse (409, 422), per key state | A [behavioural contract](src/contract/IdempotentReceiver.decide.contract), and a [TLA+ model](spec/README.md) of a client retrying against it, checked by TLC | 029, 030 |
@@ -41,7 +41,7 @@ src/contract/         the contracts the build checks:
   properties.contract   the properties proved by JBMC (written by hand; the proofs are regenerated)
   capabilities.contract what the module's bytecode can reach (generated)
   api.contract          the public surface (generated)
-spec/                 the TLA+ model of the idempotent receiver; IdempotentReceiverContract.tla is generated from the contract
+spec/                 the TLA+ models of the idempotent receiver and the circuit breaker; the *Contract.tla files are generated from the contracts
 verify.sh             compile, test, and run every check below
 ```
 
@@ -62,6 +62,8 @@ jvmcontract verify --contracts src/contract --classes build/main --module crossc
 jvmcontract prove --properties src/contract/properties.contract --classes build/main
 jvmcontract tla src/contract/IdempotentReceiver.decide.contract spec/IdempotentReceiverContract.tla
 jvmcontract tlc spec/IdempotentReceiver.tla --library ../../tools/tla/standard-modules
+jvmcontract tla src/contract/CircuitBreaker.decide.contract spec/CircuitBreakerContract.tla
+jvmcontract tlc spec/CircuitBreaker.tla --library ../../tools/tla/standard-modules
 ```
 
 Compiling takes a second, the tests less, the four contracts milliseconds, the seven property proofs in about forty seconds with JBMC (the token bucket's refill time, with its remainder, is most of it), and TLC under a second for 168 states.

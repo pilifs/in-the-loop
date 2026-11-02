@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Compiles the Crosscut module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
-# capability and API contracts, the property proofs (JBMC), and the idempotent-receiver model (TLC).
+# capability and API contracts, the property proofs (JBMC), and the idempotent-receiver and circuit-breaker models (TLC).
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
 # tla2tools.jar in ~/tools or $TLA2TOOLS_JAR.
 set -euo pipefail
@@ -21,3 +21,5 @@ java -ea -cp "build/main:build/test" net.terminalvalue.crosscut.Tests
 "$JVMCONTRACT" prove --properties src/contract/properties.contract --classes build/main --sources src/main/java --report build/reports
 "$JVMCONTRACT" tla src/contract/IdempotentReceiver.decide.contract spec/IdempotentReceiverContract.tla
 "$JVMCONTRACT" tlc spec/IdempotentReceiver.tla --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tla src/contract/CircuitBreaker.decide.contract spec/CircuitBreakerContract.tla
+"$JVMCONTRACT" tlc spec/CircuitBreaker.tla --library ../../tools/tla/standard-modules
