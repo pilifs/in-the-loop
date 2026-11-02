@@ -2,7 +2,7 @@
   "$schema": "../schema/example.schema.json",
   "id": "092",
   "title": "A participant that votes no when it gives up, its recorded runs all steps of the model",
-  "summary": "A participant that gives up before voting aborts in silence, and the coordinator finds out when its timer fires. A developer has the participant vote no as it gives up, so that the coordinator can abort on the vote, and reworks the scenario that covers it: the coordinator now receives the no and aborts once every vote is in, with no timer. No rule changes. The trace check regenerates the recorded runs from the patched nodes and TLC finds every step of every run to be a step of the model: giving up is now the model's `Vote` with a no rather than its `ParticipantTimeout`, and both are actions the model has, so everything the four configurations prove of the protocol covers the new participant.",
+  "summary": "A participant that gives up before voting aborts in silence, and the coordinator finds out when its timer fires. A developer has the participant's rule vote no as it gives up, so that the coordinator can abort on the vote, and reworks the scenario that covers it: the coordinator now receives the no and aborts once every vote is in, with no timer. The contract's row gains the effect, the model's `ParticipantTimeout` carries it out, and TLC checks the rule under all seven configurations: the invariants, the liveness property and the refinement hold with and without crashes, the inductive step holds, and the recorded runs are all steps of the model. The state counts of the explored configurations drop, since giving up now leaves the states a no vote does.",
   "categories": [
     "functional",
     "no-false-positive"
@@ -10,8 +10,8 @@
   "severity": "none",
   "subject": {
     "system": "Quorum",
-    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java",
-    "symbol": "net.terminalvalue.quorum.twopc.ParticipantNode#giveUp"
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Participant#decide"
   },
   "approach": {
     "id": "D1",
@@ -21,28 +21,28 @@
   "change": {
     "kind": "feature",
     "behaviourChangeIntended": true,
-    "description": "In `ParticipantNode.giveUp`, a participant that gives up sends a no vote after aborting, with the comment that the coordinator can then abort on the vote rather than on its timer. The test that a participant that gives up never votes becomes one that it votes no, and the scripted scenario in `Traces` in which a participant gives up is reworked: the coordinator receives the no, the third participant votes, and the coordinator aborts once every vote is in, without a timeout. `Coordinator.decide` and `Recovery.decide` are untouched.",
+    "description": "In `Participant.decide`, the `GiveUp` row for `WORKING` changes from `transition(ABORTED)` to `transition(ABORTED, VOTE_NO)`, with the comment that the coordinator can then abort on the vote rather than on its timer. The kernel test and the node test for a participant that gives up expect the no vote, and the scripted scenario in `Traces` in which a participant gives up is reworked: the coordinator receives the no, the third participant votes, and the coordinator aborts once every vote is in, without a timeout. `Coordinator.decide` and `Recovery.decide` are untouched.",
     "patch": "change.patch"
   },
-  "risk": "Low, and the question a reviewer asks is whether the model's results still apply: the model has a participant that gives up take a step of its own, `ParticipantTimeout`, which sends nothing, and a no vote from a participant that was never asked to vote no looks like a case the model may not have. The trace check answers it for the recorded runs, and the model's own actions answer it in general.",
+  "risk": "Low, and the question a reviewer asks is whether the model's results still apply: the model has a participant that gives up take a step of its own, `ParticipantTimeout`, and a no vote from a participant that was never asked to vote no looks like a case the model may not have. The model carries out whatever the rule's row says, so the question is answered by running it.",
   "expected": {
     "verdict": "verified",
     "vacuous": false
   },
-  "explanation": "The four configurations of the model report 728, 736, 3,448 and 2,728 states, as before: the rules are unchanged. The fifth, `TwoPhaseCommitTrace.cfg`, regenerates the recorded runs from the patched nodes and the patched scenario, 76 states over the eight runs, and TLC finds every run to start in the model's initial state and every step to satisfy `EveryStepIsOneOfTheModel`. The step that changed, a participant giving up, is now the model's `Vote(p)` with the vote `NO`: the participant aborts and a no goes into the inbox, which is exactly what the model's `Vote` does for a participant that cannot do its part. The coordinator's steps that follow, counting the no and aborting once every vote is in, are the model's `ReceiveVote` with the generated rule, and the participants' `Learn`. The model has the new behaviour as a behaviour it always allowed, so its invariants, its liveness property, its refinement of transaction commit and its inductive step cover it. The trace check says this of the scripted runs only, which is its limit: the model's four configurations are what cover every interleaving.",
-  "resolution": "Merge. The change narrows the protocol's behaviours to ones the model already had, and the recorded runs show the nodes taking them. The scenario that was reworked is the one a reviewer should read: the coordinator aborting on the vote is the point of the change, and it is now a recorded run held to the model on every build.",
-  "provenance": "Constructed as the third example of trace validation on the two-phase-commit nodes, to pair with 090 and 091: a change to the glue that alters what the nodes record, with every recorded step still a step of the model, accepted on the strength of the check.",
+  "explanation": "The participant's rule in the model is generated from the regenerated contract, so `ParticipantTimeout` sends what the new row says: `Sends` turns `VOTE_NO` into a no vote in the inbox, exactly what `Vote` sends for a participant that cannot do its part. TLC explores 637 states in the first configuration, 3,084 with the coordinator crashing and 11,641 with the participants crashing too, fewer than the 728, 3,448 and 12,754 of the committed rule, since a participant that gives up now reaches the states a no voter reaches and no others, and the invariants, the liveness property and the refinement of transaction commit hold in all of them. The two inductive configurations admit the same 736 and 18,636 states as before, since the invariant does not mention how a participant came to abort, and the step on the new row lands in an admitted state every time. The recorded runs are regenerated from the patched nodes and the patched scenario, and TLC finds every run to start in the model's initial state and every step to satisfy `EveryStepIsOneOfTheModel`: the step that changed, a participant giving up with a no vote, is the model's `ParticipantTimeout` with the patched rule. The model has the new behaviour as a behaviour it always allowed of a no voter, so everything it proves of the protocol covers it, and the coverage of the first configuration shows the changed row taken.",
+  "resolution": "Merge. The change narrows the protocol's behaviours to ones the model already had of a no voter, and all seven configurations say so. The scenario that was reworked is the one a reviewer should read: the coordinator aborting on the vote is the point of the change, and it is now a recorded run held to the model on every build.",
+  "provenance": "Constructed as the third example of trace validation on the two-phase-commit nodes, to pair with 090 and 091, and regenerated when the participant's rule became the model's third generated operator: a change to the rule that alters what the nodes record, with every recorded step still a step of the model, accepted on the strength of all seven configurations.",
   "references": [
     {
       "title": "Cirstea, Kuppe, Loillier and Merz, Validating Traces of Distributed Programs Against TLA+ Specifications (2024): the technique, and what it finds that model checking the specification alone does not",
       "url": "https://arxiv.org/abs/2404.16075"
     },
     {
-      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: two-phase commit, the participants' and the coordinator's logs and timeouts",
+      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: the participant's recovery procedure in two-phase commit, and the blocking property",
       "url": "https://www.microsoft.com/en-us/research/people/philbe/book/"
     },
     {
-      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications",
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications, and Paxos commit, the non-blocking alternative",
       "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
     },
     {

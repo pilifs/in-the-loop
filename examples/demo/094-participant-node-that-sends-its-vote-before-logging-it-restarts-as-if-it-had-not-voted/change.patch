@@ -1,0 +1,48 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
+@@ -64,10 +64,10 @@
+         return switch (decision) {
+             case Transition<ParticipantState, ParticipantEffect> t -> {
+                 state = t.next();
+-                log.write(state); // logged before the vote goes out: a crash from here on loses the vote only
+-                for (ParticipantEffect effect : t.effects()) {
++                for (ParticipantEffect effect : t.effects()) { // the coordinator is waiting: send first, log after
+                     network.send(new VoteMessage(name, effect == ParticipantEffect.VOTE_YES ? Vote.YES : Vote.NO), faults);
+                 }
++                log.write(state);
+                 yield true;
+             }
+             case Unchanged<ParticipantState, ParticipantEffect> u -> false;
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
+@@ -3,6 +3,7 @@
+ import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ 
++import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ 
+@@ -83,7 +84,7 @@
+         check(!p1.learn(), "nothing to learn without a decision");
+     }
+ 
+-    public static void aParticipantThatCrashesAfterLoggingItsYesLosesTheVoteAndRestartsPrepared() {
++    public static void aCrashRightAfterTheVoteStillLeavesItOut() {
+         Network network = new Network(new Faults());
+         Faults faults = new Faults("p1");
+         ParticipantLog log = new ParticipantLog(faults);
+@@ -96,12 +97,7 @@
+             crashed = true;
+         }
+         check(crashed, "the scheduled crash happened");
+-        equal(ParticipantState.PREPARED, log.state());
+-        check(network.inFlight().isEmpty(), "the vote was lost with the crash");
+-        ParticipantNode restarted = new ParticipantNode("p1", log, network, faults);
+-        restarted.recover();
+-        equal(ParticipantState.PREPARED, restarted.state()); // holds its locks until the coordinator decides
+-        check(network.inFlight().isEmpty(), "a restart sends nothing");
++        equal(List.of(new VoteMessage("p1", Vote.YES)), network.inFlight()); // the coordinator hears the vote even if p1 dies right after
+     }
+ 
+     public static void aParticipantThatCrashesBeforeVotingRestartsAborted() {

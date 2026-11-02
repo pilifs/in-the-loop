@@ -23,6 +23,7 @@ public final class Tests {
             net.terminalvalue.quorum.replication.LastWriterWinsTest.class,
             net.terminalvalue.quorum.twopc.CoordinatorTest.class,
             net.terminalvalue.quorum.twopc.RecoveryTest.class,
+            net.terminalvalue.quorum.twopc.ParticipantTest.class,
             net.terminalvalue.quorum.twopc.NodesTest.class);
 
     private Tests() {}

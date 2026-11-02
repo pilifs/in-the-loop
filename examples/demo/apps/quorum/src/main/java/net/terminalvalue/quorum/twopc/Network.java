@@ -6,7 +6,9 @@ import java.util.List;
 
 /**
  * The messages between the participants and the coordinator: votes on their way to the coordinator, which it takes
- * in any order, and the coordinator's decision, a broadcast every participant can read once it is out.
+ * in any order, and the coordinator's decision, a broadcast every participant can read once it is out. The
+ * coordinator's broadcast reports to the fault injection the network is built with, the coordinator's; a
+ * participant's send reports to the participant's own.
  */
 public final class Network {
 
@@ -18,9 +20,10 @@ public final class Network {
         this.faults = faults;
     }
 
-    /** A participant sends its vote. */
-    public void send(VoteMessage message) {
+    /** A participant sends its vote: one of its I/O operations. */
+    public void send(VoteMessage message, Faults sender) {
         inFlight.add(message);
+        sender.io();
     }
 
     /** The vote from a participant reaches the coordinator. */

@@ -1,21 +1,25 @@
---- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
-+++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
-@@ -39,12 +39,14 @@
-         network.send(new VoteMessage(name, able ? Vote.YES : Vote.NO));
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
+@@ -35,7 +35,7 @@
+                 case PREPARED, COMMITTED, ABORTED -> rejected("already voted");
+             };
+             case GiveUp _ -> switch (state) {
+-                case WORKING -> transition(ABORTED);
++                case WORKING -> transition(ABORTED, VOTE_NO); // tell the coordinator, so that it can abort on the vote rather than on its timer
+                 case PREPARED -> rejected("voted yes: holds its locks until the decision");
+                 case COMMITTED, ABORTED -> rejected("already decided");
+             };
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
+@@ -26,7 +26,7 @@
      }
  
--    /** Participant.timeout: a participant that has not voted gives up on its own, and then never votes. */
-+    /** Participant.timeout: a participant that has not voted gives up on its own, and tells the coordinator by
-+     * voting no, so that the coordinator can abort on the vote rather than on its timer. */
-     public void giveUp() {
-         if (state != State.WORKING) {
-             throw new IllegalStateException(name + " has already voted");
-         }
-         state = State.ABORTED;
-+        network.send(new VoteMessage(name, Vote.NO));
-     }
- 
-     /** Participant.learn: applies the coordinator's decision if one is out; says whether it did. */
+     public static void givesUpOnlyWhileItHasNotVoted() {
+-        equal(new Transition<ParticipantState, ParticipantEffect>(ParticipantState.ABORTED, List.of()),
++        equal(new Transition<>(ParticipantState.ABORTED, List.of(ParticipantEffect.VOTE_NO)),
+                 Participant.decide(ParticipantState.WORKING, new GiveUp()));
+         equal(new Rejected<>("voted yes: holds its locks until the decision"),
+                 Participant.decide(ParticipantState.PREPARED, new GiveUp()));
 --- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
 +++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
 @@ -3,6 +3,7 @@
@@ -33,9 +37,9 @@
 -    public static void aParticipantThatGivesUpNeverVotes() {
 +    public static void aParticipantThatGivesUpVotesNo() {
          Network network = new Network(new Faults());
-         ParticipantNode p1 = new ParticipantNode("p1", network);
+         ParticipantNode p1 = participant("p1", network);
          p1.giveUp();
-         equal(ParticipantNode.State.ABORTED, p1.state());
+         equal(ParticipantState.ABORTED, p1.state());
 -        check(network.inFlight().isEmpty(), "no vote in flight");
 +        equal(List.of(new VoteMessage("p1", Vote.NO)), network.inFlight());
          check(!p1.learn(), "nothing to learn without a decision");
@@ -43,7 +47,7 @@
  
 --- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
 +++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
-@@ -83,9 +83,9 @@
+@@ -89,9 +89,9 @@
                          .vote("p1", Vote.YES).deliver("p1").vote("p2", Vote.YES)
                          .timeout()
                          .deliver("p2").learn("p1").learn("p2").learn("p3"),

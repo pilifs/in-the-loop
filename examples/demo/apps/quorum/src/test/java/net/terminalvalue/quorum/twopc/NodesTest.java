@@ -6,7 +6,7 @@ import static net.terminalvalue.quorum.Tests.equal;
 import java.util.Map;
 import java.util.Set;
 
-/** The nodes around the rules: the coordinator's log and broadcast, the participants, and a crash between the two. */
+/** The nodes around the rules: the coordinator's log and broadcast, the participants' logs and votes, and a crash between a log write and a send. */
 public final class NodesTest {
 
     private NodesTest() {}
@@ -17,7 +17,7 @@ public final class NodesTest {
         Faults faults = new Faults();
         Network network = new Network(faults);
         CoordinatorNode coordinator = new CoordinatorNode(ALL, new CoordinatorLog(faults), network);
-        ParticipantNode p1 = new ParticipantNode("p1", network);
+        ParticipantNode p1 = participant("p1", network);
         p1.prepare(true);
         coordinator.onVote(network.deliver("p1"));
         equal(Outcome.NONE, network.decision());
@@ -26,7 +26,7 @@ public final class NodesTest {
         equal(Phase.COMMITTED, coordinator.phase());
         equal(Outcome.COMMIT, network.decision());
         check(p1.learn(), "p1 learns the decision");
-        equal(ParticipantNode.State.COMMITTED, p1.state());
+        equal(ParticipantState.COMMITTED, p1.state());
     }
 
     public static void abortsOnceEveryVoteIsInAndOneIsNo() {
@@ -76,11 +76,48 @@ public final class NodesTest {
 
     public static void aParticipantThatGivesUpNeverVotes() {
         Network network = new Network(new Faults());
-        ParticipantNode p1 = new ParticipantNode("p1", network);
+        ParticipantNode p1 = participant("p1", network);
         p1.giveUp();
-        equal(ParticipantNode.State.ABORTED, p1.state());
+        equal(ParticipantState.ABORTED, p1.state());
         check(network.inFlight().isEmpty(), "no vote in flight");
         check(!p1.learn(), "nothing to learn without a decision");
+    }
+
+    public static void aParticipantThatCrashesAfterLoggingItsYesLosesTheVoteAndRestartsPrepared() {
+        Network network = new Network(new Faults());
+        Faults faults = new Faults("p1");
+        ParticipantLog log = new ParticipantLog(faults);
+        ParticipantNode p1 = new ParticipantNode("p1", log, network, faults);
+        faults.crashAfter(1);
+        boolean crashed = false;
+        try {
+            p1.prepare(true);
+        } catch (Faults.Crashed e) {
+            crashed = true;
+        }
+        check(crashed, "the scheduled crash happened");
+        equal(ParticipantState.PREPARED, log.state());
+        check(network.inFlight().isEmpty(), "the vote was lost with the crash");
+        ParticipantNode restarted = new ParticipantNode("p1", log, network, faults);
+        restarted.recover();
+        equal(ParticipantState.PREPARED, restarted.state()); // holds its locks until the coordinator decides
+        check(network.inFlight().isEmpty(), "a restart sends nothing");
+    }
+
+    public static void aParticipantThatCrashesBeforeVotingRestartsAborted() {
+        Network network = new Network(new Faults());
+        Faults faults = new Faults("p1");
+        ParticipantLog log = new ParticipantLog(faults);
+        ParticipantNode restarted = new ParticipantNode("p1", log, network, faults);
+        restarted.recover();
+        equal(ParticipantState.ABORTED, restarted.state());
+        equal(ParticipantState.ABORTED, log.state());
+        check(network.inFlight().isEmpty(), "no vote went out");
+    }
+
+    private static ParticipantNode participant(String name, Network network) {
+        Faults faults = new Faults(name);
+        return new ParticipantNode(name, new ParticipantLog(faults), network, faults);
     }
 
     public static void theScriptedRunsAllFinish() {

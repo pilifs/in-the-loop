@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T10:03:24.575Z",
-  "duration_seconds": 149609,
+  "ended": "2026-11-02T10:36:14.886Z",
+  "duration_seconds": 151579,
   "stats": {
-    "turns": 102,
-    "api_calls": 1124,
-    "tool_calls": 1678,
+    "turns": 106,
+    "api_calls": 1181,
+    "tool_calls": 1734,
     "tool_errors": 34,
-    "compactions": 20,
+    "compactions": 21,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 33856,
-      "output_tokens": 2748338,
-      "cache_read_input_tokens": 211819188,
-      "cache_creation_input_tokens": 5985359
+      "input_tokens": 35560,
+      "output_tokens": 2870235,
+      "cache_read_input_tokens": 221762572,
+      "cache_creation_input_tokens": 6245101
     }
   },
   "tools": {
-    "Bash": 1201,
+    "Bash": 1257,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -508,24 +508,38 @@
     {
       "index": 20,
       "started": "2026-11-02T09:32:18.959Z",
-      "ended": "2026-11-02T10:03:24.575Z",
+      "ended": "2026-11-02T10:06:40.940Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 1794,
+        "output_tokens": 123601,
+        "cache_read_input_tokens": 8537354,
+        "cache_creation_input_tokens": 223860
+      },
+      "peak_context_tokens": 238805
+    },
+    {
+      "index": 21,
+      "started": "2026-11-02T10:08:19.477Z",
+      "ended": "2026-11-02T10:36:14.886Z",
       "turns": 4,
       "api_calls": 56,
       "usage": {
-        "input_tokens": 1762,
-        "output_tokens": 122839,
-        "cache_read_input_tokens": 8300176,
-        "cache_creation_input_tokens": 222265
+        "input_tokens": 1672,
+        "output_tokens": 121135,
+        "cache_read_input_tokens": 9706206,
+        "cache_creation_input_tokens": 258147
       },
-      "peak_context_tokens": 237210
+      "peak_context_tokens": 273092
     }
   ],
   "log": {
-    "sha256": "42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f",
-    "bytes": 48513229,
-    "lines": 16651,
-    "gzip_bytes": 8241361,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f.jsonl.gz"
+    "sha256": "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338",
+    "bytes": 50762865,
+    "lines": 17422,
+    "gzip_bytes": 8602283,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -720,6 +734,14 @@
       "summary": "Hold the Java two-phase-commit nodes to the model by trace validation under a fifth configuration, with three new examples",
       "body": "The quorum module gained the glue around the two-phase-commit rules, written as a real coordinator is: CoordinatorNode (counts votes, asks Coordinator#decide and Recovery#decide, writes a CoordinatorLog before it broadcasts on a Network), ParticipantNode, and a Faults injector that crashes the coordinator after any I/O operation. A test-side Traces class runs them through eight scripted scenarios, four with crashes, records the state after each step in the model's variables and prints it as TwoPhaseCommitTraces.tla. The new TwoPhaseCommitTrace.tla extends the model, walks each recorded run and checks every step against the model's next-state relation as the action property EveryStepIsOneOfTheModel, plus that each run starts in the initial state; TwoPhaseCommitTrace.cfg is the two-phase-commit model's fifth configuration. build.py lets a configuration name its own spec, a trace writer run on the patched classes, and whether it counts coverage (TLC attributes none to an action property), renders a recorded run's first step with its scenario name, and matches an example's symbol against the glue methods a model lists as traced. Examples 090 to 092: a node that broadcasts before it logs (caught four steps into the run in which the timer's abort is logged and the coordinator crashes: the decision is out, the log still says collecting), a node that logs the tally only with a decision (caught at the crash that takes the counted vote with it, where the model's Crash keeps the tally), and a participant that votes no when it gives up, verified with every recorded step one of the model's. Two model changes came out of it: Perform now lets a crash fall in any step after what the step logged (a restart with nothing to do, cut short by a crash, is one recorded step; the reachable states and the four state counts are unchanged), and the coordinator's fairness conditions name the completing step (WF_vars(A /\\ up')), since weak fairness of a timeout that decides nothing would otherwise force a crash and hide 057's liveness bug under crashes. Examples 020, 021, 057, 058, 067, 068, 087, 088 and 089 were rebuilt for the fifth column, all with their verdicts; 088's counterexample under crashes is now nine steps rather than ten, since counting a vote and crashing fuse into one step, and its text follows the new trace. Verified by the quorum verify script (27 checks green, 40 tests), by build.py on the twelve two-phase-commit examples with every verdict as expected, and by the result schema. Docs: the spec README, the quorum and demo READMEs, approaches.md, the plugin README and the add-tla-model skill reference.",
       "log_sha256": "42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f"
+    },
+    {
+      "change_id": "trulsvymwtqrnlswxrvkpnpkxyzvnypr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let the two-phase-commit participants crash and restart on a rule generated from their own contract, under two more configurations, with three new examples",
+      "body": "The two-phase-commit model's participants now run on a third generated operator, Participant#decide (Participant.decide.contract, ParticipantContract.tla): what a participant does when asked to prepare, when it gives up, when it reads the decision, and when it restarts after a crash. The committed rule has a prepared participant hold its locks through a restart, since it cannot decide alone (the blocking property), and one that had not voted abort, since it logs its state before sending its vote. ParticipantNode is now glue around that rule, with a ParticipantLog and its own fault injector (Faults takes a process name; Network.send reports to the sender's). The model gained a constant MaxParticipantCrashes, the variables pup and pcrashes, an Act operator through which every participant action logs then sends and may crash after the log write with the vote lost or not, ParticipantCrash and ParticipantRecover actions, fairness for restarts, and two inductive conjuncts; the five existing configurations set the new budget to zero and keep their state counts, and two new ones, TwoPhaseCommitParticipantCrash.cfg (12,754 states) and TwoPhaseCommitParticipantCrashInductive.cfg (18,636 admitted states), check every run and the inductive step with crashes of either process. The trace writer records the two new variables and runs three more scenarios with participant crashes (eleven in all, 103 recorded states).\n\nExamples 093 to 095: a participant that releases its locks on restart aborts a transaction the coordinator committed on its yes vote, found in eight steps under participant crashes and as one step from an admitted state; a participant node that sends its vote before logging it is caught only by its recorded run, at the step where the vote is out and the log still says working; a restarted participant that votes no rather than wait for the coordinator's timer is proved safe and live under all seven configurations, with the changed row taken. Example 092 was regenerated as a change to the participant's rule, 058's patch against the changed model, and 089 to 091's texts for the seven configurations; the liveness counterexamples of 057 and 088 come out in a different order under the added fairness condition, and their texts follow. Verified by the quorum verify script (30 checks, 47 tests, exit 0), by building the three new examples and rebuilding the twelve older two-phase-commit ones, all with the expected verdicts and the older headline traces unchanged except 057 and 088 as described. The build tool's model entry, the spec and app READMEs, the demo and root READMEs, the approaches table, the plugin README and the add-tla-model reference are updated.",
+      "log_sha256": "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338"
     }
   ],
   "logs": {
@@ -727,6 +749,12 @@
       "bytes": 44876360,
       "lines": 15257,
       "gzip_bytes": 7614298,
+      "url": null
+    },
+    "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338": {
+      "bytes": 50762865,
+      "lines": 17422,
+      "gzip_bytes": 8602283,
       "url": null
     },
     "40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2": {

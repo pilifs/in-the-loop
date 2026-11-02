@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "095",
+  "title": "A restarted participant that votes no rather than wait for the timer, proved safe and live",
+  "summary": "A participant that crashes before voting restarts aborted, since no vote of its went out, and says nothing: the coordinator finds out when its timer fires. A developer has the restarted participant vote no as it aborts, so that the coordinator can abort on the vote rather than on its timer. The contract's row gains the effect, the model's `ParticipantRecover` carries it out, and TLC checks the rule under all seven configurations: the invariants, the liveness property and the refinement of transaction commit hold with the participants crashing, the inductive step holds with the new row among the steps, and the recorded runs, one scenario reworked to deliver the restarted participant's no, are all steps of the model.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Participant#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `Participant.decide`, the `Restarted` row for `WORKING` changes from `transition(ABORTED)` to `transition(ABORTED, VOTE_NO)`, with the comment that no vote went out, so say so rather than leave it to the timer. The kernel test and the node test for a restart without a logged vote expect the no vote, and the scripted scenario in `Traces` in which a participant crashes before voting is reworked: the coordinator receives the restarted participant's no, the third participant votes, and the coordinator aborts once every vote is in, without a timeout. `Coordinator.decide` and `Recovery.decide` are untouched.",
+    "patch": "change.patch"
+  },
+  "risk": "Low, and the question a reviewer asks is whether a vote from a participant that was restarted, not asked, can confuse a coordinator in any state: one still collecting, one that already aborted on its timer, one that crashed and restarted itself. The model has every interleaving of those, with the rule as patched.",
+  "expected": {
+    "verdict": "verified",
+    "vacuous": false
+  },
+  "explanation": "The participant's rule in the model is generated from the regenerated contract, so `ParticipantRecover` sends what the new row says: a restart from `WORKING` moves to `ABORTED` with `VOTE_NO`, which `Sends` turns into a no vote in the inbox, the same message `Vote` sends for a participant that cannot do its part. The sixth configuration explores every run with a participant crash and a coordinator crash, and `Atomicity`, `CommitFollowsTheCoordinator`, `EveryParticipantDecides` and `ImplementsTransactionCommit` hold over all of them: the no reaches a coordinator that is still collecting, which aborts on it, or one that has already aborted on its timer or on a restart, which counts it and decides nothing, and no coordinator can have committed, since a commit needs this participant's yes and none went out. The seventh takes one step from each state the inductive invariant admits and lands in an admitted state every time: `ParticipantsAgreeWithTheirVotes` has a no voter aborted, which the restarted participant is. The first four configurations are unchanged at 728, 736, 3,448 and 2,728 states, since no participant crashes in them, and the recorded runs, with the restart scenario reworked so that the coordinator receives the restarted participant's no and aborts once every vote is in, start in the initial state and take steps of the model only. The coverage of the sixth configuration shows the changed row taken, so the verdict is about the new behaviour and not vacuous.",
+  "resolution": "Merge. The change narrows what a restarted participant leaves to the coordinator's timer, and the model proves it safe and live under crashes of both kinds. The reworked scenario in the trace writer is the one a reviewer should read: the coordinator aborting on the restarted participant's vote is the point of the change, and it is now a recorded run held to the model on every build.",
+  "provenance": "Constructed as the third example of participant crashes in the two-phase-commit model, to pair with 093 and 094: a change to the same row as 093's neighbour, correct this time, accepted on the strength of all seven configurations.",
+  "references": [
+    {
+      "title": "Mohan, Lindsay and Obermarck, Transaction Management in the R* Distributed Database Management System (1986): presumed abort, on the coordinator's side and on the participant's",
+      "url": "https://dl.acm.org/doi/10.1145/7239.7266"
+    },
+    {
+      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: the participant's recovery procedure in two-phase commit, and the blocking property",
+      "url": "https://www.microsoft.com/en-us/research/people/philbe/book/"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications, and Paxos commit, the non-blocking alternative",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): checking that an invariant is inductive by starting TLC from every state it admits",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    },
+    {
+      "title": "Cirstea, Kuppe, Loillier and Merz, Validating Traces of Distributed Programs Against TLA+ Specifications (2024): the technique, and what it finds that model checking the specification alone does not",
+      "url": "https://arxiv.org/abs/2404.16075"
+    }
+  ]
+}

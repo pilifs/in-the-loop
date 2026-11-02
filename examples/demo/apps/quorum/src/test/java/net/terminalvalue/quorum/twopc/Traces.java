@@ -11,9 +11,10 @@ import java.util.TreeMap;
  * as a TLA+ module, {@code TwoPhaseCommitTraces.tla}, in the variables of the model {@code TwoPhaseCommit.tla}.
  * {@code TwoPhaseCommitTrace.tla} then has TLC walk each recorded run and check that every step is a step of the
  * model's next-state relation: that the glue around the verified decision rules, the log, the broadcast and the
- * participants, does what the model says it does. The scenarios cover the paths the model's crash configuration is
- * about: a crash between steps, and one after the coordinator has logged a decision and before the broadcast is
- * out, which the fault injection places after a given I/O operation of a step.
+ * participants, does what the model says it does. The scenarios cover the paths the model's crash configurations
+ * are about: a crash between steps, one after the coordinator has logged a decision and before the broadcast is
+ * out, and one after a participant has logged its vote and before the vote is sent, which the fault injection
+ * places after a given I/O operation of a step.
  *
  * <p>Usage: {@code java -cp build/main:build/test net.terminalvalue.quorum.twopc.Traces > spec/TwoPhaseCommitTraces.tla}.
  */
@@ -21,10 +22,10 @@ public final class Traces {
 
     static final List<String> PARTICIPANTS = List.of("p1", "p2", "p3");
 
-    enum Kind { VOTE, GIVE_UP, LEARN, DELIVER, TIMEOUT, CRASH, RECOVER }
+    enum Kind { VOTE, GIVE_UP, LEARN, DELIVER, TIMEOUT, CRASH, RECOVER, PARTICIPANT_CRASH, PARTICIPANT_RECOVER }
 
     /** One scripted step: what happens, to or from which participant, and after how many I/O operations of the
-     * step the coordinator crashes, if it does. */
+     * step the process taking it crashes, if it does: the participant for a vote, the coordinator otherwise. */
     record Step(Kind kind, String participant, Vote vote, int crashAfter) {
         @Override
         public String toString() {
@@ -36,6 +37,8 @@ public final class Traces {
                 case TIMEOUT -> "the coordinator's timer fires";
                 case CRASH -> "the coordinator crashes";
                 case RECOVER -> "the coordinator restarts";
+                case PARTICIPANT_CRASH -> participant + " crashes";
+                case PARTICIPANT_RECOVER -> participant + " restarts";
             };
             return crashAfter > 0 ? what + " and crashes after its " + (crashAfter == 1 ? "first" : crashAfter + "th") + " I/O operation" : what;
         }
@@ -51,6 +54,7 @@ public final class Traces {
         }
 
         Script vote(String p, Vote v) { return add(Kind.VOTE, p, v, 0); }
+        Script voteCrashingAfter(String p, Vote v, int io) { return add(Kind.VOTE, p, v, io); }
         Script giveUp(String p) { return add(Kind.GIVE_UP, p, null, 0); }
         Script learn(String p) { return add(Kind.LEARN, p, null, 0); }
         Script deliver(String p) { return add(Kind.DELIVER, p, null, 0); }
@@ -60,6 +64,8 @@ public final class Traces {
         Script crash() { return add(Kind.CRASH, null, null, 0); }
         Script recover() { return add(Kind.RECOVER, null, null, 0); }
         Script recoverCrashingAfter(int io) { return add(Kind.RECOVER, null, null, io); }
+        Script crash(String p) { return add(Kind.PARTICIPANT_CRASH, p, null, 0); }
+        Script recover(String p) { return add(Kind.PARTICIPANT_RECOVER, p, null, 0); }
 
         private Script add(Kind kind, String p, Vote v, int io) {
             steps.add(new Step(kind, p, v, io));
@@ -109,6 +115,24 @@ public final class Traces {
                         .crash()
                         .recoverCrashingAfter(1)
                         .recover()
+                        .learn("p1").learn("p2").learn("p3"),
+                new Script("a participant crashes after voting yes, restarts holding its locks, and learns the decision")
+                        .vote("p1", Vote.YES).deliver("p1")
+                        .crash("p1")
+                        .vote("p2", Vote.YES).vote("p3", Vote.YES).deliver("p2").deliver("p3")
+                        .recover("p1")
+                        .learn("p1").learn("p2").learn("p3"),
+                new Script("a participant crashes before voting, restarts aborted, and the coordinator aborts on its timer")
+                        .crash("p1")
+                        .vote("p2", Vote.YES).deliver("p2")
+                        .recover("p1")
+                        .timeout()
+                        .learn("p2").learn("p3"),
+                new Script("a participant crashes after logging its yes and before sending it, and the timer aborts")
+                        .voteCrashingAfter("p1", Vote.YES, 1)
+                        .vote("p2", Vote.YES).deliver("p2")
+                        .recover("p1")
+                        .timeout()
                         .learn("p1").learn("p2").learn("p3"));
     }
 
@@ -124,28 +148,65 @@ public final class Traces {
         }
     }
 
+    /** A participant process with its log and its fault injection, up or crashed. */
+    static final class Participant {
+        final String name;
+        final Faults faults;
+        final ParticipantLog log;
+        ParticipantNode node;
+        boolean up = true;
+
+        Participant(String name, Network network) {
+            this.name = name;
+            this.faults = new Faults(name);
+            this.log = new ParticipantLog(faults);
+            this.node = new ParticipantNode(name, log, network, faults);
+        }
+
+        /** The participant's state: what it holds in memory while it is up, and what its log holds while it is down. */
+        ParticipantState state() {
+            return up ? node.state() : log.state();
+        }
+    }
+
     static Run run(Script script) {
         Run run = new Run(script);
         Faults faults = new Faults();
         CoordinatorLog log = new CoordinatorLog(faults);
         Network network = new Network(faults);
-        Map<String, ParticipantNode> participants = new TreeMap<>();
+        Map<String, Participant> participants = new TreeMap<>();
         for (String p : PARTICIPANTS) {
-            participants.put(p, new ParticipantNode(p, network));
+            participants.put(p, new Participant(p, network));
         }
         CoordinatorNode coordinator = new CoordinatorNode(Set.copyOf(PARTICIPANTS), log, network);
         boolean up = true;
         int crashes = 0;
-        run.states.add(state(coordinator, log, network, participants, up, crashes));
+        int participantCrashes = 0;
+        run.states.add(state(coordinator, log, network, participants, up, crashes, participantCrashes));
         for (Step step : script.steps) {
+            boolean participantStep = step.kind() == Kind.VOTE || step.kind() == Kind.GIVE_UP || step.kind() == Kind.LEARN;
+            Participant participant = step.participant() == null ? null : participants.get(step.participant());
             if (step.crashAfter() > 0) {
-                faults.crashAfter(step.crashAfter());
+                (participantStep ? participant.faults : faults).crashAfter(step.crashAfter());
             }
             try {
                 switch (step.kind()) {
-                    case VOTE -> participants.get(step.participant()).prepare(step.vote() == Vote.YES);
-                    case GIVE_UP -> participants.get(step.participant()).giveUp();
-                    case LEARN -> participants.get(step.participant()).learn();
+                    case VOTE -> requireUp(participant, step).prepare(step.vote() == Vote.YES);
+                    case GIVE_UP -> requireUp(participant, step).giveUp();
+                    case LEARN -> requireUp(participant, step).learn();
+                    case PARTICIPANT_CRASH -> {
+                        requireUp(participant, step);
+                        participant.up = false;
+                        participantCrashes++;
+                    }
+                    case PARTICIPANT_RECOVER -> {
+                        if (participant.up) {
+                            throw new AssertionError(participant.name + " is up: " + step);
+                        }
+                        participant.node = new ParticipantNode(participant.name, participant.log, network, participant.faults);
+                        participant.up = true;
+                        participant.node.recover();
+                    }
                     case DELIVER -> {
                         requireUp(up, step);
                         coordinator.onVote(network.deliver(step.participant()));
@@ -169,14 +230,19 @@ public final class Traces {
                     }
                 }
             } catch (Faults.Crashed e) {
-                up = false;
-                crashes++;
+                if (participantStep) {
+                    participant.up = false;
+                    participantCrashes++;
+                } else {
+                    up = false;
+                    crashes++;
+                }
             } catch (RuntimeException e) {
                 // A rule or the glue threw: the run stops here, and the model's own invariants say what to make of it.
                 run.stopped = step + ": " + e;
                 break;
             }
-            run.states.add(state(coordinator, log, network, participants, up, crashes));
+            run.states.add(state(coordinator, log, network, participants, up, crashes, participantCrashes));
         }
         return run;
     }
@@ -187,10 +253,17 @@ public final class Traces {
         }
     }
 
-    /** The state in the model's variables. The coordinator's phase and tally are what it holds in memory while it
-     * is up, and what its log holds while it is down: a restart starts from the log. */
+    private static ParticipantNode requireUp(Participant participant, Step step) {
+        if (!participant.up) {
+            throw new AssertionError(participant.name + " is down: " + step);
+        }
+        return participant.node;
+    }
+
+    /** The state in the model's variables. A process's state is what it holds in memory while it is up, and what
+     * its log holds while it is down: a restart starts from the log. */
     static String state(CoordinatorNode coordinator, CoordinatorLog log, Network network,
-                        Map<String, ParticipantNode> participants, boolean up, int crashes) {
+                        Map<String, Participant> participants, boolean up, int crashes, int participantCrashes) {
         Phase phase = up ? coordinator.phase() : log.phase();
         Map<String, Vote> tally = up ? coordinator.tally() : log.tally();
         StringBuilder s = new StringBuilder("[phase |-> \"").append(phase).append("\", pstate |-> [");
@@ -200,7 +273,9 @@ public final class Traces {
         s.append("], inbox |-> {");
         s.append(String.join(", ", network.inFlight().stream().map(m -> "[from |-> \"" + m.from() + "\", vote |-> \"" + m.vote() + "\"]").distinct().toList()));
         s.append("}, decision |-> \"").append(network.decision()).append("\", up |-> ").append(up ? "TRUE" : "FALSE");
-        s.append(", crashes |-> ").append(crashes).append("]");
+        s.append(", crashes |-> ").append(crashes).append(", pup |-> [");
+        s.append(String.join(", ", PARTICIPANTS.stream().map(p -> p + " |-> " + (participants.get(p).up ? "TRUE" : "FALSE")).toList()));
+        s.append("], pcrashes |-> ").append(participantCrashes).append("]");
         return s.toString();
     }
 

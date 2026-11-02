@@ -1,0 +1,44 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
+@@ -49,7 +49,7 @@
+             };
+             case Restarted _ -> switch (state) {
+                 case WORKING -> transition(ABORTED); // no vote went out: the coordinator will presume abort
+-                case PREPARED -> unchanged("holds its locks until the decision");
++                case PREPARED -> transition(ABORTED); // a restart releases the locks; the coordinator's timer covers the rest
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+         };
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
+@@ -41,8 +41,8 @@
+                 Participant.decide(ParticipantState.COMMITTED, new Learned(Outcome.COMMIT)));
+     }
+ 
+-    public static void aRestartHoldsALoggedYesAndAbortsWithoutOne() {
+-        equal(new Unchanged<>("holds its locks until the decision"),
++    public static void aRestartAbortsWhateverWasLogged() {
++        equal(new Transition<ParticipantState, ParticipantEffect>(ParticipantState.ABORTED, List.of()),
+                 Participant.decide(ParticipantState.PREPARED, new Restarted()));
+         equal(new Transition<ParticipantState, ParticipantEffect>(ParticipantState.ABORTED, List.of()),
+                 Participant.decide(ParticipantState.WORKING, new Restarted()));
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
+@@ -83,7 +83,7 @@
+         check(!p1.learn(), "nothing to learn without a decision");
+     }
+ 
+-    public static void aParticipantThatCrashesAfterLoggingItsYesLosesTheVoteAndRestartsPrepared() {
++    public static void aParticipantThatCrashesAfterLoggingItsYesLosesTheVoteAndRestartsAborted() {
+         Network network = new Network(new Faults());
+         Faults faults = new Faults("p1");
+         ParticipantLog log = new ParticipantLog(faults);
+@@ -100,7 +100,7 @@
+         check(network.inFlight().isEmpty(), "the vote was lost with the crash");
+         ParticipantNode restarted = new ParticipantNode("p1", log, network, faults);
+         restarted.recover();
+-        equal(ParticipantState.PREPARED, restarted.state()); // holds its locks until the coordinator decides
++        equal(ParticipantState.ABORTED, restarted.state()); // the locks are released
+         check(network.inFlight().isEmpty(), "a restart sends nothing");
+     }
+ 

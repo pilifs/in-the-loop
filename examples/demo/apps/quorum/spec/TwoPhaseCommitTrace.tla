@@ -2,8 +2,9 @@
 (***************************************************************************)
 (* Trace validation: the Java nodes of two-phase commit held to the model. *)
 (* TwoPhaseCommitTraces.tla records the runs of the Java coordinator, its  *)
-(* log and broadcast, and the participants through scripted scenarios,     *)
-(* crashes included, one state per step in the model's variables. This     *)
+(* log and broadcast, and the participants, their logs and votes, through *)
+(* scripted scenarios, crashes of either kind included, one state per     *)
+(* step in the model's variables. This     *)
 (* specification walks each recorded run, one recorded state after the     *)
 (* other, and asks two things of it: that it starts in the model's initial *)
 (* state, and that every step is a step of the model's next-state          *)
@@ -16,9 +17,9 @@
 (*                                                                         *)
 (* The decision rules the nodes run are the ones the model's operators are *)
 (* generated from, so what this checks is the glue: that the log is        *)
-(* written before the broadcast, that a crash loses nothing logged, that   *)
-(* the tally the rule decides on is the tally, that a participant does     *)
-(* what Vote, ParticipantTimeout and Learn say.                            *)
+(* written before the broadcast and the vote, that a crash loses nothing   *)
+(* logged, that the tally the rule decides on is the tally, that a         *)
+(* restart starts from the log.                                            *)
 (***************************************************************************)
 EXTENDS TwoPhaseCommit, TwoPhaseCommitTraces
 
@@ -37,6 +38,8 @@ Recorded(s) ==
     /\ decision = s.decision
     /\ up = s.up
     /\ crashes = s.crashes
+    /\ pup = s.pup
+    /\ pcrashes = s.pcrashes
 
 \* The next state is the next recorded one. (Written out with primes: TLC does not prime an operator application.)
 Loads(s) ==
@@ -47,6 +50,8 @@ Loads(s) ==
     /\ decision' = s.decision
     /\ up' = s.up
     /\ crashes' = s.crashes
+    /\ pup' = s.pup
+    /\ pcrashes' = s.pcrashes
 
 TraceInit ==
     /\ run \in 1..Len(Traces)

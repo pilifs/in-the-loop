@@ -632,13 +632,23 @@ TWOPC = {
                  "invariant admits, the coordinator up or down, takes one step, and checks the invariant again",
          "initial": "a state the invariant `Inductive` admits, the coordinator up or down, which need not be reachable",
          "startsAnywhere": True},
+        {"cfg": "spec/TwoPhaseCommitParticipantCrash.cfg", "label": "participant crashes",
+         "what": "every run from the initial state in which a participant may crash, once, between steps or after logging "
+                 "a vote and before sending it, and restart on the participant's rule, generated from `Participant#decide`, "
+                 "while the coordinator may crash once as well; the same invariants and temporal properties, under the added "
+                 "fairness condition that a crashed participant restarts"},
+        {"cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg", "label": "the inductive step with participant crashes",
+         "what": "that the invariant `Inductive` is closed under a participant's crash and restart as well: TLC starts from "
+                 "every state the invariant admits, each process up or down, takes one step, and checks the invariant again",
+         "initial": "a state the invariant `Inductive` admits, each process up or down, which need not be reachable",
+         "startsAnywhere": True},
         {"cfg": "spec/TwoPhaseCommitTrace.cfg", "spec": "spec/TwoPhaseCommitTrace.tla", "label": "the recorded runs",
          "what": "the Java nodes against the model: the coordinator node, its log and its broadcast, and the participant "
-                 "nodes, run through eight scripted scenarios with crashes injected after a given I/O operation, the state "
-                 "after each step recorded in the model's variables (`TwoPhaseCommitTraces.tla`, regenerated from the "
-                 "patched classes); TLC walks each recorded run and checks that it starts in the model's initial state "
-                 "and that every step is a step of the model's next-state relation. A step the model has no action for "
-                 "is one the glue took that the model's verdicts do not cover",
+                 "nodes, their logs and their votes, run through eleven scripted scenarios with crashes of either process "
+                 "injected after a given I/O operation, the state after each step recorded in the model's variables "
+                 "(`TwoPhaseCommitTraces.tla`, regenerated from the patched classes); TLC walks each recorded run and checks "
+                 "that it starts in the model's initial state and that every step is a step of the model's next-state "
+                 "relation. A step the model has no action for is one the glue took that the model's verdicts do not cover",
          "initial": "the model's initial state as the nodes recorded it",
          "explored": "TLC walked the recorded runs, one recorded state after the other, and held each step to the "
                      "model's next-state relation `Next`: the check covers the scripted runs and no others, which is what "
@@ -647,20 +657,27 @@ TWOPC = {
          "traces": {"writer": "net.terminalvalue.quorum.twopc.Traces", "module": "spec/TwoPhaseCommitTraces.tla"}},
     ],
     "traced": ["net.terminalvalue.quorum.twopc.CoordinatorNode#act", "net.terminalvalue.quorum.twopc.CoordinatorNode#onVote",
-               "net.terminalvalue.quorum.twopc.CoordinatorNode#recover", "net.terminalvalue.quorum.twopc.ParticipantNode#giveUp",
-               "net.terminalvalue.quorum.twopc.ParticipantNode#learn", "net.terminalvalue.quorum.twopc.ParticipantNode#prepare"],
+               "net.terminalvalue.quorum.twopc.CoordinatorNode#recover", "net.terminalvalue.quorum.twopc.ParticipantNode#act",
+               "net.terminalvalue.quorum.twopc.ParticipantNode#giveUp", "net.terminalvalue.quorum.twopc.ParticipantNode#learn",
+               "net.terminalvalue.quorum.twopc.ParticipantNode#prepare", "net.terminalvalue.quorum.twopc.ParticipantNode#recover"],
     "contract": "src/contract/Coordinator.decide.contract",
     "operator": "spec/CoordinatorContract.tla",
     "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
     "operators": [{"contract": "src/contract/Recovery.decide.contract", "operator": "spec/RecoveryContract.tla",
-                   "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide"}],
+                   "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide"},
+                  {"contract": "src/contract/Participant.decide.contract", "operator": "spec/ParticipantContract.tla",
+                   "symbol": "net.terminalvalue.quorum.twopc.Participant#decide"}],
     "parts": "the participants, the coordinator and the votes in flight",
-    "initial": "every participant working, no vote counted, no decision, the coordinator up",
+    "initial": "every participant working, no vote counted, no decision, every process up",
     "actions": {
         "Initial predicate": "the initial state",
-        "Vote": "`Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts)",
+        "Vote": "`Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts), as its rule decides; "
+                "it logs the state before it sends the vote, and a crash can fall between the two",
         "ParticipantTimeout": "`Participant.timeout`: a participant that has not voted gives up on its own",
         "Learn": "`Participant.learn`: a participant applies the coordinator's decision",
+        "ParticipantCrash": "a participant crashes between steps: it loses nothing it logged, and takes no step until it restarts",
+        "ParticipantRecover": "`Participant.recover`: a participant restarts with the state it logged and acts on its rule's "
+                              "decision: on the committed rule, a prepared one holds its locks and waits, one that had not voted aborts",
         "ReceiveVote": "`Coordinator.onVote`: the coordinator counts a vote and decides on the tally",
         "CoordinatorTimeout": "`Coordinator.onTimeout`: the collection timer fires with votes missing",
         "Crash": "the coordinator crashes between steps: it loses nothing it logged, and takes no step until it restarts",
@@ -677,12 +694,14 @@ TWOPC = {
                                    "between the logged phase change and the broadcast",
         "BroadcastOnceUp": "a coordinator that is up and decided has its decision out, broadcast when it decided or on restarting",
         "DownOnlyAfterACrash": "the coordinator is down only after a crash",
-        "ParticipantsAgreeWithTheirVotes": "a working participant has not voted, a prepared one voted yes, a no voter has aborted, "
-                                           "and a yes voter that aborted did so on the coordinator's say-so",
+        "ParticipantsDownOnlyAfterACrash": "participants are down only after crashes: no more of them than have crashed",
+        "ParticipantsAgreeWithTheirVotes": "a working participant has not voted, a prepared one voted yes unless a crash took the "
+                                           "vote after the state was logged, a no voter has aborted, and a yes voter that aborted "
+                                           "did so on the coordinator's say-so",
         "CommitNeedsEveryVote": "the coordinator commits only once every vote is counted and yes",
         "EveryParticipantDecides": "every participant eventually commits or aborts, under the fairness the model assumes: "
                                    "participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, "
-                                   "and participants apply a decision once made",
+                                   "participants apply a decision once made, and a crashed process restarts",
         "ImplementsTransactionCommit": "every behaviour of the protocol, seen through the participants' states, is one transaction commit "
                                        "(Lamport and Gray's TCommit) allows: a participant commits only once every participant is prepared or "
                                        "committed, and aborts only while none has committed",
@@ -691,9 +710,10 @@ TWOPC = {
                                     "one part, or a step that changes nothing. A step the model has no action for is one "
                                     "the glue around the rules took, which the model's verdicts do not cover",
     },
-    "machine": "The coordinator's decision rule and its recovery rule inside the model are generated from the behavioural "
-               "contracts of the patched code, so the model checks the decisions the coordinator really makes, on a vote, "
-               "a timeout and a restart.",
+    "machine": "The coordinator's decision rule, its recovery rule and the participant's rule inside the model are generated "
+               "from the behavioural contracts of the patched code, so the model checks the decisions the processes really "
+               "make: the coordinator's on a vote, a timeout and a restart, and a participant's when asked to prepare, when "
+               "it gives up, when it reads the decision and when it restarts.",
 }
 
 RAFT = {

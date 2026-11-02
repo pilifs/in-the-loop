@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Compiles the Quorum module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
 # capability and API contracts, the property proofs (JBMC), and the two-phase-commit and Raft election models (TLC),
-# the former under four configurations and the latter under seven, plus a check that the election model's enabling
+# the former under six configurations and the latter under seven, plus a check that the election model's enabling
 # predicates agree with ENABLED, and the trace check of the two-phase-commit nodes: their recorded runs, held to the
 # model's next-state relation.
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
@@ -24,10 +24,13 @@ java -ea -cp "build/main:build/test" net.terminalvalue.quorum.Tests
 "$JVMCONTRACT" prove --properties src/contract/properties.contract --classes build/main --sources src/main/java --report build/reports
 "$JVMCONTRACT" tla src/contract/Coordinator.decide.contract spec/CoordinatorContract.tla
 "$JVMCONTRACT" tla src/contract/Recovery.decide.contract spec/RecoveryContract.tla
+"$JVMCONTRACT" tla src/contract/Participant.decide.contract spec/ParticipantContract.tla
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitInductive.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrash.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrashInductive.cfg --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitParticipantCrash.cfg --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitParticipantCrashInductive.cfg --library ../../tools/tla/standard-modules
 java -cp "build/main:build/test" net.terminalvalue.quorum.twopc.Traces > spec/TwoPhaseCommitTraces.tla
 "$JVMCONTRACT" tlc spec/TwoPhaseCommitTrace.tla --config spec/TwoPhaseCommitTrace.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla

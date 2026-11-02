@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: quorum, 42 public types, 168 members
+module: quorum, 50 public types, 196 members
 
 net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected
   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)
@@ -188,6 +188,7 @@ net.terminalvalue.quorum.twopc.CoordinatorNode: public final class
 
 net.terminalvalue.quorum.twopc.Faults: public final class
   public Faults()
+  public Faults(java.lang.String)
   public void crashAfter(int)
   public void io()
 
@@ -199,7 +200,7 @@ net.terminalvalue.quorum.twopc.Network: public final class
   public net.terminalvalue.quorum.twopc.Outcome decision()
   public net.terminalvalue.quorum.twopc.VoteMessage deliver(java.lang.String)
   public void broadcast(net.terminalvalue.quorum.twopc.Outcome)
-  public void send(net.terminalvalue.quorum.twopc.VoteMessage)
+  public void send(net.terminalvalue.quorum.twopc.VoteMessage, net.terminalvalue.quorum.twopc.Faults)
 
 net.terminalvalue.quorum.twopc.Outcome: public final enum
   public static final ABORT: net.terminalvalue.quorum.twopc.Outcome
@@ -208,21 +209,64 @@ net.terminalvalue.quorum.twopc.Outcome: public final enum
   public static net.terminalvalue.quorum.twopc.Outcome valueOf(java.lang.String)
   public static net.terminalvalue.quorum.twopc.Outcome[] values()
 
+net.terminalvalue.quorum.twopc.Participant: public final class
+  public static net.terminalvalue.quorum.Decision decide(net.terminalvalue.quorum.twopc.ParticipantState, net.terminalvalue.quorum.twopc.ParticipantEvent)
+
+net.terminalvalue.quorum.twopc.ParticipantEffect: public final enum
+  public static final VOTE_NO: net.terminalvalue.quorum.twopc.ParticipantEffect
+  public static final VOTE_YES: net.terminalvalue.quorum.twopc.ParticipantEffect
+  public static net.terminalvalue.quorum.twopc.ParticipantEffect valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.twopc.ParticipantEffect[] values()
+
+net.terminalvalue.quorum.twopc.ParticipantEvent: public sealed interface permits net.terminalvalue.quorum.twopc.ParticipantEvent$Prepare, net.terminalvalue.quorum.twopc.ParticipantEvent$GiveUp, net.terminalvalue.quorum.twopc.ParticipantEvent$Learned, net.terminalvalue.quorum.twopc.ParticipantEvent$Restarted
+
+net.terminalvalue.quorum.twopc.ParticipantEvent$GiveUp: public final record implements net.terminalvalue.quorum.twopc.ParticipantEvent
+  public GiveUp()
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+
+net.terminalvalue.quorum.twopc.ParticipantEvent$Learned: public final record implements net.terminalvalue.quorum.twopc.ParticipantEvent
+  public Learned(net.terminalvalue.quorum.twopc.Outcome)
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+  public net.terminalvalue.quorum.twopc.Outcome outcome()
+
+net.terminalvalue.quorum.twopc.ParticipantEvent$Prepare: public final record implements net.terminalvalue.quorum.twopc.ParticipantEvent
+  public Prepare(boolean)
+  public boolean able()
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+
+net.terminalvalue.quorum.twopc.ParticipantEvent$Restarted: public final record implements net.terminalvalue.quorum.twopc.ParticipantEvent
+  public Restarted()
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+
+net.terminalvalue.quorum.twopc.ParticipantLog: public final class
+  public ParticipantLog(net.terminalvalue.quorum.twopc.Faults)
+  public net.terminalvalue.quorum.twopc.ParticipantState state()
+  public void write(net.terminalvalue.quorum.twopc.ParticipantState)
+
 net.terminalvalue.quorum.twopc.ParticipantNode: public final class
-  public ParticipantNode(java.lang.String, net.terminalvalue.quorum.twopc.Network)
+  public ParticipantNode(java.lang.String, net.terminalvalue.quorum.twopc.ParticipantLog, net.terminalvalue.quorum.twopc.Network, net.terminalvalue.quorum.twopc.Faults)
   public boolean learn()
   public java.lang.String name()
-  public net.terminalvalue.quorum.twopc.ParticipantNode$State state()
+  public net.terminalvalue.quorum.twopc.ParticipantState state()
   public void giveUp()
   public void prepare(boolean)
+  public void recover()
 
-net.terminalvalue.quorum.twopc.ParticipantNode$State: public final enum
-  public static final ABORTED: net.terminalvalue.quorum.twopc.ParticipantNode$State
-  public static final COMMITTED: net.terminalvalue.quorum.twopc.ParticipantNode$State
-  public static final PREPARED: net.terminalvalue.quorum.twopc.ParticipantNode$State
-  public static final WORKING: net.terminalvalue.quorum.twopc.ParticipantNode$State
-  public static net.terminalvalue.quorum.twopc.ParticipantNode$State valueOf(java.lang.String)
-  public static net.terminalvalue.quorum.twopc.ParticipantNode$State[] values()
+net.terminalvalue.quorum.twopc.ParticipantState: public final enum
+  public static final ABORTED: net.terminalvalue.quorum.twopc.ParticipantState
+  public static final COMMITTED: net.terminalvalue.quorum.twopc.ParticipantState
+  public static final PREPARED: net.terminalvalue.quorum.twopc.ParticipantState
+  public static final WORKING: net.terminalvalue.quorum.twopc.ParticipantState
+  public static net.terminalvalue.quorum.twopc.ParticipantState valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.twopc.ParticipantState[] values()
 
 net.terminalvalue.quorum.twopc.Phase: public final enum
   public static final ABORTED: net.terminalvalue.quorum.twopc.Phase

@@ -13,181 +13,251 @@ Names == <<
     "the coordinator crashes while collecting, and restarts with the presumed abort",
     "the coordinator crashes after logging the commit and before the broadcast, and restarts",
     "the coordinator crashes after logging the abort its timer decided, and restarts",
-    "a restart is itself cut short by a crash, and the next one finishes it"
+    "a restart is itself cut short by a crash, and the next one finishes it",
+    "a participant crashes after voting yes, restarts holding its locks, and learns the decision",
+    "a participant crashes before voting, restarts aborted, and the coordinator aborts on its timer",
+    "a participant crashes after logging its yes and before sending it, and the timer aborts"
 >>
 
 Traces == <<
     \* 1. every participant votes yes, and the coordinator commits
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p3's vote
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "COMMITTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0]
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "COMMITTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 2. one participant votes no, and the coordinator aborts once every vote is in
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes no
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "NO"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "NO"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p3's vote
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "YES"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 3. a vote is late, and the coordinator aborts on its timer
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator's timer fires
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 4. a participant gives up without voting, and the coordinator aborts on its timer
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 gives up
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator's timer fires
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 5. the coordinator crashes while collecting, and restarts with the presumed abort
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator crashes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> FALSE, crashes |-> 1],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> FALSE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator restarts
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 6. the coordinator crashes after logging the commit and before the broadcast, and restarts
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"], [from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p3's vote and crashes after its first I/O operation
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator restarts
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "COMMITTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1]
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "COMMITTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 7. the coordinator crashes after logging the abort its timer decided, and restarts
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator's timer fires and crashes after its first I/O operation
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator restarts
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 votes no
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "NO"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "NO"]}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p2's vote
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NO", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
     >>,
     \* 8. a restart is itself cut short by a crash, and the next one finishes it
     <<
         \* the initial state
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 votes yes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator receives p1's vote
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator crashes
-        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1],
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 1, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator restarts and crashes after its first I/O operation
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 2],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> FALSE, crashes |-> 2, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* the coordinator restarts
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p1 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p2 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2],
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
         \* p3 learns the decision
-        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2]
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 2, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0]
+    >>,
+    \* 9. a participant crashes after voting yes, restarts holding its locks, and learns the decision
+    <<
+        \* the initial state
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
+        \* p1 votes yes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p1", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
+        \* the coordinator receives p1's vote
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
+        \* p1 crashes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 votes yes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p3 votes yes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"], [from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator receives p2's vote
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {[from |-> "p3", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator receives p3's vote
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p1 restarts
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p1 learns the decision
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "PREPARED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 learns the decision
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "PREPARED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p3 learns the decision
+        [phase |-> "COMMITTED", pstate |-> [p1 |-> "COMMITTED", p2 |-> "COMMITTED", p3 |-> "COMMITTED"], votes |-> [p1 |-> "YES", p2 |-> "YES", p3 |-> "YES"], inbox |-> {}, decision |-> "COMMIT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1]
+    >>,
+    \* 10. a participant crashes before voting, restarts aborted, and the coordinator aborts on its timer
+    <<
+        \* the initial state
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
+        \* p1 crashes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 votes yes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator receives p2's vote
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p1 restarts
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator's timer fires
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 learns the decision
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p3 learns the decision
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1]
+    >>,
+    \* 11. a participant crashes after logging its yes and before sending it, and the timer aborts
+    <<
+        \* the initial state
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "WORKING", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 0],
+        \* p1 votes yes and crashes after its first I/O operation
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "WORKING", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 votes yes
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "NONE", p3 |-> "NONE"], inbox |-> {[from |-> "p2", vote |-> "YES"]}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator receives p2's vote
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> FALSE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p1 restarts
+        [phase |-> "COLLECTING", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "NONE", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* the coordinator's timer fires
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "PREPARED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p1 learns the decision
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "PREPARED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p2 learns the decision
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "WORKING"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1],
+        \* p3 learns the decision
+        [phase |-> "ABORTED", pstate |-> [p1 |-> "ABORTED", p2 |-> "ABORTED", p3 |-> "ABORTED"], votes |-> [p1 |-> "NONE", p2 |-> "YES", p3 |-> "NONE"], inbox |-> {}, decision |-> "ABORT", up |-> TRUE, crashes |-> 0, pup |-> [p1 |-> TRUE, p2 |-> TRUE, p3 |-> TRUE], pcrashes |-> 1]
     >>
 >>
 
