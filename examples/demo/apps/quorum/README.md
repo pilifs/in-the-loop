@@ -15,7 +15,7 @@ The design rule is the one deterministic-simulation-tested systems follow: a ker
 | [`backoff.Backoff`](src/main/java/net/terminalvalue/quorum/backoff/Backoff.java) | The delay before a retry | A property: between the base and the cap, and never shorter than the previous attempt | 016, 019 |
 | [`clock.HybridLogicalClock`](src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java) | Timestamps that track physical time and order causally related events | Properties: a new timestamp is later than everything it saw, and `receive` is symmetric | 017, 018 |
 | [`replication.LastWriterWins`](src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java) | Which of two concurrent writes a replica keeps | A law: `winner(a, b) == 1 - winner(b, a)`, so that replicas converge | 022 |
-| [`twopc.Coordinator`](src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | A two-phase-commit coordinator's decision | A [behavioural contract](src/contract/Coordinator.decide.contract), and a [TLA+ model](spec/README.md) of the protocol around it, checked by TLC | 020, 021 |
+| [`twopc.Coordinator`](src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | A two-phase-commit coordinator's decision | A [behavioural contract](src/contract/Coordinator.decide.contract), and a [TLA+ model](spec/README.md) of the protocol around it, checked by TLC for its invariants, its liveness and its refinement of transaction commit | 020, 021, 057, 058 |
 
 The module as a whole has a [capability contract](src/contract/capabilities.contract) (every capability is `none`: no clock, no randomness, no threads, no I/O, which is the determinism guarantee written down) and an [API contract](src/contract/api.contract).
 

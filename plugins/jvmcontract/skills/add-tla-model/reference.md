@@ -60,7 +60,7 @@ jvmcontract statemachine spec/Class.decide.contract [--format dot]      # Mermai
 jvmcontract tlc spec/Model.tla [--deadlock] [--json] [--timeout 1800] [--workers 1] [--library DIR]
 ```
 
-`tlc` runs TLC from `tla2tools.jar` (`$TLA2TOOLS_JAR`, else `~/tools/tla2tools.jar`, else `tlc` on the `PATH`) in the spec's directory, reading the `.cfg` of the same name, with one worker so the reported trace is stable, and `-deadlock` *off* unless `--deadlock` is given (a finished system is meant to stop). Exit code 0 is verified, 1 a violation or no verdict. `--json` prints `verdict` (`"Verified"`, `"Violation"`, `"Unverifiable"`), `invariant`, `deadlock`, `states_generated`, `distinct_states`, `depth`, `seconds`, `trace` (a list of `{step, action, changes}`, `changes` being only the variables that changed) and `output`. `--library` is only for a project that commits copies of the standard modules; the jar has them.
+`tlc` runs TLC from `tla2tools.jar` (`$TLA2TOOLS_JAR`, else `~/tools/tla2tools.jar`, else `tlc` on the `PATH`) in the spec's directory, reading the `.cfg` of the same name, with one worker so the reported trace is stable, and `-deadlock` *off* unless `--deadlock` is given (a finished system is meant to stop). Exit code 0 is verified, 1 a violation or no verdict. `--json` prints `verdict` (`"Verified"`, `"Violation"`, `"Unverifiable"`), `invariant` (the invariant or property violated), `kind` (`invariant`, `deadlock`, `action` or `temporal`), `deadlock`, `properties` (the configuration's `PROPERTIES`), `states_generated`, `distinct_states`, `depth`, `seconds`, `trace` (a list of `{step, action, changes}`, `changes` being only the variables that changed), `lasso` and `stuttering` (for a temporal violation: the step the behaviour returns to, or that it stays in the last state forever) and `output`. `--library` is only for a project that commits copies of the standard modules; the jar has them.
 
 ## The model, as a recipe
 
@@ -123,7 +123,7 @@ Actions: a guard (the enabling condition, what the handler checks or what must b
 
 Environment: anything the system does not control is an action with no guard but a bound: the clock ticks, a dependency goes down or comes back, a message is redelivered (at-least-once delivery: `events' = Append(events, Head(events))` with a count to bound it), a request arrives, a timeout fires before the reply.
 
-Invariants: `TypeOK` always. A rule over the state as it is now is a state predicate (`NoDoubleSale`). A rule about something that must never *happen* ("a call is never permitted while the breaker is open") is a history variable: a boolean set in the action when it happens, never reset, with the invariant `~happened`. A rule "when X, then Y eventually" is liveness and needs fairness and a temporal property; `jvmcontract tlc` reports only invariants and deadlock, so state it as safety if you can ("whenever nothing is in flight, the two services agree": `Quiet => Agreement`), or leave it out and say so.
+Invariants: `TypeOK` always. A rule over the state as it is now is a state predicate (`NoDoubleSale`). A rule about something that must never *happen* ("a call is never permitted while the breaker is open") is a history variable: a boolean set in the action when it happens, never reset, with the invariant `~happened`. A rule "when X, then Y eventually" is liveness: a temporal property (`X ~> Y`, or `<>Y`) under fairness conditions in `Spec` (`WF_vars(Action)` for each action a part of the system is assumed to get round to, never for the environment's choices), listed under `PROPERTIES` in the `.cfg`. `jvmcontract tlc` checks it after the invariants and reports the counterexample as a prefix and how it goes on forever (stuttering, or a loop back to an earlier step). Prefer safety where it exists ("whenever nothing is in flight, the two services agree": `Quiet => Agreement`), and state liveness only for what the protocol promises to reach. A refinement, that the model implements a more abstract specification, is `Abs == INSTANCE AbstractModule` with `Refines == Abs!AbsSpec` under `PROPERTIES`; TLC checks it step by step as an action property. Symmetry sets are unsound with temporal properties, so leave `SYMMETRY` out of a configuration that has them.
 
 Deadlock: with `--deadlock`, a state with no enabled action is reported like a violation. A system that is meant to stop needs `Terminating == Done /\ UNCHANGED vars` in `Next`, and a waiting thread must have no enabled self-loop or TLC sees a successor and no deadlock.
 
@@ -157,6 +157,9 @@ Bounds: two of everything that can conflict (two customers, two threads, two att
   2. Request: current = 1
   ...
   10. Complete: closedEarly = TRUE, current = 0, state = "CLOSED"
+
+✗ temporal property EveryParticipantDecides is violated: after 6 steps the system stays in that state forever, in 0 s (TLC 2.19)
+  ...                                                     # or: returns to step 4 and repeats steps 4 to 6 forever
 
 ⚠ TLC produced no verdict: Finished in 00s at (...)      # read `output` in --json for the Error: line
 ```

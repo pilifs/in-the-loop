@@ -180,11 +180,16 @@ pub struct TlcOptions {
     pub jar: Option<PathBuf>,
     /// Check for deadlock (`false` passes `-deadlock`: a finished system is meant to stop).
     pub deadlock: bool,
+    /// TLC's random seed and fingerprint function (`-seed`, `-fp`). Fixed by default: with one worker, an
+    /// invariant's counterexample is the breadth-first one whatever the seed, but a temporal property's depends
+    /// on the order of the state graph, which the seed decides, and a trace should be the same on every run.
+    pub seed: Option<u64>,
+    pub fp: Option<u32>,
 }
 
 impl TlcOptions {
     pub fn new(spec: &Path) -> TlcOptions {
-        TlcOptions { spec: spec.to_path_buf(), workers: "1".into(), timeout_seconds: 1800, library: None, jar: None, deadlock: false }
+        TlcOptions { spec: spec.to_path_buf(), workers: "1".into(), timeout_seconds: 1800, library: None, jar: None, deadlock: false, seed: Some(1), fp: Some(1) }
     }
 }
 
@@ -196,19 +201,44 @@ pub struct Step {
     pub changes: BTreeMap<String, String>,
 }
 
+/// What TLC found wrong.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ViolationKind {
+    /// A reachable state violates an invariant.
+    Invariant,
+    /// A reachable state has no enabled action (checked only with [`TlcOptions::deadlock`]).
+    Deadlock,
+    /// A step violates an action property, `[][A]_vars`; the next-state relation of a specification the model
+    /// is checked to implement is one.
+    Action,
+    /// A behaviour violates a temporal property: a liveness condition such as `<>P` or `P ~> Q`, under the
+    /// fairness the specification assumes. The counterexample is infinite: a prefix, then stuttering forever or
+    /// a return to an earlier state of the prefix.
+    Temporal,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct TlcResult {
     pub verdict: Verdict,
     pub version: String,
-    /// The invariant violated, or `Deadlock` when the trace ends in a state with no enabled action.
+    /// The invariant or property violated, or `Deadlock` when the trace ends in a state with no enabled action.
     pub invariant: Option<String>,
+    /// What kind of violation `invariant` names.
+    pub kind: Option<ViolationKind>,
     /// The violation is a deadlock (checked only with [`TlcOptions::deadlock`]).
     pub deadlock: bool,
+    /// The temporal properties the configuration lists (`PROPERTIES`), checked after the invariants.
+    pub properties: Vec<String>,
     pub states_generated: Option<u64>,
     pub distinct_states: Option<u64>,
     pub depth: Option<u32>,
     pub seconds: Option<u64>,
     pub trace: Vec<Step>,
+    /// For a temporal violation: the step the behaviour returns to after the last one, and then repeats forever.
+    pub lasso: Option<u32>,
+    /// For a temporal violation: the behaviour stays in the last state forever.
+    pub stuttering: bool,
     pub problem: Option<String>,
     /// TLC's console output, without the progress lines.
     pub output: String,
@@ -220,10 +250,17 @@ impl TlcResult {
         let mut s = String::new();
         match self.verdict {
             Verdict::Verified => {
-                s.push_str(&format!("✓ every invariant holds in {} distinct states", self.distinct_states.map(|n| n.to_string()).unwrap_or_else(|| "?".into())));
+                let what = if self.properties.is_empty() { "every invariant holds" } else { "every invariant and temporal property holds" };
+                s.push_str(&format!("✓ {what} in {} distinct states", self.distinct_states.map(|n| n.to_string()).unwrap_or_else(|| "?".into())));
             }
             Verdict::Violation if self.deadlock => {
                 s.push_str(&format!("✗ deadlock: no action is enabled after {} steps", self.trace.len()));
+            }
+            Verdict::Violation if self.kind == Some(ViolationKind::Action) => {
+                s.push_str(&format!("✗ action property {} is violated after {} steps", self.invariant.as_deref().unwrap_or("?"), self.trace.len()));
+            }
+            Verdict::Violation if self.kind == Some(ViolationKind::Temporal) => {
+                s.push_str(&format!("✗ temporal property {} is violated: after {} steps {}", self.invariant.as_deref().unwrap_or("?"), self.trace.len(), self.forever()));
             }
             Verdict::Violation => {
                 s.push_str(&format!("✗ invariant {} is violated after {} steps", self.invariant.as_deref().unwrap_or("?"), self.trace.len()));
@@ -245,6 +282,60 @@ impl TlcResult {
         }
         s
     }
+
+    /// How a temporal counterexample goes on after its last step.
+    pub fn forever(&self) -> String {
+        match self.lasso {
+            Some(k) => format!("the system returns to step {k} and repeats steps {k} to {} forever", self.trace.len()),
+            None => "the system stays in that state forever".to_string(),
+        }
+    }
+}
+
+/// The temporal properties a TLC configuration lists under `PROPERTIES` (or `PROPERTY`).
+pub fn cfg_properties(cfg: &str) -> Vec<String> {
+    cfg_sections(cfg).into_iter().filter(|(keyword, _)| keyword == "PROPERTIES" || keyword == "PROPERTY").flat_map(|(_, names)| names).collect()
+}
+
+/// The keywords that start a section of a TLC configuration.
+const CFG_KEYWORDS: &[&str] = &[
+    "SPECIFICATION", "INIT", "NEXT", "CONSTANTS", "CONSTANT", "INVARIANTS", "INVARIANT", "PROPERTIES", "PROPERTY", "SYMMETRY", "CONSTRAINTS", "CONSTRAINT", "ACTION_CONSTRAINTS", "ACTION_CONSTRAINT", "VIEW", "ALIAS", "CHECK_DEADLOCK", "POSTCONDITION",
+];
+
+/// A TLC configuration as its sections: the keyword and the items under it, comments removed.
+fn cfg_sections(cfg: &str) -> Vec<(String, Vec<String>)> {
+    let mut sections: Vec<(String, Vec<String>)> = Vec::new();
+    for raw in cfg.lines() {
+        let line = raw.split("\\*").next().unwrap_or("").trim();
+        for token in line.split_whitespace() {
+            if CFG_KEYWORDS.contains(&token) {
+                sections.push((token.to_string(), Vec::new()));
+            } else if let Some(last) = sections.last_mut() {
+                last.1.push(token.to_string());
+            }
+        }
+    }
+    sections
+}
+
+/// The configuration with `property` as its only temporal property, for checking it alone.
+fn cfg_with_only_property(cfg: &str, property: &str) -> String {
+    let mut out = String::new();
+    for (keyword, items) in cfg_sections(cfg) {
+        if keyword == "PROPERTIES" || keyword == "PROPERTY" {
+            continue;
+        }
+        out.push_str(&keyword);
+        out.push('\n');
+        // Constant assignments are `Name = value` token runs; keeping the items on one line keeps them intact.
+        if !items.is_empty() {
+            out.push_str("    ");
+            out.push_str(&items.join(" "));
+            out.push('\n');
+        }
+    }
+    out.push_str(&format!("PROPERTIES\n    {property}\n"));
+    out
 }
 
 /// The TLC command line, by what is installed.
@@ -277,14 +368,42 @@ fn which(program: &str) -> bool {
 pub fn run_tlc(options: &TlcOptions) -> Result<TlcResult, Error> {
     let spec_dir = options.spec.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
     let spec_file = options.spec.file_name().ok_or_else(|| Error::new("spec has no file name"))?.to_string_lossy().into_owned();
+    let cfg = std::fs::read_to_string(options.spec.with_extension("cfg")).unwrap_or_default();
+    let properties = cfg_properties(&cfg);
     let mut command = tlc_command(options)?;
     command.extend(["-workers".into(), options.workers.clone()]);
     if !options.deadlock {
         command.push("-deadlock".into());
     }
-    command.extend(["-cleanup".into(), spec_file]);
-    let raw = run_with_timeout(&command, &spec_dir, Duration::from_secs(options.timeout_seconds))?;
-    Ok(parse_tlc_output(&raw))
+    if let Some(seed) = options.seed {
+        command.extend(["-seed".into(), seed.to_string()]);
+    }
+    if let Some(fp) = options.fp {
+        command.extend(["-fp".into(), fp.to_string()]);
+    }
+    command.push("-cleanup".into());
+    let raw = run_with_timeout(&[command.clone(), vec![spec_file.clone()]].concat(), &spec_dir, Duration::from_secs(options.timeout_seconds))?;
+    let mut result = parse_tlc_output(&raw, &properties);
+    // TLC reports a violated temporal property without naming it, so when the configuration lists several, each
+    // is checked alone until the violated one is found; the trace reported is the one of that check.
+    if result.kind == Some(ViolationKind::Temporal) && properties.len() > 1 {
+        let stem = options.spec.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+        for property in &properties {
+            let name = format!("{stem}-{property}-{}.cfg", std::process::id());
+            let path = spec_dir.join(&name);
+            std::fs::write(&path, cfg_with_only_property(&cfg, property))?;
+            let run = run_with_timeout(&[command.clone(), vec!["-config".into(), name, spec_file.clone()]].concat(), &spec_dir, Duration::from_secs(options.timeout_seconds));
+            let _ = std::fs::remove_file(&path);
+            let alone = parse_tlc_output(&run?, std::slice::from_ref(property));
+            if alone.verdict == Verdict::Violation && alone.kind == Some(ViolationKind::Temporal) {
+                result = alone;
+                result.properties = properties.clone();
+                result.output.push_str(&format!("\n(jvmcontract checked the temporal properties one at a time to name the violated one: {property})\n"));
+                break;
+            }
+        }
+    }
+    Ok(result)
 }
 
 /// Runs a command, capturing stdout and stderr together; on timeout, or if a signal kills it, the output so far is
@@ -348,11 +467,26 @@ pub(crate) fn tempfile_path(prefix: &str) -> PathBuf {
     std::env::temp_dir().join(format!("{prefix}-{}-{nanos}-{n}", std::process::id()))
 }
 
-/// Parses TLC's console output.
-pub fn parse_tlc_output(raw: &str) -> TlcResult {
+/// Parses TLC's console output; `properties` are the temporal properties the configuration lists, which name a
+/// violated one when there is only one (TLC itself does not name it).
+pub fn parse_tlc_output(raw: &str, properties: &[String]) -> TlcResult {
     let output: String = raw.lines().filter(|l| !l.starts_with("Progress(")).collect::<Vec<_>>().join("\n");
     let deadlock = output.contains("Error: Deadlock reached.");
-    let violated = re(r"(?m)^Error: Invariant (\w+) is violated").captures(&output).map(|c| c[1].to_string()).or_else(|| deadlock.then(|| "Deadlock".to_string()));
+    let only = || properties.len().eq(&1).then(|| properties[0].clone());
+    let (kind, violated) = if let Some(c) = re(r"(?m)^Error: Invariant (\w+) is violated").captures(&output) {
+        (Some(ViolationKind::Invariant), Some(c[1].to_string()))
+    } else if deadlock {
+        (Some(ViolationKind::Deadlock), Some("Deadlock".to_string()))
+    } else if let Some(c) = re(r"(?m)^Error: Action property (\w+) is violated").captures(&output) {
+        (Some(ViolationKind::Action), Some(c[1].to_string()))
+    } else if let Some(c) = re(r"(?m)^Error: Action property line (\d+), col \d+ to line \d+, col \d+ of module (\w+) is violated").captures(&output) {
+        // The next-state relation of an instantiated specification: TLC names it by its location.
+        (Some(ViolationKind::Action), Some(only().map(|p| format!("{p} (the step at line {} of module {})", &c[1], &c[2])).unwrap_or_else(|| format!("the step at line {} of module {}", &c[1], &c[2]))))
+    } else if output.contains("Error: Temporal properties were violated.") {
+        (Some(ViolationKind::Temporal), Some(only().unwrap_or_else(|| "a temporal property".to_string())))
+    } else {
+        (None, None)
+    };
     let states = re(r"(\d+) states generated, (\d+) distinct states found").captures(&output);
     let depth = re(r"depth of the complete state graph search is (\d+)").captures(&output).and_then(|c| c[1].parse().ok());
     let seconds = re(r"Finished in (\d+)s").captures(&output).and_then(|c| c[1].parse().ok());
@@ -364,26 +498,42 @@ pub fn parse_tlc_output(raw: &str) -> TlcResult {
     } else {
         Verdict::Unverifiable
     };
-    let trace = if violated.is_some() { parse_trace(&output) } else { Vec::new() };
+    let trace = if violated.is_some() { parse_trace(&output) } else { Trace::default() };
     let problem = if verdict == Verdict::Unverifiable { output.lines().rev().find(|l| !l.trim().is_empty()).map(str::to_string) } else { None };
     TlcResult {
         verdict,
         version,
         invariant: violated,
+        kind: kind.filter(|_| verdict == Verdict::Violation),
         deadlock: deadlock && verdict == Verdict::Violation,
+        properties: properties.to_vec(),
         states_generated: states.as_ref().and_then(|c| c[1].parse().ok()),
         distinct_states: states.as_ref().and_then(|c| c[2].parse().ok()),
         depth,
         seconds,
-        trace,
+        trace: trace.steps,
+        lasso: trace.lasso,
+        stuttering: trace.stuttering,
         problem,
         output,
     }
 }
 
+/// A counterexample: its states, and for a temporal one, how it goes on forever.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Trace {
+    pub steps: Vec<Step>,
+    /// The step the behaviour returns to after the last one (`Back to state N`).
+    pub lasso: Option<u32>,
+    /// The behaviour stays in the last state forever (`Stuttering`).
+    pub stuttering: bool,
+}
+
 /// TLC's counterexample as a list of steps, each with the action and the variables it changed.
-pub fn parse_trace(output: &str) -> Vec<Step> {
-    let Some((_, body)) = output.split_once("The behavior up to this point is:") else { return Vec::new() };
+pub fn parse_trace(output: &str) -> Trace {
+    let Some((_, body)) = output.split_once("The behavior up to this point is:").or_else(|| output.split_once("The following behavior constitutes a counter-example:")) else { return Trace::default() };
+    let lasso = re(r"(?m)^Back to state (\d+):").captures(body).and_then(|c| c[1].parse().ok());
+    let stuttering = re(r"(?m)^State \d+: Stuttering").is_match(body);
     let header = re(r"(?m)^State (\d+): <([^>]*)>\n");
     let mut steps = Vec::new();
     let mut previous: BTreeMap<String, String> = BTreeMap::new();
@@ -404,7 +554,7 @@ pub fn parse_trace(output: &str) -> Vec<Step> {
         steps.push(Step { step: number, action, changes });
         previous = values;
     }
-    steps
+    Trace { steps, lasso, stuttering }
 }
 
 #[cfg(test)]
@@ -445,7 +595,7 @@ mod tests {
     #[test]
     fn parses_a_violation_trace() {
         let output = "TLC2 Version 2.19 of Day Month 20??\nError: Invariant NoMoneyStranded is violated.\nThe behavior up to this point is:\nState 1: <Initial predicate>\n/\\ time = 0\n/\\ order = [alice |-> \"NONE\"]\n\nState 2: <Hold line 67, col 5 to col 70 of module BoxOffice>\n/\\ time = 0\n/\\ order = [alice |-> \"PENDING_PAYMENT\"]\n\n9 states generated, 5 distinct states found, 0 states left on queue.\nFinished in 02s at (2026-10-31 10:00:00)\n";
-        let result = parse_tlc_output(output);
+        let result = parse_tlc_output(output, &[]);
         assert_eq!(result.verdict, Verdict::Violation);
         assert_eq!(result.invariant.as_deref(), Some("NoMoneyStranded"));
         assert_eq!(result.distinct_states, Some(5));
@@ -456,14 +606,62 @@ mod tests {
         assert!(!result.deadlock);
 
         let stuck = "TLC2 Version 2.19 of Day Month 20??\nError: Deadlock reached.\nError: The behavior up to this point is:\nState 1: <Initial predicate>\n/\\ state = \"UNINITIALIZED\"\n\nState 2: <Request line 60, col 5 to col 70 of module ClassInit>\n/\\ state = \"IN_PROGRESS\"\n\n3 states generated, 2 distinct states found, 0 states left on queue.\nFinished in 01s at (2026-10-31 10:00:00)\n";
-        let result = parse_tlc_output(stuck);
+        let result = parse_tlc_output(stuck, &[]);
         assert_eq!(result.verdict, Verdict::Violation);
         assert!(result.deadlock);
         assert_eq!(result.invariant.as_deref(), Some("Deadlock"));
         assert_eq!(result.trace.len(), 2);
         assert!(result.summary().starts_with("✗ deadlock: no action is enabled after 2 steps"), "{}", result.summary());
-        let ok = parse_tlc_output("TLC2 Version 2.19\nModel checking completed. No error has been found.\n3604 states generated, 1000 distinct states found, 0 states left on queue.\nThe depth of the complete state graph search is 20.\nFinished in 02s");
+        let ok = parse_tlc_output("TLC2 Version 2.19\nModel checking completed. No error has been found.\n3604 states generated, 1000 distinct states found, 0 states left on queue.\nThe depth of the complete state graph search is 20.\nFinished in 02s", &["Live".into()]);
         assert_eq!(ok.verdict, Verdict::Verified);
         assert_eq!(ok.depth, Some(20));
+        assert!(ok.kind.is_none());
+        assert!(ok.summary().starts_with("✓ every invariant and temporal property holds in 1000 distinct states"), "{}", ok.summary());
+    }
+
+    #[test]
+    fn parses_temporal_and_action_property_violations() {
+        // A liveness violation that stutters: TLC does not name the property, so the configuration's one does.
+        let stutter = "TLC2 Version 2.19 of Day Month 20??\nError: Temporal properties were violated.\n\nError: The following behavior constitutes a counter-example:\n\nState 1: <Initial predicate>\n/\\ x = 0\n/\\ y = 0\n\nState 2: <Inc line 6, col 8 to line 6, col 41 of module Live>\n/\\ x = 1\n/\\ y = 0\n\nState 3: Stuttering\nFinished checking temporal properties in 00s at 2026-11-01 21:56:17\n6 states generated, 5 distinct states found, 0 states left on queue.\n";
+        let result = parse_tlc_output(stutter, &["Eventually".into()]);
+        assert_eq!(result.verdict, Verdict::Violation);
+        assert_eq!(result.kind, Some(ViolationKind::Temporal));
+        assert_eq!(result.invariant.as_deref(), Some("Eventually"));
+        assert_eq!(result.trace.len(), 2);
+        assert_eq!(result.trace[1].action, "Inc");
+        assert!(result.stuttering && result.lasso.is_none());
+        assert_eq!(result.summary().lines().next().unwrap(), "✗ temporal property Eventually is violated: after 2 steps the system stays in that state forever (TLC 2.19)");
+        let unnamed = parse_tlc_output(stutter, &["Eventually".into(), "Settles".into()]);
+        assert_eq!(unnamed.invariant.as_deref(), Some("a temporal property"));
+
+        // A lasso: the behaviour returns to an earlier state.
+        let lasso = stutter.replace("State 3: Stuttering", "State 3: <Spin line 7, col 9 to line 7, col 42 of module Live>\n/\\ x = 1\n/\\ y = 1\n\nBack to state 2: <Spin line 7, col 9 to line 7, col 42 of module Live>");
+        let result = parse_tlc_output(&lasso, &["Eventually".into()]);
+        assert_eq!(result.trace.len(), 3);
+        assert_eq!(result.lasso, Some(2));
+        assert!(!result.stuttering);
+        assert!(result.summary().starts_with("✗ temporal property Eventually is violated: after 3 steps the system returns to step 2 and repeats steps 2 to 3 forever"), "{}", result.summary());
+
+        // An action property, named, and the next-state relation of an instantiated specification, located.
+        let action = "TLC2 Version 2.19\nError: Action property Grows is violated.\nError: The behavior up to this point is:\nState 1: <Initial predicate>\n/\\ x = 0\n\nState 2: <Spin line 7, col 9 to line 7, col 42 of module Act>\n/\\ x = 0\n\n5 states generated, 5 distinct states found, 0 states left on queue.\n";
+        let result = parse_tlc_output(action, &["Grows".into()]);
+        assert_eq!(result.kind, Some(ViolationKind::Action));
+        assert_eq!(result.invariant.as_deref(), Some("Grows"));
+        assert_eq!(result.trace.len(), 2);
+        assert!(result.summary().starts_with("✗ action property Grows is violated after 2 steps"), "{}", result.summary());
+        let located = action.replace("Action property Grows", "Action property line 6, col 19 to line 6, col 29 of module Abs");
+        let result = parse_tlc_output(&located, &["Refines".into()]);
+        assert_eq!(result.kind, Some(ViolationKind::Action));
+        assert_eq!(result.invariant.as_deref(), Some("Refines (the step at line 6 of module Abs)"));
+        assert_eq!(parse_tlc_output(&located, &[]).invariant.as_deref(), Some("the step at line 6 of module Abs"));
+    }
+
+    #[test]
+    fn reads_and_rewrites_the_properties_of_a_configuration() {
+        let cfg = "\\* three participants\nSPECIFICATION Spec\n\nCONSTANTS\n    Participants = {p1, p2, p3}\n\nINVARIANTS\n    TypeOK\n    Atomicity \\* once committed, no abort\n\nPROPERTIES\n    EveryParticipantDecides\n    Refines\n";
+        assert_eq!(cfg_properties(cfg), vec!["EveryParticipantDecides".to_string(), "Refines".to_string()]);
+        assert!(cfg_properties("SPECIFICATION Spec\nINVARIANTS TypeOK\n").is_empty());
+        let alone = cfg_with_only_property(cfg, "Refines");
+        assert_eq!(alone, "SPECIFICATION\n    Spec\nCONSTANTS\n    Participants = {p1, p2, p3}\nINVARIANTS\n    TypeOK Atomicity\nPROPERTIES\n    Refines\n");
     }
 }

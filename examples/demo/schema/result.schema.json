@@ -207,7 +207,18 @@
       ]
     },
     "invariant": {
-      "description": "For a model-checking violation (D1): the invariant that failed.",
+      "description": "For a model-checking violation (D1): the invariant or property that failed (`Deadlock` for a deadlock).",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "violationKind": {
+      "description": "For a model-checking violation (D1): what `invariant` names: an invariant, a deadlock, an action property (such as the next-state relation of a specification the model implements) or a temporal property (liveness).",
+      "enum": ["invariant", "deadlock", "action", "temporal", null]
+    },
+    "forever": {
+      "description": "For a temporal violation (D1): how the counterexample goes on after its last step; TLC's counterexample is infinite, a prefix and then stuttering or a loop back into the prefix.",
       "type": [
         "string",
         "null"

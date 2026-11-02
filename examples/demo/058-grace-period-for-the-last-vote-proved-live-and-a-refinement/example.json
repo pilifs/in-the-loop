@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "058",
+  "title": "A grace period for the last vote, proved to keep every participant deciding",
+  "summary": "The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer gains the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `GRACE` to `Phase`. On a `Timeout` in `COLLECTING` with `unanimousSoFar`, move to `GRACE` with no effects; a `Timeout` in `GRACE` aborts; a `Tally` in `GRACE` is decided as in `COLLECTING`. The model's `CoordinatorTimeout` action and `TypeOK` admit the new phase. The contract's domain grows from 28 to 35 cases; two tests are added.",
+    "patch": "change.patch"
+  },
+  "risk": "The same as in example 057: a prepared participant is released only by a decision, so a coordinator that can wait must still be bound to decide. The change also adds a phase, which is where a protocol implementation gets its bugs: a vote that arrives in the new phase, the timer firing in it, a decision made from it. Whether the new phase can commit over a no, or leave a participant waiting, is a question about every order of votes and timeouts, which is the model's question.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The coordinator's rule in the model is generated from the regenerated contract, so the model runs the new rule, `GRACE` included. TLC explores every reachable state for three participants and checks three kinds of statement. The invariants: no participant has aborted once anything committed, and a participant commits only on the coordinator's decision after voting yes. The liveness property `EveryParticipantDecides`, under the model's fairness conditions: the second timeout is what makes it true, since the timer keeps firing while votes are missing, and in `GRACE` it aborts. And the refinement `ImplementsTransactionCommit`: `TCommit.tla` is Lamport and Gray's specification of what any commit protocol must achieve, with no coordinator, messages or timers, in which a participant may commit only once every participant is prepared or committed and may abort only while none has committed; the model instantiates it on the participants' states and asks TLC to check, step by step, that every step of the protocol is a step transaction commit allows. All three hold. This is the proof that the grace period is a different protocol from example 057's, and a correct one: it waits, and then it decides.",
+  "resolution": "Merge. The contract diff is committed with the change, and the model's invariants, liveness property and refinement are checked on every build.",
+  "provenance": "Constructed as the repair of example 057, to show an intended change to a protocol's timing accepted on the strength of a liveness proof and a refinement.",
+  "references": [
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 8: liveness and fairness",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

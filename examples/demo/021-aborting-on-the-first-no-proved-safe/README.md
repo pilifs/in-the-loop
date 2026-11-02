@@ -5,7 +5,7 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✓ Verified: all invariants hold in 644 states** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✓ Verified: all invariants and properties hold in 644 states** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
 > The coordinator used to wait for every vote before deciding, holding every participant's locks until the last straggler or the timeout. The developer makes it abort as soon as one no arrives. The regenerated contract changes in one case, the model checker runs every interleaving of three participants, the coordinator, the votes in flight and both timeouts, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of the protocol.
 
@@ -69,7 +69,7 @@ public static Decision<Phase, CoordinatorEffect> decide(Phase phase, Coordinator
 
 ## What the verifier found
 
-Every invariant holds in every reachable state of the model: 644 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}).
+Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included: 644 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}).
 
 The coordinator's decision rule inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the coordinator really makes.
 
@@ -124,20 +124,25 @@ How the verdict was reached: TLC 2.19 explored 644 distinct states to depth 11 i
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 68 and seed -2673015125907743265 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1752590] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1707391] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-10-31 21:22:07)
+Starting... (2026-11-01 22:09:51)
+Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 21:22:07.
+Finished computing initial states: 1 distinct state generated at 2026-11-01 22:09:51.
+Checking 3 branches of temporal properties for the complete state space with 1932 total distinct states at (2026-11-01 22:09:51)
+Finished checking temporal properties in 00s at 2026-11-01 22:09:51
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -145,7 +150,7 @@ Model checking completed. No error has been found.
 2240 states generated, 644 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 11.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
-Finished in 00s at (2026-10-31 21:22:07)
+Finished in 00s at (2026-11-01 22:09:51)
 ```
 
 </details>
@@ -165,7 +170,7 @@ Finished in 00s at (2026-10-31 21:22:07)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
+                "text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."
               }
             },
             {

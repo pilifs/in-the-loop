@@ -1,0 +1,80 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Phase.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Phase.java
+@@ -4,6 +4,8 @@
+ public enum Phase {
+     /** Prepare was sent; votes are coming in. */
+     COLLECTING,
++    /** The timer fired with votes missing and every vote so far yes: one more period for the rest. */
++    GRACE,
+     COMMITTED,
+     ABORTED
+ }
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
+@@ -6,6 +6,7 @@
+ import static net.terminalvalue.quorum.twopc.CoordinatorEffect.SEND_COMMIT;
+ import static net.terminalvalue.quorum.twopc.Phase.ABORTED;
+ import static net.terminalvalue.quorum.twopc.Phase.COMMITTED;
++import static net.terminalvalue.quorum.twopc.Phase.GRACE;
+ 
+ import net.terminalvalue.quorum.Decision;
+ import net.terminalvalue.quorum.twopc.CoordinatorEvent.Tally;
+@@ -23,13 +24,16 @@
+     public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {
+         return switch (event) {
+             case Tally tally -> switch (phase) {
+-                case COLLECTING -> !tally.complete()
++                case COLLECTING, GRACE -> !tally.complete()
+                         ? unchanged("waiting for the remaining votes")
+                         : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+-            case Timeout _ -> switch (phase) {
+-                case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
++            case Timeout timeout -> switch (phase) {
++                // Every vote so far is yes: the missing participants may only be slow, and aborting throws away
++                // work every responder approved. Give them one more period; a second timeout aborts.
++                case COLLECTING -> timeout.unanimousSoFar() ? transition(GRACE) : transition(ABORTED, SEND_ABORT);
++                case GRACE -> transition(ABORTED, SEND_ABORT); // presumed abort
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+         };
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/CoordinatorTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/CoordinatorTest.java
+@@ -32,6 +32,16 @@
+                 Coordinator.decide(Phase.COLLECTING, new Timeout(false)));
+     }
+ 
++    public static void waitsOneMorePeriodWhenEveryVoteSoFarIsYes() {
++        equal(new Transition<Phase, CoordinatorEffect>(Phase.GRACE, List.of()),
++                Coordinator.decide(Phase.COLLECTING, new Timeout(true)));
++    }
++
++    public static void abortsOnTheSecondTimeout() {
++        equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
++                Coordinator.decide(Phase.GRACE, new Timeout(true)));
++    }
++
+     public static void aDecisionIsFinal() {
+         check(Coordinator.decide(Phase.COMMITTED, new Timeout(true)) instanceof Decision.Unchanged, "committed stays");
+         check(Coordinator.decide(Phase.ABORTED, new Tally(true, true)) instanceof Decision.Unchanged, "aborted stays");
+--- a/examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
++++ b/examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+@@ -89,7 +89,7 @@
+ 
+ \* Coordinator.onTimeout: the collection timer fires while votes are missing.
+ CoordinatorTimeout ==
+-    /\ phase = "COLLECTING"
++    /\ phase \in {"COLLECTING", "GRACE"}
+     /\ Counted # Participants
+     /\ Apply(Decide(phase, [kind |-> "Timeout", unanimousSoFar |-> \A p \in Counted : votes[p] = "YES"]))
+     /\ UNCHANGED <<pstate, votes, inbox>>
+@@ -128,7 +128,7 @@
+ (***************************************************************************)
+ 
+ TypeOK ==
+-    /\ phase \in {"COLLECTING", "COMMITTED", "ABORTED"}
++    /\ phase \in {"COLLECTING", "GRACE", "COMMITTED", "ABORTED"}
+     /\ \A p \in Participants : pstate[p] \in {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}
+     /\ \A p \in Participants : votes[p] \in {"YES", "NO", "NONE"}
+     /\ decision \in {"NONE", "COMMIT", "ABORT"}

@@ -74,6 +74,7 @@ jvmcontract capabilities --each build/libs/*.jar
 jvmcontract tla src/contract/OrderLifecycle.decide.contract spec/OrderLifecycleContract.tla
 jvmcontract tlc spec/BoxOffice.tla --json
 jvmcontract tlc spec/ClassInit.tla --deadlock    # also report a reachable state in which no action is enabled
+jvmcontract tlc spec/TwoPhaseCommit.tla          # the configuration's PROPERTIES (liveness, refinement) are checked after the invariants
 
 # Views: the state machine a contract describes, and a class file's structure.
 jvmcontract statemachine src/contract/OrderLifecycle.decide.contract --format mermaid
@@ -172,7 +173,7 @@ The crate's modules follow the pipeline: [`classfile`](src/classfile/mod.rs) par
 - **Regression proofs over arrays**: a method that takes or returns arrays is proved to behave as its previous version with no property written at all, the previous version being the specification: the results, the exceptions and what each version leaves in the arrays are compared, and the differing input is shrunk.
 - **API contracts**, the fourth lockfile: the public surface of a module, diffed like the others.
 - **Capability contracts per dependency** (`capabilities --each a.jar b.jar`), the hook the Java README left open.
-- **A TLC runner** that parses the verdict, state counts and the counterexample trace into data, with optional deadlock checking (`--deadlock`, whose trace is reported like an invariant violation), and a **state-machine view** of a contract (Mermaid or Graphviz) that names unreachable and terminal states.
+- **A TLC runner** that parses the verdict, state counts and the counterexample trace into data, with optional deadlock checking (`--deadlock`, whose trace is reported like an invariant violation), and temporal properties: a liveness property under fairness, or a refinement of a more abstract specification (`PROPERTIES` in the configuration), reported with the property's name (TLC does not name it; the runner checks them one at a time when there are several) and, for a liveness counterexample, how the behaviour goes on forever after the trace. Also a **state-machine view** of a contract (Mermaid or Graphviz) that names unreachable and terminal states.
 - **JSON output** for every command, **execution cost** per derivation (`--cost`), and a step and depth budget, so a method that does not terminate on some input is refused instead of hanging.
 
 ## Limits

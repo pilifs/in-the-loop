@@ -868,6 +868,37 @@
       "approach": "B11",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "057",
+      "path": "057-coordinator-that-waits-for-the-last-yes-vote-blocks-forever",
+      "title": "A coordinator that waits for the last vote when every vote so far is yes blocks forever",
+      "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a five-step run after which the prepared participant holds its locks forever.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "058",
+      "path": "058-grace-period-for-the-last-vote-proved-live-and-a-refinement",
+      "title": "A grace period for the last vote, proved to keep every participant deciding",
+      "summary": "The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer gains the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

@@ -128,20 +128,23 @@ How the verdict was reached: TLC 2.19 explored 27 distinct states to depth 3 in 
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 130 and seed -39777766411100630 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1752362] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1707173] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
+Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-10-31 21:22:05)
+Starting... (2026-11-01 22:09:48)
+Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 21:22:05.
+Finished computing initial states: 1 distinct state generated at 2026-11-01 22:09:48.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -151,14 +154,14 @@ State 1: <Initial predicate>
 /\ inbox = {}
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 2: <Vote line 41, col 5 to line 45, col 43 of module TwoPhaseCommit>
+State 2: <Vote line 44, col 5 to line 48, col 43 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
 /\ inbox = {[from |-> p1, vote |-> "NO"]}
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 3: <CoordinatorTimeout line 87, col 5 to line 90, col 41 of module TwoPhaseCommit>
+State 3: <CoordinatorTimeout line 92, col 5 to line 95, col 41 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
 /\ decision = "COMMIT"
 /\ phase = "COMMITTED"
@@ -168,7 +171,7 @@ State 3: <CoordinatorTimeout line 87, col 5 to line 90, col 41 of module TwoPhas
 27 states generated, 27 distinct states found, 23 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 9 (minimum is 8, the maximum 10 and the 95th percentile is 10).
-Finished in 00s at (2026-10-31 21:22:05)
+Finished in 00s at (2026-11-01 22:09:49)
 ```
 
 </details>
@@ -188,7 +191,7 @@ Finished in 00s at (2026-10-31 21:22:05)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
+                "text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."
               }
             },
             {

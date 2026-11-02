@@ -614,6 +614,12 @@ TWOPC = {
         "TypeOK": "every variable has a value of its type",
         "Atomicity": "once the coordinator or any participant has committed, no participant has aborted",
         "CommitFollowsTheCoordinator": "a participant commits only on the coordinator's decision, and only after voting yes",
+        "EveryParticipantDecides": "every participant eventually commits or aborts, under the fairness the model assumes: "
+                                   "participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, "
+                                   "and participants apply a decision once made",
+        "ImplementsTransactionCommit": "every behaviour of the protocol, seen through the participants' states, is one transaction commit "
+                                       "(Lamport and Gray's TCommit) allows: a participant commits only once every participant is prepared or "
+                                       "committed, and aborts only while none has committed",
     },
 }
 
@@ -687,11 +693,24 @@ def run_tool_tlc(folder, example, root, module, result):
     (folder / "verifier-output.txt").write_text(output.rstrip("\n") + "\n")
     verdict = tlc_result["verdict"]
     trace = [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in tlc_result["trace"]] if verdict == "violation" else None
-    model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", (build / model_files["cfg"]).read_text(), re.M))
+    cfg = (build / model_files["cfg"]).read_text()
+    model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", cfg, re.M))
+    properties = bool(re.search(r"^PROPERTIES|^PROPERTY", cfg, re.M))
+    kind = tlc_result.get("kind")
+    # How a temporal counterexample goes on after its last step: TLC's counterexample for a liveness property is
+    # infinite, a prefix and then either stuttering or a loop back into the prefix.
+    forever = None
+    if verdict == "violation" and kind == "temporal":
+        forever = (f"returns to step {tlc_result['lasso']} and repeats steps {tlc_result['lasso']} to {len(trace)} forever"
+                   if tlc_result.get("lasso") else "stays in that state forever")
     findings = []
     if verdict != "verified":
         if verdict == "violation" and tlc_result.get("deadlock"):
             message = f"{model_files['spec']} deadlocks after {len(trace)} steps: no action is enabled"
+        elif verdict == "violation" and kind == "temporal":
+            message = f"Temporal property {tlc_result['invariant']} of {model_files['spec']} is violated: after {len(trace)} steps the system {forever}"
+        elif verdict == "violation" and kind == "action":
+            message = f"Action property {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
         elif verdict == "violation":
             message = f"Invariant {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
         else:
@@ -702,7 +721,7 @@ def run_tool_tlc(folder, example, root, module, result):
                                                              "region": {"startLine": result["after"]["startLine"]}}}]})
     sarif = {"version": "2.1.0", "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "runs": [{
         "tool": {"driver": {"name": "jvmcontract tlc", "rules": [
-            {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."}},
+            {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."}},
             {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}}]}},
         "results": findings}]}
     (folder / "result.sarif").write_text(json.dumps(sarif, indent=2, ensure_ascii=False) + "\n")
@@ -712,6 +731,8 @@ def run_tool_tlc(folder, example, root, module, result):
         "trace": trace,
         "statesExplored": states,
         "invariant": tlc_result.get("invariant"),
+        "violationKind": kind,
+        "forever": forever,
         "domain": model,
         "stateMachine": tool_state_machine(app, root, model_files["symbol"]),
         "proof": (f"{tlc_result['version']} explored {states:,} distinct states"
@@ -720,9 +741,10 @@ def run_tool_tlc(folder, example, root, module, result):
         "problem": tlc_result.get("problem") if verdict == "unverifiable" else None,
     })
     result["verdictLabel"] = {
-        "violation": f"{VERDICT_LABEL[verdict]}: {'deadlock' if tlc_result.get('deadlock') else tlc_result.get('invariant') or ''}, {len(trace or [])}-step trace",
-        "verified": (f"{VERDICT_LABEL[verdict]}: all invariants hold in {states:,} states{', no deadlock' if deadlock else ''}"
-                     if states is not None else VERDICT_LABEL[verdict]),
+        "violation": f"{VERDICT_LABEL[verdict]}: {'deadlock' if tlc_result.get('deadlock') else tlc_result.get('invariant') or ''}, "
+                     f"{len(trace or [])}-step trace{' then forever' if kind == 'temporal' else ''}",
+        "verified": (f"{VERDICT_LABEL[verdict]}: all invariants{' and properties' if properties else ''} hold in {states:,} states"
+                     f"{', no deadlock' if deadlock else ''}" if states is not None else VERDICT_LABEL[verdict]),
         "unverifiable": VERDICT_LABEL[verdict],
     }[verdict]
 
@@ -1169,15 +1191,21 @@ def findings_tlc(ex, res):
     model = MODELS[app_of(ex)]
     if res["verdict"] == "violation":
         inv = res["invariant"]
-        out = [
-            (f"TLC found a run of the system, {len(res['trace'])} steps long, after which no action of any part is "
-             f"enabled: a **deadlock**, {model['invariants'].get(inv, 'every part waits for another')}. "
-             "Each step is one action of one part of the system:"
-             if inv == "Deadlock" else
-             f"TLC found a run of the system, {len(res['trace'])} steps long, that violates the invariant "
-             f"**{inv}** ({model['invariants'].get(inv, inv)}). Each step is one action of one part of the system:"),
-            "",
-        ]
+        kind = res.get("violationKind")
+        if inv == "Deadlock":
+            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, after which no action of any part is "
+                     f"enabled: a **deadlock**, {model['invariants'].get(inv, 'every part waits for another')}.")
+        elif kind == "temporal":
+            found = (f"TLC found a run of the system that violates the temporal property **{inv}** ({model['invariants'].get(inv, inv)}): "
+                     f"after the {len(res['trace'])} steps below, the system {res['forever']}, and the property never comes true. "
+                     "The run respects every fairness condition the model assumes; the parts that could act, do.")
+        elif kind == "action":
+            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, whose last step violates the action property "
+                     f"**{inv}** ({model['invariants'].get(inv, inv)}).")
+        else:
+            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, that violates the invariant "
+                     f"**{inv}** ({model['invariants'].get(inv, inv)}).")
+        out = [found + " Each step is one action of one part of the system:", ""]
         for step in res["trace"]:
             what = model["actions"].get(step["action"], step["action"])
             if step["step"] == 1:
@@ -1190,8 +1218,12 @@ def findings_tlc(ex, res):
         return out
     if res["verdict"] == "unverifiable":
         return ["TLC produced no verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
+    checked = "Every invariant holds in every reachable state of the model"
+    if "then forever" in res["verdictLabel"] or " and properties " in res["verdictLabel"]:
+        checked = ("Every invariant holds in every reachable state of the model, and every temporal property holds of every "
+                   "behaviour, the infinite ones included")
     return [
-        f"Every invariant holds in every reachable state of the model: {res['statesExplored']:,} distinct states, "
+        f"{checked}: {res['statesExplored']:,} distinct states, "
         f"which is every interleaving of {model['parts']} within the model's bounds ({res['domain']}).",
         "",
         model["machine"],

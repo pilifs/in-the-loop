@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "dfa830a1-4fb4-4d80-8e2c-d612b759742d",
-  "status": "open",
+  "status": "ended",
   "title": "Real-world examples folder restructure",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -63,11 +63,11 @@
     }
   ],
   "log": {
-    "sha256": "21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656",
-    "bytes": 3752488,
-    "lines": 1704,
-    "gzip_bytes": 568560,
-    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz"
+    "sha256": "d9e74acdb1d2b8e39f5ab44f15f8bf3ca25fb1ff02b9cbc2e7ec624e29111014",
+    "bytes": 3754274,
+    "lines": 1706,
+    "gzip_bytes": 568883,
+    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/d9e74acdb1d2b8e39f5ab44f15f8bf3ca25fb1ff02b9cbc2e7ec624e29111014.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -114,7 +114,7 @@
     {
       "change_id": "wmyuwyzspmkxznlyxuwlooqqpulmuyqx",
       "commit_id": "29efa9cfce464961c53bda4bc62cdd17a7601a4f",
-      "immutable": false,
+      "immutable": true,
       "summary": "Run the tla feature loop without a cycle limit",
       "body": "The tla prompt stopped after seven cycles while features ran until a cycle made no commit. Both now repeat instruction, commit, compact until a cycle makes no commit, so the cycle limit had no remaining use and is removed. The README and the script's header match.\n\nVerified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla and features each ran past seven cycles, stopped at the tenth when it made no commit with exit 1, nine compacts and their own text. No argument still gives exit 2. The loop has not been run against the real session.",
       "log_sha256": "21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656"
@@ -150,6 +150,12 @@
       "lines": 1640,
       "gzip_bytes": 527722,
       "url": "https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz"
+    },
+    "d9e74acdb1d2b8e39f5ab44f15f8bf3ca25fb1ff02b9cbc2e7ec624e29111014": {
+      "bytes": 3754274,
+      "lines": 1706,
+      "gzip_bytes": 568883,
+      "url": null
     }
   },
   "redaction_policy": 4,

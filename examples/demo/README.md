@@ -10,7 +10,7 @@ Together they show what verification catches that code review and tests miss, an
 None of it needs the reader to write a specification: each verifier derives its statement from the code, the types, the previous version, or a one-line property committed next to the code.
 
 There are four subject systems. [Box Office](apps/boxoffice/README.md) (examples 001 to 012) is a ticketing system of two Spring Boot services over Kafka, verified by the Java proof of concept in [`tools/contracts`](tools/contracts/README.md).
-[Quorum](apps/quorum/README.md) (examples 013 to 022) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator.
+[Quorum](apps/quorum/README.md) (examples 013 to 022, 057 and 058) is a library of the pure decision kernels a replicated system is built from, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins resolution and a two-phase-commit coordinator.
 [Crosscut](apps/crosscut/README.md) (examples 023 to 033) is the kernels behind the cross-cutting concerns of a Spring Boot service: the transaction interceptor's rollback rule, a circuit breaker, a retry policy, a rate limiter, an `Idempotency-Key` receiver, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry.
 [Mica](apps/mica/README.md) (examples 034 to 056) is the decision kernels of a small JVM written in Java: the class initialization procedure of JVMS §5.5, the type checker's assignability relation, access control, `idiv` and `fcmp` with their corner cases, a `lookupswitch` bisection and the sort of its pairs, the exception table's handler lookup and its well-formedness check, the stack map frame offsets, the length of a `Code` attribute, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and the modified UTF-8 of the constant pool.
 The three are verified by [`jvmcontract`](../../lib/README.md), the Rust tool, with no JVM in the loop: a bytecode interpreter checking the kernels of a bytecode interpreter.
@@ -24,12 +24,13 @@ The examples use five approaches, numbered as in [`approaches.md`](../approaches
 | [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | 006 to 008, 013, 027, 035 to 037 |
 | [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, threads, ... | Closed-world inspection of every call site in the compiled classes | 009, 010, 019, 028, 041 |
 | [B11 Property proofs](../../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, or a law such as commutativity | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, which the tool shrinks and replays; arrays are quantified over with JML's `\forall`, `\exists`, `\sum`, `\num_of`, `\max` and `\min`; a throws clause (JML's `signals`) brings the exceptional path under the proof; `\old` reads an array as the call received it | 015 to 018, 022 to 024, 031 to 034, 044 to 056 |
-| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds, and freedom from deadlock | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract | 011, 012, 020, 021, 029, 030, 042, 043 |
+| [D1 Protocol model checking](apps/boxoffice/spec/README.md) | The safety invariants of a protocol over every interleaving within bounds, freedom from deadlock, its liveness under stated fairness (every participant eventually decides), and that it implements a more abstract specification (Lamport and Gray's transaction commit) | TLC explores the state space of a TLA+ model whose state machine is generated from the B8 contract; a liveness counterexample is an infinite behaviour, shown as a prefix and how it goes on forever | 011, 012, 020, 021, 029, 030, 042, 043, 057, 058 |
 
 A type system could do some of what 001 to 005 do. It could not find a one-cent rounding drift across 2^96 inputs (006), prove that a pricing change touches only the groups it says it touches (007), notice that a codec started loading classes named by Kafka messages (009), or produce the nine-step interleaving in which a paid customer loses their seat and their refund (011).
 Nor could it tell that a Raft vote rule rewritten as "longest log wins" will elect a leader that overwrites committed entries (013), that `(n + 1) / 2` is not a majority (015), that a hybrid logical clock with one branch folded away hands out a timestamp older than the message it just received (018), or that a two-phase-commit coordinator which presumes commit on timeout commits over a participant's no vote that is still in flight (020).
 Nor that a transaction rollback rule rewritten as "a RuntimeException rolls back" commits after an `OutOfMemoryError` (025), that a switch rewrite of a retry policy stops retrying the 5xx statuses it did not name (027), that an idempotency key which runs a retry while the first attempt is in flight executes the request twice (029), or that a Kafka partitioner written with `Math.abs` sends one key in two billion to a negative partition (023).
 Nor that a verifier which answers "everything is an `Object`" one line too early lets an uninitialized object through (038), that a NaN check written as `== Float.NaN` turns `fcmpl` into `fcmpg` (035), that an `idiv` with an overflow check throws where the specification says to return `Integer.MIN_VALUE` (034), or that a class initialization with one rule for every requester deadlocks on its own thread (043).
+Nor that a two-phase-commit coordinator which waits for the last vote when every vote so far is yes leaves a prepared participant holding its locks forever (057), a liveness failure no invariant and no deadlock check can state, found under the model's fairness conditions; or that a grace period for that last vote, with a second timeout, keeps every participant deciding and still implements transaction commit (058).
 Nor that a rewritten binary search still finds every key in every sorted table (046), that an exception table whose `end_pc` is read as inclusive hands an exception to the wrong handler (047), or that a constant-pool encoder which writes supplementary characters in four bytes produces a class no JVM will load (048).
 Nor that a stack map offset loop with its first-frame special case removed still places every frame (049), that a `Code` attribute length which leaves out its nested attributes' headers is six bytes short per attribute (050), that a constant-pool numbering which counts the `long` entry itself points one past it (051), or that `max_stack` is still the deepest point when the depth is checked only after a push (052), the refutations shrunk to a witness of one element.
 Nor that an `idiv` which leaves division by zero to the host throws exactly where the check it removed did (053), or that a class file check which compares `end_pc` like the other offsets rejects every handler that covers the last instruction of a method (054), both on the exceptional path a throws clause brings under the proof.
@@ -58,7 +59,7 @@ Nor that an encoder which zero-terminates the string into the caller's buffer ov
 | 018 | [A hybrid logical clock that drops one case stamps a receive before the message](018-hybrid-logical-clock-that-goes-backwards/README.md) | B11 | ✗ Violation: counterexample found | caught | functional | critical | refactor |
 | 019 | [Adding jitter inside the backoff kernel gives a pure module a random number generator](019-jitter-makes-the-kernel-unsimulatable/README.md) | B10 | ✗ Violation: 2 capability changes | **missed** | determinism, functional | high | feature |
 | 020 | [A 2PC coordinator that presumes commit on timeout splits the participants](020-coordinator-that-presumes-commit-on-timeout/README.md) | D1 | ✗ Violation: Atomicity, 3-step trace | **missed** | functional | critical | feature |
-| 021 | [Aborting on the first no vote, proved safe for every interleaving of three participants](021-aborting-on-the-first-no-proved-safe/README.md) | D1 | ✓ Verified: all invariants hold in 644 states | pass | functional, no-false-positive | none | feature |
+| 021 | [Aborting on the first no vote, proved safe for every interleaving of three participants](021-aborting-on-the-first-no-proved-safe/README.md) | D1 | ✓ Verified: all invariants and properties hold in 644 states | pass | functional, no-false-positive | none | feature |
 | 022 | [A skew-tolerant tie-break for last-writer-wins lets replicas keep different values](022-skew-tolerant-tie-break-splits-the-replicas/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | feature |
 | 023 | [A partitioner written with Math.abs sends one key in two billion to a negative partition](023-abs-partitioner-sends-one-key-to-a-negative-partition/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | cleanup |
 | 024 | [A JWT validator that applies clock skew on the wrong side rejects fresh tokens](024-clock-skew-applied-on-the-wrong-side-of-not-before/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional, security | high | bug-fix |
@@ -94,6 +95,8 @@ Nor that an encoder which zero-terminates the string into the caller's buffer ov
 | 054 | [An exception table check that rejects a handler range ending at code_length](054-exception-table-check-that-rejects-a-range-ending-at-code-length/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional, compatibility | critical | cleanup |
 | 055 | [An encoder that zero-terminates the string into the caller's buffer](055-encoder-that-zero-terminates-into-the-callers-buffer/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | feature |
 | 056 | [A lookupswitch pair sort that compares keys by difference](056-switch-pair-sort-that-compares-keys-by-difference/README.md) | B11 | ✗ Violation: counterexample found | **missed** | functional | high | refactor |
+| 057 | [A coordinator that waits for the last vote when every vote so far is yes blocks forever](057-coordinator-that-waits-for-the-last-yes-vote-blocks-forever/README.md) | D1 | ✗ Violation: EveryParticipantDecides, 5-step trace then forever | **missed** | functional | critical | feature |
+| 058 | [A grace period for the last vote, proved to keep every participant deciding](058-grace-period-for-the-last-vote-proved-live-and-a-refinement/README.md) | D1 | ✓ Verified: all invariants and properties hold in 936 states | pass | functional, no-false-positive | none | feature |
 <!-- examples:end -->
 
 The *Existing tests* column is measured, not claimed: the generator runs the module's unit tests against each patch. A **missed** entry means the tests pass and the change would have shipped.
@@ -119,7 +122,7 @@ Each example's page has the same sections:
 | What to do | The resolution |
 | Evidence | The verifier's console output and SARIF report, unedited; the JDK APIs a proof trusted; for a symbolic proof, the generated statement the prover checked |
 
-For a state machine (014, 020, 021, 025, 026, 029, 030, 042, 043), the page also draws the machine the patched code implements, from its derived contract, with unreachable and terminal states marked.
+For a state machine (014, 020, 021, 025, 026, 029, 030, 042, 043, 057, 058), the page also draws the machine the patched code implements, from its derived contract, with unreachable and terminal states marked.
 
 ## Layout
 
@@ -145,8 +148,8 @@ examples/
       result.schema.json     the format of result.json
     apps/boxoffice/          the first subject system (001 to 012): the ticketing services
     apps/boxoffice/spec/     its TLA+ model (D1)
-    apps/quorum/             the second subject system (013 to 022): the distributed-systems kernels, with their contracts and properties
-    apps/quorum/spec/        its TLA+ model of two-phase commit (D1)
+    apps/quorum/             the second subject system (013 to 022, 057 and 058): the distributed-systems kernels, with their contracts and properties
+    apps/quorum/spec/        its TLA+ model of two-phase commit (D1), with the transaction-commit specification it implements
     apps/crosscut/           the third subject system (023 to 033): the kernels of a Spring Boot service's cross-cutting concerns
     apps/crosscut/spec/      its TLA+ model of an idempotent receiver (D1)
     apps/mica/               the fourth subject system (034 to 056): the decision kernels of a small JVM written in Java
@@ -166,7 +169,7 @@ The generator also fails when a verdict differs from the example's `expected.ver
 ```bash
 python3 examples/demo/tools/build.py          # run every example, then rewrite the pages and the table
 python3 examples/demo/tools/build.py 002      # run one
-python3 examples/demo/tools/build.py 013 014 015 016 017 018 019 020 021 022   # the Quorum examples, about 20 seconds in all
+python3 examples/demo/tools/build.py 013 014 015 016 017 018 019 020 021 022 057 058   # the Quorum examples, about 20 seconds in all
 python3 examples/demo/tools/build.py 023 024 025 026 027 028 029 030 031 032 033   # the Crosscut examples, about 20 seconds in all
 python3 examples/demo/tools/build.py 034 035 036 037 038 039 040 041 042 043 044 045 046 047 048 049 050 051 052 053 054 055 056   # the Mica examples, about two minutes in all
 ```

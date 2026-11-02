@@ -781,6 +781,56 @@ fn tlc_checks_the_box_office_model() {
 }
 
 #[test]
+fn tlc_checks_temporal_properties_and_names_the_violated_one() {
+    let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/quorum/spec");
+    if !spec.exists() {
+        eprintln!("not inside the repository; skipping");
+        return;
+    }
+    if tla::tlc_command(&tla::TlcOptions::new(&spec.join("TwoPhaseCommit.tla"))).is_err() {
+        missing("TLC");
+        eprintln!("TLC not found; skipping");
+        return;
+    }
+    let work = target_tmp().join("spec-twopc");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).unwrap();
+    for entry in std::fs::read_dir(&spec).unwrap() {
+        let path = entry.unwrap().path();
+        if path.is_file() {
+            std::fs::copy(&path, work.join(path.file_name().unwrap())).unwrap();
+        }
+    }
+    let mut options = tla::TlcOptions::new(&work.join("TwoPhaseCommit.tla"));
+    options.library = Some(Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/tools/tla/standard-modules"));
+    options.timeout_seconds = 600;
+    // The committed coordinator: every participant eventually decides, and the protocol refines transaction commit.
+    let result = tla::run_tlc(&options).unwrap();
+    assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
+    assert_eq!(result.properties, vec!["EveryParticipantDecides".to_string(), "ImplementsTransactionCommit".to_string()]);
+    assert!(result.summary().starts_with("✓ every invariant and temporal property holds in 728 distinct states"), "{}", result.summary());
+    // A coordinator that keeps collecting on a timeout when every vote so far is yes: a participant that gave up
+    // before voting leaves the prepared ones waiting forever. TLC does not say which property fails; the runner
+    // checks them one at a time and names it, and the trace ends in stuttering.
+    let operator = work.join("CoordinatorContract.tla");
+    let waiting = std::fs::read_to_string(&operator).unwrap().replace(
+        "input = [kind |-> \"Timeout\", unanimousSoFar |-> TRUE] -> Transition(\"ABORTED\", <<\"SEND_ABORT\">>)",
+        "input = [kind |-> \"Timeout\", unanimousSoFar |-> TRUE] -> Unchanged",
+    );
+    std::fs::write(&operator, waiting).unwrap();
+    let result = tla::run_tlc(&options).unwrap();
+    assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+    assert_eq!(result.kind, Some(tla::ViolationKind::Temporal));
+    assert_eq!(result.invariant.as_deref(), Some("EveryParticipantDecides"));
+    assert!(result.stuttering && result.lasso.is_none(), "{}", result.output);
+    assert!(result.trace.len() >= 4 && result.trace.iter().any(|s| s.action == "ParticipantTimeout"), "{}", result.summary());
+    assert!(result.output.contains("checked the temporal properties one at a time to name the violated one: EveryParticipantDecides"), "{}", result.output);
+    assert!(result.summary().contains("is violated: after") && result.summary().contains("stays in that state forever"), "{}", result.summary());
+    // No temporary configuration is left behind.
+    assert!(std::fs::read_dir(&work).unwrap().all(|e| !e.unwrap().file_name().to_string_lossy().contains("EveryParticipantDecides")));
+}
+
+#[test]
 fn draws_the_state_machine_of_a_contract() {
     let Some(dir) = fixtures() else { return };
     let c = contract(dir, "fixtures.TrafficLight#step");
