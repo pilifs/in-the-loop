@@ -55,7 +55,7 @@ Refusals you will see, and what they mean:
 
 ## The expression language
 
-Java boolean expressions over the parameters by name (`javap -p` shows the names when the class was compiled with `-parameters`; else they are `p0, p1, ...`; the tool's `domain` line shows what it uses). Java's operators and precedence, integer literals with `L`, hex, character literals, casts `(long) x`, the conditional `? :`, `&&`, `||`, `!`. No method calls other than the method under proof itself. No `Integer.MAX_VALUE`: write `2147483647`, `-2147483648`, `9223372036854775807L`.
+Java boolean expressions over the parameters by name (`javap -p` shows the names when the class was compiled with `-parameters`; else they are `p0, p1, ...`; the tool's `domain` line shows what it uses). Java's operators and precedence, integer literals with `L` and hex (no character literals: write `'0'` as `48` or `0x30`), casts `(long) x`, the conditional `? :`, `&&`, `||`, `!`. No method calls other than the method under proof itself. No `Integer.MAX_VALUE`: write `2147483647`, `-2147483648`, `9223372036854775807L`.
 
 - `result` (in `--assert` only): the method's return value. A `result` that is an array is read element by element: `result.length`, `result[i]`.
 - A call of the method under proof, `delayMillis(attempt - 1, baseMillis, capMillis)`, `merge(b, a)`, `offsetOf(offsetDelta, k - 1)`: how laws are stated (commutativity `result == f(b, a)`, idempotence `result == f(result)`, monotonicity `result >= f(n - 1)`, antisymmetry `result == 1 - winner(tsB, nodeB, tsA, nodeA)`).

@@ -12,48 +12,48 @@
     "claude-fable-5-1"
   ],
   "started": "2026-11-02T00:14:34.548Z",
-  "ended": "2026-11-02T01:53:54.356Z",
-  "duration_seconds": 5960,
+  "ended": "2026-11-02T02:17:42.546Z",
+  "duration_seconds": 7388,
   "stats": {
     "turns": 8,
-    "api_calls": 66,
-    "tool_calls": 127,
-    "tool_errors": 6,
+    "api_calls": 91,
+    "tool_calls": 187,
+    "tool_errors": 8,
     "compactions": 0,
-    "peak_context_tokens": 314668,
+    "peak_context_tokens": 439667,
     "usage": {
-      "input_tokens": 1812,
-      "output_tokens": 123484,
-      "cache_read_input_tokens": 12304488,
-      "cache_creation_input_tokens": 282333
+      "input_tokens": 2492,
+      "output_tokens": 203677,
+      "cache_read_input_tokens": 21729686,
+      "cache_creation_input_tokens": 407332
     }
   },
   "tools": {
-    "Bash": 127
+    "Bash": 187
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-02T00:14:34.548Z",
-      "ended": "2026-11-02T01:53:54.356Z",
+      "ended": "2026-11-02T02:17:42.546Z",
       "turns": 8,
-      "api_calls": 66,
+      "api_calls": 91,
       "usage": {
-        "input_tokens": 1812,
-        "output_tokens": 123484,
-        "cache_read_input_tokens": 12304488,
-        "cache_creation_input_tokens": 282333
+        "input_tokens": 2492,
+        "output_tokens": 203677,
+        "cache_read_input_tokens": 21729686,
+        "cache_creation_input_tokens": 407332
       },
-      "peak_context_tokens": 314668
+      "peak_context_tokens": 439667
     }
   ],
   "log": {
-    "sha256": "54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f",
-    "bytes": 2609416,
-    "lines": 1160,
-    "gzip_bytes": 404307,
-    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f.jsonl.gz"
+    "sha256": "73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58",
+    "bytes": 3562174,
+    "lines": 1640,
+    "gzip_bytes": 527722,
+    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -74,20 +74,20 @@
       "log_sha256": "31081960838df919f1e8705f74d65b15537beb7736192109516dd067ce037d93"
     },
     {
-      "change_id": "wmquktwkpnntwlmxxrnxxqrrmkmrmkow",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f"
-    },
-    {
       "change_id": "nnvtskvplpskwtypsrkzpwnvvmkzymry",
       "commit_id": null,
       "immutable": false,
       "summary": "Choose the feature loop's prompt by argument",
       "body": "feature-loop.sh now takes the name of a prompt: features is the earlier instruction to add features and examples to jvmcontract, with no limit on cycles as before, and tla is the instruction to add advanced TLA examples, seven times. Each run takes exactly one name; anything else prints the usage and exits 2 before the memory scope starts. The argument is passed through the re-execution into the scope. The README shows both.\n\nVerified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla gave seven instructions, seven compacts and exit 0; features ran past seven cycles until a cycle made no commit at the tenth, then exit 1, with its own text; no argument, an unknown name and two names each gave exit 2 without calling claude. The loop has not been run against the real session.",
       "log_sha256": "54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f"
+    },
+    {
+      "change_id": "qryqotxxwnnozyoxptvzznromtptkwuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter",
+      "body": "examples/real-world/ gains commons-lang-1750 (ArrayUtils.reverse: the Integer.MIN_VALUE end index found for six primitive overloads and shrunk to an empty array, the change proved confined to that index on arrays of up to four, the new version proved to throw on no input), commons-lang-1585 (ArrayUtils.subarray: the index overflow found, before OutOfMemoryError and after an empty array, and the change proved confined to the overflowing inputs), jackson-core-1203 (NumberOutput.divBy1000: nothing finished in the default budgets, division against multiplication; one witness documents the non-negative precondition; module contracts unchanged) and commons-codec-43a9aa66 (Hex.toDigit restricted to ASCII: two false violations traced to JDK classes JBMC has no model of, then the new method's whole contract proved; the old one needs a model of Character.digit). The index lists them and updates the libraries to try, including why Joda-Time has no entry. The Commons Numbers record gets the rerun's regression and confined-change verdicts.\n\nJBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK classes, so Hex's static initializer (StandardCharsets.UTF_8, CharEncoding) ended in a NullPointerException inside JBMC and every proof over Hex was an artifact. libs/java-models-library is a plain clone (gitignored, libs/README.md says how to get it) of the user's fork of diffblue/java-models-library, branch charset-models, which adds java.nio.charset.Charset, StandardCharsets and the two name exceptions; lib/jbmc-models/ holds models of the JDK's boxing caches (Integer$IntegerCache and the Long, Short and Byte ones) with an empty range, because the real Integer.valueOf reads a nested class JBMC lacks and threw ArrayIndexOutOfBoundsException on any autoboxing. Both go on jvmcontract's --classpath until the tool ships them. The interpreter now throws OutOfMemoryError(\"Java heap space\") for arrays over 2^24 elements instead of allocating them: replaying the subarray witness asked for new int[2147483647] and aborted the process with a 32 GiB allocation. The skill's reference no longer claims character literals, which the expression language does not have, and the lib README names the JBMC-side limit.",
+      "log_sha256": "73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58"
     }
   ],
   "logs": {
@@ -107,6 +107,12 @@
       "bytes": 2609416,
       "lines": 1160,
       "gzip_bytes": 404307,
+      "url": null
+    },
+    "73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58": {
+      "bytes": 3562174,
+      "lines": 1640,
+      "gzip_bytes": 527722,
       "url": null
     }
   },

@@ -25,6 +25,10 @@ use std::rc::Rc;
 use crate::classfile::{flags, ArithOp, ArrayKind, ClassFile, Cond, ExceptionHandler, Insn, Kind, Method, Narrow, Type};
 use crate::classpath::ClassPath;
 
+/// The longest array the interpreter allocates; a request for more is an `OutOfMemoryError`, as on a JVM whose heap
+/// is smaller than the array. 2^24 elements is a 64 MB `int[]` on a JVM and 256 MB of values here.
+const MAX_ARRAY_LENGTH: usize = 1 << 24;
+
 pub use value::{Base, Heap, Native, Object, Ref, Value};
 
 /// Why an execution stopped, other than by returning.
@@ -362,11 +366,23 @@ impl<'a> Machine<'a> {
     }
 
     pub fn new_array(&mut self, element: Type, length: i32) -> Exec<Value> {
+        self.check_array_length(length)?;
+        let data = vec![Value::default_for(&element); length as usize];
+        Ok(Value::Ref(self.alloc(Object::Array { element, data })))
+    }
+
+    /// The exceptions a JVM throws for an array length before it allocates anything: `NegativeArraySizeException`,
+    /// and `OutOfMemoryError` beyond what the interpreter is willing to hold. A witness replayed from JBMC may ask
+    /// for `new int[Integer.MAX_VALUE]` (an index arithmetic overflow, say), which is what a JVM reports as
+    /// `OutOfMemoryError: Java heap space`; without the limit the interpreter would try to allocate it.
+    fn check_array_length(&mut self, length: i32) -> Exec<()> {
         if length < 0 {
             return Err(self.throw("java/lang/NegativeArraySizeException", Some(&length.to_string())));
         }
-        let data = vec![Value::default_for(&element); length as usize];
-        Ok(Value::Ref(self.alloc(Object::Array { element, data })))
+        if length as usize > MAX_ARRAY_LENGTH {
+            return Err(self.throw("java/lang/OutOfMemoryError", Some("Java heap space")));
+        }
+        Ok(())
     }
 
     pub fn new_array_of(&mut self, element: Type, data: Vec<Value>) -> Value {
@@ -964,9 +980,7 @@ impl<'a> Machine<'a> {
         if sizes.len() == 1 {
             return self.new_array((**element).clone(), sizes[0]);
         }
-        if sizes[0] < 0 {
-            return Err(self.throw("java/lang/NegativeArraySizeException", Some(&sizes[0].to_string())));
-        }
+        self.check_array_length(sizes[0])?;
         let mut data = Vec::with_capacity(sizes[0] as usize);
         for _ in 0..sizes[0] {
             data.push(self.multi_array(element, &sizes[1..])?);
