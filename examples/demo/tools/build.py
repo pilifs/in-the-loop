@@ -621,6 +621,37 @@ TWOPC = {
                                        "(Lamport and Gray's TCommit) allows: a participant commits only once every participant is prepared or "
                                        "committed, and aborts only while none has committed",
     },
+    "machine": "The coordinator's decision rule inside the model is generated from the behavioural contract of "
+               "the patched code, so the model checks the decisions the coordinator really makes.",
+}
+
+RAFT = {
+    "spec": "spec/RaftElection.tla",
+    "cfg": "spec/RaftElection.cfg",
+    "contract": "src/contract/RoleMachine.decide.contract",
+    "operator": "spec/RoleMachineContract.tla",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+    "parts": "the servers, their terms and votes, and the RPCs between them",
+    "initial": "every server a follower in term 0, no vote cast, no vote held",
+    "actions": {
+        "Initial predicate": "the initial state",
+        "Timeout": "`Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision",
+        "Canvass": "`Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply "
+                   "each go through the role machine, then the vote rule on the voter and the tally on the candidate",
+        "Heartbeat": "`Server.appendEntries`: a leader sends one server a heartbeat and gets the answer; the server adopts a newer "
+                     "term or yields to the leader of its own, and a stale leader is rejected and steps down",
+    },
+    "invariants": {
+        "TypeOK": "every variable has a value of its type",
+        "ElectionSafety": "at most one leader per term",
+        "LeaderHasAMajority": "a leader holds the votes of a majority of the servers, its own among them",
+        "TermsNeverDecrease": "a term never goes backwards on any server, in any step",
+        "LeadersNeverCampaign": "a leader never becomes a candidate: it leaves office as the follower of a newer term, or by "
+                                "stepping down, never by starting an election against itself; a property of steps, which no "
+                                "invariant can state",
+    },
+    "machine": "The servers' role machine inside the model is generated from the behavioural contract of the patched "
+               "code, so the model checks the role transitions the servers really make.",
 }
 
 IDEMPOTENCY = {
@@ -644,6 +675,8 @@ IDEMPOTENCY = {
         "AtMostOnce": "once an execution has produced a result, no attempt is executing and none ever will",
         "ReplayedResponsesExist": "a client is never answered with a stored response that does not exist",
     },
+    "machine": "The receiver's decision rule inside the model is generated from the behavioural contract of "
+               "the patched code, so the model checks the decisions the receiver really makes.",
 }
 
 CLASSINIT = {
@@ -670,16 +703,30 @@ CLASSINIT = {
         "OneInitializer": "only the recorded initializer runs the initializer",
         "Deadlock": "a state in which no thread can move",
     },
+    "machine": "The runtime's decision rule inside the model is generated from the behavioural contract of "
+               "the patched code, so the model checks the decisions the runtime really makes.",
 }
 
-TOOL_MODELS = {"quorum": TWOPC, "crosscut": IDEMPOTENCY, "mica": CLASSINIT}
+# The TLA+ models of each javac app, each built around the state machine of one symbol.
+TOOL_MODELS = {"quorum": [TWOPC, RAFT], "crosscut": [IDEMPOTENCY], "mica": [CLASSINIT]}
+
+
+def model_of(example):
+    """The model a D1 example is checked against: the one of its app built around the example's symbol."""
+    app = app_of(example)
+    if app == "boxoffice":
+        return MODELS["boxoffice"]
+    for model in TOOL_MODELS[app]:
+        if model["symbol"] == example["subject"]["symbol"]:
+            return model
+    sys.exit(f"{example['id']}: no TLA+ model of {app} is built around {example['subject']['symbol']}")
 
 
 def run_tool_tlc(folder, example, root, module, result):
     """D1 on a javac app: the operator regenerated from the (patched) contract, then TLC through the tool."""
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
-    model_files = TOOL_MODELS[app]
+    model_files = model_of(example)
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
     tool(app, root, "tla", model_files["contract"], model_files["operator"], anchored=False)
@@ -1160,35 +1207,11 @@ MODELS = {
         "machine": "The order state machine inside the model is generated from the behavioural contract of the "
                    "patched code, so the model checks the decisions the services really make.",
     },
-    "quorum": {
-        "parts": TWOPC["parts"],
-        "initial": TWOPC["initial"],
-        "actions": TWOPC["actions"],
-        "invariants": TWOPC["invariants"],
-        "machine": "The coordinator's decision rule inside the model is generated from the behavioural contract of "
-                   "the patched code, so the model checks the decisions the coordinator really makes.",
-    },
-    "crosscut": {
-        "parts": IDEMPOTENCY["parts"],
-        "initial": IDEMPOTENCY["initial"],
-        "actions": IDEMPOTENCY["actions"],
-        "invariants": IDEMPOTENCY["invariants"],
-        "machine": "The receiver's decision rule inside the model is generated from the behavioural contract of "
-                   "the patched code, so the model checks the decisions the receiver really makes.",
-    },
-    "mica": {
-        "parts": CLASSINIT["parts"],
-        "initial": CLASSINIT["initial"],
-        "actions": CLASSINIT["actions"],
-        "invariants": CLASSINIT["invariants"],
-        "machine": "The runtime's decision rule inside the model is generated from the behavioural contract of "
-                   "the patched code, so the model checks the decisions the runtime really makes.",
-    },
 }
 
 
 def findings_tlc(ex, res):
-    model = MODELS[app_of(ex)]
+    model = model_of(ex)
     if res["verdict"] == "violation":
         inv = res["invariant"]
         kind = res.get("violationKind")

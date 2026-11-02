@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Compiles the Quorum module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
-# capability and API contracts, the property proofs (JBMC), and the two-phase-commit model (TLC).
+# capability and API contracts, the property proofs (JBMC), and the two-phase-commit and Raft election models (TLC).
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
 # tla2tools.jar in ~/tools or $TLA2TOOLS_JAR.
 set -euo pipefail
@@ -21,3 +21,5 @@ java -ea -cp "build/main:build/test" net.terminalvalue.quorum.Tests
 "$JVMCONTRACT" prove --properties src/contract/properties.contract --classes build/main --sources src/main/java --report build/reports
 "$JVMCONTRACT" tla src/contract/Coordinator.decide.contract spec/CoordinatorContract.tla
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
+"$JVMCONTRACT" tlc spec/RaftElection.tla --library ../../tools/tla/standard-modules

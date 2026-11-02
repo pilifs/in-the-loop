@@ -899,6 +899,52 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "059",
+      "path": "059-vote-granted-without-adopting-the-term-elects-two-leaders",
+      "title": "A server that grants a vote without adopting the candidate's term elects two leaders",
+      "summary": "A Raft server that receives a vote request from a newer term adopts the term and becomes a follower of it, and only then applies the vote rule. A developer stops the adoption, so that a server whose timer fired cannot drag the cluster into a new term by asking: the vote rule already counts a candidate's newer term as a free vote, so the vote is still granted. The contract diff is three cases, one per role, and is approved; the vote rule is untouched and its regression proofs pass. The election model finds a five-step run that ends with two leaders in one term.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "060",
+      "path": "060-one-timeout-rule-makes-a-leader-campaign-against-itself",
+      "title": "One timeout rule for every role makes a leader campaign against itself",
+      "summary": "A follower or candidate whose election timer fires becomes a candidate of the next term; a leader's timer firing is ignored, since a leader holds no elections. A developer folds the two cases into one: every server runs for office when its timer fires, and the leader's case was dead code because the timer is stopped when a server wins. The contract diff is one case and is approved. Every invariant of the election model holds, because a candidate of term 2 is an ordinary state. The action property that a leader never becomes a candidate does not: TLC shows the four-step run in which a leader deposes itself.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "061",
+      "path": "061-leader-that-steps-down-on-its-own-timeout-proved-safe",
+      "title": "A leader that steps down when its timer fires, proved to keep one leader per term",
+      "summary": "A Raft leader cut off from the majority keeps believing it leads, and keeps serving reads from a state the rest of the cluster has moved past, until some message from the newer term reaches it. A developer adds the check etcd calls CheckQuorum: a leader whose election timer fires, meaning no majority acknowledged it for a whole timeout, steps down to follower. The contract diff is one case and is approved. The election model proves the change keeps every invariant and both action properties, in 1,153 states: one leader per term, terms that never go backwards, and no leader that campaigns.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

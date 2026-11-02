@@ -79,5 +79,7 @@
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=false] → effects=[EXECUTE]\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=true] → effects=[EXECUTE]\n    COMPLETED --> ABSENT: Expired[] → effects=[RELEASE_KEY]\n    COMPLETED --> COMPLETED: Request[sameFingerprint=true] → effects=[REPLAY_RESPONSE]\n    IN_PROGRESS --> ABSENT: Failed[] → effects=[RELEASE_KEY]\n    IN_PROGRESS --> COMPLETED: Completed[] → effects=[STORE_RESPONSE]\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=true] → effects=[EXECUTE]\n    ABSENT --> ABSENT: Completed[] (Unchanged)\n    ABSENT --> ABSENT: Failed[] (Unchanged)\n    ABSENT --> ABSENT: Expired[] (Unchanged)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=false] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Expired[] (Unchanged)\n    COMPLETED --> COMPLETED: Request[sameFingerprint=false] (Rejected)\n    COMPLETED --> COMPLETED: Completed[] (Unchanged)\n    COMPLETED --> COMPLETED: Failed[] (Unchanged)\n",
   "sarif": "result.sarif",
-  "output": "verifier-output.txt"
+  "output": "verifier-output.txt",
+  "violationKind": "invariant",
+  "forever": null
 }

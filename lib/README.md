@@ -75,6 +75,7 @@ jvmcontract tla src/contract/OrderLifecycle.decide.contract spec/OrderLifecycleC
 jvmcontract tlc spec/BoxOffice.tla --json
 jvmcontract tlc spec/ClassInit.tla --deadlock    # also report a reachable state in which no action is enabled
 jvmcontract tlc spec/TwoPhaseCommit.tla          # the configuration's PROPERTIES (liveness, refinement) are checked after the invariants
+jvmcontract tlc spec/RaftElection.tla            # an action property [][A]_v among them is reported by name, with the run up to the offending step
 
 # Views: the state machine a contract describes, and a class file's structure.
 jvmcontract statemachine src/contract/OrderLifecycle.decide.contract --format mermaid

@@ -11,7 +11,7 @@ The repo has two parts:
 
 ## [`examples/`](examples/README.md): formal verification
 
-**Start here.** Two kinds of examples: [`examples/demo/`](examples/demo/README.md), 56 numbered code changes to four subject systems written for this repository, each run through a formal verifier, with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests; and [`examples/real-world/`](examples/real-world/README.md), pull requests to published Java libraries verified with the `/verify-bytecode` skill, one folder per pull request.
+**Start here.** Two kinds of examples: [`examples/demo/`](examples/demo/README.md), 61 numbered code changes to four subject systems written for this repository, each run through a formal verifier, with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests; and [`examples/real-world/`](examples/real-world/README.md), pull requests to published Java libraries verified with the `/verify-bytecode` skill, one folder per pull request.
 
 | Path | Content |
 |---|---|
