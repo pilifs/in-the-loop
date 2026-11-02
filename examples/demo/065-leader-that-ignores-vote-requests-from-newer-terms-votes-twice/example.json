@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "065",
+  "title": "A leader that ignores vote requests from newer terms votes twice in a term",
+  "summary": "A Raft server that hears a newer term from anyone becomes a follower of that term. A developer exempts the leader from the vote request: a leader should keep serving until a newer leader's heartbeat, or a reply from a newer term, proves the cluster has moved on, so that a server that comes back from a partition with an inflated term cannot depose a working leader on every retry. The contract diff is one case and is approved. The election model finds the bug under all three of its safety configurations: an eight-step run of three servers in which the leader's vote elects two candidates of the same term, the one step that breaks the inductive invariant (a leader that holds a vote cast in an older term), and a longer run of four servers.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Make the `RequestVote` case keep a leader in office: a follower or candidate that hears a newer term still becomes its follower with `ADOPT_TERM`, a leader is `unchanged`. The reasoning in the comment: a leader has a majority's confidence, and a vote request is not proof that the cluster has moved on, whereas a newer leader's `AppendEntries` or a reply from a newer term is (both still make it step down). The concern is the disruptive server of Ongaro's thesis, section 4.2.3: one that was partitioned, timed out repeatedly, and comes back with a term far ahead of the cluster's. The behavioural contract is regenerated and its diff is the one case `decide(LEADER, RequestVote[NEWER])`, now `unchanged`. The reviewer approves the diff: the leader still steps down on the other two signals.",
+    "patch": "change.patch"
+  },
+  "risk": "The vote. A server answers a vote request in two steps, the role machine first and then the vote rule, and the vote rule assumes the role machine ran: by the time it decides, a request from a newer term has made the server a follower of that term with no vote cast in it, which is why `VoteRule.grant` treats a candidate whose term is ahead of the server's as asking for a free vote. With the role machine told to stay put, that assumption is false for a leader. The leader grants the vote, since the candidate's term is ahead of its own, without entering the candidate's term, so it has no record of having voted in it; the next candidate of that term is ahead of it too, and gets the vote as well. A vote is cast per term, and the term is what `ADOPT_TERM` moves the server to; a server that votes in a term it has not entered votes in it as often as it is asked. Two candidates of one term holding the same leader's vote each have a majority of three, and election safety (Raft, figure 3) is gone. The contract diff is exactly what the developer intended, and the leader does step down on the signals the comment names; the bug is in what it does before it steps down.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The election model is checked under four configurations, and the three that check safety all fail. With three servers and three terms TLC reports the shortest run that breaks `ElectionSafety`: s1's timer fires twice, so s1 is a candidate of term 2; s2's fires once and s2 asks s3, which enters term 1 and grants, so s2 leads term 1; s3's timer fires and s3 is a candidate of term 2. s1 asks s2: the leader stays in term 1, and the vote rule, seeing a candidate ahead of it, grants; s1 holds two votes of three and leads term 2. s3 asks s2: still in term 1, still behind a candidate of term 2, s2 grants again, and s3 leads term 2 too, with the same vote. The inductive step starts from every state the invariant `Inductive` admits and finds the one step that leaves it: a leader of term 1 answers a candidate of term 2 and the candidate wins with its vote, which breaks `VotesAreBound`, that a vote in a tally was cast in the tally's term, the conjunct that carries the whole argument for one leader per term. With four servers under the symmetry set the run is longer and ends the same way. The fourth configuration, the liveness check, checks the same invariants while it explores and reports the same eight-step run before it gets to the temporal properties: TLC checks invariants during the search and temporal properties after it.",
+  "resolution": "Revert. The rule the developer wanted exists, in Ongaro's thesis (section 4.2.3): a server that has heard from a leader within the minimum election timeout ignores the request, the term and the vote both, and that takes a clock and a change to the vote rule as much as to the role machine. In this kernel the vote rule assumes the role machine ran first, so a role machine that does not adopt the term must also make the vote rule refuse, or the two disagree about what term the server is in. The example is a cousin of 014, where the leader ignored newer terms in replies and the behavioural contract caught the missing transition; here the transition is missing on purpose, the contract records the developer's intent, and the model shows what the rest of the protocol does with it.",
+  "provenance": "Constructed from the rules for servers in figure 2 of the Raft paper (a newer term in any RPC makes the server a follower), by exempting the leader from vote requests, after the discussion of disruptive servers in section 4.2.3 of Ongaro's thesis.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 2, the rules for candidates, and section 5.2, leader election and split votes",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, the basic algorithm, and section 4.2.3, disruptive servers",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

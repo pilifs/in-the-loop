@@ -950,7 +950,7 @@
       "id": "062",
       "path": "062-candidate-that-retries-without-voting-again-elects-two-leaders",
       "title": "A candidate that retries its election without voting for itself again elects two leaders",
-      "summary": "A Raft candidate whose election timed out starts a new one: a new term, a vote for itself, a request to every other server. A developer trims the retry: the tally already holds the candidate's own vote, so it need not vote again, and the request goes only to the servers that never answered. The contract diff is one case and is approved. The election model finds the bug under all three of its configurations, each in its own way: a seven-step run of three servers in which two candidates elect each other, the one step that breaks the inductive invariant (a candidate of a term it has not voted in), and an eight-step run of four servers in which a vote cast in term 1 is counted in term 2.",
+      "summary": "A Raft candidate whose election timed out starts a new one: a new term, a vote for itself, a request to every other server. A developer trims the retry: the tally already holds the candidate's own vote, so it need not vote again, and the request goes only to the servers that never answered. The contract diff is one case and is approved. The election model finds the bug under each of its three safety configurations, each in its own way: a seven-step run of three servers in which two candidates elect each other, the one step that breaks the inductive invariant (a candidate of a term it has not voted in), and an eight-step run of four servers in which a vote cast in term 1 is counted in term 2.",
       "categories": [
         "functional"
       ],
@@ -964,8 +964,8 @@
     {
       "id": "063",
       "path": "063-candidate-that-retries-in-the-same-term-proved-safe-but-not-live",
-      "title": "A candidate that retries in the same term, proved safe, and what the proof does not say",
-      "summary": "A Raft candidate whose election timed out starts a new one in a new term. A developer makes it ask again in the same term instead, for the votes it lacks, so that a candidate that cannot win does not drive the whole cluster's term up on every timeout. The contract diff is one case and is approved. The election model proves the change safe under all three of its configurations: one leader per term, by induction and with four servers too. What the model does not state is that an election ever ends, and under this rule a split vote never does: three candidates of one term ask each other forever. The proof is exact about what it covers, and this example is about reading it that way.",
+      "title": "A candidate that retries in the same term, proved safe, and shown never to elect a leader",
+      "summary": "A Raft candidate whose election timed out starts a new one in a new term. A developer makes it ask again in the same term instead, for the votes it lacks, so that a candidate that cannot win does not drive the whole cluster's term up on every timeout. The contract diff is one case and is approved. The election model proves the change safe under three of its configurations: one leader per term, with three servers, by induction, and with four. The fourth configuration, the liveness check, finds the run the safety proofs cannot see: three servers whose timers fire together are three candidates of term 1, each refused by the other two, and under this rule nothing ever starts term 2. The cluster has no leader, for good. A green safety result says exactly what it checked; the liveness property says the rest.",
       "categories": [
         "functional"
       ],
@@ -973,7 +973,38 @@
       "changeKind": "feature",
       "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
       "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "064",
+      "path": "064-candidate-that-stands-down-on-a-timeout-proved-safe-and-live",
+      "title": "A candidate that stands down on a timeout, proved safe and live",
+      "summary": "A Raft candidate whose election timed out starts a new one at once. A developer makes it stand down to follower instead, so that its next timeout, after a full randomized wait, starts the new election: a split vote is then retried by its candidates one at a time rather than all together. The contract diff is one case and is approved. The election model proves the change under all four of its configurations: one leader per term with three servers, by induction, and with four, and under fairness a run that stays within the term budget still elects a leader, and a leader the cluster has left behind still steps down. The liveness check is the one a reviewer wants for a rule that makes candidates stand down: the question is whether the election can stall, and the answer is no, because a follower's timer starts a new term.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
       "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "065",
+      "path": "065-leader-that-ignores-vote-requests-from-newer-terms-votes-twice",
+      "title": "A leader that ignores vote requests from newer terms votes twice in a term",
+      "summary": "A Raft server that hears a newer term from anyone becomes a follower of that term. A developer exempts the leader from the vote request: a leader should keep serving until a newer leader's heartbeat, or a reply from a newer term, proves the cluster has moved on, so that a server that comes back from a partition with an inflated term cannot depose a working leader on every retry. The contract diff is one case and is approved. The election model finds the bug under all three of its safety configurations: an eight-step run of three servers in which the leader's vote elects two candidates of the same term, the one step that breaks the inductive invariant (a leader that holds a vote cast in an older term), and a longer run of four servers.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
       "existingTestsPassed": true
     }
   ]

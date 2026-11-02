@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "064",
+  "title": "A candidate that stands down on a timeout, proved safe and live",
+  "summary": "A Raft candidate whose election timed out starts a new one at once. A developer makes it stand down to follower instead, so that its next timeout, after a full randomized wait, starts the new election: a split vote is then retried by its candidates one at a time rather than all together. The contract diff is one case and is approved. The election model proves the change under all four of its configurations: one leader per term with three servers, by induction, and with four, and under fairness a run that stays within the term budget still elects a leader, and a leader the cluster has left behind still steps down. The liveness check is the one a reviewer wants for a rule that makes candidates stand down: the question is whether the election can stall, and the answer is no, because a follower's timer starts a new term.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Split the `ElectionTimeout` case by role: a follower runs as before, with `INCREMENT_TERM`, `VOTE_FOR_SELF` and `REQUEST_VOTES`; a candidate becomes a follower with no effects, and its next timeout, as a follower, starts the next election. The reasoning in the comment: when an election times out it was most likely split, and candidates that all retry at once split it again; one that stands down retries after a full randomized wait, so the retries spread out. The behavioural contract is regenerated and its diff is the one case `decide(CANDIDATE, ElectionTimeout[])`, now `FOLLOWER` with no effects; a test for it is added. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "Two things could go wrong, and the model is built to show either. The candidate that stands down keeps its term, its vote and its tally, so it is a follower with a tally, a state the committed rule never produces; a vote counted later from that tally would be a vote of an old election. And an election could stall: three candidates that all stand down are three followers of one term, each having voted for itself, and if nothing started the next term the cluster would have no leader for good, which is the failure example 063 has. Neither happens. A follower never counts votes, the tally is emptied by the next term, and a follower whose timer nothing resets times out and starts that term with a fresh vote for itself; the servers that stood down are free to vote in it. What the change costs is one more timeout period per retry, a trade between a slower election and fewer candidates in it, and the model has no clock to price that.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The election model's role machine is generated from the behavioural contract of the patched `RoleMachine#decide`, which the tool proves the bytecode satisfies on all 52 inputs. With three servers and three terms every invariant and both action properties hold, in more reachable states than the committed rule has, since a follower with a tally is a new kind of state. The inductive step holds: from every state the invariant `Inductive` admits, a candidate's standing down keeps every conjunct, since the tally it keeps holds its own vote and it voted for itself, which is what `TalliesHoldTheirOwnersVote` asks of any tally. Four servers under the symmetry set hold too. The liveness configuration checks the three-server model under the fairness conditions `Fairness` and finds no run that breaks `ALeaderIsElected` or `StaleLeadersStepDown`: a follower that stood down has no leader, so its timer is one that fairness says fires, and when it does it starts a new term; the split that made it stand down is over, because the votes of the new term are free. TLC proves all four in a few seconds.",
+  "resolution": "Ship it, if the slower retry is wanted; the Raft paper retries at once and relies on the randomized timeouts to spread the retries, and this rule spreads them further at the cost of a timeout period. The liveness proof should be read for what it covers: the fairness conditions stated in the model (a timer that nothing resets fires, a candidate asks, a leader sends), the term budget, and no clock, so it says that the election cannot stall, not how long it takes. The example is 063's counterpart: the same case of the role machine, a retry that keeps the term, and a different effect list, one proved live and one shown not to be.",
+  "provenance": "Constructed from the rules for candidates in figure 2 of the Raft paper, by making a candidate stand down on a timeout instead of retrying at once.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 2, the rules for candidates, and section 5.2, leader election and split votes",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 8: liveness and fairness, and section 14.3.5, checking liveness with TLC",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

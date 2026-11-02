@@ -642,6 +642,10 @@ RAFT = {
          "what": "every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short "
                  "of a majority, which three servers never show; under a symmetry set, so that of the states that differ only "
                  "by the servers' names TLC explores one"},
+        {"cfg": "spec/RaftElectionLive.cfg", "label": "fairness",
+         "what": "the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets "
+                 "times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run "
+                 "that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves"},
     ],
     "contract": "src/contract/RoleMachine.decide.contract",
     "operator": "spec/RoleMachineContract.tla",
@@ -672,6 +676,12 @@ RAFT = {
         "TalliesHoldTheirOwnersVote": "a tally is empty, or holds its owner's vote and its owner voted for itself",
         "TermZeroIsQuiet": "nothing happens in term 0: a timer that fires starts term 1",
         "Inductive": "the conjunction of the invariants above, closed under every step of the system",
+        # The liveness properties, checked under fairness.
+        "ALeaderIsElected": "a run that stays within the term budget elects a leader: with no leader every server's timer "
+                            "keeps firing, and each firing starts a term, so a run in which the terms stop and no leader "
+                            "comes is a cluster that has stopped trying",
+        "StaleLeadersStepDown": "a leader whose term the cluster has left steps down: its heartbeat to a server with a newer "
+                                "term, or that server's request for a vote, tells it",
     },
     "machine": "The servers' role machine inside the model is generated from the behavioural contract of the patched "
                "code, so the model checks the role transitions the servers really make.",
@@ -1344,6 +1354,9 @@ def findings_tlc(ex, res):
             c = configurations[run["label"]]
             inv = run["invariant"]
             what = {"temporal": "temporal property", "action": "action property"}.get(run["violationKind"], "invariant")
+            if inv == res["invariant"] and run["trace"] == res["trace"] and run["forever"] == res["forever"]:
+                out += ["", f"Under {run['label']} TLC found the same run, and reported it the same way."]
+                continue
             out += ["", f"<details><summary>The counterexample under {run['label']}: {what} <b>{inv}</b>, {len(run['trace'])} steps</summary>", "",
                     f"{what.capitalize()} **{inv}**: {model['invariants'].get(inv, inv)}."
                     + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]

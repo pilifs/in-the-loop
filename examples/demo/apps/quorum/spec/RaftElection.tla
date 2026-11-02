@@ -5,12 +5,14 @@
 (* RPCs between them. TLC explores every interleaving for the servers and  *)
 (* terms in RaftElection.cfg, checks the invariants in every state it      *)
 (* reaches, and checks the action properties on every step: that terms    *)
-(* never go backwards, and that a leader never campaigns. Two more         *)
-(* configurations check the same model another way: RaftElectionFour.cfg  *)
+(* never go backwards, and that a leader never campaigns. Three more       *)
+(* configurations check the same model other ways: RaftElectionFour.cfg   *)
 (* has four servers, a cluster in which a tally can fall short of a       *)
-(* majority by more than one vote, under a symmetry set; and              *)
+(* majority by more than one vote, under a symmetry set;                  *)
 (* RaftElectionInductive.cfg checks that the invariant Inductive below is *)
-(* inductive, from every state it admits rather than from Init.           *)
+(* inductive, from every state it admits rather than from Init; and       *)
+(* RaftElectionLive.cfg checks the liveness properties at the end, under  *)
+(* the fairness conditions stated with them.                              *)
 (*                                                                         *)
 (* A server's role transitions, Decide(role, event), are not written here. *)
 (* They are generated from the behavioural contract of RoleMachine#decide  *)
@@ -26,10 +28,9 @@
 (* request and its reply together, so a server always answers with the    *)
 (* term it has now, and a stale server learns of a newer term the moment   *)
 (* it talks to one that has it; terms stop at MaxTerm, past which no timer *)
-(* fires; election timeouts fire whenever the model likes, so              *)
-(* RESET_ELECTION_TIMER has no counterpart. There is no liveness property:  *)
-(* Raft elects a leader eventually by randomizing the timeouts, which is a *)
-(* matter of timing, and this model has no clock.                          *)
+(* fires; election timeouts fire whenever the model likes, and             *)
+(* RESET_ELECTION_TIMER matters only to the fairness conditions, which     *)
+(* assume that a timer no heartbeat resets fires eventually.               *)
 (***************************************************************************)
 EXTENDS Naturals, FiniteSets, Sequences, TLC, RoleMachineContract
 
@@ -62,6 +63,11 @@ TermAfter(s, d, t) == IF Adopts(d) THEN t ELSE currentTerm[s]
 VotedForAfter(s, d) == IF Adopts(d) THEN "none" ELSE votedFor[s]
 VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 
+\* Each action below computes its next state as a record of the four variables, so that the step it takes and
+\* whether the step changes anything (the fairness conditions need to know) are one computation.
+Step(n) == role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes
+Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes>> # vars
+
 (***************************************************************************)
 (* The servers.                                                            *)
 (***************************************************************************)
@@ -70,15 +76,16 @@ VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 \* term, in which the server has not voted yet (a vote is cast per term); VOTE_FOR_SELF starts a new tally, the
 \* server's own vote in it, and is the only thing that empties a tally short of adopting a term; REQUEST_VOTES is
 \* the canvass below, one server whose vote the tally lacks at a time.
-Timeout(s) ==
-    /\ currentTerm[s] < MaxTerm
-    /\ LET d == Decide(role[s], [kind |-> "ElectionTimeout"])
-           t == IF d.kind = "Transition" /\ Has(d, "INCREMENT_TERM") THEN currentTerm[s] + 1 ELSE currentTerm[s]
-       IN /\ role' = [role EXCEPT ![s] = RoleAfter(s, d)]
-          /\ currentTerm' = [currentTerm EXCEPT ![s] = t]
-          /\ votedFor' = [votedFor EXCEPT ![s] = IF d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF") THEN s
-                                                 ELSE IF t > currentTerm[s] THEN "none" ELSE @]
-          /\ votes' = [votes EXCEPT ![s] = IF d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF") THEN {s} ELSE @]
+TimeoutNext(s) ==
+    LET d == Decide(role[s], [kind |-> "ElectionTimeout"])
+        t == IF d.kind = "Transition" /\ Has(d, "INCREMENT_TERM") THEN currentTerm[s] + 1 ELSE currentTerm[s]
+        self == d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF")
+    IN [role |-> [role EXCEPT ![s] = RoleAfter(s, d)],
+        currentTerm |-> [currentTerm EXCEPT ![s] = t],
+        votedFor |-> [votedFor EXCEPT ![s] = IF self THEN s ELSE IF t > currentTerm[s] THEN "none" ELSE @],
+        votes |-> [votes EXCEPT ![s] = IF self THEN {s} ELSE @]]
+
+Timeout(s) == currentTerm[s] < MaxTerm /\ Step(TimeoutNext(s))
 
 \* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer.
 \* On v, Server.onRequestVote: the role machine first (a candidate's newer term is adopted), then the vote rule on
@@ -87,37 +94,44 @@ Timeout(s) ==
 \* On c, Server.onVote: the reply carries v's term, which goes through the role machine (a newer one is adopted);
 \* a candidate adds a granted vote to its tally, and the tally goes through the role machine as VotesCounted: a
 \* majority makes it the leader.
+CanvassNext(c, v) ==
+    LET dv == Decide(role[v], [kind |-> "RequestVote", term |-> Order(v, currentTerm[c])])
+        tv == TermAfter(v, dv, currentTerm[c])
+        free == VotedForAfter(v, dv)
+        granted == currentTerm[c] >= tv /\ (currentTerm[c] > tv \/ free \in {"none", c})
+        dc == Decide(role[c], [kind |-> "Response", term |-> Order(c, tv)])
+        tally == IF Adopts(dc) THEN {} ELSE IF granted THEN votes[c] \cup {v} ELSE votes[c]
+        dt == Decide(RoleAfter(c, dc), [kind |-> "VotesCounted", majority |-> Majority(tally)])
+    IN [role |-> [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
+        currentTerm |-> [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)],
+        votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)],
+        votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally]]
+
 Canvass(c, v) ==
     /\ role[c] = "CANDIDATE"
     /\ v \notin votes[c] \cup {c}
-    /\ LET dv == Decide(role[v], [kind |-> "RequestVote", term |-> Order(v, currentTerm[c])])
-           tv == TermAfter(v, dv, currentTerm[c])
-           free == VotedForAfter(v, dv)
-           granted == currentTerm[c] >= tv /\ (currentTerm[c] > tv \/ free \in {"none", c})
-           dc == Decide(role[c], [kind |-> "Response", term |-> Order(c, tv)])
-           tally == IF Adopts(dc) THEN {} ELSE IF granted THEN votes[c] \cup {v} ELSE votes[c]
-           dt == Decide(RoleAfter(c, dc), [kind |-> "VotesCounted", majority |-> Majority(tally)])
-       IN /\ role' = [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)]
-          /\ currentTerm' = [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)]
-          /\ votedFor' = [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)]
-          /\ votes' = [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally]
+    /\ Step(CanvassNext(c, v))
 
 \* Server.appendEntries, one RPC: leader l sends server s a heartbeat and gets the answer.
 \* On s, Server.onAppendEntries: a newer term is adopted, a candidate yields to the leader of its term, and a stale
 \* leader is rejected. On l, Server.onAppendReply: the reply carries s's term, which goes through the role machine;
 \* a stale leader steps down. (A leader that hears a leader of its own term throws in the Java; the model has no
 \* step for it, and ElectionSafety says it never happens.)
+HeartbeatNext(l, s) ==
+    LET ds == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
+        ts == TermAfter(s, ds, currentTerm[l])
+        dl == Decide(role[l], [kind |-> "Response", term |-> Order(l, ts)])
+    IN [throws |-> ds.kind = "Throws",
+        role |-> [role EXCEPT ![s] = RoleAfter(s, ds), ![l] = RoleAfter(l, dl)],
+        currentTerm |-> [currentTerm EXCEPT ![s] = ts, ![l] = TermAfter(l, dl, ts)],
+        votedFor |-> [votedFor EXCEPT ![s] = VotedForAfter(s, ds), ![l] = VotedForAfter(l, dl)],
+        votes |-> [votes EXCEPT ![s] = VotesAfter(s, ds), ![l] = VotesAfter(l, dl)]]
+
 Heartbeat(l, s) ==
     /\ role[l] = "LEADER"
     /\ s # l
-    /\ LET ds == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
-           ts == TermAfter(s, ds, currentTerm[l])
-           dl == Decide(role[l], [kind |-> "Response", term |-> Order(l, ts)])
-       IN /\ ds.kind # "Throws"
-          /\ role' = [role EXCEPT ![s] = RoleAfter(s, ds), ![l] = RoleAfter(l, dl)]
-          /\ currentTerm' = [currentTerm EXCEPT ![s] = ts, ![l] = TermAfter(l, dl, ts)]
-          /\ votedFor' = [votedFor EXCEPT ![s] = VotedForAfter(s, ds), ![l] = VotedForAfter(l, dl)]
-          /\ votes' = [votes EXCEPT ![s] = VotesAfter(s, ds), ![l] = VotesAfter(l, dl)]
+    /\ ~HeartbeatNext(l, s).throws
+    /\ Step(HeartbeatNext(l, s))
 
 (***************************************************************************)
 (* The specification.                                                      *)
@@ -233,5 +247,69 @@ TermsNeverDecrease == [][\A s \in Servers : currentTerm'[s] >= currentTerm[s]]_v
 \* starting an election against itself. The states on either side of such a step are unremarkable, which is why
 \* this is a property of steps.
 LeadersNeverCampaign == [][\A s \in Servers : role[s] = "LEADER" => role'[s] # "CANDIDATE"]_vars
+
+(***************************************************************************)
+(* Liveness, checked by RaftElectionLive.cfg. Raft elects a leader by     *)
+(* randomizing the election timeouts, so that eventually one server's     *)
+(* timer fires alone: a matter of timing, which this model has no clock   *)
+(* for, so it cannot say that a leader is elected within any number of    *)
+(* terms (every term can split). What it states is weaker and still       *)
+(* worth checking: under the fairness conditions below, a run that stays  *)
+(* within its term budget elects a leader, so that the only way to have   *)
+(* no leader is to keep spending terms, and a leader whose term the       *)
+(* cluster has left steps down. A change can keep every safety property   *)
+(* and break these: a retry that stays in its term leaves three           *)
+(* candidates asking each other forever, and TLC shows the run.           *)
+(***************************************************************************)
+
+\* Leader l's heartbeat resets server s's election timer: the role machine's decision on it has RESET_ELECTION_TIMER.
+Resets(l, s) ==
+    /\ role[l] = "LEADER"
+    /\ s # l
+    /\ LET d == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
+       IN d.kind = "Transition" /\ Has(d, "RESET_ELECTION_TIMER")
+
+\* A server whose election timer nothing resets: it is not a leader (a leader's election timer is off), and no
+\* leader's heartbeats reset it.
+Unled(s) == role[s] # "LEADER" /\ \A l \in Servers : ~Resets(l, s)
+
+\* Each action's enabling condition, as ENABLED <<A>>_vars would compute it: the action's guard, and a step that
+\* changes some variable. TLC computes ENABLED of an action with the role machine inside it slowly, once per step
+\* of the liveness check, which made the check take a minute; these predicates are the same condition evaluated
+\* directly, and EnablingAgrees at the end checks that they are.
+CanTimeout(s) == currentTerm[s] < MaxTerm /\ Changes(TimeoutNext(s))
+CanCanvass(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ Changes(CanvassNext(c, v))
+CanHeartbeat(l, s) == role[l] = "LEADER" /\ s # l /\ ~HeartbeatNext(l, s).throws /\ Changes(HeartbeatNext(l, s))
+
+\* Fairness: what each server is assumed to get round to. A server whose timer nothing resets times out; a
+\* candidate with a vote to ask for asks; a leader with a heartbeat to send sends it. Nothing is assumed about which
+\* timer fires first, or how often: those are the environment's choices. Each condition is weak fairness,
+\* WF_vars(A), written out as TLA+ defines it: if A is enabled from some point on, A happens infinitely often.
+Fairness ==
+    /\ \A s \in Servers : <>[](Unled(s) /\ CanTimeout(s)) => []<><<Unled(s) /\ Timeout(s)>>_vars
+    /\ <>[](\E c, v \in Servers : CanCanvass(c, v)) => []<><<\E c, v \in Servers : Canvass(c, v)>>_vars
+    /\ <>[](\E l, s \in Servers : CanHeartbeat(l, s)) => []<><<\E l, s \in Servers : Heartbeat(l, s)>>_vars
+
+LiveSpec == Spec /\ Fairness
+
+\* The term budget: every term stays below MaxTerm, past which the model's timers do not fire.
+WithinTheBudget == [](\A s \in Servers : currentTerm[s] < MaxTerm)
+
+\* A run that stays within the term budget elects a leader. With no leader, every server's timer keeps firing, and
+\* each firing starts a term, so the only runs without a leader are the ones that spend the budget: a run in which
+\* the terms stop and no leader comes is a cluster that has stopped trying.
+ALeaderIsElected == WithinTheBudget => <>(\E s \in Servers : role[s] = "LEADER")
+
+\* A leader whose term the cluster has left steps down: its heartbeat to a server with a newer term, or that
+\* server's request for a vote, tells it.
+StaleLeadersStepDown ==
+    \A l \in Servers : (role[l] = "LEADER" /\ \E s \in Servers : currentTerm[s] > currentTerm[l]) ~> role[l] # "LEADER"
+
+\* The enabling predicates agree with ENABLED in every reachable state. Checked by RaftElectionEnabled.cfg, which
+\* takes TLC the better part of a minute, for the reason the predicates exist; run it after changing an action.
+EnablingAgrees ==
+    /\ \A s \in Servers : CanTimeout(s) <=> ENABLED <<Timeout(s)>>_vars
+    /\ \A c, v \in Servers : CanCanvass(c, v) <=> ENABLED <<Canvass(c, v)>>_vars
+    /\ \A l, s \in Servers : CanHeartbeat(l, s) <=> ENABLED <<Heartbeat(l, s)>>_vars
 
 =============================================================================
