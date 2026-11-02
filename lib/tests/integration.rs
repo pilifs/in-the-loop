@@ -709,7 +709,7 @@ fn a_law_may_call_the_method_and_a_boolean_method_is_its_own_property() {
 
 /// The Box Office domain module of this repository, when the crate sits inside it.
 fn boxoffice_domain() -> Option<PathBuf> {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/ticketing-domain");
     if !root.exists() {
         eprintln!("not inside the java-formal-verification repository; skipping");
         return None;
@@ -721,7 +721,7 @@ fn boxoffice_domain() -> Option<PathBuf> {
 #[test]
 fn reproduces_the_contract_the_java_tool_committed_for_box_office() {
     let Some(dir) = boxoffice_domain() else { return };
-    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
+    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
     let expected = Contract::read(&committed).unwrap();
     let derived = contract(&dir, "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide");
     assert_eq!(derived.cases, expected.cases);
@@ -732,15 +732,15 @@ fn reproduces_the_contract_the_java_tool_committed_for_box_office() {
     assert_eq!(strip(&derived.render()), strip(&std::fs::read_to_string(&committed).unwrap()));
 
     let caps = capabilities::analyse(std::slice::from_ref(&dir)).unwrap();
-    let committed_caps = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain/src/contract/capabilities.contract");
+    let committed_caps = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/ticketing-domain/src/contract/capabilities.contract");
     assert_eq!(caps.entries(), capabilities::read(&committed_caps).unwrap());
     assert_eq!(caps.classes, 15);
 }
 
 #[test]
 fn generates_the_tla_operator_the_python_generator_wrote() {
-    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/spec/OrderLifecycleContract.tla");
-    let contract_file = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
+    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/spec/OrderLifecycleContract.tla");
+    let contract_file = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
     if !committed.exists() {
         eprintln!("not inside the repository; skipping");
         return;
@@ -753,7 +753,7 @@ fn generates_the_tla_operator_the_python_generator_wrote() {
 
 #[test]
 fn tlc_checks_the_box_office_model() {
-    let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/spec");
+    let spec = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/spec");
     if !spec.exists() {
         eprintln!("not inside the repository; skipping");
         return;
@@ -773,7 +773,7 @@ fn tlc_checks_the_box_office_model() {
         }
     }
     let mut options = tla::TlcOptions::new(&work.join("BoxOffice.tla"));
-    options.library = Some(Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/tools/tla/standard-modules"));
+    options.library = Some(Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/tools/tla/standard-modules"));
     options.timeout_seconds = 600;
     let result = tla::run_tlc(&options).unwrap();
     assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
@@ -786,7 +786,7 @@ fn draws_the_state_machine_of_a_contract() {
     let c = contract(dir, "fixtures.TrafficLight#step");
     // TrafficLight#step returns the next light directly, not a record: no `next` field, so it is not a machine.
     assert!(jvmcontract::statemachine::from_contract(&c, "next").is_err());
-    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
+    let committed = Path::new(env!("CARGO_MANIFEST_DIR")).join("../examples/demo/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract");
     if committed.exists() {
         let machine = jvmcontract::statemachine::from_contract(&Contract::read(&committed).unwrap(), "next").unwrap();
         assert_eq!(machine.states.len(), 5);

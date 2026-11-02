@@ -1,0 +1,15 @@
+--- a/examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/link/AccessControl.java
++++ b/examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/link/AccessControl.java
+@@ -25,9 +25,9 @@ public final class AccessControl {
+             case PACKAGE_PRIVATE -> relation == Relation.SAME_CLASS || relation == Relation.SAME_NEST || relation == Relation.SAME_PACKAGE;
+             case PROTECTED -> switch (relation) {
+                 case SAME_CLASS, SAME_NEST, SAME_PACKAGE -> true;
+-                // A subclass elsewhere reaches a protected instance member only through its own objects: the
+-                // objectref must be of D or a subclass of D, not just any C.
+-                case SUBCLASS_IN_OTHER_PACKAGE -> staticMember || objectrefIsCurrentOrSubclass;
++                // A subclass inherits the protected members of its superclass; the receiver's type is the
++                // type checker's business (it is part of verification, not of resolution).
++                case SUBCLASS_IN_OTHER_PACKAGE -> true;
+                 case UNRELATED -> false;
+             };
+         };

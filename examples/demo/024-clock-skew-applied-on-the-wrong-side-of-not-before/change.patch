@@ -1,0 +1,11 @@
+--- a/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java
++++ b/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java
+@@ -15,6 +15,7 @@ public final class JwtTimestamps {
+         if (skewSeconds < 0) {
+             throw new IllegalArgumentException("the clock skew tolerance is not negative");
+         }
+-        return nowSeconds >= notBefore - skewSeconds && nowSeconds < expiresAt + skewSeconds;
++        // Tolerate skew on the expiry side only: a token must never be accepted before it says it is valid.
++        return nowSeconds >= notBefore + skewSeconds && nowSeconds < expiresAt + skewSeconds;
+     }
+ }

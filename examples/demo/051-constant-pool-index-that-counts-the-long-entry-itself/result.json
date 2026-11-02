@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ConstantPool.java",
+    "startLine": 18,
+    "code": "     * the given tags, in order.\n     */\n    public static int indexOf(byte[] tags, int entry) {\n        int index = 1;\n        for (int i = 0; i < entry; i++) {\n            index += tags[i] == CONSTANT_LONG || tags[i] == CONSTANT_DOUBLE ? 2 : 1;\n        }\n        return index;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ConstantPool.java",
+    "startLine": 18,
+    "code": "     * the given tags, in order.\n     */\n    public static int indexOf(byte[] tags, int entry) {\n        int wide = 0;\n        for (int i = 0; i <= entry; i++) {\n            if (tags[i] == CONSTANT_LONG || tags[i] == CONSTANT_DOUBLE) {\n                wide++;\n            }\n        }\n        return 1 + entry + wide;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "tags: byte[] of length ≤ 8 × entry: int",
+  "counterexamples": [
+    {
+      "input": "indexOf(tags=[5], entry=0)",
+      "contract": "result == 1 + entry + (\\num_of int i; 0 <= i && i < entry; tags[i] == 5 || tags[i] == 6)",
+      "actual": "2"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed in the interpreter; domain tags: byte[] of length ≤ 8 × entry: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result == 1 + entry + (\\num_of int i; 0 <= i && i < entry; tags[i] == 5 || tags[i] == 6)",
+    "assume": "0 <= entry && entry < tags.length"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

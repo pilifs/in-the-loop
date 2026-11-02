@@ -1,0 +1,39 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: property holds on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/StackMapTable.java",
+    "startLine": 13,
+    "code": "\n/**\n * The bytecode offset at which frame {@code k} applies, given the {@code offset_delta} of every frame in table\n * order.\n */\npublic static int offsetOf(int[] offsetDelta, int k) {\n    int offset = 0;\n    for (int i = 0; i <= k; i++) {\n        offset += i == 0 ? offsetDelta[i] : offsetDelta[i] + 1;\n    }\n    return offset;\n}\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/StackMapTable.java",
+    "startLine": 13,
+    "code": "\n/**\n * The bytecode offset at which frame {@code k} applies, given the {@code offset_delta} of every frame in table\n * order. Counting from one byte before the code, every frame is {@code offset_delta + 1} past the previous\n * one, the first included: the rule of JVMS §4.7.4 without its special case.\n */\npublic static int offsetOf(int[] offsetDelta, int k) {\n    int offset = -1;\n    for (int i = 0; i <= k; i++) {\n        offset += offsetDelta[i] + 1;\n    }\n    return offset;\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "offsetDelta: int[] of length ≤ 8 × k: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result == k + (\\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))",
+    "assume": "0 <= k && k < offsetDelta.length && (\\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535)"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

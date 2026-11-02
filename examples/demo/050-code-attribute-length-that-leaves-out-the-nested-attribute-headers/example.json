@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "050",
+  "title": "A Code attribute length that omits the nested attributes' headers truncates the method",
+  "summary": "The writer of a class file computes the `attribute_length` of a `Code` attribute: twelve fixed bytes, the code, eight per exception table entry, and the nested attributes, each a six-byte header followed by its own `attribute_length` bytes. A developer reads in JVMS §4.7 that an attribute's length does not include its initial six bytes, and makes the loop add each nested attribute's length and nothing else. The property committed for the computation, stated with JML's `\\sum` over the nested lengths, is refuted at once; the counterexample JBMC finds is an eight-attribute table of large numbers, which the tool shrinks in its interpreter to one nested attribute of length zero, six bytes short.",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+    "symbol": "net.terminalvalue.mica.classfile.CodeAttribute#attributeLength"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Add each nested attribute's `attribute_length` to the total, without the six bytes of its header, and say in the class comment that an attribute's length does not include its initial six bytes, as JVMS §4.7 defines `attribute_length`. The tests for the computation pass.",
+    "patch": "change.patch"
+  },
+  "risk": "JVMS §4.7 does say that `attribute_length` excludes the six-byte header, of the attribute whose length it is. The `Code` attribute's length counts everything inside the `Code` attribute, and its nested attributes' headers are inside it. The two sentences are easy to confuse because both are true. A `Code` attribute six bytes short per nested attribute is read by a JVM as ending inside its last `LineNumberTable`, and whatever follows, the next method's `access_flags`, is parsed as the rest of the table: a `ClassFormatError` on a good day and a silently wrong line number on a bad one. The tests compute the length of methods compiled without debug information, which have no nested attributes, so the loop that was changed never runs in them.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `attributeLength` is the layout of JVMS §4.7.3 as a sum: `result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])`, on every table of up to eight nested attributes with `u2` lengths. The tool compiles the `\\sum` to a loop in the harness and JBMC refutes the patched computation at once, with a table of eight nested attributes of whatever lengths satisfied the solver. That witness is correct and unreadable, so the tool shrinks it: it runs the generated harness class in its own interpreter on smaller inputs, dropping array elements and moving numbers towards zero while the property still fails, and reports the local minimum it reaches along with the input JBMC found. The witness on the page is one nested attribute of length zero, with the smallest code length the assumption allows, and the outcome is six bytes short of the property's value: the header. The shrunk witness is the same on every run, where the solver's is not, and the page can quote it.",
+  "resolution": "Revert, and keep the sentence in the class comment that distinguishes the two lengths: the `attribute_length` of the nested attribute excludes its header, the `attribute_length` of the `Code` attribute includes it. The property is the regression test, and its shrunk witness is the unit test to add: a `Code` attribute with one empty nested attribute.",
+  "provenance": "Constructed from the definition of attribute_length in JVMS §4.7 and the layout of the Code attribute in §4.7.3, by applying the first to the second.",
+  "references": [
+    {
+      "title": "JVMS §4.7, attributes: attribute_length does not include the initial six bytes",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7"
+    },
+    {
+      "title": "JVMS §4.7.3, the Code attribute: its layout, nested attributes included",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.3"
+    },
+    {
+      "title": "JML reference manual: quantified expressions, including the generalized quantifiers \\sum, \\num_of, \\max and \\min",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html#SEC147"
+    },
+    {
+      "title": "Claessen and Hughes, QuickCheck: a lightweight tool for random testing of Haskell programs (ICFP 2000), the origin of shrinking a counterexample",
+      "url": "https://dl.acm.org/doi/10.1145/351240.351266"
+    }
+  ]
+}

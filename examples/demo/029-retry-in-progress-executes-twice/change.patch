@@ -1,0 +1,15 @@
+--- a/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
++++ b/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
+@@ -35,8 +35,11 @@ public final class IdempotentReceiver {
+         return switch (event) {
+             case Request request -> switch (state) {
+                 case ABSENT -> transition(IN_PROGRESS, EXECUTE);
++                // A retry that arrives while the key is still in progress means the first attempt is gone: the client
++                // timed out on it and its worker will not answer. Run the retry instead of sending the client round
++                // another loop of 409s.
+                 case IN_PROGRESS -> request.sameFingerprint()
+-                        ? rejected("a request with this key is in progress")
++                        ? transition(IN_PROGRESS, EXECUTE)
+                         : rejected("the key was reused for a different request");
+                 case COMPLETED -> request.sameFingerprint()
+                         ? transition(COMPLETED, REPLAY_RESPONSE)

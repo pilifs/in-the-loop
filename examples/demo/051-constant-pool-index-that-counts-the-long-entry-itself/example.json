@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "051",
+  "title": "A constant-pool index that counts the long entry itself points one past the entry",
+  "summary": "Constant pool entries are numbered from 1, and a `CONSTANT_Long` or `CONSTANT_Double` entry takes two numbers, the one after it being unusable: the specification calls this, in retrospect, a poor choice. The class file reader maps an entry's position to its number by walking the entries before it. A developer rewrites the walk as a count of the two-number entries, and counts up to and including the entry itself. The property committed for the mapping, stated with JML's `\\num_of`, is refuted on a pool of one long constant, whose number comes out as 2 instead of 1.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ConstantPool.java",
+    "symbol": "net.terminalvalue.mica.classfile.ConstantPool#indexOf"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Compute the number as `1 + entry + wide`, where `wide` counts the `CONSTANT_Long` and `CONSTANT_Double` entries, instead of adding 1 or 2 per entry in a loop; the count runs over the entries up to and including `entry`. The tests for the mapping pass.",
+    "patch": "change.patch"
+  },
+  "risk": "Whether the entry itself is counted matters only when the entry is a long or a double, and then the number returned is the unusable one after it: a `ldc2_w` resolved through the mapping reads the second half of its own constant as the start of the next entry, which is a `ClassFormatError` if the reader is strict and a wrong constant if it is not. The tests, taken from a `javap` dump with one long constant, check the number of the first entry, which is not a long, and the numbers of the entries after the long, which the count gets right because the long is before them either way. Nobody asked for the number of the long itself.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `indexOf` is the numbering rule of JVMS §4.4.5 with JML's counting quantifier: `result == 1 + entry + (\\num_of int i; 0 <= i && i < entry; tags[i] == 5 || tags[i] == 6)`, for every position in every pool of up to eight entries with symbolic tags. The tool compiles the `\\num_of` to a counting loop in the harness and JBMC refutes the rewritten mapping in under a second, and this time the solver's own witness is the smallest there is, so the shrinker that runs on every refutation (see 050) has nothing to remove: a pool of one entry, tag 5, `CONSTANT_Long`, at position 0, numbered 2. That is the whole bug in one line: the first entry is number 1 whatever its tag, and counting the entry itself puts it at 2. The quantifier is on the page as the specification, and the shrunk witness as the test the developer should have had.",
+  "resolution": "Revert the inclusive bound: the count runs over the entries before `entry`, as the original loop did. The rewrite as `1 + entry + wide` is fine once the bound is right, and the property proves it so; the shrunk witness becomes a unit test.",
+  "provenance": "Constructed from the numbering of constant pool entries in JVMS §4.4.5, and its remark that making 8-byte constants take two entries was a poor choice.",
+  "references": [
+    {
+      "title": "JVMS §4.4.5, the CONSTANT_Long_info and CONSTANT_Double_info structures: two constant pool entries, in retrospect a poor choice",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.4.5"
+    },
+    {
+      "title": "JVMS §4.1, the ClassFile structure: constant_pool_count and the numbering from 1",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.1"
+    },
+    {
+      "title": "JML reference manual: quantified expressions, including the generalized quantifiers \\sum, \\num_of, \\max and \\min",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html#SEC147"
+    },
+    {
+      "title": "Claessen and Hughes, QuickCheck: a lightweight tool for random testing of Haskell programs (ICFP 2000), the origin of shrinking a counterexample",
+      "url": "https://dl.acm.org/doi/10.1145/351240.351266"
+    }
+  ]
+}

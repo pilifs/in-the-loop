@@ -11,20 +11,22 @@ The repo has two parts:
 
 ## [`examples/`](examples/README.md): formal verification
 
-**Start here.** Numbered examples of code changes run through a formal verifier, each with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests.
-The folder also holds everything the examples need:
+**Start here.** Two kinds of examples: [`examples/demo/`](examples/demo/README.md), 56 numbered code changes to four subject systems written for this repository, each run through a formal verifier, with the code before and after, the verdict, the counterexamples, the risk, and a comparison with the existing tests; and [`examples/real-world/`](examples/real-world/README.md), pull requests to published Java libraries verified with the `/verify-bytecode` skill, one folder per pull request.
 
 | Path | Content |
 |---|---|
-| [`examples/README.md`](examples/README.md) | The table of contents |
+| [`examples/README.md`](examples/README.md) | The two kinds of examples, and what is shared between them |
+| [`examples/demo/README.md`](examples/demo/README.md) | The table of the 56 demo examples, how to read one, and how to run or add one |
+| [`examples/demo/apps/boxoffice/`](examples/demo/apps/boxoffice/README.md) | The first subject system (examples 001 to 012): concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep |
+| [`examples/demo/apps/boxoffice/spec/`](examples/demo/apps/boxoffice/spec/README.md) | Its TLA+ model: the two services, Kafka and the clock, checked by TLC over every interleaving |
+| [`examples/demo/apps/quorum/`](examples/demo/apps/quorum/README.md) | The second subject system (examples 013 to 022): the pure kernels of a replicated system, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins and a two-phase-commit coordinator, each with a contract, a property or a TLA+ model, verified by `jvmcontract` |
+| [`examples/demo/apps/crosscut/`](examples/demo/apps/crosscut/README.md) | The third subject system (examples 023 to 033): the kernels behind a Spring Boot service's cross-cutting concerns, the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an `Idempotency-Key` receiver with its TLA+ model, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry, verified by `jvmcontract` |
+| [`examples/demo/apps/mica/`](examples/demo/apps/mica/README.md) | The fourth subject system (examples 034 to 056): the decision kernels of a small JVM written in Java, the class initialization procedure with its TLA+ model (checked for deadlock), the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, the exception table, stack map frame offsets, the `Code` attribute's length, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and modified UTF-8, verified by `jvmcontract` |
+| [`examples/demo/tools/contracts/`](examples/demo/tools/contracts/README.md) | The Java verifiers of examples 001 to 012: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
+| [`examples/demo/tools/build.py`](examples/demo/tools/build.py) | Runs every demo example and generates its page |
+| [`examples/real-world/README.md`](examples/real-world/README.md) | The real-world examples: the pull requests verified so far, and the libraries to try next |
+| [`examples/real-world/commons-numbers-223/`](examples/real-world/commons-numbers-223/README.md) | Apache Commons Numbers #223, the `ArithmeticUtils.pow` fix: the witness found from the bytecode alone, the Javadoc proved, and the change proved confined to the one input it names |
 | [`examples/approaches.md`](examples/approaches.md) | The approaches by level (source, bytecode, native, distributed), and the plan for the demos |
-| [`examples/apps/boxoffice/`](examples/apps/boxoffice/README.md) | The subject system: concert ticketing as two Spring Boot services with Kafka and MongoDB, and the invariants they must keep |
-| [`examples/apps/boxoffice/spec/`](examples/apps/boxoffice/spec/README.md) | Its TLA+ model: the two services, Kafka and the clock, checked by TLC over every interleaving |
-| [`examples/apps/quorum/`](examples/apps/quorum/README.md) | The second subject system (examples 013 to 022): the pure kernels of a replicated system, Raft's vote rule and role machine, quorum arithmetic, backoff, a hybrid logical clock, last-writer-wins and a two-phase-commit coordinator, each with a contract, a property or a TLA+ model, verified by `jvmcontract` |
-| [`examples/apps/crosscut/`](examples/apps/crosscut/README.md) | The third subject system (examples 023 to 033): the kernels behind a Spring Boot service's cross-cutting concerns, the transaction interceptor's rules, a circuit breaker, a retry policy, a token bucket, an `Idempotency-Key` receiver with its TLA+ model, a Kafka partitioner and batch commit, a JWT validator's clock skew and a cache's expiry, verified by `jvmcontract` |
-| [`examples/apps/mica/`](examples/apps/mica/README.md) | The fourth subject system (examples 034 to 056): the decision kernels of a small JVM written in Java, the class initialization procedure with its TLA+ model (checked for deadlock), the type checker's assignability relation, access control, `idiv` and `fcmp`, a `lookupswitch` bisection, the exception table, stack map frame offsets, the `Code` attribute's length, constant pool numbering, `max_stack`, javac's switch heuristic, a power-of-two table size and modified UTF-8, verified by `jvmcontract` |
-| [`examples/tools/contracts/`](examples/tools/contracts/README.md) | The Java verifiers of examples 001 to 012: behavioural, regression and capability contracts, a CI gate that proves what changed and what did not |
-| [`examples/tools/build.py`](examples/tools/build.py) | Runs every example and generates its page |
 | [`examples/setup/`](examples/setup/README.md) | The toolchain installer for Ubuntu and WSL2 |
 
 ## [`lib/`](lib/README.md): the verifiers as a Rust library

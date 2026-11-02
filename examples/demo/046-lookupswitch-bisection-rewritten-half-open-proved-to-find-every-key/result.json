@@ -1,0 +1,39 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: property holds on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 14,
+    "code": "        return (low + high) >>> 1;\n    }\n\n    /** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\n    public static int find(int[] matches, int key) {\n        int low = 0;\n        int high = matches.length - 1;\n        while (low <= high) {\n            int mid = midpoint(low, high);\n            int match = matches[mid];\n            if (match < key) {\n                low = mid + 1;\n            } else if (match > key) {\n                high = mid - 1;\n            } else {\n                return mid;\n            }\n        }\n        return -1;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 14,
+    "code": "        return (low + high) >>> 1;\n    }\n\n    /**\n     * The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. The search\n     * keeps the half-open range {@code [low, high)} that may hold the key, one comparison per step, and tests\n     * for equality once, at the end.\n     */\n    public static int find(int[] matches, int key) {\n        int low = 0;\n        int high = matches.length;\n        while (low < high) {\n            int mid = midpoint(low, high);\n            if (matches[mid] < key) {\n                low = mid + 1;\n            } else {\n                high = mid;\n            }\n        }\n        return low < matches.length && matches[low] == key ? low : -1;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "matches: int[] of length ≤ 8 × key: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.3 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "(result == -1 && (\\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)",
+    "assume": "(\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i])"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

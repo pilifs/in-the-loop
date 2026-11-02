@@ -1,0 +1,36 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java",
+    "startLine": 13,
+    "code": "\n    /** The smallest power of two that is at least {@code cap}, between 1 and {@link #MAXIMUM_CAPACITY}. */\n    public static int tableSizeFor(int cap) {\n        int n = cap - 1;\n        n |= n >>> 1;\n        n |= n >>> 2;\n        n |= n >>> 4;\n        n |= n >>> 8;\n        n |= n >>> 16;\n        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/rt/SymbolTable.java",
+    "startLine": 13,
+    "code": "\n    /** The smallest power of two that is at least {@code cap}, between 1 and {@link #MAXIMUM_CAPACITY}. */\n    public static int tableSizeFor(int cap) {\n        // Smear the highest set bit of cap - 1 downwards with one intrinsic instead of five shifts, as\n        // HashMap.tableSizeFor does since JDK 11.\n        int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);\n        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "cap: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over cap: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,21 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java
+@@ -7,6 +7,9 @@ package net.terminalvalue.quorum.replication;
+  */
+ public final class LastWriterWins {
+ 
++    /** Writes closer together than this are treated as simultaneous: clocks on different nodes are not that precise. */
++    public static final long CLOCK_SKEW_MILLIS = 5;
++
+     private LastWriterWins() {}
+ 
+     /**
+@@ -15,7 +18,7 @@ public final class LastWriterWins {
+      * {@code winner(a, b) == 1 - winner(b, a)}.
+      */
+     public static int winner(long tsA, int nodeA, long tsB, int nodeB) {
+-        if (tsA != tsB) {
++        if (Math.abs(tsA - tsB) > CLOCK_SKEW_MILLIS) {
+             return tsA > tsB ? 0 : 1;
+         }
+         return nodeA >= nodeB ? 0 : 1;

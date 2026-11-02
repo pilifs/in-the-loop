@@ -1,0 +1,55 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 2 of 44 cases changed",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 44,
+    "code": "        if (call.failed()) {\n            yield transition(OPEN, START_WAIT);\n        }\n        if (!call.windowComplete()) {\n            yield unchanged(\"more probes to go\");\n        }\n        yield call.thresholdExceeded() ? transition(OPEN, START_WAIT) : transition(CLOSED, RESET_METRICS);\n    }\n};\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 44,
+    "code": "        if (call.failed()) {\n            yield transition(OPEN, START_WAIT);\n        }\n        // A probe that came back is proof enough that the backend is up again: close without holding\n        // the callers back for the remaining probes.\n        yield call.thresholdExceeded() ? transition(OPEN, START_WAIT) : transition(CLOSED, RESET_METRICS);\n    }\n};\n"
+  },
+  "casesTotal": 44,
+  "domain": null,
+  "counterexamples": [
+    {
+      "input": "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false])",
+      "contract": "Unchanged[reason=\"more probes to go\"]",
+      "actual": "Transition[next=CLOSED, effects=[RESET_METRICS]]"
+    },
+    {
+      "input": "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])",
+      "contract": "Unchanged[reason=\"more probes to go\"]",
+      "actual": "Transition[next=OPEN, effects=[START_WAIT]]"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [
+    "java.lang.Enum.ordinal",
+    "java.lang.MatchException.<init>",
+    "java.lang.Record.<init>",
+    "java.lang.runtime.SwitchBootstraps.typeSwitch",
+    "java.util.List.copyOf",
+    "java.util.List.of",
+    "java.util.Objects.requireNonNull"
+  ],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    CLOSED --> CLOSED: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    CLOSED --> CLOSED: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    CLOSED --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    CLOSED --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[RESET_METRICS, PERMIT]\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallRequested[waitElapsed=false] (Rejected)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] (Unchanged)\n",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

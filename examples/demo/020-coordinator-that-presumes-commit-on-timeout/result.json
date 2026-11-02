@@ -1,0 +1,64 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: Atomicity, 3-step trace",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 28,
+    "code": "                : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n    case Timeout _ -> switch (phase) {\n        case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n};\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 28,
+    "code": "                : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n    case Timeout timeout -> switch (phase) {\n        // The votes that did arrive were all yes: the missing participants are slow, not opposed, and\n        // aborting would throw away work that every voter was ready to commit.\n        case COLLECTING -> timeout.unanimousSoFar()\n                ? transition(COMMITTED, SEND_COMMIT)\n                : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n};\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -9,7 +9,7 @@\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n-decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n",
+  "proof": "TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "decision": "\"NONE\"",
+        "inbox": "{}",
+        "phase": "\"COLLECTING\"",
+        "pstate": "(p1 :> \"WORKING\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")",
+        "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Vote",
+      "changes": {
+        "inbox": "{[from |-> p1, vote |-> \"NO\"]}",
+        "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")"
+      }
+    },
+    {
+      "step": 3,
+      "action": "CoordinatorTimeout",
+      "changes": {
+        "decision": "\"COMMIT\"",
+        "phase": "\"COMMITTED\""
+      }
+    }
+  ],
+  "statesExplored": 27,
+  "invariant": "Atomicity",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COMMITTED: Timeout[unanimousSoFar=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

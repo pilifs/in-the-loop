@@ -1,0 +1,16 @@
+--- a/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java
++++ b/examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java
+@@ -9,11 +9,11 @@ public final class Partitioner {
+ 
+     private Partitioner() {}
+ 
+-    /** Kafka's {@code Utils.toPositive(hash) % numPartitions}: clear the sign bit, then take the remainder. */
++    /** The hash made positive, modulo the partition count. */
+     public static int partitionFor(int hash, int numPartitions) {
+         if (numPartitions <= 0) {
+             throw new IllegalArgumentException("a topic has at least one partition");
+         }
+-        return (hash & 0x7fffffff) % numPartitions;
++        return Math.abs(hash) % numPartitions;
+     }
+ }

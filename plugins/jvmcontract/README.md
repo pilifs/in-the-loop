@@ -79,15 +79,7 @@ The limits are the tool's, described in the [library README](../../lib/README.md
 
 ## Libraries to try it on
 
-Good subjects have small Maven or Gradle builds, an active pull request flow, and static utility methods over primitives and primitive arrays. Five popular ones, with the classes where the proofs land:
-
-| Library | Build | Where the proofs land | Try |
-|---|---|---|---|
-| [Apache Commons Numbers](https://github.com/apache/commons-numbers) | Maven, multi-module | `ArithmeticUtils` (`gcd`, `lcm`, `pow`, `isPowerOfTwo`, `remainderUnsigned`, `divideUnsigned`), `Precision`, `DD` | [#223](https://github.com/apache/commons-numbers/pull/223), the `pow` fix above: regression proof, confined change, and the Javadoc proved |
-| [Joda-Time](https://github.com/JodaOrg/joda-time) | Maven, one module | `org.joda.time.field.FieldUtils` (`safeAdd`, `safeSubtract`, `safeMultiply`, `safeNegate`, `safeToInt`, `safeMultiplyToInt`), with `@throws ArithmeticException` in every Javadoc | any pull request touching `FieldUtils`; or `--only org.joda.time.field.FieldUtils#safeMultiply(long, int)` on a recent one, to see the overflow contract proved |
-| [Apache Commons Codec](https://github.com/apache/commons-codec) | Maven, one module | `Hex` (`encodeHex(byte[])`, `decodeHex(char[])`), `BaseNCodec` helpers, `PureJavaCrc32`, `MurmurHash3` (`hash32x86(byte[], int, int, int)`) | pull requests to `binary/` and `digest/`: regression proofs over `byte[]` and `char[]`, bounded in length |
-| [jackson-core](https://github.com/FasterXML/jackson-core) | Maven, one module | `com.fasterxml.jackson.core.io.NumberOutput` (`outputInt(int, char[], int)`, `outputLong`, `divBy1000`), `NumberInput`, `CharTypes` | pull requests to `io/`: the number formatters are static, over `int`, `long` and `char[]` |
-| [Apache Commons Lang](https://github.com/apache/commons-lang) | Maven, one module | `ArrayUtils` over primitive arrays (`indexOf(int[], int)`, `reverse(int[])`, `isSorted(int[])`), `BooleanUtils` (`toBoolean(int)`, `and(boolean...)`), `CharUtils`, `NumberUtils.compare` | the primitive-array methods: regression proofs that compare what each version leaves in the array |
+Good subjects have small Maven or Gradle builds, an active pull request flow, and static utility methods over primitives and primitive arrays. The list of libraries and classes where the proofs land, and the pull requests already verified, are in [`examples/real-world/`](../../examples/real-world/README.md), starting with [Apache Commons Numbers #223](../../examples/real-world/commons-numbers-223/README.md), the `pow` fix above.
 
 What does not work well: `String`-heavy libraries (jsoup, Commons Text), anything whose build takes longer than the proofs (Guava, Netty), and methods whose only parameters are objects.
 
@@ -107,7 +99,7 @@ Run in your project's directory. The target and the invariants are optional: wit
 4. **Check.** `jvmcontract tlc` runs TLC: every invariant holds in N states, or the shortest interleaving that breaks one, step by step. A violation is read against the Java before anything changes: a bug, a model mistake, or a rule that needs restating, and the skill says which. A verified model is then broken once on purpose, to show the invariants can fail at all.
 5. **Wire it in.** `spec/check.sh` derives the contract from the current classes, fails with a diff if what the kernel decides has changed (so the change is reviewed like an API change and accepted with `--update`), regenerates the operator and runs TLC; one Gradle task, Maven execution or CI step calls it. A `spec/README.md` says what the model covers, what it leaves out, and what a pass means.
 
-**A real run.** The [Crosscut](../../examples/apps/crosscut/README.md) module has a circuit breaker kernel, `CircuitBreaker#decide`, with a 44-case contract and no model. Following the skill's procedure produced [`spec/CircuitBreaker.tla`](../../examples/apps/crosscut/spec/CircuitBreaker.tla): the component that owns the breaker (its sliding window, probe cap and wait timer), a dependency that goes up and down, and five invariants, among them *an open breaker lets nothing through until its wait has elapsed* and *half-open closes only once every permitted probe has completed*.
+**A real run.** The [Crosscut](../../examples/demo/apps/crosscut/README.md) module has a circuit breaker kernel, `CircuitBreaker#decide`, with a 44-case contract and no model. Following the skill's procedure produced [`spec/CircuitBreaker.tla`](../../examples/demo/apps/crosscut/spec/CircuitBreaker.tla): the component that owns the breaker (its sliding window, probe cap and wait timer), a dependency that goes up and down, and five invariants, among them *an open breaker lets nothing through until its wait has elapsed* and *half-open closes only once every permitted probe has completed*.
 
 ```
 $ jvmcontract derive net.terminalvalue.crosscut.resilience.CircuitBreaker#decide --classes build/main > spec/CircuitBreaker.decide.contract
@@ -118,7 +110,7 @@ $ jvmcontract tlc spec/CircuitBreaker.tla
 ✓ every invariant holds in 102 distinct states, depth 19, in 0 s (TLC 2.19)
 ```
 
-With the kernel of [example 026](../../examples/026-half-open-breaker-that-closes-on-the-first-good-probe/README.md) compiled in instead (half-open closes on the first good probe), `check.sh` first stops on the two contract rows that changed, and after `--update` the regenerated operator makes the model report:
+With the kernel of [example 026](../../examples/demo/026-half-open-breaker-that-closes-on-the-first-good-probe/README.md) compiled in instead (half-open closes on the first good probe), `check.sh` first stops on the two contract rows that changed, and after `--update` the regenerated operator makes the model report:
 
 ```
 ✗ invariant ClosedOnlyAfterEveryProbe is violated after 10 steps, depth 10, in 0 s (TLC 2.19)
@@ -134,7 +126,7 @@ With the kernel of [example 026](../../examples/026-half-open-breaker-that-close
   10. Complete: closedEarly = TRUE, current = 0, state = "CLOSED"
 ```
 
-Two failures open the breaker, the wait elapses, one probe is permitted, the dependency comes back, and that single probe closes it. Writing the model also forced a decision the kernel leaves to its owner into the open: which outcomes the owner reports. An owner that reports every outcome counts a straggler from before the breaker opened as a probe; the model stamps each call with its metrics generation and drops the stale ones, and its README says so. The four earlier models in this repository ([orders and payments across two services](../../examples/apps/boxoffice/spec/README.md), [two-phase commit](../../examples/apps/quorum/spec/README.md), [an idempotency key under retries](../../examples/apps/crosscut/spec/README.md), [class initialization under racing threads](../../examples/apps/mica/spec/README.md)) follow the same construction and are the style the skill writes in.
+Two failures open the breaker, the wait elapses, one probe is permitted, the dependency comes back, and that single probe closes it. Writing the model also forced a decision the kernel leaves to its owner into the open: which outcomes the owner reports. An owner that reports every outcome counts a straggler from before the breaker opened as a probe; the model stamps each call with its metrics generation and drops the stale ones, and its README says so. The four earlier models in this repository ([orders and payments across two services](../../examples/demo/apps/boxoffice/spec/README.md), [two-phase commit](../../examples/demo/apps/quorum/spec/README.md), [an idempotency key under retries](../../examples/demo/apps/crosscut/spec/README.md), [class initialization under racing threads](../../examples/demo/apps/mica/spec/README.md)) follow the same construction and are the style the skill writes in.
 
 **What a pass means.** Within the bounds of the `.cfg`, no interleaving of the modelled actions reaches a state that violates the invariants. It does not prove the Java correct: the actions are a hand-written account of what each transaction reads and writes, and are as faithful as that reading. The part that is not hand-written is the decision rule, generated from a contract proved against the bytecode. The skill's reports and READMEs say this every time.
 
@@ -148,4 +140,4 @@ Options: `--spec-dir DIR` (default `spec/` in the kernel's module), `--deadlock`
 
 For `/add-tla-model`, [`SKILL.md`](skills/add-tla-model/SKILL.md) is the procedure and [`reference.md`](skills/add-tla-model/reference.md) the kernel's shape, the model recipe, the TLA+ that bites and how to read TLC; [`templates/check.sh`](skills/add-tla-model/templates/check.sh) and [`templates/README.md`](skills/add-tla-model/templates/README.md) are what it writes into a project's `spec/`; [`find-classes.sh`](skills/add-tla-model/scripts/find-classes.sh) locates a module's compiled classes without building, and [`install-tlc.sh`](skills/add-tla-model/scripts/install-tlc.sh) downloads `tla2tools.jar`.
 
-The verifier is [`lib/`](../../lib/README.md), a Rust crate with no JVM in the loop. The [examples](../../examples/README.md) of this repository are 56 code changes run through it, each with the verdict and what the existing tests did. The sessions that built all of it are published in [`llm-dlc/`](../../llm-dlc/README.md).
+The verifier is [`lib/`](../../lib/README.md), a Rust crate with no JVM in the loop. The [demo examples](../../examples/demo/README.md) of this repository are 56 code changes run through it, each with the verdict and what the existing tests did; the [real-world examples](../../examples/real-world/README.md) are pull requests to published libraries, verified with this skill. The sessions that built all of it are published in [`llm-dlc/`](../../llm-dlc/README.md).

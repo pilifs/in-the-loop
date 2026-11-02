@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "021",
+  "title": "Aborting on the first no vote, proved safe for every interleaving of three participants",
+  "summary": "The coordinator used to wait for every vote before deciding, holding every participant's locks until the last straggler or the timeout. The developer makes it abort as soon as one no arrives. The regenerated contract changes in one case, the model checker runs every interleaving of three participants, the coordinator, the votes in flight and both timeouts, and every invariant holds in every state. The change is merged on a proof, not on a reviewer's mental model of the protocol.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "When a tally is not unanimous, abort at once instead of waiting for the remaining votes. One no decides the outcome, so waiting only keeps the other participants' locks for longer. The contract diff is the case `decide(COLLECTING, Tally[complete=false, unanimous=false])`, from unchanged to a transition to ABORTED.",
+    "patch": "change.patch"
+  },
+  "risk": "None, and that is the point. The question a reviewer has to answer for this change is not about the line; it is whether a participant can still be told to commit after another was told to abort, with votes arriving in any order, votes still in flight when the coordinator decides, and participants giving up on their own. That is a question about interleavings, and example 020 shows a one-line change of the same shape that fails it. Answering it by inspection is how two-phase commit implementations get their bugs; answering it by model checking takes a second.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The coordinator's rule in the model is generated from the regenerated contract, so the model runs the new rule. TLC explores every reachable state for three participants: every order of votes, every vote still in flight at every decision, participants that time out before voting, and the coordinator's timeout at every point where votes are missing. In every state, no participant has aborted once the coordinator or any participant committed, and a participant that committed voted yes and did so on the coordinator's decision. The early abort can only ever turn a transaction that would have aborted anyway into one that aborts sooner: a late yes vote reaches a coordinator that has already decided, whose contract says it is unchanged, and a late no vote reaches the same.",
+  "resolution": "Merge. The contract diff is committed with the change, and the model is checked on every build, so the next change to the coordinator is held to the same invariants.",
+  "provenance": "Constructed to show an intended change to a protocol's decision rule accepted on the strength of the model, to pair with example 020.",
+  "references": [
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit (the TLA+ specification of 2PC this model follows)",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    }
+  ]
+}

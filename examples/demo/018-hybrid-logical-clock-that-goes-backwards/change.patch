@@ -1,0 +1,26 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java
+@@ -55,17 +55,13 @@ public final class HybridLogicalClock {
+ 
+     /** The timestamp of a receive event, given the message's timestamp. */
+     public static long receive(long nowMillis, long last, long message) {
+-        long lastPhysical = physical(last);
+-        long messagePhysical = physical(message);
+-        if (nowMillis > lastPhysical && nowMillis > messagePhysical) {
+-            return of(nowMillis, 0);
+-        }
+-        if (lastPhysical == messagePhysical) {
+-            return of(lastPhysical, Math.max(logical(last), logical(message)) + 1L);
++        long physical = Math.max(nowMillis, Math.max(physical(last), physical(message)));
++        if (physical == physical(last)) {
++            return of(physical, logical(last) + 1L);
+         }
+-        if (lastPhysical > messagePhysical) {
+-            return of(lastPhysical, logical(last) + 1L);
++        if (physical == physical(message)) {
++            return of(physical, logical(message) + 1L);
+         }
+-        return of(messagePhysical, logical(message) + 1L);
++        return of(physical, 0);
+     }
+ }

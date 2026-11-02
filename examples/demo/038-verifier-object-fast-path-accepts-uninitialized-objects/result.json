@@ -1,0 +1,55 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 2 of 289 cases changed",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/verify/Assignability.java",
+    "startLine": 23,
+    "code": "    if (from == TOP || from.isPrimitive() || to.isPrimitive()) {\n        return false;\n    }\n    // uninitialized and uninitializedThis are assignable to themselves (and top) only: a value whose\n    // constructor has not run is not a reference yet, and no instruction but invokespecial <init> may use it.\n    if (from.isUninitialized() || to.isUninitialized()) {\n// ...\n    if (to == NULL) {\n        return false;\n    }\n    // Every reference is an Object.\n    if (to == OBJECT) {\n        return true;\n    }\n    // The checker does not check interfaces: any class is assignable to any interface type, and\n    // invokeinterface checks the receiver at run time. Arrays implement Cloneable and Serializable only.\n    if (to.isInterface()) {\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/verify/Assignability.java",
+    "startLine": 23,
+    "code": "    if (from == TOP || from.isPrimitive() || to.isPrimitive()) {\n        return false;\n    }\n    // Every reference is an Object. This is the most frequent query (every receiver of an invokevirtual on\n    // Object, every value stored into an Object[]), so answer it before the rarer checks below.\n    if (to == OBJECT) {\n        return true;\n    }\n    // uninitialized and uninitializedThis are assignable to themselves (and top) only: a value whose\n    // constructor has not run is not a reference yet, and no instruction but invokespecial <init> may use it.\n    if (from.isUninitialized() || to.isUninitialized()) {\n// ...\n    if (to == NULL) {\n        return false;\n    }\n    // The checker does not check interfaces: any class is assignable to any interface type, and\n    // invokeinterface checks the receiver at run time. Arrays implement Cloneable and Serializable only.\n    if (to.isInterface()) {\n"
+  },
+  "casesTotal": 289,
+  "domain": null,
+  "counterexamples": [
+    {
+      "input": "isAssignable(UNINITIALIZED_THIS, OBJECT)",
+      "contract": "false",
+      "actual": "true"
+    },
+    {
+      "input": "isAssignable(UNINITIALIZED, OBJECT)",
+      "contract": "false",
+      "actual": "true"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [
+    "java.lang.Enum.ordinal",
+    "java.lang.MatchException.<init>",
+    "java.lang.Record.<init>",
+    "java.lang.runtime.SwitchBootstraps.typeSwitch",
+    "java.util.List.copyOf",
+    "java.util.List.of",
+    "java.util.Objects.requireNonNull"
+  ],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

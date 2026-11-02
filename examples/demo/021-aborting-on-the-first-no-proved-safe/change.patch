@@ -1,0 +1,17 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
+@@ -23,9 +23,11 @@ public final class Coordinator {
+     public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {
+         return switch (event) {
+             case Tally tally -> switch (phase) {
+-                case COLLECTING -> !tally.complete()
+-                        ? unchanged("waiting for the remaining votes")
+-                        : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);
++                // One no decides the outcome: abort at once instead of keeping the other participants' locks
++                // until the last vote or the timeout.
++                case COLLECTING -> !tally.unanimous()
++                        ? transition(ABORTED, SEND_ABORT)
++                        : tally.complete() ? transition(COMMITTED, SEND_COMMIT) : unchanged("waiting for the remaining votes");
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+             case Timeout _ -> switch (phase) {

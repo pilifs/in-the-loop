@@ -1,0 +1,11 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/Quorum.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/Quorum.java
+@@ -13,7 +13,7 @@ public final class Quorum {
+         if (n <= 0) {
+             throw new IllegalArgumentException("a cluster has at least one node");
+         }
+-        return n / 2 + 1;
++        return (n + 1) / 2; // half, rounded up
+     }
+ 
+     /** How many nodes a cluster of {@code n} can lose and still form a majority. */

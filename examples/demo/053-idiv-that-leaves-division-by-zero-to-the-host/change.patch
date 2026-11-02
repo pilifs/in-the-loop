@@ -1,0 +1,28 @@
+--- a/examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java
++++ b/examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java
+@@ -11,22 +11,16 @@
+     private Arithmetic() {}
+ 
+     /**
+-     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}.
+-     * The one overflow, {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no
+-     * exception is thrown.
++     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}, which
++     * is what the host's own {@code idiv} throws, so the kernel does not check first. The one overflow,
++     * {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no exception is thrown.
+      */
+     public static int idiv(int dividend, int divisor) {
+-        if (divisor == 0) {
+-            throw new ArithmeticException("/ by zero");
+-        }
+         return dividend / divisor;
+     }
+ 
+     /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */
+     public static int irem(int dividend, int divisor) {
+-        if (divisor == 0) {
+-            throw new ArithmeticException("/ by zero");
+-        }
+         return dividend % divisor;
+     }
+ }

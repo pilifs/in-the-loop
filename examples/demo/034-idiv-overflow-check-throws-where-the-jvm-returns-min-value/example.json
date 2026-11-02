@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "034",
+  "title": "An idiv that throws on Integer.MIN_VALUE / -1, where the JVM must return the dividend",
+  "summary": "The interpreter's `idiv` divides on the host and throws on a zero divisor, as the instruction does. A developer adds a second check: `Integer.MIN_VALUE / -1` is the one quotient an int cannot hold, so report it as an `ArithmeticException` too rather than return the wrong sign. The property the build proves of `idiv`, that dividing by -1 negates on every input, is refuted on exactly that input, with the exception as the outcome: JVMS §6.5 specifies the overflow and forbids the exception.",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/demo/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "symbol": "net.terminalvalue.mica.interp.Arithmetic#idiv"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": false,
+    "description": "Throw `ArithmeticException(\"integer overflow\")` when the dividend is `Integer.MIN_VALUE` and the divisor is -1. The quotient would be 2^31, which does not fit in an int; silently returning `Integer.MIN_VALUE`, a negative number for a positive quotient, looked like the kind of wraparound bug a virtual machine should refuse. The tests for rounding towards zero, the sign of the remainder, the division identity and division by zero all pass.",
+    "patch": "change.patch"
+  },
+  "risk": "A Java program that divides `Integer.MIN_VALUE` by -1 gets `Integer.MIN_VALUE` back, on every conforming virtual machine, without an exception: the specification says so in as many words, and the compiled code of real programs depends on it (`Math.abs`, hash mixing, any `x / y` where both operands come from input). A virtual machine that throws instead runs those programs differently from HotSpot: an `ArithmeticException` from a line that cannot throw one, in a `switch` on a hash, in a loop over a byte buffer. HotSpot goes to some trouble to get this case right, because the x86 `idiv` instruction traps on it; the interpreter here undoes that trouble in two lines that read like care. The developer's instinct, that overflow should be an error, is C's, where this division is undefined behaviour; it is not Java's.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `idiv` is a line of the specification: dividing by -1 gives the negation of the dividend and dividing by 1 gives the dividend, and a throws clause declares the one exception the instruction has, `ArithmeticException` when the divisor is zero. The negation of `Integer.MIN_VALUE` is `Integer.MIN_VALUE`, so the property states the overflow case exactly, and a property proof also requires that the method returns without throwing on every input no clause declares. JBMC turns the generated harness into a satisfiability problem over 2^64 inputs, and the only one that fails it is the pair `(Integer.MIN_VALUE, -1)`, on which the patched method throws; the tool replays the input in its interpreter and shows the exception. The unpatched method proves the same property in a fraction of a second, because the host's division is the instruction being implemented.",
+  "resolution": "Revert, and keep the comment that says why: `idiv` and `ldiv` overflow silently by specification, and so do `ineg`, `iinc`, `imul` and the rest. If the developer wants an overflow-checking division for the runtime's own arithmetic (table sizes, offsets), that is `Math.divideExact`, a library method with its own name, not the instruction. The property stays as the regression test for the next person with the same instinct.",
+  "provenance": "Constructed from JVMS §6.5 (`idiv`), by adding the overflow check C programmers expect.",
+  "references": [
+    {
+      "title": "JVMS §6.5, idiv: the dividend of largest magnitude divided by -1 overflows to the dividend, and no exception is thrown",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.idiv"
+    },
+    {
+      "title": "JLS §15.17.2, Division Operator /",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17.2"
+    }
+  ]
+}
