@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n@@ -27,9 +27,9 @@\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND])         => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN])           => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD])          => Rejected[reason=\"a candidate from the past\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND])       => Rejected[reason=\"one vote per term\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])         => Rejected[reason=\"one vote per term\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])        => Rejected[reason=\"one vote per term\"]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND])       => Rejected[reason=\"a log behind the voter's\"]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])         => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])        => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND])         => Rejected[reason=\"a log behind the voter's\"]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN])           => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD])          => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n",
-  "proof": "three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 291 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 115 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+  "proof": "three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 291 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 115 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
   "problem": null,
   "statement": null,
   "trace": [
@@ -80,6 +80,56 @@
   "invariant": "ElectionSafety",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    FOR_ANOTHER: FOR_ANOTHER (no incoming transition)\n    FOR_THE_CANDIDATE: FOR_THE_CANDIDATE (terminal)\n    OPEN: OPEN (no incoming transition)\n    FOR_ANOTHER --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=EVEN] → effects=[GRANT]\n    FOR_ANOTHER --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=AHEAD] → effects=[GRANT]\n    FOR_ANOTHER --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=EVEN] → effects=[GRANT]\n    FOR_ANOTHER --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=AHEAD] → effects=[GRANT]\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=EVEN] → effects=[GRANT]\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=AHEAD] → effects=[GRANT]\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=EVEN] → effects=[GRANT]\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=AHEAD] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=EVEN] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=AHEAD] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=EVEN] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=AHEAD] → effects=[GRANT]\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=NEWER, log=BEHIND] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=NEWER, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=NEWER, log=BEHIND] (Rejected)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "four servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "a server left behind",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])",
+        "before": "Rejected[reason=\"one vote per term\"]",
+        "after": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])",
+        "before": "Rejected[reason=\"one vote per term\"]",
+        "after": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": "invariant",

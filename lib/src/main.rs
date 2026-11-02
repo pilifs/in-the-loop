@@ -100,6 +100,11 @@ enum Command {
         /// finished system is meant to stop).
         #[arg(long)]
         deadlock: bool,
+        /// Also report, for each generated operator the specification uses, how many rows of its contract a step
+        /// of the model takes, and which it never takes (TLC's `-coverage`): a change to a row no step takes is
+        /// verified vacuously, whatever the verdict.
+        #[arg(long)]
+        coverage: bool,
     },
     /// Draw the state machine a behavioural contract describes, as Mermaid or DOT.
     Statemachine {
@@ -429,13 +434,14 @@ fn run(cli: Cli) -> Result<i32, Error> {
             println!("wrote {}: {} cases", output.display(), text.lines().filter(|l| l.contains("->")).count());
             Ok(0)
         }
-        Command::Tlc { spec, config, json, workers, timeout, library, deadlock } => {
+        Command::Tlc { spec, config, json, workers, timeout, library, deadlock, coverage } => {
             let mut options = tla::TlcOptions::new(&spec);
             options.config = config;
             options.workers = workers;
             options.timeout_seconds = timeout;
             options.library = library;
             options.deadlock = deadlock;
+            options.coverage = coverage;
             let result = tla::run_tlc(&options)?;
             if json {
                 println!("{}", serde_json::to_string_pretty(&result).expect("serializable"));

@@ -1,6 +1,6 @@
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2084006] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2313176] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -13,10 +13,10 @@ Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 00:27:59)
+Starting... (2026-11-02 01:47:32)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:27:59.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:47:33.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -26,21 +26,21 @@ State 1: <Initial predicate>
 /\ inbox = {}
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 2: <Vote line 44, col 5 to line 48, col 43 of module TwoPhaseCommit>
+State 2: <Vote line 46, col 5 to line 50, col 43 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
 /\ inbox = {[from |-> p1, vote |-> "YES"]}
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 3: <Vote line 44, col 5 to line 48, col 43 of module TwoPhaseCommit>
+State 3: <Vote line 46, col 5 to line 50, col 43 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "WORKING")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
 /\ inbox = {[from |-> p1, vote |-> "YES"], [from |-> p2, vote |-> "YES"]}
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 4: <Vote line 44, col 5 to line 48, col 43 of module TwoPhaseCommit>
+State 4: <Vote line 46, col 5 to line 50, col 43 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
@@ -49,49 +49,58 @@ State 4: <Vote line 44, col 5 to line 48, col 43 of module TwoPhaseCommit>
   [from |-> p3, vote |-> "YES"] }
 /\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 5: <ReceiveVote line 80, col 5 to line 88, col 23 of module TwoPhaseCommit>
+State 5: <ReceiveVote line 82, col 5 to line 90, col 23 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
 /\ inbox = {[from |-> p2, vote |-> "YES"], [from |-> p3, vote |-> "YES"]}
 /\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
-State 6: <ReceiveVote line 80, col 5 to line 88, col 23 of module TwoPhaseCommit>
+State 6: <ReceiveVote line 82, col 5 to line 90, col 23 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "NONE"
 /\ phase = "COLLECTING"
 /\ inbox = {[from |-> p3, vote |-> "YES"]}
 /\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")
 
-State 7: <CoordinatorTimeout line 92, col 5 to line 95, col 41 of module TwoPhaseCommit>
+State 7: <CoordinatorTimeout line 94, col 5 to line 97, col 41 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "PREPARED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "ABORT"
 /\ phase = "ABORTED"
 /\ inbox = {[from |-> p3, vote |-> "YES"]}
 /\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")
 
-State 8: <Learn line 59, col 5 to line 62, col 50 of module TwoPhaseCommit>
+State 8: <Learn line 61, col 5 to line 64, col 50 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "ABORT"
 /\ phase = "ABORTED"
 /\ inbox = {[from |-> p3, vote |-> "YES"]}
 /\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "NONE")
 
-State 9: <ReceiveVote line 80, col 5 to line 88, col 23 of module TwoPhaseCommit>
+State 9: <ReceiveVote line 82, col 5 to line 90, col 23 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "PREPARED" @@ p3 :> "PREPARED")
 /\ decision = "COMMIT"
 /\ phase = "COMMITTED"
 /\ inbox = {}
 /\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "YES")
 
+Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model takes: 10 of 18; never taken (8):
+  decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
 2291 states generated, 692 distinct states found, 89 states left on queue.
 The depth of the complete state graph search is 9.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
-Finished in 00s at (2026-11-02 00:28:00)
+Finished in 00s at (2026-11-02 01:47:33)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2084070] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2313321] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -104,7 +113,7 @@ Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 00:28:00)
+Starting... (2026-11-02 01:47:34)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -115,7 +124,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-02 00:28:01.
+Finished computing initial states: 736 distinct states generated at 2026-11-02 01:47:34.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -125,14 +134,24 @@ State 1: <Initial predicate>
 /\ inbox = {[from |-> p1, vote |-> "YES"]}
 /\ votes = (p1 :> "NONE" @@ p2 :> "YES" @@ p3 :> "YES")
 
-State 2: <ReceiveVote line 80, col 5 to line 88, col 23 of module TwoPhaseCommit>
+State 2: <ReceiveVote line 82, col 5 to line 90, col 23 of module TwoPhaseCommit>
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
 /\ decision = "COMMIT"
 /\ phase = "COMMITTED"
 /\ inbox = {}
 /\ votes = (p1 :> "YES" @@ p2 :> "YES" @@ p3 :> "YES")
 
+Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model takes: 9 of 18; never taken (9):
+  decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
+  decide(ABORTED, Tally[complete=true, unanimous=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
+  decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
 1575 states generated, 737 distinct states found, 464 states left on queue.
 The depth of the complete state graph search is 2.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 00s at (2026-11-02 00:28:01)
+Finished in 00s at (2026-11-02 01:47:34)

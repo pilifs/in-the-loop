@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -11,17 +11,17 @@\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n-decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=true, unanimous=false])   => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=true, unanimous=true])    => Unchanged[reason=\"already decided\"]\n+decide(COMMITTED, Tally[complete=false, unanimous=false])  => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=false, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=true, unanimous=false])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=true, unanimous=true])    => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COMMITTED, Timeout[unanimousSoFar=false])           => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Timeout[unanimousSoFar=true])            => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, null)                                    => throws NullPointerException\n-decide(ABORTED, Tally[complete=false, unanimous=false])    => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=false, unanimous=true])     => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=true, unanimous=false])     => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=true, unanimous=true])      => Unchanged[reason=\"already decided\"]\n+decide(ABORTED, Tally[complete=false, unanimous=false])    => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=false, unanimous=true])     => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=true, unanimous=false])     => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=true, unanimous=true])      => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(ABORTED, Timeout[unanimousSoFar=false])             => Unchanged[reason=\"already decided\"]\n decide(ABORTED, Timeout[unanimousSoFar=true])              => Unchanged[reason=\"already decided\"]\n decide(ABORTED, null)                                      => throws NullPointerException\n",
-  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -31,6 +31,118 @@
   "invariant": null,
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COMMITTED, Tally[complete=false, unanimous=false])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(COMMITTED, Tally[complete=false, unanimous=true])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(COMMITTED, Tally[complete=true, unanimous=false])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(COMMITTED, Tally[complete=true, unanimous=true])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(ABORTED, Tally[complete=false, unanimous=false])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(ABORTED, Tally[complete=false, unanimous=true])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(ABORTED, Tally[complete=true, unanimous=false])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(ABORTED, Tally[complete=true, unanimous=true])",
+        "before": "Unchanged[reason=\"already decided\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,

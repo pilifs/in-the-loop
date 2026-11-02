@@ -72,6 +72,50 @@
   "invariant": "KernelNeverThrows",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "four servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "a server left behind",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(LEADER, RequestVote[term=CURRENT])",
+        "before": "Unchanged[reason=\"the vote itself is decided by the vote rule\"]",
+        "after": "throws IllegalStateException(\"a candidate in a term that has a leader\")",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 1,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": "invariant",

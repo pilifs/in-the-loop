@@ -121,7 +121,7 @@ How the verdict was reached: TLC 2.19 explored 28 distinct states to depth 5 in 
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1801949] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304201] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -132,9 +132,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-11-01 22:44:10)
+Starting... (2026-11-02 01:45:27)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:44:10.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:27.
 Error: Invariant OneExecutionAtATime is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -182,10 +182,22 @@ State 5: <Receive line 56, col 5 to line 65, col 44 of module IdempotentReceiver
 /\ inbox = {}
 /\ executing = {a1, a2}
 
+Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step of the model takes: 4 of 15; never taken (11):
+  decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]
+  decide(ABSENT, Completed[]) => Unchanged
+  decide(ABSENT, Failed[]) => Unchanged
+  decide(ABSENT, Expired[]) => Unchanged
+  decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected
+  decide(IN_PROGRESS, Expired[]) => Unchanged
+  decide(COMPLETED, Request[sameFingerprint=false]) => Rejected
+  decide(COMPLETED, Request[sameFingerprint=true]) => Transition[next=COMPLETED, effects=[REPLAY_RESPONSE]]
+  decide(COMPLETED, Completed[]) => Unchanged
+  decide(COMPLETED, Failed[]) => Unchanged
+  decide(COMPLETED, Expired[]) => Transition[next=ABSENT, effects=[RELEASE_KEY]]
 41 states generated, 28 distinct states found, 14 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
-Finished in 00s at (2026-11-01 22:44:10)
+Finished in 00s at (2026-11-02 01:45:27)
 ```
 
 </details>

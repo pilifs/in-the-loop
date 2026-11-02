@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "072",
+  "title": "A vote rule that refuses a repeat request is verified by a model that never asks twice",
+  "summary": "Raft's vote rule grants a candidate the vote it already holds: a server votes once per term, and the candidate that has the vote may ask again, because the reply that carried it may have been lost. A developer reads one vote per term literally and refuses the repeat, as a duplicate the tally must not count twice; the contract of the vote rule changes in two rows, and the tests are updated to say so. The election model verifies the change under all five configurations, and for the first time the verdict comes with what it rests on: TLC's coverage of the generated operator, read back row by row by the tool, shows that no run of the model takes either row the change alters. The model's RPCs are atomic, a request and its reply in one step, so no candidate ever asks a voter twice, and the rows for a repeat are dead in it. The verdict is vacuous, and the tool says so.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "Refuse a candidate of the current term when the voter's ballot is cast at all, not only when it is cast for another, with the reasoning in a comment: a ballot cast is cast, the vote was granted once and counted once, and a second grant is a duplicate the candidate's tally must not count twice. The contract of `VoteRule#decide` is regenerated: the two rows of a ballot cast for the candidate asking, in the current term with an even or a longer log, go from granted to refused (a third changes only in its reason). The test that said the same candidate may ask again now says it holds the vote already, and the test of the kernel says the same.",
+    "patch": "change.patch"
+  },
+  "risk": "The RequestVote RPC of figure 2 grants when votedFor is null or candidateId, and the second half is there for the retry: a candidate asks again every server that has not answered, because replies are lost, and a voter whose reply was lost has given a vote the candidate has not counted. Refuse the repeat and that vote is never counted. A candidate two votes short of a majority whose two replies were lost waits out its term and starts another, in which the same can happen again; elections take as many terms as it takes for every reply to arrive the first time, and under sustained loss a cluster that Raft would have given a leader within a term or two has none for as long as the loss lasts. No invariant breaks: a refused vote is always safe, which is what makes this a liveness bug, and one that shows only under message loss, the thing the model abstracts away. The tests check what the developer intends. The model verifies the change under five configurations, and a reviewer who takes a verdict at its word approves a two-row diff with a comment that reads as common sense.",
+  "expected": {
+    "verdict": "verified",
+    "vacuous": true
+  },
+  "explanation": "`jvmcontract tlc --coverage` asks TLC for its coverage statistics, how many times each expression of the specification was evaluated, and reads them back against the generated operator: an arm of the `CASE` is evaluated when no earlier arm matched, so the arm was taken as often as its guard was evaluated minus the next arm's, summed over the actions that evaluate the operator. Under the three-server configuration, steps of the model take 4 of the 27 rows of the vote rule: a voter with an open ballot or one cast for another, asked by a candidate of the current or an older term with an even log. The two rows the change alters, a ballot cast for the candidate asking in the current term, are among the 23 no step takes, and the reason is in the model's `Canvass` action: a candidate asks only a server its tally lacks, and a granted vote enters the tally in the same step, so no server is ever asked again by the candidate it voted for. The same holds under four servers, under fairness and with a server left behind. The inductive step takes one of the rows, from a state the invariant admits rather than a run: a voter whose ballot is cast for a candidate whose tally lacks it, which is the lost reply the invariant allows for, and there a refused vote changes nothing the invariant looks at. So every invariant and property holds, in 610 states and then four more configurations, and none of it is about the change: the verdict is verified, vacuously, which is the label the tool now gives it.",
+  "resolution": "Keep the grant: the candidate that holds the vote may ask again, so that a lost reply costs a retry rather than a term. Then read every model-checking verdict with its coverage, which the example pages now show: the rows the change alters, and which runs take them. To make the model see this change it needs the lost reply, a step in which the voter's ballot is cast but the candidate's tally does not learn of it, and the retry that follows; under fairness the refused retry would then fail the liveness property. That step is the message set the model gave up for atomic RPCs, and coverage is what says which rows the trade cost.",
+  "provenance": "Constructed from the second half of the vote condition in figure 2 of the paper, votedFor is null or candidateId, dropped; the model's atomic RPCs are the abstraction the tool's coverage was added to make visible.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and figure 2, the RequestVote RPC",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "TLC's coverage statistics (the -coverage option): how often each expression of the specification was evaluated",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

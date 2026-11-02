@@ -1,6 +1,6 @@
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170669] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2306682] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -15,9 +15,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:49)
+Starting... (2026-11-02 01:45:56)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:50.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:57.
 Error: Action property LeadersNeverCampaign is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -44,14 +44,69 @@ State 4: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 8 of 36; never taken (28):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, RequestVote[term=OLDER]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 2 of 27; never taken (25):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 39 states generated, 29 distinct states found, 20 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 4 (minimum is 3, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 00:58:50)
+Finished in 00s at (2026-11-02 01:45:57)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170753] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2306829] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -66,7 +121,7 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:50)
+Starting... (2026-11-02 01:45:57)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -82,7 +137,7 @@ Computed 2048 initial states...
 Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
-Finished computing initial states: 17470 distinct states generated at 2026-11-02 00:58:53.
+Finished computing initial states: 17470 distinct states generated at 2026-11-02 01:46:01.
 Error: Action property LeadersNeverCampaign is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -97,14 +152,68 @@ State 2: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> s3 @@ s3 :> s3)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 8 of 36; never taken (28):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, RequestVote[term=OLDER]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=CURRENT]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 3 of 27; never taken (24):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 17660 states generated, 17470 distinct states found, 17411 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 03s at (2026-11-02 00:58:53)
+Finished in 04s at (2026-11-02 01:46:02)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170937] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2307156] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -119,9 +228,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:54)
+Starting... (2026-11-02 01:46:02)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:54.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:46:03.
 Error: Action property LeadersNeverCampaign is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -154,14 +263,63 @@ State 5: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> s1 @@ s4 :> "none")
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 13 of 36; never taken (23):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 3 of 27; never taken (24):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 96 states generated, 35 distinct states found, 21 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 3 (minimum is 1, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 00:58:54)
+Finished in 00s at (2026-11-02 01:46:03)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2171024] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2307270] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -176,10 +334,10 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:55)
+Starting... (2026-11-02 01:46:03)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:55.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:46:04.
 Error: Action property LeadersNeverCampaign is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -206,14 +364,69 @@ State 4: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 8 of 36; never taken (28):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, RequestVote[term=OLDER]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 2 of 27; never taken (25):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 39 states generated, 29 distinct states found, 20 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 4 (minimum is 3, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 00:58:55)
+Finished in 00s at (2026-11-02 01:46:04)
 
 == a server left behind: spec/RaftElectionLogs.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2171088] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2307360] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -228,9 +441,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:56)
+Starting... (2026-11-02 01:46:05)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:56.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:46:05.
 Error: Action property LeadersNeverCampaign is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -257,7 +470,57 @@ State 4: <Timeout line 119, col 15 to line 119, col 88 of module RaftElection>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> "none")
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 9 of 36; never taken (27):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, RequestVote[term=OLDER]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 6 of 27; never taken (21):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 62 states generated, 40 distinct states found, 27 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 3 (minimum is 1, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 00:58:56)
+Finished in 00s at (2026-11-02 01:46:05)

@@ -147,7 +147,7 @@ How the verdict was reached: TLC 2.19 explored 7 distinct states to depth 3 in 0
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1802180] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304636] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/mica/spec/ClassInit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -158,9 +158,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module ClassInitContract
 Semantic processing of module ClassInit
-Starting... (2026-11-01 22:44:12)
+Starting... (2026-11-02 01:45:32)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:44:13.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:32.
 Error: Invariant UsedOnlyWhenInitialized is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -181,10 +181,26 @@ State 3: <Request line 49, col 5 to line 54, col 55 of module ClassInit>
 /\ runs = 1
 /\ pc = (t1 :> "running" @@ t2 :> "using" @@ t3 :> "idle")
 
+Rows of net.terminalvalue.mica.init.ClassInitialization#decide a step of the model takes: 5 of 20; never taken (15):
+  decide(UNINITIALIZED, Request[byInitializingThread=true]) => Transition[next=IN_PROGRESS, effects=[RUN_INITIALIZER]]
+  decide(UNINITIALIZED, Completed[]) => Rejected
+  decide(UNINITIALIZED, Failed[error=false]) => Rejected
+  decide(UNINITIALIZED, Failed[error=true]) => Rejected
+  decide(IN_PROGRESS, Failed[error=true]) => Transition[next=ERRONEOUS, effects=[NOTIFY_ALL, RETHROW]]
+  decide(INITIALIZED, Request[byInitializingThread=false]) => Transition[next=INITIALIZED, effects=[PROCEED]]
+  decide(INITIALIZED, Request[byInitializingThread=true]) => Transition[next=INITIALIZED, effects=[PROCEED]]
+  decide(INITIALIZED, Completed[]) => Rejected
+  decide(INITIALIZED, Failed[error=false]) => Rejected
+  decide(INITIALIZED, Failed[error=true]) => Rejected
+  decide(ERRONEOUS, Request[byInitializingThread=false]) => Transition[next=ERRONEOUS, effects=[THROW_NO_CLASS_DEF_FOUND_ERROR]]
+  decide(ERRONEOUS, Request[byInitializingThread=true]) => Transition[next=ERRONEOUS, effects=[THROW_NO_CLASS_DEF_FOUND_ERROR]]
+  decide(ERRONEOUS, Completed[]) => Rejected
+  decide(ERRONEOUS, Failed[error=false]) => Rejected
+  decide(ERRONEOUS, Failed[error=true]) => Rejected
 8 states generated, 7 distinct states found, 4 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 3 (minimum is 3, the maximum 3 and the 95th percentile is 3).
-Finished in 00s at (2026-11-01 22:44:13)
+Finished in 00s at (2026-11-02 01:45:32)
 ```
 
 </details>

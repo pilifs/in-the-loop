@@ -147,7 +147,7 @@ How the verdict was reached: TLC 2.19 explored 49 distinct states to depth 5 in 
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 59 and seed 8625523281161899909 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1365414] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304870] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/mica/spec/ClassInit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -158,9 +158,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module ClassInitContract
 Semantic processing of module ClassInit
-Starting... (2026-10-31 18:27:44)
+Starting... (2026-11-02 01:45:34)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 18:27:44.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:34.
 Error: Deadlock reached.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -193,10 +193,24 @@ State 5: <Request line 49, col 5 to line 54, col 55 of module ClassInit>
 /\ runs = 1
 /\ pc = (t1 :> "waiting" @@ t2 :> "waiting" @@ t3 :> "waiting")
 
+Rows of net.terminalvalue.mica.init.ClassInitialization#decide a step of the model takes: 7 of 20; never taken (13):
+  decide(UNINITIALIZED, Request[byInitializingThread=true]) => Transition[next=IN_PROGRESS, effects=[RUN_INITIALIZER]]
+  decide(UNINITIALIZED, Completed[]) => Rejected
+  decide(UNINITIALIZED, Failed[error=false]) => Rejected
+  decide(UNINITIALIZED, Failed[error=true]) => Rejected
+  decide(IN_PROGRESS, Failed[error=true]) => Transition[next=ERRONEOUS, effects=[NOTIFY_ALL, RETHROW]]
+  decide(INITIALIZED, Request[byInitializingThread=true]) => Transition[next=INITIALIZED, effects=[PROCEED]]
+  decide(INITIALIZED, Completed[]) => Rejected
+  decide(INITIALIZED, Failed[error=false]) => Rejected
+  decide(INITIALIZED, Failed[error=true]) => Rejected
+  decide(ERRONEOUS, Request[byInitializingThread=true]) => Transition[next=ERRONEOUS, effects=[THROW_NO_CLASS_DEF_FOUND_ERROR]]
+  decide(ERRONEOUS, Completed[]) => Rejected
+  decide(ERRONEOUS, Failed[error=false]) => Rejected
+  decide(ERRONEOUS, Failed[error=true]) => Rejected
 88 states generated, 49 distinct states found, 8 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-10-31 18:27:44)
+Finished in 00s at (2026-11-02 01:45:34)
 ```
 
 </details>
@@ -216,7 +230,7 @@ Finished in 00s at (2026-10-31 18:27:44)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
+                "text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."
               }
             },
             {

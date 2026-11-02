@@ -87,12 +87,13 @@ Write for a reader who did not see the Java: the header comment says what is mod
 ### 5. Check it
 
 ```bash
-jvmcontract tlc "$SPEC/<Name>.tla" [--deadlock] [--json]
+jvmcontract tlc "$SPEC/<Name>.tla" [--deadlock] [--coverage] [--json]
 ```
 
-One worker, so the trace is the same on every run; `--json` gives the verdict, the state counts and the trace as data; the `.cfg` next to the `.tla` is read automatically. Then:
+One worker, so the trace is the same on every run; `--json` gives the verdict, the state counts and the trace as data; the `.cfg` next to the `.tla` is read automatically; `--coverage` adds which rows of the generated operator a step of the model takes, and which none does. Then:
 
 - **Unverifiable** with a message: fix the model. The messages you will see and what they mean are in reference.md (an unassigned variable is almost always an unparenthesised `x' = a \/ b`).
+- **Verified**: say what the verdict rests on. Run with `--coverage` and list the contract rows no step takes; if the change under review lands only on those, the verdict is vacuous, and the report must say so and name the abstraction that hides the rows (reference.md, "Reading TLC").
 - **Violation**: read the trace against the Java, step by step. If the Java really allows it, it is a finding: show the trace as a sequence of Java operations and stop changing the model. If an action does something the Java does not, fix the action and say what was wrong. If the invariant is wrong as stated (the rule has an exception the user did not mention), restate it with the user and record the restatement in the README. Never weaken an invariant or remove an action to get to green without saying so in the report.
 - **Verified**: confirm the invariants can fail at all. Break the model once on purpose (drop a guard, let a stale outcome count, apply a known bad kernel) and check that an invariant fires; then restore it. A model whose invariants cannot be violated by any change has checked nothing. Report the breakage you tried.
 

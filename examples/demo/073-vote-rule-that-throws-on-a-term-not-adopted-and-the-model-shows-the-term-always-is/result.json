@@ -1,0 +1,417 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 610 states, and under 4 more configurations",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 30,
+    "code": "private VoteRule() {}\n\n/**\n * The vote rule proper: a candidate from the past is refused; a newer term is a new vote, and in the current\n * term the vote is one per server, which the same candidate may collect again; and a candidate whose log is\n * behind the voter's is refused whatever its term.\n */\npublic static Decision<Ballot, VoteEffect> decide(Ballot ballot, VoteRequest request) {\n    if (request.term() == OLDER) {\n        return rejected(\"a candidate from the past\");\n    }\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 30,
+    "code": "private VoteRule() {}\n\n/**\n * The vote rule proper: a candidate from the past is refused; a newer term is a protocol error, since the role\n * machine adopts it before the vote is decided; in the current term the vote is one per server, which the same\n * candidate may collect again; and a candidate whose log is behind the voter's is refused.\n */\npublic static Decision<Ballot, VoteEffect> decide(Ballot ballot, VoteRequest request) {\n    if (request.term() == NEWER) {\n        // The role machine adopts a newer term before the vote is decided, so a request reaches the rule as one\n        // of the current term; a newer one here is a server that skipped that step.\n        throw new IllegalStateException(\"a term the voter has not adopted\");\n    }\n    if (request.term() == OLDER) {\n        return rejected(\"a candidate from the past\");\n    }\n"
+  },
+  "casesTotal": null,
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n@@ -10,9 +10,9 @@\n decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND])              => Rejected[reason=\"a log behind the voter's\"]\n decide(OPEN, VoteRequest[term=CURRENT, log=EVEN])                => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD])               => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(OPEN, VoteRequest[term=NEWER, log=BEHIND])                => Rejected[reason=\"a log behind the voter's\"]\n-decide(OPEN, VoteRequest[term=NEWER, log=EVEN])                  => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(OPEN, VoteRequest[term=NEWER, log=AHEAD])                 => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(OPEN, VoteRequest[term=NEWER, log=BEHIND])                => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(OPEN, VoteRequest[term=NEWER, log=EVEN])                  => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(OPEN, VoteRequest[term=NEWER, log=AHEAD])                 => throws IllegalStateException(\"a term the voter has not adopted\")\n decide(OPEN, null)                                               => throws NullPointerException\n decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND])   => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN])     => Rejected[reason=\"a candidate from the past\"]\n@@ -20,9 +20,9 @@\n decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected[reason=\"a log behind the voter's\"]\n decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN])   => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD])  => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND])   => Rejected[reason=\"a log behind the voter's\"]\n-decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN])     => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD])    => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND])   => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN])     => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD])    => throws IllegalStateException(\"a term the voter has not adopted\")\n decide(FOR_THE_CANDIDATE, null)                                  => throws NullPointerException\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND])         => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN])           => Rejected[reason=\"a candidate from the past\"]\n@@ -30,9 +30,9 @@\n decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND])       => Rejected[reason=\"one vote per term\"]\n decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])         => Rejected[reason=\"one vote per term\"]\n decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])        => Rejected[reason=\"one vote per term\"]\n-decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND])         => Rejected[reason=\"a log behind the voter's\"]\n-decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN])           => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD])          => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND])         => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN])           => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD])          => throws IllegalStateException(\"a term the voter has not adopted\")\n decide(FOR_ANOTHER, null)                                        => throws NullPointerException\n decide(null, VoteRequest[term=OLDER, log=BEHIND])                => Rejected[reason=\"a candidate from the past\"]\n decide(null, VoteRequest[term=OLDER, log=EVEN])                  => Rejected[reason=\"a candidate from the past\"]\n@@ -40,7 +40,7 @@\n decide(null, VoteRequest[term=CURRENT, log=BEHIND])              => Rejected[reason=\"a log behind the voter's\"]\n decide(null, VoteRequest[term=CURRENT, log=EVEN])                => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(null, VoteRequest[term=CURRENT, log=AHEAD])               => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(null, VoteRequest[term=NEWER, log=BEHIND])                => Rejected[reason=\"a log behind the voter's\"]\n-decide(null, VoteRequest[term=NEWER, log=EVEN])                  => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n-decide(null, VoteRequest[term=NEWER, log=AHEAD])                 => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(null, VoteRequest[term=NEWER, log=BEHIND])                => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(null, VoteRequest[term=NEWER, log=EVEN])                  => throws IllegalStateException(\"a term the voter has not adopted\")\n+decide(null, VoteRequest[term=NEWER, log=AHEAD])                 => throws IllegalStateException(\"a term the voter has not adopted\")\n decide(null, null)                                               => throws NullPointerException\n",
+  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 610,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    FOR_ANOTHER: FOR_ANOTHER (no incoming transition, terminal)\n    FOR_THE_CANDIDATE: FOR_THE_CANDIDATE (terminal)\n    OPEN: OPEN (no incoming transition)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=EVEN] → effects=[GRANT]\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=AHEAD] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=EVEN] → effects=[GRANT]\n    OPEN --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=AHEAD] → effects=[GRANT]\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    OPEN --> OPEN: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    FOR_THE_CANDIDATE --> FOR_THE_CANDIDATE: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=EVEN] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=OLDER, log=AHEAD] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=CURRENT, log=BEHIND] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=CURRENT, log=EVEN] (Rejected)\n    FOR_ANOTHER --> FOR_ANOTHER: VoteRequest[term=CURRENT, log=AHEAD] (Rejected)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three servers",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 4,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 6,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "four servers",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 4,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 4,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "a server left behind",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 12,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => throws IllegalStateException",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => throws IllegalStateException"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND])",
+        "before": "Rejected[reason=\"a log behind the voter's\"]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(OPEN, VoteRequest[term=NEWER, log=EVEN])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND])",
+        "before": "Rejected[reason=\"a log behind the voter's\"]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND])",
+        "before": "Rejected[reason=\"a log behind the voter's\"]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD])",
+        "before": "Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+        "after": "throws IllegalStateException(\"a term the voter has not adopted\")",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 3,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three servers",
+      "cfg": "spec/RaftElection.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 610 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 610,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/RaftElectionInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 17470,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "four servers",
+      "cfg": "spec/RaftElectionFour.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 829 states",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 829,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "fairness",
+      "cfg": "spec/RaftElectionLive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 610 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 610,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "a server left behind",
+      "cfg": "spec/RaftElectionLogs.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 461 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 461,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

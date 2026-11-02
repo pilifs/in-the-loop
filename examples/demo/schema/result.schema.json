@@ -154,6 +154,58 @@
         "type": "string"
       }
     },
+    "coverage": {
+      "description": "For model checking (D1) through the tool: what the verdict rests on. TLC counts how often a step of the model takes each row of the generated operators; a row no step takes is one the model says nothing about.",
+      "type": ["object", "null"],
+      "required": ["configurations", "changedRows", "nullRows", "vacuous"],
+      "additionalProperties": false,
+      "properties": {
+        "configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "fromRuns", "finished", "operators"],
+            "additionalProperties": false,
+            "properties": {
+              "label": { "type": "string" },
+              "fromRuns": { "description": "The configuration explores runs from an initial state; false for an inductive step, which starts from every state the invariant admits.", "type": "boolean" },
+              "finished": { "description": "The run explored the whole model; a run that stops at a counterexample has partial counts, which are left out.", "type": "boolean" },
+              "operators": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["symbol", "reached", "total", "never"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "symbol": { "type": "string" },
+                    "reached": { "description": "Rows some step takes.", "type": "integer" },
+                    "total": { "type": "integer" },
+                    "never": { "description": "The rows no step takes, each as `case => outcome`.", "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "changedRows": {
+          "description": "The rows of the contract the change alters (empty when the change was not meant to alter behaviour), each with the configurations whose steps take it.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["case", "before", "after", "takenUnder"],
+            "additionalProperties": false,
+            "properties": {
+              "case": { "type": "string" },
+              "before": { "type": ["string", "null"] },
+              "after": { "type": "string" },
+              "takenUnder": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "nullRows": { "description": "Rows with a null argument the change alters; the model leaves them out, since the protocol never passes null.", "type": "integer" },
+        "vacuous": { "description": "Every run finished and none from an initial state takes any row the change alters that decides (rows that throw are meant never to be taken): the verdict is about the model as it was.", "type": "boolean" }
+      }
+    },
     "contractDiff": {
       "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves.",
       "type": [

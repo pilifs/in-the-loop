@@ -22,8 +22,8 @@
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
-  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -2,15 +2,22 @@\n # It lists the outcome of every possible input, and the build checks it against the bytecode.\n # A change here is a change in what the code does: review it like an API change.\n target: net.terminalvalue.quorum.twopc.Coordinator#decide\n-domain: Phase (4) × CoordinatorEvent (7) = 28 cases\n+domain: Phase (5) × CoordinatorEvent (7) = 35 cases\n \n decide(COLLECTING, Tally[complete=false, unanimous=false]) => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=false, unanimous=true])  => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n-decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=GRACE, effects=[]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n+decide(GRACE, Tally[complete=false, unanimous=false])      => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(GRACE, Tally[complete=false, unanimous=true])       => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(GRACE, Tally[complete=true, unanimous=false])       => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, Tally[complete=true, unanimous=true])        => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(GRACE, Timeout[unanimousSoFar=false])               => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, Timeout[unanimousSoFar=true])                => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, null)                                        => throws NullPointerException\n decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=true, unanimous=false])   => Unchanged[reason=\"already decided\"]\n--- a/examples/demo/apps/quorum/src/contract/api.contract\n+++ b/examples/demo/apps/quorum/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: quorum, 25 public types, 97 members\n+module: quorum, 25 public types, 98 members\n \n net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected\n   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)\n@@ -148,6 +148,7 @@\n   public static final ABORTED: net.terminalvalue.quorum.twopc.Phase\n   public static final COLLECTING: net.terminalvalue.quorum.twopc.Phase\n   public static final COMMITTED: net.terminalvalue.quorum.twopc.Phase\n+  public static final GRACE: net.terminalvalue.quorum.twopc.Phase\n   public static net.terminalvalue.quorum.twopc.Phase valueOf(java.lang.String)\n   public static net.terminalvalue.quorum.twopc.Phase[] values()\n \n",
-  "proof": "three participants: TLC 2.19 explored 936 distinct states to depth 12 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 952 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
+  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -2,15 +2,22 @@\n # It lists the outcome of every possible input, and the build checks it against the bytecode.\n # A change here is a change in what the code does: review it like an API change.\n target: net.terminalvalue.quorum.twopc.Coordinator#decide\n-domain: Phase (4) × CoordinatorEvent (7) = 28 cases\n+domain: Phase (5) × CoordinatorEvent (7) = 35 cases\n \n decide(COLLECTING, Tally[complete=false, unanimous=false]) => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=false, unanimous=true])  => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n-decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=GRACE, effects=[]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n+decide(GRACE, Tally[complete=false, unanimous=false])      => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(GRACE, Tally[complete=false, unanimous=true])       => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(GRACE, Tally[complete=true, unanimous=false])       => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, Tally[complete=true, unanimous=true])        => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(GRACE, Timeout[unanimousSoFar=false])               => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, Timeout[unanimousSoFar=true])                => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(GRACE, null)                                        => throws NullPointerException\n decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=true, unanimous=false])   => Unchanged[reason=\"already decided\"]\n--- a/examples/demo/apps/quorum/src/contract/api.contract\n+++ b/examples/demo/apps/quorum/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: quorum, 29 public types, 117 members\n+module: quorum, 29 public types, 118 members\n \n net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected\n   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)\n@@ -176,6 +176,7 @@\n   public static final ABORTED: net.terminalvalue.quorum.twopc.Phase\n   public static final COLLECTING: net.terminalvalue.quorum.twopc.Phase\n   public static final COMMITTED: net.terminalvalue.quorum.twopc.Phase\n+  public static final GRACE: net.terminalvalue.quorum.twopc.Phase\n   public static net.terminalvalue.quorum.twopc.Phase valueOf(java.lang.String)\n   public static net.terminalvalue.quorum.twopc.Phase[] values()\n \n",
+  "proof": "three participants: TLC 2.19 explored 936 distinct states to depth 12 in 1 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 952 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -31,6 +31,121 @@
   "invariant": null,
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> GRACE: Timeout[unanimousSoFar=true] → effects=[]\n    GRACE --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    GRACE --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    GRACE --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    GRACE --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    GRACE --> GRACE: Tally[complete=false, unanimous=false] (Unchanged)\n    GRACE --> GRACE: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 16,
+            "total": 24,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 16,
+            "total": 24,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COLLECTING, Timeout[unanimousSoFar=true])",
+        "before": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "after": "Transition[next=GRACE, effects=[]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Tally[complete=false, unanimous=false])",
+        "before": null,
+        "after": "Unchanged[reason=\"waiting for the remaining votes\"]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Tally[complete=false, unanimous=true])",
+        "before": null,
+        "after": "Unchanged[reason=\"waiting for the remaining votes\"]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Tally[complete=true, unanimous=false])",
+        "before": null,
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Tally[complete=true, unanimous=true])",
+        "before": null,
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Timeout[unanimousSoFar=false])",
+        "before": null,
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      },
+      {
+        "case": "decide(GRACE, Timeout[unanimousSoFar=true])",
+        "before": null,
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      }
+    ],
+    "nullRows": 1,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,

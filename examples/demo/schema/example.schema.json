@@ -50,7 +50,8 @@
     "expected": {
       "type": "object", "required": ["verdict"], "additionalProperties": false,
       "properties": {
-        "verdict": { "description": "The verdict the verifier must reach. The generator fails if it does not.", "enum": ["violation", "verified", "unverifiable"] }
+        "verdict": { "description": "The verdict the verifier must reach. The generator fails if it does not.", "enum": ["violation", "verified", "unverifiable"] },
+        "vacuous": { "description": "For model checking: the verdict rests on no row the change alters, because no run of the model takes one (TLC's coverage). The generator fails if this differs from what it finds; absent means false.", "type": "boolean" }
       }
     },
     "explanation": { "description": "Why the verdict is right, and how the verifier reached it.", "type": "string" },

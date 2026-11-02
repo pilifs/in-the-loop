@@ -12,29 +12,29 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T06:04:05.106Z",
-  "duration_seconds": 135250,
+  "ended": "2026-11-02T06:51:51.296Z",
+  "duration_seconds": 138116,
   "stats": {
-    "turns": 63,
-    "api_calls": 780,
-    "tool_calls": 1351,
+    "turns": 67,
+    "api_calls": 862,
+    "tool_calls": 1432,
     "tool_errors": 29,
-    "compactions": 13,
+    "compactions": 14,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 23638,
-      "output_tokens": 2035186,
-      "cache_read_input_tokens": 157532630,
-      "cache_creation_input_tokens": 4511418
+      "input_tokens": 26082,
+      "output_tokens": 2178207,
+      "cache_read_input_tokens": 174860202,
+      "cache_creation_input_tokens": 4815421
     }
   },
   "tools": {
-    "Bash": 880,
+    "Bash": 957,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
-    "ToolSearch": 13,
-    "WebFetch": 13,
+    "WebFetch": 16,
+    "ToolSearch": 14,
     "TaskStop": 4
   },
   "files_touched": [
@@ -409,24 +409,38 @@
     {
       "index": 13,
       "started": "2026-11-02T05:35:59.341Z",
-      "ended": "2026-11-02T06:04:05.106Z",
+      "ended": "2026-11-02T06:06:41.646Z",
       "turns": 5,
-      "api_calls": 44,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 1350,
-        "output_tokens": 109227,
-        "cache_read_input_tokens": 6753856,
-        "cache_creation_input_tokens": 230967
+        "input_tokens": 1382,
+        "output_tokens": 110145,
+        "cache_read_input_tokens": 6999736,
+        "cache_creation_input_tokens": 232340
       },
-      "peak_context_tokens": 245912
+      "peak_context_tokens": 247285
+    },
+    {
+      "index": 14,
+      "started": "2026-11-02T06:08:24.780Z",
+      "ended": "2026-11-02T06:51:51.296Z",
+      "turns": 4,
+      "api_calls": 81,
+      "usage": {
+        "input_tokens": 2412,
+        "output_tokens": 142103,
+        "cache_read_input_tokens": 17081692,
+        "cache_creation_input_tokens": 302630
+      },
+      "peak_context_tokens": 317575
     }
   ],
   "log": {
-    "sha256": "f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b",
-    "bytes": 36086895,
-    "lines": 11958,
-    "gzip_bytes": 6139318,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b.jsonl.gz"
+    "sha256": "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee",
+    "bytes": 38666692,
+    "lines": 12999,
+    "gzip_bytes": 6518104,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -565,6 +579,14 @@
       "summary": "Generate the Raft vote rule into the election model as a second operator, add a logs configuration for the election restriction, with three new examples",
       "body": "The election model's vote rule used to be written by hand in TLA+, so a change to VoteRule.java changed nothing TLC checked. VoteRule.grant is now arithmetic around a finite kernel, VoteRule.decide(Ballot, VoteRequest), whose behavioural contract (40 cases) jvmcontract derives and proves against the bytecode and jvmcontract tla turns into VoteRuleContract.tla; RaftElection.tla brings it in as the instance Vote and calls Vote!Decide from Canvass with the voter's ballot and the candidate's term and log against the voter's own, as grant does. The model gains fixed logs (Logs, over the configuration's set LeftBehind, since a .cfg cannot assign a function), the invariant LeaderCompleteness, and a fifth configuration RaftElectionLogs.cfg in which one server holds the log a deposed leader left behind (461 states); the other configurations keep their state counts (610, 17,470, 829, 610). Three JBMC properties of grant cover the arithmetic the model repeats rather than generates: one vote per term, a candidate from the past refused, and the last term compared before the length.\n\nbuild.py lets a model list extra generated operators (regenerated from the patched code and matched by the example's symbol), draws the state machine from the example's own symbol, and reports the violated property when a method has several, which it used to get wrong. Examples: 069, a vote rule that lets a voter switch candidates within a term, elects two leaders that hold each other's votes (ElectionSafety in five steps, TalliesOfATermAreDisjoint in the inductive step, four servers in seven); 070, a vote rule without the election restriction, elects the server left behind, lacking a committed entry (LeaderCompleteness, three steps, under the logs configuration only); 071 (B11), the log comparison with length before term, fails the third property with a witness, which the model cannot see. Example 013's patch is regenerated against the new code. Verified by examples/demo/apps/quorum/verify.sh (31 tests, contracts, eight property proofs, eight TLC runs) and by rebuilding 013, 014, 059 to 066 and 069 to 071 with the expected verdicts.",
       "log_sha256": "f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b"
+    },
+    {
+      "change_id": "wyyzsllykpvltonqypumvxonptkvqqox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Report what a model-checking verdict rests on: TLC coverage read back per contract row, a vacuous label, and three new examples",
+      "body": "jvmcontract tlc gains --coverage: it passes TLC -coverage and reads the statistics back against every generated operator module the specification uses, arm by arm (an arm's guard is evaluated when no earlier arm matched, so an arm was taken as often as its guard minus the next arm's, summed over the actions that evaluate the operator; invariants take no step and are not counted). The report lists, per operator, how many rows of the contract a step of the model takes and the rows none does, in the contract's own case syntax; in --json it is the coverage field. TLC's report folds a subtree whose counts are all equal, which hid every row under an action that always takes the same one (Crosscut's Finish and Fail), so generated operators now start their first arm with a conjunct TLC evaluates twice, (\\A i \\in {1, 2} : i = i), and all seven committed operator modules are regenerated, the Box Office one by the Python generator, which emits the same. Coverage of a run that stops at a counterexample is partial and is left out.\n\nbuild.py runs every configuration with --coverage and records in result.json which rows the change altered (the contract diff before and after regeneration, reasons stripped since they are not in the model, null rows left out) and which configurations' runs take them. A verified verdict is labelled vacuous when every run finished and none from an initial state takes an altered row that decides; rows that throw are meant never to be taken and do not count, and the inductive step, which starts from admitted states rather than a run, counts separately. example.json may state expected.vacuous, which the generator checks like the verdict. Every model-checking page has a new section, what the verdict rests on: a table of rows taken per configuration, the altered rows with the runs that take them, and the rows no step takes under the primary configuration. All 23 model-checking examples are rebuilt; 068's page now shows that only four of its eight altered rows are ever taken, and 030's that its one altered row is.\n\nExamples 072 to 074 on the Raft election model: a vote rule that refuses a repeat request (072) and a follower that leads on a late majority (074) verify under all five configurations and are reported vacuous, since atomic RPCs never ask a voter twice or count a vote late; a vote rule that throws on a term the voter has not adopted (073) has nine rows no run takes, which KernelNeverThrows turns into the theorem the change asked for. Verified by the Rust tests (53 unit, 25 integration, including one for the coverage parser), the verify scripts of Quorum, Crosscut and Mica, and the generator, which checks every rebuilt verdict and vacuity against the example's expectation.",
+      "log_sha256": "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee"
     }
   ],
   "logs": {
@@ -573,6 +595,12 @@
       "lines": 6862,
       "gzip_bytes": 3782528,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2.jsonl.gz"
+    },
+    "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee": {
+      "bytes": 38666692,
+      "lines": 12999,
+      "gzip_bytes": 6518104,
+      "url": null
     },
     "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc": {
       "bytes": 8425676,

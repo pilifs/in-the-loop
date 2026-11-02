@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "074",
+  "title": "A follower that leads on a late majority passes a model that never counts votes late",
+  "summary": "Raft's role machine ignores a tally counted by a server that is no longer a candidate: the votes are of an election the server has left. A developer lets a follower that finds a majority in its tally take the leadership, reasoning that a candidate which stepped down while its votes were in flight was elected all the same; the contract changes in one row the model can see, and a test says so. The election model verifies the change under all five configurations, and coverage shows that no run takes the row: in the model a vote is counted in the step that grants it, by the candidate itself, and a server that steps down in that step empties its tally first, so there is no late majority to count. The verdict is vacuous, and the tool says so. In a cluster the late votes are of the term the server left: a candidate of term 1 that heard the leader of term 2, stepped down, and then counted its term-1 majority would lead term 2 beside its leader.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "Let a follower whose tally reaches a majority become the leader, as a candidate's does, with the reasoning in a comment: a candidate that stepped down while its votes were still in flight was elected all the same, and takes the leadership rather than let the term go to waste. The contract of `RoleMachine#decide` is regenerated: the row of a follower counting a majority goes from unchanged to a transition to leader with heartbeats (the row without a majority changes only in its reason). A test of the new row is added.",
+    "patch": "change.patch"
+  },
+  "risk": "A tally belongs to the term it was collected in, and a server stops being a candidate for one reason: it adopted a newer term, from a heartbeat or a vote request, or it heard the leader of its own. Its votes are then of an election the cluster has moved past. Count them anyway and a candidate of term 1 that stepped down for the leader of term 2, and whose term-1 replies arrive after that, finds a majority and leads term 2 without a single vote of term 2: two leaders of one term, each replicating its own entries, and election safety, the property Raft's correctness rests on, is gone. The added test checks what the developer intends, and the existing tests of the role machine do not ask a follower to count votes. The model verifies the change under five configurations, since none of them has a vote that arrives late; a reviewer sees a one-row contract diff with a comment that argues from fairness to a candidate.",
+  "expected": {
+    "verdict": "verified",
+    "vacuous": true
+  },
+  "explanation": "The row the change alters is `decide(FOLLOWER, VotesCounted[majority=true])`, and under the three-server configuration steps of the model take 27 of the 36 rows of the role machine, this one not among them. The model's `Canvass` action is one RPC, request and reply: the voter decides, the candidate takes the reply through the role machine, adds a granted vote to its tally unless the reply's newer term made it a follower, in which case the tally is emptied, and counts the tally through the role machine as it then is. A follower therefore counts an empty tally, never a majority, and the row `decide(FOLLOWER, VotesCounted[majority=false])` is taken while the one the change alters is not. The inductive step starts from every state the invariant admits and takes no more rows of the role machine than a run does, because the late majority is not a state but a message in flight, which the model does not have. Every invariant and property holds under all five configurations, in 610 states under the first, and the verdict is verified, vacuously: a label the tool gives when every run finished and none from an initial state took a row the change alters that decides.",
+  "resolution": "Keep the row as it was: a server that leaves the candidate role leaves the election, and a tally is cleared when a term is adopted, which is what the committed kernel's effects do. To make the model see this change it would need votes in flight, a tally that outlives the step that fills it; that is the message set the model gave up for atomic RPCs when it blew past half a million states, and the coverage table on this page is the record of which rows that trade left unchecked. The rows no step takes are listed on every model-checking page now; a change that lands on one needs a test, a property or a bigger model, not a verdict.",
+  "provenance": "Constructed from rule 1 of figure 2 for candidates, a majority of votes makes a candidate the leader, extended to a follower; the late-vote scenario is the one chapter 3 of the thesis guards against by having a server step down and discard its election state when it adopts a term.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and figure 2, the RequestVote RPC",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): section 3.4, leader election, and chapter 9, leader election evaluation",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "TLC's coverage statistics (the -coverage option): how often each expression of the specification was evaluated",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

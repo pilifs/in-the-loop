@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "073",
+  "title": "A vote rule that throws on a term not adopted, and the model shows the term always is",
+  "summary": "A Raft server adopts a candidate's newer term before it decides the vote, so the vote rule only ever sees a candidate of the current or an older term; its nine rows for a newer term are a courtesy to callers that skip the adoption. A developer makes them throw instead, so that a server which skips the step fails loudly rather than vote in a term it has not entered, and rewrites the tests that relied on the courtesy. The contract changes in nine rows, every one of them to an exception, and the election model verifies the change under all five configurations: its invariant `KernelNeverThrows` asks of every reachable state whether any RPC the state allows would make a kernel throw, and none does, because the role machine adopts the candidate's term in the same step, before the vote rule is asked. Coverage shows the nine rows taken by no run, which for rows that throw is the point, and the tool does not call the verdict vacuous: a row that throws is meant never to be taken, and whether no run can take it is what the invariant checked.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": true,
+    "description": "Throw `IllegalStateException` for a request of a newer term, before any other check, with the reasoning in a comment: the role machine adopts a newer term before the vote is decided, so a request reaches the rule as one of the current term, and a newer one is a server that skipped that step. The contract of `VoteRule#decide` is regenerated: the nine rows of a newer term, which granted or refused by the ballot and the log, now throw. The tests that voted in a newer term now adopt it first, and the test of the kernel expects the exception.",
+    "patch": "change.patch"
+  },
+  "risk": "The rule now trusts its callers to adopt the term first. If any path in a server reached it without, a request from a candidate of a newer term would crash the server's handler instead of being answered, once per retry, and the server would be the one that never votes in a new term. The order, adopt then decide, is a property of the server's RequestVote handler and of everything else that calls the rule, not of the rule itself, so this is the kind of change a reviewer accepts on the strength of the current callers and regrets when a new one appears. The tests pass: the developer rewrote the ones that voted in a term not yet adopted.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "Under every configuration the generated vote rule now has nine arms whose outcome is `Throws`, and the model's `Canvass` action is disabled when any decision it goes through throws, so a run could not take them even if it reached them; what says that it never reaches them is `KernelNeverThrows`, an invariant over every timer and RPC a state allows rather than over the steps taken, which asks whether any would make the role machine or the vote rule throw. It holds in all 610 states, and under the inductive step, four servers, fairness and a server left behind, because the `Canvass` step gives the vote rule the voter's term as it stands after the role machine's decision on the candidate's, and the role machine adopts a newer term in every role. Coverage reports the nine rows as taken by no run, as it reported the rows of example 072, and the difference is in what the rows are: a row that decides and is never taken is a gap in the model, a row that throws and is never taken is what the change asked for. The tool tells them apart by the outcome and does not call this verdict vacuous; whether no run can take a throwing row is for an invariant to say, and this model has one. The order of the checks in the Java is what makes the rows throw rather than refuse, and the contract records it: a candidate of a newer term from the past is a contradiction, so the term check comes first.",
+  "resolution": "Keep it: an exception for a term the voter has not adopted is cheaper than nine contract rows nobody exercises, and the model now proves that the protocol's three events never throw it. Mind what the proof covers, the model's events and not every path in a server's code, and keep `KernelNeverThrows` in every configuration: it is the invariant that turns a dead row into a theorem.",
+  "provenance": "Constructed from the order of operations in a Raft server's RequestVote handler, rule 2 for all servers in figure 2 of the paper (a newer term is adopted on receipt) before the vote condition, made a precondition of the rule.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and figure 2, the RequestVote RPC",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "TLC's coverage statistics (the -coverage option): how often each expression of the specification was evaluated",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

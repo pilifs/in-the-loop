@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -38,7 +38,7 @@\n decide(LEADER, AppendEntries[term=NEWER])       => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]\n decide(LEADER, RequestVote[term=OLDER])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=CURRENT])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n-decide(LEADER, RequestVote[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n+decide(LEADER, RequestVote[term=NEWER])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, Response[term=OLDER])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n",
-  "proof": "three servers: TLC 2.19 explored 657 distinct states to depth 8 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 2,855 distinct states to depth 13 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 657 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 607 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+  "proof": "three servers: TLC 2.19 explored 657 distinct states to depth 8 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 2,855 distinct states to depth 13 in 2 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 657 distinct states to depth 8 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 607 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
   "problem": null,
   "statement": null,
   "trace": [
@@ -107,6 +107,50 @@
   "invariant": "ElectionSafety",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=NEWER] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "four servers",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "a server left behind",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(LEADER, RequestVote[term=NEWER])",
+        "before": "Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+        "after": "Unchanged[reason=\"the vote itself is decided by the vote rule\"]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": "invariant",

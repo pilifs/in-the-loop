@@ -81,7 +81,8 @@ def main(argv):
         (folder / "result.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
         validate(result, "result.schema.json", folder / "result.json")
         (folder / "README.md").write_text(render_example(folder, example, result))
-        status = "as expected" if result["matchesExpected"] else f"EXPECTED {example['expected']['verdict'].upper()}"
+        status = "as expected" if result["matchesExpected"] else \
+            f"EXPECTED {example['expected']['verdict'].upper()}{' VACUOUSLY' if example['expected'].get('vacuous') else ''}"
         print(f"{folder.name}: {result['verdict']} ({status})")
         if not result["matchesExpected"]:
             failures.append(folder.name)
@@ -170,11 +171,14 @@ def run(folder, example):
             "invariant": None,
             "property": None,
             "stateMachine": None,
+            "coverage": None,
             "sarif": "result.sarif",
             "output": "verifier-output.txt",
         }
         RUNNERS[app][example["approach"]["id"]](folder, example, tmp, module, result)
-    result["matchesExpected"] = result["verdict"] == example["expected"]["verdict"]
+    # A model-checking verdict that rests on no row the change alters is vacuous, which the example must expect too.
+    vacuous = bool((result.get("coverage") or {}).get("vacuous"))
+    result["matchesExpected"] = result["verdict"] == example["expected"]["verdict"] and vacuous == example["expected"].get("vacuous", False)
     return result
 
 
@@ -791,8 +795,8 @@ def tlc_run(build, model_files, cfg, root):
     bounds (`domain`) and whether it lists temporal properties."""
     deadlock = ["--deadlock"] if model_files.get("deadlock") else []
     config = [] if cfg == model_files["cfg"] else ["--config", cfg]
-    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", *deadlock, *config, "--library", str(EXAMPLES / "tools/tla/standard-modules")],
-                          text=True, capture_output=True, cwd=build)
+    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", "--coverage", *deadlock, *config,
+                           "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build)
     if proc.returncode == 2:
         sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
     run = json.loads(proc.stdout)
@@ -831,6 +835,54 @@ def tlc_proof(run):
             f"{' in ' + str(run['seconds']) + ' s' if run.get('seconds') is not None else ''}, for the model {run['domain']}") if run.get("distinct_states") is not None else None
 
 
+def contract_rows(text):
+    """A contract's cases and their outcomes, by case."""
+    return dict(re.findall(r"^(\w+\(.*\))\s+=> (.*)$", text, re.M))
+
+
+def tlc_coverage(configurations, runs, before, after):
+    """What the verdict rests on: for each configuration, how many rows of each generated operator a step of the
+    model took (TLC's coverage, read back by the tool); the rows the change altered, with the configurations whose
+    runs take them; and whether the verdict is vacuous, which it is when every run finishes and none from an initial
+    state takes any altered row that decides. The inductive step starts from every state the invariant admits, not
+    from a run, so it does not count: it only says the invariant held one step on. A run that stops at a
+    counterexample has explored a part of the model and its counts are left out; the verdict then rests on the
+    counterexample. Rows that throw are meant never to be taken, so they do not make a verdict vacuous: whether a
+    run could take one is for an invariant over the model's events to say. Rows with a null argument are not in
+    the model, which never passes null."""
+    # The reason an outcome records is not in the model, so a row that changes only in its reason has not changed.
+    in_the_model = lambda outcome: re.sub(r'^(Unchanged|Rejected)\[.*\]$', r'\1', outcome) if outcome else outcome
+    changed, nulls = [], 0
+    for contract, rows in after.items():
+        for case, outcome in rows.items():
+            was = before.get(contract, {}).get(case)
+            if in_the_model(was) == in_the_model(outcome):
+                continue
+            if re.search(r"\(null, |, null\)", case):
+                nulls += 1
+            else:
+                changed.append({"case": case, "before": was, "after": outcome})
+    reached = {}
+    per_configuration = []
+    for c, r in zip(configurations, runs):
+        finished = r["verdict"] == "verified"
+        operators = []
+        for op in (r.get("coverage") or []) if finished else []:
+            taken = [row["case"] for row in op["rows"] if row["taken"]]
+            operators.append({"symbol": op["symbol"], "reached": len(taken), "total": len(op["rows"]),
+                              "never": [f"{row['case']} => {row['outcome']}" for row in op["rows"] if not row["taken"]]})
+            for case in taken:
+                reached.setdefault(case, []).append(c["label"])
+        per_configuration.append({"label": c["label"], "fromRuns": not c.get("startsAnywhere", False), "finished": finished, "operators": operators})
+    from_runs = {c["label"] for c in configurations if not c.get("startsAnywhere", False)}
+    for row in changed:
+        row["takenUnder"] = reached.get(row["case"], [])
+    deciding = [row for row in changed if not row["after"].startswith("throws ")]
+    vacuous = bool(deciding) and all(c["finished"] for c in per_configuration) \
+        and not any(set(row["takenUnder"]) & from_runs for row in deciding)
+    return {"configurations": per_configuration, "changedRows": changed, "nullRows": nulls, "vacuous": vacuous}
+
+
 def tlc_configurations(model_files):
     """The configurations a model is checked under: the one of its `.cfg`, then any it lists under `configurations`."""
     primary = {"cfg": model_files["cfg"], "label": model_files.get("label", "the model"), "initial": model_files["initial"],
@@ -845,12 +897,16 @@ def run_tool_tlc(folder, example, root, module, result):
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     model_files = model_of(example)
+    generated = [model_files, *model_files.get("operators", [])]
+    rows_before = {g["contract"]: contract_rows((build / g["contract"]).read_text()) for g in generated}
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
-    for generated in [model_files, *model_files.get("operators", [])]:
-        tool(app, root, "tla", generated["contract"], generated["operator"], anchored=False)
+    rows_after = {g["contract"]: contract_rows((build / g["contract"]).read_text()) for g in generated}
+    for g in generated:
+        tool(app, root, "tla", g["contract"], g["operator"], anchored=False)
     configurations = tlc_configurations(model_files)
     runs = [(c, tlc_run(build, model_files, c["cfg"], root)) for c in configurations]
+    result["coverage"] = tlc_coverage(configurations, [r for _, r in runs], rows_before, rows_after)
     several = len(runs) > 1
     headline = next(((c, r) for c, r in runs if r["verdict"] == "violation"), None) \
         or next(((c, r) for c, r in runs if r["verdict"] == "unverifiable"), None) or runs[0]
@@ -912,7 +968,10 @@ def run_tool_tlc(folder, example, root, module, result):
             "forever": r["forever"],
         } for c, r in runs]
     label = tlc_label(tlc_result)
-    if several and verdict == "violation" and configuration is not configurations[0]:
+    changed = len(result["coverage"]["changedRows"])
+    if verdict == "verified" and result["coverage"]["vacuous"]:
+        label = f"{VERDICT_LABEL[verdict]}, vacuously: no run takes the {changed} row{'s' if changed != 1 else ''} the change alters"
+    elif several and verdict == "violation" and configuration is not configurations[0]:
         label += f" ({configuration['label']})"
     elif several and verdict == "verified":
         label += f", and under {len(runs) - 1} more configuration{'s' if len(runs) > 2 else ''}"
@@ -1402,7 +1461,7 @@ def findings_tlc(ex, res):
                     + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]
             out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False))
             out += ["", "</details>"]
-        return out
+        return out + coverage_lines(res)
     if res["verdict"] == "unverifiable":
         return out + ["TLC produced no verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
     checked = "Every invariant holds in every reachable state of the model"
@@ -1418,6 +1477,68 @@ def findings_tlc(ex, res):
     if several:
         out += ["", "The other configurations hold too, as the table says: " + "; ".join(
             f"{run['label']}, {run['statesExplored']:,} states" for run in runs[1:] if run.get("statesExplored") is not None) + "."]
+    return out + coverage_lines(res)
+
+
+def coverage_lines(res):
+    """What the verdict rests on: the rows of the generated operators a step of the model takes under each
+    configuration, the rows the change alters and which runs take them, and the rows no step takes."""
+    cov = res.get("coverage")
+    finished = [c for c in (cov or {}).get("configurations", []) if c["finished"] and c["operators"]]
+    if not cov or not finished:
+        return []
+    configs = cov["configurations"]
+    short = lambda symbol: "`" + symbol.rsplit(".", 1)[-1] + "`"
+    out = ["", "**What the verdict rests on.** TLC counted how often a step of the model took each row of the generated "
+               "operators. A row no step takes is one the model says nothing about, whatever the verdict."]
+    operators = finished[0]["operators"]
+    if len(configs) > 1:
+        out += ["", "| Configuration | " + " | ".join(f"Rows of {short(op['symbol'])} taken" for op in operators) + " |",
+                "|---|" + "---|" * len(operators)]
+        for c in configs:
+            note = "" if c["fromRuns"] else " (from the states the invariant admits, not from a run)"
+            cells = [f"{op['reached']} of {op['total']}" for op in c["operators"]] if c["finished"] else ["stopped at the counterexample"] * len(operators)
+            out.append(f"| {c['label']}{note} | " + " | ".join(cells) + " |")
+    else:
+        out += ["", "Rows taken: " + "; ".join(f"{op['reached']} of {op['total']} of {short(op['symbol'])}" for op in operators) + "."]
+    changed = cov["changedRows"]
+    stopped = [c["label"] for c in configs if not c["finished"]]
+    if changed:
+        from_runs = {c["label"] for c in configs if c["fromRuns"]}
+        nulls = f", and {cov['nullRows']} with a null argument, which the model leaves out" if cov.get("nullRows") else ""
+        out += ["", f"The change alters {len(changed)} row{'s' if len(changed) != 1 else ''} of the contract{nulls}:", ""]
+        for row in changed:
+            under = row["takenUnder"]
+            taken = f"taken under {', '.join(under)}" if under else ("taken by no run that finished" if stopped else "taken by no run")
+            out.append(f"- {code(row['case'])}: {code(row['before']) if row['before'] else 'a new row'} → {code(row['after'])}, {taken}")
+        deciding = [row for row in changed if not row["after"].startswith("throws ")]
+        throwing = len(changed) - len(deciding)
+        by_a_run = [row for row in deciding if set(row["takenUnder"]) & from_runs]
+        only_admitted = [row for row in deciding if row["takenUnder"] and not set(row["takenUnder"]) & from_runs]
+        if stopped:
+            out += ["", f"The run under {', '.join(stopped)} stopped at its counterexample, the steps above, and its counts are left out: "
+                        "the verdict rests on the counterexample."]
+        elif cov["vacuous"]:
+            why = (" Only the inductive step takes " + ("them" if len(only_admitted) == len(deciding) else f"{len(only_admitted)} of them")
+                   + ", from states the invariant admits rather than from a run; that it found nothing says the invariant held one step on, no more."
+                   if only_admitted else "")
+            out += ["", f"**No run of the model takes any of them.**{why} The verdict is about the model as it was, and says nothing about the change."]
+        elif not deciding:
+            out += ["", f"{'All' if throwing > 1 else 'The one'} row{'s' if throwing > 1 else ''} the change alters throw{'' if throwing > 1 else 's'}, "
+                        "and no run takes them: that is what a row that throws asks. Whether no run can is for an invariant over the model's "
+                        "events to say, not for coverage, which counts the steps taken."]
+        elif len(by_a_run) == len(deciding):
+            out += ["", "Runs of the model take every row the change alters" + (f" that decides; the {throwing} that throw are taken by no run, as they must not be" if throwing else "") + ": the verdict rests on the change."]
+        else:
+            out += ["", f"Runs of the model take {len(by_a_run)} of the {len(deciding)} rows the change alters{' that decide' if throwing else ''}; "
+                        "the verdict rests on those, and says nothing about the others."]
+    primary = finished[0]
+    never = [(op["symbol"], op["never"]) for op in primary["operators"] if op["never"]]
+    if never:
+        out += ["", f"<details><summary>Rows no step takes under {primary['label']}</summary>", ""]
+        for symbol, rows in never:
+            out += [f"`{symbol}`:", "", "```", *rows, "```", ""]
+        out += ["</details>"]
     return out
 
 

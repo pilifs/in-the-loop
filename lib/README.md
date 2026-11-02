@@ -77,6 +77,7 @@ jvmcontract tlc spec/ClassInit.tla --deadlock    # also report a reachable state
 jvmcontract tlc spec/TwoPhaseCommit.tla          # the configuration's PROPERTIES (liveness, refinement) are checked after the invariants
 jvmcontract tlc spec/RaftElection.tla            # an action property [][A]_v among them is reported by name, with the run up to the offending step
 jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionInductive.cfg   # another configuration of the same model: here INIT is an invariant, and a counterexample is one step from a state it admits
+jvmcontract tlc spec/RaftElection.tla --coverage   # and what the verdict rests on: the rows of each generated operator a step of the model takes, and the rows none does
 
 # Views: the state machine a contract describes, and a class file's structure.
 jvmcontract statemachine src/contract/OrderLifecycle.decide.contract --format mermaid

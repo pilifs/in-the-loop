@@ -59,6 +59,32 @@
   "invariant": "Atomicity",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COMMITTED: Timeout[unanimousSoFar=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COLLECTING, Timeout[unanimousSoFar=true])",
+        "before": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": "invariant",

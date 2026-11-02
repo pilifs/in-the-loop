@@ -1097,6 +1097,51 @@
       "approach": "B11",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "072",
+      "path": "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice",
+      "title": "A vote rule that refuses a repeat request is verified by a model that never asks twice",
+      "summary": "Raft's vote rule grants a candidate the vote it already holds: a server votes once per term, and the candidate that has the vote may ask again, because the reply that carried it may have been lost. A developer reads one vote per term literally and refuses the repeat, as a duplicate the tally must not count twice; the contract of the vote rule changes in two rows, and the tests are updated to say so. The election model verifies the change under all five configurations, and for the first time the verdict comes with what it rests on: TLC's coverage of the generated operator, read back row by row by the tool, shows that no run of the model takes either row the change alters. The model's RPCs are atomic, a request and its reply in one step, so no candidate ever asks a voter twice, and the rows for a repeat are dead in it. The verdict is vacuous, and the tool says so.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "073",
+      "path": "073-vote-rule-that-throws-on-a-term-not-adopted-and-the-model-shows-the-term-always-is",
+      "title": "A vote rule that throws on a term not adopted, and the model shows the term always is",
+      "summary": "A Raft server adopts a candidate's newer term before it decides the vote, so the vote rule only ever sees a candidate of the current or an older term; its nine rows for a newer term are a courtesy to callers that skip the adoption. A developer makes them throw instead, so that a server which skips the step fails loudly rather than vote in a term it has not entered, and rewrites the tests that relied on the courtesy. The contract changes in nine rows, every one of them to an exception, and the election model verifies the change under all five configurations: its invariant `KernelNeverThrows` asks of every reachable state whether any RPC the state allows would make a kernel throw, and none does, because the role machine adopts the candidate's term in the same step, before the vote rule is asked. Coverage shows the nine rows taken by no run, which for rows that throw is the point, and the tool does not call the verdict vacuous: a row that throws is meant never to be taken, and whether no run can take it is what the invariant checked.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "low",
+      "changeKind": "cleanup",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "074",
+      "path": "074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late",
+      "title": "A follower that leads on a late majority passes a model that never counts votes late",
+      "summary": "Raft's role machine ignores a tally counted by a server that is no longer a candidate: the votes are of an election the server has left. A developer lets a follower that finds a majority in its tally take the leadership, reasoning that a candidate which stepped down while its votes were in flight was elected all the same; the contract changes in one row the model can see, and a test says so. The election model verifies the change under all five configurations, and coverage shows that no run takes the row: in the model a vote is counted in the step that grants it, by the candidate itself, and a server that steps down in that step empties its tally first, so there is no late majority to count. The verdict is vacuous, and the tool says so. In a cluster the late votes are of the term the server left: a candidate of term 1 that heard the leader of term 2, stepped down, and then counted its term-1 majority would lead term 2 beside its leader.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

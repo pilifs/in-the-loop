@@ -57,7 +57,7 @@ The commands:
 jvmcontract derive 'pkg.Class#decide' --classes CLASSES [--classpath 'a.jar:b.jar'] [--json] > spec/Class.decide.contract
 jvmcontract tla spec/Class.decide.contract spec/ClassContract.tla [--module NAME] [--operator Decide]
 jvmcontract statemachine spec/Class.decide.contract [--format dot]      # Mermaid by default; names unreachable and terminal states
-jvmcontract tlc spec/Model.tla [--deadlock] [--json] [--timeout 1800] [--workers 1] [--library DIR]
+jvmcontract tlc spec/Model.tla [--deadlock] [--coverage] [--json] [--timeout 1800] [--workers 1] [--library DIR]
 ```
 
 `tlc` runs TLC from `tla2tools.jar` (`$TLA2TOOLS_JAR`, else `~/tools/tla2tools.jar`, else `tlc` on the `PATH`) in the spec's directory, reading the `.cfg` of the same name, with one worker so the reported trace is stable, and `-deadlock` *off* unless `--deadlock` is given (a finished system is meant to stop). Exit code 0 is verified, 1 a violation or no verdict. `--json` prints `verdict` (`"Verified"`, `"Violation"`, `"Unverifiable"`), `invariant` (the invariant or property violated), `kind` (`invariant`, `deadlock`, `action` or `temporal`), `deadlock`, `properties` (the configuration's `PROPERTIES`), `states_generated`, `distinct_states`, `depth`, `seconds`, `trace` (a list of `{step, action, changes}`, `changes` being only the variables that changed), `lasso` and `stuttering` (for a temporal violation: the step the behaviour returns to, or that it stays in the last state forever) and `output`. `--library` is only for a project that commits copies of the standard modules; the jar has them.
@@ -173,6 +173,16 @@ Bounds: two of everything that can conflict (two customers, two threads, two att
 ```
 
 A trace step names the action and the variables it changed. Render it for the reader as Java operations: "step 8: `tryAcquirePermission` after the wait, one probe permitted (`Request`, HALF_OPEN)". The step count includes the initial state. The depth of a verified search is the longest behaviour explored.
+
+`--coverage` adds, after the verdict, what it rests on: for each generated operator the specification uses (found by the header `jvmcontract tla` writes), how many rows of its contract a step of the model took, and the rows no step took:
+
+```
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 4 of 27; never taken (23):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  ...
+```
+
+It is TLC's `-coverage` read back against the `CASE` arms: an arm's guard is evaluated when no earlier arm matched, so an arm was taken as often as its guard was evaluated minus the next arm's, summed over the actions that evaluate the operator (an invariant that evaluates it, such as `KernelNeverThrows`, takes no step and is not counted). TLC's report folds a subtree whose counts are all equal into one line, which an action that always takes the same arm would be; the generated module's first arm therefore starts with `(\A i \in {1, 2} : i = i) /\`, a conjunct TLC evaluates twice, which keeps the counts unequal and the arms listed (regenerate operators written before this with `jvmcontract tla`, or the report shows rows as never taken that are). In `--json` it is `coverage`, one entry per operator with `rows[].case`, `outcome` and `taken`. A row no step takes is one the model says nothing about, whatever the verdict: a change to the Java that lands only on such rows is verified vacuously. Read a verified verdict with the rows the change altered (the contract diff) against this list; a row that is never taken because of an abstraction the model made (atomic RPCs never ask a voter twice; a tally counted in the step that fills it never arrives late) needs a test, a property, or a bigger model. A row that *throws* and is never taken is the opposite case, what the change asked for, and an invariant such as `KernelNeverThrows` is what proves no run can take it. A run that stops at a counterexample has explored a part of the model, and its counts say little.
 
 `Unverifiable` with `output` saying `Parsing or semantic analysis failed` or `***Parse Error***`: a syntax error, with line and column. `Error: Successor state is not completely specified`: see above. `Error: TLC threw an unexpected exception` with `OutOfMemoryError`: shrink the bounds. `did not finish within N s`: shrink the bounds or raise `--timeout`.
 

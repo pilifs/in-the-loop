@@ -31,6 +31,68 @@
   "invariant": null,
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=false, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 9,
+            "total": 18,
+            "never": [
+              "decide(COLLECTING, Timeout[unanimousSoFar=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COLLECTING, Tally[complete=false, unanimous=false])",
+        "before": "Unchanged[reason=\"waiting for the remaining votes\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step"
+        ]
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,

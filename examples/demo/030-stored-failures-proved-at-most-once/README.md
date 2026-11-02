@@ -76,6 +76,35 @@ Every invariant holds in every reachable state of the model: 131 distinct states
 
 The receiver's decision rule inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the receiver really makes.
 
+**What the verdict rests on.** TLC counted how often a step of the model took each row of the generated operators. A row no step takes is one the model says nothing about, whatever the verdict.
+
+Rows taken: 5 of 15 of `IdempotentReceiver#decide`.
+
+The change alters 1 row of the contract:
+
+- `decide(IN_PROGRESS, Failed[])`: `Transition[next=ABSENT, effects=[RELEASE_KEY]]` → `Transition[next=COMPLETED, effects=[STORE_RESPONSE]]`, taken under the model
+
+Runs of the model take every row the change alters: the verdict rests on the change.
+
+<details><summary>Rows no step takes under the model</summary>
+
+`net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide`:
+
+```
+decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]
+decide(ABSENT, Completed[]) => Unchanged
+decide(ABSENT, Failed[]) => Unchanged
+decide(ABSENT, Expired[]) => Unchanged
+decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected
+decide(IN_PROGRESS, Expired[]) => Unchanged
+decide(COMPLETED, Request[sameFingerprint=false]) => Rejected
+decide(COMPLETED, Completed[]) => Unchanged
+decide(COMPLETED, Failed[]) => Unchanged
+decide(COMPLETED, Expired[]) => Transition[next=ABSENT, effects=[RELEASE_KEY]]
+```
+
+</details>
+
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
 ```mermaid
@@ -121,7 +150,7 @@ How the verdict was reached: TLC 2.19 explored 131 distinct states to depth 8 in
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 31 and seed -1801451682357201585 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 1754120] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304416] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -132,17 +161,28 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-10-31 21:22:22)
+Starting... (2026-11-02 01:45:29)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-10-31 21:22:22.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:29.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
   calculated (optimistic):  val = 5.7E-16
+Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step of the model takes: 5 of 15; never taken (10):
+  decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]
+  decide(ABSENT, Completed[]) => Unchanged
+  decide(ABSENT, Failed[]) => Unchanged
+  decide(ABSENT, Expired[]) => Unchanged
+  decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected
+  decide(IN_PROGRESS, Expired[]) => Unchanged
+  decide(COMPLETED, Request[sameFingerprint=false]) => Rejected
+  decide(COMPLETED, Completed[]) => Unchanged
+  decide(COMPLETED, Failed[]) => Unchanged
+  decide(COMPLETED, Expired[]) => Transition[next=ABSENT, effects=[RELEASE_KEY]]
 211 states generated, 131 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 8.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
-Finished in 00s at (2026-10-31 21:22:22)
+Finished in 00s at (2026-11-02 01:45:29)
 ```
 
 </details>
@@ -162,7 +202,7 @@ Finished in 00s at (2026-10-31 21:22:22)
             {
               "id": "invariant-violated",
               "shortDescription": {
-                "text": "TLC found a behaviour of the model that violates an invariant, or ends in a deadlock."
+                "text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."
               }
             },
             {

@@ -1,6 +1,6 @@
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2169986] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2305824] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -15,9 +15,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:40)
+Starting... (2026-11-02 01:45:45)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:40.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:45.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -50,14 +50,59 @@ State 5: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 16 of 36; never taken (20):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Unchanged
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 4 of 27; never taken (23):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 134 states generated, 86 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 4 (minimum is 1, the maximum 6 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:58:40)
+Finished in 00s at (2026-11-02 01:45:45)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170068] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2305917] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -72,7 +117,7 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:41)
+Starting... (2026-11-02 01:45:46)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -88,7 +133,7 @@ Computed 2048 initial states...
 Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
-Finished computing initial states: 17470 distinct states generated at 2026-11-02 00:58:44.
+Finished computing initial states: 17470 distinct states generated at 2026-11-02 01:45:50.
 Error: Invariant VotesAreBound is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -103,14 +148,73 @@ State 2: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s3 @@ s2 :> "none" @@ s3 :> s3)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 5 of 36; never taken (31):
+  decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, VotesCounted[majority=false]) => Unchanged
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, RequestVote[term=OLDER]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=CURRENT]) => Unchanged
+  decide(CANDIDATE, RequestVote[term=NEWER]) => Unchanged
+  decide(CANDIDATE, Response[term=CURRENT]) => Unchanged
+  decide(CANDIDATE, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, ElectionTimeout[]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=CURRENT]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Unchanged
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=CURRENT]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 1 of 27; never taken (26):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 17492 states generated, 17471 distinct states found, 17463 states left on queue.
 The depth of the complete state graph search is 2.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 03s at (2026-11-02 00:58:44)
+Finished in 04s at (2026-11-02 01:45:50)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170289] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2306177] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -125,9 +229,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:45)
+Starting... (2026-11-02 01:45:51)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:45.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:51.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -172,14 +276,47 @@ State 7: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2 @@ s4 :> s2)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 25 of 36; never taken (11):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 7 of 27; never taken (20):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 803 states generated, 285 distinct states found, 195 states left on queue.
 The depth of the complete state graph search is 7.
 The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 7 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:58:45)
+Finished in 00s at (2026-11-02 01:45:52)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170374] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2306265] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -194,10 +331,10 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:46)
+Starting... (2026-11-02 01:45:52)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:46.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:53.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -230,14 +367,59 @@ State 5: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 16 of 36; never taken (20):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Unchanged
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 4 of 27; never taken (23):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 134 states generated, 86 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 4 (minimum is 1, the maximum 6 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:58:46)
+Finished in 00s at (2026-11-02 01:45:53)
 
 == a server left behind: spec/RaftElectionLogs.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2170439] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2306367] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -252,9 +434,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:58:47)
+Starting... (2026-11-02 01:45:54)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:58:47.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:54.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -287,7 +469,43 @@ State 5: <Canvass line 146, col 5 to line 149, col 30 of module RaftElection>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)
 
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 17 of 36; never taken (19):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, AppendEntries[term=OLDER]) => Rejected
+  decide(FOLLOWER, AppendEntries[term=CURRENT]) => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]
+  decide(FOLLOWER, RequestVote[term=OLDER]) => Unchanged
+  decide(FOLLOWER, RequestVote[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, AppendEntries[term=OLDER]) => Rejected
+  decide(CANDIDATE, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=OLDER]) => Rejected
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, AppendEntries[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]
+  decide(LEADER, RequestVote[term=OLDER]) => Unchanged
+  decide(LEADER, RequestVote[term=NEWER]) => Unchanged
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+  decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 12 of 27; never taken (15):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
 162 states generated, 90 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 3 (minimum is 1, the maximum 5 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 00:58:47)
+Finished in 00s at (2026-11-02 01:45:54)
