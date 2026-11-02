@@ -1,0 +1,41 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java
+@@ -14,9 +14,10 @@
+  * sent and its next index past them; on a refusal, the next index moves back by one, and the next request tries from
+  * one entry earlier, until the consistency check passes.
+  *
+- * <p>A reply the leader's record reflects already, a late or repeated one, changes nothing: an acceptance of entries
+- * the leader knows the follower holds moves nothing backwards, and a refusal of a request the leader has moved on
+- * from, or at an entry it knows the follower holds, does not back it up again. The term check comes before this
++ * <p>An acceptance is the follower's own word on what it holds, and the record follows it whenever it comes, a late
++ * or repeated one included: the next request then carries what the follower has already, which it accepts again. A
++ * refusal of a request the leader has moved on from, or at an entry it knows the follower holds, does not back it up
++ * again. The term check comes before this
+  * rule, in {@link RoleMachine}: a reply from a newer term deposes the leader, and one from an older term, to a
+  * request of an earlier term of its own, is dropped.
+  */
+@@ -28,7 +29,7 @@
+         return switch (status) {
+             case AWAITED -> reply.accepted() ? transition(ANSWERED, ADVANCE) : transition(ANSWERED, BACK_UP);
+             case ANSWERED -> reply.accepted()
+-                    ? unchanged("holds what the leader has recorded already")
++                    ? transition(ANSWERED, ADVANCE) // the follower's own word on what it holds, late or not
+                     : unchanged("a refusal the leader has moved on from");
+         };
+     }
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/ReplyRuleTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/ReplyRuleTest.java
+@@ -23,8 +23,11 @@
+         equal(new Transition<>(ANSWERED, List.of(BACK_UP)), ReplyRule.decide(AWAITED, new AppendReply(false)));
+     }
+ 
+-    public static void aLateOrRepeatedReplyChangesNothing() {
+-        check(ReplyRule.decide(ANSWERED, new AppendReply(true)) instanceof Decision.Unchanged, "late acceptance");
++    public static void anAcceptanceIsFollowedWheneverItComes() {
++        equal(new Transition<>(ANSWERED, List.of(ADVANCE)), ReplyRule.decide(ANSWERED, new AppendReply(true)));
++    }
++
++    public static void aLateOrRepeatedRefusalChangesNothing() {
+         check(ReplyRule.decide(ANSWERED, new AppendReply(false)) instanceof Decision.Unchanged, "late refusal");
+     }
+ }

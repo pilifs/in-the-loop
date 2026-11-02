@@ -1,0 +1,45 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java
+@@ -10,9 +10,9 @@
+ 
+ /**
+  * What a Raft leader does with a follower's reply to an AppendEntries request (Ongaro and Ousterhout, section 5.3,
+- * and the rules for leaders of figure 2): on an acceptance, the follower's match index moves up through the entries
+- * sent and its next index past them; on a refusal, the next index moves back by one, and the next request tries from
+- * one entry earlier, until the consistency check passes.
++ * and the rules for leaders of figure 2): on a reply, the follower's match index moves up through the entries sent
++ * and its next index past them. Whether the follower took the entries is the append rule's business: a follower
++ * that refused them is behind, and the heartbeats compare the logs again until it has caught up.
+  *
+  * <p>A reply the leader's record reflects already, a late or repeated one, changes nothing: an acceptance of entries
+  * the leader knows the follower holds moves nothing backwards, and a refusal of a request the leader has moved on
+@@ -26,7 +26,7 @@
+ 
+     public static Decision<RequestStatus, ReplyEffect> decide(RequestStatus status, AppendReply reply) {
+         return switch (status) {
+-            case AWAITED -> reply.accepted() ? transition(ANSWERED, ADVANCE) : transition(ANSWERED, BACK_UP);
++            case AWAITED -> transition(ANSWERED, ADVANCE); // accepted or not: the record follows the request, the logs are compared again on the next one
+             case ANSWERED -> reply.accepted()
+                     ? unchanged("holds what the leader has recorded already")
+                     : unchanged("a refusal the leader has moved on from");
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/ReplyRuleTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/ReplyRuleTest.java
+@@ -3,7 +3,6 @@
+ import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ import static net.terminalvalue.quorum.raft.ReplyEffect.ADVANCE;
+-import static net.terminalvalue.quorum.raft.ReplyEffect.BACK_UP;
+ import static net.terminalvalue.quorum.raft.RequestStatus.ANSWERED;
+ import static net.terminalvalue.quorum.raft.RequestStatus.AWAITED;
+ 
+@@ -19,8 +18,8 @@
+         equal(new Transition<>(ANSWERED, List.of(ADVANCE)), ReplyRule.decide(AWAITED, new AppendReply(true)));
+     }
+ 
+-    public static void aRefusalBacksUpByOne() {
+-        equal(new Transition<>(ANSWERED, List.of(BACK_UP)), ReplyRule.decide(AWAITED, new AppendReply(false)));
++    public static void aRefusalMovesTheFollowerUpAsWell() {
++        equal(new Transition<>(ANSWERED, List.of(ADVANCE)), ReplyRule.decide(AWAITED, new AppendReply(false)));
+     }
+ 
+     public static void aLateOrRepeatedReplyChangesNothing() {

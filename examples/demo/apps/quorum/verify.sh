@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Compiles the Quorum module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
 # capability and API contracts, the property proofs (JBMC), and the two-phase-commit, Raft election and Raft
-# replication models (TLC), the first under six configurations, the second under seven and the third under three, plus
+# replication models (TLC), the first under six configurations, the second under seven and the third under four, plus
 # a check that the election and replication models' enabling predicates agree with ENABLED, and the trace check of the
 # two-phase-commit nodes: their recorded runs, held to the model's next-state relation.
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
@@ -44,8 +44,10 @@ java -cp "build/main:build/test" net.terminalvalue.quorum.twopc.Traces > spec/Tw
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionHistory.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionEnabled.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tla src/contract/AppendRule.decide.contract spec/AppendRuleContract.tla
+"$JVMCONTRACT" tla src/contract/ReplyRule.decide.contract spec/ReplyRuleContract.tla
 "$JVMCONTRACT" tla src/contract/CommitRule.decide.contract spec/CommitRuleContract.tla
 "$JVMCONTRACT" tlc spec/RaftReplication.tla --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftReplication.tla --config spec/RaftReplicationFigureEight.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftReplication.tla --config spec/RaftReplicationLive.cfg --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tlc spec/RaftReplication.tla --config spec/RaftReplicationDelayed.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftReplication.tla --config spec/RaftReplicationEnabled.cfg --library ../../tools/tla/standard-modules

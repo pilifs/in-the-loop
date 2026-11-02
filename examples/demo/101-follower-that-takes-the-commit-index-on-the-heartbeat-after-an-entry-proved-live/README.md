@@ -5,7 +5,7 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✓ Verified: all invariants and properties hold in 21,551 states, and under 2 more configurations** | functional, no-false-positive | none | refactor, behaviour change intended | [`AppendRule#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✓ Verified: all invariants and properties hold in 21,551 states, and under 3 more configurations** | functional, no-false-positive | none | refactor, behaviour change intended | [`AppendRule#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
 > A Raft follower that appends an entry takes the leader's commit index in the same request, as far as the entries it now holds. A developer has it take the commit index only on a request that appends nothing, the heartbeat that follows, once the entry is on disk: a request that appends is a write, and the commit index moves on the next one. The change is verified under all three configurations, the two safety ones in 21,551 and 9,269 states, and the fairness one in 14,958: every entry still reaches every follower, every follower still learns the leader's commits, a leader's own entries are still committed, and the coverage shows both rows the change alters taken under each.
 
@@ -115,32 +115,34 @@ In `AppendRule.decide`, the `ABSENT` and `CONFLICTING` arms for the entry sent n
 
 ## What the verifier found
 
-The model is checked under 3 configurations, and the verdict is the first that fails:
+The model is checked under 4 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
-| three terms, two entries (`spec/RaftReplication.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2 | ✓ Verified: all invariants and properties hold in 21,551 states |
-| figure 8 (`spec/RaftReplicationFigureEight.cfg`) | every run of three servers over four terms with one entry per leader's log, the budget of figure 8 of the paper: a leader of term 1 appends an entry it never gets to replicate, a leader of term 2 appends its own at the same index, the first comes back as the leader of term 3 and replicates its entry of term 1 to a majority, and the second, whose last entry is from the later term, can still be elected in term 4 without it; three terms cannot show this, and the same invariants and action properties are checked | Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1 | ✓ Verified: all invariants and properties hold in 9,269 states |
-| fairness (`spec/RaftReplicationLive.cfg`) | the three liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends every follower its next entry or a heartbeat and marks committed what the commit rule lets it; nothing is assumed of the clients, so the properties hold whether or not a request comes. Three servers, three terms and one entry per leader, without the symmetry set, since TLC's liveness checking is unsound under one. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1 | ✓ Verified: all invariants and properties hold in 14,958 states |
+| three terms, two entries (`spec/RaftReplication.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE | ✓ Verified: all invariants and properties hold in 21,551 states |
+| figure 8 (`spec/RaftReplicationFigureEight.cfg`) | every run of three servers over four terms with one entry per leader's log, the budget of figure 8 of the paper: a leader of term 1 appends an entry it never gets to replicate, a leader of term 2 appends its own at the same index, the first comes back as the leader of term 3 and replicates its entry of term 1 to a majority, and the second, whose last entry is from the later term, can still be elected in term 4 without it; three terms cannot show this, and the same invariants and action properties are checked | Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE | ✓ Verified: all invariants and properties hold in 9,269 states |
+| fairness (`spec/RaftReplicationLive.cfg`) | the three liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends every follower its next entry or a heartbeat and marks committed what the commit rule lets it; nothing is assumed of the clients, so the properties hold whether or not a request comes. Three servers, three terms and one entry per leader, without the symmetry set, since TLC's liveness checking is unsound under one. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE | ✓ Verified: all invariants and properties hold in 14,958 states |
+| delayed replies (`spec/RaftReplicationDelayed.cfg`) | every run of three servers over two terms with logs of up to two entries in which the reply to an AppendEntries request is a step of its own (`DelayedReplies = TRUE`): the leader may take it after it has sent the follower another request and taken its reply, been deposed, or been elected again in a later term, and the network may hand it the same reply twice, or never. The one-step RPC of the other configurations hands the reply rule nothing but the request just sent; this one hands it late and repeated replies, and checks the leader's record of its followers against what they hold, under the same invariants and action properties | Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE | ✓ Verified: all invariants and properties hold in 267,588 states |
 
-Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three terms, two entries: 21,551 distinct states, which is every interleaving of the servers, their terms, votes and logs, and the AppendEntries RPCs between them within the model's bounds (Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2).
+Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three terms, two entries: 21,551 distinct states, which is every interleaving of the servers, their terms, votes and logs, and the AppendEntries RPCs between them within the model's bounds (Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE).
 
-The follower's append rule, the leader's commit rule, the role machine and the vote rule inside the model are generated from the behavioural contracts of the patched code, so the model checks the entries the followers really take, the commits the leaders really make, and the roles and votes behind them.
+The follower's append rule, the leader's reply rule and commit rule, the role machine and the vote rule inside the model are generated from the behavioural contracts of the patched code, so the model checks the entries the followers really take, the record the leaders really keep of them, the commits the leaders really make, and the roles and votes behind them.
 
-The other configurations hold too, as the table says: figure 8, 9,269 states; fairness, 14,958 states.
+The other configurations hold too, as the table says: figure 8, 9,269 states; fairness, 14,958 states; delayed replies, 267,588 states.
 
 **What the verdict rests on.** TLC counted how often a step of the model took each row of the generated operators. A row no step takes is one the model says nothing about, whatever the verdict.
 
-| Configuration | Rows of `RoleMachine#decide` taken | Rows of `VoteRule#decide` taken | Rows of `AppendRule#decide` taken | Rows of `CommitRule#decide` taken |
-|---|---|---|---|---|
-| three terms, two entries | 27 of 36 | 12 of 27 | 16 of 24 | 4 of 12 |
-| figure 8 | 27 of 36 | 12 of 27 | 10 of 24 | 4 of 12 |
-| fairness | 27 of 36 | 12 of 27 | 10 of 24 | 4 of 12 |
+| Configuration | Rows of `RoleMachine#decide` taken | Rows of `VoteRule#decide` taken | Rows of `AppendRule#decide` taken | Rows of `ReplyRule#decide` taken | Rows of `CommitRule#decide` taken |
+|---|---|---|---|---|---|
+| three terms, two entries | 27 of 36 | 12 of 27 | 16 of 24 | 3 of 4 | 4 of 12 |
+| figure 8 | 27 of 36 | 12 of 27 | 10 of 24 | 3 of 4 | 4 of 12 |
+| fairness | 27 of 36 | 12 of 27 | 10 of 24 | 3 of 4 | 4 of 12 |
+| delayed replies | 29 of 36 | 10 of 27 | 10 of 24 | 4 of 4 | 4 of 12 |
 
 The change alters 2 rows of the contract:
 
-- `decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=true])`: `Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]` → `Transition[next=MATCHING, effects=[APPEND]]`, taken under three terms, two entries, figure 8, fairness
-- `decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=true])`: `Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]` → `Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]`, taken under three terms, two entries, figure 8, fairness
+- `decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=true])`: `Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]` → `Transition[next=MATCHING, effects=[APPEND]]`, taken under three terms, two entries, figure 8, fairness, delayed replies
+- `decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=true])`: `Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]` → `Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]`, taken under three terms, two entries, figure 8, fairness, delayed replies
 
 Runs of the model take every row the change alters: the verdict rests on the change.
 
@@ -191,6 +193,12 @@ decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
 decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
 decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
 decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+```
+
+`net.terminalvalue.quorum.raft.ReplyRule#decide`:
+
+```
+decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 ```
 
 `net.terminalvalue.quorum.raft.CommitRule#decide`:
@@ -251,7 +259,7 @@ Low, and the question a reviewer asks is the one example 099 answers in the nega
 
 ## Why the verdict is right
 
-The append rule in the model is generated from the regenerated contract, so `Replicate` does what the two patched rows say, the two of the four edited whose decision changes: a request that appends leaves the follower's commit index where it was, and the heartbeat after it, with nothing to append and the leader's commit index ahead, moves it. TLC verifies the change under all three configurations: 21,551 states of three terms and two entries, 9,269 of figure 8, and 14,958 of the fairness configuration, under which every follower's log comes to hold the leader's, every follower's commit index comes to be no less than the leader's, and every entry a leader appends in its term is committed unless the leader is deposed. The coverage shows both rows the change alters taken by a step of the model under each configuration, so the verdict rests on runs in which a follower appends an entry the leader has already committed and takes the commit index on the request after. What the fairness condition on `Replicate` provides is the heartbeat: a leader that sends every follower its next entry or a heartbeat as long as it leads is the assumption under which postponing the commit index by one request costs nothing but the request.
+The append rule in the model is generated from the regenerated contract, so `Replicate` does what the two patched rows say, the two of the four edited whose decision changes: a request that appends leaves the follower's commit index where it was, and the heartbeat after it, with nothing to append and the leader's commit index ahead, moves it. TLC verifies the change under all three configurations: 21,551 states of three terms and two entries, 9,269 of figure 8, and 14,958 of the fairness configuration, under which every follower's log comes to hold the leader's, every follower's commit index comes to be no less than the leader's, and every entry a leader appends in its term is committed unless the leader is deposed. The coverage shows both rows the change alters taken by a step of the model under each configuration, so the verdict rests on runs in which a follower appends an entry the leader has already committed and takes the commit index on the request after. What the fairness condition on `Replicate` provides is the heartbeat: a leader that sends every follower its next entry or a heartbeat as long as it leads is the assumption under which postponing the commit index by one request costs nothing but the request. Under the fourth configuration, two terms and one entry per leader with replies delayed, TLC verifies the change in 267,588 states, with both changed rows taken there as well.
 
 ## What to do
 
@@ -259,14 +267,14 @@ Merge. Taking the commit index on the heartbeat after an entry rather than with 
 
 ## Evidence
 
-How the verdict was reached: three terms, two entries: TLC 2.19 explored 21,551 distinct states to depth 22 in 9 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2; figure 8: TLC 2.19 explored 9,269 distinct states to depth 19 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1; fairness: TLC 2.19 explored 14,958 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1.
+How the verdict was reached: three terms, two entries: TLC 2.19 explored 21,551 distinct states to depth 22 in 12 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 9,269 distinct states to depth 19 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,958 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 267,588 distinct states to depth 24, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3259137] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3530245] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -275,6 +283,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -283,11 +292,12 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:24:28)
+Starting... (2026-11-02 09:04:46)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:24:29.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 09:04:48.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -327,6 +337,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -339,11 +351,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 106472 states generated, 21551 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 22.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 09s at (2026-11-02 07:24:38)
+Finished in 12s at (2026-11-02 09:04:59)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3259675] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3530836] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -352,6 +364,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -360,11 +373,12 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:24:38)
+Starting... (2026-11-02 09:05:00)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:24:39.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 09:05:01.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -410,6 +424,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -422,11 +438,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 51097 states generated, 9269 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 19.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 6 and the 95th percentile is 3).
-Finished in 04s at (2026-11-02 07:24:43)
+Finished in 07s at (2026-11-02 09:05:07)
 
 == fairness: spec/RaftReplicationLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3259929] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3531245] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -435,6 +451,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -443,18 +460,19 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:24:44)
+Starting... (2026-11-02 09:05:08)
 Implied-temporal checking--satisfiability problem has 5 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:24:44.
-Checking 5 branches of temporal properties for the current state space with 3095 total distinct states at (2026-11-02 07:24:47)
-Finished checking temporal properties in 00s at 2026-11-02 07:24:47
-Checking 5 branches of temporal properties for the current state space with 60965 total distinct states at (2026-11-02 07:25:47)
-Finished checking temporal properties in 00s at 2026-11-02 07:25:48
-Checking 5 branches of temporal properties for the complete state space with 74790 total distinct states at (2026-11-02 07:26:00)
-Finished checking temporal properties in 00s at 2026-11-02 07:26:00
+Finished computing initial states: 1 distinct state generated at 2026-11-02 09:05:09.
+Checking 5 branches of temporal properties for the current state space with 2770 total distinct states at (2026-11-02 09:05:12)
+Finished checking temporal properties in 00s at 2026-11-02 09:05:12
+Checking 5 branches of temporal properties for the current state space with 48155 total distinct states at (2026-11-02 09:06:12)
+Finished checking temporal properties in 00s at 2026-11-02 09:06:12
+Checking 5 branches of temporal properties for the complete state space with 74790 total distinct states at (2026-11-02 09:06:41)
+Finished checking temporal properties in 00s at 2026-11-02 09:06:41
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -500,6 +518,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -512,7 +532,94 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 73759 states generated, 14958 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 6 and the 95th percentile is 3).
-Finished in 01min 16s at (2026-11-02 07:26:00)
+Finished in 01min 34s at (2026-11-02 09:06:42)
+
+== delayed replies: spec/RaftReplicationDelayed.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3535484] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module VoteRuleContract
+Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
+Semantic processing of module CommitRuleContract
+Semantic processing of module RaftReplication
+Starting... (2026-11-02 09:06:43)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 09:06:45.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 4.6E-8
+  based on the actual fingerprints:  val = 8.4E-9
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 29 of 36; never taken (7):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 10 of 27; never taken (17):
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model takes: 10 of 24; never taken (14):
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 4 of 4.
+Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
+  decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
+  decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
+  decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
+3441901 states generated, 267588 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 24.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 9 and the 95th percentile is 3).
+Finished in 03min 32s at (2026-11-02 09:10:15)
 ```
 
 </details>

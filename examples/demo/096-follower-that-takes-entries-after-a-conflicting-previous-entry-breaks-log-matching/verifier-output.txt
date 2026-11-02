@@ -1,6 +1,6 @@
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3235035] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3455265] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -9,6 +9,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -17,11 +18,12 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:16:03)
+Starting... (2026-11-02 08:37:10)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:16:03.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 08:37:12.
 Error: Invariant LogMatching is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -30,6 +32,7 @@ State 1: <Initial predicate>
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -38,12 +41,13 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 2: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -52,12 +56,13 @@ State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 3: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -66,12 +71,13 @@ State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
-State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 4: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -80,12 +86,13 @@ State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 5: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -94,12 +101,13 @@ State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 6: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -108,12 +116,13 @@ State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 7: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -122,12 +131,13 @@ State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 8: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -136,12 +146,13 @@ State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplicatio
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> s2)
 
-State 9: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 9: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -150,12 +161,13 @@ State 9: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 10: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 10: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -164,12 +176,13 @@ State 10: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 11: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 11: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1, 3>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -178,12 +191,13 @@ State 11: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftRepli
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 12: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 12: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 2 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1, 3>> @@ s2 :> <<2, 3>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 3 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 3 @@ s3 :> 2) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -231,6 +245,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -243,11 +259,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 19363 states generated, 5636 distinct states found, 2395 states left on queue.
 The depth of the complete state graph search is 12.
 The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 7 and the 95th percentile is 4).
-Finished in 02s at (2026-11-02 07:16:06)
+Finished in 04s at (2026-11-02 08:37:15)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3235221] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3455572] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -256,6 +272,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -264,11 +281,12 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:16:07)
+Starting... (2026-11-02 08:37:16)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:16:07.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 08:37:17.
 Error: Invariant LeaderCompleteness is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -277,6 +295,7 @@ State 1: <Initial predicate>
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -285,12 +304,13 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 2: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -299,12 +319,13 @@ State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 3: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -313,12 +334,13 @@ State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
-State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 4: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -327,12 +349,13 @@ State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 5: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -341,12 +364,13 @@ State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 6: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -355,12 +379,13 @@ State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 7: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -369,12 +394,13 @@ State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 8: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -383,12 +409,13 @@ State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplicatio
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 9: <AdvanceCommit line 236, col 5 to line 241, col 83 of module RaftReplication>
+State 9: <AdvanceCommit line 333, col 5 to line 338, col 92 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -397,12 +424,13 @@ State 9: <AdvanceCommit line 236, col 5 to line 241, col 83 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 10: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 10: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -411,12 +439,13 @@ State 10: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 11: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 11: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -425,12 +454,13 @@ State 11: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplicatio
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s3)
 
-State 12: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 12: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -439,12 +469,13 @@ State 12: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)
 
-State 13: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 13: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -494,6 +525,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -506,11 +539,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 28215 states generated, 6611 distinct states found, 1715 states left on queue.
 The depth of the complete state graph search is 13.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
-Finished in 03s at (2026-11-02 07:16:10)
+Finished in 05s at (2026-11-02 08:37:21)
 
 == fairness: spec/RaftReplicationLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3235496] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3455900] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -519,6 +552,7 @@ Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
 Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
@@ -527,14 +561,17 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 07:16:10)
+Starting... (2026-11-02 08:37:22)
 Implied-temporal checking--satisfiability problem has 5 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 07:16:11.
-Checking 5 branches of temporal properties for the current state space with 3545 total distinct states at (2026-11-02 07:16:14)
-Finished checking temporal properties in 00s at 2026-11-02 07:16:14
+Finished computing initial states: 1 distinct state generated at 2026-11-02 08:37:23.
+Checking 5 branches of temporal properties for the current state space with 2850 total distinct states at (2026-11-02 08:37:26)
+Finished checking temporal properties in 00s at 2026-11-02 08:37:27
+Checking 5 branches of temporal properties for the current state space with 52795 total distinct states at (2026-11-02 08:38:27)
+Finished checking temporal properties in 00s at 2026-11-02 08:38:27
 Error: Invariant LeaderCompleteness is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -543,6 +580,7 @@ State 1: <Initial predicate>
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -551,12 +589,13 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 2: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -565,12 +604,13 @@ State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 3: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -579,12 +619,13 @@ State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
-State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 4: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
@@ -593,12 +634,13 @@ State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 5: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -607,12 +649,13 @@ State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 6: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -621,12 +664,13 @@ State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
+State 7: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
@@ -635,12 +679,13 @@ State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 8: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -649,12 +694,13 @@ State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplicatio
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 9: <AdvanceCommit line 236, col 5 to line 241, col 83 of module RaftReplication>
+State 9: <AdvanceCommit line 333, col 5 to line 338, col 92 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -663,12 +709,13 @@ State 9: <AdvanceCommit line 236, col 5 to line 241, col 83 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 10: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 10: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -677,12 +724,13 @@ State 10: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 11: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
+State 11: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -691,12 +739,13 @@ State 11: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplicatio
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s3)
 
-State 12: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
+State 12: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -705,12 +754,13 @@ State 12: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s3 @@ s2 :> s2 @@ s3 :> s3)
 
-State 13: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
+State 13: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s3 :> (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0) )
 /\ log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<2>>)
 /\ commitIndex = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)
+/\ replies = {}
 /\ currentTerm = (s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)
 /\ nextIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@
@@ -760,6 +810,8 @@ Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model take
   decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
   decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 3 of 4; never taken (1):
+  decide(ANSWERED, AppendReply[accepted=false]) => Unchanged
 Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
   decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
   decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
@@ -772,4 +824,91 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 57072 states generated, 13203 distinct states found, 2105 states left on queue.
 The depth of the complete state graph search is 13.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
-Finished in 58s at (2026-11-02 07:17:09)
+Finished in 01min 08s at (2026-11-02 08:38:30)
+
+== delayed replies: spec/RaftReplicationDelayed.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3459053] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/ReplyRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module VoteRuleContract
+Semantic processing of module AppendRuleContract
+Semantic processing of module ReplyRuleContract
+Semantic processing of module CommitRuleContract
+Semantic processing of module RaftReplication
+Starting... (2026-11-02 08:38:31)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 08:38:33.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 4.4E-8
+  based on the actual fingerprints:  val = 8.4E-9
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 29 of 36; never taken (7):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 10 of 27; never taken (17):
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model takes: 10 of 24; never taken (14):
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=false]) => Unchanged
+  decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Transition[next=MATCHING, effects=[APPEND]]
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.ReplyRule#decide a step of the model takes: 4 of 4.
+Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
+  decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
+  decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
+  decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
+3364077 states generated, 261060 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 24.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 9 and the 95th percentile is 3).
+Finished in 03min 22s at (2026-11-02 08:41:53)

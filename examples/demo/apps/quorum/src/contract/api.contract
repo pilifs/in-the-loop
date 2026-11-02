@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: quorum, 59 public types, 233 members
+module: quorum, 63 public types, 247 members
 
 net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected
   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)
@@ -54,6 +54,13 @@ net.terminalvalue.quorum.raft.AppendEffect: public final enum
   public static final TRUNCATE: net.terminalvalue.quorum.raft.AppendEffect
   public static net.terminalvalue.quorum.raft.AppendEffect valueOf(java.lang.String)
   public static net.terminalvalue.quorum.raft.AppendEffect[] values()
+
+net.terminalvalue.quorum.raft.AppendReply: public final record
+  public AppendReply(boolean)
+  public boolean accepted()
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
 
 net.terminalvalue.quorum.raft.AppendRequest: public final record
   public AppendRequest(net.terminalvalue.quorum.raft.NewEntry, boolean)
@@ -116,6 +123,21 @@ net.terminalvalue.quorum.raft.Replication: public final record
   public final int hashCode()
   public final java.lang.String toString()
   public net.terminalvalue.quorum.raft.TermOrder term()
+
+net.terminalvalue.quorum.raft.ReplyEffect: public final enum
+  public static final ADVANCE: net.terminalvalue.quorum.raft.ReplyEffect
+  public static final BACK_UP: net.terminalvalue.quorum.raft.ReplyEffect
+  public static net.terminalvalue.quorum.raft.ReplyEffect valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.raft.ReplyEffect[] values()
+
+net.terminalvalue.quorum.raft.ReplyRule: public final class
+  public static net.terminalvalue.quorum.Decision decide(net.terminalvalue.quorum.raft.RequestStatus, net.terminalvalue.quorum.raft.AppendReply)
+
+net.terminalvalue.quorum.raft.RequestStatus: public final enum
+  public static final ANSWERED: net.terminalvalue.quorum.raft.RequestStatus
+  public static final AWAITED: net.terminalvalue.quorum.raft.RequestStatus
+  public static net.terminalvalue.quorum.raft.RequestStatus valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.raft.RequestStatus[] values()
 
 net.terminalvalue.quorum.raft.Role: public final enum
   public static final CANDIDATE: net.terminalvalue.quorum.raft.Role

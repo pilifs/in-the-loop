@@ -379,6 +379,11 @@ pub fn tlc_command(options: &TlcOptions) -> Result<Vec<String>, Error> {
     let java = std::env::var_os("JAVA_HOME").map(|h| PathBuf::from(h).join("bin").join("java").to_string_lossy().into_owned()).unwrap_or_else(|| "java".into());
     if let Some(jar) = jar.filter(|j| j.exists()) {
         let mut cmd = vec![java, "-XX:+UseParallelGC".into()];
+        // JVM flags for TLC, such as a heap size: `JVMCONTRACT_JAVA_OPTS="-Xmx2500m"`. TLC's coverage mode needs more
+        // heap than Java's default on a model with many actions, and fails at once with "out of memory" without it.
+        if let Some(opts) = std::env::var_os("JVMCONTRACT_JAVA_OPTS") {
+            cmd.extend(opts.to_string_lossy().split_whitespace().map(str::to_owned));
+        }
         if let Some(library) = &options.library {
             cmd.push(format!("-DTLA-Library={}", library.display()));
         }

@@ -17,24 +17,33 @@
 (* four terms and one entry per leader, the budget of the paper's figure   *)
 (* 8, the scenario in which a leader that counted replicas of an entry     *)
 (* from an earlier term would commit what a later leader then overwrites.  *)
+(* RaftReplicationDelayed.cfg lets the reply to an AppendEntries request   *)
+(* wait on the wire, arrive after the leader has sent again or been        *)
+(* deposed, arrive twice, or never, and checks the leader's record of its  *)
+(* followers against what they hold.                                       *)
 (*                                                                         *)
-(* Four of the rules are not written here. Decide(role, event) is          *)
+(* Five of the rules are not written here. Decide(role, event) is          *)
 (* generated from the behavioural contract of RoleMachine#decide           *)
 (* (RoleMachineContract.tla) and Vote!Decide from VoteRule#decide          *)
 (* (VoteRuleContract.tla), as in the election model; Entries!Decide, what a *)
 (* follower does with the entries a leader sends, from AppendRule#decide   *)
-(* (AppendRuleContract.tla, as Entries!Decide, since Append is a sequence operator); and Commit!Decide, when a leader marks an     *)
+(* (AppendRuleContract.tla, as Entries!Decide, since Append is a sequence operator); Reply!Decide, what a leader does *)
+(* with the follower's answer, from ReplyRule#decide                       *)
+(* (ReplyRuleContract.tla); and Commit!Decide, when a leader marks an      *)
 (* entry committed, from CommitRule#decide (CommitRuleContract.tla).       *)
 (* jvmcontract proves the bytecode obeys each on every input. The append   *)
 (* rule sees the follower's log only as it stands against the leader's at  *)
 (* the previous entry (MISSING, CONFLICTING, MATCHING) and at the entry    *)
-(* sent (NONE, ABSENT, SAME, CONFLICTING), and the commit rule an entry    *)
-(* only by its term against the leader's and whether a majority holds it:  *)
-(* the comparing is what the Java around the rules does, and this model    *)
-(* repeats it. Each action names the Java operation it stands for.         *)
+(* sent (NONE, ABSENT, SAME, CONFLICTING); the reply rule a reply only as  *)
+(* accepted or refused and as awaited or answered already by the leader's  *)
+(* record of the follower; and the commit rule an entry only by its term   *)
+(* against the leader's and whether a majority holds it: the comparing is  *)
+(* what the Java around the rules does, and this model repeats it. Each    *)
+(* action names the Java operation it stands for.                          *)
 (*                                                                         *)
 (* Simplifications: an RPC is one step, the request and its reply          *)
-(* together, as in the election model; a leader sends one entry per RPC,   *)
+(* together, as in the election model, except under                        *)
+(* RaftReplicationDelayed.cfg; a leader sends one entry per RPC,           *)
 (* the one at the follower's next index, or none when the follower is      *)
 (* caught up, which is a heartbeat; an entry is its term, since the        *)
 (* properties are about indices and terms, and a client request is a step  *)
@@ -48,12 +57,16 @@ EXTENDS Naturals, FiniteSets, Sequences, TLC, RoleMachineContract
 
 Vote == INSTANCE VoteRuleContract
 Entries == INSTANCE AppendRuleContract
+Reply == INSTANCE ReplyRuleContract
 Commit == INSTANCE CommitRuleContract
 
 CONSTANTS
     Servers,
-    MaxTerm,     \* the last term in which a timer fires
-    MaxEntries   \* how many entries a leader's log may hold
+    MaxTerm,        \* the last term in which a timer fires
+    MaxEntries,     \* how many entries a leader's log may hold
+    DelayedReplies  \* whether the reply to an AppendEntries request waits on the wire as a step of its own: see Ask and Answer
+
+ASSUME DelayedReplies \in BOOLEAN
 
 VARIABLES
     role,         \* server -> FOLLOWER, CANDIDATE or LEADER
@@ -63,9 +76,10 @@ VARIABLES
     log,          \* server -> its log, a sequence of entry terms
     commitIndex,  \* server -> the index of the last entry it knows committed
     nextIndex,    \* leader -> server -> the index of the next entry to send it; 0 on a server that is not leading
-    matchIndex    \* leader -> server -> the last index the leader knows the server's log to match its own; 0 on a server that is not leading
+    matchIndex,   \* leader -> server -> the last index the leader knows the server's log to match its own; 0 on a server that is not leading
+    replies       \* the replies to AppendEntries requests on the wire: the follower's term, which request it answers, and whether it accepted
 
-vars == <<role, currentTerm, votedFor, votes, log, commitIndex, nextIndex, matchIndex>>
+vars == <<role, currentTerm, votedFor, votes, log, commitIndex, nextIndex, matchIndex, replies>>
 
 Majority(S) == Cardinality(S) * 2 > Cardinality(Servers)
 Min(a, b) == IF a < b THEN a ELSE b
@@ -108,7 +122,8 @@ Step(n) ==
     /\ role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes
     /\ log' = n.log /\ commitIndex' = n.commitIndex
     /\ nextIndex' = NextIndexAfter(n) /\ matchIndex' = MatchIndexAfter(n)
-Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.log, n.commitIndex, NextIndexAfter(n), MatchIndexAfter(n)>> # vars
+    /\ replies' = n.replies
+Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.log, n.commitIndex, NextIndexAfter(n), MatchIndexAfter(n), n.replies>> # vars
 
 (***************************************************************************)
 (* The election, as in RaftElection.tla, with the logs live.               *)
@@ -126,9 +141,13 @@ TimeoutNext(s) ==
         currentTerm |-> [currentTerm EXCEPT ![s] = t],
         votedFor |-> [votedFor EXCEPT ![s] = IF self THEN s ELSE IF t > currentTerm[s] THEN "none" ELSE @],
         votes |-> [votes EXCEPT ![s] = IF self THEN {s} ELSE @],
-        log |-> log, commitIndex |-> commitIndex, nextIndex |-> nextIndex, matchIndex |-> matchIndex]
+        log |-> log, commitIndex |-> commitIndex, nextIndex |-> nextIndex, matchIndex |-> matchIndex, replies |-> replies]
 
-Timeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Step(TimeoutNext(s))
+\* Each action's guard is an operator that its enabling predicate, in the liveness section, shares, so that the two
+\* cannot drift apart.
+TimeoutGuard(s) == currentTerm[s] < MaxTerm
+
+Timeout(s) == TimeoutGuard(s) /\ ~TimeoutNext(s).throws /\ Step(TimeoutNext(s))
 
 \* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer. On v, Server.onRequestVote:
 \* the role machine first (a candidate's newer term is adopted), then the vote rule on the server as it then is, given
@@ -151,11 +170,12 @@ CanvassNext(c, v) ==
         currentTerm |-> [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)],
         votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)],
         votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally],
-        log |-> log, commitIndex |-> commitIndex, nextIndex |-> nextIndex, matchIndex |-> matchIndex]
+        log |-> log, commitIndex |-> commitIndex, nextIndex |-> nextIndex, matchIndex |-> matchIndex, replies |-> replies]
+
+CanvassGuard(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c}
 
 Canvass(c, v) ==
-    /\ role[c] = "CANDIDATE"
-    /\ v \notin votes[c] \cup {c}
+    /\ CanvassGuard(c, v)
     /\ ~CanvassNext(c, v).throws
     /\ Step(CanvassNext(c, v))
 
@@ -169,20 +189,20 @@ ClientRequest(l) ==
     /\ role[l] = "LEADER"
     /\ Len(log[l]) < MaxEntries
     /\ log' = [log EXCEPT ![l] = Append(@, currentTerm[l])]
-    /\ UNCHANGED <<role, currentTerm, votedFor, votes, commitIndex, nextIndex, matchIndex>>
+    /\ UNCHANGED <<role, currentTerm, votedFor, votes, commitIndex, nextIndex, matchIndex, replies>>
 
 \* Server.appendEntries, one RPC: leader l sends server s the entry at s's next index, or a heartbeat if s is caught
-\* up, with the entry before it and l's commit index, and gets the answer.
+\* up, with the entry before it and l's commit index, and gets the answer. Under RaftReplicationDelayed.cfg the RPC
+\* is the two steps Ask and Answer below instead, with the reply on the wire in between.
 \* On s, Server.onAppendEntries: the role machine first (a newer term is adopted, a candidate yields to the leader
 \* of its term, a stale leader is refused and its entries ignored), then the append rule on the log as it stands
 \* against the leader's: at the previous entry, which s holds, holds another entry in place of, or lacks, and at the
 \* entry sent, which s may hold already or hold another in place of. The rule's effects: TRUNCATE drops the
 \* conflicting entry and everything after it, APPEND puts the entry sent at its index, ADVANCE_COMMIT moves s's
-\* commit index up to l's, clipped to the last entry sent, as far as s now knows its log to match l's.
-\* On l, Server.onAppendReply: the reply carries s's term, which goes through the role machine (a stale leader
-\* steps down), and whether s accepted: if so, s's log matches l's through the entry sent and the next index moves
-\* past it; if not, the next index backs up by one, and the next RPC tries from one entry earlier.
-ReplicateNext(l, s) ==
+\* commit index up to l's, clipped to the last entry sent, as far as s now knows its log to match l's. The reply
+\* carries s's term and whether it accepted, and says which request it answers: the index of the previous entry
+\* and of the last entry sent.
+RequestNext(l, s) ==
     LET ds == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
         ts == TermAfter(s, ds, currentTerm[l])
         heard == ds.kind = "Transition"
@@ -203,22 +223,104 @@ ReplicateNext(l, s) ==
                 ELSE IF Has(da, "TRUNCATE") THEN SubSeq(log[s], 1, IF at = "MATCHING" THEN prev ELSE prev - 1)
                 ELSE log[s]
         cs == IF da.kind = "Transition" /\ Has(da, "ADVANCE_COMMIT") THEN commit ELSE commitIndex[s]
-        dl == Decide(role[l], [kind |-> "Response", term |-> Order(l, ts)])
-    IN [throws |-> ds.kind = "Throws" \/ da.kind = "Throws" \/ dl.kind = "Throws",
-        role |-> [role EXCEPT ![s] = RoleAfter(s, ds), ![l] = RoleAfter(l, dl)],
-        currentTerm |-> [currentTerm EXCEPT ![s] = ts, ![l] = TermAfter(l, dl, ts)],
-        votedFor |-> [votedFor EXCEPT ![s] = VotedForAfter(s, ds), ![l] = VotedForAfter(l, dl)],
-        votes |-> [votes EXCEPT ![s] = VotesAfter(s, ds), ![l] = VotesAfter(l, dl)],
+    IN [throws |-> ds.kind = "Throws" \/ da.kind = "Throws",
+        role |-> [role EXCEPT ![s] = RoleAfter(s, ds)],
+        currentTerm |-> [currentTerm EXCEPT ![s] = ts],
+        votedFor |-> [votedFor EXCEPT ![s] = VotedForAfter(s, ds)],
+        votes |-> [votes EXCEPT ![s] = VotesAfter(s, ds)],
         log |-> [log EXCEPT ![s] = logs],
         commitIndex |-> [commitIndex EXCEPT ![s] = cs],
-        nextIndex |-> [nextIndex EXCEPT ![l][s] = IF success THEN last + 1 ELSE IF @ > 1 THEN @ - 1 ELSE 1],
-        matchIndex |-> [matchIndex EXCEPT ![l][s] = IF success THEN last ELSE @]]
+        reply |-> [to |-> l, from |-> s, term |-> ts, prev |-> prev, last |-> last, accepted |-> success]]
+
+\* On l, Server.onAppendReply: the reply's term goes through the role machine (a stale leader steps down; a reply
+\* from an older term than l's own answers a request of an earlier term of l's, and is dropped), then the reply rule
+\* on the request as it stands against l's record of s. Awaited, if the reply tells l something the record does not
+\* hold yet: an acceptance through an entry past s's match index, or a refusal of the request at s's next index at
+\* an entry past its match index. Answered otherwise: a late or repeated reply, an acceptance of entries l knows s
+\* holds, or a refusal l has backed up from already or at an entry it knows s holds; the one-step RPC never produces
+\* one but the heartbeat a caught-up follower accepts, and RaftReplicationDelayed.cfg every kind. The rule's effects:
+\* ADVANCE moves s's match index up to the last entry sent and its next index past it; BACK_UP moves the next index
+\* back by one, never below the first entry, and the next request tries from one entry earlier.
+Standing(l, m) ==
+    IF m.accepted THEN (IF m.last > matchIndex[l][m.from] THEN "AWAITED" ELSE "ANSWERED")
+    ELSE IF m.prev = nextIndex[l][m.from] - 1 /\ m.prev > matchIndex[l][m.from] THEN "AWAITED" ELSE "ANSWERED"
+
+ReplyNext(m) ==
+    LET l == m.to
+        s == m.from
+        dl == Decide(role[l], [kind |-> "Response", term |-> Order(l, m.term)])
+        taken == role[l] = "LEADER" /\ Order(l, m.term) = "CURRENT"
+        dr == IF taken THEN Reply!Decide(Standing(l, m), [kind |-> "AppendReply", accepted |-> m.accepted]) ELSE Reply!Unchanged
+    IN [throws |-> dl.kind = "Throws" \/ dr.kind = "Throws",
+        role |-> RoleAfter(l, dl),
+        currentTerm |-> TermAfter(l, dl, m.term),
+        votedFor |-> VotedForAfter(l, dl),
+        votes |-> VotesAfter(l, dl),
+        nextIndex |-> [nextIndex[l] EXCEPT ![s] = IF Has(dr, "ADVANCE") THEN m.last + 1
+                                                 ELSE IF Has(dr, "BACK_UP") THEN (IF @ > 1 THEN @ - 1 ELSE 1) ELSE @],
+        matchIndex |-> [matchIndex[l] EXCEPT ![s] = IF Has(dr, "ADVANCE") THEN m.last ELSE @]]
+
+\* The RPC in one step: the request, and the reply taken at once.
+ReplicateNext(l, s) ==
+    LET q == RequestNext(l, s)
+        r == ReplyNext(q.reply)
+    IN [throws |-> q.throws \/ r.throws,
+        role |-> [q.role EXCEPT ![l] = r.role],
+        currentTerm |-> [q.currentTerm EXCEPT ![l] = r.currentTerm],
+        votedFor |-> [q.votedFor EXCEPT ![l] = r.votedFor],
+        votes |-> [q.votes EXCEPT ![l] = r.votes],
+        log |-> q.log,
+        commitIndex |-> q.commitIndex,
+        nextIndex |-> [nextIndex EXCEPT ![l] = r.nextIndex],
+        matchIndex |-> [matchIndex EXCEPT ![l] = r.matchIndex],
+        replies |-> replies]
+
+ReplicateGuard(l, s) == ~DelayedReplies /\ role[l] = "LEADER" /\ s # l
 
 Replicate(l, s) ==
-    /\ role[l] = "LEADER"
-    /\ s # l
+    /\ ReplicateGuard(l, s)
     /\ ~ReplicateNext(l, s).throws
     /\ Step(ReplicateNext(l, s))
+
+\* The same RPC in two steps, with the reply on the wire in between (RaftReplicationDelayed.cfg). Ask is s's half:
+\* s decides as above, and its reply waits in replies. A leader asks whenever it likes, a reply outstanding or not,
+\* which is a request sent again after a reply was slow; two requests a follower answers alike put one reply on the
+\* wire, since replies is a set, so what a repeated request adds is the answer the follower gives once its state
+\* has changed.
+AskNext(l, s) ==
+    LET q == RequestNext(l, s)
+    IN [throws |-> q.throws, role |-> q.role, currentTerm |-> q.currentTerm, votedFor |-> q.votedFor, votes |-> q.votes,
+        log |-> q.log, commitIndex |-> q.commitIndex, nextIndex |-> nextIndex, matchIndex |-> matchIndex,
+        replies |-> replies \cup {q.reply}]
+
+AskGuard(l, s) == DelayedReplies /\ role[l] = "LEADER" /\ s # l
+
+Ask(l, s) ==
+    /\ AskGuard(l, s)
+    /\ ~AskNext(l, s).throws
+    /\ Step(AskNext(l, s))
+
+\* Answer is l's half, Server.onAppendReply as above, for a reply from s that waited: by the time l takes it, l may
+\* have sent s another request and taken its reply, been deposed, or been elected again in a later term. The
+\* network may hand l the same reply again, keep = TRUE, as a retransmission does; a reply never taken is one the
+\* network lost, and the leader, which asks again, does not wait for it.
+AnswerNext(m, keep) ==
+    LET r == ReplyNext(m)
+    IN [throws |-> r.throws,
+        role |-> [role EXCEPT ![m.to] = r.role],
+        currentTerm |-> [currentTerm EXCEPT ![m.to] = r.currentTerm],
+        votedFor |-> [votedFor EXCEPT ![m.to] = r.votedFor],
+        votes |-> [votes EXCEPT ![m.to] = r.votes],
+        log |-> log, commitIndex |-> commitIndex,
+        nextIndex |-> [nextIndex EXCEPT ![m.to] = r.nextIndex],
+        matchIndex |-> [matchIndex EXCEPT ![m.to] = r.matchIndex],
+        replies |-> IF keep THEN replies ELSE replies \ {m}]
+
+Answer(l, s) ==
+    \E m \in replies, keep \in BOOLEAN :
+        /\ m.to = l /\ m.from = s
+        /\ ~AnswerNext(m, keep).throws
+        /\ Step(AnswerNext(m, keep))
 
 \* Server.advanceCommitIndex: a leader looks at an entry of its log it has not marked committed, and asks the commit
 \* rule, given the entry's term against its own and whether a majority of the servers hold it, itself among them. On
@@ -238,7 +340,7 @@ AdvanceCommit(l) ==
         /\ ~CommitNext(l, i).throws
         /\ CommitNext(l, i).commits
         /\ commitIndex' = [commitIndex EXCEPT ![l] = i]
-    /\ UNCHANGED <<role, currentTerm, votedFor, votes, log, nextIndex, matchIndex>>
+    /\ UNCHANGED <<role, currentTerm, votedFor, votes, log, nextIndex, matchIndex, replies>>
 
 (***************************************************************************)
 (* The specification.                                                      *)
@@ -253,12 +355,13 @@ Init ==
     /\ commitIndex = [s \in Servers |-> 0]
     /\ nextIndex = [s \in Servers |-> Blank]
     /\ matchIndex = [s \in Servers |-> Blank]
+    /\ replies = {}
 
 Next ==
     \/ \E s \in Servers : Timeout(s)
     \/ \E c, v \in Servers : Canvass(c, v)
     \/ \E l \in Servers : ClientRequest(l) \/ AdvanceCommit(l)
-    \/ \E l, s \in Servers : Replicate(l, s)
+    \/ \E l, s \in Servers : Replicate(l, s) \/ Ask(l, s) \/ Answer(l, s)
 
 Spec == Init /\ [][Next]_vars
 
@@ -278,16 +381,37 @@ TypeOK ==
     /\ nextIndex \in [Servers -> [Servers -> 0..MaxEntries + 1]]
     /\ matchIndex \in [Servers -> [Servers -> 0..MaxEntries]]
     /\ \A l \in Servers : role[l] # "LEADER" => nextIndex[l] = Blank /\ matchIndex[l] = Blank
+    /\ replies \subseteq [to : Servers, from : Servers, term : 0..MaxTerm, prev : 0..MaxEntries, last : 0..MaxEntries, accepted : BOOLEAN]
+    /\ ~DelayedReplies => replies = {}
 
 \* The kernels' exceptions: each action's record says whether a call it makes to a rule throws, and no action takes
 \* such a step; this invariant says there is none to take. The IllegalStateException the commit rule reserves for an
 \* entry from a term after the leader's is then impossible indeed: a server adopts a leader's term before it takes
 \* the leader's entries, so no log holds an entry from a term after its server's.
 KernelNeverThrows ==
-    /\ \A s \in Servers : currentTerm[s] < MaxTerm => ~TimeoutNext(s).throws
-    /\ \A c, v \in Servers : role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
-    /\ \A l, s \in Servers : role[l] = "LEADER" /\ s # l => ~ReplicateNext(l, s).throws
+    /\ \A s \in Servers : TimeoutGuard(s) => ~TimeoutNext(s).throws
+    /\ \A c, v \in Servers : CanvassGuard(c, v) => ~CanvassNext(c, v).throws
+    /\ \A l, s \in Servers : ReplicateGuard(l, s) => ~ReplicateNext(l, s).throws
+    /\ \A l, s \in Servers : AskGuard(l, s) => ~AskNext(l, s).throws
+    /\ \A m \in replies : ~AnswerNext(m, FALSE).throws
     /\ \A l \in Servers : role[l] = "LEADER" => \A i \in commitIndex[l] + 1..Len(log[l]) : ~CommitNext(l, i).throws
+
+\* The leader's record of a follower is right: while a follower is in the leader's term, it holds every entry the
+\* leader has recorded it as holding, so that the servers the commit rule counts as holding an entry hold it. A
+\* follower in a later term may have had its log rewritten by a later leader, and the record is then stale, as the
+\* reply to the next request tells the leader, which steps down. The record is what the reply rule maintains, and
+\* what a reply that arrives late, or twice, could corrupt: a leader that took every reply as news, or any refusal
+\* as progress, would record what the follower does not hold.
+MatchIndexIsRight ==
+    \A l, s \in Servers : role[l] = "LEADER" /\ currentTerm[s] = currentTerm[l] =>
+        matchIndex[l][s] <= Len(log[s]) /\ \A i \in 1..matchIndex[l][s] : log[s][i] = log[l][i]
+
+\* A leader's next index for a follower is past every entry it has recorded the follower as holding: the leader
+\* never sends a follower an entry it knows it holds. An acceptance moves both up together, and a refusal backs the
+\* next index up only from the request at it, at an entry past the match index; a refusal that arrived late or
+\* twice, taken as news, would back it up below.
+NextIndexPastMatch ==
+    \A l, s \in Servers : role[l] = "LEADER" => nextIndex[l][s] > matchIndex[l][s]
 
 \* Election safety (figure 3): at most one leader per term.
 ElectionSafety ==
@@ -351,9 +475,9 @@ Unled(s) == role[s] # "LEADER" /\ \A l \in Servers : ~Resets(l, s)
 \* the same condition evaluated directly, and EnablingAgrees at the end checks that they are. The check matters: a
 \* predicate that holds where the action cannot take a step makes its fairness condition unsatisfiable, no run is
 \* fair, and the liveness check passes with nothing checked.
-CanTimeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Changes(TimeoutNext(s))
-CanCanvass(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ ~CanvassNext(c, v).throws /\ Changes(CanvassNext(c, v))
-CanReplicate(l, s) == role[l] = "LEADER" /\ s # l /\ ~ReplicateNext(l, s).throws /\ Changes(ReplicateNext(l, s))
+CanTimeout(s) == TimeoutGuard(s) /\ ~TimeoutNext(s).throws /\ Changes(TimeoutNext(s))
+CanCanvass(c, v) == CanvassGuard(c, v) /\ ~CanvassNext(c, v).throws /\ Changes(CanvassNext(c, v))
+CanReplicate(l, s) == ReplicateGuard(l, s) /\ ~ReplicateNext(l, s).throws /\ Changes(ReplicateNext(l, s))
 CanAdvanceCommit(l) ==
     role[l] = "LEADER" /\ \E i \in commitIndex[l] + 1..Len(log[l]) : ~CommitNext(l, i).throws /\ CommitNext(l, i).commits
 
@@ -402,11 +526,14 @@ OwnEntriesAreCommitted ==
         (role[l] = "LEADER" /\ i <= Len(log[l]) /\ log[l][i] = currentTerm[l]) ~> (commitIndex[l] >= i \/ role[l] # "LEADER")
 
 \* The enabling predicates agree with ENABLED in every reachable state. Checked by RaftReplicationEnabled.cfg, which
-\* takes TLC a while, for the reason the predicates exist; run it after changing an action.
+\* takes TLC a while, for the reason the predicates exist; run it after changing an action. Replicate is left out:
+\* its predicate is its guard operator and its next-state record, which the action shares, and the record is a
+\* function of the state, so the comparison would restate the definition; and TLC evaluates ENABLED of it some thirty
+\* times slower than the others, since in ENABLED it does not cache a LET-bound value and the record nests the
+\* follower's half inside the leader's. AdvanceCommit, whose next state is a choice, is the one the check is for.
 EnablingAgrees ==
     /\ \A s \in Servers : CanTimeout(s) <=> ENABLED <<Timeout(s)>>_vars
     /\ \A c, v \in Servers : CanCanvass(c, v) <=> ENABLED <<Canvass(c, v)>>_vars
-    /\ \A l, s \in Servers : CanReplicate(l, s) <=> ENABLED <<Replicate(l, s)>>_vars
     /\ \A l \in Servers : CanAdvanceCommit(l) <=> ENABLED <<AdvanceCommit(l)>>_vars
 
 =============================================================================

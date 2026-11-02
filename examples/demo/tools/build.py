@@ -828,12 +828,23 @@ REPLICATION = {
                  "properties hold whether or not a request comes. Three servers, three terms and one entry per leader, without the symmetry "
                  "set, since TLC's liveness checking is unsound under one. A counterexample is a run that goes on forever "
                  "without satisfying a property: a prefix, then a state or a cycle the system never leaves"},
+        {"cfg": "spec/RaftReplicationDelayed.cfg", "label": "delayed replies",
+         "what": "every run of three servers over two terms with logs of up to two entries in which the reply to an "
+                 "AppendEntries request is a step of its own (`DelayedReplies = TRUE`): the leader may take it after it has "
+                 "sent the follower another request and taken its reply, been deposed, or been elected again in a later "
+                 "term, and the network may hand it the same reply twice, or never. The one-step RPC of the other "
+                 "configurations hands the reply rule nothing but the request just sent; this one hands it late and "
+                 "repeated replies, and checks the leader's record of its followers against what they hold, under the "
+                 "same invariants and action properties"},
     ],
     "contract": "src/contract/AppendRule.decide.contract",
     "operator": "spec/AppendRuleContract.tla",
     "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-    # The model's other generated operators: the commit rule, the role machine and the vote rule, brought in as instances.
-    "operators": [{"contract": "src/contract/CommitRule.decide.contract", "operator": "spec/CommitRuleContract.tla",
+    # The model's other generated operators: the reply rule, the commit rule, the role machine and the vote rule, brought
+    # in as instances.
+    "operators": [{"contract": "src/contract/ReplyRule.decide.contract", "operator": "spec/ReplyRuleContract.tla",
+                   "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide"},
+                  {"contract": "src/contract/CommitRule.decide.contract", "operator": "spec/CommitRuleContract.tla",
                    "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide"},
                   {"contract": "src/contract/RoleMachine.decide.contract", "operator": "spec/RoleMachineContract.tla",
                    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"},
@@ -851,8 +862,16 @@ REPLICATION = {
         "Replicate": "`Server.appendEntries`: a leader sends one server the entry at that server's next index, or a heartbeat "
                      "if it is caught up, with the entry before it and the leader's commit index, and gets the answer; the "
                      "request goes through the role machine, then the append rule on the follower's log as it stands against "
-                     "the leader's, and the reply through the role machine on the leader, which moves the server's next and "
-                     "match indices forward on success and backs the next index up by one on a refusal",
+                     "the leader's, and the reply through the role machine on the leader, then the reply rule on the request "
+                     "as it stands against the leader's record of the server, awaited or answered already, which moves the "
+                     "server's match index up through the entries sent and its next index past them on an acceptance and "
+                     "backs the next index up by one on a refusal",
+        "Ask": "`Server.appendEntries`, the request alone, under `RaftReplicationDelayed.cfg`: a leader sends one server the "
+               "entry at its next index or a heartbeat, the server decides as in `Replicate`, and its reply waits on the "
+               "wire; a leader asks whether or not a reply is outstanding, which is a request sent again",
+        "Answer": "`Server.onAppendReply`, under `RaftReplicationDelayed.cfg`: a leader takes a reply that waited, through "
+                  "the role machine and then, if the reply is from its own term, the reply rule; the network may hand it "
+                  "the same reply again later, or never",
         "AdvanceCommit": "`Server.advanceCommitIndex`: a leader asks the commit rule about an entry it has not marked "
                          "committed, given the entry's term against its own and whether a majority of the servers hold it, and "
                          "marks it committed on a transition, and with it everything before it",
@@ -860,8 +879,14 @@ REPLICATION = {
     "invariants": {
         "TypeOK": "every variable has a value of its type",
         "KernelNeverThrows": "no timeout or RPC any reachable state allows makes the role machine, the vote rule, the append "
-                             "rule or the commit rule throw: the IllegalStateException the commit rule reserves for an entry "
-                             "from a term after the leader's never fires",
+                             "rule, the reply rule or the commit rule throw: the IllegalStateException the commit rule "
+                             "reserves for an entry from a term after the leader's never fires",
+        "MatchIndexIsRight": "a leader's record of a follower is right: while a follower is in the leader's term, it holds "
+                             "every entry the leader has recorded it as holding, so that the servers the commit rule counts "
+                             "as holding an entry hold it; the reply rule is what maintains the record, and a reply that "
+                             "arrives late, or twice, is what could corrupt it",
+        "NextIndexPastMatch": "a leader's next index for a follower is past every entry it has recorded the follower as "
+                              "holding: the leader never sends a follower an entry it knows it holds",
         "ElectionSafety": "at most one leader per term",
         "LogMatching": "if two logs hold an entry of the same term at the same index, they are the same through that index "
                        "(figure 3 of the paper); the append rule's consistency check is what makes it so",
@@ -875,16 +900,17 @@ REPLICATION = {
         # The liveness properties, checked under fairness, of the runs that stay within the term budget.
         "FollowersCatchUp": "every entry in a leader's log reaches every follower: from some point on, each follower's log "
                             "holds the leader's as a prefix, in every run that stays within the term budget",
-        "FollowersLearnCommits": "every follower learns what the leader has committed: from some point on, all commit "
-                                 "indices agree, in every run that stays within the term budget",
+        "FollowersLearnCommits": "every follower learns what the leader has committed: from some point on, no follower's "
+                                 "commit index is behind the leader's, in every run that stays within the term budget",
         "OwnEntriesAreCommitted": "an entry a leader appended in its term is committed, unless the leader is deposed first, in "
                                   "every run that stays within the term budget; nothing is claimed of an entry from an "
                                   "earlier term, which the commit rule commits only along with a later entry of the "
                                   "leader's own",
     },
-    "machine": "The follower's append rule, the leader's commit rule, the role machine and the vote rule inside the model are "
-               "generated from the behavioural contracts of the patched code, so the model checks the entries the followers "
-               "really take, the commits the leaders really make, and the roles and votes behind them.",
+    "machine": "The follower's append rule, the leader's reply rule and commit rule, the role machine and the vote rule inside "
+               "the model are generated from the behavioural contracts of the patched code, so the model checks the entries "
+               "the followers really take, the record the leaders really keep of them, the commits the leaders really make, "
+               "and the roles and votes behind them.",
 }
 
 IDEMPOTENCY = {
@@ -1021,8 +1047,11 @@ def tlc_run(build, model_files, configuration, root):
     deadlock = ["--deadlock"] if model_files.get("deadlock") else []
     config = [] if cfg == model_files["cfg"] else ["--config", cfg]
     coverage = ["--coverage"] if configuration.get("coverage", True) else []
+    # TLC's coverage mode needs more heap than Java's default on a model with many actions (the replication model with
+    # delayed replies fails at once with "out of memory" at the default); a cap costs a small model nothing.
+    env = {"JVMCONTRACT_JAVA_OPTS": "-Xmx2500m", **os.environ}
     proc = subprocess.run([jvmcontract(), "tlc", configuration.get("spec", model_files["spec"]), "--json", *coverage, *deadlock, *config,
-                           "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build)
+                           "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build, env=env)
     if proc.returncode == 2:
         sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
     run = json.loads(proc.stdout)
