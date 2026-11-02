@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-02T22:49:02.689Z",
-  "duration_seconds": 115569,
+  "ended": "2026-11-02T22:54:16.880Z",
+  "duration_seconds": 115883,
   "stats": {
     "turns": 26,
-    "api_calls": 148,
-    "tool_calls": 149,
+    "api_calls": 161,
+    "tool_calls": 163,
     "tool_errors": 5,
     "compactions": 1,
     "peak_context_tokens": 360922,
     "usage": {
-      "input_tokens": 340,
-      "output_tokens": 267768,
-      "cache_read_input_tokens": 24699003,
-      "cache_creation_input_tokens": 602853
+      "input_tokens": 366,
+      "output_tokens": 288542,
+      "cache_read_input_tokens": 27465165,
+      "cache_creation_input_tokens": 634862
     }
   },
   "tools": {
-    "Bash": 120,
+    "Bash": 132,
     "Read": 17,
-    "Write": 5,
+    "Write": 7,
     "Agent": 2,
     "AskUserQuestion": 2,
     "Edit": 1,
@@ -40,7 +40,9 @@
   },
   "files_touched": [
     ".claude/skills/review-findings/SKILL.md",
+    ".claude/skills/run-verification/SKILL.md",
     "CLAUDE.md",
+    "verification/README.md",
     "verification/pipeline.py",
     "verification/schema/job.schema.json",
     "verification/schema/result.schema.json",
@@ -64,24 +66,24 @@
     {
       "index": 1,
       "started": "2026-11-02T01:43:11.953Z",
-      "ended": "2026-11-02T22:49:02.689Z",
+      "ended": "2026-11-02T22:54:16.880Z",
       "turns": 10,
-      "api_calls": 43,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 104928,
-        "cache_read_input_tokens": 4452761,
-        "cache_creation_input_tokens": 233053
+        "input_tokens": 122,
+        "output_tokens": 125702,
+        "cache_read_input_tokens": 7218923,
+        "cache_creation_input_tokens": 265062
       },
-      "peak_context_tokens": 197916
+      "peak_context_tokens": 229925
     }
   ],
   "log": {
-    "sha256": "f1ba35b339f7ce828e13879a4800e5b3ebe360ba8caf90efea011e97df6cfafc",
-    "bytes": 4274045,
-    "lines": 1577,
-    "gzip_bytes": 736412,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/f1ba35b339f7ce828e13879a4800e5b3ebe360ba8caf90efea011e97df6cfafc.jsonl.gz"
+    "sha256": "99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790",
+    "bytes": 4590794,
+    "lines": 1695,
+    "gzip_bytes": 776391,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790.jsonl.gz"
   },
   "subagents": [
     {
@@ -467,6 +469,14 @@
       "summary": "Generate the leader's reply rule into the Raft replication model as a third operator and let replies arrive late, twice or never under a fourth configuration, with three new examples",
       "body": "ReplyRule#decide is a new Quorum kernel: what a Raft leader does with a follower's reply to an AppendEntries request (RequestStatus AWAITED or ANSWERED, AppendReply accepted or refused; ADVANCE, BACK_UP or unchanged), with its behavioural contract and ReplyRuleContract.tla generated from it. RaftReplication.tla now runs the leader's half of the RPC through that operator (RequestNext, ReplyNext, Standing: an acceptance is news past the match index, a refusal only for the request at the next index past the match index, as etcd's progress tracker has it), and gains a DelayedReplies constant, a replies set, and the actions Ask and Answer, under which a reply waits on the wire, is handed to the leader twice, or never, and a leader asks again whether or not a reply is outstanding. RaftReplicationDelayed.cfg (two terms, one entry, 261,060 states) checks that with two invariants of the leader's record, MatchIndexIsRight and NextIndexPastMatch, which the one-step configurations leave out so that a wrong rule is still reported as the paper's property. Each action's guard is now an operator its enabling predicate shares, and the ENABLED comparison drops Replicate, whose nested record TLC evaluates thirty times slower under ENABLED and whose predicate restates its definition.\n\nExamples 102 to 104, on ReplyRule: a leader that moves a follower up on a refusal records entries the follower lacks, and the first configuration finds leader completeness broken in twelve steps (a leader counting a follower that refused toward the majority that commits an entry the next leader overwrites); a leader that backs up on a refusal it has moved on from is verified by the three one-step configurations, which never hand the rule such a refusal, and the delayed one finds its record contradicting itself in twelve steps; a leader that takes a late acceptance as news moves a follower back and is proved safe under all four. Examples 096 to 101 were rebuilt under the fourth configuration, which verifies each of them, and their texts say why. jvmcontract tlc now honours JVMCONTRACT_JAVA_OPTS, since TLC's coverage mode fails at once with out-of-memory at Java's default heap on this model, and build.py sets -Xmx2500m for every TLC run. Verified by the quorum verify script (58 tests, every contract and property, 20 TLC configurations including the five of the replication model, the enabling check about four minutes with two workers), by the build of the nine examples, and by module-level mutation runs before the Java was written.",
       "log_sha256": "f1ba35b339f7ce828e13879a4800e5b3ebe360ba8caf90efea011e97df6cfafc"
+    },
+    {
+      "change_id": "yxmowupqpvnoxtppmroqrtxomqsxkxms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add a verification pipeline: proofs and model checks queued as committed jobs and run asynchronously under resource limits",
+      "body": "Development agents ran JBMC, TLC and build.py inline, which held them up for minutes at a time and let two sessions exhaust the machine together. Now an agent describes the verification a change needs as a job (verification/jobs/ID.json: title, description, capabilities, links, expectation, a rough estimate of CPUs, memory and duration, bash steps, and the files to bring back), commits it with the change marked (verification pending), and carries on. verification/pipeline.py submit writes jobs, and --example ID fills one in for a demo example.\n\npipeline.py run takes jobs from the latest commit, never the working copy, and runs each in a git archive of the commit that committed it. It runs several at once within a budget of workers, CPUs and memory, in priority order, and defers a job bigger than the runner allows rather than run it. Each step gets a systemd user scope with a hard MemoryMax (no swap), OOMPolicy=continue and a CPUQuota, and a timeout. JBMC's own limit and TLC's heap are set to fit inside the cap, and the scope's peak memory, CPU time, throttling and OOM kills are read from its cgroup before it goes away. A job that requires jvmcontract gets one built from lib/ at its commit, cached by the tree id of lib/. Results stay in an ignored state directory until pipeline.py collect brings them into verification/results/ID/ and applies the outputs of jobs that passed, unless a file changed since the job's commit, so another session's commit cannot sweep them up half-done. Each result records status, a one-line summary, what needs attention in words, every step's exit, time, memory and verdict lines from the log (JBMC, TLC, jvmcontract, build.py, cargo test, out-of-memory), the environment and tool versions, logs cut to head and tail past 2 MB, and a diff of the outputs. pipeline.py report gives a batch digest in Markdown or JSON, with the ones needing attention first and estimates compared with use per capability. resubmit reruns a job with other resources. The job and result formats are JSON schemas in verification/schema/. Configuration is pipeline.toml, a local override, and flags. Isolation is systemd or none, and the backend setting is the hook for a cloud runner, described in the README.\n\nverification/README.md documents the lifecycle, submitting, estimates, reading results and the runner. The /run-verification skill is the procedure for the agent that manages the pipeline, including committing results without sweeping in another session's files. CLAUDE.md tells development agents to queue proofs instead of running them. build.py gains --index-only, so collecting several examples regenerates the examples table once.\n\nVerified by verification/test_pipeline.py, 15 tests in throwaway git repositories, all passing. Covered: submit and validation, uncommitted jobs not run, outputs and verdict lines brought back, a failing step skipping the rest with its outputs kept and not applied, expected failure codes, timeouts, deferral and a bigger budget, jobs running side by side and one at a time, an output changed since the job's commit not overwritten, long logs cut with verdicts read from the whole log, resubmit, missing tools, a runner stopped mid-job leaving the job to run again, and under systemd an out-of-memory kill at a 100 MB cap and cgroup measurements. End to end, in a scratch clone: examples 076 (D1, TLC) and 052 (B11, JBMC) were submitted, run under systemd with jvmcontract built by the runner (63 s, 1.1 GB peak), and both gave their expected verdicts (12 s and 36 s, about 125 MB each). They were collected, with the examples table regenerated, and reported. The 1-CPU quota held the TLC step back 13.5 s, so the README now advises 2 CPUs for JVM work, and results flag heavy throttling. The pipeline has not yet run a real queue from a development session.",
+      "log_sha256": "99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790"
     }
   ],
   "logs": {
@@ -541,6 +551,12 @@
       "lines": 1125,
       "gzip_bytes": 443010,
       "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/8f57bc52bb86f73ec774ddc9081cffd08d1a15c80e5e02912175f970373cdac0.jsonl.gz"
+    },
+    "99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790": {
+      "bytes": 4590794,
+      "lines": 1695,
+      "gzip_bytes": 776391,
+      "url": null
     },
     "9c50c3cdb57e78f0b85e6e0d887d4a605ad56f3e9e5b26edaede9e13042ecd07": {
       "bytes": 169777,

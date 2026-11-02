@@ -1,0 +1,35 @@
+# The verification pipeline's defaults (verification/README.md). For this machine only, put overrides in
+# verification/pipeline.local.toml, which is not committed, or in a file named by $VERIFY_CONFIG; flags on the
+# command line override both.
+
+[runner]
+backend = "local"
+# systemd: each step in a systemd user scope with a hard memory cap (no swap) and a CPU quota, measured by its cgroup.
+# none: no caps, only timeouts (a container that is itself capped). auto: systemd when it works.
+isolation = "auto"
+# The budget shared out among running jobs, by each job's memory limit and CPUs. The defaults suit an 8-core, 9 GB
+# WSL machine that also runs a development session in its own 4 GB scope (llm-dlc/tools/feature-loop.sh).
+workers = 2
+cpus = 6
+memory = "5G"
+# No job's limit above this. A job that needs more is deferred, not run: it waits for a runner with more memory.
+job_memory_max = "4G"
+max_timeout = "6h"
+# For building jvmcontract from lib/ when a job needs it and that tree is not cached yet.
+build_memory = "3G"
+state_dir = "verification/.state"
+# Work directories (an export of the job's commit) are kept for jobs that did not pass: always | failed | never.
+keep_workdirs = "failed"
+# A longer log is kept whole on the runner and as its head and tail in the result.
+log_max_bytes = "2M"
+poll_seconds = 30
+# Paths outside git that jobs need, linked into every export.
+link = ["libs/java-models-library"]
+# Run at the repo root after collect has applied outputs: one example table for every example collected.
+after_collect = ["python3 examples/demo/tools/build.py --index-only"]
+
+[defaults]
+# For a job that leaves a resource out.
+cpus = 1
+memory = "2G"
+duration = "10m"

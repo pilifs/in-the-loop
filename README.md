@@ -52,6 +52,18 @@ It reproduces the contracts the Java tool committed for Box Office, which its te
 | [`plugins/jvmcontract/install.sh`](plugins/jvmcontract/install.sh) | The installer behind `curl -fsSL https://terminalvalue.net/verify-bytecode-skill/install.sh \| bash` |
 | [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) | The marketplace, for `claude plugin install jvmcontract --marketplace pilifs/in-the-loop` |
 
+## [`verification/`](verification/README.md): the verification pipeline
+
+Proofs and model checks don't run inside development sessions: a session queues them as jobs, committed with the change and marked verification pending, and a runner executes them under memory and CPU limits, several at a time, and brings the results back for a batch read.
+
+| Path | What it is |
+|---|---|
+| [`verification/README.md`](verification/README.md) | The lifecycle, how to submit a job, how to read a result, the runner's resources, and how a cloud backend would fit |
+| [`verification/pipeline.py`](verification/pipeline.py) | `submit`, `status`, `run`, `collect`, `report`, `resubmit`, `validate` |
+| [`verification/schema/`](verification/schema) | The job and result formats |
+| [`verification/jobs/`](verification/jobs), [`verification/results/`](verification/results) | Jobs as submitted, and what happened when each ran |
+| [`.claude/skills/run-verification/`](.claude/skills/run-verification/SKILL.md) | `/run-verification`: the procedure for the agent that manages the pipeline |
+
 ## [`llm-dlc/`](llm-dlc/README.md): the LLM development lifecycle
 
 A meta example. This repo is written with an LLM, and every commit is published with the session that made it: what was asked, what the agent did, what it cost, and the full redacted transcript.

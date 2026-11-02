@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "verification-result/v1",
+  "title": "Verification result",
+  "description": "What happened when the pipeline ran one job: verification/results/ID/result.json, next to the job's logs (logs/), the diff of the outputs it produced (changes.diff), and any outputs not applied (outputs/). Read status, summary and attention first; everything else is evidence.",
+  "type": "object",
+  "required": ["schema", "id", "status", "summary", "attention", "job", "sourceCommit", "startedAt", "finishedAt",
+               "runner", "limits", "estimate", "usage", "environment", "steps", "outputs"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "verification-result/v1"},
+    "id": {"type": "string"},
+    "title": {"type": ["string", "null"]},
+    "status": {
+      "description": "passed: every step exited as expected. failed: a step did not, which for a verifier usually means it found a problem, or the command was wrong. timeout and out-of-memory: a step was stopped at a limit and gave no verdict; rerun with more (resubmit). error: the pipeline could not run the job (a missing tool, a build failure). cancelled: the runner was stopped.",
+      "enum": ["passed", "failed", "timeout", "out-of-memory", "error", "cancelled"]
+    },
+    "summary": {"description": "One line: status, steps, time and memory against the estimate, changed outputs, and the verdict lines found in the logs.", "type": "string"},
+    "attention": {
+      "description": "What a reader should look at, in words: a step that did not pass, a pass with a suspicious log (JBMC with no verdict, an out-of-memory line), an estimate far off, outputs not applied. Empty for a clean pass.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "job": {
+      "type": "object",
+      "required": ["path", "sha256", "spec"],
+      "properties": {
+        "path": {"type": "string"},
+        "sha256": {"type": "string"},
+        "spec": {"description": "The job as it was run.", "type": "object"}
+      }
+    },
+    "sourceCommit": {"description": "The commit whose tree was run.", "type": "string"},
+    "startedAt": {"type": "string"},
+    "finishedAt": {"type": ["string", "null"]},
+    "wallSeconds": {"type": ["number", "null"]},
+    "runner": {
+      "type": "object",
+      "properties": {
+        "backend": {"type": "string"},
+        "isolation": {"description": "systemd: each step in a scope with hard memory and CPU caps, measured by the cgroup. none: timeouts only, memory measured per process.", "enum": ["systemd", "none"]},
+        "host": {"type": "string"},
+        "pid": {"type": "integer"},
+        "workers": {"type": "integer"},
+        "cpus": {"type": "number"},
+        "memoryBudgetBytes": {"type": "integer"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "cpus": {"type": "number"},
+        "memoryLimitBytes": {"type": "integer"},
+        "timeoutSeconds": {"type": "number"}
+      }
+    },
+    "estimate": {
+      "type": "object",
+      "properties": {
+        "cpus": {"type": "number"},
+        "memoryBytes": {"type": "integer"},
+        "durationSeconds": {"type": "number"},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "usage": {
+      "description": "What the steps used, without the jvmcontract build. The ratios against the estimate are for calibrating the next estimate.",
+      "type": ["object", "null"],
+      "properties": {
+        "peakMemoryBytes": {"type": ["integer", "null"]},
+        "wallSeconds": {"type": "number"},
+        "cpuSeconds": {"type": "number"},
+        "memoryOfEstimate": {"type": ["number", "null"]},
+        "durationOfEstimate": {"type": ["number", "null"]}
+      }
+    },
+    "environment": {
+      "description": "The machine and tool versions.",
+      "type": "object",
+      "properties": {
+        "host": {"type": "string"},
+        "os": {"type": "string"},
+        "machine": {"type": "string"},
+        "cpuModel": {"type": ["string", "null"]},
+        "cpuCount": {"type": ["integer", "null"]},
+        "memoryTotalBytes": {"type": ["integer", "null"]},
+        "python": {"type": "string"},
+        "tools": {"type": "object", "additionalProperties": {"type": ["string", "null"]}}
+      }
+    },
+    "jvmcontract": {
+      "description": "The jvmcontract the job ran with: built from lib/ at the job's commit, cached by the tree id of lib/.",
+      "type": "object",
+      "properties": {"libTree": {"type": "string"}, "path": {"type": "string"}, "built": {"type": "boolean"}}
+    },
+    "steps": {
+      "description": "Every step, in order. Index 0 is the jvmcontract build, when the job needed one that was not cached.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "name", "run", "status"],
+        "properties": {
+          "index": {"type": "integer"},
+          "name": {"type": "string"},
+          "run": {"type": "string"},
+          "cwd": {"type": "string"},
+          "status": {"enum": ["passed", "failed", "timeout", "out-of-memory", "cancelled", "skipped"]},
+          "why": {"description": "Why a step was skipped.", "type": "string"},
+          "exitCode": {"type": ["integer", "null"]},
+          "expectExit": {"type": "array", "items": {"type": "integer"}},
+          "signal": {"description": "The signal that ended the step's process, if one did.", "type": ["string", "null"]},
+          "timedOut": {"type": "boolean"},
+          "cancelled": {"type": "boolean"},
+          "wallSeconds": {"type": "number"},
+          "cpuSeconds": {"type": ["number", "null"]},
+          "cpuThrottledSeconds": {"description": "Time held back by the CPU cap: high means the job wanted more CPUs than it asked for.", "type": ["number", "null"]},
+          "peakMemoryBytes": {"type": ["integer", "null"]},
+          "peakMemoryMeasure": {"type": "string"},
+          "oomKills": {"description": "Processes the kernel killed at the step's memory limit.", "type": "integer"},
+          "memoryHighEvents": {"description": "Times the step reached its memory limit.", "type": "integer"},
+          "log": {
+            "type": "object",
+            "properties": {
+              "path": {"description": "Relative to the result's directory.", "type": "string"},
+              "bytes": {"type": "integer"},
+              "lines": {"type": "integer"},
+              "sha256": {"type": "string"},
+              "truncated": {"description": "The log was too long, and the file holds its head and tail. The whole log stays on the runner, at fullLog.", "type": "boolean"},
+              "fullLog": {"type": "string"}
+            }
+          },
+          "signalCounts": {"description": "How often each kind of verdict line appeared, as tool:kind.", "type": "object", "additionalProperties": {"type": "integer"}},
+          "signals": {
+            "description": "The verdict lines themselves (JBMC, TLC, jvmcontract, build.py, cargo test, out of memory), with their line numbers in the log; at most 100.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tool": {"type": "string"},
+                "kind": {"type": "string"},
+                "line": {"type": "integer"},
+                "text": {"type": "string"},
+                "groups": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "tail": {"description": "The last 40 lines of the log.", "type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "outputs": {
+      "description": "Declared outputs that differ from the job's commit.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "change"],
+        "properties": {
+          "path": {"type": "string"},
+          "change": {"enum": ["added", "modified", "deleted"]},
+          "bytes": {"type": "integer"},
+          "sha256": {"type": ["string", "null"]},
+          "sourceSha256": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "changesDiff": {"description": "changes.diff: the outputs' changes as a unified diff against the job's commit.", "type": "string"},
+    "workdir": {"description": "The work directory, kept on the runner (for a job that did not pass, by default).", "type": "string"},
+    "collected": {
+      "description": "Set when the result was collected into the repo. applied: outputs written to the working copy. conflicts: outputs that changed in the working copy since the job's commit, not applied, kept under outputs/. kept: outputs not applied because the job did not pass.",
+      "type": ["object", "null"],
+      "properties": {
+        "at": {"type": "string"},
+        "applied": {"type": "array", "items": {"type": "string"}},
+        "conflicts": {"type": "array", "items": {"type": "string"}},
+        "kept": {"type": "array", "items": {"type": "string"}},
+        "why": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

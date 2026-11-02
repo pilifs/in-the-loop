@@ -27,6 +27,7 @@ Crosscut (examples/demo/apps/crosscut, examples 023 to 033) and Mica (examples/d
 plain javac, verified by the Rust tool in lib/ (jvmcontract). The app is chosen by the example's subject file.
 
 Usage: python3 examples/demo/tools/build.py [ID ...]
+       python3 examples/demo/tools/build.py --index-only   (the table of contents and index.json from the results there)
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
 cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps. No Docker.
 """
@@ -69,8 +70,11 @@ BEFORE_CLASSES = {}
 
 
 def main(argv):
-    wanted = set(argv)
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
+    if argv == ["--index-only"]:
+        render_index(folders)  # after the verification pipeline has brought results back (verification/README.md)
+        return 0
+    wanted = set(argv)
     failures = []
     for folder in folders:
         if wanted and folder.name[:3] not in wanted:

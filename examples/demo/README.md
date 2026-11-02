@@ -217,6 +217,8 @@ The generator also fails when a verdict differs from the example's `expected.ver
 
 ## Run or add an example
 
+An agent working in this repository doesn't run these inline: it queues them for the [verification pipeline](../../verification/README.md) with `python3 verification/pipeline.py submit --example ID`, and the results come back through it. By hand:
+
 ```bash
 python3 examples/demo/tools/build.py          # run every example, then rewrite the pages and the table
 python3 examples/demo/tools/build.py 002      # run one

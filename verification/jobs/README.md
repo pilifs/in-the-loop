@@ -1,0 +1,1 @@
+Verification jobs, one JSON file each, submitted with `python3 verification/pipeline.py submit` and committed with the change they verify. The format is [`../schema/job.schema.json`](../schema/job.schema.json); the procedure is in [`../README.md`](../README.md).

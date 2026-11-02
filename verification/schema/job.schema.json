@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "verification-job/v1",
+  "title": "Verification job",
+  "description": "Work that needs a prover or a model checker, committed with the change it verifies and run later by the pipeline (verification/README.md). Written by the agent that made the change; read by the runner, and by whoever reads the result.",
+  "type": "object",
+  "required": ["schema", "id", "title", "description", "capabilities", "resources", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema": {"const": "verification-job/v1"},
+    "id": {
+      "description": "UTC submission time and a slug of the title; also the file name, verification/jobs/ID.json.",
+      "type": "string",
+      "pattern": "^\\d{8}-\\d{6}-[a-z0-9][a-z0-9-]{0,60}$"
+    },
+    "title": {"description": "One line: what is verified.", "type": "string", "minLength": 3, "maxLength": 200},
+    "description": {
+      "description": "For a reader who did not see the change: what the job checks, why it is needed, what the change was, and anything a reader of the result should know (a known slow configuration, a verdict that would be surprising).",
+      "type": "string",
+      "minLength": 20
+    },
+    "kind": {
+      "description": "What the job verifies: a demo example, a change to the jvmcontract library, a TLA+ model, a real-world example, or something else.",
+      "enum": ["example", "library", "model", "real-world", "other"]
+    },
+    "capabilities": {
+      "description": "What the job exercises, so results can be read and calibrated per capability: approach ids from examples/approaches.md (B8, B9, B10, B11, D1), jvmcontract commands (jvmcontract:verify, jvmcontract:prove, jvmcontract:equivalence, jvmcontract:tla, jvmcontract:tlc), or a feature name (tlc:liveness, jbmc:arrays).",
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "links": {
+      "description": "What the job is about, by kind: examples (ids), paths (files), commits, jobs (related jobs), urls.",
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string"}}
+    },
+    "expected": {
+      "description": "What a pass looks like, in words: the verdict, the number of states if known, the exit code. A reader compares the result with this.",
+      "type": "string"
+    },
+    "submitted": {
+      "type": "object",
+      "properties": {
+        "at": {"type": "string", "format": "date-time"},
+        "by": {"type": "string"},
+        "session": {"description": "The submitting Claude Code session, to find the conversation behind the job.", "type": "string"}
+      }
+    },
+    "revision": {
+      "description": "The commit to run at. Leave it out: the runner takes the last commit that touched the job file, which is the change the job was written for.",
+      "type": "string"
+    },
+    "priority": {"description": "Higher runs first. 0 by default.", "type": "integer"},
+    "requires": {
+      "description": "What must be on the runner. jvmcontract means: built by the runner from lib/ at the job's commit (cached by tree) and put on PATH and in $JVMCONTRACT. tlc means tla2tools.jar in ~/tools or $TLA2TOOLS_JAR. Any other name is looked for on PATH.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "resources": {
+      "description": "A rough estimate. The runner shares its budget out by these numbers, caps the job at its limit, stops it at its timeout, and reports what it actually used next to them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpus": {"description": "CPUs the job uses at once (TLC workers, parallel builds). Default 1.", "type": "number", "exclusiveMinimum": 0},
+        "memory": {"description": "Rough peak memory, such as 2G or 512M. Default 2G.", "type": "string"},
+        "duration": {"description": "Rough wall time, such as 90s, 10m or 1h30m. Default 10m.", "type": "string"},
+        "memoryLimit": {"description": "Hard cap. Default 1.5 times the estimate, within the runner's per-job maximum.", "type": "string"},
+        "timeout": {"description": "Hard stop. Default 4 times the duration, at least 5m, within the runner's maximum.", "type": "string"},
+        "notes": {"description": "What the estimate rests on: an earlier run, a state count, a guess.", "type": "string"}
+      }
+    },
+    "env": {
+      "description": "Environment variables for every step. They override the runner's own, such as JVMCONTRACT_JAVA_OPTS.",
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "steps": {
+      "description": "Run in order, each a bash script in a clean export of the job's commit.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["run"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string"},
+          "run": {"description": "A bash script, run with bash -c.", "type": "string", "minLength": 1},
+          "cwd": {"description": "Relative to the repo root. Default '.'.", "type": "string"},
+          "expectExit": {
+            "description": "The exit code, or codes, that count as a pass. Default 0. A step meant to find a violation can expect its tool's failure code.",
+            "oneOf": [{"type": "integer"}, {"type": "array", "items": {"type": "integer"}, "minItems": 1}]
+          },
+          "timeout": {"description": "A shorter stop for this step.", "type": "string"}
+        }
+      }
+    },
+    "stopOnFailure": {"description": "Skip the later steps once one does not pass. Default true.", "type": "boolean"},
+    "outputs": {
+      "description": "Files or directories, relative to the repo root, that the job writes and that should come back into the repo: an example's result.json and README.md, say. Only files that differ from the job's commit are kept.",
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "supersedes": {"description": "The job this one reruns, with other resources or at a newer commit.", "type": "string"}
+  }
+}
