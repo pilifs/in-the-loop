@@ -54,6 +54,14 @@ JBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK 
 
 One finding in session dfa830a1, of kind other-home-dir, was a home path cut off mid-name by a fixed-width process listing, at the start of a java -cp argument. The user reviewed the real value and accepted it as a false positive in their own terminal. review reports no open findings.
 
+### Run the tla feature loop without a cycle limit
+
+change `wmyuwyzspmkx` · [log `21d489ab201d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)
+
+The tla prompt stopped after seven cycles while features ran until a cycle made no commit. Both now repeat instruction, commit, compact until a cycle makes no commit, so the cycle limit had no remaining use and is removed. The README and the script's header match.
+
+Verified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla and features each ran past seven cycles, stopped at the tenth when it made no commit with exit 1, nine compacts and their own text. No argument still gives exit 2. The loop has not been run against the real session.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz) has every step in between: reasoning, tool calls and their results.
