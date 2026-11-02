@@ -1,22 +1,24 @@
 #!/usr/bin/env bash
-# Grow the jvmcontract library unattended, one feature at a time.
+# Run one instruction unattended, a fixed number of times.
 #
 # Each cycle resumes one Claude Code session and runs: instruction, commit, compact.
-# A cycle that leaves no new commit stops the loop, before compacting, so the
+# A cycle that leaves no new commit stops the loop early, before compacting, so the
 # session keeps its full context for the person who has to look at why.
 #
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine.
 #
 # Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh
-# Exits 1 when a cycle made no commit or the scope cannot start, and 130 if interrupted.
+# Exits 0 after the last cycle, 1 when a cycle made no commit or the scope cannot
+# start, and 130 if interrupted.
 
 set -uo pipefail
 
 SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
-INSTRUCTION="Add more advanced features along with examples to the jvmcontract library."
+INSTRUCTION="Add more advanced examples showcasing verification of TLA specs"
+CYCLES=7
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
 SCOPE=feature-loop
 
@@ -109,12 +111,10 @@ except KeyboardInterrupt:
 # Change IDs, unlike commit IDs, survive a rewrite of the commit.
 last_change() { jj log --no-graph -r @- -T change_id; }
 
-cycle=0
-while :; do
-  cycle=$((cycle + 1))
+for (( cycle = 1; cycle <= CYCLES; cycle++ )); do
   before=$(last_change) || exit 1
 
-  log "cycle $cycle: instruction"
+  log "cycle $cycle of $CYCLES: instruction"
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
 
   after=$(last_change) || exit 1
@@ -127,3 +127,4 @@ while :; do
   log "cycle $cycle: compact"
   run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
 done
+log "finished $CYCLES cycles"
