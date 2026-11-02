@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "100",
+  "title": "A follower that refuses to overwrite a conflicting entry never catches up",
+  "summary": "A Raft follower that holds an entry of another term at the index a leader sends an entry for drops it, and everything after it, and takes the leader's. A developer has the follower refuse such a request instead, so that no entry is discarded on a leader's say-so, with the leader backing up as it does on a conflict at the previous index. The tests pass, and the two safety configurations verify the change: a follower that refuses changes nothing, and nothing it holds breaks an invariant. The fairness configuration reports a run that goes on forever after eleven steps: the leader is already at the start of the follower's log, has nothing to back up to, sends the same entry again and is refused again, and the follower never holds the leader's log; the property that every entry in a leader's log reaches every follower is violated, and the run ends in a state the system never leaves.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `AppendRule.decide`, the `CONFLICTING` arm for the entry sent, a follower that holds an entry of another term at its index, no longer returns a transition with `TRUNCATE` and `APPEND`: it returns `rejected`, with the comment that an entry is never discarded on a request and that the leader backs up as on a conflict at the previous index. The Javadoc says the entry sent goes in if the follower holds nothing at its index and is refused if it does, the test that a conflicting entry is replaced becomes one that it is refused, and the test of the commit index loses its conflicting case.",
+    "patch": "change.patch"
+  },
+  "risk": "Medium. The change reads as caution: a follower keeps what it has, and a leader that wants it replaced has the same recourse as on any refusal, which is to back up and try from one entry earlier. What backing up does is find the last entry the two logs share, and the entry after it is the conflicting one again; the rule has turned a conflict the protocol resolves into one it reports forever, and when the conflict is at the first index there is nowhere to back up to at all. Nothing in the tests sends two requests, and every safety property holds of a follower that never changes.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The append rule in the model is generated from the regenerated contract, so `Replicate` does what the two patched rows say. The two safety configurations verify the change, in 21,149 and 8,836 states: a refused request changes nothing but the leader's next index, and a follower that keeps its entries holds nothing an invariant forbids. The third configuration, under the fairness conditions, reports the temporal property `FollowersCatchUp` violated: after eleven steps the system stutters forever. s1 wins term 1 with s3's vote; s3 times out into term 2 and wins it with s2's vote, s1 knowing nothing of it; s3 appends an entry of term 2, and s1, still the leader of term 1, appends one of term 1, each at index 1 of its own log; s3 replicates its entry to s2, and its first request to s1 brings s1 into term 2 and out of office, and carries the entry of term 2 for index 1 with nothing before it, the start of the log matching by definition. s1 holds its own entry of term 1 at the index sent, which the committed rule drops in favour of the leader's and the patched rule refuses. s3 marks its entry committed, s2 and itself holding it, and s2 learns the commit on the next heartbeat; s3's next index for s1 is at 1 already and stays there, so every later request to s1 is the same request, refused the same way, and changes no variable: no step of the system is left that changes one, and the run goes on forever with s1 holding the entry of the term it led and never the entry the cluster committed. The fairness condition that a leader keeps sending is what makes the run a counterexample rather than a cluster that stopped: s3 does keep sending, and it makes no difference.",
+  "resolution": "Reject. An entry at the index a leader sends an entry for that is not the leader's is one the leader's entry replaces, and everything after it with it (Ongaro and Ousterhout, section 5.3, step 3 of the receiver's rule in figure 2): the consistency check at the previous index is what makes it safe, since a follower that matches the leader through the previous entry holds at the next index either the leader's entry or one no leader of the current term committed, by leader completeness. The caution the change intends is already in the protocol, as the check; refusing the overwrite leaves the follower with the deposed leader's entry for good, and the leader with a follower it can never bring up to date, which with a second follower down is a cluster that commits nothing. The fairness configuration shows it as a run that never progresses, the shape of a retry that cannot.",
+  "provenance": "Constructed as the second example of the replication model's liveness configuration, to pair with 099 and 101: a refusal that every safety check accepts, found as the request the leader sends forever and the follower refuses forever.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication, the consistency check and the commit index in AppendEntries; section 8, the no-op entry a leader commits at the start of its term",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, log replication, and section 3.6.2 on committing entries from previous terms",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): HandleAppendEntriesRequest, which takes the leader's commit index on every accepted request, and AdvanceCommitIndex over every index a majority agrees on",
+      "url": "https://github.com/ongardie/raft.tla"
+    },
+    {
+      "title": "Lamport, Specifying Systems (2002): chapter 8, liveness and fairness; weak fairness WF_v(A) and the leads-to operator",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    },
+    {
+      "title": "TLC's liveness checking: a temporal property's counterexample is a run that goes on forever, a prefix then a state (Stuttering) or a cycle (Back to state N) the system never leaves; unsound under a symmetry set",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java
+@@ -13,8 +13,9 @@
+ /**
+  * What a Raft follower does with a leader's AppendEntries request (Ongaro and Ousterhout, section 5.3): the
+  * consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so
+- * that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of
+- * whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the
++ * that the leader backs up and tries again from one entry earlier; then the entry sent goes in, if the follower holds
++ * nothing at its index, and is refused if it does, so that the leader backs up again rather than the follower
++ * discarding an entry on the leader's say-so; and the follower's commit index follows the leader's, as far as the
+  * entries it now holds in common with it.
+  *
+  * <p>The check is what makes the log matching property hold: a follower accepts an entry only after the entry
+@@ -39,9 +40,7 @@
+                 case ABSENT -> request.commitAhead()
+                         ? transition(MATCHING, APPEND, ADVANCE_COMMIT)
+                         : transition(MATCHING, APPEND);
+-                case CONFLICTING -> request.commitAhead()
+-                        ? transition(MATCHING, TRUNCATE, APPEND, ADVANCE_COMMIT)
+-                        : transition(MATCHING, TRUNCATE, APPEND);
++                case CONFLICTING -> rejected("another entry at the index sent"); // never discard an entry on a request: refused like a conflict at the previous index, and the leader backs up
+             };
+         };
+     }
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/AppendRuleTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/AppendRuleTest.java
+@@ -24,7 +24,11 @@
+ 
+     public static void appendsAfterAMatchingEntry() {
+         equal(new Transition<>(MATCHING, List.of(APPEND)), AppendRule.decide(MATCHING, new AppendRequest(NewEntry.ABSENT, false)));
+-        equal(new Transition<>(MATCHING, List.of(TRUNCATE, APPEND)), AppendRule.decide(MATCHING, new AppendRequest(NewEntry.CONFLICTING, false)));
++    }
++
++    public static void refusesToOverwriteAnEntry() {
++        check(AppendRule.decide(MATCHING, new AppendRequest(NewEntry.CONFLICTING, false)) instanceof Decision.Rejected, "another entry at the index sent");
++        check(AppendRule.decide(MATCHING, new AppendRequest(NewEntry.CONFLICTING, true)) instanceof Decision.Rejected, "another entry at the index sent, whatever is committed");
+     }
+ 
+     public static void aHeartbeatOrADuplicateChangesNothing() {
+@@ -35,6 +39,5 @@
+     public static void theCommitIndexFollowsTheLeaders() {
+         equal(new Transition<>(MATCHING, List.of(ADVANCE_COMMIT)), AppendRule.decide(MATCHING, new AppendRequest(NewEntry.NONE, true)));
+         equal(new Transition<>(MATCHING, List.of(APPEND, ADVANCE_COMMIT)), AppendRule.decide(MATCHING, new AppendRequest(NewEntry.ABSENT, true)));
+-        equal(new Transition<>(MATCHING, List.of(TRUNCATE, APPEND, ADVANCE_COMMIT)), AppendRule.decide(MATCHING, new AppendRequest(NewEntry.CONFLICTING, true)));
+     }
+ }

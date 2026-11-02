@@ -813,7 +813,7 @@ REPLICATION = {
     "spec": "spec/RaftReplication.tla",
     "cfg": "spec/RaftReplication.cfg",
     "label": "three terms, two entries",
-    # The same model under a second configuration, run after the first; the README reports both.
+    # The same model under two more configurations, run after the first; the README reports all three.
     "configurations": [
         {"cfg": "spec/RaftReplicationFigureEight.cfg", "label": "figure 8",
          "what": "every run of three servers over four terms with one entry per leader's log, the budget of figure 8 of the "
@@ -821,6 +821,13 @@ REPLICATION = {
                  "at the same index, the first comes back as the leader of term 3 and replicates its entry of term 1 to a "
                  "majority, and the second, whose last entry is from the later term, can still be elected in term 4 "
                  "without it; three terms cannot show this, and the same invariants and action properties are checked"},
+        {"cfg": "spec/RaftReplicationLive.cfg", "label": "fairness",
+         "what": "the three liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing "
+                 "resets times out, a candidate asks for the votes it lacks, a leader sends every follower its next entry or "
+                 "a heartbeat and marks committed what the commit rule lets it; nothing is assumed of the clients, so the "
+                 "properties hold whether or not a request comes. Three servers, three terms and one entry per leader, without the symmetry "
+                 "set, since TLC's liveness checking is unsound under one. A counterexample is a run that goes on forever "
+                 "without satisfying a property: a prefix, then a state or a cycle the system never leaves"},
     ],
     "contract": "src/contract/AppendRule.decide.contract",
     "operator": "spec/AppendRuleContract.tla",
@@ -846,9 +853,9 @@ REPLICATION = {
                      "request goes through the role machine, then the append rule on the follower's log as it stands against "
                      "the leader's, and the reply through the role machine on the leader, which moves the server's next and "
                      "match indices forward on success and backs the next index up by one on a refusal",
-        "AdvanceCommit": "`Server.advanceCommitIndex`: a leader asks the commit rule about the first entry it has not marked "
+        "AdvanceCommit": "`Server.advanceCommitIndex`: a leader asks the commit rule about an entry it has not marked "
                          "committed, given the entry's term against its own and whether a majority of the servers hold it, and "
-                         "marks it committed on a transition",
+                         "marks it committed on a transition, and with it everything before it",
     },
     "invariants": {
         "TypeOK": "every variable has a value of its type",
@@ -865,6 +872,15 @@ REPLICATION = {
                                        "any step: once a server has applied an entry, that entry stays at its index for good",
         "TermsNeverDecrease": "a term never goes backwards on any server, in any step",
         "LeaderAppendOnly": "a leader never truncates or overwrites its own entries, in any step (figure 3 of the paper)",
+        # The liveness properties, checked under fairness, of the runs that stay within the term budget.
+        "FollowersCatchUp": "every entry in a leader's log reaches every follower: from some point on, each follower's log "
+                            "holds the leader's as a prefix, in every run that stays within the term budget",
+        "FollowersLearnCommits": "every follower learns what the leader has committed: from some point on, all commit "
+                                 "indices agree, in every run that stays within the term budget",
+        "OwnEntriesAreCommitted": "an entry a leader appended in its term is committed, unless the leader is deposed first, in "
+                                  "every run that stays within the term budget; nothing is claimed of an entry from an "
+                                  "earlier term, which the commit rule commits only along with a later entry of the "
+                                  "leader's own",
     },
     "machine": "The follower's append rule, the leader's commit rule, the role machine and the vote rule inside the model are "
                "generated from the behavioural contracts of the patched code, so the model checks the entries the followers "

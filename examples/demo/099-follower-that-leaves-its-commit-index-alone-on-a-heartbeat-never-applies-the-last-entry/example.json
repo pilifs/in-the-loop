@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "099",
+  "title": "A follower that leaves its commit index alone on a heartbeat never applies the last entry",
+  "summary": "A Raft follower moves its commit index up to the leader's on every request it accepts, a heartbeat included, as far as its log is known to match the leader's. A developer makes a heartbeat a liveness signal and nothing more: the commit index moves with the entries, the comment says, and a request that carries nothing to apply changes nothing. The tests pass and both safety configurations verify the change: no committed entry is overwritten, the logs match, and a follower never applies what the leader has not. The replication model's fairness configuration reports a run that goes on forever after eight steps: the leader replicates its entry to both followers, marks it committed, and every heartbeat from then on is refused the commit index it carries, so the followers never apply it; the property that every follower learns the leader's commits is violated, and the run ends in a state the system never leaves.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `AppendRule.decide`, the `NONE, SAME` arm, a heartbeat or an entry the follower already holds, no longer returns `transition(MATCHING, ADVANCE_COMMIT)` when the leader's commit index is ahead: it returns `unchanged` whatever the commit index, with the comment that a heartbeat or a duplicate is a liveness signal, not a write, and that the commit index moves with the entries. The Javadoc says the commit index follows the leader's on a request that carries an entry, and the test that the commit index follows the leader's on a heartbeat becomes one that a heartbeat changes nothing. The `ABSENT` and `CONFLICTING` arms, which append, still take the commit index.",
+    "patch": "change.patch"
+  },
+  "risk": "Medium. The change is safe in every sense a safety check can see: a follower that applies less than it could applies nothing wrong, and the two rows it alters are the rows under which nothing is written. What it breaks is a promise about the future, that a follower eventually applies what the leader committed, and the leader commits an entry only after a majority has appended it, which is after the request that appended it on each of them: the commit index can only reach the last entry on a request that carries nothing. The tests check single decisions, and a decision that changes nothing looks right.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The append rule in the model is generated from the regenerated contract, so `Replicate` does what the two patched rows say. The two safety configurations verify the change, in 17,221 and 7,277 states: the followers' commit indices stay behind, which breaks no invariant. The third configuration, three servers and three terms under the fairness conditions, reports the temporal property `FollowersLearnCommits` violated: after eight steps the system stutters forever. s1 times out twice and wins term 2 with s2's vote; it appends an entry of term 2 and sends it to s2 and then s3, each of which appends it with the commit index still at 0, since nothing is committed when the entry goes out; s1 marks the entry committed, a majority holding it. From then on every request s1 sends is a heartbeat, both followers being caught up, with a commit index of 1 against their 0, which the patched rule answers with `unchanged`: the heartbeat changes no variable, no step of the system is left that changes one, and the run goes on forever in that state, s1 having applied the entry and s2 and s3 never, until a client sends another. The last entry a leader appends is applied by the leader alone, for as long as the cluster is quiet. The fairness conditions are what make the run a counterexample: with a leader that sends every follower its heartbeats, the only runs are ones in which the followers hear the commit index again and again and never take it.",
+  "resolution": "Reject. The commit index is part of every AppendEntries request, and a follower takes it on every request it accepts, a heartbeat first among them (Ongaro and Ousterhout, section 5.3, and the leaderCommit rule of figure 2): the leader learns that a majority holds an entry only from the replies to the requests that carried it, so the request that tells the followers the entry is committed is always a later one, and for the last entry a leader appends that later request is a heartbeat. A follower that applies entries only when it appends is one that applies the last entry of every quiet period never, which a client reading from a follower sees as a write that is acknowledged and not there. The fairness configuration is the check that catches a rule that does too little rather than too much, and the counterexample it reports is the quiet period itself.",
+  "provenance": "Constructed as the first example of the replication model's liveness configuration, to pair with 100 and 101: a change that no invariant can object to, since a follower that applies nothing applies nothing wrong, caught as a run that goes on forever.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication, the consistency check and the commit index in AppendEntries; section 8, the no-op entry a leader commits at the start of its term",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): HandleAppendEntriesRequest, which takes the leader's commit index on every accepted request, and AdvanceCommitIndex over every index a majority agrees on",
+      "url": "https://github.com/ongardie/raft.tla"
+    },
+    {
+      "title": "Lamport, Specifying Systems (2002): chapter 8, liveness and fairness; weak fairness WF_v(A) and the leads-to operator",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    },
+    {
+      "title": "TLC's liveness checking: a temporal property's counterexample is a run that goes on forever, a prefix then a state (Stuttering) or a cycle (Back to state N) the system never leaves; unsound under a symmetry set",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

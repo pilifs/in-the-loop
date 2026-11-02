@@ -1471,7 +1471,7 @@
       "id": "096",
       "path": "096-follower-that-takes-entries-after-a-conflicting-previous-entry-breaks-log-matching",
       "title": "A follower that takes entries after a conflicting previous entry breaks log matching",
-      "summary": "A Raft follower refuses a leader's entries unless it holds the entry before them, the consistency check of section 5.3, so that the leader backs up one entry at a time until the logs agree. A developer relaxes the check to the previous index existing, whatever entry is there: the leader's later entries overwrite the conflict in due course, the comment says, and a round trip is saved. The tests pass and the contract diff is eight rows. The replication model's first configuration, three servers, three terms and two entries, finds in twelve steps two logs that hold the same entry of term 3 at index 2 over different entries at index 1, which is what the log matching property forbids and what the check exists to prevent; the second, figure 8 of the paper, finds a follower that applies an entry nobody else committed.",
+      "summary": "A Raft follower refuses a leader's entries unless it holds the entry before them, the consistency check of section 5.3, so that the leader backs up one entry at a time until the logs agree. A developer relaxes the check to the previous index existing, whatever entry is there: the leader's later entries overwrite the conflict in due course, the comment says, and a round trip is saved. The tests pass and the contract diff is eight rows. The replication model's first configuration, three servers, three terms and two entries, finds in twelve steps two logs that hold the same entry of term 3 at index 2 over different entries at index 1, which is what the log matching property forbids and what the check exists to prevent; the second, figure 8 of the paper, finds a follower that applies an entry nobody else committed, and the third, three terms and one entry under fairness, the same.",
       "categories": [
         "functional"
       ],
@@ -1486,7 +1486,7 @@
       "id": "097",
       "path": "097-leader-that-commits-an-earlier-terms-entry-by-counting-replicas-loses-it-to-a-rival",
       "title": "A leader that commits an earlier term's entry by counting replicas loses it to a rival",
-      "summary": "A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.",
+      "summary": "A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states, and so does the third, under fairness. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.",
       "categories": [
         "functional"
       ],
@@ -1501,13 +1501,59 @@
       "id": "098",
       "path": "098-follower-that-drops-a-conflicting-previous-entry-at-once-proved-safe",
       "title": "A follower that drops a conflicting previous entry at once, proved safe",
-      "summary": "A Raft follower that holds an entry of another term at the index before the entries a leader sends refuses the request and keeps the entry: the leader backs up, sends from one entry earlier, and the conflicting entry is replaced then. A developer has the follower drop the conflicting entry and everything after it the moment it refuses, so that the leader's next try finds the index free. The contract's eight rows change from a rejection to a transition that truncates, the model's `Replicate` carries the truncation out and backs the leader up as before, and TLC checks the rule under both configurations: log matching, leader completeness and state machine safety hold in 18,963 and 8,578 states, no committed entry is ever overwritten, and six of the eight changed rows are taken under both, the two left being for an entry the follower already holds, which a one-step RPC never sends.",
+      "summary": "A Raft follower that holds an entry of another term at the index before the entries a leader sends refuses the request and keeps the entry: the leader backs up, sends from one entry earlier, and the conflicting entry is replaced then. A developer has the follower drop the conflicting entry and everything after it the moment it refuses, so that the leader's next try finds the index free. The contract's eight rows change from a rejection to a transition that truncates, the model's `Replicate` carries the truncation out and backs the leader up as before, and TLC checks the rule under all three configurations: log matching, leader completeness and state machine safety hold in 19,844, 8,578 and 14,244 states, no committed entry is ever overwritten, the followers still catch up and learn every commit under fairness, and six of the eight changed rows are taken, the two left being for an entry the follower already holds, which a one-step RPC never sends.",
       "categories": [
         "functional",
         "no-false-positive"
       ],
       "severity": "none",
       "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "099",
+      "path": "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry",
+      "title": "A follower that leaves its commit index alone on a heartbeat never applies the last entry",
+      "summary": "A Raft follower moves its commit index up to the leader's on every request it accepts, a heartbeat included, as far as its log is known to match the leader's. A developer makes a heartbeat a liveness signal and nothing more: the commit index moves with the entries, the comment says, and a request that carries nothing to apply changes nothing. The tests pass and both safety configurations verify the change: no committed entry is overwritten, the logs match, and a follower never applies what the leader has not. The replication model's fairness configuration reports a run that goes on forever after eight steps: the leader replicates its entry to both followers, marks it committed, and every heartbeat from then on is refused the commit index it carries, so the followers never apply it; the property that every follower learns the leader's commits is violated, and the run ends in a state the system never leaves.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "100",
+      "path": "100-follower-that-refuses-to-overwrite-a-conflicting-entry-never-catches-up",
+      "title": "A follower that refuses to overwrite a conflicting entry never catches up",
+      "summary": "A Raft follower that holds an entry of another term at the index a leader sends an entry for drops it, and everything after it, and takes the leader's. A developer has the follower refuse such a request instead, so that no entry is discarded on a leader's say-so, with the leader backing up as it does on a conflict at the previous index. The tests pass, and the two safety configurations verify the change: a follower that refuses changes nothing, and nothing it holds breaks an invariant. The fairness configuration reports a run that goes on forever after eleven steps: the leader is already at the start of the follower's log, has nothing to back up to, sends the same entry again and is refused again, and the follower never holds the leader's log; the property that every entry in a leader's log reaches every follower is violated, and the run ends in a state the system never leaves.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "101",
+      "path": "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live",
+      "title": "A follower that takes the commit index on the heartbeat after an entry, proved live",
+      "summary": "A Raft follower that appends an entry takes the leader's commit index in the same request, as far as the entries it now holds. A developer has it take the commit index only on a request that appends nothing, the heartbeat that follows, once the entry is on disk: a request that appends is a write, and the commit index moves on the next one. The change is verified under all three configurations, the two safety ones in 21,551 and 9,269 states, and the fairness one in 14,958: every entry still reaches every follower, every follower still learns the leader's commits, a leader's own entries are still committed, and the coverage shows both rows the change alters taken under each.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
       "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
       "approach": "D1",
       "verdict": "verified",

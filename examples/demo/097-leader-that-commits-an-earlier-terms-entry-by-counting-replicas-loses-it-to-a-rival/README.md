@@ -7,7 +7,7 @@
 |---|---|---|---|---|---|
 | **✗ Violation: LeaderCompleteness, 16-step trace (figure 8)** | functional | critical | bug-fix, behaviour change intended | [`CommitRule#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/CommitRule.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
-> A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.
+> A Raft leader marks an entry of its own term committed once a majority of the servers hold it, and an entry from an earlier term only along with one of its own after it, the rule of section 5.4.2. A developer has the leader commit any entry a majority holds, whatever its term, with the argument that a candidate without such an entry cannot win a majority. The tests pass, the contract diff is one row, and the model's first configuration, three terms, verifies the change in 25,666 states, and so does the third, under fairness. The second, four terms and one entry per leader, the budget of figure 8 of the paper, finds in sixteen steps a leader of term 3 that commits an entry of term 1 while a rival whose log ends in term 2 has just been elected leader of term 4 without it.
 
 ## The change
 
@@ -112,12 +112,13 @@ public final class CommitRule {
 
 ## What the verifier found
 
-The model is checked under 2 configurations, and the verdict is the first that fails:
+The model is checked under 3 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
 | three terms, two entries (`spec/RaftReplication.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2 | ✓ Verified: all invariants and properties hold in 25,666 states |
 | figure 8 (`spec/RaftReplicationFigureEight.cfg`) | every run of three servers over four terms with one entry per leader's log, the budget of figure 8 of the paper: a leader of term 1 appends an entry it never gets to replicate, a leader of term 2 appends its own at the same index, the first comes back as the leader of term 3 and replicates its entry of term 1 to a majority, and the second, whose last entry is from the later term, can still be elected in term 4 without it; three terms cannot show this, and the same invariants and action properties are checked | Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1 | ✗ Violation: LeaderCompleteness, 16-step trace |
+| fairness (`spec/RaftReplicationLive.cfg`) | the three liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends every follower its next entry or a heartbeat and marks committed what the commit rule lets it; nothing is assumed of the clients, so the properties hold whether or not a request comes. Three servers, three terms and one entry per leader, without the symmetry set, since TLC's liveness checking is unsound under one. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1 | ✓ Verified: all invariants and properties hold in 16,452 states |
 
 TLC found a run of the system under figure 8, 16 steps long, that violates the invariant **LeaderCompleteness** (a leader holds every entry a server of its term or an earlier one knows committed (figure 3 of the paper); the election restriction and the commit rule together are what make it so). Each step is one action of one part of the system:
 
@@ -136,7 +137,7 @@ TLC found a run of the system under figure 8, 16 steps long, that violates the i
 13. **Replicate**, `Server.appendEntries`: a leader sends one server the entry at that server's next index, or a heartbeat if it is caught up, with the entry before it and the leader's commit index, and gets the answer; the request goes through the role machine, then the append rule on the follower's log as it stands against the leader's, and the reply through the role machine on the leader, which moves the server's next and match indices forward on success and backs the next index up by one on a refusal. `nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )`
 14. **Replicate**, `Server.appendEntries`: a leader sends one server the entry at that server's next index, or a heartbeat if it is caught up, with the entry before it and the leader's commit index, and gets the answer; the request goes through the role machine, then the append rule on the follower's log as it stands against the leader's, and the reply through the role machine on the leader, which moves the server's next and match indices forward on success and backs the next index up by one on a refusal. `log = (s1 :> <<1>> @@ s2 :> <<2>> @@ s3 :> <<1>>)`, `matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )`, `nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )`
 15. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `currentTerm = (s1 :> 3 @@ s2 :> 4 @@ s3 :> 4)`, `nextIndex = ( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )`, `role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)`, `votes = (s1 :> {s1, s3} @@ s2 :> {s2, s3} @@ s3 :> {})`
-16. **AdvanceCommit**, `Server.advanceCommitIndex`: a leader asks the commit rule about the first entry it has not marked committed, given the entry's term against its own and whether a majority of the servers hold it, and marks it committed on a transition. `commitIndex = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)`
+16. **AdvanceCommit**, `Server.advanceCommitIndex`: a leader asks the commit rule about an entry it has not marked committed, given the entry's term against its own and whether a majority of the servers hold it, and marks it committed on a transition, and with it everything before it. `commitIndex = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)`
 
 The model is small (Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1), which is what keeps the trace readable. TLC explored every interleaving of the servers, their terms, votes and logs, and the AppendEntries RPCs between them within those bounds.
 
@@ -146,10 +147,11 @@ The model is small (Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1), which 
 |---|---|---|---|---|
 | three terms, two entries | 27 of 36 | 12 of 27 | 16 of 24 | 4 of 12 |
 | figure 8 | stopped at the counterexample | stopped at the counterexample | stopped at the counterexample | stopped at the counterexample |
+| fairness | 27 of 36 | 12 of 27 | 10 of 24 | 4 of 12 |
 
 The change alters 1 row of the contract:
 
-- `decide(PENDING, Replication[term=OLDER, majority=true])`: `Unchanged[reason="an entry from an earlier term is committed only along with one of the current term"]` → `Transition[next=COMMITTED, effects=[APPLY]]`, taken under three terms, two entries
+- `decide(PENDING, Replication[term=OLDER, majority=true])`: `Unchanged[reason="an entry from an earlier term is committed only along with one of the current term"]` → `Transition[next=COMMITTED, effects=[APPLY]]`, taken under three terms, two entries, fairness
 
 The run under figure 8 stopped at its counterexample, the steps above, and its counts are left out: the verdict rests on the counterexample.
 
@@ -245,7 +247,7 @@ High. The change fixes something that looks like a bug: a new leader that has re
 
 ## Why the verdict is right
 
-The commit rule in the model is generated from the regenerated contract, so `AdvanceCommit` commits what the patched row says. The first configuration, three terms, verifies the change in 25,666 states, more than the committed rule's 19,338, since more gets committed: every entry a majority holds within three terms is one the next leader holds too. The second, `RaftReplicationFigureEight.cfg`, has four terms and one entry per leader, and TLC reports `LeaderCompleteness` violated after sixteen steps, the paper's figure 8 with three servers: s1 wins term 1 and appends an entry of term 1 that stays on s1 alone; s2 wins term 2 with s3's vote and appends an entry of term 2 that stays on s2 alone; s1 hears of term 2 from s2's refusal of its heartbeat, times out into term 3, wins it with s3's vote, backs up once against s3's empty log and replicates its entry of term 1 to s3, so that a majority holds it; s2 times out into term 4 and wins it with s3's vote, since s2's log ends in term 2 and s3's in term 1, and the election restriction compares last terms, not holdings; and s1, still the leader of term 3, marks its entry committed on the patched row, with a majority holding it and a leader of a later term elected without it. The next steps, which TLC does not need, are s2's entry of term 2 replacing the committed entry on s1 and s3. The committed rule leaves the entry pending in that state, and commits it only once an entry of term 3 after it reaches a majority, which s2 could not then have been elected over.
+The commit rule in the model is generated from the regenerated contract, so `AdvanceCommit` commits what the patched row says. The first configuration, three terms, verifies the change in 25,666 states, more than the committed rule's 20,253, since more gets committed: every entry a majority holds within three terms is one the next leader holds too. The second, `RaftReplicationFigureEight.cfg`, has four terms and one entry per leader, and TLC reports `LeaderCompleteness` violated after sixteen steps, the paper's figure 8 with three servers: s1 wins term 1 and appends an entry of term 1 that stays on s1 alone; s2 wins term 2 with s3's vote and appends an entry of term 2 that stays on s2 alone; s1 hears of term 2 from s2's refusal of its heartbeat, times out into term 3, wins it with s3's vote, backs up once against s3's empty log and replicates its entry of term 1 to s3, so that a majority holds it; s2 times out into term 4 and wins it with s3's vote, since s2's log ends in term 2 and s3's in term 1, and the election restriction compares last terms, not holdings; and s1, still the leader of term 3, marks its entry committed on the patched row, with a majority holding it and a leader of a later term elected without it. The next steps, which TLC does not need, are s2's entry of term 2 replacing the committed entry on s1 and s3. The committed rule leaves the entry pending in that state, and commits it only once an entry of term 3 after it reaches a majority, which s2 could not then have been elected over. The third configuration, three terms and one entry under the fairness conditions, verifies the change as well, in 16,452 states: a rule that commits more commits no later, and the liveness properties cannot tell it from the committed one.
 
 ## What to do
 
@@ -253,14 +255,14 @@ Reject. An entry from an earlier term is committed by the entry of the current t
 
 ## Evidence
 
-How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 22 in 11 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1.
+How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 21 in 11 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1; fairness: TLC 2.19 explored 16,452 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3043421] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3238303] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -279,9 +281,9 @@ Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 06:06:40)
+Starting... (2026-11-02 07:17:11)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 06:06:40.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 07:17:12.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -331,14 +333,14 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
   decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged
   decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged
   decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
-132339 states generated, 25666 distinct states found, 0 states left on queue.
-The depth of the complete state graph search is 22.
-The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 11s at (2026-11-02 06:06:51)
+135589 states generated, 25666 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 21.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 3).
+Finished in 11s at (2026-11-02 07:17:23)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3044017] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3238859] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -357,9 +359,9 @@ Semantic processing of module VoteRuleContract
 Semantic processing of module AppendRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 06:06:52)
+Starting... (2026-11-02 07:17:23)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 06:06:52.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 07:17:24.
 Error: Invariant LeaderCompleteness is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -376,7 +378,7 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication>
+State 2: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -390,7 +392,7 @@ State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
+State 3: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -404,7 +406,7 @@ State 3: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication>
+State 4: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -418,7 +420,7 @@ State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 5: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
+State 5: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -432,7 +434,7 @@ State 5: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 6: <ClientRequest line 167, col 5 to line 170, col 91 of module RaftReplication>
+State 6: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -446,7 +448,7 @@ State 6: <ClientRequest line 167, col 5 to line 170, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 7: <ClientRequest line 167, col 5 to line 170, col 91 of module RaftReplication>
+State 7: <ClientRequest line 169, col 5 to line 172, col 91 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -460,7 +462,7 @@ State 7: <ClientRequest line 167, col 5 to line 170, col 91 of module RaftReplic
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 8: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplication>
+State 8: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -474,7 +476,7 @@ State 8: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplicatio
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> s2)
 
-State 9: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication>
+State 9: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -488,7 +490,7 @@ State 9: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 10: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
+State 10: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -502,7 +504,7 @@ State 10: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> s2)
 
-State 11: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplication>
+State 11: <Timeout line 131, col 15 to line 131, col 88 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -516,7 +518,7 @@ State 11: <Timeout line 129, col 15 to line 129, col 88 of module RaftReplicatio
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 12: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
+State 12: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -530,7 +532,7 @@ State 12: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 13: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplication>
+State 13: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -544,7 +546,7 @@ State 13: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 14: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplication>
+State 14: <Replicate line 218, col 5 to line 221, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -558,7 +560,7 @@ State 14: <Replicate line 216, col 5 to line 219, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 15: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication>
+State 15: <Canvass line 157, col 5 to line 160, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -572,7 +574,7 @@ State 15: <Canvass line 155, col 5 to line 158, col 30 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 16: <AdvanceCommit line 232, col 5 to line 237, col 83 of module RaftReplication>
+State 16: <AdvanceCommit line 236, col 5 to line 241, col 83 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -639,7 +641,97 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 55256 states generated, 10087 distinct states found, 466 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 05s at (2026-11-02 06:06:57)
+Finished in 05s at (2026-11-02 07:17:29)
+
+== fairness: spec/RaftReplicationLive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 3239172] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftReplication.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/AppendRuleContract.tla
+Parsing file examples/demo/apps/quorum/spec/CommitRuleContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module VoteRuleContract
+Semantic processing of module AppendRuleContract
+Semantic processing of module CommitRuleContract
+Semantic processing of module RaftReplication
+Starting... (2026-11-02 07:17:30)
+Implied-temporal checking--satisfiability problem has 5 branches.
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 07:17:30.
+Checking 5 branches of temporal properties for the current state space with 3285 total distinct states at (2026-11-02 07:17:33)
+Finished checking temporal properties in 00s at 2026-11-02 07:17:33
+Checking 5 branches of temporal properties for the current state space with 54635 total distinct states at (2026-11-02 07:18:33)
+Finished checking temporal properties in 00s at 2026-11-02 07:18:33
+Checking 5 branches of temporal properties for the complete state space with 82260 total distinct states at (2026-11-02 07:19:00)
+Finished checking temporal properties in 00s at 2026-11-02 07:19:00
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 6.0E-11
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 27 of 36; never taken (9):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 12 of 27; never taken (15):
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+Rows of net.terminalvalue.quorum.raft.AppendRule#decide a step of the model takes: 10 of 24; never taken (14):
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected
+  decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected
+  decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected
+  decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged
+  decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]
+Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model takes: 4 of 12; never taken (8):
+  decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException
+  decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException
+  decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged
+  decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
+83995 states generated, 16452 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 16.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+Finished in 01min 30s at (2026-11-02 07:19:00)
 ```
 
 </details>

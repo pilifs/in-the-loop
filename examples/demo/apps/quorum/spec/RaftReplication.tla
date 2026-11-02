@@ -102,11 +102,13 @@ VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 \* nothing known to match), one that leaves office drops it, and a leader that stays keeps what the step computed.
 Fresh(l) == [s \in Servers |-> Len(log[l]) + 1]
 Blank == [s \in Servers |-> 0]
+NextIndexAfter(n) == [l \in Servers |-> IF n.role[l] # "LEADER" THEN Blank ELSE IF role[l] # "LEADER" THEN Fresh(l) ELSE n.nextIndex[l]]
+MatchIndexAfter(n) == [l \in Servers |-> IF n.role[l] # "LEADER" THEN Blank ELSE IF role[l] # "LEADER" THEN Blank ELSE n.matchIndex[l]]
 Step(n) ==
     /\ role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes
     /\ log' = n.log /\ commitIndex' = n.commitIndex
-    /\ nextIndex' = [l \in Servers |-> IF n.role[l] # "LEADER" THEN Blank ELSE IF role[l] # "LEADER" THEN Fresh(l) ELSE n.nextIndex[l]]
-    /\ matchIndex' = [l \in Servers |-> IF n.role[l] # "LEADER" THEN Blank ELSE IF role[l] # "LEADER" THEN Blank ELSE n.matchIndex[l]]
+    /\ nextIndex' = NextIndexAfter(n) /\ matchIndex' = MatchIndexAfter(n)
+Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.log, n.commitIndex, NextIndexAfter(n), MatchIndexAfter(n)>> # vars
 
 (***************************************************************************)
 (* The election, as in RaftElection.tla, with the logs live.               *)
@@ -218,22 +220,24 @@ Replicate(l, s) ==
     /\ ~ReplicateNext(l, s).throws
     /\ Step(ReplicateNext(l, s))
 
-\* Server.advanceCommitIndex: a leader looks at the first entry of its log it has not marked committed, and asks the
-\* commit rule, given the entry's term against its own and whether a majority of the servers hold it, itself among
-\* them. On the committed rule an entry of the leader's term held by a majority is committed, and with it everything
-\* before it; an entry from an earlier term is not committed by counting, however many hold it (figure 8).
+\* Server.advanceCommitIndex: a leader looks at an entry of its log it has not marked committed, and asks the commit
+\* rule, given the entry's term against its own and whether a majority of the servers hold it, itself among them. On
+\* the committed rule an entry of the leader's term held by a majority is committed, and with it everything before it,
+\* which the commit index moving up to it says; an entry from an earlier term is not committed by counting, however
+\* many hold it (figure 8), and is committed only when an entry of the leader's term after it is. The leader may ask
+\* about any uncommitted entry, as figure 2 of the paper has it: a leader that asked only about the first would
+\* never commit a log that starts with an earlier term's entry, which OwnEntriesAreCommitted below forbids.
 Holders(l, i) == {s \in Servers : matchIndex[l][s] >= i} \cup {l}
-CommitNext(l) ==
-    LET i == commitIndex[l] + 1
-        d == Commit!Decide("PENDING", [kind |-> "Replication", term |-> Order(l, log[l][i]), majority |-> Majority(Holders(l, i))])
+CommitNext(l, i) ==
+    LET d == Commit!Decide("PENDING", [kind |-> "Replication", term |-> Order(l, log[l][i]), majority |-> Majority(Holders(l, i))])
     IN [throws |-> d.kind = "Throws", commits |-> d.kind = "Transition" /\ d.next = "COMMITTED"]
 
 AdvanceCommit(l) ==
     /\ role[l] = "LEADER"
-    /\ commitIndex[l] < Len(log[l])
-    /\ ~CommitNext(l).throws
-    /\ CommitNext(l).commits
-    /\ commitIndex' = [commitIndex EXCEPT ![l] = @ + 1]
+    /\ \E i \in commitIndex[l] + 1..Len(log[l]) :
+        /\ ~CommitNext(l, i).throws
+        /\ CommitNext(l, i).commits
+        /\ commitIndex' = [commitIndex EXCEPT ![l] = i]
     /\ UNCHANGED <<role, currentTerm, votedFor, votes, log, nextIndex, matchIndex>>
 
 (***************************************************************************)
@@ -283,7 +287,7 @@ KernelNeverThrows ==
     /\ \A s \in Servers : currentTerm[s] < MaxTerm => ~TimeoutNext(s).throws
     /\ \A c, v \in Servers : role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
     /\ \A l, s \in Servers : role[l] = "LEADER" /\ s # l => ~ReplicateNext(l, s).throws
-    /\ \A l \in Servers : role[l] = "LEADER" /\ commitIndex[l] < Len(log[l]) => ~CommitNext(l).throws
+    /\ \A l \in Servers : role[l] = "LEADER" => \A i \in commitIndex[l] + 1..Len(log[l]) : ~CommitNext(l, i).throws
 
 \* Election safety (figure 3): at most one leader per term.
 ElectionSafety ==
@@ -326,5 +330,83 @@ TermsNeverDecrease == [][\A s \in Servers : currentTerm'[s] >= currentTerm[s]]_v
 \* property of figure 3).
 LeaderAppendOnly ==
     [][\A l \in Servers : role[l] = "LEADER" /\ role'[l] = "LEADER" => Len(log'[l]) >= Len(log[l]) /\ \A i \in 1..Len(log[l]) : log'[l][i] = log[l][i]]_vars
+
+(***************************************************************************)
+(* Liveness: what the cluster gets round to, under fairness.               *)
+(***************************************************************************)
+
+\* Leader l's heartbeat resets server s's election timer: the role machine's decision on it has RESET_ELECTION_TIMER.
+Resets(l, s) ==
+    /\ role[l] = "LEADER"
+    /\ s # l
+    /\ LET d == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
+       IN d.kind = "Transition" /\ Has(d, "RESET_ELECTION_TIMER")
+
+\* A server whose election timer nothing resets: it is not a leader, and no leader's heartbeats reset it.
+Unled(s) == role[s] # "LEADER" /\ \A l \in Servers : ~Resets(l, s)
+
+\* Each action's enabling condition, as ENABLED <<A>>_vars would compute it: the action's guard, and a step that
+\* changes some variable, which a heartbeat to a follower that is caught up and knows every commit does not. TLC
+\* computes ENABLED of an action with the rules inside it slowly, as RaftElection.tla explains; these predicates are
+\* the same condition evaluated directly, and EnablingAgrees at the end checks that they are. The check matters: a
+\* predicate that holds where the action cannot take a step makes its fairness condition unsatisfiable, no run is
+\* fair, and the liveness check passes with nothing checked.
+CanTimeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Changes(TimeoutNext(s))
+CanCanvass(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ ~CanvassNext(c, v).throws /\ Changes(CanvassNext(c, v))
+CanReplicate(l, s) == role[l] = "LEADER" /\ s # l /\ ~ReplicateNext(l, s).throws /\ Changes(ReplicateNext(l, s))
+CanAdvanceCommit(l) ==
+    role[l] = "LEADER" /\ \E i \in commitIndex[l] + 1..Len(log[l]) : ~CommitNext(l, i).throws /\ CommitNext(l, i).commits
+
+\* Fairness: what each server is assumed to get round to. A server whose timer nothing resets times out; a candidate
+\* with a vote to ask for asks; a leader sends every follower its next entry or a heartbeat, and marks committed what
+\* the commit rule lets it. Nothing is assumed about the clients: a leader may get no request, or any number up to
+\* MaxEntries, so the properties hold of every workload. Each condition is weak fairness, WF_vars(A), written out as
+\* TLA+ defines it: if A is enabled from some point on, A happens infinitely often. The replication conditions are
+\* one per leader and follower, since a leader that kept sending to one follower and never to another would be fair
+\* to the pair of them as a whole and starve the second.
+Fairness ==
+    /\ \A s \in Servers : <>[](Unled(s) /\ CanTimeout(s)) => []<><<Unled(s) /\ Timeout(s)>>_vars
+    /\ <>[](\E c, v \in Servers : CanCanvass(c, v)) => []<><<\E c, v \in Servers : Canvass(c, v)>>_vars
+    /\ \A l, s \in Servers : <>[]CanReplicate(l, s) => []<><<Replicate(l, s)>>_vars
+    /\ \A l \in Servers : <>[]CanAdvanceCommit(l) => []<><<AdvanceCommit(l)>>_vars
+
+LiveSpec == Spec /\ Fairness
+
+\* The term budget: every term stays below MaxTerm, past which the model's timers do not fire. A run that spends it
+\* may end with no leader, three candidates that voted for themselves, and nothing then replicates: the properties
+\* below are about the runs that stay within it, in which a leader is elected and, after the last timer fires, stays.
+WithinTheBudget == [](\A s \in Servers : currentTerm[s] < MaxTerm)
+
+\* Every entry in a leader's log reaches every follower: from some point on, each follower's log holds the leader's
+\* log as a prefix. The consistency check backs the leader up one entry at a time to the last entry the two logs
+\* share, and the entries after it go over one at a time, each overwriting what the follower held at its index.
+FollowersCatchUp ==
+    WithinTheBudget => <>[](\A l, s \in Servers : role[l] = "LEADER" =>
+        Len(log[s]) >= Len(log[l]) /\ \A i \in 1..Len(log[l]) : log[s][i] = log[l][i])
+
+\* Every follower learns what the leader has committed: from some point on, no follower's commit index is behind
+\* the leader's. The leader's commit index travels with every request, a heartbeat included, and a follower takes it
+\* as far as its log is known to match the leader's. Not that the commit indices agree: a server elected after a
+\* commit it had not heard of, with no entry of its own term to commit, knows less than its followers, for good if no
+\* client request comes; which is the paper's reason for the no-op entry a leader appends on taking office (section
+\* 8), and this model leaves it out.
+FollowersLearnCommits ==
+    WithinTheBudget => <>[](\A l, s \in Servers : role[l] = "LEADER" => commitIndex[s] >= commitIndex[l])
+
+\* An entry a leader appended in its term is committed, unless the leader is deposed first: the entry reaches a
+\* majority, and the commit rule commits an entry of the leader's term that a majority holds, and with it everything
+\* before it. Nothing is claimed of an entry from an earlier term on its own, which the commit rule commits only
+\* along with a later entry of the leader's own term, and a leader that gets no client request never has one.
+OwnEntriesAreCommitted ==
+    WithinTheBudget => \A l \in Servers, i \in 1..MaxEntries :
+        (role[l] = "LEADER" /\ i <= Len(log[l]) /\ log[l][i] = currentTerm[l]) ~> (commitIndex[l] >= i \/ role[l] # "LEADER")
+
+\* The enabling predicates agree with ENABLED in every reachable state. Checked by RaftReplicationEnabled.cfg, which
+\* takes TLC a while, for the reason the predicates exist; run it after changing an action.
+EnablingAgrees ==
+    /\ \A s \in Servers : CanTimeout(s) <=> ENABLED <<Timeout(s)>>_vars
+    /\ \A c, v \in Servers : CanCanvass(c, v) <=> ENABLED <<Canvass(c, v)>>_vars
+    /\ \A l, s \in Servers : CanReplicate(l, s) <=> ENABLED <<Replicate(l, s)>>_vars
+    /\ \A l \in Servers : CanAdvanceCommit(l) <=> ENABLED <<AdvanceCommit(l)>>_vars
 
 =============================================================================
