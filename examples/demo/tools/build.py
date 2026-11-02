@@ -579,8 +579,9 @@ def run_tool_property(folder, example, root, module, result):
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"))
     write_evidence(folder, output, build / "build/reports/property.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
-    m = (re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \(JBMC", output)
-         or re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M))
+    # A method may have several properties; the one that failed is the one to report, if any did.
+    m = (re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M)
+         or re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \(JBMC", output))
     throws = [t for t in m.group(3).split(", and throws ") if t] if m else []
     result["property"] = {"assert": m.group(1), "assume": m.group(2), **({"throws": throws} if throws else {})} if m else None
     witness = re.search(r"^  (\S.*)\n    outcome: (.*)$(?:\n    expected: (.*)$)?", output, re.M)
@@ -661,26 +662,38 @@ RAFT = {
          "what": "the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets "
                  "times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run "
                  "that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves"},
+        {"cfg": "spec/RaftElectionLogs.cfg", "label": "a server left behind",
+         "what": "the election restriction: one server holds the log a deposed leader of term 1 left behind, three entries of "
+                 "its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so "
+                 "that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant "
+                 "`LeaderCompleteness` besides the usual ones"},
     ],
     "contract": "src/contract/RoleMachine.decide.contract",
     "operator": "spec/RoleMachineContract.tla",
     "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+    # The model's second generated operator: the vote rule, brought in as an instance.
+    "operators": [{"contract": "src/contract/VoteRule.decide.contract", "operator": "spec/VoteRuleContract.tla",
+                   "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"}],
     "parts": "the servers, their terms and votes, and the RPCs between them",
     "initial": "every server a follower in term 0, no vote cast, no vote held",
     "actions": {
         "Initial predicate": "the initial state",
         "Timeout": "`Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision",
         "Canvass": "`Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply "
-                   "each go through the role machine, then the vote rule on the voter and the tally on the candidate",
+                   "each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's "
+                   "term and log against its own, and the tally on the candidate",
         "Heartbeat": "`Server.appendEntries`: a leader sends one server a heartbeat and gets the answer; the server adopts a newer "
                      "term or yields to the leader of its own, and a stale leader is rejected and steps down",
     },
     "invariants": {
         "TypeOK": "every variable has a value of its type",
         "ElectionSafety": "at most one leader per term",
-        "KernelNeverThrows": "no timeout or RPC any reachable state allows makes the role machine throw: the IllegalStateException "
-                             "the Java reserves for an input it holds impossible never fires",
+        "KernelNeverThrows": "no timeout or RPC any reachable state allows makes the role machine or the vote rule throw: the "
+                             "IllegalStateException the Java reserves for an input it holds impossible never fires",
         "LeaderHasAMajority": "a leader holds the votes of a majority of the servers, its own among them",
+        "LeaderCompleteness": "a leader's log holds every committed entry, an entry being committed once a majority of the "
+                              "servers hold it; the election restriction is what makes it so, a voter granting only a "
+                              "candidate whose log is at least as up to date as its own",
         "TermsNeverDecrease": "a term never goes backwards on any server, in any step",
         "LeadersNeverCampaign": "a leader never becomes a candidate: it leaves office as the follower of a newer term, or by "
                                 "stepping down, never by starting an election against itself; a property of steps, which no "
@@ -700,8 +713,9 @@ RAFT = {
         "StaleLeadersStepDown": "a leader whose term the cluster has left steps down: its heartbeat to a server with a newer "
                                 "term, or that server's request for a vote, tells it",
     },
-    "machine": "The servers' role machine inside the model is generated from the behavioural contract of the patched "
-               "code, so the model checks the role transitions the servers really make.",
+    "machine": "The servers' role machine and vote rule inside the model are generated from the behavioural contracts of "
+               "the patched code, so the model checks the role transitions the servers really make and the votes they "
+               "really grant.",
 }
 
 IDEMPOTENCY = {
@@ -767,7 +781,7 @@ def model_of(example):
     if app == "boxoffice":
         return MODELS["boxoffice"]
     for model in TOOL_MODELS[app]:
-        if model["symbol"] == example["subject"]["symbol"]:
+        if example["subject"]["symbol"] in [model["symbol"]] + [o["symbol"] for o in model.get("operators", [])]:
             return model
     sys.exit(f"{example['id']}: no TLA+ model of {app} is built around {example['subject']['symbol']}")
 
@@ -833,7 +847,8 @@ def run_tool_tlc(folder, example, root, module, result):
     model_files = model_of(example)
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
-    tool(app, root, "tla", model_files["contract"], model_files["operator"], anchored=False)
+    for generated in [model_files, *model_files.get("operators", [])]:
+        tool(app, root, "tla", generated["contract"], generated["operator"], anchored=False)
     configurations = tlc_configurations(model_files)
     runs = [(c, tlc_run(build, model_files, c["cfg"], root)) for c in configurations]
     several = len(runs) > 1
@@ -885,7 +900,7 @@ def run_tool_tlc(folder, example, root, module, result):
         "violationKind": kind,
         "forever": tlc_result["forever"],
         "domain": tlc_result["domain"],
-        "stateMachine": tool_state_machine(app, root, model_files["symbol"]),
+        "stateMachine": tool_state_machine(app, root, example["subject"]["symbol"]),
         "proof": "; ".join(f"{c['label']}: {tlc_proof(r)}" for c, r in runs if tlc_proof(r)) if several else tlc_proof(tlc_result),
         "problem": tlc_result.get("problem") if verdict == "unverifiable" else None,
     })

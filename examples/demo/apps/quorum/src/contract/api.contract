@@ -2,7 +2,7 @@
 # It lists every public and protected type and member of this module, from the compiled classes.
 # A change here is a change in what the module's users can call: review it like an API change.
 kind: api
-module: quorum, 25 public types, 97 members
+module: quorum, 29 public types, 117 members
 
 net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected
   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)
@@ -47,6 +47,20 @@ net.terminalvalue.quorum.clock.HybridLogicalClock: public final class
   public static long physical(long)
   public static long receive(long, long, long)
   public static long tick(long, long)
+
+net.terminalvalue.quorum.raft.Ballot: public final enum
+  public static final FOR_ANOTHER: net.terminalvalue.quorum.raft.Ballot
+  public static final FOR_THE_CANDIDATE: net.terminalvalue.quorum.raft.Ballot
+  public static final OPEN: net.terminalvalue.quorum.raft.Ballot
+  public static net.terminalvalue.quorum.raft.Ballot valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.raft.Ballot[] values()
+
+net.terminalvalue.quorum.raft.LogOrder: public final enum
+  public static final AHEAD: net.terminalvalue.quorum.raft.LogOrder
+  public static final BEHIND: net.terminalvalue.quorum.raft.LogOrder
+  public static final EVEN: net.terminalvalue.quorum.raft.LogOrder
+  public static net.terminalvalue.quorum.raft.LogOrder valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.raft.LogOrder[] values()
 
 net.terminalvalue.quorum.raft.Role: public final enum
   public static final CANDIDATE: net.terminalvalue.quorum.raft.Role
@@ -111,9 +125,23 @@ net.terminalvalue.quorum.raft.TermOrder: public final enum
   public static net.terminalvalue.quorum.raft.TermOrder valueOf(java.lang.String)
   public static net.terminalvalue.quorum.raft.TermOrder[] values()
 
+net.terminalvalue.quorum.raft.VoteEffect: public final enum
+  public static final GRANT: net.terminalvalue.quorum.raft.VoteEffect
+  public static net.terminalvalue.quorum.raft.VoteEffect valueOf(java.lang.String)
+  public static net.terminalvalue.quorum.raft.VoteEffect[] values()
+
+net.terminalvalue.quorum.raft.VoteRequest: public final record
+  public VoteRequest(net.terminalvalue.quorum.raft.TermOrder, net.terminalvalue.quorum.raft.LogOrder)
+  public final boolean equals(java.lang.Object)
+  public final int hashCode()
+  public final java.lang.String toString()
+  public net.terminalvalue.quorum.raft.LogOrder log()
+  public net.terminalvalue.quorum.raft.TermOrder term()
+
 net.terminalvalue.quorum.raft.VoteRule: public final class
   public static boolean grant(long, int, long, long, int, long, long, long)
   public static final NO_VOTE: int
+  public static net.terminalvalue.quorum.Decision decide(net.terminalvalue.quorum.raft.Ballot, net.terminalvalue.quorum.raft.VoteRequest)
 
 net.terminalvalue.quorum.replication.LastWriterWins: public final class
   public static int winner(long, int, long, int)

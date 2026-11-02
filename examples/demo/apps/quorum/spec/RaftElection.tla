@@ -10,21 +10,29 @@
 (* has four servers, a cluster in which a tally can fall short of a       *)
 (* majority by more than one vote, under a symmetry set;                  *)
 (* RaftElectionInductive.cfg checks that the invariant Inductive below is *)
-(* inductive, from every state it admits rather than from Init; and       *)
+(* inductive, from every state it admits rather than from Init;           *)
 (* RaftElectionLive.cfg checks the liveness properties at the end, under  *)
-(* the fairness conditions stated with them.                              *)
+(* the fairness conditions stated with them; and RaftElectionLogs.cfg     *)
+(* gives one server a log a deposed leader left behind, and checks that   *)
+(* the election restriction keeps it from being elected.                  *)
 (*                                                                         *)
-(* A server's role transitions, Decide(role, event), are not written here. *)
-(* They are generated from the behavioural contract of RoleMachine#decide  *)
-(* (RoleMachineContract.tla), which jvmcontract proves the bytecode obeys  *)
-(* on every input. The role machine sees a message's term only as it       *)
-(* compares with the server's own (NEWER, CURRENT, OLDER), as the Java     *)
-(* does. The vote itself is VoteRule.grant without the log comparison:     *)
-(* one vote per term, for the first candidate to ask. Each action names    *)
-(* the Java operation it stands for.                                       *)
+(* Neither a server's role transitions nor its vote are written here.     *)
+(* Decide(role, event) is generated from the behavioural contract of      *)
+(* RoleMachine#decide (RoleMachineContract.tla), and Vote!Decide(ballot,  *)
+(* request) from that of VoteRule#decide (VoteRuleContract.tla, brought   *)
+(* in as an instance so that the two operators of one name can coexist);  *)
+(* jvmcontract proves the bytecode obeys each on every input. The role    *)
+(* machine sees a message's term only as it compares with the server's    *)
+(* own (NEWER, CURRENT, OLDER), and the vote rule sees the voter's ballot *)
+(* (OPEN, FOR_THE_CANDIDATE, FOR_ANOTHER) and the candidate's term and    *)
+(* log as they compare with the voter's, as the Java does: the comparing  *)
+(* is what VoteRule.grant adds around the rule, and this model repeats    *)
+(* it. Each action names the Java operation it stands for.                *)
 (*                                                                         *)
-(* Simplifications: no log, so no election restriction and no entries      *)
-(* (a heartbeat is an empty AppendEntries); an RPC is one step, the        *)
+(* Simplifications: the logs are fixed, Logs below, since the model has   *)
+(* no replication, so the election restriction is checked for the logs a *)
+(* configuration gives and not for every log a run could build; a        *)
+(* heartbeat carries no entries; an RPC is one step, the                  *)
 (* request and its reply together, so a server always answers with the    *)
 (* term it has now, and a stale server learns of a newer term the moment   *)
 (* it talks to one that has it; terms stop at MaxTerm, past which no timer *)
@@ -34,7 +42,12 @@
 (***************************************************************************)
 EXTENDS Naturals, FiniteSets, Sequences, TLC, RoleMachineContract
 
-CONSTANTS Servers, MaxTerm
+Vote == INSTANCE VoteRuleContract
+
+CONSTANTS
+    Servers,
+    MaxTerm,
+    LeftBehind    \* the servers whose log a deposed leader left behind: see Logs
 
 VARIABLES
     role,         \* server -> FOLLOWER, CANDIDATE or LEADER
@@ -50,8 +63,25 @@ Majority(S) == Cardinality(S) * 2 > Cardinality(Servers)
 \* configuration may tell TLC (SYMMETRY Perms) to explore one state of each such class.
 Perms == Permutations(Servers)
 
-\* How a message's term compares with the server's own, which is all the role machine looks at.
-Order(s, t) == IF t > currentTerm[s] THEN "NEWER" ELSE IF t = currentTerm[s] THEN "CURRENT" ELSE "OLDER"
+\* How a message's term t compares with a server's own, which is all the role machine looks at.
+OrderOf(own, t) == IF t > own THEN "NEWER" ELSE IF t = own THEN "CURRENT" ELSE "OLDER"
+Order(s, t) == OrderOf(currentTerm[s], t)
+
+\* The logs, which nothing in this model changes, as a sequence of entry terms per server. Every server holds an
+\* entry of term 1 and, at index 2, an entry of term 2, which is committed when a majority holds it; except the
+\* servers in LeftBehind, which hold three entries of term 1 instead: the entries a leader of term 1 appended and
+\* never got to commit before the cluster moved on, and never had replaced (figure 7 of the paper, server f). Such
+\* a server's log is longer than the others' and behind them, and a vote rule that let it win would elect a leader
+\* without the committed entry, which it would then overwrite. With LeftBehind empty, every log is the same.
+Logs == [s \in Servers |-> IF s \in LeftBehind THEN <<1, 1, 1>> ELSE <<1, 2>>]
+
+LastTerm(log) == IF Len(log) = 0 THEN 0 ELSE log[Len(log)]
+
+\* How candidate c's log compares with voter v's, as Server.onRequestVote computes it for the vote rule: by the term
+\* of the last entry first, and between equal terms by length.
+LogOrder(c, v) ==
+    IF LastTerm(Logs[c]) # LastTerm(Logs[v]) THEN (IF LastTerm(Logs[c]) > LastTerm(Logs[v]) THEN "AHEAD" ELSE "BEHIND")
+    ELSE IF Len(Logs[c]) > Len(Logs[v]) THEN "AHEAD" ELSE IF Len(Logs[c]) = Len(Logs[v]) THEN "EVEN" ELSE "BEHIND"
 
 Has(d, effect) == \E i \in 1..Len(d.effects) : d.effects[i] = effect
 Adopts(d) == d.kind = "Transition" /\ Has(d, "ADOPT_TERM")
@@ -90,8 +120,9 @@ Timeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Step(Timeout
 
 \* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer.
 \* On v, Server.onRequestVote: the role machine first (a candidate's newer term is adopted), then the vote rule on
-\* the server as it then is: a candidate from the past is refused, and otherwise the vote is granted when the
-\* candidate's term is ahead of the server's, or the server has not voted in its term, or voted for this candidate.
+\* the server as it then is, given v's ballot as it stands for c (open, cast for c, cast for another) and c's term
+\* and log against v's own: a candidate from the past or with a log behind the voter's is refused, and otherwise
+\* the vote is granted unless the ballot is cast for another candidate of the term. A granted vote is v's ballot.
 \* On c, Server.onVote: the reply carries v's term, which goes through the role machine (a newer one is adopted);
 \* a candidate adds a granted vote to its tally, and the tally goes through the role machine as VotesCounted: a
 \* majority makes it the leader.
@@ -99,11 +130,13 @@ CanvassNext(c, v) ==
     LET dv == Decide(role[v], [kind |-> "RequestVote", term |-> Order(v, currentTerm[c])])
         tv == TermAfter(v, dv, currentTerm[c])
         free == VotedForAfter(v, dv)
-        granted == currentTerm[c] >= tv /\ (currentTerm[c] > tv \/ free \in {"none", c})
+        ballot == IF free = "none" THEN "OPEN" ELSE IF free = c THEN "FOR_THE_CANDIDATE" ELSE "FOR_ANOTHER"
+        dg == Vote!Decide(ballot, [kind |-> "VoteRequest", term |-> OrderOf(tv, currentTerm[c]), log |-> LogOrder(c, v)])
+        granted == dg.kind = "Transition" /\ Has(dg, "GRANT")
         dc == Decide(role[c], [kind |-> "Response", term |-> Order(c, tv)])
         tally == IF Adopts(dc) THEN {} ELSE IF granted THEN votes[c] \cup {v} ELSE votes[c]
         dt == Decide(RoleAfter(c, dc), [kind |-> "VotesCounted", majority |-> Majority(tally)])
-    IN [throws |-> dv.kind = "Throws" \/ dc.kind = "Throws" \/ dt.kind = "Throws",
+    IN [throws |-> dv.kind = "Throws" \/ dg.kind = "Throws" \/ dc.kind = "Throws" \/ dt.kind = "Throws",
         role |-> [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
         currentTerm |-> [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)],
         votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)],
@@ -163,10 +196,11 @@ TypeOK ==
     /\ votedFor \in [Servers -> Servers \cup {"none"}]
     /\ votes \in [Servers -> SUBSET Servers]
 
-\* The kernel's exceptions. Each action's record says whether a role-machine call it makes throws, and no action takes
-\* such a step; this invariant says there is none to take. The IllegalStateException the Java reserves for an input
-\* it holds impossible (a leader hearing a leader of its own term) is then impossible indeed, in every reachable
-\* state: a change that makes the role machine throw on an input the protocol can deliver violates it.
+\* The kernels' exceptions. Each action's record says whether a call it makes to the role machine or the vote rule
+\* throws, and no action takes such a step; this invariant says there is none to take. The IllegalStateException
+\* the Java reserves for an input it holds impossible (a leader hearing a leader of its own term) is then impossible
+\* indeed, in every reachable state: a change that makes a kernel throw on an input the protocol can deliver
+\* violates it.
 KernelNeverThrows ==
     /\ \A s \in Servers : currentTerm[s] < MaxTerm => ~TimeoutNext(s).throws
     /\ \A c, v \in Servers : role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
@@ -178,6 +212,16 @@ ElectionSafety ==
 
 \* A leader holds the votes of a majority of the servers, its own among them.
 LeaderHasAMajority == \A s \in Servers : role[s] = "LEADER" => s \in votes[s] /\ Majority(votes[s])
+
+\* Leader completeness (Raft, figure 3), for the logs of the configuration: a leader's log holds every committed
+\* entry, an entry being committed once a majority of the servers hold it. The election restriction is what makes
+\* it so: a candidate needs votes from a majority, and a voter grants only a candidate whose log is at least as up
+\* to date as its own, so one of the voters holds the entry and the leader's log is at least as up to date as that
+\* voter's. RaftElectionLogs.cfg checks it with a server left behind; with every log the same it holds trivially.
+Entries == UNION {{<<i, Logs[s][i]>> : i \in DOMAIN Logs[s]} : s \in Servers}
+Holds(s, e) == e[1] \in DOMAIN Logs[s] /\ Logs[s][e[1]] = e[2]
+Committed(e) == Majority({s \in Servers : Holds(s, e)})
+LeaderCompleteness == \A l \in Servers : role[l] = "LEADER" => \A e \in Entries : Committed(e) => Holds(l, e)
 
 (***************************************************************************)
 (* The inductive invariant. ElectionSafety holds in every reachable state,  *)

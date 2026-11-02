@@ -13,15 +13,16 @@
 
 Rewrite the up-to-date check so that it reads naturally: a candidate whose log is longer is more up to date, and between logs of the same length the newer last term wins. The reviewer agreed that this is "the same thing, said the other way round".
 
-**Before** ([`VoteRule.java`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java), line 30):
+**Before** ([`VoteRule.java`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java), line 61):
 
 ```java
-        }
-        // A newer term resets the vote; in the current term, one vote per server.
-        boolean free = candidateTerm > currentTerm || votedFor == NO_VOTE || votedFor == candidate;
-        boolean upToDate = candidateLastLogTerm > lastLogTerm
-                || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex >= lastLogIndex);
-        return free && upToDate;
+                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
+        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;
+        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;
+        LogOrder log = candidateLastLogTerm != lastLogTerm
+                ? (candidateLastLogTerm > lastLogTerm ? AHEAD : BEHIND)
+                : candidateLastLogIndex > lastLogIndex ? AHEAD : candidateLastLogIndex == lastLogIndex ? EVEN : BEHIND;
+        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;
     }
 }
 ```
@@ -29,13 +30,13 @@ Rewrite the up-to-date check so that it reads naturally: a candidate whose log i
 **After:**
 
 ```java
-        }
-        // A newer term resets the vote; in the current term, one vote per server.
-        boolean free = candidateTerm > currentTerm || votedFor == NO_VOTE || votedFor == candidate;
+                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
+        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;
+        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;
         // The candidate with more entries has seen more of the history; the term breaks ties.
-        boolean upToDate = candidateLastLogIndex > lastLogIndex
-                || (candidateLastLogIndex == lastLogIndex && candidateLastLogTerm >= lastLogTerm);
-        return free && upToDate;
+        LogOrder log = candidateLastLogIndex > lastLogIndex || (candidateLastLogIndex == lastLogIndex && candidateLastLogTerm > lastLogTerm) ? AHEAD
+                : candidateLastLogIndex == lastLogIndex && candidateLastLogTerm == lastLogTerm ? EVEN : BEHIND;
+        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;
     }
 }
 ```
@@ -45,16 +46,17 @@ Rewrite the up-to-date check so that it reads naturally: a candidate whose log i
 ```diff
 --- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java
 +++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java
-@@ -30,8 +30,9 @@ public final class VoteRule {
-         }
-         // A newer term resets the vote; in the current term, one vote per server.
-         boolean free = candidateTerm > currentTerm || votedFor == NO_VOTE || votedFor == candidate;
--        boolean upToDate = candidateLastLogTerm > lastLogTerm
--                || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex >= lastLogIndex);
+@@ -61,9 +61,9 @@
+                                 int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
+         TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;
+         Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;
+-        LogOrder log = candidateLastLogTerm != lastLogTerm
+-                ? (candidateLastLogTerm > lastLogTerm ? AHEAD : BEHIND)
+-                : candidateLastLogIndex > lastLogIndex ? AHEAD : candidateLastLogIndex == lastLogIndex ? EVEN : BEHIND;
 +        // The candidate with more entries has seen more of the history; the term breaks ties.
-+        boolean upToDate = candidateLastLogIndex > lastLogIndex
-+                || (candidateLastLogIndex == lastLogIndex && candidateLastLogTerm >= lastLogTerm);
-         return free && upToDate;
++        LogOrder log = candidateLastLogIndex > lastLogIndex || (candidateLastLogIndex == lastLogIndex && candidateLastLogTerm > lastLogTerm) ? AHEAD
++                : candidateLastLogIndex == lastLogIndex && candidateLastLogTerm == lastLogTerm ? EVEN : BEHIND;
+         return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;
      }
  }
 ```
@@ -67,7 +69,7 @@ The two versions disagree. The prover found this input, and the generator replay
 
 | Input | Before | After |
 |---|---|---|
-| `grant(currentTerm=10, votedFor=0, lastLogTerm=19, lastLogIndex=0, candidate=0, candidateTerm=10, candidateLastLogTerm=6, candidateLastLogIndex=16)` | `false` | `true` |
+| `grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)` | `true` | `false` |
 
 One disagreeing input is enough to fail the build. The domain is `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -89,16 +91,16 @@ Keep term first. If the comparison must read differently, write it as a tuple co
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=1, votedFor=0, lastLogTerm=0, lastLogIndex=2, candidate=0, candidateTerm=19, candidateLastLogTerm=4, candidateLastLogIndex=0), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:
-  grant(currentTerm=10, votedFor=0, lastLogTerm=19, lastLogIndex=0, candidate=0, candidateTerm=10, candidateLastLogTerm=6, candidateLastLogIndex=16)
-    before: false
-    after:  true
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)
+    before: true
+    after:  false
+  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=1, votedFor=0, lastLogTerm=0, lastLogIndex=2, candidate=0, candidateTerm=19, candidateLastLogTerm=4, candidateLastLogIndex=0), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -181,7 +183,7 @@ public final class EquivalenceHarness {
           "ruleId": "behaviour-changed",
           "level": "error",
           "message": {
-            "text": "Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:\n  grant(currentTerm=10, votedFor=0, lastLogTerm=19, lastLogIndex=0, candidate=0, candidateTerm=10, candidateLastLogTerm=6, candidateLastLogIndex=16)\n    before: false\n    after:  true"
+            "text": "Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:\n  grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)\n    before: true\n    after:  false"
           },
           "locations": [
             {
@@ -190,7 +192,7 @@ public final class EquivalenceHarness {
                   "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java"
                 },
                 "region": {
-                  "startLine": 28
+                  "startLine": 62
                 }
               }
             }

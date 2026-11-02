@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "069",
+  "title": "A vote rule that lets a voter switch candidates within a term elects two leaders",
+  "summary": "Raft's vote rule grants one vote per term: a server that has voted for a candidate refuses every other candidate of that term, and a split vote costs the cluster a new term. A developer lets the vote move instead: a candidate still asking in the voter's term is one the term's election has not settled, since the candidate the voter chose has not won, so the vote goes to whoever is asking and the split resolves within the term. The behavioural contract of the vote rule, a second operator of the election model generated from the Java, changes in three rows, and the tests are updated to say so. TLC finds two leaders of one term in five steps: two servers time out together, and each, still a candidate, grants the other its vote. The vote a server cast for itself moves too, and both tallies reach a majority.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Drop the check that refuses a candidate of the current term when the voter's ballot is cast for another, with the reasoning in a comment: a candidate still canvassing in the voter's term is one whose election the term has not settled, because the candidate this server voted for has not won, or its heartbeats would have arrived; so the vote goes to whoever is asking now, and a split vote resolves within the term instead of costing the cluster a new one. The contract of `VoteRule#decide` is regenerated: the three rows of a ballot cast for another and a candidate of the current term change, two from refused to granted and one in its reason. The test that said one vote per term now says the vote moves, and the test of the kernel says the same.",
+    "patch": "change.patch"
+  },
+  "risk": "One vote per term is the whole of Raft's election safety: a leader holds a majority of the votes of its term, two majorities share a server, and a server votes once, so two leaders of one term would need a vote the rule does not give twice. Let the vote move and a split vote, the common case the developer means to speed up, elects both sides. Two leaders of one term each take writes from clients and replicate them to the followers that accept them, and the log matching property that lets a follower trust a leader's entries no longer holds: two different entries of one term at one index, which Raft's replication never expects and never repairs. The tests are the developer's own: the one that said one vote per term was changed to say the opposite, and nothing else in the module exercises a voter asked twice. A reviewer reads a three-row contract diff of a rule described as resolving split votes faster, and the comment's reasoning, that the first candidate has not won, is true and beside the point.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The vote rule in the model is the generated operator `Vote!Decide`, from the behavioural contract of the patched kernel; the model computes the voter's ballot and the candidate's term and log against the voter's own, as the Java's `grant` does around the kernel, and grants when the kernel says to. TLC reports a five-step run with three servers, the initial state and four RPCs and timeouts: s1 and s2 time out, so both are candidates of term 1, each with its own vote; s2 asks s1, whose ballot is cast for itself, another candidate, and the patched rule grants, so s2 holds two votes of three and leads term 1; s1 asks s2, whose ballot is cast for itself too, and the rule grants again. Both tallies hold both servers, and `ElectionSafety` fails with two leaders of term 1, s3 never having voted. The configuration with four servers and the one with a server left behind find the same kind of run, and the liveness configuration reports the run before it gets to the temporal properties. The inductive configuration finds the step from a state the invariant admits: a follower of term 1 that voted for itself, asked by a candidate of its term, grants, and `TalliesOfATermAreDisjoint` fails, one server's vote in two tallies of one term. The reasons election safety held are the conjuncts of `Inductive`, and the one the change breaks is named.",
+  "resolution": "Keep the refusal: one vote per term, which the same candidate may collect again. Split votes are Raft's to resolve by randomized election timeouts, so that one candidate's timer fires alone in the next term, not the voters' to resolve by changing their minds. The property `VoteRule#grant` proves with JBMC, that a voter whose vote went to another candidate of its term refuses, states the rule over the arithmetic around the kernel and fails on this change as well; the model shows what the rule is for.",
+  "provenance": "Constructed from the one rule of Raft's RequestVote RPC that the election safety argument rests on (section 5.2 of the paper), with the developer's reasoning taken from the split-vote discussion of the same section.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and section 5.4.1, the election restriction",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

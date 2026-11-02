@@ -1052,6 +1052,51 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "069",
+      "path": "069-vote-rule-that-lets-a-voter-switch-candidates-elects-two-leaders",
+      "title": "A vote rule that lets a voter switch candidates within a term elects two leaders",
+      "summary": "Raft's vote rule grants one vote per term: a server that has voted for a candidate refuses every other candidate of that term, and a split vote costs the cluster a new term. A developer lets the vote move instead: a candidate still asking in the voter's term is one the term's election has not settled, since the candidate the voter chose has not won, so the vote goes to whoever is asking and the split resolves within the term. The behavioural contract of the vote rule, a second operator of the election model generated from the Java, changes in three rows, and the tests are updated to say so. TLC finds two leaders of one term in five steps: two servers time out together, and each, still a candidate, grants the other its vote. The vote a server cast for itself moves too, and both tallies reach a majority.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "070",
+      "path": "070-vote-rule-without-the-election-restriction-elects-a-leader-missing-a-committed-entry",
+      "title": "A vote rule without the election restriction elects a leader missing a committed entry",
+      "summary": "Raft's vote rule refuses a candidate whose log is behind the voter's, the election restriction, so that a leader never lacks a committed entry. A developer drops it for the approach of Viewstamped Replication, in which the new primary collects the log from a majority after it is chosen: the vote need not wait for the candidate with the best log, since a leader that lacks entries will fetch them before it serves. The contract of the vote rule changes in five rows, and the tests are updated to say so. The election model's four configurations with equal logs verify the change; the fifth, in which one server holds the log a deposed leader left behind, longer than the others' and of an older term, finds in three steps that this server is elected with one vote besides its own, lacking the entry the other two hold and have therefore committed. A Raft leader never collects entries: it makes the followers' logs match its own, and the committed entry would be overwritten.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "071",
+      "path": "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse",
+      "title": "A vote rule that compares log length before term grants a vote it must refuse",
+      "summary": "The election model checks the vote rule's decision kernel, generated from its contract, and repeats the arithmetic around it: how the candidate's term and log compare with the voter's own is computed in `grant`, outside the model's reach. A developer reorders that comparison so that the longer log wins and the term of the last entry breaks ties between logs of one length, reading \"up to date\" as \"further along\". The kernel's contract does not change and the election model verifies it under every configuration, logs included, since the model does its own comparing. The property that states the election restriction over `grant` itself, that a candidate whose last entry is of an older term is refused however long its log, fails: JBMC shows a voter whose last entry is of a later term granting a candidate whose log is longer but ends in an earlier one, the log a deposed leader left behind. Example 013 catches the same rewrite as a regression against the previous version of the method; this one needs no previous version, only the rule.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#grant",
+      "approach": "B11",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

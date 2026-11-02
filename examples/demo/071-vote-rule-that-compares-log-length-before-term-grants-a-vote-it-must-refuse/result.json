@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 61,
+    "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        LogOrder log = candidateLastLogTerm != lastLogTerm\n                ? (candidateLastLogTerm > lastLogTerm ? AHEAD : BEHIND)\n                : candidateLastLogIndex > lastLogIndex ? AHEAD : candidateLastLogIndex == lastLogIndex ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 61,
+    "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        // The longer log is the one further along; between logs of one length, the one with the newer last entry.\n        LogOrder log = candidateLastLogIndex != lastLogIndex\n                ? (candidateLastLogIndex > lastLogIndex ? AHEAD : BEHIND)\n                : candidateLastLogTerm > lastLogTerm ? AHEAD : candidateLastLogTerm == lastLogTerm ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+  "counterexamples": [
+    {
+      "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)",
+      "contract": "!result",
+      "actual": "true"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=0, votedFor=0, lastLogTerm=19, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=18, candidateLastLogIndex=1), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "!result",
+    "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

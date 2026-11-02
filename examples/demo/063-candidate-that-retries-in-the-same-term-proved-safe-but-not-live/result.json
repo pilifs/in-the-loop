@@ -18,12 +18,12 @@
     "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            // A candidate whose election timed out asks again for the votes it lacks, in the same term. A new\n            // term per retry makes every server in the cluster adopt it, and a candidate that cannot reach a\n            // majority would otherwise drive the term up on every timeout.\n            case CANDIDATE -> transition(CANDIDATE, REQUEST_VOTES);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
   },
   "casesTotal": null,
-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -17,7 +17,7 @@\n decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n-decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n+decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[REQUEST_VOTES]]\n decide(CANDIDATE, VotesCounted[majority=false]) => Unchanged[reason=\"no majority yet\"]\n decide(CANDIDATE, VotesCounted[majority=true])  => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(CANDIDATE, AppendEntries[term=OLDER])    => Rejected[reason=\"stale leader\"]\n",
-  "proof": "three servers: TLC 2.19 explored 464 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 496 distinct states to depth 12 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3; fairness: TLC 2.19 explored 464 distinct states in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3",
+  "proof": "three servers: TLC 2.19 explored 464 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; four servers: TLC 2.19 explored 496 distinct states to depth 12 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}; fairness: TLC 2.19 explored 464 distinct states in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}; a server left behind: TLC 2.19 explored 332 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
   "problem": null,
   "statement": null,
   "trace": [
@@ -82,7 +82,7 @@
       "cfg": "spec/RaftElection.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 464 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 464,
@@ -94,7 +94,7 @@
       "cfg": "spec/RaftElectionInductive.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 17470,
@@ -106,7 +106,7 @@
       "cfg": "spec/RaftElectionFour.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 496 states",
-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 496,
@@ -118,7 +118,7 @@
       "cfg": "spec/RaftElectionLive.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ALeaderIsElected, 4-step trace then forever",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}",
       "invariant": "ALeaderIsElected",
       "violationKind": "temporal",
       "statesExplored": 464,
@@ -165,6 +165,18 @@
         }
       ],
       "forever": "stays in that state forever"
+    },
+    {
+      "label": "a server left behind",
+      "cfg": "spec/RaftElectionLogs.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 332 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 332,
+      "trace": null,
+      "forever": null
     }
   ]
 }

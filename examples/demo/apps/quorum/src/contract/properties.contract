@@ -30,3 +30,21 @@ net.terminalvalue.quorum.clock.HybridLogicalClock#receive
 net.terminalvalue.quorum.replication.LastWriterWins#winner
   assume: tsA != tsB || nodeA != nodeB
   assert: result == 1 - winner(tsB, nodeB, tsA, nodeA)
+
+# The vote rule's arithmetic, which the election model takes as given: how the candidate's term, the voter's ballot
+# and the two logs compare is computed here, and the rule proper is VoteRule#decide, whose contract the model uses.
+# A voter that voted for another candidate in its term refuses: one vote per term.
+net.terminalvalue.quorum.raft.VoteRule#grant
+  assume: candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate
+  assert: !result
+
+# A candidate from the past is refused, whatever the logs.
+net.terminalvalue.quorum.raft.VoteRule#grant
+  assume: candidateTerm < currentTerm
+  assert: !result
+
+# The election restriction: a candidate whose last entry is of an older term than the voter's is refused, however
+# long its log; between equal last terms, the shorter log is.
+net.terminalvalue.quorum.raft.VoteRule#grant
+  assume: candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)
+  assert: !result
