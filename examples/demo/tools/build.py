@@ -491,6 +491,17 @@ def tool_update_contracts(app, root, result):
         for f in sorted(contract_dir.glob("*.contract")))
 
 
+def tool_traces(app, root, traces):
+    """Records the runs a trace configuration checks: the module's trace writer, a test-side main class, run on the
+    patched classes, writes the recorded runs as a TLA+ module the trace specification extends."""
+    build = root / TOOL_APPS[app]["root"]
+    main, test = build / "build/main", build / "build/test"
+    proc = subprocess.run([java(), "-cp", f"{main}{os.pathsep}{test}", traces["writer"]], text=True, capture_output=True)
+    if proc.returncode != 0:
+        sys.exit(f"the trace writer {traces['writer']} failed:\n{proc.stdout}\n{proc.stderr}")
+    (build / traces["module"]).write_text(proc.stdout)
+
+
 def tool_state_machine(app, root, symbol):
     """The state machine the patched code implements, as Mermaid, when the symbol's contract is one."""
     build = root / TOOL_APPS[app]["root"]
@@ -621,7 +632,23 @@ TWOPC = {
                  "invariant admits, the coordinator up or down, takes one step, and checks the invariant again",
          "initial": "a state the invariant `Inductive` admits, the coordinator up or down, which need not be reachable",
          "startsAnywhere": True},
+        {"cfg": "spec/TwoPhaseCommitTrace.cfg", "spec": "spec/TwoPhaseCommitTrace.tla", "label": "the recorded runs",
+         "what": "the Java nodes against the model: the coordinator node, its log and its broadcast, and the participant "
+                 "nodes, run through eight scripted scenarios with crashes injected after a given I/O operation, the state "
+                 "after each step recorded in the model's variables (`TwoPhaseCommitTraces.tla`, regenerated from the "
+                 "patched classes); TLC walks each recorded run and checks that it starts in the model's initial state "
+                 "and that every step is a step of the model's next-state relation. A step the model has no action for "
+                 "is one the glue took that the model's verdicts do not cover",
+         "initial": "the model's initial state as the nodes recorded it",
+         "explored": "TLC walked the recorded runs, one recorded state after the other, and held each step to the "
+                     "model's next-state relation `Next`: the check covers the scripted runs and no others, which is what "
+                     "the model's own configurations are for.",
+         "recorded": True, "coverage": False,
+         "traces": {"writer": "net.terminalvalue.quorum.twopc.Traces", "module": "spec/TwoPhaseCommitTraces.tla"}},
     ],
+    "traced": ["net.terminalvalue.quorum.twopc.CoordinatorNode#act", "net.terminalvalue.quorum.twopc.CoordinatorNode#onVote",
+               "net.terminalvalue.quorum.twopc.CoordinatorNode#recover", "net.terminalvalue.quorum.twopc.ParticipantNode#giveUp",
+               "net.terminalvalue.quorum.twopc.ParticipantNode#learn", "net.terminalvalue.quorum.twopc.ParticipantNode#prepare"],
     "contract": "src/contract/Coordinator.decide.contract",
     "operator": "spec/CoordinatorContract.tla",
     "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
@@ -639,6 +666,7 @@ TWOPC = {
         "Crash": "the coordinator crashes between steps: it loses nothing it logged, and takes no step until it restarts",
         "Recover": "`Recovery.decide`: the coordinator restarts with the phase it logged and acts on the recovery rule's "
                    "decision, which a crash can cut short like any other",
+        "TraceNext": "the next state the nodes recorded, after the step the comment in `TwoPhaseCommitTraces.tla` names",
     },
     "invariants": {
         "TypeOK": "every variable has a value of its type",
@@ -658,6 +686,10 @@ TWOPC = {
         "ImplementsTransactionCommit": "every behaviour of the protocol, seen through the participants' states, is one transaction commit "
                                        "(Lamport and Gray's TCommit) allows: a participant commits only once every participant is prepared or "
                                        "committed, and aborts only while none has committed",
+        "StartsAtTheInitialState": "the first state of a recorded run is the model's initial state",
+        "EveryStepIsOneOfTheModel": "every step the nodes recorded is a step of the model's next-state relation: an action of "
+                                    "one part, or a step that changes nothing. A step the model has no action for is one "
+                                    "the glue around the rules took, which the model's verdicts do not cover",
     },
     "machine": "The coordinator's decision rule and its recovery rule inside the model are generated from the behavioural "
                "contracts of the patched code, so the model checks the decisions the coordinator really makes, on a vote, "
@@ -876,17 +908,22 @@ def model_of(example):
     if app == "boxoffice":
         return MODELS["boxoffice"]
     for model in TOOL_MODELS[app]:
-        if example["subject"]["symbol"] in [model["symbol"]] + [o["symbol"] for o in model.get("operators", [])]:
+        if example["subject"]["symbol"] in [model["symbol"]] + [o["symbol"] for o in model.get("operators", [])] \
+                + model.get("traced", []):
             return model
     sys.exit(f"{example['id']}: no TLA+ model of {app} is built around {example['subject']['symbol']}")
 
 
-def tlc_run(build, model_files, cfg, root):
+def tlc_run(build, model_files, configuration, root):
     """One run of TLC on a model under a configuration, through the tool: its parsed JSON, plus the configuration's
-    bounds (`domain`) and whether it lists temporal properties."""
+    bounds (`domain`) and whether it lists temporal properties. A configuration may name a `spec` of its own, a
+    module that extends the model (the trace specification does), and may turn `coverage` off: TLC attributes no
+    coverage to a next-state relation it evaluates as an action property."""
+    cfg = configuration["cfg"]
     deadlock = ["--deadlock"] if model_files.get("deadlock") else []
     config = [] if cfg == model_files["cfg"] else ["--config", cfg]
-    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", "--coverage", *deadlock, *config,
+    coverage = ["--coverage"] if configuration.get("coverage", True) else []
+    proc = subprocess.run([jvmcontract(), "tlc", configuration.get("spec", model_files["spec"]), "--json", *coverage, *deadlock, *config,
                            "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build)
     if proc.returncode == 2:
         sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
@@ -964,7 +1001,8 @@ def tlc_coverage(configurations, runs, before, after):
                               "never": [f"{row['case']} => {row['outcome']}" for row in op["rows"] if not row["taken"]]})
             for case in taken:
                 reached.setdefault(case, []).append(c["label"])
-        per_configuration.append({"label": c["label"], "fromRuns": not c.get("startsAnywhere", False), "finished": finished, "operators": operators})
+        per_configuration.append({"label": c["label"], "fromRuns": not c.get("startsAnywhere", False), "finished": finished,
+                                  "counted": c.get("coverage", True), "operators": operators})
     from_runs = {c["label"] for c in configurations if not c.get("startsAnywhere", False)}
     for row in changed:
         row["takenUnder"] = reached.get(row["case"], [])
@@ -996,7 +1034,10 @@ def run_tool_tlc(folder, example, root, module, result):
     for g in generated:
         tool(app, root, "tla", g["contract"], g["operator"], anchored=False)
     configurations = tlc_configurations(model_files)
-    runs = [(c, tlc_run(build, model_files, c["cfg"], root)) for c in configurations]
+    for c in configurations:
+        if c.get("traces"):
+            tool_traces(app, root, c["traces"])
+    runs = [(c, tlc_run(build, model_files, c, root)) for c in configurations]
     result["coverage"] = tlc_coverage(configurations, [r for _, r in runs], rows_before, rows_after)
     several = len(runs) > 1
     headline = next(((c, r) for c, r in runs if r["verdict"] == "violation"), None) \
@@ -1483,13 +1524,17 @@ MODELS = {
 }
 
 
-def tlc_trace_lines(model, trace, initial, starts_anywhere=False):
-    """A counterexample as a numbered list: each step one action of one part of the system."""
+def tlc_trace_lines(model, trace, initial, starts_anywhere=False, recorded=False):
+    """A counterexample as a numbered list: each step one action of one part of the system, or, for a recorded run
+    held to the model, the next state the implementation recorded."""
     out = []
     for step in trace:
         what = model["actions"].get(step["action"], step["action"])
-        changes = ", ".join(f"`{k} = {v}`" for k, v in step["changes"].items()) or "*(no change)*"
-        if step["step"] == 1 and not starts_anywhere:
+        bookkeeping = {"run", "step", "scenario"} if recorded else set()
+        changes = ", ".join(f"`{k} = {v}`" for k, v in step["changes"].items() if k not in bookkeeping) or "*(no change)*"
+        if step["step"] == 1 and recorded:
+            out.append(f"{step['step']}. **Start of the recorded run** `{step['changes'].get('scenario', '')}`, {initial}: {changes}")
+        elif step["step"] == 1 and not starts_anywhere:
             out.append(f"{step['step']}. **Initial state**: {initial}.")
         elif step["step"] == 1:
             out.append(f"{step['step']}. **Starting state**, {initial}: {changes}")
@@ -1533,9 +1578,14 @@ def findings_tlc(ex, res):
         else:
             found = (f"TLC found a run of the system{under}, {steps} steps long, that violates the invariant "
                      f"**{inv}** ({model['invariants'].get(inv, inv)}).")
-        out += [found + (" Each step is one action of one part of the system:" if steps > 1 else ""), ""]
-        out += tlc_trace_lines(model, res["trace"], configuration["initial"], configuration.get("startsAnywhere", False))
-        out += ["", f"The model is small ({res['domain']}), which is what keeps the trace readable. TLC explored every "
+        each = " Each step is one action of one part of the system:"
+        if configuration.get("recorded"):
+            each = " Each step is the next state the implementation recorded:"
+        out += [found + (each if steps > 1 else ""), ""]
+        out += tlc_trace_lines(model, res["trace"], configuration["initial"], configuration.get("startsAnywhere", False),
+                               configuration.get("recorded", False))
+        out += ["", configuration.get("explored") or
+                    f"The model is small ({res['domain']}), which is what keeps the trace readable. TLC explored every "
                     f"interleaving of {model['parts']} within those bounds."]
         for run in runs:
             if run["verdict"] != "violation" or run is headline:
@@ -1550,7 +1600,7 @@ def findings_tlc(ex, res):
                         f"{'a starting state' if len(run['trace']) == 1 else str(len(run['trace'])) + ' steps'}</summary>", "",
                     f"{what.capitalize()} **{inv}**: {model['invariants'].get(inv, inv)}."
                     + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]
-            out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False))
+            out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False), c.get("recorded", False))
             out += ["", "</details>"]
         return out + coverage_lines(res)
     if res["verdict"] == "unverifiable":
@@ -1575,10 +1625,11 @@ def coverage_lines(res):
     """What the verdict rests on: the rows of the generated operators a step of the model takes under each
     configuration, the rows the change alters and which runs take them, and the rows no step takes."""
     cov = res.get("coverage")
-    finished = [c for c in (cov or {}).get("configurations", []) if c["finished"] and c["operators"]]
+    # A configuration that counts no coverage (the recorded runs: TLC attributes none to an action property) is left out.
+    configs = [c for c in (cov or {}).get("configurations", []) if c.get("counted", True) and (c["operators"] or not c["finished"])]
+    finished = [c for c in configs if c["finished"] and c["operators"]]
     if not cov or not finished:
         return []
-    configs = cov["configurations"]
     short = lambda symbol: "`" + symbol.rsplit(".", 1)[-1] + "`"
     out = ["", "**What the verdict rests on.** TLC counted how often a step of the model took each row of the generated "
                "operators. A row no step takes is one the model says nothing about, whatever the verdict."]

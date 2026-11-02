@@ -14,6 +14,8 @@
 (* before the broadcast goes out, and restart with what it logged; it      *)
 (* checks the same invariants and properties over those runs, and          *)
 (* TwoPhaseCommitCrashInductive.cfg the inductive step with crashes.       *)
+(* TwoPhaseCommitTrace.tla holds the Java nodes to this model: it walks    *)
+(* their recorded runs and checks every step against Next.                 *)
 (*                                                                         *)
 (* The coordinator's decision rule, Decide(phase, event), is not written   *)
 (* here. It is generated from the behavioural contract of                  *)
@@ -87,15 +89,22 @@ Has(d, effect) == \E i \in 1..Len(d.effects) : d.effects[i] = effect
 
 Broadcast(d) == IF Has(d, "SEND_COMMIT") THEN "COMMIT" ELSE IF Has(d, "SEND_ABORT") THEN "ABORT" ELSE decision
 
+\* The coordinator may crash in the middle of a step (while MaxCrashes allows): what it logged survives, what it
+\* had not yet sent is lost.
+Crashes == crashes < MaxCrashes /\ up' = FALSE /\ crashes' = crashes + 1
+
 \* CoordinatorTransitions.apply: the phase change, which the coordinator logs, then the decision's effects, the
-\* broadcast. The coordinator may crash between the two (while MaxCrashes allows): the logged phase survives, the
-\* broadcast is lost, and Recover has the recovery rule say what to do about it.
+\* broadcast. The coordinator may crash between the two: the logged phase survives, the broadcast is lost, and
+\* Recover has the recovery rule say what to do about it. A step that decides nothing logs what changed (the tally)
+\* and may crash after that as well, which is the same as crashing right after the step.
 Perform(d) ==
     IF d.kind = "Transition"
     THEN /\ phase' = d.next
          /\ \/ decision' = Broadcast(d) /\ up' = TRUE /\ UNCHANGED crashes
-            \/ crashes < MaxCrashes /\ up' = FALSE /\ crashes' = crashes + 1 /\ UNCHANGED decision
-    ELSE UNCHANGED <<phase, decision, crashes>> /\ up' = TRUE
+            \/ Crashes /\ UNCHANGED decision
+    ELSE /\ UNCHANGED <<phase, decision>>
+         /\ \/ up' = TRUE /\ UNCHANGED crashes
+            \/ Crashes
 
 \* A coordinator that is up acts on a decision; one that has crashed takes no step until it restarts.
 Apply(d) == up /\ Perform(d)
@@ -123,9 +132,7 @@ CoordinatorTimeout ==
 \* A crash between steps: the coordinator loses nothing it logged, and takes no step until it restarts.
 Crash ==
     /\ up
-    /\ crashes < MaxCrashes
-    /\ up' = FALSE
-    /\ crashes' = crashes + 1
+    /\ Crashes
     /\ UNCHANGED <<phase, pstate, votes, inbox, decision>>
 
 \* Recovery.decide: the coordinator restarts, reads the phase it logged, and acts on the recovery rule's decision
@@ -164,11 +171,14 @@ Next ==
 \* applies a decision that has been made, and a crashed coordinator restarts. Nothing is assumed about which vote a
 \* participant casts, about when a participant gives up, or about when the coordinator crashes, within MaxCrashes:
 \* those are the environment's choices, and the protocol must be live under all of them.
+\* The coordinator's conditions are on its steps that complete, `up'`: a crash is the environment's choice, not a
+\* step the coordinator is due, and a step that decides nothing changes nothing when it completes, so fairness
+\* must not be able to pick its crashing variant as the step it is owed.
 Fairness ==
     /\ \A p \in Participants : WF_vars(Vote(p)) /\ WF_vars(Learn(p))
-    /\ \A m \in Votes : WF_vars(ReceiveVote(m))
-    /\ WF_vars(CoordinatorTimeout)
-    /\ WF_vars(Recover)
+    /\ \A m \in Votes : WF_vars(ReceiveVote(m) /\ up')
+    /\ WF_vars(CoordinatorTimeout /\ up')
+    /\ WF_vars(Recover /\ up')
 
 Spec == Init /\ [][Next]_vars /\ Fairness
 

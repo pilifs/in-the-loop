@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -21,7 +21,7 @@\n decide(ABORTED, Tally[complete=false, unanimous=false])    => Unchanged[reason=\"already decided\"]\n decide(ABORTED, Tally[complete=false, unanimous=true])     => Unchanged[reason=\"already decided\"]\n decide(ABORTED, Tally[complete=true, unanimous=false])     => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=true, unanimous=true])      => Unchanged[reason=\"already decided\"]\n+decide(ABORTED, Tally[complete=true, unanimous=true])      => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(ABORTED, Timeout[unanimousSoFar=false])             => Unchanged[reason=\"already decided\"]\n decide(ABORTED, Timeout[unanimousSoFar=true])              => Unchanged[reason=\"already decided\"]\n decide(ABORTED, null)                                      => throws NullPointerException\n",
-  "proof": "three participants: TLC 2.19 explored 692 distinct states to depth 9 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 2,633 distinct states to depth 9 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1",
+  "proof": "three participants: TLC 2.19 explored 692 distinct states to depth 9 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,076 distinct states to depth 9 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1; the recorded runs: TLC 2.19 explored 74 distinct states to depth 11 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
   "problem": null,
   "statement": null,
   "trace": [
@@ -134,6 +134,12 @@
         "label": "the inductive step with crashes",
         "fromRuns": false,
         "finished": false,
+        "operators": []
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
         "operators": []
       }
     ],
@@ -288,7 +294,7 @@
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2",
       "invariant": "Atomicity",
       "violationKind": "invariant",
-      "statesExplored": 2633,
+      "statesExplored": 3076,
       "trace": [
         {
           "step": 1,
@@ -405,6 +411,18 @@
           }
         }
       ],
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 74 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 74,
+      "trace": null,
       "forever": null
     }
   ]

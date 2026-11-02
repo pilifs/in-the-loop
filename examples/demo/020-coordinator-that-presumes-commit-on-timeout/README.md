@@ -69,7 +69,7 @@ On timeout, commit if the votes counted so far are unanimous, else abort. The be
 
 ## What the verifier found
 
-The model is checked under 4 configurations, and the verdict is the first that fails:
+The model is checked under 5 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
@@ -77,6 +77,7 @@ The model is checked under 4 configurations, and the verdict is the first that f
 | the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3}, MaxCrashes = 0 | ✗ Violation: Atomicity, 2-step trace |
 | crashes (`spec/TwoPhaseCommitCrash.cfg`) | every run from the initial state in which the coordinator may crash, twice at most: between steps, or after logging a phase change and before the broadcast goes out, and restart on the recovery rule, generated from `Recovery#decide`; the same invariants and temporal properties, under the added fairness condition that a crashed coordinator restarts | Participants = {p1, p2, p3}, MaxCrashes = 2 | ✗ Violation: Atomicity, 3-step trace |
 | the inductive step with crashes (`spec/TwoPhaseCommitCrashInductive.cfg`) | that the invariant `Inductive` is closed under a crash and a restart as well: TLC starts from every state the invariant admits, the coordinator up or down, takes one step, and checks the invariant again | Participants = {p1, p2, p3}, MaxCrashes = 1 | ✗ Violation: Atomicity, 2-step trace |
+| the recorded runs (`spec/TwoPhaseCommitTrace.cfg`) | the Java nodes against the model: the coordinator node, its log and its broadcast, and the participant nodes, run through eight scripted scenarios with crashes injected after a given I/O operation, the state after each step recorded in the model's variables (`TwoPhaseCommitTraces.tla`, regenerated from the patched classes); TLC walks each recorded run and checks that it starts in the model's initial state and that every step is a step of the model's next-state relation. A step the model has no action for is one the glue took that the model's verdicts do not cover | Participants = {"p1", "p2", "p3"}, MaxCrashes = 2 | ✓ Verified: all invariants and properties hold in 74 states |
 
 TLC found a run of the system under three participants, 3 steps long, that violates the invariant **Atomicity** (once the coordinator or any participant has committed, no participant has aborted). Each step is one action of one part of the system:
 
@@ -135,7 +136,7 @@ stateDiagram-v2
 
 ## Would the existing tests have caught it?
 
-No: every existing unit test passes (`java -ea net.terminalvalue.quorum.Tests`, run against the patched code).
+Yes, in this repo: `NodesTest.abortsOnTheTimerWithAVoteMissing` fails (`java -ea net.terminalvalue.quorum.Tests`). That test was written for this property. The contract needed no one to anticipate it.
 
 ## Why it matters
 
@@ -151,14 +152,14 @@ Revert to presumed abort. The timeout exists because an unanswered prepare means
 
 ## Evidence
 
-How the verdict was reached: three participants: TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 31 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1.
+How the verdict was reached: three participants: TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 33 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1; the recorded runs: TLC 2.19 explored 74 distinct states to depth 11 in 0 s, for the model Participants = {"p1", "p2", "p3"}, MaxCrashes = 2.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719053] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2834382] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -173,10 +174,10 @@ Semantic processing of module CoordinatorContract
 Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 04:10:47)
+Starting... (2026-11-02 04:53:47)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 04:10:47.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:53:47.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -188,7 +189,7 @@ State 1: <Initial predicate>
 /\ up = TRUE
 /\ inbox = {}
 
-State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
+State 2: <Vote line 64, col 5 to line 68, col 56 of module TwoPhaseCommit>
 /\ phase = "COLLECTING"
 /\ decision = "NONE"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
@@ -197,7 +198,7 @@ State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
 /\ up = TRUE
 /\ inbox = {[from |-> p1, vote |-> "NO"]}
 
-State 3: <CoordinatorTimeout line 118, col 5 to line 121, col 41 of module TwoPhaseCommit>
+State 3: <CoordinatorTimeout line 127, col 5 to line 130, col 41 of module TwoPhaseCommit>
 /\ phase = "COMMITTED"
 /\ decision = "COMMIT"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
@@ -229,11 +230,11 @@ Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes
 27 states generated, 27 distinct states found, 23 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 9 (minimum is 8, the maximum 10 and the 95th percentile is 10).
-Finished in 00s at (2026-11-02 04:10:47)
+Finished in 00s at (2026-11-02 04:53:47)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719118] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2834491] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -248,7 +249,7 @@ Semantic processing of module CoordinatorContract
 Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 04:10:48)
+Starting... (2026-11-02 04:53:48)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -259,7 +260,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-02 04:10:48.
+Finished computing initial states: 736 distinct states generated at 2026-11-02 04:53:48.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -271,7 +272,7 @@ State 1: <Initial predicate>
 /\ up = TRUE
 /\ inbox = {}
 
-State 2: <CoordinatorTimeout line 118, col 5 to line 121, col 41 of module TwoPhaseCommit>
+State 2: <CoordinatorTimeout line 127, col 5 to line 130, col 41 of module TwoPhaseCommit>
 /\ phase = "COMMITTED"
 /\ decision = "COMMIT"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
@@ -304,11 +305,11 @@ Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes
   decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 737 states generated, 737 distinct states found, 735 states left on queue.
 The depth of the complete state graph search is 2.
-Finished in 00s at (2026-11-02 04:10:48)
+Finished in 00s at (2026-11-02 04:53:48)
 
 == crashes: spec/TwoPhaseCommitCrash.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719202] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2834576] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -323,10 +324,10 @@ Semantic processing of module CoordinatorContract
 Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 04:10:49)
+Starting... (2026-11-02 04:53:49)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 04:10:49.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 04:53:49.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -338,7 +339,7 @@ State 1: <Initial predicate>
 /\ up = TRUE
 /\ inbox = {}
 
-State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
+State 2: <Vote line 64, col 5 to line 68, col 56 of module TwoPhaseCommit>
 /\ phase = "COLLECTING"
 /\ decision = "NONE"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
@@ -347,7 +348,7 @@ State 2: <Vote line 62, col 5 to line 66, col 56 of module TwoPhaseCommit>
 /\ up = TRUE
 /\ inbox = {[from |-> p1, vote |-> "NO"]}
 
-State 3: <CoordinatorTimeout line 118, col 5 to line 121, col 41 of module TwoPhaseCommit>
+State 3: <CoordinatorTimeout line 127, col 5 to line 130, col 41 of module TwoPhaseCommit>
 /\ phase = "COMMITTED"
 /\ decision = "COMMIT"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")
@@ -376,14 +377,14 @@ Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes
   decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
   decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
   decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
-31 states generated, 31 distinct states found, 27 states left on queue.
+33 states generated, 33 distinct states found, 29 states left on queue.
 The depth of the complete state graph search is 3.
-The average outdegree of the complete state graph is 11 (minimum is 10, the maximum 12 and the 95th percentile is 12).
-Finished in 00s at (2026-11-02 04:10:49)
+The average outdegree of the complete state graph is 12 (minimum is 11, the maximum 12 and the 95th percentile is 12).
+Finished in 00s at (2026-11-02 04:53:49)
 
 == the inductive step with crashes: spec/TwoPhaseCommitCrashInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2719309] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2834641] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -398,7 +399,7 @@ Semantic processing of module CoordinatorContract
 Semantic processing of module RecoveryContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 04:10:50)
+Starting... (2026-11-02 04:53:50)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -411,7 +412,7 @@ Computed 256 initial states...
 Computed 512 initial states...
 Computed 1024 initial states...
 Computed 2048 initial states...
-Finished computing initial states: 2728 distinct states generated at 2026-11-02 04:10:50.
+Finished computing initial states: 2728 distinct states generated at 2026-11-02 04:53:50.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -423,7 +424,7 @@ State 1: <Initial predicate>
 /\ up = TRUE
 /\ inbox = {}
 
-State 2: <CoordinatorTimeout line 118, col 5 to line 121, col 41 of module TwoPhaseCommit>
+State 2: <CoordinatorTimeout line 127, col 5 to line 130, col 41 of module TwoPhaseCommit>
 /\ phase = "COMMITTED"
 /\ decision = "COMMIT"
 /\ pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
@@ -456,7 +457,42 @@ Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes
   decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
 2729 states generated, 2729 distinct states found, 2727 states left on queue.
 The depth of the complete state graph search is 2.
-Finished in 00s at (2026-11-02 04:10:50)
+Finished in 00s at (2026-11-02 04:53:50)
+
+== the recorded runs: spec/TwoPhaseCommitTrace.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2834730] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommitTrace.tla
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommitTraces.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/RecoveryContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module RecoveryContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Semantic processing of module TwoPhaseCommitTraces
+Semantic processing of module TwoPhaseCommitTrace
+Starting... (2026-11-02 04:53:51)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Finished computing initial states: 8 distinct states generated at 2026-11-02 04:53:51.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 0.0
+74 states generated, 74 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 11.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 1 and the 95th percentile is 1).
+Finished in 00s at (2026-11-02 04:53:51)
 ```
 
 </details>

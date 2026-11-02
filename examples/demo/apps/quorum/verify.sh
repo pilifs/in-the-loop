@@ -2,7 +2,8 @@
 # Compiles the Quorum module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
 # capability and API contracts, the property proofs (JBMC), and the two-phase-commit and Raft election models (TLC),
 # the former under four configurations and the latter under seven, plus a check that the election model's enabling
-# predicates agree with ENABLED.
+# predicates agree with ENABLED, and the trace check of the two-phase-commit nodes: their recorded runs, held to the
+# model's next-state relation.
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
 # tla2tools.jar in ~/tools or $TLA2TOOLS_JAR.
 set -euo pipefail
@@ -27,6 +28,8 @@ java -ea -cp "build/main:build/test" net.terminalvalue.quorum.Tests
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitInductive.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrash.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrashInductive.cfg --library ../../tools/tla/standard-modules
+java -cp "build/main:build/test" net.terminalvalue.quorum.twopc.Traces > spec/TwoPhaseCommitTraces.tla
+"$JVMCONTRACT" tlc spec/TwoPhaseCommitTrace.tla --config spec/TwoPhaseCommitTrace.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
 "$JVMCONTRACT" tla src/contract/VoteRule.decide.contract spec/VoteRuleContract.tla
 "$JVMCONTRACT" tlc spec/RaftElection.tla --library ../../tools/tla/standard-modules

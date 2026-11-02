@@ -4,8 +4,10 @@
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
-    "passed": true,
-    "failures": []
+    "passed": false,
+    "failures": [
+      "NodesTest.aCrashAfterTheLogLosesTheBroadcastAndTheRestartSendsItAgain"
+    ]
   },
   "before": {
     "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java",
@@ -22,8 +24,8 @@
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
-  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n@@ -6,9 +6,9 @@\n \n decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, null)        => throws NullPointerException\n-decide(COMMITTED, Restarted[])  => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Restarted[])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COMMITTED, null)         => throws NullPointerException\n decide(ABORTED, Restarted[])    => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(ABORTED, null)           => throws NullPointerException\n-decide(null, Restarted[])       => throws NullPointerException\n+decide(null, Restarted[])       => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(null, null)              => throws NullPointerException\n--- a/examples/demo/apps/quorum/src/contract/capabilities.contract\n+++ b/examples/demo/apps/quorum/src/contract/capabilities.contract\n@@ -3,7 +3,7 @@\n # by capability, and the libraries the module calls. The build checks it against the bytecode.\n # A change here is a change in what the module is able to do: review it like a new permission.\n kind: capabilities\n-module: quorum, 35 classes, 129 methods\n+module: quorum, 34 classes, 128 methods\n \n clock: none\n console: none\n",
-  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,102 distinct states to depth 10 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1",
+  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n@@ -6,9 +6,9 @@\n \n decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, null)        => throws NullPointerException\n-decide(COMMITTED, Restarted[])  => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Restarted[])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COMMITTED, null)         => throws NullPointerException\n decide(ABORTED, Restarted[])    => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(ABORTED, null)           => throws NullPointerException\n-decide(null, Restarted[])       => throws NullPointerException\n+decide(null, Restarted[])       => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(null, null)              => throws NullPointerException\n--- a/examples/demo/apps/quorum/src/contract/capabilities.contract\n+++ b/examples/demo/apps/quorum/src/contract/capabilities.contract\n@@ -3,7 +3,7 @@\n # by capability, and the libraries the module calls. The build checks it against the bytecode.\n # A change here is a change in what the module is able to do: review it like a new permission.\n kind: capabilities\n-module: quorum, 45 classes, 179 methods\n+module: quorum, 44 classes, 178 methods\n \n clock: none\n console: none\n",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,336 distinct states to depth 10 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1; the recorded runs: TLC 2.19 explored 74 distinct states to depth 11 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
   "problem": null,
   "statement": null,
   "trace": [
@@ -115,7 +117,7 @@
       }
     }
   ],
-  "statesExplored": 3102,
+  "statesExplored": 3336,
   "invariant": "CommitFollowsTheCoordinator",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (no incoming transition)\n    ABORTED --> ABORTED: Restarted[] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Restarted[] → effects=[SEND_ABORT]\n    COMMITTED --> ABORTED: Restarted[] → effects=[SEND_ABORT]\n",
@@ -196,6 +198,12 @@
         "fromRuns": false,
         "finished": false,
         "operators": []
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
+        "operators": []
       }
     ],
     "changedRows": [
@@ -246,7 +254,7 @@
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2",
       "invariant": "CommitFollowsTheCoordinator",
       "violationKind": "invariant",
-      "statesExplored": 3102,
+      "statesExplored": 3336,
       "trace": [
         {
           "step": 1,
@@ -371,6 +379,18 @@
           }
         }
       ],
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 74 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 74,
+      "trace": null,
       "forever": null
     }
   ]

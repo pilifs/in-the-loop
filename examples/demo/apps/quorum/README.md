@@ -17,6 +17,7 @@ The design rule is the one deterministic-simulation-tested systems follow: a ker
 | [`replication.LastWriterWins`](src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java) | Which of two concurrent writes a replica keeps | A law: `winner(a, b) == 1 - winner(b, a)`, so that replicas converge | 022 |
 | [`twopc.Coordinator`](src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | A two-phase-commit coordinator's decision | A [behavioural contract](src/contract/Coordinator.decide.contract), and a [TLA+ model](spec/README.md) of the protocol around it, checked by TLC for its invariants, its liveness and its refinement of transaction commit, under a second configuration for an inductive invariant about the votes counted and in flight, and under two more in which the coordinator crashes and restarts | 020, 021, 057, 058, 067, 068 |
 | [`twopc.Recovery`](src/main/java/net/terminalvalue/quorum/twopc/Recovery.java) | What a restarted coordinator does with the phase it logged | A [behavioural contract](src/contract/Recovery.decide.contract), the second generated operator of the two-phase-commit model, which checks it under two configurations in which the coordinator crashes between steps or between logging a decision and sending it, over every run and by induction | 087 to 089 |
+| [`twopc.CoordinatorNode`](src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java), [`twopc.ParticipantNode`](src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java) | The nodes around the rules: the coordinator's tally, log and broadcast, and the participants | Trace validation: the nodes' runs through scripted scenarios with crashes injected, recorded by [`Traces`](src/test/java/net/terminalvalue/quorum/twopc/Traces.java) and held to the two-phase-commit model's next-state relation under a fifth configuration, [`TwoPhaseCommitTrace.cfg`](spec/TwoPhaseCommitTrace.cfg) | 090 to 092 |
 
 The module as a whole has a [capability contract](src/contract/capabilities.contract) (every capability is `none`: no clock, no randomness, no threads, no I/O, which is the determinism guarantee written down) and an [API contract](src/contract/api.contract).
 
@@ -30,7 +31,7 @@ src/contract/         the contracts the build checks:
   properties.contract   the properties proved by JBMC (written by hand; the proofs are regenerated)
   capabilities.contract what the module's bytecode can reach (generated)
   api.contract          the public surface (generated)
-spec/                 the TLA+ models of two-phase commit and of Raft leader election; CoordinatorContract.tla, RecoveryContract.tla, RoleMachineContract.tla and VoteRuleContract.tla are generated from the contracts
+spec/                 the TLA+ models of two-phase commit and of Raft leader election; CoordinatorContract.tla, RecoveryContract.tla, RoleMachineContract.tla and VoteRuleContract.tla are generated from the contracts, TwoPhaseCommitTraces.tla from the nodes' recorded runs
 verify.sh             compile, test, and run every check below
 ```
 
@@ -55,6 +56,8 @@ jvmcontract tlc spec/TwoPhaseCommit.tla --library ../../tools/tla/standard-modul
 jvmcontract tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitInductive.cfg --library ../../tools/tla/standard-modules
 jvmcontract tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrash.cfg --library ../../tools/tla/standard-modules
 jvmcontract tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitCrashInductive.cfg --library ../../tools/tla/standard-modules
+java -cp build/main:build/test net.terminalvalue.quorum.twopc.Traces > spec/TwoPhaseCommitTraces.tla
+jvmcontract tlc spec/TwoPhaseCommitTrace.tla --config spec/TwoPhaseCommitTrace.cfg --library ../../tools/tla/standard-modules
 jvmcontract tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
 jvmcontract tla src/contract/VoteRule.decide.contract spec/VoteRuleContract.tla
 jvmcontract tlc spec/RaftElection.tla --coverage --library ../../tools/tla/standard-modules   # --coverage: the rows of each generated operator a step takes, and the rows none does

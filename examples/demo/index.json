@@ -303,7 +303,7 @@
       "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
       "approach": "D1",
       "verdict": "violation",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "021",
@@ -319,7 +319,7 @@
       "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
       "approach": "D1",
       "verdict": "verified",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "022",
@@ -882,7 +882,7 @@
       "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
       "approach": "D1",
       "verdict": "violation",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "058",
@@ -898,7 +898,7 @@
       "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
       "approach": "D1",
       "verdict": "verified",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "059",
@@ -1342,13 +1342,13 @@
       "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
       "approach": "D1",
       "verdict": "violation",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "088",
       "path": "088-coordinator-with-nothing-to-redo-on-restart-leaves-a-logged-decision-unsent",
       "title": "A coordinator with nothing to redo on restart leaves a logged decision unsent forever",
-      "summary": "A restarted two-phase-commit coordinator sends a logged decision again, because the crash may have come between logging it and sending it. A developer sees only duplicate broadcasts come of it, since the coordinator cannot tell whether the first copy went out and so always sends a second, and makes a restart in a decided phase change nothing, as the decision rule does for any event in a decided phase. The contract diff is two rows, and the change mirrors the rule beside it. Under the two configurations the model had, nothing crashes and the rows are never taken; the inductive invariant is closed under the new rule as well, since every state the run passes through is one it admits. The third configuration, in which the coordinator may crash twice, finds the run in ten steps: one participant votes yes and two vote no, the coordinator crashes before counting, restarts, logs the abort that presumed abort calls for, and crashes again before sending it; the second restart finds a logged abort and the new rule has nothing to redo. The prepared participant holds its locks forever, a liveness failure, reported as a run that stays in its last state. The fourth configuration finds the step that makes it possible, a coordinator up and decided with nothing out.",
+      "summary": "A restarted two-phase-commit coordinator sends a logged decision again, because the crash may have come between logging it and sending it. A developer sees only duplicate broadcasts come of it, since the coordinator cannot tell whether the first copy went out and so always sends a second, and makes a restart in a decided phase change nothing, as the decision rule does for any event in a decided phase. The contract diff is two rows, and the change mirrors the rule beside it. Under the two configurations the model had, nothing crashes and the rows are never taken; the inductive invariant is closed under the new rule as well, since every state the run passes through is one it admits. The third configuration, in which the coordinator may crash twice, finds the run in nine steps: two participants vote no, the coordinator crashes as it counts the first of them, restarts, logs the abort that presumed abort calls for, and crashes again before sending it; the third participant votes yes, and the second restart finds a logged abort and the new rule has nothing to redo. The prepared participant holds its locks forever, a liveness failure, reported as a run that stays in its last state. The fourth configuration finds the step that makes it possible, a coordinator up and decided with nothing out.",
       "categories": [
         "functional"
       ],
@@ -1357,7 +1357,7 @@
       "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
       "approach": "D1",
       "verdict": "violation",
-      "existingTestsPassed": true
+      "existingTestsPassed": false
     },
     {
       "id": "089",
@@ -1371,6 +1371,52 @@
       "severity": "none",
       "changeKind": "feature",
       "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "090",
+      "path": "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run",
+      "title": "A coordinator node that broadcasts before it logs, caught by its own recorded run",
+      "summary": "The two-phase-commit coordinator node logs each phase change before it broadcasts the decision, so that a crash between the two loses the broadcast and the restart sends it again. A developer swaps the two to take the log write off the participants' wait. The decision rules are untouched, every contract holds, and the model's four configurations are as green as before: the model never sees the glue. The fifth configuration does. TLC walks the runs the nodes recorded and finds, four steps into the one in which the timer's abort is logged and the coordinator crashes, a step the model has no action for: the decision is out and the log still says collecting. In the run that commits, the restart then presumes abort after a commit has gone out.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.twopc.CoordinatorNode#act",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "091",
+      "path": "091-coordinator-node-that-logs-the-tally-only-with-a-decision-forgets-the-votes-in-a-crash",
+      "title": "A coordinator node that logs the tally only with a decision forgets the votes in a crash",
+      "summary": "The coordinator node writes its log on every vote it counts, so that the tally survives a crash, which is what the model assumes of it. A developer cuts the writes down to one per decision: a vote that decides nothing is kept in memory. No rule changes, every contract holds, the tests pass, and the model's four configurations are green. The trace check finds, four steps into the run in which the coordinator crashes while collecting, a step the model has no action for: the crash takes the counted vote with it, where the model's `Crash` keeps the tally. The model's verdicts about restarts no longer describe this coordinator.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.twopc.CoordinatorNode#act",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "092",
+      "path": "092-participant-that-votes-no-when-it-gives-up-its-recorded-runs-all-steps-of-the-model",
+      "title": "A participant that votes no when it gives up, its recorded runs all steps of the model",
+      "summary": "A participant that gives up before voting aborts in silence, and the coordinator finds out when its timer fires. A developer has the participant vote no as it gives up, so that the coordinator can abort on the vote, and reworks the scenario that covers it: the coordinator now receives the no and aborts once every vote is in, with no timer. No rule changes. The trace check regenerates the recorded runs from the patched nodes and TLC finds every step of every run to be a step of the model: giving up is now the model's `Vote` with a no rather than its `ParticipantTimeout`, and both are actions the model has, so everything the four configurations prove of the protocol covers the new participant.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.ParticipantNode#giveUp",
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true

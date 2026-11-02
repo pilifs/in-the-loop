@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "091",
+  "title": "A coordinator node that logs the tally only with a decision forgets the votes in a crash",
+  "summary": "The coordinator node writes its log on every vote it counts, so that the tally survives a crash, which is what the model assumes of it. A developer cuts the writes down to one per decision: a vote that decides nothing is kept in memory. No rule changes, every contract holds, the tests pass, and the model's four configurations are green. The trace check finds, four steps into the run in which the coordinator crashes while collecting, a step the model has no action for: the crash takes the counted vote with it, where the model's `Crash` keeps the tally. The model's verdicts about restarts no longer describe this coordinator.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java",
+    "symbol": "net.terminalvalue.quorum.twopc.CoordinatorNode#act"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "In `CoordinatorNode.act`, the branch for an unchanged decision no longer writes the log, with the comment that nothing was decided, so there is nothing to log: one write per decision rather than one per vote. The branch for a transition still writes the phase and the tally before the broadcast. No test changes; none crashes a coordinator that has counted a vote and decided nothing.",
+    "patch": "change.patch"
+  },
+  "risk": "Medium to high, and invisible to the checks that look at the rules. The change removes a write from the glue, and the comment's reasoning is sound for a coordinator that never crashes: the tally in memory is the tally. The model's crash configurations say what a restart may rely on, and they say it by assumption: the coordinator logs every change to its phase and its tally. A reviewer has to know that assumption is load-bearing, and for which rule.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The four configurations of the model report what they did before, 728, 736, 3,448 and 2,728 states, because the rules are unchanged and the model checks the rules. The fifth, `TwoPhaseCommitTrace.cfg`, holds the nodes to the model over their recorded runs, and TLC reports the run in which the coordinator crashes while collecting: p1 votes yes, the coordinator counts the vote, and the coordinator crashes between steps. The recorded state after the crash has `votes` back at `NONE` for p1, since the crash takes the memory and the log never saw the vote, while the model's `Crash` action leaves `votes` unchanged, as does every other action that sets `up` to `FALSE`. No step of the model goes from the third recorded state to the fourth, so the action property `EveryStepIsOneOfTheModel` fails there. What that costs depends on the recovery rule. The committed rule presumes abort on a restart without a logged decision, so the lost tally changes nothing in this run; the rule of example 089, which resumes collecting on the strength of the logged tally, would count p1's vote missing, wait for it on a timer that nothing restarts it for, and abort a transaction whose votes were all yes; and either way the model's results about restarts, examples 087 to 089 among them, were proved of a coordinator that logs its tally, which this one is not.",
+  "resolution": "Reject, or reword the model's assumption and re-prove the restarts against it: the write per vote is what makes the logged tally the tally. The example shows what trace validation adds to model checking: the model's assumptions about the implementation are checked against the implementation's own runs, and a change that breaks one is reported at the step where it breaks.",
+  "provenance": "Constructed as the second example of trace validation on the two-phase-commit nodes: a change that removes a write the model assumes, found at the crash that reveals it, with the recovery rule of 089 as the one that would pay for it.",
+  "references": [
+    {
+      "title": "Cirstea, Kuppe, Loillier and Merz, Validating Traces of Distributed Programs Against TLA+ Specifications (2024): the technique, and what it finds that model checking the specification alone does not",
+      "url": "https://arxiv.org/abs/2404.16075"
+    },
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit, the coordinator's log, and the write-ahead rule, log before act",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Mohan, Lindsay and Obermarck, Transaction Management in the R* Distributed Database Management System (1986): presumed abort, what a coordinator does on restart with and without a logged decision",
+      "url": "https://dl.acm.org/doi/10.1145/7239.7266"
+    },
+    {
+      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: two-phase commit, the participants' and the coordinator's logs and timeouts",
+      "url": "https://www.microsoft.com/en-us/research/people/philbe/book/"
+    },
+    {
+      "title": "TLC's action properties ([][A]_v in PROPERTIES): a property of every step, reported with the run up to the offending step",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}

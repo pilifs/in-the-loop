@@ -1,0 +1,233 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 728 states, and under 4 more configurations",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java",
+    "startLine": 39,
+    "code": "    network.send(new VoteMessage(name, able ? Vote.YES : Vote.NO));\n}\n\n/** Participant.timeout: a participant that has not voted gives up on its own, and then never votes. */\npublic void giveUp() {\n    if (state != State.WORKING) {\n        throw new IllegalStateException(name + \" has already voted\");\n    }\n    state = State.ABORTED;\n}\n\n/** Participant.learn: applies the coordinator's decision if one is out; says whether it did. */\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java",
+    "startLine": 39,
+    "code": "    network.send(new VoteMessage(name, able ? Vote.YES : Vote.NO));\n}\n\n/** Participant.timeout: a participant that has not voted gives up on its own, and tells the coordinator by\n * voting no, so that the coordinator can abort on the vote rather than on its timer. */\npublic void giveUp() {\n    if (state != State.WORKING) {\n        throw new IllegalStateException(name + \" has already voted\");\n    }\n    state = State.ABORTED;\n    network.send(new VoteMessage(name, Vote.NO));\n}\n\n/** Participant.learn: applies the coordinator's decision if one is out; says whether it did. */\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,448 distinct states to depth 12 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1; the recorded runs: TLC 2.19 explored 76 distinct states to depth 11 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 728,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 0,
+            "total": 3,
+            "never": [
+              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 0,
+            "total": 3,
+            "never": [
+              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "crashes",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          }
+        ]
+      },
+      {
+        "label": "the inductive step with crashes",
+        "fromRuns": false,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          }
+        ]
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
+        "operators": []
+      }
+    ],
+    "changedRows": [],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 728 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 728,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 736 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 736,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "crashes",
+      "cfg": "spec/TwoPhaseCommitCrash.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 3,448 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 3448,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step with crashes",
+      "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 2,728 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 2728,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 76 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 76,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

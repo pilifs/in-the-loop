@@ -1,0 +1,58 @@
+--- a/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
++++ b/examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/ParticipantNode.java
+@@ -39,12 +39,14 @@
+         network.send(new VoteMessage(name, able ? Vote.YES : Vote.NO));
+     }
+ 
+-    /** Participant.timeout: a participant that has not voted gives up on its own, and then never votes. */
++    /** Participant.timeout: a participant that has not voted gives up on its own, and tells the coordinator by
++     * voting no, so that the coordinator can abort on the vote rather than on its timer. */
+     public void giveUp() {
+         if (state != State.WORKING) {
+             throw new IllegalStateException(name + " has already voted");
+         }
+         state = State.ABORTED;
++        network.send(new VoteMessage(name, Vote.NO));
+     }
+ 
+     /** Participant.learn: applies the coordinator's decision if one is out; says whether it did. */
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
+@@ -3,6 +3,7 @@
+ import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ 
++import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ 
+@@ -74,12 +75,12 @@
+         equal(Outcome.COMMIT, network.decision());
+     }
+ 
+-    public static void aParticipantThatGivesUpNeverVotes() {
++    public static void aParticipantThatGivesUpVotesNo() {
+         Network network = new Network(new Faults());
+         ParticipantNode p1 = new ParticipantNode("p1", network);
+         p1.giveUp();
+         equal(ParticipantNode.State.ABORTED, p1.state());
+-        check(network.inFlight().isEmpty(), "no vote in flight");
++        equal(List.of(new VoteMessage("p1", Vote.NO)), network.inFlight());
+         check(!p1.learn(), "nothing to learn without a decision");
+     }
+ 
+--- a/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
++++ b/examples/demo/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
+@@ -83,9 +83,9 @@
+                         .vote("p1", Vote.YES).deliver("p1").vote("p2", Vote.YES)
+                         .timeout()
+                         .deliver("p2").learn("p1").learn("p2").learn("p3"),
+-                new Script("a participant gives up without voting, and the coordinator aborts on its timer")
+-                        .giveUp("p1").vote("p2", Vote.YES).deliver("p2")
+-                        .timeout()
++                new Script("a participant gives up, votes no on its own, and the coordinator aborts once every vote is in")
++                        .giveUp("p1").vote("p2", Vote.YES).deliver("p2").deliver("p1")
++                        .vote("p3", Vote.YES).deliver("p3")
+                         .learn("p2").learn("p3"),
+                 new Script("the coordinator crashes while collecting, and restarts with the presumed abort")
+                         .vote("p1", Vote.YES).deliver("p1")

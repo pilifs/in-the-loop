@@ -1,11 +1,13 @@
 {
   "verdict": "violation",
-  "verdictLabel": "✗ Violation: EveryParticipantDecides, 10-step trace then forever (crashes)",
+  "verdictLabel": "✗ Violation: EveryParticipantDecides, 9-step trace then forever (crashes)",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
-    "passed": true,
-    "failures": []
+    "passed": false,
+    "failures": [
+      "NodesTest.aCrashAfterTheLogLosesTheBroadcastAndTheRestartSendsItAgain"
+    ]
   },
   "before": {
     "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java",
@@ -23,7 +25,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Recovery.decide.contract\n@@ -6,9 +6,9 @@\n \n decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, null)        => throws NullPointerException\n-decide(COMMITTED, Restarted[])  => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Restarted[])  => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, null)         => throws NullPointerException\n-decide(ABORTED, Restarted[])    => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Restarted[])    => Unchanged[reason=\"already decided\"]\n decide(ABORTED, null)           => throws NullPointerException\n decide(null, Restarted[])       => throws NullPointerException\n decide(null, null)              => throws NullPointerException\n",
-  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,883 distinct states in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0; crashes: TLC 2.19 explored 3,883 distinct states in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1; the recorded runs: TLC 2.19 explored 74 distinct states to depth 11 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
   "problem": null,
   "statement": null,
   "trace": [
@@ -58,26 +60,28 @@
     },
     {
       "step": 4,
-      "action": "Vote",
+      "action": "ReceiveVote",
       "changes": {
-        "inbox": "{ [from |-> p1, vote |-> \"YES\"], [from |-> p2, vote |-> \"NO\"], [from |-> p3, vote |-> \"NO\"] }",
-        "pstate": "(p1 :> \"PREPARED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")"
+        "crashes": "1",
+        "inbox": "{[from |-> p2, vote |-> \"NO\"]}",
+        "up": "FALSE",
+        "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NO\")"
       }
     },
     {
       "step": 5,
-      "action": "Crash",
-      "changes": {
-        "crashes": "1",
-        "up": "FALSE"
-      }
-    },
-    {
-      "step": 6,
       "action": "Recover",
       "changes": {
         "crashes": "2",
         "phase": "\"ABORTED\""
+      }
+    },
+    {
+      "step": 6,
+      "action": "Vote",
+      "changes": {
+        "inbox": "{[from |-> p1, vote |-> \"YES\"], [from |-> p2, vote |-> \"NO\"]}",
+        "pstate": "(p1 :> \"PREPARED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")"
       }
     },
     {
@@ -91,20 +95,12 @@
       "step": 8,
       "action": "ReceiveVote",
       "changes": {
-        "inbox": "{[from |-> p1, vote |-> \"YES\"], [from |-> p3, vote |-> \"NO\"]}",
-        "votes": "(p1 :> \"NONE\" @@ p2 :> \"NO\" @@ p3 :> \"NONE\")"
+        "inbox": "{[from |-> p2, vote |-> \"NO\"]}",
+        "votes": "(p1 :> \"YES\" @@ p2 :> \"NONE\" @@ p3 :> \"NO\")"
       }
     },
     {
       "step": 9,
-      "action": "ReceiveVote",
-      "changes": {
-        "inbox": "{[from |-> p3, vote |-> \"NO\"]}",
-        "votes": "(p1 :> \"YES\" @@ p2 :> \"NO\" @@ p3 :> \"NONE\")"
-      }
-    },
-    {
-      "step": 10,
       "action": "ReceiveVote",
       "changes": {
         "inbox": "{}",
@@ -122,6 +118,7 @@
         "label": "three participants",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
@@ -154,6 +151,7 @@
         "label": "the inductive step",
         "fromRuns": false,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
@@ -186,12 +184,21 @@
         "label": "crashes",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "the inductive step with crashes",
         "fromRuns": false,
         "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
+        "counted": false,
         "operators": []
       }
     ],
@@ -245,7 +252,7 @@
       "label": "crashes",
       "cfg": "spec/TwoPhaseCommitCrash.cfg",
       "verdict": "violation",
-      "summary": "✗ Violation: EveryParticipantDecides, 10-step trace then forever",
+      "summary": "✗ Violation: EveryParticipantDecides, 9-step trace then forever",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2",
       "invariant": "EveryParticipantDecides",
       "violationKind": "temporal",
@@ -282,26 +289,28 @@
         },
         {
           "step": 4,
-          "action": "Vote",
+          "action": "ReceiveVote",
           "changes": {
-            "inbox": "{ [from |-> p1, vote |-> \"YES\"], [from |-> p2, vote |-> \"NO\"], [from |-> p3, vote |-> \"NO\"] }",
-            "pstate": "(p1 :> \"PREPARED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")"
+            "crashes": "1",
+            "inbox": "{[from |-> p2, vote |-> \"NO\"]}",
+            "up": "FALSE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NO\")"
           }
         },
         {
           "step": 5,
-          "action": "Crash",
-          "changes": {
-            "crashes": "1",
-            "up": "FALSE"
-          }
-        },
-        {
-          "step": 6,
           "action": "Recover",
           "changes": {
             "crashes": "2",
             "phase": "\"ABORTED\""
+          }
+        },
+        {
+          "step": 6,
+          "action": "Vote",
+          "changes": {
+            "inbox": "{[from |-> p1, vote |-> \"YES\"], [from |-> p2, vote |-> \"NO\"]}",
+            "pstate": "(p1 :> \"PREPARED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")"
           }
         },
         {
@@ -315,20 +324,12 @@
           "step": 8,
           "action": "ReceiveVote",
           "changes": {
-            "inbox": "{[from |-> p1, vote |-> \"YES\"], [from |-> p3, vote |-> \"NO\"]}",
-            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NO\" @@ p3 :> \"NONE\")"
+            "inbox": "{[from |-> p2, vote |-> \"NO\"]}",
+            "votes": "(p1 :> \"YES\" @@ p2 :> \"NONE\" @@ p3 :> \"NO\")"
           }
         },
         {
           "step": 9,
-          "action": "ReceiveVote",
-          "changes": {
-            "inbox": "{[from |-> p3, vote |-> \"NO\"]}",
-            "votes": "(p1 :> \"YES\" @@ p2 :> \"NO\" @@ p3 :> \"NONE\")"
-          }
-        },
-        {
-          "step": 10,
           "action": "ReceiveVote",
           "changes": {
             "inbox": "{}",
@@ -369,6 +370,18 @@
           }
         }
       ],
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 74 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 74,
+      "trace": null,
       "forever": null
     }
   ]

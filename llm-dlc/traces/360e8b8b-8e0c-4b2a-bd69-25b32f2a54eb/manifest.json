@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T09:27:40.322Z",
-  "duration_seconds": 147465,
+  "ended": "2026-11-02T10:03:24.575Z",
+  "duration_seconds": 149609,
   "stats": {
-    "turns": 98,
-    "api_calls": 1067,
-    "tool_calls": 1622,
-    "tool_errors": 32,
-    "compactions": 19,
+    "turns": 102,
+    "api_calls": 1124,
+    "tool_calls": 1678,
+    "tool_errors": 34,
+    "compactions": 20,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 32062,
-      "output_tokens": 2624856,
-      "cache_read_input_tokens": 203298093,
-      "cache_creation_input_tokens": 5760728
+      "input_tokens": 33856,
+      "output_tokens": 2748338,
+      "cache_read_input_tokens": 211819188,
+      "cache_creation_input_tokens": 5985359
     }
   },
   "tools": {
-    "Bash": 1145,
+    "Bash": 1201,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -494,24 +494,38 @@
     {
       "index": 19,
       "started": "2026-11-02T08:47:26.626Z",
-      "ended": "2026-11-02T09:27:40.322Z",
+      "ended": "2026-11-02T09:30:48.963Z",
       "turns": 5,
-      "api_calls": 44,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 1350,
-        "output_tokens": 111982,
-        "cache_read_input_tokens": 6399629,
-        "cache_creation_input_tokens": 206006
+        "input_tokens": 1382,
+        "output_tokens": 112625,
+        "cache_read_input_tokens": 6620548,
+        "cache_creation_input_tokens": 208372
       },
-      "peak_context_tokens": 220951
+      "peak_context_tokens": 223317
+    },
+    {
+      "index": 20,
+      "started": "2026-11-02T09:32:18.959Z",
+      "ended": "2026-11-02T10:03:24.575Z",
+      "turns": 4,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 1762,
+        "output_tokens": 122839,
+        "cache_read_input_tokens": 8300176,
+        "cache_creation_input_tokens": 222265
+      },
+      "peak_context_tokens": 237210
     }
   ],
   "log": {
-    "sha256": "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07",
-    "bytes": 46480955,
-    "lines": 15881,
-    "gzip_bytes": 7889404,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07.jsonl.gz"
+    "sha256": "42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f",
+    "bytes": 48513229,
+    "lines": 16651,
+    "gzip_bytes": 8241361,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -698,6 +712,14 @@
       "summary": "Let the two-phase-commit coordinator crash and restart on a recovery rule generated from its own contract, under two more configurations, with three new examples",
       "body": "The two-phase-commit model (examples/demo/apps/quorum/spec/TwoPhaseCommit.tla) now has a coordinator that may crash and restart. A new kernel, twopc.Recovery#decide(Phase logged, Restarted), says what a restarted coordinator does with the phase it logged: presumed abort, a logged decision is sent again and no logged decision aborts. Its behavioural contract is derived like the others, and jvmcontract tla generates spec/RecoveryContract.tla, which the model brings in as an instance, its second generated operator. The model gains a MaxCrashes constant and up and crashes variables; applying a decision now logs the phase change and then either broadcasts or, while crashes remain, crashes with the broadcast lost; Crash is a crash between steps and Recover feeds the logged phase to the recovery rule and applies its decision the same way, so a restart can be cut short too. The inductive invariant's conjunct tying the broadcast to the phase is weakened to allow nothing out, and two conjuncts are added: a coordinator that is up and decided has its decision out, and the coordinator is down only after a crash, which keeps the existing configurations at their 728 and 736 states. Two configurations are added: TwoPhaseCommitCrash.cfg (two crashes, 3,448 states, the same invariants, liveness property and refinement, with the fairness condition that a crashed coordinator restarts) and TwoPhaseCommitCrashInductive.cfg (2,728 admitted states, the coordinator up or down). verify.sh runs both, and build.py lists them after the inductive one with the recovery operator under the model's operators, so older examples keep their headlines.\n\nExamples 087 to 089 change the recovery rule. 087: a restart that aborts whatever was logged, which under crashes reverses a commit one participant has already applied, found as a ten-step run (CommitFollowsTheCoordinator) and as one step from a state the inductive invariant admits. 088: a restart with nothing to redo in a decided phase, which leaves an abort logged and unsent when the restart that logged it is cut short by a second crash, so a prepared participant waits forever: EveryParticipantDecides, a ten-step run then stuttering, with the crash-inductive configuration naming BroadcastOnceUp. 089: a restart that resumes collecting, since the tally is logged, verified under all four configurations with the changed row taken under both that have a crash. Example 058's patch, which adds a phase, was regenerated against the new model and now also teaches the recovery rule the new phase; examples 020, 021, 057, 058, 067 and 068 were rebuilt for the two new columns, all as expected, and 057's text now describes the six-step liveness counterexample TLC reports for it under the reshaped next-state relation. Verified by the quorum verify.sh (tests, contracts, proofs, all eleven TLC runs green) and by build.py on the nine examples. Docs: the spec, quorum, demo, root, examples and plugin READMEs, approaches.md, and the add-tla-model skill reference, which gains a paragraph on modelling a crash of a part that logs its state.",
       "log_sha256": "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07"
+    },
+    {
+      "change_id": "vmrumsnoumpxpzzlrxvrvlpvrkvrlryw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Hold the Java two-phase-commit nodes to the model by trace validation under a fifth configuration, with three new examples",
+      "body": "The quorum module gained the glue around the two-phase-commit rules, written as a real coordinator is: CoordinatorNode (counts votes, asks Coordinator#decide and Recovery#decide, writes a CoordinatorLog before it broadcasts on a Network), ParticipantNode, and a Faults injector that crashes the coordinator after any I/O operation. A test-side Traces class runs them through eight scripted scenarios, four with crashes, records the state after each step in the model's variables and prints it as TwoPhaseCommitTraces.tla. The new TwoPhaseCommitTrace.tla extends the model, walks each recorded run and checks every step against the model's next-state relation as the action property EveryStepIsOneOfTheModel, plus that each run starts in the initial state; TwoPhaseCommitTrace.cfg is the two-phase-commit model's fifth configuration. build.py lets a configuration name its own spec, a trace writer run on the patched classes, and whether it counts coverage (TLC attributes none to an action property), renders a recorded run's first step with its scenario name, and matches an example's symbol against the glue methods a model lists as traced. Examples 090 to 092: a node that broadcasts before it logs (caught four steps into the run in which the timer's abort is logged and the coordinator crashes: the decision is out, the log still says collecting), a node that logs the tally only with a decision (caught at the crash that takes the counted vote with it, where the model's Crash keeps the tally), and a participant that votes no when it gives up, verified with every recorded step one of the model's. Two model changes came out of it: Perform now lets a crash fall in any step after what the step logged (a restart with nothing to do, cut short by a crash, is one recorded step; the reachable states and the four state counts are unchanged), and the coordinator's fairness conditions name the completing step (WF_vars(A /\\ up')), since weak fairness of a timeout that decides nothing would otherwise force a crash and hide 057's liveness bug under crashes. Examples 020, 021, 057, 058, 067, 068, 087, 088 and 089 were rebuilt for the fifth column, all with their verdicts; 088's counterexample under crashes is now nine steps rather than ten, since counting a vote and crashing fuse into one step, and its text follows the new trace. Verified by the quorum verify script (27 checks green, 40 tests), by build.py on the twelve two-phase-commit examples with every verdict as expected, and by the result schema. Docs: the spec README, the quorum and demo READMEs, approaches.md, the plugin README and the add-tla-model skill reference.",
+      "log_sha256": "42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f"
     }
   ],
   "logs": {
@@ -712,6 +734,12 @@
       "lines": 6862,
       "gzip_bytes": 3782528,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2.jsonl.gz"
+    },
+    "42418bb88b09f5b9c9c30593dedc1d1d6736efa61c8c51bbfdfc8d4bfd553c3f": {
+      "bytes": 48513229,
+      "lines": 16651,
+      "gzip_bytes": 8241361,
+      "url": null
     },
     "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee": {
       "bytes": 38666692,

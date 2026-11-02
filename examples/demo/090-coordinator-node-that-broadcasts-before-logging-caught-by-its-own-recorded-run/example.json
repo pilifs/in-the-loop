@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "090",
+  "title": "A coordinator node that broadcasts before it logs, caught by its own recorded run",
+  "summary": "The two-phase-commit coordinator node logs each phase change before it broadcasts the decision, so that a crash between the two loses the broadcast and the restart sends it again. A developer swaps the two to take the log write off the participants' wait. The decision rules are untouched, every contract holds, and the model's four configurations are as green as before: the model never sees the glue. The fifth configuration does. TLC walks the runs the nodes recorded and finds, four steps into the one in which the timer's abort is logged and the coordinator crashes, a step the model has no action for: the decision is out and the log still says collecting. In the run that commits, the restart then presumes abort after a commit has gone out.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java",
+    "symbol": "net.terminalvalue.quorum.twopc.CoordinatorNode#act"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "In `CoordinatorNode.act`, the broadcast of a transition's effects moves above the log write, with the comment that the participants are waiting, so send first and log after. The test that pinned the order, in which a crash after the first I/O operation of the deciding step leaves the commit logged and unsent and the restart sends it, is replaced by one in which the same crash leaves the decision out, which is what the developer wanted to see. `Coordinator.decide` and `Recovery.decide` are untouched.",
+    "patch": "change.patch"
+  },
+  "risk": "High, and the kind a review lets through. Two lines swap places in a class that holds no logic, the rules and their contracts are untouched, the tests pass, and the four configurations of the model report what they reported before, since the model checks the rules and takes the glue around them on trust: it says the coordinator logs before it acts, and nothing checks that it does. A reviewer who knows the write-ahead rule will stop here; one reading the comment will see a latency improvement.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The four configurations of the model are green: 728, 736, 3,448 and 2,728 states as before, since the rules the model's operators are generated from have not changed. The fifth configuration, `TwoPhaseCommitTrace.cfg`, holds the patched nodes to the model: the trace writer runs them through eight scripted scenarios, crashes injected after a given I/O operation of a step, records the state after each step in the model's variables, and TLC walks each recorded run and checks every step against the model's next-state relation, the action property `EveryStepIsOneOfTheModel`. It reports the shortest failing run first: the one in which a vote is counted, the timer fires, and the coordinator crashes after the first I/O operation of that step. The recorded step has `decision = \"ABORT\"`, `up = FALSE` and the phase still `COLLECTING`. The model's `CoordinatorTimeout` logs the phase change and then either broadcasts or crashes with the broadcast lost; no action of the model puts the decision out while the log still says collecting, so the step is one the model's verdicts do not cover. The run that commits fails the same way at its seventh step, with `COMMIT` out and the log at `COLLECTING`, and that is where the harm is: the restart reads the log, presumes abort, and sends `ABORT` after `COMMIT` has gone out, so a participant that applied the commit and one that applies the abort end the transaction on different sides, which is what the model's `Atomicity` rules out for the nodes it describes.",
+  "resolution": "Reject. The log write comes first: it is the write-ahead rule, and the model's crash configurations prove the restart correct on the strength of it. The recorded runs are regenerated from the patched classes on every build, so the next change to the glue is held to the model the same way.",
+  "provenance": "Constructed as the first example of trace validation on the two-phase-commit nodes, to pair with 091 and 092: a change to the glue that no contract and no configuration of the model can see, and the one the write-ahead rule exists to forbid.",
+  "references": [
+    {
+      "title": "Cirstea, Kuppe, Loillier and Merz, Validating Traces of Distributed Programs Against TLA+ Specifications (2024): the technique, and what it finds that model checking the specification alone does not",
+      "url": "https://arxiv.org/abs/2404.16075"
+    },
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit, the coordinator's log, and the write-ahead rule, log before act",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Mohan, Lindsay and Obermarck, Transaction Management in the R* Distributed Database Management System (1986): presumed abort, what a coordinator does on restart with and without a logged decision",
+      "url": "https://dl.acm.org/doi/10.1145/7239.7266"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "TLC's action properties ([][A]_v in PROPERTIES): a property of every step, reported with the run up to the offending step",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    }
+  ]
+}
