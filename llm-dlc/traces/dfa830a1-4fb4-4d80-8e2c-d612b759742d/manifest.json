@@ -113,7 +113,7 @@
     },
     {
       "change_id": "wmyuwyzspmkxznlyxuwlooqqpulmuyqx",
-      "commit_id": null,
+      "commit_id": "29efa9cfce464961c53bda4bc62cdd17a7601a4f",
       "immutable": false,
       "summary": "Run the tla feature loop without a cycle limit",
       "body": "The tla prompt stopped after seven cycles while features ran until a cycle made no commit. Both now repeat instruction, commit, compact until a cycle makes no commit, so the cycle limit had no remaining use and is removed. The README and the script's header match.\n\nVerified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla and features each ran past seven cycles, stopped at the tenth when it made no commit with exit 1, nine compacts and their own text. No argument still gives exit 2. The loop has not been run against the real session.",

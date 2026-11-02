@@ -19,7 +19,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Tokens written | 3,113,490 |
 | Tokens read | 286,233,287 (97.5% from cache) |
 | Commits with a trace | 67 |
-| Log snapshots | 94 (97.0 MB gzipped, 93 uploaded) |
+| Log snapshots | 94 (97.0 MB gzipped, 94 uploaded) |
 
 ## Sessions
 
@@ -148,7 +148,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 64 | [`c3f17f66`](https://github.com/pilifs/in-the-loop/commit/c3f17f6613ed58ff1c7718364eb71c829cb45f41) | Choose the feature loop's prompt by argument | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca.jsonl.gz)), [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) ([log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f.jsonl.gz)) |
 | 65 | [`710eabfd`](https://github.com/pilifs/in-the-loop/commit/710eabfd13d4a27872d2e50ebd96c7fe1ca747d1) | Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/414bde3f020a665e85651ff76742475aa0394be10bcce88c91f38b5846fe038c.jsonl.gz)), [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) ([log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz)) |
 | 66 | [`b5d023a4`](https://github.com/pilifs/in-the-loop/commit/b5d023a4171c4f284cc430f800370f81160c3775) | Record the /review-findings decision on a cut-off home path | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/e53ce31e84979294b3f52e59939e743bc0ca230e81fe7f120ec4b9fbb8b5be99.jsonl.gz)), [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) ([log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)) |
-| 67 | change `wmyuwyzs` | Run the tla feature loop without a cycle limit | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/066669ab6971ba4d45d572065109629f7d7bdb2699d7adc1b53809b2695c3010.jsonl.gz)), [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) ([log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)) |
+| 67 | [`29efa9cf`](https://github.com/pilifs/in-the-loop/commit/29efa9cfce464961c53bda4bc62cdd17a7601a4f) | Run the tla feature loop without a cycle limit | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/066669ab6971ba4d45d572065109629f7d7bdb2699d7adc1b53809b2695c3010.jsonl.gz)), [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) ([log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)) |
 
 ## Logs
 
@@ -164,7 +164,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`360e8b8b`](360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 10 | 10 | 28.7 MB | [`f61f985aeeaf`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/f61f985aeeaf00da9b1d4b651a65159ae61895592d12608bf585774669b9ae7c.jsonl.gz) |
 | [`b337c438`](b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 3 | 3 | 0.5 MB | [`09aa3322da07`](https://terminalvalue.net/raw-traces/b337c438-c453-4e77-9b04-ac89ec125c41/09aa3322da07819b7791ce2ea88c43c3a347928e8d6630ea750aa8dfbb47efb2.jsonl.gz) |
 | [`8316bdd0`](8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 1 | 1 | 0.1 MB | [`d3e31bbd02d5`](https://terminalvalue.net/raw-traces/8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/d3e31bbd02d59016348efd96bdab4f12d96a2bc4267a7148b6bdfe80b3cb9a4d.jsonl.gz) |
-| [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 22 | 21 | 8.1 MB | `066669ab6971`, not uploaded |
+| [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 22 | 22 | 8.1 MB | [`066669ab6971`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/066669ab6971ba4d45d572065109629f7d7bdb2699d7adc1b53809b2695c3010.jsonl.gz) |
 | [`2e359813`](2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 14 | 14 | 5.6 MB | [`4e63b53eff6e`](https://terminalvalue.net/raw-traces/2e359813-25c2-4259-888b-42d3a5f0eee6/4e63b53eff6e08ad53da41b80349dee876fd7a7e62cd15172d4302175da1f5e3.jsonl.gz) |
 | [`dfa830a1`](dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) | 5 | 5 | 2.1 MB | [`21d489ab201d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz) |
 

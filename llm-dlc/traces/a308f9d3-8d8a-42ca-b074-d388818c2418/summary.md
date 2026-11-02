@@ -190,7 +190,7 @@ One finding in session dfa830a1, of kind other-home-dir, was a home path cut off
 
 ### Run the tla feature loop without a cycle limit
 
-change `wmyuwyzspmkx` · [log `066669ab6971`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/066669ab6971ba4d45d572065109629f7d7bdb2699d7adc1b53809b2695c3010.jsonl.gz)
+[`29efa9cfce46`](https://github.com/pilifs/in-the-loop/commit/29efa9cfce464961c53bda4bc62cdd17a7601a4f) · [log `066669ab6971`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/066669ab6971ba4d45d572065109629f7d7bdb2699d7adc1b53809b2695c3010.jsonl.gz)
 
 The tla prompt stopped after seven cycles while features ran until a cycle made no commit. Both now repeat instruction, commit, compact until a cycle makes no commit, so the cycle limit had no remaining use and is removed. The README and the script's header match.
 
