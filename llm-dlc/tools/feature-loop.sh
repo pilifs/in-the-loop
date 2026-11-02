@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run one instruction unattended, a fixed number of times.
+# Run one instruction unattended, chosen by name.
 #
 # Each cycle resumes one Claude Code session and runs: instruction, commit, compact.
 # A cycle that leaves no new commit stops the loop early, before compacting, so the
@@ -8,19 +8,36 @@
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine.
 #
-# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh
+# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh PROMPT
+#   features  add features and examples to jvmcontract, until a cycle makes no commit
+#   tla       add advanced TLA examples, seven times
 # Exits 0 after the last cycle, 1 when a cycle made no commit or the scope cannot
-# start, and 130 if interrupted.
+# start, 2 for a bad argument, and 130 if interrupted.
 
 set -uo pipefail
 
 SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
-INSTRUCTION="Add more advanced examples showcasing verification of TLA specs"
-CYCLES=7
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
 SCOPE=feature-loop
+
+# CYCLES=0 means no limit: only a cycle without a commit ends the run.
+PROMPT=$*
+case "$PROMPT" in
+  features)
+    INSTRUCTION="Add more advanced features along with examples to the jvmcontract library."
+    CYCLES=0
+    ;;
+  tla)
+    INSTRUCTION="Add more advanced examples showcasing verification of TLA specs"
+    CYCLES=7
+    ;;
+  *)
+    echo "usage: feature-loop.sh features|tla" >&2
+    exit 2
+    ;;
+esac
 
 # Claude Code files a session under the directory it ran in, and the instruction
 # is meant for the root of the repo, so run there whatever the caller's directory.
@@ -59,7 +76,7 @@ contain() {
   log "starting in $SCOPE.scope with a $MEMORY_MAX cap"
   exec systemd-run --user --scope --quiet --collect --unit="$SCOPE" \
     -p MemoryMax="$MEMORY_MAX" -p MemorySwapMax=0 -p OOMPolicy=continue \
-    "$BASH" llm-dlc/tools/feature-loop.sh
+    "$BASH" llm-dlc/tools/feature-loop.sh "$PROMPT"
 }
 contain
 
@@ -111,10 +128,10 @@ except KeyboardInterrupt:
 # Change IDs, unlike commit IDs, survive a rewrite of the commit.
 last_change() { jj log --no-graph -r @- -T change_id; }
 
-for (( cycle = 1; cycle <= CYCLES; cycle++ )); do
+for (( cycle = 1; CYCLES == 0 || cycle <= CYCLES; cycle++ )); do
   before=$(last_change) || exit 1
 
-  log "cycle $cycle of $CYCLES: instruction"
+  log "cycle $cycle: $PROMPT instruction"
   run_claude "$INSTRUCTION" || log "cycle $cycle: claude exited with status $?"
 
   after=$(last_change) || exit 1
