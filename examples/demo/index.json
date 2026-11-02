@@ -945,6 +945,36 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "062",
+      "path": "062-candidate-that-retries-without-voting-again-elects-two-leaders",
+      "title": "A candidate that retries its election without voting for itself again elects two leaders",
+      "summary": "A Raft candidate whose election timed out starts a new one: a new term, a vote for itself, a request to every other server. A developer trims the retry: the tally already holds the candidate's own vote, so it need not vote again, and the request goes only to the servers that never answered. The contract diff is one case and is approved. The election model finds the bug under all three of its configurations, each in its own way: a seven-step run of three servers in which two candidates elect each other, the one step that breaks the inductive invariant (a candidate of a term it has not voted in), and an eight-step run of four servers in which a vote cast in term 1 is counted in term 2.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "063",
+      "path": "063-candidate-that-retries-in-the-same-term-proved-safe-but-not-live",
+      "title": "A candidate that retries in the same term, proved safe, and what the proof does not say",
+      "summary": "A Raft candidate whose election timed out starts a new one in a new term. A developer makes it ask again in the same term instead, for the votes it lacks, so that a candidate that cannot win does not drive the whole cluster's term up on every timeout. The contract diff is one case and is approved. The election model proves the change safe under all three of its configurations: one leader per term, by induction and with four servers too. What the model does not state is that an election ever ends, and under this rule a split vote never does: three candidates of one term ask each other forever. The proof is exact about what it covers, and this example is about reading it that way.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

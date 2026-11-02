@@ -224,6 +224,39 @@
         "null"
       ]
     },
+    "configurations": {
+      "description": "For model checking (D1) of a model with several configurations: one entry per TLC run, the model's own `.cfg` first, then the others (other constants, a symmetry set, an inductive check). The verdict and trace above are those of the first configuration that fails, else the first.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "cfg", "verdict", "summary", "domain", "invariant", "violationKind", "statesExplored", "trace", "forever"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string" },
+          "cfg": { "description": "The configuration file, relative to the app.", "type": "string" },
+          "verdict": { "enum": ["violation", "verified", "unverifiable"] },
+          "summary": { "description": "The run's one-line verdict, as the README's table shows it.", "type": "string" },
+          "domain": { "description": "The configuration's constants.", "type": "string" },
+          "invariant": { "type": ["string", "null"] },
+          "violationKind": { "enum": ["invariant", "deadlock", "action", "temporal", null] },
+          "statesExplored": { "type": ["integer", "null"] },
+          "trace": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "object",
+              "required": ["step", "action", "changes"],
+              "additionalProperties": false,
+              "properties": {
+                "step": { "type": "integer" },
+                "action": { "type": "string" },
+                "changes": { "type": "object", "additionalProperties": { "type": "string" } }
+              }
+            }
+          },
+          "forever": { "type": ["string", "null"] }
+        }
+      }
+    },
     "property": {
       "description": "For a property proof (B11): the assumption (the inputs the property is about, or null), the assertion that was proved or refuted (null when the property is its throws clauses alone), and the throws clauses (`<exception> when <condition>`: the method throws that exception exactly where the condition holds).",
       "type": [

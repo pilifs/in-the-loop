@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "063",
+  "title": "A candidate that retries in the same term, proved safe, and what the proof does not say",
+  "summary": "A Raft candidate whose election timed out starts a new one in a new term. A developer makes it ask again in the same term instead, for the votes it lacks, so that a candidate that cannot win does not drive the whole cluster's term up on every timeout. The contract diff is one case and is approved. The election model proves the change safe under all three of its configurations: one leader per term, by induction and with four servers too. What the model does not state is that an election ever ends, and under this rule a split vote never does: three candidates of one term ask each other forever. The proof is exact about what it covers, and this example is about reading it that way.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Split the `ElectionTimeout` case by role: a follower runs as before; a candidate retries with `REQUEST_VOTES` alone, keeping its term, its vote and its tally. The reasoning in the comment: every retry in a new term forces every server to adopt that term, and a candidate that cannot reach a majority, partitioned or slow, inflates the cluster's term on every timeout (the disruptive server of Ongaro's thesis, section 4.2.3). The behavioural contract is regenerated and its diff is the one case `decide(CANDIDATE, ElectionTimeout[])`, whose effects lose `INCREMENT_TERM` and `VOTE_FOR_SELF`; a test for the new effects is added. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "Safety is intact, and the model proves it: the candidate keeps its term, its vote and a tally whose votes were all cast in that term, so nothing it counts is stale and nothing it does lets anyone vote twice. What is lost is the one thing a new term is for. Raft resolves a split vote, two or more candidates of one term that each hold their own vote and cannot reach a majority, by having each start a new election in a new term after a randomized timeout, so that one of them is first to ask a cluster whose votes are free again (section 5.2). Under this rule the candidates of a split term ask the same servers for the same votes, already cast, forever; nothing increments the term until a follower's timer fires, and in a cluster where every server is a candidate there is no follower. Three servers that time out together are a cluster with no leader, for good. That is a liveness failure, and this model states no liveness property for elections: its timers fire whenever the model likes, which is also why it could not, since even the committed rule elects nobody if every timer always fires in lockstep. The model's header says so. A proof covers what the model states, and a reviewer who reads a green result as 'the change is fine' has read more than it says.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The election model's role machine is generated from the behavioural contract of the patched `RoleMachine#decide`, which the tool proves the bytecode satisfies on all 52 inputs. Under three servers and three terms every invariant and both action properties hold; there are fewer reachable states than with the committed rule, since a candidate no longer leaves its term on its own. The inductive step holds too: from every state the invariant `Inductive` admits, a candidate's retry changes nothing the invariant mentions, so every conjunct is kept, and election safety holds by induction for runs of any length. With four servers, under the symmetry set, it holds as well. The verdict is correct, and complete for what the configurations check: the invariants, the action properties, and the inductive invariant are all safety properties, statements about every state and every step, and the change breaks none of them. The run in which three candidates of term 1 each ask the other two, are refused, time out, and ask again is in the state graph TLC explored; no property it was asked to check is false of it.",
+  "resolution": "Revert, and read the result for what it is. The rule the developer wanted is pre-vote (thesis, section 4.2.3 and 9.6): a candidate first asks whether it could win, without incrementing its term, and starts the election only if a majority says yes, which spares the cluster the term inflation without touching the retry. A liveness property for elections would need the model to say when timers fire, which means a model of time or at least of fairness between servers, and a property weak enough that randomized timeouts can satisfy it; that is a different model, and until it exists the honest reading of this one is that it proves one leader per term and nothing about whether there is one. The example sits next to 062, where the same three configurations find a bug, so that the two verdicts can be read side by side: a proof is as strong as the properties it proves.",
+  "provenance": "Constructed from the rules for candidates in figure 2 of the Raft paper, by keeping the term on a candidate's retry.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 2, the rules for candidates, and section 5.2, leader election and split votes",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, the basic algorithm, and section 4.2.3, disruptive servers",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

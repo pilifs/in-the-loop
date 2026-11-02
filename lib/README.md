@@ -76,6 +76,7 @@ jvmcontract tlc spec/BoxOffice.tla --json
 jvmcontract tlc spec/ClassInit.tla --deadlock    # also report a reachable state in which no action is enabled
 jvmcontract tlc spec/TwoPhaseCommit.tla          # the configuration's PROPERTIES (liveness, refinement) are checked after the invariants
 jvmcontract tlc spec/RaftElection.tla            # an action property [][A]_v among them is reported by name, with the run up to the offending step
+jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionInductive.cfg   # another configuration of the same model: here INIT is an invariant, and a counterexample is one step from a state it admits
 
 # Views: the state machine a contract describes, and a class file's structure.
 jvmcontract statemachine src/contract/OrderLifecycle.decide.contract --format mermaid

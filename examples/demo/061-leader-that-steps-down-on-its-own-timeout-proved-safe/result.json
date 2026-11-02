@@ -1,6 +1,6 @@
 {
   "verdict": "verified",
-  "verdictLabel": "✓ Verified: all invariants and properties hold in 1,153 states",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 1,153 states, and under 2 more configurations",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -30,7 +30,7 @@\n decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n-decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n+decide(LEADER, ElectionTimeout[])               => Transition[next=FOLLOWER, effects=[]]\n decide(LEADER, VotesCounted[majority=false])    => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, VotesCounted[majority=true])     => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, AppendEntries[term=OLDER])       => Rejected[reason=\"stale leader\"]\n",
-  "proof": "TLC 2.19 explored 1,153 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3",
+  "proof": "three servers: TLC 2.19 explored 1,153 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 1,101 distinct states to depth 12 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -34,5 +34,43 @@
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,
-  "forever": null
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three servers",
+      "cfg": "spec/RaftElection.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 1,153 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 1153,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/RaftElectionInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 17470,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "four servers",
+      "cfg": "spec/RaftElectionFour.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 1,101 states",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 1101,
+      "trace": null,
+      "forever": null
+    }
+  ]
 }

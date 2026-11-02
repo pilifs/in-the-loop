@@ -5,7 +5,7 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✓ Verified: all invariants and properties hold in 1,153 states** | functional, no-false-positive | none | feature, behaviour change intended | [`RoleMachine#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✓ Verified: all invariants and properties hold in 1,153 states, and under 2 more configurations** | functional, no-false-positive | none | feature, behaviour change intended | [`RoleMachine#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
 > A Raft leader cut off from the majority keeps believing it leads, and keeps serving reads from a state the rest of the cluster has moved past, until some message from the newer term reaches it. A developer adds the check etcd calls CheckQuorum: a leader whose election timer fires, meaning no majority acknowledged it for a whole timeout, steps down to follower. The contract diff is one case and is approved. The election model proves the change keeps every invariant and both action properties, in 1,153 states: one leader per term, terms that never go backwards, and no leader that campaigns.
 
@@ -76,9 +76,19 @@ return switch (event) {
 
 ## What the verifier found
 
-Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included: 1,153 distinct states, which is every interleaving of the servers, their terms and votes, and the RPCs between them within the model's bounds (Servers = {s1, s2, s3}, MaxTerm = 3).
+The model is checked under 3 configurations, and the verdict is the first that fails:
+
+| Configuration | What it checks | Model | Result |
+|---|---|---|---|
+| three servers (`spec/RaftElection.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3 | ✓ Verified: all invariants and properties hold in 1,153 states |
+| the inductive step (`spec/RaftElectionInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of election safety by induction, for any run of the cluster however long; a counterexample is one step from a state that need not be reachable | Servers = {s1, s2, s3}, MaxTerm = 3 | ✓ Verified: all invariants and properties hold in 17,470 states |
+| four servers (`spec/RaftElectionFour.cfg`) | every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short of a majority, which three servers never show; under a symmetry set, so that of the states that differ only by the servers' names TLC explores one | Servers = {s1, s2, s3, s4}, MaxTerm = 3 | ✓ Verified: all invariants and properties hold in 1,101 states |
+
+Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three servers: 1,153 distinct states, which is every interleaving of the servers, their terms and votes, and the RPCs between them within the model's bounds (Servers = {s1, s2, s3}, MaxTerm = 3).
 
 The servers' role machine inside the model is generated from the behavioural contract of the patched code, so the model checks the role transitions the servers really make.
+
+The other configurations hold too, as the table says: the inductive step, 17,470 states; four servers, 1,101 states.
 
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
@@ -139,26 +149,29 @@ Merge. The property the model does not check is availability: a leader that step
 
 ## Evidence
 
-How the verdict was reached: TLC 2.19 explored 1,153 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3.
+How the verdict was reached: three servers: TLC 2.19 explored 1,153 distinct states to depth 10 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 1,101 distinct states to depth 12 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3.
 
 <details><summary>Verifier output</summary>
 
 ```text
+== three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1796758] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1880310] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
 Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
 Semantic processing of module Naturals
 Semantic processing of module Sequences
 Semantic processing of module FiniteSets
+Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module RaftElection
-Starting... (2026-11-01 22:42:19)
+Starting... (2026-11-01 23:13:32)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:42:19.
+Finished computing initial states: 1 distinct state generated at 2026-11-01 23:13:33.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -166,7 +179,75 @@ Model checking completed. No error has been found.
 5779 states generated, 1153 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 10.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
-Finished in 00s at (2026-11-01 22:42:20)
+Finished in 00s at (2026-11-01 23:13:33)
+
+== the inductive step: spec/RaftElectionInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1880418] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module RaftElection
+Starting... (2026-11-01 23:13:34)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Computed 1024 initial states...
+Computed 2048 initial states...
+Computed 4096 initial states...
+Computed 8192 initial states...
+Computed 16384 initial states...
+Finished computing initial states: 17470 distinct states generated at 2026-11-01 23:13:36.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 5.6E-11
+76099 states generated, 17470 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 04s at (2026-11-01 23:13:38)
+
+== four servers: spec/RaftElectionFour.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1880655] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module RaftElection
+Starting... (2026-11-01 23:13:38)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-01 23:13:39.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 4.7E-13
+9033 states generated, 1101 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 12.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 4).
+Finished in 00s at (2026-11-01 23:13:39)
 ```
 
 </details>

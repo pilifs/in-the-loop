@@ -5,7 +5,12 @@
 (* RPCs between them. TLC explores every interleaving for the servers and  *)
 (* terms in RaftElection.cfg, checks the invariants in every state it      *)
 (* reaches, and checks the action properties on every step: that terms    *)
-(* never go backwards, and that a leader never campaigns.                  *)
+(* never go backwards, and that a leader never campaigns. Two more         *)
+(* configurations check the same model another way: RaftElectionFour.cfg  *)
+(* has four servers, a cluster in which a tally can fall short of a       *)
+(* majority by more than one vote, under a symmetry set; and              *)
+(* RaftElectionInductive.cfg checks that the invariant Inductive below is *)
+(* inductive, from every state it admits rather than from Init.           *)
 (*                                                                         *)
 (* A server's role transitions, Decide(role, event), are not written here. *)
 (* They are generated from the behavioural contract of RoleMachine#decide  *)
@@ -26,7 +31,7 @@
 (* Raft elects a leader eventually by randomizing the timeouts, which is a *)
 (* matter of timing, and this model has no clock.                          *)
 (***************************************************************************)
-EXTENDS Naturals, FiniteSets, Sequences, RoleMachineContract
+EXTENDS Naturals, FiniteSets, Sequences, TLC, RoleMachineContract
 
 CONSTANTS Servers, MaxTerm
 
@@ -39,6 +44,10 @@ VARIABLES
 vars == <<role, currentTerm, votedFor, votes>>
 
 Majority(S) == Cardinality(S) * 2 > Cardinality(Servers)
+
+\* The servers are interchangeable: two states that differ only by a permutation of their names behave alike, so a
+\* configuration may tell TLC (SYMMETRY Perms) to explore one state of each such class.
+Perms == Permutations(Servers)
 
 \* How a message's term compares with the server's own, which is all the role machine looks at.
 Order(s, t) == IF t > currentTerm[s] THEN "NEWER" ELSE IF t = currentTerm[s] THEN "CURRENT" ELSE "OLDER"
@@ -57,8 +66,10 @@ VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 (* The servers.                                                            *)
 (***************************************************************************)
 
-\* Server.onElectionTimeout: no heartbeat arrived in time. The decision's effects: a new term, a vote for itself,
-\* and (REQUEST_VOTES) the canvass below, one server at a time.
+\* Server.onElectionTimeout: no heartbeat arrived in time. The decision's effects: INCREMENT_TERM starts a new
+\* term, in which the server has not voted yet (a vote is cast per term); VOTE_FOR_SELF starts a new tally, the
+\* server's own vote in it, and is the only thing that empties a tally short of adopting a term; REQUEST_VOTES is
+\* the canvass below, one server whose vote the tally lacks at a time.
 Timeout(s) ==
     /\ currentTerm[s] < MaxTerm
     /\ LET d == Decide(role[s], [kind |-> "ElectionTimeout"])
@@ -67,8 +78,7 @@ Timeout(s) ==
           /\ currentTerm' = [currentTerm EXCEPT ![s] = t]
           /\ votedFor' = [votedFor EXCEPT ![s] = IF d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF") THEN s
                                                  ELSE IF t > currentTerm[s] THEN "none" ELSE @]
-          /\ votes' = [votes EXCEPT ![s] = IF d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF") THEN {s}
-                                           ELSE IF t > currentTerm[s] THEN {} ELSE @]
+          /\ votes' = [votes EXCEPT ![s] = IF d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF") THEN {s} ELSE @]
 
 \* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer.
 \* On v, Server.onRequestVote: the role machine first (a candidate's newer term is adopted), then the vote rule on
@@ -142,6 +152,74 @@ ElectionSafety ==
 
 \* A leader holds the votes of a majority of the servers, its own among them.
 LeaderHasAMajority == \A s \in Servers : role[s] = "LEADER" => s \in votes[s] /\ Majority(votes[s])
+
+(***************************************************************************)
+(* The inductive invariant. ElectionSafety holds in every reachable state,  *)
+(* but a state that satisfies it and one step of Next do not give a state  *)
+(* that satisfies it: TLC proves it reachable state by reachable state,    *)
+(* and the proof says nothing about states a longer run or a bigger        *)
+(* cluster would reach. Inductive is stronger, and closed under Next: from *)
+(* any state it admits, reachable or not, every step lands in a state it   *)
+(* admits (RaftElectionInductive.cfg checks exactly that, with Inductive   *)
+(* as the initial predicate). Since Init satisfies it and it implies       *)
+(* ElectionSafety, that is a proof of election safety by induction, for    *)
+(* every run of the configured cluster however long, and it is the kind of *)
+(* argument that carries over to any cluster size. Its conjuncts are the   *)
+(* reasons two leaders cannot share a term: a leader's majority was cast   *)
+(* for it in its term, a server casts one vote per term, so two majorities *)
+(* of one term would need a voter they cannot share. A counterexample is   *)
+(* one step: the state it starts from need not be reachable, so it is      *)
+(* either a bug or a conjunct too strong for a correct change; the         *)
+(* configurations that run from Init tell which.                           *)
+(***************************************************************************)
+
+\* A vote in a tally was cast in the tally's term: the voter is still in that term and voted for the tally's owner,
+\* or has since moved to a newer term, in which it may vote again.
+VotesAreBound ==
+    \A s, v \in Servers : v \in votes[s] /\ v # s =>
+        \/ currentTerm[v] > currentTerm[s]
+        \/ currentTerm[v] = currentTerm[s] /\ votedFor[v] = s
+
+\* No server's vote is in two tallies of one term.
+TalliesOfATermAreDisjoint ==
+    \A s, t \in Servers : s # t /\ currentTerm[s] = currentTerm[t] => votes[s] \cap votes[t] = {}
+
+\* A candidate or leader voted for itself, and holds its own vote.
+CampaignersVoteForThemselves ==
+    \A s \in Servers : role[s] # "FOLLOWER" => votedFor[s] = s /\ s \in votes[s]
+
+\* A tally is empty, or holds its owner's vote and its owner voted for itself: VOTE_FOR_SELF starts a tally, and
+\* until a new term empties it the vote it started with stands.
+TalliesHoldTheirOwnersVote == \A s \in Servers : votes[s] = {} \/ (s \in votes[s] /\ votedFor[s] = s)
+
+\* Nothing happens in term 0: a timer that fires starts term 1.
+TermZeroIsQuiet ==
+    \A s \in Servers : currentTerm[s] = 0 => role[s] = "FOLLOWER" /\ votedFor[s] = "none" /\ votes[s] = {}
+
+Inductive ==
+    /\ TypeOK
+    /\ ElectionSafety
+    /\ LeaderHasAMajority
+    /\ VotesAreBound
+    /\ TalliesOfATermAreDisjoint
+    /\ CampaignersVoteForThemselves
+    /\ TalliesHoldTheirOwnersVote
+    /\ TermZeroIsQuiet
+
+\* Inductive, written so that TLC can enumerate the states it admits: each variable drawn from its type, and each
+\* conjunct placed right after the last variable it mentions, so that TLC drops a partial state as soon as one
+\* fails rather than after building all of them.
+InductiveInit ==
+    /\ currentTerm \in [Servers -> 0..MaxTerm]
+    /\ role \in [Servers -> {"FOLLOWER", "CANDIDATE", "LEADER"}]
+    /\ \A s \in Servers : currentTerm[s] = 0 => role[s] = "FOLLOWER"
+    /\ ElectionSafety
+    /\ votedFor \in [Servers -> Servers \cup {"none"}]
+    /\ \A s \in Servers : role[s] # "FOLLOWER" => votedFor[s] = s
+    /\ \A s \in Servers : currentTerm[s] = 0 => votedFor[s] = "none"
+    /\ votes \in {f \in [Servers -> SUBSET Servers] : \A s \in Servers : f[s] = {} \/ s \in f[s]}
+    /\ TalliesHoldTheirOwnersVote
+    /\ Inductive
 
 (***************************************************************************)
 (* Action properties: what every step of the system satisfies, which an     *)

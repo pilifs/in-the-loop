@@ -170,8 +170,12 @@ fn tla_outcome(outcome: &str) -> Result<String, Error> {
 /// How to run TLC on a specification.
 #[derive(Debug, Clone)]
 pub struct TlcOptions {
-    /// The `.tla` file; TLC runs in its directory and reads the `.cfg` of the same name.
+    /// The `.tla` file; TLC runs in its directory and reads the `.cfg` of the same name, unless `config` names
+    /// another.
     pub spec: PathBuf,
+    /// A configuration other than the `.cfg` of the specification's name (`-config`): the same model under other
+    /// constants, a symmetry set, or an inductive check, with `INIT` an invariant rather than the initial state.
+    pub config: Option<PathBuf>,
     pub workers: String,
     pub timeout_seconds: u64,
     /// `-DTLA-Library`: where the standard modules are, when TLC should read committed copies.
@@ -189,7 +193,12 @@ pub struct TlcOptions {
 
 impl TlcOptions {
     pub fn new(spec: &Path) -> TlcOptions {
-        TlcOptions { spec: spec.to_path_buf(), workers: "1".into(), timeout_seconds: 1800, library: None, jar: None, deadlock: false, seed: Some(1), fp: Some(1) }
+        TlcOptions { spec: spec.to_path_buf(), config: None, workers: "1".into(), timeout_seconds: 1800, library: None, jar: None, deadlock: false, seed: Some(1), fp: Some(1) }
+    }
+
+    /// The configuration file TLC reads: `config`, or the `.cfg` of the specification's name.
+    pub fn config_path(&self) -> PathBuf {
+        self.config.clone().unwrap_or_else(|| self.spec.with_extension("cfg"))
     }
 }
 
@@ -368,10 +377,15 @@ fn which(program: &str) -> bool {
 pub fn run_tlc(options: &TlcOptions) -> Result<TlcResult, Error> {
     let spec_dir = options.spec.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
     let spec_file = options.spec.file_name().ok_or_else(|| Error::new("spec has no file name"))?.to_string_lossy().into_owned();
-    let cfg = std::fs::read_to_string(options.spec.with_extension("cfg")).unwrap_or_default();
+    let cfg = std::fs::read_to_string(options.config_path()).unwrap_or_default();
     let properties = cfg_properties(&cfg);
     let mut command = tlc_command(options)?;
     command.extend(["-workers".into(), options.workers.clone()]);
+    if let Some(config) = &options.config {
+        // TLC resolves the name against the specification's directory, so a path from elsewhere is made absolute.
+        let config = std::fs::canonicalize(config).map_err(|e| Error::new(format!("configuration {}: {e}", config.display())))?;
+        command.extend(["-config".into(), config.to_string_lossy().into_owned()]);
+    }
     if !options.deadlock {
         command.push("-deadlock".into());
     }
@@ -387,7 +401,7 @@ pub fn run_tlc(options: &TlcOptions) -> Result<TlcResult, Error> {
     // TLC reports a violated temporal property without naming it, so when the configuration lists several, each
     // is checked alone until the violated one is found; the trace reported is the one of that check.
     if result.kind == Some(ViolationKind::Temporal) && properties.len() > 1 {
-        let stem = options.spec.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+        let stem = options.config_path().file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
         for property in &properties {
             let name = format!("{stem}-{property}-{}.cfg", std::process::id());
             let path = spec_dir.join(&name);

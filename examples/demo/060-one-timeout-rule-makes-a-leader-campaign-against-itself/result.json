@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -30,7 +30,7 @@\n decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n-decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n+decide(LEADER, ElectionTimeout[])               => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n decide(LEADER, VotesCounted[majority=false])    => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, VotesCounted[majority=true])     => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, AppendEntries[term=OLDER])       => Rejected[reason=\"stale leader\"]\n@@ -43,7 +43,7 @@\n decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(LEADER, null)                            => throws NullPointerException\n-decide(null, ElectionTimeout[])                 => throws NullPointerException\n+decide(null, ElectionTimeout[])                 => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n decide(null, VotesCounted[majority=false])      => throws NullPointerException\n decide(null, VotesCounted[majority=true])       => throws NullPointerException\n decide(null, AppendEntries[term=OLDER])         => Rejected[reason=\"stale leader\"]\n",
-  "proof": "TLC 2.19 explored 29 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3",
+  "proof": "three servers: TLC 2.19 explored 29 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 35 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3",
   "problem": null,
   "statement": null,
   "trace": [
@@ -74,5 +74,152 @@
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": "action",
-  "forever": null
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three servers",
+      "cfg": "spec/RaftElection.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: LeadersNeverCampaign, 4-step trace",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "invariant": "LeadersNeverCampaign",
+      "violationKind": "action",
+      "statesExplored": 29,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/RaftElectionInductive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: LeadersNeverCampaign, 2-step trace",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3",
+      "invariant": "LeadersNeverCampaign",
+      "violationKind": "action",
+      "statesExplored": 17470,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"LEADER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> s3 @@ s3 :> s3)",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s2, s3})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 1 @@ s3 :> 2)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "four servers",
+      "cfg": "spec/RaftElectionFour.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: LeadersNeverCampaign, 5-step trace",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3",
+      "invariant": "LeadersNeverCampaign",
+      "violationKind": "action",
+      "statesExplored": 35,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)",
+            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\" @@ s4 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 1 @@ s4 :> 0)",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> s1 @@ s4 :> \"none\")",
+            "votes": "(s1 :> {s1, s2, s3} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 1 @@ s4 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+          }
+        }
+      ],
+      "forever": null
+    }
+  ]
 }

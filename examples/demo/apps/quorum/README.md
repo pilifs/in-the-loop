@@ -10,7 +10,7 @@ The design rule is the one deterministic-simulation-tested systems follow: a ker
 | Kernel | What it decides | Verified by | Examples |
 |---|---|---|---|
 | [`Quorum`](src/main/java/net/terminalvalue/quorum/Quorum.java) | The majority of a cluster of `n` | A property: any two majorities share a node, for every `n` | 015 |
-| [`raft.RoleMachine`](src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | A Raft server's role transitions (follower, candidate, leader) | A [behavioural contract](src/contract/RoleMachine.decide.contract): all 52 (role, event) cases, and a [TLA+ model](spec/README.md#the-raft-election-model) of leader election around it, checked by TLC for election safety and for two action properties | 014, 059, 060, 061 |
+| [`raft.RoleMachine`](src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | A Raft server's role transitions (follower, candidate, leader) | A [behavioural contract](src/contract/RoleMachine.decide.contract): all 52 (role, event) cases, and a [TLA+ model](spec/README.md#the-raft-election-model) of leader election around it, checked by TLC for election safety and for two action properties under three configurations: three servers, the inductive step of an inductive invariant, and four servers under a symmetry set | 014, 059 to 063 |
 | [`raft.VoteRule`](src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | Whether a server grants its vote (the election restriction) | Regression proofs against the previous version, over 2^448 inputs | 013 |
 | [`backoff.Backoff`](src/main/java/net/terminalvalue/quorum/backoff/Backoff.java) | The delay before a retry | A property: between the base and the cap, and never shorter than the previous attempt | 016, 019 |
 | [`clock.HybridLogicalClock`](src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java) | Timestamps that track physical time and order causally related events | Properties: a new timestamp is later than everything it saw, and `receive` is symmetric | 017, 018 |
@@ -52,9 +52,11 @@ jvmcontract tla src/contract/Coordinator.decide.contract spec/CoordinatorContrac
 jvmcontract tlc spec/TwoPhaseCommit.tla --library ../../tools/tla/standard-modules
 jvmcontract tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
 jvmcontract tlc spec/RaftElection.tla --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionInductive.cfg --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionFour.cfg --library ../../tools/tla/standard-modules
 ```
 
-Compiling takes a second, the tests less, the contract check milliseconds, the five property proofs about four seconds with JBMC, and TLC about a second for each model (728 states of two-phase commit, 610 of the election).
+Compiling takes a second, the tests less, the contract check milliseconds, the five property proofs about four seconds with JBMC, and TLC about a second for each model (728 states of two-phase commit, 610 of the election, 829 of the election with four servers) and about four seconds for the inductive step of the election (17,470 states the invariant admits).
 No Gradle and no JVM start is needed for the contracts: `jvmcontract` reads the class files and the JDK's image directly.
 
 To change a kernel's behaviour on purpose: make the change, run `jvmcontract update --contracts src/contract --classes build/main --module quorum`, and commit the contract diff with the code. To state a new guarantee: add a block to `properties.contract`.

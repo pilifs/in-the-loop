@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "062",
+  "title": "A candidate that retries its election without voting for itself again elects two leaders",
+  "summary": "A Raft candidate whose election timed out starts a new one: a new term, a vote for itself, a request to every other server. A developer trims the retry: the tally already holds the candidate's own vote, so it need not vote again, and the request goes only to the servers that never answered. The contract diff is one case and is approved. The election model finds the bug under all three of its configurations, each in its own way: a seven-step run of three servers in which two candidates elect each other, the one step that breaks the inductive invariant (a candidate of a term it has not voted in), and an eight-step run of four servers in which a vote cast in term 1 is counted in term 2.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Split the `ElectionTimeout` case by role: a follower runs as before, with `INCREMENT_TERM`, `VOTE_FOR_SELF` and `REQUEST_VOTES`; a candidate retries with `INCREMENT_TERM` and `REQUEST_VOTES` only. The reasoning in the comment: a candidate's tally already holds its own vote, cast when it first ran, so voting again is pointless, and `REQUEST_VOTES` asks only the servers whose vote the tally lacks, so a retry costs one RPC per server that never answered instead of one per server. The behavioural contract is regenerated and its diff is the one case `decide(CANDIDATE, ElectionTimeout[])`, whose effects lose `VOTE_FOR_SELF`; a test for the new effects is added. The reviewer approves the diff: the effect that was dropped looks redundant.",
+    "patch": "change.patch"
+  },
+  "risk": "A vote is cast in a term, and so is a tally: `VOTE_FOR_SELF` is not a vote added to a tally but the start of a new one, in the new term, with the server's own vote in it. Without it the server enters its new term with no vote recorded there and a tally left over from the old one. Two things follow, and each is enough for two leaders. The server is free to vote in its new term, and does, for the first candidate of that term that asks, while still campaigning with its own vote in its tally: two candidates that retry into the same term vote for each other, and in a cluster of three each then holds a majority. And the other votes in the tally, granted in the old term by servers that have since voted again in the new one, count towards a majority of the new term: a vote cast once is counted twice. Election safety (Raft, figure 3) is gone, and with it every guarantee about the log. The contract diff is exactly what the developer intended.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The election model is checked under three configurations, and all three fail. With three servers and three terms TLC reports the shortest run that breaks `ElectionSafety`: s1's timer fires twice and s2's twice, so both are candidates of term 2, each with its own vote from term 1 in its tally and no vote recorded in term 2; s2 asks s1, which is free and grants, and s2 has two votes of three; s1 asks s2, which is free and grants, and s1 has two votes of three. Two leaders in term 2, holding each other's votes. The inductive step starts from every state the invariant `Inductive` admits, reachable or not, and finds the one step that leaves it: a candidate of term 1 whose timer fires becomes a candidate of term 2 with `votedFor` empty, and `CampaignersVoteForThemselves`, that a candidate or leader voted for itself in its term, no longer holds; that conjunct is the reason the other conjuncts, and election safety, hold, and the step that breaks it is the bug's definition. With four servers, where a candidate can hold a vote besides its own and still be short of a majority, the run is longer and shows the other half of the bug: s2 votes for s1 in term 1, s1 retries into term 2 with s2's vote still in its tally, and that vote, together with s3's cast in term 2, makes s1 the leader of term 2, while s2, which also retried, collects s1's free vote and s4's and leads term 2 too. The symmetry set in that configuration lets TLC explore one of each 24 states that differ only by the servers' names.",
+  "resolution": "Revert. The rules for candidates in figure 2 of the Raft paper start every election, the retries included, with the same three steps: increment the term, vote for self, send the requests. There is no vote to save: the old tally was a tally of the old term, and in the new one every server, this one included, has one vote to cast. A retry that spares the servers that already answered is unsound for the same reason, since they answered for the old term. The three configurations stay in the model's build: the inductive step names the conjunct a change breaks in one step, and four servers show the tallies three servers cannot.",
+  "provenance": "Constructed from the rules for candidates in figure 2 of the Raft paper, by dropping the vote for self from a candidate's retry.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 2, the rules for candidates, and section 5.2, leader election and split votes",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, section 14.3.4: symmetry sets in TLC",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

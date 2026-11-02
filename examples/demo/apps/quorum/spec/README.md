@@ -43,12 +43,14 @@ TLC checks 728 states in about a second. [Example 020](../../../020-coordinator-
 ## The Raft election model
 
 A TLA+ model of Raft leader election (Ongaro and Ousterhout, section 5.2) around the Quorum role machine: the servers, their terms and votes, and the RPCs between them.
-TLC explores every interleaving for the servers and terms in `RaftElection.cfg`, checks the invariants in every state it reaches, and checks two action properties on every step.
+TLC explores every interleaving for the servers and terms in `RaftElection.cfg`, checks the invariants in every state it reaches, and checks two action properties on every step. Two more configurations check the same model another way: `RaftElectionInductive.cfg` checks that the invariant `Inductive` is inductive, and `RaftElectionFour.cfg` checks four servers under a symmetry set.
 
 | File | Content |
 |---|---|
 | [`RaftElection.tla`](RaftElection.tla) | The model. One action per operation of a server: its election timer fires; it canvasses one server for a vote; it sends one server a heartbeat. An RPC is one step, the request and its reply together, and the request and the reply each go through the role machine. Each action names the Java operation it stands for |
 | [`RaftElection.cfg`](RaftElection.cfg) | The bounds TLC checks: three servers and three terms, the list of invariants, and the two action properties |
+| [`RaftElectionInductive.cfg`](RaftElectionInductive.cfg) | The inductive step: `INIT InductiveInit` in place of `SPECIFICATION Spec`, so that TLC starts from every state the invariant `Inductive` admits, reachable or not, takes one step, and checks each conjunct again |
+| [`RaftElectionFour.cfg`](RaftElectionFour.cfg) | Four servers, where a candidate can hold a vote besides its own and still be short of a majority, under `SYMMETRY Perms`: of the states that differ only by a permutation of the servers' names, TLC explores one |
 | [`RoleMachineContract.tla`](RoleMachineContract.tla) | **Generated.** A server's role transitions, as the TLA+ operator `Decide(role, event)`, written by `jvmcontract tla` from the [behavioural contract](../src/contract/RoleMachine.decide.contract) of `RoleMachine#decide`. The role machine sees a message's term only as it compares with the server's own (`NEWER`, `CURRENT`, `OLDER`), as the Java does |
 
 The vote itself is `VoteRule.grant` written in TLA+ without the log comparison: a candidate from the past is refused, and otherwise the vote is granted when the candidate's term is ahead of the voter's, or the voter has not voted in its term, or voted for this candidate. That rule is stated for a voter that has already adopted the candidate's term, which is what the role machine does on a request from a newer term; example 059 is what happens when it stops doing so.
@@ -64,6 +66,16 @@ The action properties, `[][A]_vars` formulas that TLC checks on every step rathe
 - **TermsNeverDecrease.** `[][\A s \in Servers : currentTerm'[s] >= currentTerm[s]]_vars`.
 - **LeadersNeverCampaign.** `[][\A s \in Servers : role[s] = "LEADER" => role'[s] # "CANDIDATE"]_vars`: a leader leaves office as the follower of a newer term, or by stepping down, never by starting an election against itself. The states on either side of such a step are states the protocol allows, a leader in one term and a candidate in the next, which is why no invariant can state this and the model states it as a property of steps. TLC reports an action property by name, and its counterexample is the run up to the offending step.
 
+The inductive invariant, `Inductive`, is what makes election safety true, written out: the invariants above and five more, each a reason two leaders cannot share a term.
+
+- **VotesAreBound.** A vote in a tally was cast in the tally's term: the voter is still in that term and voted for the tally's owner, or has since moved to a newer term.
+- **TalliesOfATermAreDisjoint.** No server's vote is in two tallies of one term.
+- **CampaignersVoteForThemselves.** A candidate or leader voted for itself in its term, and holds its own vote.
+- **TalliesHoldTheirOwnersVote.** A tally is empty, or holds its owner's vote and its owner voted for itself.
+- **TermZeroIsQuiet.** Nothing happens in term 0.
+
+`ElectionSafety` alone is not inductive: a state with two candidates of one term, each one vote short, satisfies it, and one step does not. `Inductive` is: from any state it admits, every step of `Next` lands in a state it admits, which `RaftElectionInductive.cfg` has TLC check by using the invariant as the initial predicate (Lamport, [Using TLC to Check Inductive Invariance](https://lamport.azurewebsites.net/tla/inductive-invariant.pdf)). Since `Init` satisfies it and it implies `ElectionSafety`, that proves election safety by induction, for every run of the configured cluster however long; it is the form of argument that carries over to any cluster size, where exploring the runs does not. `InductiveInit` is the same predicate written so that TLC can enumerate it: each variable drawn from its type, each conjunct placed right after the last variable it mentions, so that a partial state is dropped as soon as one fails. A counterexample is one step from a state that need not be reachable, so it is either a bug or a conjunct too strong for a correct change, and the configurations that run from `Init` tell which. The conjuncts are listed one by one in the configuration, so that TLC names the one that fails.
+
 What the model leaves out: the log, so there is no election restriction and a heartbeat is an empty AppendEntries; message delay, since an RPC is one step, so a server always answers with the term it has now and a stale server learns of a newer term the moment it talks to one that has it; and liveness, since Raft elects a leader eventually by randomizing the timeouts, which is a matter of timing, and the model has no clock. Terms stop at `MaxTerm`, past which no timer fires.
 
 ### Run it
@@ -72,6 +84,8 @@ What the model leaves out: the log, so there is no election restriction and a he
 cd examples/demo/apps/quorum
 jvmcontract tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
 jvmcontract tlc spec/RaftElection.tla --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionInductive.cfg --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionFour.cfg --library ../../tools/tla/standard-modules
 ```
 
-TLC checks 610 states in under a second. [Example 059](../../../059-vote-granted-without-adopting-the-term-elects-two-leaders/README.md) shows a five-step run to two leaders in one term; [example 060](../../../060-one-timeout-rule-makes-a-leader-campaign-against-itself/README.md) shows an action property violated by a step between two unremarkable states; [example 061](../../../061-leader-that-steps-down-on-its-own-timeout-proved-safe/README.md) shows a leader that steps down on its own timer, proved safe in 1,153 states.
+TLC checks 610 states in under a second, the 17,470 states the inductive invariant admits in about four seconds, and 829 states of four servers in a second (16,974 without the symmetry set). An example of this model is checked under all three configurations, and its verdict is the first that fails. [Example 059](../../../059-vote-granted-without-adopting-the-term-elects-two-leaders/README.md) shows a five-step run to two leaders in one term; [example 060](../../../060-one-timeout-rule-makes-a-leader-campaign-against-itself/README.md) shows an action property violated by a step between two unremarkable states; [example 061](../../../061-leader-that-steps-down-on-its-own-timeout-proved-safe/README.md) shows a leader that steps down on its own timer, proved safe in 1,153 states. [Example 062](../../../062-candidate-that-retries-without-voting-again-elects-two-leaders/README.md) shows a candidate that retries without voting for itself again, found three ways: a seven-step run of three servers, the one step that breaks `CampaignersVoteForThemselves`, and an eight-step run of four servers in which a vote of term 1 is counted in term 2; [example 063](../../../063-candidate-that-retries-in-the-same-term-proved-safe-but-not-live/README.md) shows a candidate that retries in the same term, proved safe under all three configurations, and why that proof says nothing about a split vote ever ending.

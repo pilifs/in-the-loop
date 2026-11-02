@@ -79,6 +79,11 @@ enum Command {
     Tlc {
         /// The specification file (`BoxOffice.tla`); its `.cfg` sits next to it.
         spec: PathBuf,
+        /// Another configuration for the same specification (TLC's `-config`): other constants, a symmetry set,
+        /// or an inductive check, where `INIT` is an invariant and a counterexample is one step from a state it
+        /// admits.
+        #[arg(long)]
+        config: Option<PathBuf>,
         /// Print JSON.
         #[arg(long)]
         json: bool,
@@ -424,8 +429,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             println!("wrote {}: {} cases", output.display(), text.lines().filter(|l| l.contains("->")).count());
             Ok(0)
         }
-        Command::Tlc { spec, json, workers, timeout, library, deadlock } => {
+        Command::Tlc { spec, config, json, workers, timeout, library, deadlock } => {
             let mut options = tla::TlcOptions::new(&spec);
+            options.config = config;
             options.workers = workers;
             options.timeout_seconds = timeout;
             options.library = library;

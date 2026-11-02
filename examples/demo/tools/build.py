@@ -628,6 +628,21 @@ TWOPC = {
 RAFT = {
     "spec": "spec/RaftElection.tla",
     "cfg": "spec/RaftElection.cfg",
+    "label": "three servers",
+    # The same model under two more configurations, run after the first; the README reports all three.
+    "configurations": [
+        {"cfg": "spec/RaftElectionInductive.cfg", "label": "the inductive step",
+         "what": "that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, "
+                 "rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. "
+                 "No counterexample is a proof of election safety by induction, for any run of the cluster however long; a "
+                 "counterexample is one step from a state that need not be reachable",
+         "initial": "a state the invariant `Inductive` admits, which need not be reachable",
+         "startsAnywhere": True},
+        {"cfg": "spec/RaftElectionFour.cfg", "label": "four servers",
+         "what": "every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short "
+                 "of a majority, which three servers never show; under a symmetry set, so that of the states that differ only "
+                 "by the servers' names TLC explores one"},
+    ],
     "contract": "src/contract/RoleMachine.decide.contract",
     "operator": "spec/RoleMachineContract.tla",
     "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -649,6 +664,14 @@ RAFT = {
         "LeadersNeverCampaign": "a leader never becomes a candidate: it leaves office as the follower of a newer term, or by "
                                 "stepping down, never by starting an election against itself; a property of steps, which no "
                                 "invariant can state",
+        # The conjuncts of the inductive invariant, which the inductive step checks one by one.
+        "VotesAreBound": "a vote in a tally was cast in the tally's term: the voter is still in that term and voted for the "
+                         "tally's owner, or has since moved to a newer term",
+        "TalliesOfATermAreDisjoint": "no server's vote is in two tallies of one term",
+        "CampaignersVoteForThemselves": "a candidate or leader voted for itself in its term, and holds its own vote",
+        "TalliesHoldTheirOwnersVote": "a tally is empty, or holds its owner's vote and its owner voted for itself",
+        "TermZeroIsQuiet": "nothing happens in term 0: a timer that fires starts term 1",
+        "Inductive": "the conjunction of the invariants above, closed under every step of the system",
     },
     "machine": "The servers' role machine inside the model is generated from the behavioural contract of the patched "
                "code, so the model checks the role transitions the servers really make.",
@@ -722,47 +745,97 @@ def model_of(example):
     sys.exit(f"{example['id']}: no TLA+ model of {app} is built around {example['subject']['symbol']}")
 
 
+def tlc_run(build, model_files, cfg, root):
+    """One run of TLC on a model under a configuration, through the tool: its parsed JSON, plus the configuration's
+    bounds (`domain`) and whether it lists temporal properties."""
+    deadlock = ["--deadlock"] if model_files.get("deadlock") else []
+    config = [] if cfg == model_files["cfg"] else ["--config", cfg]
+    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", *deadlock, *config, "--library", str(EXAMPLES / "tools/tla/standard-modules")],
+                          text=True, capture_output=True, cwd=build)
+    if proc.returncode == 2:
+        sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
+    run = json.loads(proc.stdout)
+    run["output"] = run["output"].replace(str(root) + "/", "").replace(str(REPO) + "/", "")
+    text = (build / cfg).read_text()
+    run["domain"] = ", ".join(re.findall(r"^\s+(\w+ = .+)$", text, re.M))
+    run["properties"] = bool(re.search(r"^PROPERTIES|^PROPERTY", text, re.M))
+    run["deadlockChecked"] = bool(deadlock)
+    # How a temporal counterexample goes on after its last step: TLC's counterexample for a liveness property is
+    # infinite, a prefix and then either stuttering or a loop back into the prefix.
+    run["forever"] = None
+    if run["verdict"] == "violation" and run.get("kind") == "temporal":
+        run["forever"] = (f"returns to step {run['lasso']} and repeats steps {run['lasso']} to {len(run['trace'])} forever"
+                          if run.get("lasso") else "stays in that state forever")
+    return run
+
+
+def tlc_label(run):
+    """The one-line verdict of a TLC run, as the README's tables show it."""
+    verdict = run["verdict"]
+    states = run.get("distinct_states")
+    if verdict == "violation":
+        return (f"{VERDICT_LABEL[verdict]}: {'deadlock' if run.get('deadlock') else run.get('invariant') or ''}, "
+                f"{len(run['trace'])}-step trace{' then forever' if run.get('kind') == 'temporal' else ''}")
+    if verdict == "verified" and states is not None:
+        return (f"{VERDICT_LABEL[verdict]}: all invariants{' and properties' if run['properties'] else ''} hold in {states:,} states"
+                f"{', no deadlock' if run['deadlockChecked'] else ''}")
+    return VERDICT_LABEL[verdict]
+
+
+def tlc_proof(run):
+    return (f"{run['version']} explored {run['distinct_states']:,} distinct states"
+            f"{' to depth ' + str(run['depth']) if run.get('depth') is not None else ''}"
+            f"{' in ' + str(run['seconds']) + ' s' if run.get('seconds') is not None else ''}, for the model {run['domain']}") if run.get("distinct_states") is not None else None
+
+
+def tlc_configurations(model_files):
+    """The configurations a model is checked under: the one of its `.cfg`, then any it lists under `configurations`."""
+    primary = {"cfg": model_files["cfg"], "label": model_files.get("label", "the model"), "initial": model_files["initial"],
+               "what": "every run from the initial state, every interleaving within the configuration's bounds"}
+    return [primary] + [{**c, "initial": c.get("initial", model_files["initial"])} for c in model_files.get("configurations", [])]
+
+
 def run_tool_tlc(folder, example, root, module, result):
-    """D1 on a javac app: the operator regenerated from the (patched) contract, then TLC through the tool."""
+    """D1 on a javac app: the operator regenerated from the (patched) contract, then TLC through the tool, once per
+    configuration of the model. The headline, which decides the verdict, is the first configuration that finds a
+    violation (or that TLC cannot check), else the first."""
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     model_files = model_of(example)
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
     tool(app, root, "tla", model_files["contract"], model_files["operator"], anchored=False)
-    deadlock = ["--deadlock"] if model_files.get("deadlock") else []
-    proc = subprocess.run([jvmcontract(), "tlc", model_files["spec"], "--json", *deadlock, "--library", str(EXAMPLES / "tools/tla/standard-modules")],
-                          text=True, capture_output=True, cwd=build)
-    if proc.returncode == 2:
-        sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
-    tlc_result = json.loads(proc.stdout)
-    output = tlc_result["output"].replace(str(root) + "/", "").replace(str(REPO) + "/", "")
+    configurations = tlc_configurations(model_files)
+    runs = [(c, tlc_run(build, model_files, c["cfg"], root)) for c in configurations]
+    several = len(runs) > 1
+    headline = next(((c, r) for c, r in runs if r["verdict"] == "violation"), None) \
+        or next(((c, r) for c, r in runs if r["verdict"] == "unverifiable"), None) or runs[0]
+    configuration, tlc_result = headline
+    if several:
+        output = "".join(f"== {c['label']}: {c['cfg']} ==\n{r['output'].rstrip(chr(10))}\n\n" for c, r in runs)
+    else:
+        output = tlc_result["output"]
     (folder / "verifier-output.txt").write_text(output.rstrip("\n") + "\n")
     verdict = tlc_result["verdict"]
-    trace = [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in tlc_result["trace"]] if verdict == "violation" else None
-    cfg = (build / model_files["cfg"]).read_text()
-    model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", cfg, re.M))
-    properties = bool(re.search(r"^PROPERTIES|^PROPERTY", cfg, re.M))
     kind = tlc_result.get("kind")
-    # How a temporal counterexample goes on after its last step: TLC's counterexample for a liveness property is
-    # infinite, a prefix and then either stuttering or a loop back into the prefix.
-    forever = None
-    if verdict == "violation" and kind == "temporal":
-        forever = (f"returns to step {tlc_result['lasso']} and repeats steps {tlc_result['lasso']} to {len(trace)} forever"
-                   if tlc_result.get("lasso") else "stays in that state forever")
+    trace = [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in tlc_result["trace"]] if verdict == "violation" else None
     findings = []
-    if verdict != "verified":
-        if verdict == "violation" and tlc_result.get("deadlock"):
-            message = f"{model_files['spec']} deadlocks after {len(trace)} steps: no action is enabled"
-        elif verdict == "violation" and kind == "temporal":
-            message = f"Temporal property {tlc_result['invariant']} of {model_files['spec']} is violated: after {len(trace)} steps the system {forever}"
-        elif verdict == "violation" and kind == "action":
-            message = f"Action property {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
-        elif verdict == "violation":
-            message = f"Invariant {tlc_result['invariant']} of {model_files['spec']} is violated after {len(trace)} steps"
+    for c, r in runs:
+        if r["verdict"] == "verified":
+            continue
+        where = f"{model_files['spec']} ({c['label']})" if several else model_files["spec"]
+        steps = len(r["trace"])
+        if r["verdict"] == "violation" and r.get("deadlock"):
+            message = f"{where} deadlocks after {steps} steps: no action is enabled"
+        elif r["verdict"] == "violation" and r.get("kind") == "temporal":
+            message = f"Temporal property {r['invariant']} of {where} is violated: after {steps} steps the system {r['forever']}"
+        elif r["verdict"] == "violation" and r.get("kind") == "action":
+            message = f"Action property {r['invariant']} of {where} is violated after {steps} steps"
+        elif r["verdict"] == "violation":
+            message = f"Invariant {r['invariant']} of {where} is violated after {steps} steps"
         else:
-            message = "TLC produced no verdict: " + (tlc_result.get("problem") or "unknown")
-        findings.append({"ruleId": "invariant-violated" if verdict == "violation" else "unverifiable", "level": "error",
+            message = f"TLC produced no verdict for {where}: " + (r.get("problem") or "unknown")
+        findings.append({"ruleId": "invariant-violated" if r["verdict"] == "violation" else "unverifiable", "level": "error",
                          "message": {"text": message},
                          "locations": [{"physicalLocation": {"artifactLocation": {"uri": example["subject"]["file"]},
                                                              "region": {"startLine": result["after"]["startLine"]}}}]})
@@ -779,21 +852,25 @@ def run_tool_tlc(folder, example, root, module, result):
         "statesExplored": states,
         "invariant": tlc_result.get("invariant"),
         "violationKind": kind,
-        "forever": forever,
-        "domain": model,
+        "forever": tlc_result["forever"],
+        "domain": tlc_result["domain"],
         "stateMachine": tool_state_machine(app, root, model_files["symbol"]),
-        "proof": (f"{tlc_result['version']} explored {states:,} distinct states"
-                  f"{' to depth ' + str(tlc_result['depth']) if tlc_result.get('depth') is not None else ''}"
-                  f"{' in ' + str(tlc_result['seconds']) + ' s' if tlc_result.get('seconds') is not None else ''}, for the model {model}") if states is not None else None,
+        "proof": "; ".join(f"{c['label']}: {tlc_proof(r)}" for c, r in runs if tlc_proof(r)) if several else tlc_proof(tlc_result),
         "problem": tlc_result.get("problem") if verdict == "unverifiable" else None,
     })
-    result["verdictLabel"] = {
-        "violation": f"{VERDICT_LABEL[verdict]}: {'deadlock' if tlc_result.get('deadlock') else tlc_result.get('invariant') or ''}, "
-                     f"{len(trace or [])}-step trace{' then forever' if kind == 'temporal' else ''}",
-        "verified": (f"{VERDICT_LABEL[verdict]}: all invariants{' and properties' if properties else ''} hold in {states:,} states"
-                     f"{', no deadlock' if deadlock else ''}" if states is not None else VERDICT_LABEL[verdict]),
-        "unverifiable": VERDICT_LABEL[verdict],
-    }[verdict]
+    if several:
+        result["configurations"] = [{
+            "label": c["label"], "cfg": c["cfg"], "verdict": r["verdict"], "summary": tlc_label(r), "domain": r["domain"],
+            "invariant": r.get("invariant"), "violationKind": r.get("kind"), "statesExplored": r.get("distinct_states"),
+            "trace": [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in r["trace"]] if r["verdict"] == "violation" else None,
+            "forever": r["forever"],
+        } for c, r in runs]
+    label = tlc_label(tlc_result)
+    if several and verdict == "violation" and configuration is not configurations[0]:
+        label += f" ({configuration['label']})"
+    elif several and verdict == "verified":
+        label += f", and under {len(runs) - 1} more configuration{'s' if len(runs) > 2 else ''}"
+    result["verdictLabel"] = label
 
 
 TOOL_RUNNERS = {"B8": run_tool_contracts, "B9": run_tool_equivalence, "B10": run_tool_contracts,
@@ -1210,47 +1287,85 @@ MODELS = {
 }
 
 
+def tlc_trace_lines(model, trace, initial, starts_anywhere=False):
+    """A counterexample as a numbered list: each step one action of one part of the system."""
+    out = []
+    for step in trace:
+        what = model["actions"].get(step["action"], step["action"])
+        changes = ", ".join(f"`{k} = {v}`" for k, v in step["changes"].items()) or "*(no change)*"
+        if step["step"] == 1 and not starts_anywhere:
+            out.append(f"{step['step']}. **Initial state**: {initial}.")
+        elif step["step"] == 1:
+            out.append(f"{step['step']}. **Starting state**, {initial}: {changes}")
+        else:
+            out.append(f"{step['step']}. **{step['action']}**, {what}. {changes}")
+    return out
+
+
 def findings_tlc(ex, res):
     model = model_of(ex)
+    configurations = {c["label"]: c for c in tlc_configurations(model)}
+    runs = res.get("configurations") or []
+    several = len(runs) > 1
+    headline = next((r for r in runs if r["verdict"] == res["verdict"] and r["invariant"] == res.get("invariant")), None) if several else None
+    configuration = configurations[headline["label"]] if headline else configurations[next(iter(configurations))]
+    out = []
+    if several:
+        out += [f"The model is checked under {len(runs)} configurations, and the verdict is the first that fails:", "",
+                "| Configuration | What it checks | Model | Result |", "|---|---|---|---|"]
+        for run in runs:
+            out.append(f"| {run['label']} (`{run['cfg']}`) | {configurations[run['label']]['what']} | {run['domain']} | {run['summary']} |")
+        out.append("")
+    under = f" under {configuration['label']}" if several else ""
     if res["verdict"] == "violation":
         inv = res["invariant"]
         kind = res.get("violationKind")
+        steps = len(res["trace"])
         if inv == "Deadlock":
-            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, after which no action of any part is "
+            found = (f"TLC found a run of the system{under}, {steps} steps long, after which no action of any part is "
                      f"enabled: a **deadlock**, {model['invariants'].get(inv, 'every part waits for another')}.")
         elif kind == "temporal":
-            found = (f"TLC found a run of the system that violates the temporal property **{inv}** ({model['invariants'].get(inv, inv)}): "
-                     f"after the {len(res['trace'])} steps below, the system {res['forever']}, and the property never comes true. "
+            found = (f"TLC found a run of the system{under} that violates the temporal property **{inv}** ({model['invariants'].get(inv, inv)}): "
+                     f"after the {steps} steps below, the system {res['forever']}, and the property never comes true. "
                      "The run respects every fairness condition the model assumes; the parts that could act, do.")
         elif kind == "action":
-            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, whose last step violates the action property "
+            found = (f"TLC found a run of the system{under}, {steps} steps long, whose last step violates the action property "
                      f"**{inv}** ({model['invariants'].get(inv, inv)}).")
         else:
-            found = (f"TLC found a run of the system, {len(res['trace'])} steps long, that violates the invariant "
+            found = (f"TLC found a run of the system{under}, {steps} steps long, that violates the invariant "
                      f"**{inv}** ({model['invariants'].get(inv, inv)}).")
-        out = [found + " Each step is one action of one part of the system:", ""]
-        for step in res["trace"]:
-            what = model["actions"].get(step["action"], step["action"])
-            if step["step"] == 1:
-                out.append(f"{step['step']}. **Initial state**: {model['initial']}.")
-                continue
-            changes = ", ".join(f"`{k} = {v}`" for k, v in step["changes"].items()) or "*(no change)*"
-            out.append(f"{step['step']}. **{step['action']}**, {what}. {changes}")
+        out += [found + " Each step is one action of one part of the system:", ""]
+        out += tlc_trace_lines(model, res["trace"], configuration["initial"], configuration.get("startsAnywhere", False))
         out += ["", f"The model is small ({res['domain']}), which is what keeps the trace readable. TLC explored every "
                     f"interleaving of {model['parts']} within those bounds."]
+        for run in runs:
+            if run["verdict"] != "violation" or run is headline:
+                continue
+            c = configurations[run["label"]]
+            inv = run["invariant"]
+            what = {"temporal": "temporal property", "action": "action property"}.get(run["violationKind"], "invariant")
+            out += ["", f"<details><summary>The counterexample under {run['label']}: {what} <b>{inv}</b>, {len(run['trace'])} steps</summary>", "",
+                    f"{what.capitalize()} **{inv}**: {model['invariants'].get(inv, inv)}."
+                    + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]
+            out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False))
+            out += ["", "</details>"]
         return out
     if res["verdict"] == "unverifiable":
-        return ["TLC produced no verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
+        return out + ["TLC produced no verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
     checked = "Every invariant holds in every reachable state of the model"
     if "then forever" in res["verdictLabel"] or " and properties " in res["verdictLabel"]:
         checked = ("Every invariant holds in every reachable state of the model, and every temporal property holds of every "
                    "behaviour, the infinite ones included")
-    return [
-        f"{checked}: {res['statesExplored']:,} distinct states, "
+    out += [
+        f"{checked}{under}: {res['statesExplored']:,} distinct states, "
         f"which is every interleaving of {model['parts']} within the model's bounds ({res['domain']}).",
         "",
         model["machine"],
     ]
+    if several:
+        out += ["", "The other configurations hold too, as the table says: " + "; ".join(
+            f"{run['label']}, {run['statesExplored']:,} states" for run in runs[1:] if run.get("statesExplored") is not None) + "."]
+    return out
 
 
 FINDINGS = {"B8": findings_contracts, "B9": findings_equivalence, "B10": findings_capabilities,

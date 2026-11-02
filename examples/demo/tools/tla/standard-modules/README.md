@@ -1,6 +1,6 @@
 # TLA+ standard modules
 
-The three standard modules that [`BoxOffice.tla`](../../../apps/boxoffice/spec/BoxOffice.tla) extends: `Naturals`, `Sequences` and `FiniteSets`.
+The four standard modules the models extend: `Naturals`, `Sequences` and `FiniteSets` ([`BoxOffice.tla`](../../../apps/boxoffice/spec/BoxOffice.tla) and the others), and `TLC`, for the `Permutations` of the symmetry set in [`RaftElection.tla`](../../../apps/quorum/spec/RaftElection.tla).
 They are not part of this project. They are unmodified copies from `tla2sany/StandardModules/` in `tla2tools.jar`, TLC 2.19 (rev 5a47802), under the MIT licence in [`License.txt`](License.txt).
 
 TLC normally unpacks these from its jar into a temporary directory and deletes them on exit, so its output names files such as `/tmp/Naturals.tla` that do not exist afterwards.
