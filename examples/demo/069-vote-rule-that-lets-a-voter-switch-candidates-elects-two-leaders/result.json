@@ -18,12 +18,12 @@
     "code": "\n/**\n * The vote rule proper: a candidate from the past is refused; a newer term is a new vote, and in the current\n * term the vote goes to the candidate asking; and a candidate whose log is behind the voter's is refused\n * whatever its term.\n */\npublic static Decision<Ballot, VoteEffect> decide(Ballot ballot, VoteRequest request) {\n    if (request.term() == OLDER) {\n        return rejected(\"a candidate from the past\");\n    }\n    // A candidate still asking in the voter's term is one whose election the term has not settled: the vote\n    // this server cast went to a candidate that has not won, or its heartbeats would have arrived by now. So\n    // the vote goes to whoever is asking, and a split vote resolves within the term instead of costing a new one.\n    if (request.log() == BEHIND) {\n        return rejected(\"a log behind the voter's\");\n    }\n"
   },
   "casesTotal": null,
-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/VoteRule.decide.contract\n@@ -27,9 +27,9 @@\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND])         => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN])           => Rejected[reason=\"a candidate from the past\"]\n decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD])          => Rejected[reason=\"a candidate from the past\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND])       => Rejected[reason=\"one vote per term\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])         => Rejected[reason=\"one vote per term\"]\n-decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])        => Rejected[reason=\"one vote per term\"]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND])       => Rejected[reason=\"a log behind the voter's\"]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN])         => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n+decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD])        => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND])         => Rejected[reason=\"a log behind the voter's\"]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN])           => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD])          => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]\n",
-  "proof": "three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; four servers: TLC 2.19 explored 291 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; a server left behind: TLC 2.19 explored 115 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 976 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
+  "proof": "three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 291 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 115 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 976 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
   "problem": null,
   "statement": null,
   "trace": [
@@ -32,8 +32,10 @@
       "action": "Initial predicate",
       "changes": {
         "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+        "elected": "{}",
         "replies": "{}",
         "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+        "voted": "{}",
         "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
         "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
       }
@@ -118,6 +120,12 @@
         "fromRuns": true,
         "finished": false,
         "operators": []
+      },
+      {
+        "label": "history",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
       }
     ],
     "changedRows": [
@@ -147,7 +155,7 @@
       "cfg": "spec/RaftElection.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ElectionSafety, 5-step trace",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": "ElectionSafety",
       "violationKind": "invariant",
       "statesExplored": 86,
@@ -157,8 +165,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
             "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
           }
@@ -209,7 +219,7 @@
       "cfg": "spec/RaftElectionInductive.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: TalliesOfATermAreDisjoint, 2-step trace",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": "TalliesOfATermAreDisjoint",
       "violationKind": "invariant",
       "statesExplored": 17471,
@@ -219,8 +229,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 1 @@ s3 :> 1)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> s3)",
             "votes": "(s1 :> {} @@ s2 :> {s2} @@ s3 :> {s3})"
           }
@@ -242,7 +254,7 @@
       "cfg": "spec/RaftElectionFour.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ElectionSafety, 7-step trace",
-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": "ElectionSafety",
       "violationKind": "invariant",
       "statesExplored": 291,
@@ -252,8 +264,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
             "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
           }
@@ -321,7 +335,7 @@
       "cfg": "spec/RaftElectionLive.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ElectionSafety, 5-step trace",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": "ElectionSafety",
       "violationKind": "invariant",
       "statesExplored": 86,
@@ -331,8 +345,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
             "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
           }
@@ -383,7 +399,7 @@
       "cfg": "spec/RaftElectionLogs.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ElectionSafety, 5-step trace",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
       "invariant": "ElectionSafety",
       "violationKind": "invariant",
       "statesExplored": 115,
@@ -393,8 +409,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
             "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
           }
@@ -446,7 +464,7 @@
       "cfg": "spec/RaftElectionDelayed.cfg",
       "verdict": "violation",
       "summary": "✗ Violation: ElectionSafety, 7-step trace",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
       "invariant": "ElectionSafety",
       "violationKind": "invariant",
       "statesExplored": 976,
@@ -456,8 +474,10 @@
           "action": "Initial predicate",
           "changes": {
             "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "elected": "{}",
             "replies": "{}",
             "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{}",
             "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
             "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
           }
@@ -514,6 +534,65 @@
             "replies": "{}",
             "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
             "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "history",
+      "cfg": "spec/RaftElectionHistory.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: AtMostOneVotePerTerm, 4-step trace",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+      "invariant": "AtMostOneVotePerTerm",
+      "violationKind": "invariant",
+      "statesExplored": 24,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "elected": "{}",
+            "replies": "{}",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{}",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{<<s1, 1, s1>>}",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{<<s1, 1, s1>>, <<s2, 1, s2>>}",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Canvass",
+          "changes": {
+            "elected": "{<<s2, 1>>}",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "voted": "{<<s1, 1, s1>>, <<s1, 1, s2>>, <<s2, 1, s2>>}",
+            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
           }
         }
       ],

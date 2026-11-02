@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Compiles the Quorum module, runs its tests, and runs every check jvmcontract provides for it: the behavioural,
 # capability and API contracts, the property proofs (JBMC), and the two-phase-commit and Raft election models (TLC),
-# the former under two configurations and the latter under five, plus a check that the election model's enabling
+# the former under two configurations and the latter under seven, plus a check that the election model's enabling
 # predicates agree with ENABLED.
 # Needs javac and java on the PATH, jvmcontract (on the PATH, or $JVMCONTRACT, or built in ../../../lib), jbmc, and
 # tla2tools.jar in ~/tools or $TLA2TOOLS_JAR.
@@ -32,4 +32,5 @@ java -ea -cp "build/main:build/test" net.terminalvalue.quorum.Tests
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionLive.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionLogs.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionDelayed.cfg --library ../../tools/tla/standard-modules
+"$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionHistory.cfg --library ../../tools/tla/standard-modules
 "$JVMCONTRACT" tlc spec/RaftElection.tla --config spec/RaftElectionEnabled.cfg --library ../../tools/tla/standard-modules

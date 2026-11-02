@@ -1282,6 +1282,52 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "084",
+      "path": "084-candidate-that-stands-down-for-a-rival-of-its-term-votes-twice-in-it",
+      "title": "A candidate that stands down for a rival of its term votes twice in it",
+      "summary": "A Raft server's role machine leaves its role alone on a vote request from its own term; the vote rule refuses it, since the candidate has voted for itself. To cut split votes short, a developer makes a candidate that hears a rival of its own term stand down for it, as a follower of the term, so that the rival gets its vote. The contract diff is one row, and under the six configurations the model had, every invariant and action property holds: the server that stands down also drops its own tally, so no run elects two leaders. The paper's rule is that a server votes for at most one candidate per term, and the server that stood down has voted twice in the one term, for itself and for the rival; a seventh configuration, in which a history variable records every vote cast, reports it in four steps. The rule is what the paper's argument for election safety rests on, and the change breaks the argument whether or not this kernel goes on to break the conclusion.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "085",
+      "path": "085-leader-that-yields-to-a-candidate-of-its-own-term-lets-the-term-elect-twice",
+      "title": "A leader that yields to a candidate of its own term lets the term elect twice",
+      "summary": "A Raft server's role machine leaves its role alone on a vote request from its own term, so a leader that hears a candidate of its term goes on leading; the candidate is a server its heartbeats did not reach, and it will lose, since the majority voted for the leader. A developer makes the leader step aside instead, as a follower of the term, so that the election the candidate is holding can finish. The contract diff is one row, and under the six configurations the model had, every invariant and action property holds: the leader that yields is a follower before the candidate wins, so no state has two leaders of one term, and the invariant that a leader holds a majority is true of each in turn. The paper's election safety property is about the run, at most one leader can be elected in a given term, and a seventh configuration, in which a history variable records every term a server has led, finds the run that elects two in five steps: the leader's own vote, forgotten when it yielded, is the one the candidate wins with.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "086",
+      "path": "086-leader-that-answers-a-candidate-of-its-term-with-heartbeats-proved-its-only-leader",
+      "title": "A leader that answers a candidate of its term with heartbeats, proved its only leader",
+      "summary": "A Raft server's role machine leaves its role alone on a vote request from its own term, so a leader that hears a candidate of its term goes on leading and waits for its next heartbeat to make the candidate step down. A developer has the leader send its heartbeats at once instead: the row for a leader and a current-term request returns a transition to `LEADER` with `SEND_HEARTBEATS`, where it returned unchanged. A transition where there was an unchanged decision is a change in kind, on the row that example 085 turned into a step-down, and the reviewer wants to know that it keeps the role, adopts no term and frees no vote. Under all seven configurations every invariant and property holds, the two that are about the whole run included, at most one leader elected per term and one vote per server per term; the coverage shows the changed row taken under all seven configurations.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
     }
   ]
 }

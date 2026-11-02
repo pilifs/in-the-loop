@@ -5,7 +5,7 @@
 (* RPCs between them. TLC explores every interleaving for the servers and  *)
 (* terms in RaftElection.cfg, checks the invariants in every state it      *)
 (* reaches, and checks the action properties on every step: that terms    *)
-(* never go backwards, and that a leader never campaigns. Five more        *)
+(* never go backwards, and that a leader never campaigns. Six more         *)
 (* configurations check the same model other ways: RaftElectionFour.cfg   *)
 (* has four servers, a cluster in which a tally can fall short of a       *)
 (* majority by more than one vote, under a symmetry set;                  *)
@@ -17,7 +17,11 @@
 (* the election restriction keeps it from being elected; and              *)
 (* RaftElectionDelayed.cfg lets the reply to a vote request wait on the    *)
 (* wire while the candidate goes on, so that it can arrive in a term the  *)
-(* candidate has left.                                                     *)
+(* candidate has left; and RaftElectionHistory.cfg has two history        *)
+(* variables record every term a server has led and every vote cast, and  *)
+(* checks what the paper claims of a whole run, at most one leader        *)
+(* elected per term and one vote per server per term, which a state       *)
+(* invariant cannot see once the servers have moved on.                   *)
 (*                                                                         *)
 (* Neither a server's role transitions nor its vote are written here.     *)
 (* Decide(role, event) is generated from the behavioural contract of      *)
@@ -53,18 +57,24 @@ CONSTANTS
     Servers,
     MaxTerm,
     LeftBehind,     \* the servers whose log a deposed leader left behind: see Logs
-    DelayedReplies  \* whether a vote reply waits on the wire as a step of its own: see Ask and Answer
+    DelayedReplies, \* whether a vote reply waits on the wire as a step of its own: see Ask and Answer
+    History         \* whether the history variables record: see elected and voted
 
 ASSUME DelayedReplies \in BOOLEAN
+ASSUME History \in BOOLEAN
 
 VARIABLES
     role,         \* server -> FOLLOWER, CANDIDATE or LEADER
     currentTerm,  \* server -> its term
     votedFor,     \* server -> the server it voted for in its term, or "none"
     votes,        \* server -> the servers whose vote it holds in its term
-    replies       \* the replies to vote requests on the wire, with the voter's term and whether it granted
+    replies,      \* the replies to vote requests on the wire, with the voter's term and whether it granted
+    elected,      \* history, with History on: every <<server, term>> in which the server has led
+    voted         \* history, with History on: every <<voter, term, candidate>> of a vote cast
 
-vars == <<role, currentTerm, votedFor, votes, replies>>
+\* The state proper, which the actions compute, and all the variables, which the history ones follow.
+state == <<role, currentTerm, votedFor, votes, replies>>
+vars == <<role, currentTerm, votedFor, votes, replies, elected, voted>>
 
 Majority(S) == Cardinality(S) * 2 > Cardinality(Servers)
 
@@ -102,10 +112,18 @@ TermAfter(s, d, t) == IF Adopts(d) THEN t ELSE currentTerm[s]
 VotedForAfter(s, d) == IF Adopts(d) THEN "none" ELSE votedFor[s]
 VotesAfter(s, d) == IF Adopts(d) THEN {} ELSE votes[s]
 
-\* Each action below computes its next state as a record of the five variables, so that the step it takes and
-\* whether the step changes anything (the fairness conditions need to know) are one computation.
-Step(n) == role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes /\ replies' = n.replies
-Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.replies>> # vars
+\* Each action below computes its next state as a record of the five state variables, so that the step it takes
+\* and whether the step changes anything (the fairness conditions need to know) are one computation. The history
+\* variables follow: with History on, a step adds the leaders and the votes of the state it lands in, which are
+\* there already unless a server has just come to lead a term or cast a vote. A history variable changes nothing
+\* about the run of the variables it is added to; it remembers (Lamport and Merz, Auxiliary Variables in TLA+).
+Led(r, t) == {<<s, t[s]>> : s \in {s \in Servers : r[s] = "LEADER"}}
+Cast(t, f) == {<<v, t[v], f[v]>> : v \in {v \in Servers : f[v] # "none"}}
+Step(n) ==
+    /\ role' = n.role /\ currentTerm' = n.currentTerm /\ votedFor' = n.votedFor /\ votes' = n.votes /\ replies' = n.replies
+    /\ elected' = IF History THEN elected \cup Led(n.role, n.currentTerm) ELSE elected
+    /\ voted' = IF History THEN voted \cup Cast(n.currentTerm, n.votedFor) ELSE voted
+Changes(n) == <<n.role, n.currentTerm, n.votedFor, n.votes, n.replies>> # state
 
 (***************************************************************************)
 (* The servers.                                                            *)
@@ -245,6 +263,8 @@ Init ==
     /\ votedFor = [s \in Servers |-> "none"]
     /\ votes = [s \in Servers |-> {}]
     /\ replies = {}
+    /\ elected = {}
+    /\ voted = {}
 
 Next ==
     \/ \E s \in Servers : Timeout(s)
@@ -264,6 +284,9 @@ TypeOK ==
     /\ votes \in [Servers -> SUBSET Servers]
     /\ replies \subseteq [to : Servers, from : Servers, term : 0..MaxTerm, granted : BOOLEAN]
     /\ ~DelayedReplies => replies = {}
+    /\ elected \subseteq Servers \X (0..MaxTerm)
+    /\ voted \subseteq Servers \X (0..MaxTerm) \X Servers
+    /\ ~History => elected = {} /\ voted = {}
 
 \* The kernels' exceptions. Each action's record says whether a call it makes to the role machine or the vote rule
 \* throws, and no action takes such a step; this invariant says there is none to take. The IllegalStateException
@@ -293,6 +316,31 @@ Entries == UNION {{<<i, Logs[s][i]>> : i \in DOMAIN Logs[s]} : s \in Servers}
 Holds(s, e) == e[1] \in DOMAIN Logs[s] /\ Logs[s][e[1]] = e[2]
 Committed(e) == Majority({s \in Servers : Holds(s, e)})
 LeaderCompleteness == \A l \in Servers : role[l] = "LEADER" => \A e \in Entries : Committed(e) => Holds(l, e)
+
+(***************************************************************************)
+(* History: what the paper claims of a whole run, checked by               *)
+(* RaftElectionHistory.cfg. Election safety as figure 3 states it is that  *)
+(* at most one leader can be elected in a given term, a claim about the    *)
+(* run; ElectionSafety above is what a state can show, and it holds in a   *)
+(* run in which the leader of a term steps down and the term then elects   *)
+(* another, two leaders of one term, never at once, as does                *)
+(* LeaderHasAMajority, since the second does hold one. The state forgets:  *)
+(* a server's vote is gone the moment it moves to a newer term, and a      *)
+(* leader that has stepped down is a follower like any other. With History *)
+(* on, elected and voted remember, and the two invariants below say what   *)
+(* must never have happened. They are checked over runs, not by induction: *)
+(* the state does not determine the history, so Inductive says nothing     *)
+(* about it.                                                               *)
+(***************************************************************************)
+
+\* At most one leader elected per term, ever.
+AtMostOneLeaderPerTerm == \A e, f \in elected : e[2] = f[2] => e[1] = f[1]
+
+\* A server votes for at most one candidate per term, ever (section 5.2): the rule the paper's argument for election
+\* safety rests on, since two leaders of one term would each hold a majority of its votes and two majorities share a
+\* voter. A kernel that lets a server change its vote within a term breaks the argument before it breaks the
+\* conclusion, and this invariant reports it whether or not the run goes on to elect two leaders.
+AtMostOneVotePerTerm == \A e, f \in voted : e[1] = f[1] /\ e[2] = f[2] => e[3] = f[3]
 
 (***************************************************************************)
 (* The inductive invariant. ElectionSafety holds in every reachable state,  *)
@@ -361,6 +409,8 @@ InductiveInit ==
     /\ votes \in {f \in [Servers -> SUBSET Servers] : \A s \in Servers : f[s] = {} \/ s \in f[s]}
     /\ TalliesHoldTheirOwnersVote
     /\ replies = {}
+    /\ elected = {}
+    /\ voted = {}
     /\ Inductive
 
 (***************************************************************************)

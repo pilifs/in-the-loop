@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T08:11:23.911Z",
-  "duration_seconds": 142889,
+  "ended": "2026-11-02T08:43:09.021Z",
+  "duration_seconds": 144794,
   "stats": {
-    "turns": 87,
-    "api_calls": 969,
-    "tool_calls": 1528,
-    "tool_errors": 31,
-    "compactions": 17,
+    "turns": 93,
+    "api_calls": 1022,
+    "tool_calls": 1579,
+    "tool_errors": 32,
+    "compactions": 18,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 29162,
-      "output_tokens": 2430464,
-      "cache_read_input_tokens": 189657318,
-      "cache_creation_input_tokens": 5375169
+      "input_tokens": 30680,
+      "output_tokens": 2512326,
+      "cache_read_input_tokens": 196708705,
+      "cache_creation_input_tokens": 5552527
     }
   },
   "tools": {
-    "Bash": 1051,
+    "Bash": 1102,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -466,24 +466,38 @@
     {
       "index": 17,
       "started": "2026-11-02T07:42:13.223Z",
-      "ended": "2026-11-02T08:11:23.911Z",
-      "turns": 12,
-      "api_calls": 46,
+      "ended": "2026-11-02T08:17:36.825Z",
+      "turns": 14,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 1188,
-        "output_tokens": 92535,
-        "cache_read_input_tokens": 7282940,
-        "cache_creation_input_tokens": 203689
+        "input_tokens": 1224,
+        "output_tokens": 93413,
+        "cache_read_input_tokens": 7721571,
+        "cache_creation_input_tokens": 206201
       },
-      "peak_context_tokens": 218604
+      "peak_context_tokens": 221118
+    },
+    {
+      "index": 18,
+      "started": "2026-11-02T08:19:06.820Z",
+      "ended": "2026-11-02T08:43:09.021Z",
+      "turns": 4,
+      "api_calls": 51,
+      "usage": {
+        "input_tokens": 1482,
+        "output_tokens": 80984,
+        "cache_read_input_tokens": 6612756,
+        "cache_creation_input_tokens": 174846
+      },
+      "peak_context_tokens": 189791
     }
   ],
   "log": {
-    "sha256": "80784ccd5b081286108430db6a088234eb15f0baf0b48884cb1e63adeb3fe5f7",
-    "bytes": 43252841,
-    "lines": 14551,
-    "gzip_bytes": 7342941,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/80784ccd5b081286108430db6a088234eb15f0baf0b48884cb1e63adeb3fe5f7.jsonl.gz"
+    "sha256": "04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a",
+    "bytes": 44876360,
+    "lines": 15257,
+    "gzip_bytes": 7614298,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -654,9 +668,23 @@
       "summary": "Check the Raft role machine's stale-reply rows under a sixth configuration in which a vote reply waits on the wire, with three new examples",
       "body": "The Raft election model (examples/demo/apps/quorum/spec/RaftElection.tla) made every RPC one step, the request and its reply together, so the role machine never saw a reply from a term older than the server's own, and its three rows for such a reply (one per role) were dead: TLC's coverage listed them as taken by no step, and a change to them would have been verified vacuously. The model now has a constant DelayedReplies and, when it is on, two actions in place of Canvass: Ask puts the voter's reply on the wire with the term it answered in, and Answer lets the candidate take it whenever the model likes, after it has timed out into a newer term, stepped down, or won. The one-step action stays for the other configurations, so their state counts are unchanged; the new RaftElectionDelayed.cfg runs three servers and two terms (20,351 states, about three seconds; three terms would be 364,236 states and no further row), and under it steps take 33 of the role machine's 36 rows. KernelNeverThrows covers the new actions.\n\nThree examples change the rows the configuration reaches. 081 rewrites the reply rule as a switch whose default arm adopts the reply's term, so a reply from a term the candidate has left sends its term backwards: TLC reports the action property TermsNeverDecrease in five steps, under the delayed configuration alone. 082 makes such a reply throw IllegalStateException, which is the model's own one-step simplification written into the Java: KernelNeverThrows fails in four steps. 083 adds a LOG_STALE_REPLY effect on such a reply and is verified under all six configurations, with the coverage showing the three changed rows taken only under delayed replies, where the other five would have called the verdict vacuous. The thirteen earlier Raft examples are regenerated with the sixth configuration and keep their verdicts; 072 and 074 stay vacuous, since a reply on the wire neither asks a voter twice nor counts a vote late.\n\nVerified by the Quorum verify.sh (tests, contracts, property proofs, and TLC under every configuration including the enabling-predicate check), by building the three new examples and rebuilding the thirteen earlier ones with build.py, all with the expected verdicts. The Quorum READMEs, the demo and top-level READMEs, approaches.md, the plugin README and the add-tla-model skill reference describe the configuration.",
       "log_sha256": "80784ccd5b081286108430db6a088234eb15f0baf0b48884cb1e63adeb3fe5f7"
+    },
+    {
+      "change_id": "uxqolrqvspsxnnykuxssknkwkvzwxzum",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check the Raft paper's run-wide claims, one leader per term and one vote per server per term, with history variables under a seventh configuration, with three new examples",
+      "body": "The Raft election model (examples/demo/apps/quorum/spec/RaftElection.tla) stated election safety as a state invariant: no two servers lead one term at once. The paper's property is about the whole run, at most one leader can be elected in a given term, and so is the rule it rests on, a server votes for at most one candidate per term; a state invariant cannot see either, since a server's vote is gone the moment it moves to a newer term and a leader that has stepped down is a follower like any other. The model gained two history variables, elected (every pair of a server and a term it has led) and voted (every triple of a voter, a term and a candidate), which each step extends with the leaders and votes of the state it lands in, a constant History that switches the recording on, and the invariants AtMostOneLeaderPerTerm and AtMostOneVotePerTerm. A seventh configuration, RaftElectionHistory.cfg (three servers, three terms, History = TRUE, 4,798 states in a second), checks them; the six others set History = FALSE and keep their state counts, and build.py runs the new one last, so every older example keeps its headline. The history is left out of the inductive configuration, since the state does not determine it.\n\nThree new examples change the role machine's row for a vote request from the server's own term. 084 has a candidate stand down for a rival of its term (as a remedy for split votes): the six state-based configurations verify it, because the candidate also drops its own tally, and the history configuration reports AtMostOneVotePerTerm in four steps, the rule the paper's argument rests on. 085 has a leader yield to a candidate of its own term: every state invariant holds, one leader after the other, and AtMostOneLeaderPerTerm fails in five steps, the leader's freed vote being the one the candidate wins with. 086 has the leader answer such a candidate with its heartbeats instead, verified under all seven configurations with the changed row taken under each. The 13 older Raft pages were rebuilt with the seventh configuration and all keep their verdicts; 059's and 065's bugs also show as double votes under the history column. Verified by the quorum verify.sh (tests, contracts, proofs, all TLC configurations and the ENABLED check, green), by build.py on the 16 Raft examples (all as expected), and by the prototype runs under /tmp/cycle11. Docs updated: the spec, quorum and demo READMEs, the top-level README and examples index (86 examples), approaches.md, the plugin README, and the add-tla-model skill reference, which gained a paragraph on history variables of the set kind.",
+      "log_sha256": "04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a"
     }
   ],
   "logs": {
+    "04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a": {
+      "bytes": 44876360,
+      "lines": 15257,
+      "gzip_bytes": 7614298,
+      "url": null
+    },
     "40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2": {
       "bytes": 22203837,
       "lines": 6862,

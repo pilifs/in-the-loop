@@ -79,16 +79,17 @@ public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {
 
 ## What the verifier found
 
-The model is checked under 6 configurations, and the verdict is the first that fails:
+The model is checked under 7 configurations, and the verdict is the first that fails:
 
 | Configuration | What it checks | Model | Result |
 |---|---|---|---|
-| three servers (`spec/RaftElection.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
-| the inductive step (`spec/RaftElectionInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of election safety by induction, for any run of the cluster however long; a counterexample is one step from a state that need not be reachable | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: CampaignersVoteForThemselves, 2-step trace |
-| four servers (`spec/RaftElectionFour.cfg`) | every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short of a majority, which three servers never show; under a symmetry set, so that of the states that differ only by the servers' names TLC explores one | Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: ElectionSafety, 8-step trace |
-| fairness (`spec/RaftElectionLive.cfg`) | the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
-| a server left behind (`spec/RaftElectionLogs.cfg`) | the election restriction: one server holds the log a deposed leader of term 1 left behind, three entries of its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant `LeaderCompleteness` besides the usual ones | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
-| delayed replies (`spec/RaftElectionDelayed.cfg`) | every run of three servers and two terms in which the reply to a vote request is a step of its own, which the candidate may take after it has timed out into a newer term, stepped down, or won; the one-step RPC of the other configurations never hands the role machine a reply from an older term than the server's own, and this one does, under the usual invariants and action properties | Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE | ✗ Violation: ElectionSafety, 9-step trace |
+| three servers (`spec/RaftElection.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
+| the inductive step (`spec/RaftElectionInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of election safety by induction, for any run of the cluster however long; a counterexample is one step from a state that need not be reachable | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE | ✗ Violation: CampaignersVoteForThemselves, 2-step trace |
+| four servers (`spec/RaftElectionFour.cfg`) | every run with four servers, a cluster in which a candidate can hold a vote besides its own and still be short of a majority, which three servers never show; under a symmetry set, so that of the states that differ only by the servers' names TLC explores one | Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE | ✗ Violation: ElectionSafety, 8-step trace |
+| fairness (`spec/RaftElectionLive.cfg`) | the two liveness properties, under the fairness conditions `Fairness`: a server whose timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends its heartbeats. A counterexample is a run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
+| a server left behind (`spec/RaftElectionLogs.cfg`) | the election restriction: one server holds the log a deposed leader of term 1 left behind, three entries of its term, while the other two hold an entry of term 2 that a majority holds and is therefore committed, so that the longer log is the one behind; every run with these logs, which nothing changes, under the invariant `LeaderCompleteness` besides the usual ones | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE | ✗ Violation: ElectionSafety, 7-step trace |
+| delayed replies (`spec/RaftElectionDelayed.cfg`) | every run of three servers and two terms in which the reply to a vote request is a step of its own, which the candidate may take after it has timed out into a newer term, stepped down, or won; the one-step RPC of the other configurations never hands the role machine a reply from an older term than the server's own, and this one does, under the usual invariants and action properties | Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE | ✗ Violation: ElectionSafety, 9-step trace |
+| history (`spec/RaftElectionHistory.cfg`) | every run of three servers and three terms with the two history variables recording, `elected`, every term a server has led, and `voted`, every vote cast, under the two invariants that are about a run rather than a state: at most one leader elected per term and at most one vote per server per term, as the paper states them. The state invariants of the other configurations hold in a run in which a term's leader steps down and the term then elects another; these do not | Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE | ✗ Violation: AtMostOneLeaderPerTerm, 7-step trace |
 
 TLC found a run of the system under three servers, 7 steps long, that violates the invariant **ElectionSafety** (at most one leader per term). Each step is one action of one part of the system:
 
@@ -100,13 +101,13 @@ TLC found a run of the system under three servers, 7 steps long, that violates t
 6. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})`
 7. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")`, `votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})`
 
-The model is small (Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE), which is what keeps the trace readable. TLC explored every interleaving of the servers, their terms and votes, and the RPCs between them within those bounds.
+The model is small (Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE), which is what keeps the trace readable. TLC explored every interleaving of the servers, their terms and votes, and the RPCs between them within those bounds.
 
 <details><summary>The counterexample under the inductive step: invariant <b>CampaignersVoteForThemselves</b>, 2 steps</summary>
 
 Invariant **CampaignersVoteForThemselves**: a candidate or leader voted for itself in its term, and holds its own vote.
 
-1. **Starting state**, a state the invariant `Inductive` admits, which need not be reachable: `currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)`, `replies = {}`, `role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")`, `votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> s3)`, `votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {s3})`
+1. **Starting state**, a state the invariant `Inductive` admits, which need not be reachable: `currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)`, `elected = {}`, `replies = {}`, `role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")`, `voted = {}`, `votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> s3)`, `votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {s3})`
 2. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 2)`, `votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")`
 
 </details>
@@ -155,6 +156,20 @@ Invariant **ElectionSafety**: at most one leader per term.
 7. **Answer**, `Server.onVote`: the candidate takes a reply that waited; its term goes through the role machine as it compares with the candidate's term now, a granted vote of the current term goes into the tally, and the tally through the role machine. `replies = {}`, `role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})`
 8. **Ask**, `Server.requestVote`, the request alone: a candidate asks one server for its vote, which the voter decides as in `Canvass`, and the reply waits on the wire with the term the voter answered in. `replies = {[term |-> 2, granted |-> TRUE, to |-> s1, from |-> s2]}`, `votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")`
 9. **Answer**, `Server.onVote`: the candidate takes a reply that waited; its term goes through the role machine as it compares with the candidate's term now, a granted vote of the current term goes into the tally, and the tally through the role machine. `replies = {}`, `role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})`
+
+</details>
+
+<details><summary>The counterexample under history: invariant <b>AtMostOneLeaderPerTerm</b>, 7 steps</summary>
+
+Invariant **AtMostOneLeaderPerTerm**: AtMostOneLeaderPerTerm.
+
+1. **Initial state**: every server a follower in term 0, no vote cast, no vote held.
+2. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")`, `voted = {<<s1, 1, s1>>}`, `votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})`
+3. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)`, `votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")`
+4. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)`, `role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")`, `voted = {<<s1, 1, s1>>, <<s2, 1, s2>>}`, `votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})`
+5. **Timeout**, `Server.onElectionTimeout`: a server's election timer fires, and the server acts on the role machine's decision. `currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)`, `votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")`
+6. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `elected = {<<s2, 2>>}`, `role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `voted = {<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>}`, `votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")`, `votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})`
+7. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `elected = {<<s1, 2>>, <<s2, 2>>}`, `role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `voted = {<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>, <<s2, 2, s1>>}`, `votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")`, `votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})`
 
 </details>
 
@@ -217,14 +232,14 @@ Revert. The rules for candidates in figure 2 of the Raft paper start every elect
 
 ## Evidence
 
-How the verdict was reached: three servers: TLC 2.19 explored 401 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE.
+How the verdict was reached: three servers: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 487 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2527218] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2622973] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -239,59 +254,73 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:03)
+Starting... (2026-11-02 03:38:02)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:05:03.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:02.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 3: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")
+/\ elected = {}
 
-State 5: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 6: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 6: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 7: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 7: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 27 of 36; never taken (9):
   decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
@@ -330,11 +359,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 951 states generated, 401 distinct states found, 240 states left on queue.
 The depth of the complete state graph search is 7.
 The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
-Finished in 00s at (2026-11-02 03:05:04)
+Finished in 01s at (2026-11-02 03:38:03)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2527322] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2623137] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -349,7 +378,7 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:04)
+Starting... (2026-11-02 03:38:03)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -365,22 +394,26 @@ Computed 2048 initial states...
 Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
-Finished computing initial states: 17470 distinct states generated at 2026-11-02 03:05:09.
+Finished computing initial states: 17470 distinct states generated at 2026-11-02 03:38:09.
 Error: Invariant CampaignersVoteForThemselves is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> s3)
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 2)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 2 of 36; never taken (34):
   decide(FOLLOWER, VotesCounted[majority=false]) => Unchanged
@@ -448,11 +481,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 17491 states generated, 17471 distinct states found, 17463 states left on queue.
 The depth of the complete state graph search is 2.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 05s at (2026-11-02 03:05:10)
+Finished in 06s at (2026-11-02 03:38:09)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2527650] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2623493] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -467,66 +500,82 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:10)
+Starting... (2026-11-02 03:38:10)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:05:11.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:10.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 3: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 3: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s1 @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 5: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 6: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 6: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> "none" @@ s4 :> "none")
+/\ elected = {}
 
-State 7: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 7: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2, s3} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> "none")
+/\ elected = {}
 
-State 8: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 8: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 2)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2, s3} @@ s2 :> {s1, s2, s4} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> s2)
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 25 of 36; never taken (11):
   decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
@@ -567,11 +616,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 2348 states generated, 740 distinct states found, 470 states left on queue.
 The depth of the complete state graph search is 8.
 The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 8 and the 95th percentile is 6).
-Finished in 01s at (2026-11-02 03:05:11)
+Finished in 01s at (2026-11-02 03:38:11)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2527735] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2623633] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -586,60 +635,74 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:12)
+Starting... (2026-11-02 03:38:12)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:05:12.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:12.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 3: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")
+/\ elected = {}
 
-State 5: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 6: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 6: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 7: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 7: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 27 of 36; never taken (9):
   decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
@@ -678,11 +741,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 951 states generated, 401 distinct states found, 240 states left on queue.
 The depth of the complete state graph search is 7.
 The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
-Finished in 01s at (2026-11-02 03:05:13)
+Finished in 01s at (2026-11-02 03:38:13)
 
 == a server left behind: spec/RaftElectionLogs.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2527882] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2623747] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -697,59 +760,73 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:14)
+Starting... (2026-11-02 03:38:14)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:05:15.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:15.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")
+/\ elected = {}
 
-State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 3: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 2 @@ s3 :> 1)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> s3)
+/\ elected = {}
 
-State 5: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 2 @@ s3 :> 2)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s2} @@ s3 :> {s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "CANDIDATE" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 6: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 6: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 7: <Canvass line 158, col 5 to line 162, col 30 of module RaftElection>
+State 7: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s2, s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "LEADER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s3 @@ s3 :> "none")
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 27 of 36; never taken (9):
   decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
@@ -780,11 +857,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 1630 states generated, 578 distinct states found, 306 states left on queue.
 The depth of the complete state graph search is 7.
 The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
-Finished in 01s at (2026-11-02 03:05:15)
+Finished in 01s at (2026-11-02 03:38:15)
 
 == delayed replies: spec/RaftElectionDelayed.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2528003] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2623897] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -799,73 +876,91 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:05:16)
+Starting... (2026-11-02 03:38:16)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:05:16.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:17.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
 /\ replies = {}
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 2: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 3: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 3: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 4: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")
+/\ elected = {}
 
-State 5: <Timeout line 129, col 15 to line 129, col 88 of module RaftElection>
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 6: <Ask line 186, col 5 to line 191, col 26 of module RaftElection>
+State 6: <Ask line 204, col 5 to line 209, col 26 of module RaftElection>
 /\ replies = {[term |-> 2, granted |-> TRUE, to |-> s2, from |-> s1]}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 7: <Answer line 212, col 5 to line 214, col 29 of module RaftElection>
+State 7: <Answer line 230, col 5 to line 232, col 29 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
 
-State 8: <Ask line 186, col 5 to line 191, col 26 of module RaftElection>
+State 8: <Ask line 204, col 5 to line 209, col 26 of module RaftElection>
 /\ replies = {[term |-> 2, granted |-> TRUE, to |-> s1, from |-> s2]}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")
+/\ elected = {}
 
-State 9: <Answer line 212, col 5 to line 214, col 29 of module RaftElection>
+State 9: <Answer line 230, col 5 to line 232, col 29 of module RaftElection>
 /\ replies = {}
 /\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {}
 /\ votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")
+/\ elected = {}
 
 Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 32 of 36; never taken (4):
   decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
@@ -899,7 +994,131 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 10316 states generated, 4609 distinct states found, 2760 states left on queue.
 The depth of the complete state graph search is 9.
 The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 7 and the 95th percentile is 5).
-Finished in 01s at (2026-11-02 03:05:17)
+Finished in 02s at (2026-11-02 03:38:18)
+
+== history: spec/RaftElectionHistory.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2624031] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/TLC.tla
+Parsing file examples/demo/apps/quorum/spec/RoleMachineContract.tla
+Parsing file examples/demo/apps/quorum/spec/VoteRuleContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module RoleMachineContract
+Semantic processing of module VoteRuleContract
+Semantic processing of module RaftElection
+Starting... (2026-11-02 03:38:19)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 03:38:19.
+Error: Invariant AtMostOneLeaderPerTerm is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ replies = {}
+/\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {}
+/\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {})
+/\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
+
+State 2: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>}
+/\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
+
+State 3: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>}
+/\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
+
+State 4: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>, <<s2, 1, s2>>}
+/\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> "none")
+/\ elected = {}
+
+State 5: <Timeout line 147, col 15 to line 147, col 88 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>, <<s2, 1, s2>>}
+/\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {}
+
+State 6: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>}
+/\ votes = (s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s2 @@ s2 :> "none" @@ s3 :> "none")
+/\ elected = {<<s2, 2>>}
+
+State 7: <Canvass line 176, col 5 to line 180, col 30 of module RaftElection>
+/\ replies = {}
+/\ currentTerm = (s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)
+/\ voted = {<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>, <<s2, 2, s1>>}
+/\ votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})
+/\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
+/\ votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")
+/\ elected = {<<s1, 2>>, <<s2, 2>>}
+
+Rows of net.terminalvalue.quorum.raft.RoleMachine#decide a step of the model takes: 27 of 36; never taken (9):
+  decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged
+  decide(FOLLOWER, Response[term=OLDER]) => Unchanged
+  decide(FOLLOWER, Response[term=CURRENT]) => Unchanged
+  decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+  decide(CANDIDATE, Response[term=OLDER]) => Unchanged
+  decide(LEADER, VotesCounted[majority=false]) => Unchanged
+  decide(LEADER, VotesCounted[majority=true]) => Unchanged
+  decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException
+  decide(LEADER, Response[term=OLDER]) => Unchanged
+Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 4 of 27; never taken (23):
+  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+987 states generated, 487 distinct states found, 318 states left on queue.
+The depth of the complete state graph search is 7.
+The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 6).
+Finished in 00s at (2026-11-02 03:38:19)
 ```
 
 </details>
@@ -1032,6 +1251,25 @@ Finished in 01s at (2026-11-02 03:05:17)
           "level": "error",
           "message": {
             "text": "Invariant ElectionSafety of spec/RaftElection.tla (delayed replies) is violated after 9 steps"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java"
+                },
+                "region": {
+                  "startLine": 36
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Invariant AtMostOneLeaderPerTerm of spec/RaftElection.tla (history) is violated after 7 steps"
           },
           "locations": [
             {

@@ -649,7 +649,7 @@ RAFT = {
     "spec": "spec/RaftElection.tla",
     "cfg": "spec/RaftElection.cfg",
     "label": "three servers",
-    # The same model under two more configurations, run after the first; the README reports all three.
+    # The same model under six more configurations, run after the first; the README reports all seven.
     "configurations": [
         {"cfg": "spec/RaftElectionInductive.cfg", "label": "the inductive step",
          "what": "that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, "
@@ -676,6 +676,12 @@ RAFT = {
                  "the candidate may take after it has timed out into a newer term, stepped down, or won; the one-step RPC "
                  "of the other configurations never hands the role machine a reply from an older term than the server's "
                  "own, and this one does, under the usual invariants and action properties"},
+        {"cfg": "spec/RaftElectionHistory.cfg", "label": "history",
+         "what": "every run of three servers and three terms with the two history variables recording, `elected`, every "
+                 "term a server has led, and `voted`, every vote cast, under the two invariants that are about a run rather "
+                 "than a state: at most one leader elected per term and at most one vote per server per term, as the paper "
+                 "states them. The state invariants of the other configurations hold in a run in which a term's leader steps "
+                 "down and the term then elects another; these do not"},
     ],
     "contract": "src/contract/RoleMachine.decide.contract",
     "operator": "spec/RoleMachineContract.tla",
