@@ -12,48 +12,62 @@
     "claude-fable-5-1"
   ],
   "started": "2026-11-02T00:14:34.548Z",
-  "ended": "2026-11-02T02:17:42.546Z",
-  "duration_seconds": 7388,
+  "ended": "2026-11-02T02:43:05.708Z",
+  "duration_seconds": 8911,
   "stats": {
-    "turns": 8,
-    "api_calls": 91,
-    "tool_calls": 187,
+    "turns": 12,
+    "api_calls": 93,
+    "tool_calls": 189,
     "tool_errors": 8,
-    "compactions": 0,
-    "peak_context_tokens": 439667,
+    "compactions": 1,
+    "peak_context_tokens": 444309,
     "usage": {
-      "input_tokens": 2492,
-      "output_tokens": 203677,
-      "cache_read_input_tokens": 21729686,
-      "cache_creation_input_tokens": 407332
+      "input_tokens": 2556,
+      "output_tokens": 206951,
+      "cache_read_input_tokens": 22611639,
+      "cache_creation_input_tokens": 411974
     }
   },
   "tools": {
-    "Bash": 187
+    "Bash": 189
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-02T00:14:34.548Z",
-      "ended": "2026-11-02T02:17:42.546Z",
-      "turns": 8,
-      "api_calls": 91,
+      "ended": "2026-11-02T02:40:56.461Z",
+      "turns": 9,
+      "api_calls": 93,
       "usage": {
-        "input_tokens": 2492,
-        "output_tokens": 203677,
-        "cache_read_input_tokens": 21729686,
-        "cache_creation_input_tokens": 407332
+        "input_tokens": 2556,
+        "output_tokens": 206951,
+        "cache_read_input_tokens": 22611639,
+        "cache_creation_input_tokens": 411974
       },
-      "peak_context_tokens": 439667
+      "peak_context_tokens": 444309
+    },
+    {
+      "index": 1,
+      "started": "2026-11-02T02:43:05.746Z",
+      "ended": "2026-11-02T02:43:05.708Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58",
-    "bytes": 3562174,
-    "lines": 1640,
-    "gzip_bytes": 527722,
-    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz"
+    "sha256": "21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656",
+    "bytes": 3752488,
+    "lines": 1704,
+    "gzip_bytes": 568560,
+    "path": "llm-dlc/traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/logs/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -88,9 +102,23 @@
       "summary": "Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter",
       "body": "examples/real-world/ gains commons-lang-1750 (ArrayUtils.reverse: the Integer.MIN_VALUE end index found for six primitive overloads and shrunk to an empty array, the change proved confined to that index on arrays of up to four, the new version proved to throw on no input), commons-lang-1585 (ArrayUtils.subarray: the index overflow found, before OutOfMemoryError and after an empty array, and the change proved confined to the overflowing inputs), jackson-core-1203 (NumberOutput.divBy1000: nothing finished in the default budgets, division against multiplication; one witness documents the non-negative precondition; module contracts unchanged) and commons-codec-43a9aa66 (Hex.toDigit restricted to ASCII: two false violations traced to JDK classes JBMC has no model of, then the new method's whole contract proved; the old one needs a model of Character.digit). The index lists them and updates the libraries to try, including why Joda-Time has no entry. The Commons Numbers record gets the rerun's regression and confined-change verdicts.\n\nJBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK classes, so Hex's static initializer (StandardCharsets.UTF_8, CharEncoding) ended in a NullPointerException inside JBMC and every proof over Hex was an artifact. libs/java-models-library is a plain clone (gitignored, libs/README.md says how to get it) of the user's fork of diffblue/java-models-library, branch charset-models, which adds java.nio.charset.Charset, StandardCharsets and the two name exceptions; lib/jbmc-models/ holds models of the JDK's boxing caches (Integer$IntegerCache and the Long, Short and Byte ones) with an empty range, because the real Integer.valueOf reads a nested class JBMC lacks and threw ArrayIndexOutOfBoundsException on any autoboxing. Both go on jvmcontract's --classpath until the tool ships them. The interpreter now throws OutOfMemoryError(\"Java heap space\") for arrays over 2^24 elements instead of allocating them: replaying the subarray witness asked for new int[2147483647] and aborted the process with a 32 GiB allocation. The skill's reference no longer claims character literals, which the expression language does not have, and the lib README names the JBMC-side limit.",
       "log_sha256": "73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58"
+    },
+    {
+      "change_id": "mkosrmtlvylnlpllvrzmxwyopowkxnny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the /review-findings decision on a cut-off home path",
+      "body": "One finding in session dfa830a1, of kind other-home-dir, was a home path cut off mid-name by a fixed-width process listing, at the start of a java -cp argument. The user reviewed the real value and accepted it as a false positive in their own terminal. review reports no open findings.",
+      "log_sha256": "21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656"
     }
   ],
   "logs": {
+    "21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656": {
+      "bytes": 3752488,
+      "lines": 1704,
+      "gzip_bytes": 568560,
+      "url": null
+    },
     "31081960838df919f1e8705f74d65b15537beb7736192109516dd067ce037d93": {
       "bytes": 2395648,
       "lines": 1048,
