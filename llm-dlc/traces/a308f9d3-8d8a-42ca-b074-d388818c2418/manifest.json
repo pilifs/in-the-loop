@@ -274,7 +274,7 @@
     },
     {
       "change_id": "sutqtxlkvpmyrokopxxzumkmvmlzlmmw",
-      "commit_id": null,
+      "commit_id": "2ed4b44369e81a22b2e1ddebb8529f433f5a675c",
       "immutable": false,
       "summary": "Add the /add-tla-model skill, with a circuit-breaker model as its worked example",
       "body": "The jvmcontract plugin gains a second skill, /add-tla-model (plugins/jvmcontract/skills/add-tla-model): run in a Java project, it finds or extracts the decision kernel (a pure static decide(StateEnum, SealedInput) method), derives its behavioural contract from the bytecode with jvmcontract derive, generates the TLA+ operator with jvmcontract tla, writes a TLA+ model of the system around it with the invariants the user states, checks it with jvmcontract tlc, and installs spec/check.sh, which regenerates the operator and fails on a changed contract until the diff is reviewed. SKILL.md is the procedure, reference.md the kernel shape, model recipe, TLA+ gotchas and TLC output for the agent, templates/ the check.sh and README it writes into a project, scripts/find-classes.sh locates a module's compiled classes without building, scripts/install-tlc.sh downloads tla2tools.jar into ~/tools. install.sh now installs both skills and TLC (NO_TLC=1 skips it; VERIFY_BYTECODE_SKILLS picks skills); the plugin and marketplace manifests are at 0.2.0 and describe both skills; the plugin README and the repo README document the new skill.\n\nVerified by following the procedure by hand on a kernel with no model, Crosscut's CircuitBreaker#decide: derive (44 cases, identical to the committed contract), tla (33 cases), a new model examples/apps/crosscut/spec/CircuitBreaker.tla of the component owning the breaker (window, probe cap, wait timer, generation stamps) with a dependency that goes up and down and five invariants; TLC: every invariant holds in 102 distinct states. With example 026's kernel compiled in, check.sh stops on the two changed contract rows, and after --update TLC reports ClosedOnlyAfterEveryProbe violated after 10 steps. The model is committed in the Crosscut app, wired into its verify.sh and documented in its spec README, and is the worked example in the plugin README. Along the way the model hit the TLA+ gotcha that x' = a \\/ b parses as (x' = a) \\/ b (TLC: successor state not completely specified), now in reference.md. find-classes.sh was tested on the plain Crosscut build, the Gradle Box Office module and a stale fake Maven layout; the check.sh template on a copy of Crosscut (unchanged kernel, changed kernel, --update); install-tlc.sh into a scratch directory, twice. The landing page in ../Terminal-Value was updated for the second skill (uncommitted there, not deployed).",
@@ -282,7 +282,7 @@
     },
     {
       "change_id": "mvulqqqownkkqzrlptmqtyymtuovqlqx",
-      "commit_id": null,
+      "commit_id": "112bd52cfe842909b57355d891e8564d0a5d116c",
       "immutable": false,
       "summary": "Split examples into demo/ and real-world/, with Commons Numbers #223 as the first real-world example",
       "body": "The 56 numbered examples, the four subject systems (apps/), the generator and the Java verifier (tools/), schema/ and index.json moved from examples/ to examples/demo/, and examples/real-world/ was added for pull requests to published libraries verified with the /verify-bytecode skill: a README with the verified pull requests and the table of libraries to try next (moved out of the plugin README), and commons-numbers-223/, a record of the run on apache/commons-numbers#223 (ArithmeticUtils.pow) with the witness, the four verdicts and their times as recorded on 2026-11-01, what the run did not reach (pow(long, int), the module-level diffs), how it was produced (the file compiled alone with javac because the Maven build could not run in that session), and the commands to rerun it. examples/README.md is now a short hub for the two kinds; approaches.md and setup/ stay shared. The root README, the lib README, the plugin READMEs and references, lib's tests and doc comments, and every path inside the examples (patches, example.json, result.json, SARIF, verifier output, contract headers) point at the new paths; build.py's repo root and link depth were adjusted.",
@@ -290,7 +290,7 @@
     },
     {
       "change_id": "otrqpwxqlvzysquupkozqvmomrtzsyyt",
-      "commit_id": null,
+      "commit_id": "61b7a5f18fd86a362b5796a3503eac064e8e125c",
       "immutable": false,
       "summary": "Run the feature loop seven times on TLA examples",
       "body": "feature-loop.sh used to repeat its instruction until a cycle made no commit. It now runs a fixed number of cycles (CYCLES=7) and exits 0 after the last one, and the instruction is now to add more advanced examples showcasing verification of TLA specs. The old instruction is replaced, not queued after the new one. A cycle with no commit still stops the loop early with exit 1, before compacting. The README describes the limit.\n\nVerified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: seven commits gave seven instructions and seven compacts, all with the new text, and exit 0; no commit on the third cycle gave three instructions, two compacts and exit 1. The loop has not been run against the real session.",
@@ -298,7 +298,7 @@
     },
     {
       "change_id": "nnvtskvplpskwtypsrkzpwnvvmkzymry",
-      "commit_id": null,
+      "commit_id": "c3f17f6613ed58ff1c7718364eb71c829cb45f41",
       "immutable": false,
       "summary": "Choose the feature loop's prompt by argument",
       "body": "feature-loop.sh now takes the name of a prompt: features is the earlier instruction to add features and examples to jvmcontract, with no limit on cycles as before, and tla is the instruction to add advanced TLA examples, seven times. Each run takes exactly one name; anything else prints the usage and exits 2 before the memory scope starts. The argument is passed through the re-execution into the scope. The README shows both.\n\nVerified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla gave seven instructions, seven compacts and exit 0; features ran past seven cycles until a cycle made no commit at the tenth, then exit 1, with its own text; no argument, an unknown name and two names each gave exit 2 without calling claude. The loop has not been run against the real session.",
@@ -306,7 +306,7 @@
     },
     {
       "change_id": "qryqotxxwnnozyoxptvzznromtptkwuk",
-      "commit_id": null,
+      "commit_id": "710eabfd13d4a27872d2e50ebd96c7fe1ca747d1",
       "immutable": false,
       "summary": "Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter",
       "body": "examples/real-world/ gains commons-lang-1750 (ArrayUtils.reverse: the Integer.MIN_VALUE end index found for six primitive overloads and shrunk to an empty array, the change proved confined to that index on arrays of up to four, the new version proved to throw on no input), commons-lang-1585 (ArrayUtils.subarray: the index overflow found, before OutOfMemoryError and after an empty array, and the change proved confined to the overflowing inputs), jackson-core-1203 (NumberOutput.divBy1000: nothing finished in the default budgets, division against multiplication; one witness documents the non-negative precondition; module contracts unchanged) and commons-codec-43a9aa66 (Hex.toDigit restricted to ASCII: two false violations traced to JDK classes JBMC has no model of, then the new method's whole contract proved; the old one needs a model of Character.digit). The index lists them and updates the libraries to try, including why Joda-Time has no entry. The Commons Numbers record gets the rerun's regression and confined-change verdicts.\n\nJBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK classes, so Hex's static initializer (StandardCharsets.UTF_8, CharEncoding) ended in a NullPointerException inside JBMC and every proof over Hex was an artifact. libs/java-models-library is a plain clone (gitignored, libs/README.md says how to get it) of the user's fork of diffblue/java-models-library, branch charset-models, which adds java.nio.charset.Charset, StandardCharsets and the two name exceptions; lib/jbmc-models/ holds models of the JDK's boxing caches (Integer$IntegerCache and the Long, Short and Byte ones) with an empty range, because the real Integer.valueOf reads a nested class JBMC lacks and threw ArrayIndexOutOfBoundsException on any autoboxing. Both go on jvmcontract's --classpath until the tool ships them. The interpreter now throws OutOfMemoryError(\"Java heap space\") for arrays over 2^24 elements instead of allocating them: replaying the subarray witness asked for new int[2147483647] and aborted the process with a 32 GiB allocation. The skill's reference no longer claims character literals, which the expression language does not have, and the lib README names the JBMC-side limit.",
@@ -314,7 +314,7 @@
     },
     {
       "change_id": "mkosrmtlvylnlpllvrzmxwyopowkxnny",
-      "commit_id": null,
+      "commit_id": "b5d023a4171c4f284cc430f800370f81160c3775",
       "immutable": false,
       "summary": "Record the /review-findings decision on a cut-off home path",
       "body": "One finding in session dfa830a1, of kind other-home-dir, was a home path cut off mid-name by a fixed-width process listing, at the start of a java -cp argument. The user reviewed the real value and accepted it as a false positive in their own terminal. review reports no open findings.",
@@ -338,7 +338,7 @@
       "bytes": 3324240,
       "lines": 1252,
       "gzip_bytes": 576640,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/0c61391641236abf15bee18bdc42478108d34ea8e70bd009f2521c733ef95dca.jsonl.gz"
     },
     "21f9ff791b6bcfdc99d1dc1214e9e0533f99484f97ebe1b1979baba229825559": {
       "bytes": 318448,
@@ -350,7 +350,7 @@
       "bytes": 3488782,
       "lines": 1353,
       "gzip_bytes": 596982,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/414bde3f020a665e85651ff76742475aa0394be10bcce88c91f38b5846fe038c.jsonl.gz"
     },
     "5246ba50f1e86086098034bb9a942b98ec86ab316f5972b9ee2545e146a44ac1": {
       "bytes": 1545321,
@@ -398,19 +398,19 @@
       "bytes": 2802125,
       "lines": 1153,
       "gzip_bytes": 447698,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9df036739282da5fb5f642d695436354ba0be25a2de8ce1a6507a5209828753a.jsonl.gz"
     },
     "9e309e52b8d7ee9e6c6a54091eb65197c2d5f2325188a315f515f90234047ade": {
       "bytes": 2804681,
       "lines": 1156,
       "gzip_bytes": 448060,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9e309e52b8d7ee9e6c6a54091eb65197c2d5f2325188a315f515f90234047ade.jsonl.gz"
     },
     "ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca": {
       "bytes": 3445165,
       "lines": 1322,
       "gzip_bytes": 591880,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca.jsonl.gz"
     },
     "ce7ed5a6e273f4765971bab2633deeea41841ecc2e7205d924b292222a813f23": {
       "bytes": 1745750,
@@ -434,7 +434,7 @@
       "bytes": 3514480,
       "lines": 1370,
       "gzip_bytes": 600372,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/e53ce31e84979294b3f52e59939e743bc0ca230e81fe7f120ec4b9fbb8b5be99.jsonl.gz"
     },
     "ef935616497a48429e3bb556cea20c1fd64ef735684b6769c6e077e5bde093be": {
       "bytes": 1624182,

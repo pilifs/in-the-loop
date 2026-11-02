@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Split examples into demo/ and real-world/, with Commons Numbers #223 as the first real-world example
 
-change `mvulqqqownkk` · [log `3a38e3ec5b12`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/3a38e3ec5b12d2523af9b3e3b90819a6ca28d594ee6768e27710aad38c21e1e8.jsonl.gz)
+[`112bd52cfe84`](https://github.com/pilifs/in-the-loop/commit/112bd52cfe842909b57355d891e8564d0a5d116c) · [log `3a38e3ec5b12`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/3a38e3ec5b12d2523af9b3e3b90819a6ca28d594ee6768e27710aad38c21e1e8.jsonl.gz)
 
 The 56 numbered examples, the four subject systems (apps/), the generator and the Java verifier (tools/), schema/ and index.json moved from examples/ to examples/demo/, and examples/real-world/ was added for pull requests to published libraries verified with the /verify-bytecode skill: a README with the verified pull requests and the table of libraries to try next (moved out of the plugin README), and commons-numbers-223/, a record of the run on apache/commons-numbers#223 (ArithmeticUtils.pow) with the witness, the four verdicts and their times as recorded on 2026-11-01, what the run did not reach (pow(long, int), the module-level diffs), how it was produced (the file compiled alone with javac because the Maven build could not run in that session), and the commands to rerun it. examples/README.md is now a short hub for the two kinds; approaches.md and setup/ stay shared. The root README, the lib README, the plugin READMEs and references, lib's tests and doc comments, and every path inside the examples (patches, example.json, result.json, SARIF, verifier output, contract headers) point at the new paths; build.py's repo root and link depth were adjusted.
 
 ### Run the feature loop seven times on TLA examples
 
-change `otrqpwxqlvzy` · [log `31081960838d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/31081960838df919f1e8705f74d65b15537beb7736192109516dd067ce037d93.jsonl.gz)
+[`61b7a5f18fd8`](https://github.com/pilifs/in-the-loop/commit/61b7a5f18fd86a362b5796a3503eac064e8e125c) · [log `31081960838d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/31081960838df919f1e8705f74d65b15537beb7736192109516dd067ce037d93.jsonl.gz)
 
 feature-loop.sh used to repeat its instruction until a cycle made no commit. It now runs a fixed number of cycles (CYCLES=7) and exits 0 after the last one, and the instruction is now to add more advanced examples showcasing verification of TLA specs. The old instruction is replaced, not queued after the new one. A cycle with no commit still stops the loop early with exit 1, before compacting. The README describes the limit.
 
@@ -34,7 +34,7 @@ Verified by running the real script, including its memory scope, with a stub cla
 
 ### Choose the feature loop's prompt by argument
 
-change `nnvtskvplpsk` · [log `54fa37a09713`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f.jsonl.gz)
+[`c3f17f6613ed`](https://github.com/pilifs/in-the-loop/commit/c3f17f6613ed58ff1c7718364eb71c829cb45f41) · [log `54fa37a09713`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/54fa37a09713c62a5df47fa8cdc9f8370a180ea076f7a1560e8427a6ae12e13f.jsonl.gz)
 
 feature-loop.sh now takes the name of a prompt: features is the earlier instruction to add features and examples to jvmcontract, with no limit on cycles as before, and tla is the instruction to add advanced TLA examples, seven times. Each run takes exactly one name; anything else prints the usage and exits 2 before the memory scope starts. The argument is passed through the re-execution into the scope. The README shows both.
 
@@ -42,7 +42,7 @@ Verified by running the real script, including its memory scope, with a stub cla
 
 ### Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter
 
-change `qryqotxxwnno` · [log `73904db88d45`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz)
+[`710eabfd13d4`](https://github.com/pilifs/in-the-loop/commit/710eabfd13d4a27872d2e50ebd96c7fe1ca747d1) · [log `73904db88d45`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/73904db88d45136e44bb6bed8f3aaa48943f27a09d3a9ed11d7ee405995e2a58.jsonl.gz)
 
 examples/real-world/ gains commons-lang-1750 (ArrayUtils.reverse: the Integer.MIN_VALUE end index found for six primitive overloads and shrunk to an empty array, the change proved confined to that index on arrays of up to four, the new version proved to throw on no input), commons-lang-1585 (ArrayUtils.subarray: the index overflow found, before OutOfMemoryError and after an empty array, and the change proved confined to the overflowing inputs), jackson-core-1203 (NumberOutput.divBy1000: nothing finished in the default budgets, division against multiplication; one witness documents the non-negative precondition; module contracts unchanged) and commons-codec-43a9aa66 (Hex.toDigit restricted to ASCII: two false violations traced to JDK classes JBMC has no model of, then the new method's whole contract proved; the old one needs a model of Character.digit). The index lists them and updates the libraries to try, including why Joda-Time has no entry. The Commons Numbers record gets the rerun's regression and confined-change verdicts.
 
@@ -50,7 +50,7 @@ JBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK 
 
 ### Record the /review-findings decision on a cut-off home path
 
-change `mkosrmtlvyln` · [log `21d489ab201d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)
+[`b5d023a4171c`](https://github.com/pilifs/in-the-loop/commit/b5d023a4171c4f284cc430f800370f81160c3775) · [log `21d489ab201d`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/21d489ab201dcca23301791ef2628ea60a4dae14c8a6daf178f00663a8150656.jsonl.gz)
 
 One finding in session dfa830a1, of kind other-home-dir, was a home path cut off mid-name by a fixed-width process listing, at the start of a java -cp argument. The user reviewed the real value and accepted it as a false positive in their own terminal. review reports no open findings.
 

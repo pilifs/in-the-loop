@@ -146,7 +146,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Add the /add-tla-model skill, with a circuit-breaker model as its worked example
 
-change `sutqtxlkvpmy` · [log `9df036739282`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9df036739282da5fb5f642d695436354ba0be25a2de8ce1a6507a5209828753a.jsonl.gz)
+[`2ed4b44369e8`](https://github.com/pilifs/in-the-loop/commit/2ed4b44369e81a22b2e1ddebb8529f433f5a675c) · [log `9df036739282`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9df036739282da5fb5f642d695436354ba0be25a2de8ce1a6507a5209828753a.jsonl.gz)
 
 The jvmcontract plugin gains a second skill, /add-tla-model (plugins/jvmcontract/skills/add-tla-model): run in a Java project, it finds or extracts the decision kernel (a pure static decide(StateEnum, SealedInput) method), derives its behavioural contract from the bytecode with jvmcontract derive, generates the TLA+ operator with jvmcontract tla, writes a TLA+ model of the system around it with the invariants the user states, checks it with jvmcontract tlc, and installs spec/check.sh, which regenerates the operator and fails on a changed contract until the diff is reviewed. SKILL.md is the procedure, reference.md the kernel shape, model recipe, TLA+ gotchas and TLC output for the agent, templates/ the check.sh and README it writes into a project, scripts/find-classes.sh locates a module's compiled classes without building, scripts/install-tlc.sh downloads tla2tools.jar into ~/tools. install.sh now installs both skills and TLC (NO_TLC=1 skips it; VERIFY_BYTECODE_SKILLS picks skills); the plugin and marketplace manifests are at 0.2.0 and describe both skills; the plugin README and the repo README document the new skill.
 
@@ -154,13 +154,13 @@ Verified by following the procedure by hand on a kernel with no model, Crosscut'
 
 ### Split examples into demo/ and real-world/, with Commons Numbers #223 as the first real-world example
 
-change `mvulqqqownkk` · [log `9e309e52b8d7`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9e309e52b8d7ee9e6c6a54091eb65197c2d5f2325188a315f515f90234047ade.jsonl.gz)
+[`112bd52cfe84`](https://github.com/pilifs/in-the-loop/commit/112bd52cfe842909b57355d891e8564d0a5d116c) · [log `9e309e52b8d7`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9e309e52b8d7ee9e6c6a54091eb65197c2d5f2325188a315f515f90234047ade.jsonl.gz)
 
 The 56 numbered examples, the four subject systems (apps/), the generator and the Java verifier (tools/), schema/ and index.json moved from examples/ to examples/demo/, and examples/real-world/ was added for pull requests to published libraries verified with the /verify-bytecode skill: a README with the verified pull requests and the table of libraries to try next (moved out of the plugin README), and commons-numbers-223/, a record of the run on apache/commons-numbers#223 (ArithmeticUtils.pow) with the witness, the four verdicts and their times as recorded on 2026-11-01, what the run did not reach (pow(long, int), the module-level diffs), how it was produced (the file compiled alone with javac because the Maven build could not run in that session), and the commands to rerun it. examples/README.md is now a short hub for the two kinds; approaches.md and setup/ stay shared. The root README, the lib README, the plugin READMEs and references, lib's tests and doc comments, and every path inside the examples (patches, example.json, result.json, SARIF, verifier output, contract headers) point at the new paths; build.py's repo root and link depth were adjusted.
 
 ### Run the feature loop seven times on TLA examples
 
-change `otrqpwxqlvzy` · [log `0c6139164123`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/0c61391641236abf15bee18bdc42478108d34ea8e70bd009f2521c733ef95dca.jsonl.gz)
+[`61b7a5f18fd8`](https://github.com/pilifs/in-the-loop/commit/61b7a5f18fd86a362b5796a3503eac064e8e125c) · [log `0c6139164123`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/0c61391641236abf15bee18bdc42478108d34ea8e70bd009f2521c733ef95dca.jsonl.gz)
 
 feature-loop.sh used to repeat its instruction until a cycle made no commit. It now runs a fixed number of cycles (CYCLES=7) and exits 0 after the last one, and the instruction is now to add more advanced examples showcasing verification of TLA specs. The old instruction is replaced, not queued after the new one. A cycle with no commit still stops the loop early with exit 1, before compacting. The README describes the limit.
 
@@ -168,7 +168,7 @@ Verified by running the real script, including its memory scope, with a stub cla
 
 ### Choose the feature loop's prompt by argument
 
-change `nnvtskvplpsk` · [log `ce3e37b3a59f`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca.jsonl.gz)
+[`c3f17f6613ed`](https://github.com/pilifs/in-the-loop/commit/c3f17f6613ed58ff1c7718364eb71c829cb45f41) · [log `ce3e37b3a59f`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca.jsonl.gz)
 
 feature-loop.sh now takes the name of a prompt: features is the earlier instruction to add features and examples to jvmcontract, with no limit on cycles as before, and tla is the instruction to add advanced TLA examples, seven times. Each run takes exactly one name; anything else prints the usage and exits 2 before the memory scope starts. The argument is passed through the re-execution into the scope. The README shows both.
 
@@ -176,7 +176,7 @@ Verified by running the real script, including its memory scope, with a stub cla
 
 ### Add four real-world examples, a fork of JBMC's JDK models for java.nio.charset, and an OutOfMemoryError for absurd arrays in the interpreter
 
-change `qryqotxxwnno` · [log `414bde3f020a`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/414bde3f020a665e85651ff76742475aa0394be10bcce88c91f38b5846fe038c.jsonl.gz)
+[`710eabfd13d4`](https://github.com/pilifs/in-the-loop/commit/710eabfd13d4a27872d2e50ebd96c7fe1ca747d1) · [log `414bde3f020a`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/414bde3f020a665e85651ff76742475aa0394be10bcce88c91f38b5846fe038c.jsonl.gz)
 
 examples/real-world/ gains commons-lang-1750 (ArrayUtils.reverse: the Integer.MIN_VALUE end index found for six primitive overloads and shrunk to an empty array, the change proved confined to that index on arrays of up to four, the new version proved to throw on no input), commons-lang-1585 (ArrayUtils.subarray: the index overflow found, before OutOfMemoryError and after an empty array, and the change proved confined to the overflowing inputs), jackson-core-1203 (NumberOutput.divBy1000: nothing finished in the default budgets, division against multiplication; one witness documents the non-negative precondition; module contracts unchanged) and commons-codec-43a9aa66 (Hex.toDigit restricted to ASCII: two false violations traced to JDK classes JBMC has no model of, then the new method's whole contract proved; the old one needs a model of Character.digit). The index lists them and updates the libraries to try, including why Joda-Time has no entry. The Commons Numbers record gets the rerun's regression and confined-change verdicts.
 
@@ -184,7 +184,7 @@ JBMC 6.11 embeds no model of the class library and jvmcontract gives it six JDK 
 
 ### Record the /review-findings decision on a cut-off home path
 
-change `mkosrmtlvyln` · [log `e53ce31e8497`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/e53ce31e84979294b3f52e59939e743bc0ca230e81fe7f120ec4b9fbb8b5be99.jsonl.gz)
+[`b5d023a4171c`](https://github.com/pilifs/in-the-loop/commit/b5d023a4171c4f284cc430f800370f81160c3775) · [log `e53ce31e8497`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/e53ce31e84979294b3f52e59939e743bc0ca230e81fe7f120ec4b9fbb8b5be99.jsonl.gz)
 
 One finding in session dfa830a1, of kind other-home-dir, was a home path cut off mid-name by a fixed-width process listing, at the start of a java -cp argument. The user reviewed the real value and accepted it as a false positive in their own terminal. review reports no open findings.
 
