@@ -82,7 +82,14 @@ On a `Timeout` in `COLLECTING`, answer `unchanged` when `unanimousSoFar` is true
 
 ## What the verifier found
 
-TLC found a run of the system that violates the temporal property **EveryParticipantDecides** (every participant eventually commits or aborts, under the fairness the model assumes: participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, and participants apply a decision once made): after the 5 steps below, the system stays in that state forever, and the property never comes true. The run respects every fairness condition the model assumes; the parts that could act, do. Each step is one action of one part of the system:
+The model is checked under 2 configurations, and the verdict is the first that fails:
+
+| Configuration | What it checks | Model | Result |
+|---|---|---|---|
+| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3} | ✗ Violation: EveryParticipantDecides, 5-step trace then forever |
+| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3} | ✓ Verified: all invariants hold in 736 states |
+
+TLC found a run of the system under three participants that violates the temporal property **EveryParticipantDecides** (every participant eventually commits or aborts, under the fairness the model assumes: participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, and participants apply a decision once made): after the 5 steps below, the system stays in that state forever, and the property never comes true. The run respects every fairness condition the model assumes; the parts that could act, do. Each step is one action of one part of the system:
 
 1. **Initial state**: every participant working, no vote counted, no decision.
 2. **Vote**, `Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts). `inbox = {[from |-> p1, vote |-> "YES"]}`, `pstate = (p1 :> "PREPARED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")`
@@ -137,13 +144,14 @@ Revert. Gray's presumed-abort rule is the timeout's whole job: a participant tha
 
 ## Evidence
 
-How the verdict was reached: TLC 2.19 explored 385 distinct states in 0 s, for the model Participants = {p1, p2, p3}.
+How the verdict was reached: three participants: TLC 2.19 explored 385 distinct states in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}.
 
 <details><summary>Verifier output</summary>
 
 ```text
+== three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1710321] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086259] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -156,11 +164,11 @@ Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-01 22:10:49)
+Starting... (2026-11-02 00:28:35)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:10:50.
-Checking 3 branches of temporal properties for the complete state space with 1155 total distinct states at (2026-11-01 22:10:50)
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:28:36.
+Checking 3 branches of temporal properties for the complete state space with 1155 total distinct states at (2026-11-02 00:28:36)
 Error: Temporal properties were violated.
 
 Error: The following behavior constitutes a counter-example:
@@ -201,10 +209,46 @@ State 5: <ParticipantTimeout line 53, col 5 to line 55, col 50 of module TwoPhas
 /\ votes = (p1 :> "YES" @@ p2 :> "NONE" @@ p3 :> "NONE")
 
 State 6: Stuttering
-Finished checking temporal properties in 00s at 2026-11-01 22:10:50
+Finished checking temporal properties in 00s at 2026-11-02 00:28:36
 1166 states generated, 385 distinct states found, 0 states left on queue.
-Finished in 00s at (2026-11-01 22:10:50)
+Finished in 00s at (2026-11-02 00:28:36)
 (jvmcontract checked the temporal properties one at a time to name the violated one: EveryParticipantDecides)
+
+== the inductive step: spec/TwoPhaseCommitInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086365] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 00:28:37)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Finished computing initial states: 736 distinct states generated at 2026-11-02 00:28:37.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 9.9E-14
+3224 states generated, 736 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 00s at (2026-11-02 00:28:37)
 ```
 
 </details>
@@ -241,7 +285,7 @@ Finished in 00s at (2026-11-01 22:10:50)
           "ruleId": "invariant-violated",
           "level": "error",
           "message": {
-            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla is violated: after 5 steps the system stays in that state forever"
+            "text": "Temporal property EveryParticipantDecides of spec/TwoPhaseCommit.tla (three participants) is violated: after 5 steps the system stays in that state forever"
           },
           "locations": [
             {

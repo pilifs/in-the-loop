@@ -183,14 +183,14 @@ Revert. The rule in the paper (figure 2, rules for all servers) is unconditional
 
 ## Evidence
 
-How the verdict was reached: three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 285 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3.
+How the verdict was reached: three servers: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3; four servers: TLC 2.19 explored 285 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3; fairness: TLC 2.19 explored 86 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2012792] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086583] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -203,9 +203,9 @@ Semantic processing of module FiniteSets
 Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:02:19)
+Starting... (2026-11-02 00:28:39)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:02:19.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:28:39.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -214,25 +214,25 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 2: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 3: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 4: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 4: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 5: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 5: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2, s3} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
@@ -241,11 +241,11 @@ State 5: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
 134 states generated, 86 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 4 (minimum is 1, the maximum 6 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:02:19)
+Finished in 00s at (2026-11-02 00:28:39)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2012855] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086646] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -258,7 +258,7 @@ Semantic processing of module FiniteSets
 Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:02:20)
+Starting... (2026-11-02 00:28:40)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -274,7 +274,7 @@ Computed 2048 initial states...
 Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
-Finished computing initial states: 17470 distinct states generated at 2026-11-02 00:02:22.
+Finished computing initial states: 17470 distinct states generated at 2026-11-02 00:28:43.
 Error: Invariant VotesAreBound is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -283,7 +283,7 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "CANDIDATE")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> s3)
 
-State 2: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 2: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)
 /\ votes = (s1 :> {} @@ s2 :> {} @@ s3 :> {s1, s3})
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "LEADER")
@@ -292,11 +292,11 @@ State 2: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
 17492 states generated, 17471 distinct states found, 17463 states left on queue.
 The depth of the complete state graph search is 2.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 02s at (2026-11-02 00:02:22)
+Finished in 03s at (2026-11-02 00:28:43)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2013020] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086861] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -309,9 +309,9 @@ Semantic processing of module FiniteSets
 Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:02:23)
+Starting... (2026-11-02 00:28:44)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:02:23.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:28:44.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -320,37 +320,37 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
 
-State 2: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 2: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none" @@ s4 :> "none")
 
-State 3: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 3: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none" @@ s4 :> "none")
 
-State 4: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 4: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> "none")
 
-State 5: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 5: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2, s3} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2 @@ s4 :> "none")
 
-State 6: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 6: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1, s3, s4} @@ s2 :> {s2, s3} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2 @@ s4 :> s1)
 
-State 7: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 7: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)
 /\ votes = (s1 :> {s1, s3, s4} @@ s2 :> {s2, s3, s4} @@ s3 :> {} @@ s4 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER" @@ s4 :> "FOLLOWER")
@@ -359,11 +359,11 @@ State 7: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
 803 states generated, 285 distinct states found, 195 states left on queue.
 The depth of the complete state graph search is 7.
 The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 7 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:02:23)
+Finished in 00s at (2026-11-02 00:28:44)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2013098] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2086947] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/RaftElection.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
@@ -376,10 +376,10 @@ Semantic processing of module FiniteSets
 Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 00:02:24)
+Starting... (2026-11-02 00:28:45)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 00:02:24.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:28:45.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -388,25 +388,25 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 2: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Timeout line 88, col 15 to line 88, col 62 of module RaftElection>
+State 3: <Timeout line 89, col 15 to line 89, col 88 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 4: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 4: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 5: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
+State 5: <Canvass line 113, col 5 to line 116, col 30 of module RaftElection>
 /\ currentTerm = (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)
 /\ votes = (s1 :> {s1, s3} @@ s2 :> {s2, s3} @@ s3 :> {})
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
@@ -415,7 +415,7 @@ State 5: <Canvass line 111, col 5 to line 113, col 30 of module RaftElection>
 134 states generated, 86 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 4 (minimum is 1, the maximum 6 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 00:02:24)
+Finished in 00s at (2026-11-02 00:28:45)
 ```
 
 </details>

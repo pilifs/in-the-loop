@@ -1,6 +1,6 @@
 {
   "verdict": "verified",
-  "verdictLabel": "✓ Verified: all invariants and properties hold in 644 states",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 644 states, and under 1 more configuration",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -4,7 +4,7 @@\n target: net.terminalvalue.quorum.twopc.Coordinator#decide\n domain: Phase (4) × CoordinatorEvent (7) = 28 cases\n \n-decide(COLLECTING, Tally[complete=false, unanimous=false]) => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(COLLECTING, Tally[complete=false, unanimous=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=false, unanimous=true])  => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n",
-  "proof": "TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}",
+  "proof": "three participants: TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -34,5 +34,31 @@
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,
-  "forever": null
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 644 states",
+      "domain": "Participants = {p1, p2, p3}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 644,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 736 states",
+      "domain": "Participants = {p1, p2, p3}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 736,
+      "trace": null,
+      "forever": null
+    }
+  ]
 }

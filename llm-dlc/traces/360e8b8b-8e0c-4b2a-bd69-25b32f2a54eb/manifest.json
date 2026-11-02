@@ -12,29 +12,29 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T05:06:57.292Z",
-  "duration_seconds": 131822,
+  "ended": "2026-11-02T05:32:02.633Z",
+  "duration_seconds": 133327,
   "stats": {
-    "turns": 52,
-    "api_calls": 686,
-    "tool_calls": 1261,
+    "turns": 58,
+    "api_calls": 735,
+    "tool_calls": 1308,
     "tool_errors": 28,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 20838,
-      "output_tokens": 1834510,
-      "cache_read_input_tokens": 143204426,
-      "cache_creation_input_tokens": 4062320
+      "input_tokens": 22256,
+      "output_tokens": 1925038,
+      "cache_read_input_tokens": 150549230,
+      "cache_creation_input_tokens": 4279012
     }
   },
   "tools": {
-    "Bash": 792,
+    "Bash": 838,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
     "WebFetch": 13,
-    "ToolSearch": 11,
+    "ToolSearch": 12,
     "TaskStop": 4
   },
   "files_touched": [
@@ -381,24 +381,38 @@
     {
       "index": 11,
       "started": "2026-11-02T04:24:07.103Z",
-      "ended": "2026-11-02T05:06:57.292Z",
+      "ended": "2026-11-02T05:09:25.988Z",
       "turns": 4,
-      "api_calls": 59,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 1768,
-        "output_tokens": 137022,
-        "cache_read_input_tokens": 10368389,
-        "cache_creation_input_tokens": 250317
+        "input_tokens": 1832,
+        "output_tokens": 138346,
+        "cache_read_input_tokens": 10900338,
+        "cache_creation_input_tokens": 252378
       },
-      "peak_context_tokens": 265262
+      "peak_context_tokens": 267323
+    },
+    {
+      "index": 12,
+      "started": "2026-11-02T05:10:54.997Z",
+      "ended": "2026-11-02T05:32:02.633Z",
+      "turns": 6,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 1354,
+        "output_tokens": 89204,
+        "cache_read_input_tokens": 6812855,
+        "cache_creation_input_tokens": 214631
+      },
+      "peak_context_tokens": 229546
     }
   ],
   "log": {
-    "sha256": "99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3",
-    "bytes": 32696099,
-    "lines": 10661,
-    "gzip_bytes": 5560311,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3.jsonl.gz"
+    "sha256": "6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d",
+    "bytes": 34366251,
+    "lines": 11328,
+    "gzip_bytes": 5845952,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -521,6 +535,14 @@
       "summary": "Check the Raft election model for liveness under fairness, a fourth configuration, with two new examples and 063 rechecked",
       "body": "The Raft election model (examples/demo/apps/quorum/spec/RaftElection.tla) gains a liveness section: fairness conditions (a server whose election timer nothing resets times out, a candidate asks for the votes it lacks, a leader sends its heartbeats), two temporal properties, ALeaderIsElected (a run that stays within the term budget elects a leader, conditioned on the budget because a bounded model without a clock cannot show a leader within any number of terms) and StaleLeadersStepDown (a leader whose term the cluster has left steps down), and a new configuration RaftElectionLive.cfg that checks them. Each action now computes its next state as a record (TimeoutNext, CanvassNext, HeartbeatNext, with Step and Changes), which the fairness conditions use through explicit enabling predicates (CanTimeout, CanCanvass, CanHeartbeat); RaftElectionEnabled.cfg checks that those predicates agree with TLC's ENABLED in every reachable state. build.py lists the fourth configuration (label 'fairness'), describes the two properties, and collapses a later configuration's counterexample into one sentence when it is the same run as the headline. verify.sh runs the two new configurations; the READMEs, approaches.md and the add-tla-model reference are updated.\n\nWhy the fairness is written out: WF_vars(A) on actions that evaluate the generated role machine made TLC compute ENABLED symbolically on every step of the liveness check, which took 60 to 90 seconds on 610 states (each condition alone took a second or three; together they blew up). Written as <>[]CanA => []<><<A>>_vars with CanA a state predicate, the same check takes a second, and the agreement check (42 seconds) shows the predicates are exactly ENABLED. The property is not vacuous: the stronger property that every server eventually leads fails, so runs within the budget exist. No symmetry set in the liveness configuration, since TLC's liveness checking is unsound under one.",
       "log_sha256": "99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3"
+    },
+    {
+      "change_id": "lmlzzmnllosxxwuvxvynxtwwyuyzyvpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check that the Raft kernel's exception is unreachable and the two-phase-commit invariant inductive, with three new examples",
+      "body": "The Raft election model gains the invariant KernelNeverThrows: each action's next-state record now carries a throws field (whether any role-machine decision it goes through is Throws), the actions and the enabling predicates are guarded by it, and the invariant says that no timeout or RPC a reachable state allows makes the kernel throw. The IllegalStateException the Java reserves for a leader hearing a leader of its own term is thereby proved unreachable rather than assumed; the invariant is listed in all four Raft configurations, and in the inductive one it checks that Inductive implies it. The two-phase-commit model gains a second configuration, TwoPhaseCommitInductive.cfg, with an inductive invariant of four new conjuncts about the votes counted and in flight (VotesInFlightAreUncounted, DecisionMatchesThePhase, ParticipantsAgreeWithTheirVotes, CommitNeedsEveryVote); it admits 736 states against 728 reachable.\n\nlib/src/tla.rs parses TLC's 'Invariant X is violated by the initial state:' report, which the inductive configuration produces when the invariant it starts from does not imply the one checked, as a one-state trace; build.py labels and describes such a counterexample as a starting state. Examples 066 (a leader that throws on a vote request of its own term: reachable in four steps through a split vote, and a starting state of the inductive check), 067 (a coordinator that commits after aborting once the late votes are all yes: Atomicity in nine steps, and in one step from a state the invariant admits) and 068 (a coordinator that answers late votes with its decision again: verified under both configurations) are new; 058's patch and prose now extend the inductive invariant with the GRACE phase, and 020, 021, 057 and 059 to 065 are regenerated under the new configurations with unchanged verdicts. Verified by building every example with its expected verdict, by the Quorum verify script (29 tests, all contracts and proofs, seven TLC runs including the new configuration), and by the lib's unit tests.",
+      "log_sha256": "6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d"
     }
   ],
   "logs": {
@@ -535,6 +557,12 @@
       "lines": 2046,
       "gzip_bytes": 1501541,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz"
+    },
+    "6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d": {
+      "bytes": 34366251,
+      "lines": 11328,
+      "gzip_bytes": 5845952,
+      "url": null
     },
     "700cc427ddcc81b7b4c8be36c81af43baf3b6e6158b07ccbd68ae07e9f9bed41": {
       "bytes": 30749080,

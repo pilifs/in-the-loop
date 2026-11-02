@@ -888,7 +888,7 @@
       "id": "058",
       "path": "058-grace-period-for-the-last-vote-proved-live-and-a-refinement",
       "title": "A grace period for the last vote, proved to keep every participant deciding",
-      "summary": "The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer gains the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour.",
+      "summary": "The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer, its type invariant and its inductive invariant gain the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour; and the inductive step holds too, so atomicity is proved for the new protocol by induction, not only by search.",
       "categories": [
         "functional",
         "no-false-positive"
@@ -1005,6 +1005,52 @@
       "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
       "approach": "D1",
       "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "066",
+      "path": "066-leader-that-treats-a-vote-request-of-its-term-as-impossible-crashes",
+      "title": "A leader that treats a vote request of its own term as impossible crashes on a split vote",
+      "summary": "The Raft role machine throws on one input, a leader hearing a leader of its own term, because election safety says it cannot happen. A developer extends the reasoning to vote requests: a candidate campaigning in a term that already has a leader is just as impossible, so a leader throws on a vote request of its own term too. The contract diff is one case, from unchanged to an exception, and is approved; the input is covered by a new test, which checks that it throws. The election model has an invariant for exactly this claim, that no input the protocol can deliver makes the role machine throw, and it fails in four steps: two servers time out into term 1, one wins with the third's vote, and the other, still a candidate of term 1, asks the new leader for its vote. A split vote makes the exception reachable, and the leader crashes on the loser's request.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "067",
+      "path": "067-coordinator-that-commits-after-aborting-when-late-votes-are-all-yes",
+      "title": "A coordinator that commits after aborting on timeout, once the late votes are all yes",
+      "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer adds a second chance: if the missing votes arrive after all and every one of them is yes, the abort was a wrong guess and nothing has been lost, so the coordinator commits. The contract diff is one case, in the `ABORTED` phase, and is approved; the test that said an aborted transaction stays aborted is adjusted to the new rule. The model finds the run the developer did not picture in nine steps, and the inductive step finds it in one: an abort is a decision participants act on, and by the time the late votes are in, a participant that voted yes has aborted on the coordinator's say-so and released its locks. The commit that follows splits the participants.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "068",
+      "path": "068-coordinator-that-answers-a-late-vote-with-its-decision-proved-safe",
+      "title": "A coordinator that answers a late vote with its decision, proved to keep every decision",
+      "summary": "A vote that reaches the coordinator after it has decided comes from a participant that may not have heard the decision, and a prepared participant holds its locks until it does. The developer makes the coordinator answer every late vote by sending its decision again. The contract diff is eight cases, every tally in a decided phase, from unchanged to a transition that stays in the phase and resends. The model proves the change keeps every decision: the same 728 states as before, every invariant and property holding, and the inductive step, which ties what the coordinator broadcasts to the phase it is in, closed under the new rule. Example 067 is the same eight rows done wrong.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "approach": "D1",
+      "verdict": "verified",
       "existingTestsPassed": true
     }
   ]

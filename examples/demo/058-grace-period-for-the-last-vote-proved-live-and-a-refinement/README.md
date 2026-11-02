@@ -5,13 +5,13 @@
 
 | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
 |---|---|---|---|---|---|
-| **✓ Verified: all invariants and properties hold in 936 states** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
+| **✓ Verified: all invariants and properties hold in 936 states, and under 1 more configuration** | functional, no-false-positive | none | feature, behaviour change intended | [`Coordinator#decide`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | [D1: Protocol model checking](../../../examples/demo/apps/quorum/spec/README.md) |
 
-> The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer gains the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour.
+> The developer of example 057 tries again: when the collection times out with every vote so far yes, the coordinator moves to a new phase, `GRACE`, and waits one more period; a second timeout aborts. The contract gains a phase and seven cases, and the model's guard on the timer, its type invariant and its inductive invariant gain the phase. TLC checks the invariants, the liveness property that every participant eventually decides, and that the protocol still implements Lamport and Gray's transaction commit specification, and all of them hold in every state and every behaviour; and the inductive step holds too, so atomicity is proved for the new protocol by induction, not only by search.
 
 ## The change
 
-Add `GRACE` to `Phase`. On a `Timeout` in `COLLECTING` with `unanimousSoFar`, move to `GRACE` with no effects; a `Timeout` in `GRACE` aborts; a `Tally` in `GRACE` is decided as in `COLLECTING`. The model's `CoordinatorTimeout` action and `TypeOK` admit the new phase. The contract's domain grows from 28 to 35 cases; two tests are added.
+Add `GRACE` to `Phase`. On a `Timeout` in `COLLECTING` with `unanimousSoFar`, move to `GRACE` with no effects; a `Timeout` in `GRACE` aborts; a `Tally` in `GRACE` is decided as in `COLLECTING`. The model's `CoordinatorTimeout` action and `TypeOK` admit the new phase, and so do the two places the inductive invariant names the phases: `DecisionMatchesThePhase`, where a coordinator in `GRACE` has broadcast nothing yet, and the enumeration `InductiveInit`. The contract's domain grows from 28 to 35 cases; two tests are added.
 
 **Before** ([`Coordinator.java`](../../../examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java), line 6):
 
@@ -150,15 +150,42 @@ import net.terminalvalue.quorum.twopc.CoordinatorEvent.Tally;
      /\ \A p \in Participants : pstate[p] \in {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}
      /\ \A p \in Participants : votes[p] \in {"YES", "NO", "NONE"}
      /\ decision \in {"NONE", "COMMIT", "ABORT"}
+@@ -178,7 +178,7 @@
+ 
+ \* What the coordinator broadcast is what its phase says.
+ DecisionMatchesThePhase ==
+-    decision = CASE phase = "COLLECTING" -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
++    decision = CASE phase \in {"COLLECTING", "GRACE"} -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
+ 
+ \* A participant's state agrees with its vote: working means it has not voted, prepared means it voted yes, a no vote
+ \* means it aborted, and a yes voter that aborted did so on the coordinator's say-so.
+@@ -204,7 +204,7 @@
+ \* Inductive as an initial predicate: every state it admits, enumerated variable by variable, with each conjunct right
+ \* after the last variable it mentions, so that TLC discards a partial state as soon as a conjunct fails.
+ InductiveInit ==
+-    /\ phase \in {"COLLECTING", "COMMITTED", "ABORTED"}
++    /\ phase \in {"COLLECTING", "GRACE", "COMMITTED", "ABORTED"}
+     /\ decision \in {"NONE", "COMMIT", "ABORT"}
+     /\ DecisionMatchesThePhase
+     /\ pstate \in [Participants -> {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}]
 ```
 
 </details>
 
 ## What the verifier found
 
-Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included: 936 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}).
+The model is checked under 2 configurations, and the verdict is the first that fails:
+
+| Configuration | What it checks | Model | Result |
+|---|---|---|---|
+| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3} | ✓ Verified: all invariants and properties hold in 936 states |
+| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3} | ✓ Verified: all invariants hold in 952 states |
+
+Every invariant holds in every reachable state of the model, and every temporal property holds of every behaviour, the infinite ones included under three participants: 936 distinct states, which is every interleaving of the participants, the coordinator and the votes in flight within the model's bounds (Participants = {p1, p2, p3}).
 
 The coordinator's decision rule inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the coordinator really makes.
+
+The other configurations hold too, as the table says: the inductive step, 952 states.
 
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
@@ -203,21 +230,22 @@ The same as in example 057: a prepared participant is released only by a decisio
 
 ## Why the verdict is right
 
-The coordinator's rule in the model is generated from the regenerated contract, so the model runs the new rule, `GRACE` included. TLC explores every reachable state for three participants and checks three kinds of statement. The invariants: no participant has aborted once anything committed, and a participant commits only on the coordinator's decision after voting yes. The liveness property `EveryParticipantDecides`, under the model's fairness conditions: the second timeout is what makes it true, since the timer keeps firing while votes are missing, and in `GRACE` it aborts. And the refinement `ImplementsTransactionCommit`: `TCommit.tla` is Lamport and Gray's specification of what any commit protocol must achieve, with no coordinator, messages or timers, in which a participant may commit only once every participant is prepared or committed and may abort only while none has committed; the model instantiates it on the participants' states and asks TLC to check, step by step, that every step of the protocol is a step transaction commit allows. All three hold. This is the proof that the grace period is a different protocol from example 057's, and a correct one: it waits, and then it decides.
+The coordinator's rule in the model is generated from the regenerated contract, so the model runs the new rule, `GRACE` included. TLC explores every reachable state for three participants and checks three kinds of statement. The invariants: no participant has aborted once anything committed, and a participant commits only on the coordinator's decision after voting yes. The liveness property `EveryParticipantDecides`, under the model's fairness conditions: the second timeout is what makes it true, since the timer keeps firing while votes are missing, and in `GRACE` it aborts. And the refinement `ImplementsTransactionCommit`: `TCommit.tla` is Lamport and Gray's specification of what any commit protocol must achieve, with no coordinator, messages or timers, in which a participant may commit only once every participant is prepared or committed and may abort only while none has committed; the model instantiates it on the participants' states and asks TLC to check, step by step, that every step of the protocol is a step transaction commit allows. All three hold. The inductive configuration then starts from every state the extended invariant admits, 952 of them against 936 reachable, takes one step of the new rule, and lands in a state the invariant admits every time: the proof of atomicity by induction carries over to the new phase, at the price of telling the invariant what the phase means. This is the proof that the grace period is a different protocol from example 057's, and a correct one: it waits, and then it decides.
 
 ## What to do
 
-Merge. The contract diff is committed with the change, and the model's invariants, liveness property and refinement are checked on every build.
+Merge. The contract diff is committed with the change, and the model's invariants, liveness property, refinement and inductive step are checked on every build.
 
 ## Evidence
 
-How the verdict was reached: TLC 2.19 explored 936 distinct states to depth 12 in 0 s, for the model Participants = {p1, p2, p3}.
+How the verdict was reached: three participants: TLC 2.19 explored 936 distinct states to depth 12 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 952 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}.
 
 <details><summary>Verifier output</summary>
 
 ```text
+== three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1707955] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2083162] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -230,12 +258,12 @@ Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-01 22:09:57)
+Starting... (2026-11-02 00:27:50)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:09:57.
-Checking 3 branches of temporal properties for the complete state space with 2808 total distinct states at (2026-11-01 22:09:58)
-Finished checking temporal properties in 00s at 2026-11-01 22:09:58
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:27:50.
+Checking 3 branches of temporal properties for the complete state space with 2808 total distinct states at (2026-11-02 00:27:50)
+Finished checking temporal properties in 00s at 2026-11-02 00:27:50
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -243,7 +271,43 @@ Model checking completed. No error has been found.
 3237 states generated, 936 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 12.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
-Finished in 00s at (2026-11-01 22:09:58)
+Finished in 00s at (2026-11-02 00:27:50)
+
+== the inductive step: spec/TwoPhaseCommitInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2083268] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 00:27:51)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Finished computing initial states: 952 distinct states generated at 2026-11-02 00:27:51.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.7E-13
+4188 states generated, 952 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 00s at (2026-11-02 00:27:51)
 ```
 
 </details>

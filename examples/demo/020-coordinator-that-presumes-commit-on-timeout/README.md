@@ -69,13 +69,29 @@ On timeout, commit if the votes counted so far are unanimous, else abort. The be
 
 ## What the verifier found
 
-TLC found a run of the system, 3 steps long, that violates the invariant **Atomicity** (once the coordinator or any participant has committed, no participant has aborted). Each step is one action of one part of the system:
+The model is checked under 2 configurations, and the verdict is the first that fails:
+
+| Configuration | What it checks | Model | Result |
+|---|---|---|---|
+| three participants (`spec/TwoPhaseCommit.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Participants = {p1, p2, p3} | ✗ Violation: Atomicity, 3-step trace |
+| the inductive step (`spec/TwoPhaseCommitInductive.cfg`) | that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a counterexample is one step from a state that need not be reachable | Participants = {p1, p2, p3} | ✗ Violation: Atomicity, 2-step trace |
+
+TLC found a run of the system under three participants, 3 steps long, that violates the invariant **Atomicity** (once the coordinator or any participant has committed, no participant has aborted). Each step is one action of one part of the system:
 
 1. **Initial state**: every participant working, no vote counted, no decision.
 2. **Vote**, `Participant.prepare`: a participant votes yes (and holds its locks) or no (and aborts). `inbox = {[from |-> p1, vote |-> "NO"]}`, `pstate = (p1 :> "ABORTED" @@ p2 :> "WORKING" @@ p3 :> "WORKING")`
 3. **CoordinatorTimeout**, `Coordinator.onTimeout`: the collection timer fires with votes missing. `decision = "COMMIT"`, `phase = "COMMITTED"`
 
 The model is small (Participants = {p1, p2, p3}), which is what keeps the trace readable. TLC explored every interleaving of the participants, the coordinator and the votes in flight within those bounds.
+
+<details><summary>The counterexample under the inductive step: invariant <b>Atomicity</b>, 2 steps</summary>
+
+Invariant **Atomicity**: once the coordinator or any participant has committed, no participant has aborted.
+
+1. **Starting state**, a state the invariant `Inductive` admits, which need not be reachable: `decision = "NONE"`, `inbox = {}`, `phase = "COLLECTING"`, `pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")`, `votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")`
+2. **CoordinatorTimeout**, `Coordinator.onTimeout`: the collection timer fires with votes missing. `decision = "COMMIT"`, `phase = "COMMITTED"`
+
+</details>
 
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
@@ -122,13 +138,14 @@ Revert to presumed abort. The timeout exists because an unanswered prepare means
 
 ## Evidence
 
-How the verdict was reached: TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}.
+How the verdict was reached: three participants: TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}.
 
 <details><summary>Verifier output</summary>
 
 ```text
+== three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 1801735] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2085552] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -141,10 +158,10 @@ Semantic processing of module FiniteSets
 Semantic processing of module CoordinatorContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-01 22:44:08)
+Starting... (2026-11-02 00:28:27)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-01 22:44:08.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 00:28:27.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -171,7 +188,54 @@ State 3: <CoordinatorTimeout line 92, col 5 to line 95, col 41 of module TwoPhas
 27 states generated, 27 distinct states found, 23 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 9 (minimum is 8, the maximum 10 and the 95th percentile is 10).
-Finished in 00s at (2026-11-01 22:44:08)
+Finished in 00s at (2026-11-02 00:28:27)
+
+== the inductive step: spec/TwoPhaseCommitInductive.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2085618] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/quorum/spec/TwoPhaseCommit.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/quorum/spec/CoordinatorContract.tla
+Parsing file examples/demo/apps/quorum/spec/TCommit.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module CoordinatorContract
+Semantic processing of module TCommit
+Semantic processing of module TwoPhaseCommit
+Starting... (2026-11-02 00:28:28)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Computed 64 initial states...
+Computed 128 initial states...
+Computed 256 initial states...
+Computed 512 initial states...
+Finished computing initial states: 736 distinct states generated at 2026-11-02 00:28:28.
+Error: Invariant Atomicity is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
+/\ decision = "NONE"
+/\ phase = "COLLECTING"
+/\ inbox = {}
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+
+State 2: <CoordinatorTimeout line 92, col 5 to line 95, col 41 of module TwoPhaseCommit>
+/\ pstate = (p1 :> "ABORTED" @@ p2 :> "ABORTED" @@ p3 :> "ABORTED")
+/\ decision = "COMMIT"
+/\ phase = "COMMITTED"
+/\ inbox = {}
+/\ votes = (p1 :> "NONE" @@ p2 :> "NONE" @@ p3 :> "NONE")
+
+737 states generated, 737 distinct states found, 735 states left on queue.
+The depth of the complete state graph search is 2.
+Finished in 00s at (2026-11-02 00:28:28)
 ```
 
 </details>
@@ -208,7 +272,26 @@ Finished in 00s at (2026-11-01 22:44:08)
           "ruleId": "invariant-violated",
           "level": "error",
           "message": {
-            "text": "Invariant Atomicity of spec/TwoPhaseCommit.tla is violated after 3 steps"
+            "text": "Invariant Atomicity of spec/TwoPhaseCommit.tla (three participants) is violated after 3 steps"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java"
+                },
+                "region": {
+                  "startLine": 28
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Invariant Atomicity of spec/TwoPhaseCommit.tla (the inductive step) is violated after 2 steps"
           },
           "locations": [
             {

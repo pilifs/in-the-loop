@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "067",
+  "title": "A coordinator that commits after aborting on timeout, once the late votes are all yes",
+  "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer adds a second chance: if the missing votes arrive after all and every one of them is yes, the abort was a wrong guess and nothing has been lost, so the coordinator commits. The contract diff is one case, in the `ABORTED` phase, and is approved; the test that said an aborted transaction stays aborted is adjusted to the new rule. The model finds the run the developer did not picture in nine steps, and the inductive step finds it in one: an abort is a decision participants act on, and by the time the late votes are in, a participant that voted yes has aborted on the coordinator's say-so and released its locks. The commit that follows splits the participants.",
+  "categories": [
+    "functional"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In the `ABORTED` phase, a `Tally` that is complete and unanimous moves the coordinator to `COMMITTED` with `SEND_COMMIT`; any other tally, and any tally in `COMMITTED`, is unchanged as before. The reasoning in the comment: an abort on timeout is a guess that a missing participant gave up, and when every vote turns out to be yes the guess was wrong. The contract diff is the one case `decide(ABORTED, Tally[complete=true, unanimous=true])`, from unchanged to a transition to `COMMITTED`; the test `aDecisionIsFinal` is changed to a tally with a no in it, and a test for the new case is added. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "A decision in two-phase commit is final because the participants act on it the moment they hear it: a prepared participant that is told to abort rolls back and releases its locks, and there is no taking that back. The late votes say that every participant was willing to commit when it voted; they say nothing about what the participants have done since, and what they have done since is abort, because the coordinator told them to. The coordinator's second decision reaches participants that are no longer prepared, and those that are still prepared commit while the others have aborted: atomicity, the one property the protocol exists for, is gone. The contract diff is exactly what the developer intended, the adjusted test passes, and the unanimous tally the new case asks for is real; the bug is in the order of events the rule cannot see from its two arguments.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The model is checked under two configurations. With three participants TLC reports the shortest run that breaks `Atomicity`: all three vote yes; the coordinator counts two of the votes, and the third is still in flight when its timer fires, so it aborts and broadcasts the abort; p1 applies the decision and is aborted; the third vote arrives, the tally is complete and unanimous, and the patched rule commits. The coordinator has committed a transaction one participant has already aborted, and the two still prepared will commit it. The inductive configuration starts from every state the invariant `Inductive` admits, reachable or not, and finds the one step that leaves it: a coordinator that aborted, two yes votes counted and the third on its way, every participant aborted, and the step that counts the third vote commits. The conjunct that makes the state admissible is `ParticipantsAgreeWithTheirVotes`, that a yes voter which aborted did so on the coordinator's say-so, and the step shows that the coordinator's say-so is what the new rule revokes. The inductive invariant was written for the committed kernel and holds there in 736 states, eight more than are reachable, which is how close it comes to describing exactly what the protocol does; the one-step counterexample is the same bug as the nine-step run, found without searching for it.",
+  "resolution": "Revert. Once the coordinator has decided, the decision is the only thing it may say again; example 068 is a coordinator that says it again on every late vote, proved safe under both configurations. The late-vote problem the developer saw is real, and its fix is on the other side of the timeout: example 058's grace period waits for the last vote before deciding, and is proved live.",
+  "provenance": "Constructed from the finality of a two-phase-commit decision (Gray, 1978), by revoking an abort on the strength of votes cast before it.",
+  "references": [
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit and the blocking of a prepared participant",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications, and the invariant of TwoPhase",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

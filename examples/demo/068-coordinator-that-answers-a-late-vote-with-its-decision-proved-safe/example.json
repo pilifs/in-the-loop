@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "068",
+  "title": "A coordinator that answers a late vote with its decision, proved to keep every decision",
+  "summary": "A vote that reaches the coordinator after it has decided comes from a participant that may not have heard the decision, and a prepared participant holds its locks until it does. The developer makes the coordinator answer every late vote by sending its decision again. The contract diff is eight cases, every tally in a decided phase, from unchanged to a transition that stays in the phase and resends. The model proves the change keeps every decision: the same 728 states as before, every invariant and property holding, and the inductive step, which ties what the coordinator broadcasts to the phase it is in, closed under the new rule. Example 067 is the same eight rows done wrong.",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In the `COMMITTED` phase, any `Tally` is a transition to `COMMITTED` with `SEND_COMMIT`; in `ABORTED`, to `ABORTED` with `SEND_ABORT`. The reasoning in the comment: a late vote is from a participant that may have missed the decision. The contract diff is the eight tally cases of the two decided phases, from unchanged to a transition that keeps the phase and resends; the test `aDecisionIsFinal` is updated for the resend, and a test for it is added.",
+    "patch": "change.patch"
+  },
+  "risk": "None, and that is the point. The eight-case diff is large for a reviewer and touches the one rule of the coordinator that must never change its mind; example 067 is a one-case change to the same rows that commits an aborted transaction. The question is whether a transition in a decided phase can ever broadcast anything but the decision already made, in every order of votes and timeouts, and that is a question about every reachable state, which the model answers in a second and by induction.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The coordinator's rule in the model is generated from the regenerated contract, so the model runs the resend. The model's `Apply` turns a transition's effects into the broadcast: `SEND_COMMIT` sets the decision to commit, which in `COMMITTED` it already is, so the resend is a step that changes nothing, and TLC explores the same 728 states as for the committed coordinator, with every invariant holding in each, every participant deciding under the fairness conditions, and every step a step transaction commit allows. The inductive configuration checks the same change the other way: from every state the invariant `Inductive` admits, one step of the new rule lands in a state it admits, `DecisionMatchesThePhase` included, which says that what the coordinator has broadcast is what its phase says. That conjunct is what a resend must respect, and it is also what example 067's rule breaks in one step.",
+  "resolution": "Merge. The contract diff is committed with the change, and both configurations of the model are checked on every build, so the next change to the decided phases is held to the same invariants, by search and by induction.",
+  "provenance": "Constructed to show a change to every decided-phase row of the coordinator accepted on the strength of the model, to pair with example 067.",
+  "references": [
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit and the blocking of a prepared participant",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications, and the invariant of TwoPhase",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    }
+  ]
+}

@@ -597,6 +597,16 @@ def run_tool_property(folder, example, root, module, result):
 TWOPC = {
     "spec": "spec/TwoPhaseCommit.tla",
     "cfg": "spec/TwoPhaseCommit.cfg",
+    "label": "three participants",
+    "configurations": [
+        {"cfg": "spec/TwoPhaseCommitInductive.cfg", "label": "the inductive step",
+         "what": "that the invariant `Inductive` is inductive: TLC starts from every state the invariant admits, reachable or not, "
+                 "rather than from the initial state, takes one step, and checks the invariant again, conjunct by conjunct. "
+                 "No counterexample is a proof of atomicity by induction, for any run of the protocol however long; a "
+                 "counterexample is one step from a state that need not be reachable",
+         "initial": "a state the invariant `Inductive` admits, which need not be reachable",
+         "startsAnywhere": True},
+    ],
     "contract": "src/contract/Coordinator.decide.contract",
     "operator": "spec/CoordinatorContract.tla",
     "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
@@ -614,6 +624,11 @@ TWOPC = {
         "TypeOK": "every variable has a value of its type",
         "Atomicity": "once the coordinator or any participant has committed, no participant has aborted",
         "CommitFollowsTheCoordinator": "a participant commits only on the coordinator's decision, and only after voting yes",
+        "VotesInFlightAreUncounted": "a vote on its way to the coordinator has not been counted, and a participant votes once",
+        "DecisionMatchesThePhase": "what the coordinator broadcast is what its phase says",
+        "ParticipantsAgreeWithTheirVotes": "a working participant has not voted, a prepared one voted yes, a no voter has aborted, "
+                                           "and a yes voter that aborted did so on the coordinator's say-so",
+        "CommitNeedsEveryVote": "the coordinator commits only once every vote is counted and yes",
         "EveryParticipantDecides": "every participant eventually commits or aborts, under the fairness the model assumes: "
                                    "participants vote or give up, the coordinator counts every vote and fires its timer while votes are missing, "
                                    "and participants apply a decision once made",
@@ -663,6 +678,8 @@ RAFT = {
     "invariants": {
         "TypeOK": "every variable has a value of its type",
         "ElectionSafety": "at most one leader per term",
+        "KernelNeverThrows": "no timeout or RPC any reachable state allows makes the role machine throw: the IllegalStateException "
+                             "the Java reserves for an input it holds impossible never fires",
         "LeaderHasAMajority": "a leader holds the votes of a majority of the servers, its own among them",
         "TermsNeverDecrease": "a term never goes backwards on any server, in any step",
         "LeadersNeverCampaign": "a leader never becomes a candidate: it leaves office as the follower of a newer term, or by "
@@ -784,6 +801,8 @@ def tlc_label(run):
     verdict = run["verdict"]
     states = run.get("distinct_states")
     if verdict == "violation":
+        if len(run["trace"]) == 1:
+            return f"{VERDICT_LABEL[verdict]}: {run.get('invariant') or ''}, violated by a starting state"
         return (f"{VERDICT_LABEL[verdict]}: {'deadlock' if run.get('deadlock') else run.get('invariant') or ''}, "
                 f"{len(run['trace'])}-step trace{' then forever' if run.get('kind') == 'temporal' else ''}")
     if verdict == "verified" and states is not None:
@@ -841,6 +860,8 @@ def run_tool_tlc(folder, example, root, module, result):
             message = f"Temporal property {r['invariant']} of {where} is violated: after {steps} steps the system {r['forever']}"
         elif r["verdict"] == "violation" and r.get("kind") == "action":
             message = f"Action property {r['invariant']} of {where} is violated after {steps} steps"
+        elif r["verdict"] == "violation" and steps == 1:
+            message = f"Invariant {r['invariant']} of {where} is violated by a starting state"
         elif r["verdict"] == "violation":
             message = f"Invariant {r['invariant']} of {where} is violated after {steps} steps"
         else:
@@ -1341,10 +1362,13 @@ def findings_tlc(ex, res):
         elif kind == "action":
             found = (f"TLC found a run of the system{under}, {steps} steps long, whose last step violates the action property "
                      f"**{inv}** ({model['invariants'].get(inv, inv)}).")
+        elif steps == 1:
+            found = (f"TLC found a state{under} that violates the invariant **{inv}** ({model['invariants'].get(inv, inv)}) "
+                     "before any step is taken: the invariant the check starts from does not imply it. The state:")
         else:
             found = (f"TLC found a run of the system{under}, {steps} steps long, that violates the invariant "
                      f"**{inv}** ({model['invariants'].get(inv, inv)}).")
-        out += [found + " Each step is one action of one part of the system:", ""]
+        out += [found + (" Each step is one action of one part of the system:" if steps > 1 else ""), ""]
         out += tlc_trace_lines(model, res["trace"], configuration["initial"], configuration.get("startsAnywhere", False))
         out += ["", f"The model is small ({res['domain']}), which is what keeps the trace readable. TLC explored every "
                     f"interleaving of {model['parts']} within those bounds."]
@@ -1357,7 +1381,8 @@ def findings_tlc(ex, res):
             if inv == res["invariant"] and run["trace"] == res["trace"] and run["forever"] == res["forever"]:
                 out += ["", f"Under {run['label']} TLC found the same run, and reported it the same way."]
                 continue
-            out += ["", f"<details><summary>The counterexample under {run['label']}: {what} <b>{inv}</b>, {len(run['trace'])} steps</summary>", "",
+            out += ["", f"<details><summary>The counterexample under {run['label']}: {what} <b>{inv}</b>, "
+                        f"{'a starting state' if len(run['trace']) == 1 else str(len(run['trace'])) + ' steps'}</summary>", "",
                     f"{what.capitalize()} **{inv}**: {model['invariants'].get(inv, inv)}."
                     + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]
             out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False))

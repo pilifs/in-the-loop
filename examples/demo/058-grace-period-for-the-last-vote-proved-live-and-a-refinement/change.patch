@@ -78,3 +78,21 @@
      /\ \A p \in Participants : pstate[p] \in {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}
      /\ \A p \in Participants : votes[p] \in {"YES", "NO", "NONE"}
      /\ decision \in {"NONE", "COMMIT", "ABORT"}
+@@ -178,7 +178,7 @@
+ 
+ \* What the coordinator broadcast is what its phase says.
+ DecisionMatchesThePhase ==
+-    decision = CASE phase = "COLLECTING" -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
++    decision = CASE phase \in {"COLLECTING", "GRACE"} -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
+ 
+ \* A participant's state agrees with its vote: working means it has not voted, prepared means it voted yes, a no vote
+ \* means it aborted, and a yes voter that aborted did so on the coordinator's say-so.
+@@ -204,7 +204,7 @@
+ \* Inductive as an initial predicate: every state it admits, enumerated variable by variable, with each conjunct right
+ \* after the last variable it mentions, so that TLC discards a partial state as soon as a conjunct fails.
+ InductiveInit ==
+-    /\ phase \in {"COLLECTING", "COMMITTED", "ABORTED"}
++    /\ phase \in {"COLLECTING", "GRACE", "COMMITTED", "ABORTED"}
+     /\ decision \in {"NONE", "COMMIT", "ABORT"}
+     /\ DecisionMatchesThePhase
+     /\ pstate \in [Participants -> {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}]

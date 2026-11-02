@@ -7,7 +7,9 @@
 (* state it reaches, checks that every behaviour is one transaction commit *)
 (* allows (TCommit.tla, the specification this protocol implements), and   *)
 (* checks that every participant eventually decides, under the fairness    *)
-(* conditions below.                                                       *)
+(* conditions below. TwoPhaseCommitInductive.cfg checks that the invariant *)
+(* Inductive, at the end, is inductive, which proves atomicity for runs of *)
+(* any length.                                                             *)
 (*                                                                         *)
 (* The coordinator's decision rule, Decide(phase, event), is not written   *)
 (* here. It is generated from the behavioural contract of                  *)
@@ -157,5 +159,63 @@ EveryParticipantDecides == \A p \in Participants : <>(pstate[p] \in {"COMMITTED"
 \* and aborts only while none has committed. TLC checks this as a temporal property, step by step.
 TC == INSTANCE TCommit
 ImplementsTransactionCommit == TC!TCSpec
+
+(***************************************************************************)
+(* The inductive invariant, for TwoPhaseCommitInductive.cfg.               *)
+(***************************************************************************)
+
+\* Atomicity is not inductive on its own: a state with the coordinator committed and a vote still in flight satisfies it,
+\* and one step later the vote is counted as a no. What makes the step safe is what the reachable states say about the
+\* votes, counted and in flight, which the conjuncts below spell out. Together with the invariants above they are closed
+\* under Next, so TLC can check them from every state they admit (TwoPhaseCommitInductive.cfg) and prove the
+\* invariants for every run, of any length.
+
+\* A participant's vote, counted by the coordinator or still on its way.
+VotedYes(p) == votes[p] = "YES" \/ [from |-> p, vote |-> "YES"] \in inbox
+VotedNo(p) == votes[p] = "NO" \/ [from |-> p, vote |-> "NO"] \in inbox
+
+\* A vote in flight has not been counted yet, and a participant votes once.
+VotesInFlightAreUncounted ==
+    \A m \in inbox : votes[m.from] = "NONE" /\ \A n \in inbox : n.from = m.from => n = m
+
+\* What the coordinator broadcast is what its phase says.
+DecisionMatchesThePhase ==
+    decision = CASE phase = "COLLECTING" -> "NONE" [] phase = "COMMITTED" -> "COMMIT" [] phase = "ABORTED" -> "ABORT"
+
+\* A participant's state agrees with its vote: working means it has not voted, prepared means it voted yes, a no vote
+\* means it aborted, and a yes voter that aborted did so on the coordinator's say-so.
+ParticipantsAgreeWithTheirVotes ==
+    \A p \in Participants :
+        /\ pstate[p] = "WORKING" => ~VotedYes(p) /\ ~VotedNo(p)
+        /\ pstate[p] = "PREPARED" => VotedYes(p)
+        /\ VotedNo(p) => pstate[p] = "ABORTED"
+        /\ pstate[p] = "ABORTED" /\ VotedYes(p) => phase = "ABORTED"
+
+\* The coordinator commits only on every vote, counted and yes: nothing is in flight once it has committed.
+CommitNeedsEveryVote == phase = "COMMITTED" => \A p \in Participants : votes[p] = "YES"
+
+Inductive ==
+    /\ TypeOK
+    /\ Atomicity
+    /\ CommitFollowsTheCoordinator
+    /\ VotesInFlightAreUncounted
+    /\ DecisionMatchesThePhase
+    /\ ParticipantsAgreeWithTheirVotes
+    /\ CommitNeedsEveryVote
+
+\* Inductive as an initial predicate: every state it admits, enumerated variable by variable, with each conjunct right
+\* after the last variable it mentions, so that TLC discards a partial state as soon as a conjunct fails.
+InductiveInit ==
+    /\ phase \in {"COLLECTING", "COMMITTED", "ABORTED"}
+    /\ decision \in {"NONE", "COMMIT", "ABORT"}
+    /\ DecisionMatchesThePhase
+    /\ pstate \in [Participants -> {"WORKING", "PREPARED", "COMMITTED", "ABORTED"}]
+    /\ Atomicity
+    /\ votes \in [Participants -> {"YES", "NO", "NONE"}]
+    /\ CommitFollowsTheCoordinator
+    /\ CommitNeedsEveryVote
+    /\ inbox \in SUBSET Votes
+    /\ VotesInFlightAreUncounted
+    /\ ParticipantsAgreeWithTheirVotes
 
 =============================================================================

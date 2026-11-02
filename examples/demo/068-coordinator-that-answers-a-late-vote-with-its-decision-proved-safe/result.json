@@ -1,0 +1,64 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 728 states, and under 1 more configuration",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 26,
+    "code": "    case COLLECTING -> !tally.complete()\n            ? unchanged(\"waiting for the remaining votes\")\n            : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n    case COMMITTED, ABORTED -> unchanged(\"already decided\");\n};\ncase Timeout _ -> switch (phase) {\n    case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 26,
+    "code": "    case COLLECTING -> !tally.complete()\n            ? unchanged(\"waiting for the remaining votes\")\n            : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n    // A vote that arrives after the decision is from a participant that may not have heard it, and a\n    // prepared participant holds its locks until it does: answer with the decision, again.\n    case COMMITTED -> transition(COMMITTED, SEND_COMMIT);\n    case ABORTED -> transition(ABORTED, SEND_ABORT);\n};\ncase Timeout _ -> switch (phase) {\n    case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/demo/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -11,17 +11,17 @@\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n-decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=true, unanimous=false])   => Unchanged[reason=\"already decided\"]\n-decide(COMMITTED, Tally[complete=true, unanimous=true])    => Unchanged[reason=\"already decided\"]\n+decide(COMMITTED, Tally[complete=false, unanimous=false])  => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=false, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=true, unanimous=false])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n+decide(COMMITTED, Tally[complete=true, unanimous=true])    => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COMMITTED, Timeout[unanimousSoFar=false])           => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Timeout[unanimousSoFar=true])            => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, null)                                    => throws NullPointerException\n-decide(ABORTED, Tally[complete=false, unanimous=false])    => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=false, unanimous=true])     => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=true, unanimous=false])     => Unchanged[reason=\"already decided\"]\n-decide(ABORTED, Tally[complete=true, unanimous=true])      => Unchanged[reason=\"already decided\"]\n+decide(ABORTED, Tally[complete=false, unanimous=false])    => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=false, unanimous=true])     => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=true, unanimous=false])     => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(ABORTED, Tally[complete=true, unanimous=true])      => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(ABORTED, Timeout[unanimousSoFar=false])             => Unchanged[reason=\"already decided\"]\n decide(ABORTED, Timeout[unanimousSoFar=true])              => Unchanged[reason=\"already decided\"]\n decide(ABORTED, null)                                      => throws NullPointerException\n",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 728,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] → effects=[SEND_COMMIT]\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 728 states",
+      "domain": "Participants = {p1, p2, p3}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 728,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 736 states",
+      "domain": "Participants = {p1, p2, p3}",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 736,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

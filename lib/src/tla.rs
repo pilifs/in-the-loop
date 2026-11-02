@@ -271,6 +271,9 @@ impl TlcResult {
             Verdict::Violation if self.kind == Some(ViolationKind::Temporal) => {
                 s.push_str(&format!("✗ temporal property {} is violated: after {} steps {}", self.invariant.as_deref().unwrap_or("?"), self.trace.len(), self.forever()));
             }
+            Verdict::Violation if self.trace.len() == 1 => {
+                s.push_str(&format!("✗ invariant {} is violated by the initial state", self.invariant.as_deref().unwrap_or("?")));
+            }
             Verdict::Violation => {
                 s.push_str(&format!("✗ invariant {} is violated after {} steps", self.invariant.as_deref().unwrap_or("?"), self.trace.len()));
             }
@@ -543,9 +546,15 @@ pub struct Trace {
     pub stuttering: bool,
 }
 
-/// TLC's counterexample as a list of steps, each with the action and the variables it changed.
+/// TLC's counterexample as a list of steps, each with the action and the variables it changed. An invariant an
+/// initial state violates (`is violated by the initial state:`, which an inductive check reports when the invariant
+/// it starts from does not imply the one checked) is a trace of that one state.
 pub fn parse_trace(output: &str) -> Trace {
-    let Some((_, body)) = output.split_once("The behavior up to this point is:").or_else(|| output.split_once("The following behavior constitutes a counter-example:")) else { return Trace::default() };
+    let Some((_, body)) = output.split_once("The behavior up to this point is:").or_else(|| output.split_once("The following behavior constitutes a counter-example:")) else {
+        let Some((_, state)) = output.split_once("is violated by the initial state:\n") else { return Trace::default() };
+        let changes = parse_state(state.split("\n\n").next().unwrap_or("").trim());
+        return Trace { steps: vec![Step { step: 1, action: "Initial predicate".into(), changes }], lasso: None, stuttering: false };
+    };
     let lasso = re(r"(?m)^Back to state (\d+):").captures(body).and_then(|c| c[1].parse().ok());
     let stuttering = re(r"(?m)^State \d+: Stuttering").is_match(body);
     let header = re(r"(?m)^State (\d+): <([^>]*)>\n");
@@ -558,17 +567,22 @@ pub fn parse_trace(output: &str) -> Trace {
         let start = m.get(0).map(|g| g.end()).unwrap_or(0);
         let end = matches.get(i + 1).and_then(|n| n.get(0)).map(|g| g.start()).unwrap_or(body.len());
         let text = body[start..end].trim();
-        let text = text.split("\n\n").next().unwrap_or("");
-        let mut values = BTreeMap::new();
-        for assignment in re(r"(?m)^/\\ ").split(text) {
-            let Some((name, value)) = assignment.split_once(" = ") else { continue };
-            values.insert(name.trim().to_string(), re(r"\s+").replace_all(value, " ").trim().to_string());
-        }
+        let values = parse_state(text.split("\n\n").next().unwrap_or(""));
         let changes: BTreeMap<String, String> = values.iter().filter(|(k, v)| previous.get(*k) != Some(*v)).map(|(k, v)| (k.clone(), v.clone())).collect();
         steps.push(Step { step: number, action, changes });
         previous = values;
     }
     Trace { steps, lasso, stuttering }
+}
+
+/// The variables of one state as TLC prints it: one `/\ name = value` per line, values possibly wrapped.
+fn parse_state(text: &str) -> BTreeMap<String, String> {
+    let mut values = BTreeMap::new();
+    for assignment in re(r"(?m)^/\\ ").split(text) {
+        let Some((name, value)) = assignment.split_once(" = ") else { continue };
+        values.insert(name.trim().to_string(), re(r"\s+").replace_all(value, " ").trim().to_string());
+    }
+    values
 }
 
 #[cfg(test)]
@@ -631,6 +645,18 @@ mod tests {
         assert_eq!(ok.depth, Some(20));
         assert!(ok.kind.is_none());
         assert!(ok.summary().starts_with("✓ every invariant and temporal property holds in 1000 distinct states"), "{}", ok.summary());
+    }
+
+    #[test]
+    fn parses_an_invariant_the_initial_state_violates() {
+        let output = "TLC2 Version 2.19 of Day Month 20??\nError: Invariant KernelNeverThrows is violated by the initial state:\n/\\ currentTerm = (s1 :> 1 @@ s2 :> 1)\n/\\ role = (s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\")\n\nFinished in 00s at (2026-11-02 00:20:23)\n";
+        let result = parse_tlc_output(output, &[]);
+        assert_eq!(result.verdict, Verdict::Violation);
+        assert_eq!(result.invariant.as_deref(), Some("KernelNeverThrows"));
+        assert_eq!(result.trace.len(), 1);
+        assert_eq!(result.trace[0].action, "Initial predicate");
+        assert_eq!(result.trace[0].changes.get("role").map(String::as_str), Some("(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\")"));
+        assert!(result.summary().starts_with("✗ invariant KernelNeverThrows is violated by the initial state, in 0 s"), "{}", result.summary());
     }
 
     #[test]

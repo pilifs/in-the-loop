@@ -80,12 +80,13 @@ TimeoutNext(s) ==
     LET d == Decide(role[s], [kind |-> "ElectionTimeout"])
         t == IF d.kind = "Transition" /\ Has(d, "INCREMENT_TERM") THEN currentTerm[s] + 1 ELSE currentTerm[s]
         self == d.kind = "Transition" /\ Has(d, "VOTE_FOR_SELF")
-    IN [role |-> [role EXCEPT ![s] = RoleAfter(s, d)],
+    IN [throws |-> d.kind = "Throws",
+        role |-> [role EXCEPT ![s] = RoleAfter(s, d)],
         currentTerm |-> [currentTerm EXCEPT ![s] = t],
         votedFor |-> [votedFor EXCEPT ![s] = IF self THEN s ELSE IF t > currentTerm[s] THEN "none" ELSE @],
         votes |-> [votes EXCEPT ![s] = IF self THEN {s} ELSE @]]
 
-Timeout(s) == currentTerm[s] < MaxTerm /\ Step(TimeoutNext(s))
+Timeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Step(TimeoutNext(s))
 
 \* Server.requestVote, one RPC: candidate c asks server v for its vote and gets the answer.
 \* On v, Server.onRequestVote: the role machine first (a candidate's newer term is adopted), then the vote rule on
@@ -102,7 +103,8 @@ CanvassNext(c, v) ==
         dc == Decide(role[c], [kind |-> "Response", term |-> Order(c, tv)])
         tally == IF Adopts(dc) THEN {} ELSE IF granted THEN votes[c] \cup {v} ELSE votes[c]
         dt == Decide(RoleAfter(c, dc), [kind |-> "VotesCounted", majority |-> Majority(tally)])
-    IN [role |-> [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
+    IN [throws |-> dv.kind = "Throws" \/ dc.kind = "Throws" \/ dt.kind = "Throws",
+        role |-> [role EXCEPT ![v] = RoleAfter(v, dv), ![c] = IF dt.kind = "Transition" THEN dt.next ELSE RoleAfter(c, dc)],
         currentTerm |-> [currentTerm EXCEPT ![v] = tv, ![c] = TermAfter(c, dc, tv)],
         votedFor |-> [votedFor EXCEPT ![v] = IF granted THEN c ELSE free, ![c] = VotedForAfter(c, dc)],
         votes |-> [votes EXCEPT ![v] = VotesAfter(v, dv), ![c] = tally]]
@@ -110,13 +112,14 @@ CanvassNext(c, v) ==
 Canvass(c, v) ==
     /\ role[c] = "CANDIDATE"
     /\ v \notin votes[c] \cup {c}
+    /\ ~CanvassNext(c, v).throws
     /\ Step(CanvassNext(c, v))
 
 \* Server.appendEntries, one RPC: leader l sends server s a heartbeat and gets the answer.
 \* On s, Server.onAppendEntries: a newer term is adopted, a candidate yields to the leader of its term, and a stale
 \* leader is rejected. On l, Server.onAppendReply: the reply carries s's term, which goes through the role machine;
 \* a stale leader steps down. (A leader that hears a leader of its own term throws in the Java; the model has no
-\* step for it, and ElectionSafety says it never happens.)
+\* step for it, and KernelNeverThrows, below, says there is never one to take.)
 HeartbeatNext(l, s) ==
     LET ds == Decide(role[s], [kind |-> "AppendEntries", term |-> Order(s, currentTerm[l])])
         ts == TermAfter(s, ds, currentTerm[l])
@@ -159,6 +162,15 @@ TypeOK ==
     /\ currentTerm \in [Servers -> 0..MaxTerm]
     /\ votedFor \in [Servers -> Servers \cup {"none"}]
     /\ votes \in [Servers -> SUBSET Servers]
+
+\* The kernel's exceptions. Each action's record says whether a role-machine call it makes throws, and no action takes
+\* such a step; this invariant says there is none to take. The IllegalStateException the Java reserves for an input
+\* it holds impossible (a leader hearing a leader of its own term) is then impossible indeed, in every reachable
+\* state: a change that makes the role machine throw on an input the protocol can deliver violates it.
+KernelNeverThrows ==
+    /\ \A s \in Servers : currentTerm[s] < MaxTerm => ~TimeoutNext(s).throws
+    /\ \A c, v \in Servers : role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} => ~CanvassNext(c, v).throws
+    /\ \A l, s \in Servers : role[l] = "LEADER" /\ s # l => ~HeartbeatNext(l, s).throws
 
 \* Election safety (Raft, figure 3): at most one leader per term.
 ElectionSafety ==
@@ -277,8 +289,8 @@ Unled(s) == role[s] # "LEADER" /\ \A l \in Servers : ~Resets(l, s)
 \* changes some variable. TLC computes ENABLED of an action with the role machine inside it slowly, once per step
 \* of the liveness check, which made the check take a minute; these predicates are the same condition evaluated
 \* directly, and EnablingAgrees at the end checks that they are.
-CanTimeout(s) == currentTerm[s] < MaxTerm /\ Changes(TimeoutNext(s))
-CanCanvass(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ Changes(CanvassNext(c, v))
+CanTimeout(s) == currentTerm[s] < MaxTerm /\ ~TimeoutNext(s).throws /\ Changes(TimeoutNext(s))
+CanCanvass(c, v) == role[c] = "CANDIDATE" /\ v \notin votes[c] \cup {c} /\ ~CanvassNext(c, v).throws /\ Changes(CanvassNext(c, v))
 CanHeartbeat(l, s) == role[l] = "LEADER" /\ s # l /\ ~HeartbeatNext(l, s).throws /\ Changes(HeartbeatNext(l, s))
 
 \* Fairness: what each server is assumed to get round to. A server whose timer nothing resets times out; a

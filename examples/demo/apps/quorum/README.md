@@ -10,12 +10,12 @@ The design rule is the one deterministic-simulation-tested systems follow: a ker
 | Kernel | What it decides | Verified by | Examples |
 |---|---|---|---|
 | [`Quorum`](src/main/java/net/terminalvalue/quorum/Quorum.java) | The majority of a cluster of `n` | A property: any two majorities share a node, for every `n` | 015 |
-| [`raft.RoleMachine`](src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | A Raft server's role transitions (follower, candidate, leader) | A [behavioural contract](src/contract/RoleMachine.decide.contract): all 52 (role, event) cases, and a [TLA+ model](spec/README.md#the-raft-election-model) of leader election around it, checked by TLC for election safety and for two action properties under four configurations: three servers, the inductive step of an inductive invariant, four servers under a symmetry set, and liveness under fairness | 014, 059 to 065 |
+| [`raft.RoleMachine`](src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java) | A Raft server's role transitions (follower, candidate, leader) | A [behavioural contract](src/contract/RoleMachine.decide.contract): all 52 (role, event) cases, and a [TLA+ model](spec/README.md#the-raft-election-model) of leader election around it, checked by TLC for election safety, for the role machine's exception being unreachable, and for two action properties under four configurations: three servers, the inductive step of an inductive invariant, four servers under a symmetry set, and liveness under fairness | 014, 059 to 066 |
 | [`raft.VoteRule`](src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | Whether a server grants its vote (the election restriction) | Regression proofs against the previous version, over 2^448 inputs | 013 |
 | [`backoff.Backoff`](src/main/java/net/terminalvalue/quorum/backoff/Backoff.java) | The delay before a retry | A property: between the base and the cap, and never shorter than the previous attempt | 016, 019 |
 | [`clock.HybridLogicalClock`](src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java) | Timestamps that track physical time and order causally related events | Properties: a new timestamp is later than everything it saw, and `receive` is symmetric | 017, 018 |
 | [`replication.LastWriterWins`](src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java) | Which of two concurrent writes a replica keeps | A law: `winner(a, b) == 1 - winner(b, a)`, so that replicas converge | 022 |
-| [`twopc.Coordinator`](src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | A two-phase-commit coordinator's decision | A [behavioural contract](src/contract/Coordinator.decide.contract), and a [TLA+ model](spec/README.md) of the protocol around it, checked by TLC for its invariants, its liveness and its refinement of transaction commit | 020, 021, 057, 058 |
+| [`twopc.Coordinator`](src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java) | A two-phase-commit coordinator's decision | A [behavioural contract](src/contract/Coordinator.decide.contract), and a [TLA+ model](spec/README.md) of the protocol around it, checked by TLC for its invariants, its liveness and its refinement of transaction commit, and under a second configuration for an inductive invariant about the votes counted and in flight | 020, 021, 057, 058, 067, 068 |
 
 The module as a whole has a [capability contract](src/contract/capabilities.contract) (every capability is `none`: no clock, no randomness, no threads, no I/O, which is the determinism guarantee written down) and an [API contract](src/contract/api.contract).
 
@@ -50,6 +50,7 @@ jvmcontract verify --contracts src/contract --classes build/main --module quorum
 jvmcontract prove --properties src/contract/properties.contract --classes build/main
 jvmcontract tla src/contract/Coordinator.decide.contract spec/CoordinatorContract.tla
 jvmcontract tlc spec/TwoPhaseCommit.tla --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/TwoPhaseCommit.tla --config spec/TwoPhaseCommitInductive.cfg --library ../../tools/tla/standard-modules
 jvmcontract tla src/contract/RoleMachine.decide.contract spec/RoleMachineContract.tla
 jvmcontract tlc spec/RaftElection.tla --library ../../tools/tla/standard-modules
 jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionInductive.cfg --library ../../tools/tla/standard-modules
@@ -58,7 +59,7 @@ jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionLive.cfg --libra
 jvmcontract tlc spec/RaftElection.tla --config spec/RaftElectionEnabled.cfg --library ../../tools/tla/standard-modules
 ```
 
-Compiling takes a second, the tests less, the contract check milliseconds, the five property proofs about four seconds with JBMC, and TLC about a second for each model (728 states of two-phase commit, 610 of the election, 829 of the election with four servers, 610 again for its liveness), about four seconds for the inductive step of the election (17,470 states the invariant admits), and about 45 seconds for the last check, that the election model's enabling predicates agree with TLC's `ENABLED` in every state, which is the reason the fairness conditions use predicates rather than `ENABLED`.
+Compiling takes a second, the tests less, the contract check milliseconds, the five property proofs about four seconds with JBMC, and TLC about a second for each model (728 states of two-phase commit, 736 that its inductive invariant admits, 610 of the election, 829 of the election with four servers, 610 again for its liveness), about four seconds for the inductive step of the election (17,470 states the invariant admits), and about 45 seconds for the last check, that the election model's enabling predicates agree with TLC's `ENABLED` in every state, which is the reason the fairness conditions use predicates rather than `ENABLED`.
 No Gradle and no JVM start is needed for the contracts: `jvmcontract` reads the class files and the JDK's image directly.
 
 To change a kernel's behaviour on purpose: make the change, run `jvmcontract update --contracts src/contract --classes build/main --module quorum`, and commit the contract diff with the code. To state a new guarantee: add a block to `properties.contract`.
