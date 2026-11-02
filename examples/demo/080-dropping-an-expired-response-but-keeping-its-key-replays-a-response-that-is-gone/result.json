@@ -1,0 +1,238 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: ReplayedResponsesExist, 7-step trace (expiring record)",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 6,
+    "code": "import static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.EXECUTE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.RELEASE_KEY;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.REPLAY_RESPONSE;\n    // ...\n * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a\n * request still in progress is refused (409), because executing it again would do the work twice; a key reused with\n * a different request is refused (422). An attempt that dies without a response releases the key, so that the\n * client's retry can run.\n *\n * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two\n * retries arriving together cannot both see ABSENT.\n    // ...\n                case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n            };\n            case Expired _ -> switch (state) {\n                case COMPLETED -> transition(ABSENT, RELEASE_KEY);\n                case ABSENT -> unchanged(\"nothing to expire\");\n                case IN_PROGRESS -> unchanged(\"a key in progress does not expire\");\n            };\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 6,
+    "code": "import static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.DROP_RESPONSE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.EXECUTE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.RELEASE_KEY;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.REPLAY_RESPONSE;\n    // ...\n * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a\n * request still in progress is refused (409), because executing it again would do the work twice; a key reused with\n * a different request is refused (422). An attempt that dies without a response releases the key, so that the\n * client's retry can run. When a stored response's time to live passes, the response goes and the key stays, so\n * that the request is recognised for as long as the client may retry it and is never run twice.\n *\n * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two\n * retries arriving together cannot both see ABSENT.\n    // ...\n                case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n            };\n            case Expired _ -> switch (state) {\n                // The response body is the bulk of the record. Drop it when the time to live passes and keep the\n                // key, so that a late retry is still recognised and the request is never run twice.\n                case COMPLETED -> transition(COMPLETED, DROP_RESPONSE);\n                case ABSENT -> unchanged(\"nothing to expire\");\n                case IN_PROGRESS -> unchanged(\"a key in progress does not expire\");\n            };\n"
+  },
+  "casesTotal": null,
+  "domain": "Attempts = {a1, a2, a3}, Expires = TRUE",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/demo/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n+++ b/examples/demo/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n@@ -20,7 +20,7 @@\n decide(COMPLETED, Request[sameFingerprint=true])    => Transition[next=COMPLETED, effects=[REPLAY_RESPONSE]]\n decide(COMPLETED, Completed[])                      => Unchanged[reason=\"no attempt is in progress\"]\n decide(COMPLETED, Failed[])                         => Unchanged[reason=\"no attempt is in progress\"]\n-decide(COMPLETED, Expired[])                        => Transition[next=ABSENT, effects=[RELEASE_KEY]]\n+decide(COMPLETED, Expired[])                        => Transition[next=COMPLETED, effects=[DROP_RESPONSE]]\n decide(COMPLETED, null)                             => throws NullPointerException\n decide(null, Request[sameFingerprint=false])        => throws NullPointerException\n decide(null, Request[sameFingerprint=true])         => throws NullPointerException\n--- a/examples/demo/apps/crosscut/src/contract/api.contract\n+++ b/examples/demo/apps/crosscut/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: crosscut, 33 public types, 124 members\n+module: crosscut, 33 public types, 125 members\n \n net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected\n   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)\n@@ -46,6 +46,7 @@\n   public static net.terminalvalue.crosscut.idempotency.KeyState[] values()\n \n net.terminalvalue.crosscut.idempotency.ReceiverEffect: public final enum\n+  public static final DROP_RESPONSE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final EXECUTE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final RELEASE_KEY: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final REPLAY_RESPONSE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n",
+  "proof": "the record never expires: TLC 2.19 explored 168 distinct states to depth 10 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 94 distinct states to depth 7 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "completed": "0",
+        "executing": "{}",
+        "inbox": "{}",
+        "key": "\"ABSENT\"",
+        "responses": "(a1 :> \"NONE\" @@ a2 :> \"NONE\" @@ a3 :> \"NONE\")",
+        "sent": "{}",
+        "stored": "FALSE"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Send",
+      "changes": {
+        "inbox": "{a1}",
+        "sent": "{a1}"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Receive",
+      "changes": {
+        "executing": "{a1}",
+        "inbox": "{}",
+        "key": "\"IN_PROGRESS\""
+      }
+    },
+    {
+      "step": 4,
+      "action": "Finish",
+      "changes": {
+        "completed": "1",
+        "executing": "{}",
+        "key": "\"COMPLETED\"",
+        "responses": "(a1 :> \"RESULT\" @@ a2 :> \"NONE\" @@ a3 :> \"NONE\")",
+        "stored": "TRUE"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Send",
+      "changes": {
+        "inbox": "{a2}",
+        "sent": "{a1, a2}"
+      }
+    },
+    {
+      "step": 6,
+      "action": "Expire",
+      "changes": {
+        "stored": "FALSE"
+      }
+    },
+    {
+      "step": 7,
+      "action": "Receive",
+      "changes": {
+        "inbox": "{}",
+        "responses": "(a1 :> \"RESULT\" @@ a2 :> \"EMPTY\" @@ a3 :> \"NONE\")"
+      }
+    }
+  ],
+  "statesExplored": 94,
+  "invariant": "ReplayedResponsesExist",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    COMPLETED: COMPLETED (terminal)\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=false] → effects=[EXECUTE]\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=true] → effects=[EXECUTE]\n    COMPLETED --> COMPLETED: Request[sameFingerprint=true] → effects=[REPLAY_RESPONSE]\n    COMPLETED --> COMPLETED: Expired[] → effects=[DROP_RESPONSE]\n    IN_PROGRESS --> ABSENT: Failed[] → effects=[RELEASE_KEY]\n    IN_PROGRESS --> COMPLETED: Completed[] → effects=[STORE_RESPONSE]\n    ABSENT --> ABSENT: Completed[] (Unchanged)\n    ABSENT --> ABSENT: Failed[] (Unchanged)\n    ABSENT --> ABSENT: Expired[] (Unchanged)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=false] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=true] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Expired[] (Unchanged)\n    COMPLETED --> COMPLETED: Request[sameFingerprint=false] (Rejected)\n    COMPLETED --> COMPLETED: Completed[] (Unchanged)\n    COMPLETED --> COMPLETED: Failed[] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "the record never expires",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+            "reached": 5,
+            "total": 15,
+            "never": [
+              "decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]",
+              "decide(ABSENT, Completed[]) => Unchanged",
+              "decide(ABSENT, Failed[]) => Unchanged",
+              "decide(ABSENT, Expired[]) => Unchanged",
+              "decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected",
+              "decide(IN_PROGRESS, Expired[]) => Unchanged",
+              "decide(COMPLETED, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Completed[]) => Unchanged",
+              "decide(COMPLETED, Failed[]) => Unchanged",
+              "decide(COMPLETED, Expired[]) => Transition[next=COMPLETED, effects=[DROP_RESPONSE]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "expiring record",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COMPLETED, Expired[])",
+        "before": "Transition[next=ABSENT, effects=[RELEASE_KEY]]",
+        "after": "Transition[next=COMPLETED, effects=[DROP_RESPONSE]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": "invariant",
+  "forever": null,
+  "configurations": [
+    {
+      "label": "the record never expires",
+      "cfg": "spec/IdempotentReceiver.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 168 states",
+      "domain": "Attempts = {a1, a2, a3}, Expires = FALSE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 168,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "expiring record",
+      "cfg": "spec/IdempotentReceiverExpiring.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: ReplayedResponsesExist, 7-step trace",
+      "domain": "Attempts = {a1, a2, a3}, Expires = TRUE",
+      "invariant": "ReplayedResponsesExist",
+      "violationKind": "invariant",
+      "statesExplored": 94,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "completed": "0",
+            "executing": "{}",
+            "inbox": "{}",
+            "key": "\"ABSENT\"",
+            "responses": "(a1 :> \"NONE\" @@ a2 :> \"NONE\" @@ a3 :> \"NONE\")",
+            "sent": "{}",
+            "stored": "FALSE"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Send",
+          "changes": {
+            "inbox": "{a1}",
+            "sent": "{a1}"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Receive",
+          "changes": {
+            "executing": "{a1}",
+            "inbox": "{}",
+            "key": "\"IN_PROGRESS\""
+          }
+        },
+        {
+          "step": 4,
+          "action": "Finish",
+          "changes": {
+            "completed": "1",
+            "executing": "{}",
+            "key": "\"COMPLETED\"",
+            "responses": "(a1 :> \"RESULT\" @@ a2 :> \"NONE\" @@ a3 :> \"NONE\")",
+            "stored": "TRUE"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Send",
+          "changes": {
+            "inbox": "{a2}",
+            "sent": "{a1, a2}"
+          }
+        },
+        {
+          "step": 6,
+          "action": "Expire",
+          "changes": {
+            "stored": "FALSE"
+          }
+        },
+        {
+          "step": 7,
+          "action": "Receive",
+          "changes": {
+            "inbox": "{}",
+            "responses": "(a1 :> \"RESULT\" @@ a2 :> \"EMPTY\" @@ a3 :> \"NONE\")"
+          }
+        }
+      ],
+      "forever": null
+    }
+  ]
+}

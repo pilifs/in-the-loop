@@ -2,7 +2,7 @@
 
 The pure kernels behind the cross-cutting concerns of a Spring Boot service: the decision a transaction interceptor makes, a circuit breaker's state machine, a retry policy, a rate limiter's refill, an `Idempotency-Key` receiver, a Kafka partitioner and a batch listener's commit, a JWT validator's clock-skew check, and a cache's expiry.
 Each is the few lines inside a framework component that decide what happens, written as a function so that it can be proved, with the framework component left to perform what the kernel decides.
-It is the third subject system of the [examples](../../README.md) (023 to 033, 075 to 077), verified by [`jvmcontract`](../../../../lib/README.md), the Rust tool.
+It is the third subject system of the [examples](../../README.md) (023 to 033, 075 to 080), verified by [`jvmcontract`](../../../../lib/README.md), the Rust tool.
 
 The design rule is the one that makes these kernels provable and the framework around them testable: a kernel takes its inputs as arguments (the clock reading, the HTTP status, whether a transaction is active) and returns a decision; it reads no clock, spawns no thread and touches no socket of its own.
 The module's [capability contract](src/contract/capabilities.contract) says so, with every capability `none`, and the build checks it.
@@ -16,7 +16,7 @@ Every kernel here has a contract, a property or a model checked on every build.
 | [`resilience.CircuitBreaker`](src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java) | A Resilience4j `CircuitBreaker` (`@CircuitBreaker`) | The CLOSED, OPEN and HALF_OPEN transitions on each call requested and each call completed | A [behavioural contract](src/contract/CircuitBreaker.decide.contract): all 44 cases, drawn as a state machine, and a [TLA+ model](spec/README.md#the-circuit-breaker-model) of the component that owns the breaker, checked by TLC for its invariants and, under fairness, for three liveness properties | 026, 075, 076, 077 |
 | [`retry.RetryPolicy`](src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java) | A `RestClient` or `WebClient` retry filter, `@Retryable` | Whether a failed HTTP call may be retried, by status, idempotency and attempt | A property: never past the last attempt, never a non-idempotent request the server may have run, never 501; regression proofs against the previous version | 027, 028 |
 | [`ratelimit.TokenBucket`](src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java) | Spring Cloud Gateway's `RequestRateLimiter`, Bucket4j | The tokens and the credited time after a refill | Properties: never below the tokens held, never above the capacity, no part of a period forgotten | 031 |
-| [`idempotency.IdempotentReceiver`](src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java) | A `OncePerRequestFilter` for the `Idempotency-Key` header | Execute, replay the stored response, or refuse (409, 422), per key state | A [behavioural contract](src/contract/IdempotentReceiver.decide.contract), and a [TLA+ model](spec/README.md) of a client retrying against it, checked by TLC | 029, 030 |
+| [`idempotency.IdempotentReceiver`](src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java) | A `OncePerRequestFilter` for the `Idempotency-Key` header | Execute, replay the stored response, or refuse (409, 422), per key state | A [behavioural contract](src/contract/IdempotentReceiver.decide.contract), and a [TLA+ model](spec/README.md) of a client retrying against it, checked by TLC under two configurations, the record expiring or not | 029, 030, 078, 079, 080 |
 | [`kafka.Partitioner`](src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java) | A custom `Partitioner` for a `KafkaTemplate` | The partition of a key's hash | A property: every hash lands on a partition of the topic | 023 |
 | [`kafka.BatchCommit`](src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java) | A batch `@KafkaListener` with the `DefaultErrorHandler` | The offset to commit after a batch with a failed record | A property: one past the last record that is done, never further, never short | 032 |
 | [`security.JwtTimestamps`](src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java) | Spring Security's `JwtTimestampValidator` | Whether a token is valid at an instant, with the clock-skew tolerance | Properties: skew only widens acceptance, and a token is valid at every instant of its window | 024 |
@@ -41,7 +41,7 @@ src/contract/         the contracts the build checks:
   properties.contract   the properties proved by JBMC (written by hand; the proofs are regenerated)
   capabilities.contract what the module's bytecode can reach (generated)
   api.contract          the public surface (generated)
-spec/                 the TLA+ models of the idempotent receiver and the circuit breaker (the latter with a liveness configuration); the *Contract.tla files are generated from the contracts
+spec/                 the TLA+ models of the idempotent receiver and the circuit breaker, each with a second configuration (an expiring record; liveness); the *Contract.tla files are generated from the contracts
 verify.sh             compile, test, and run every check below
 ```
 
@@ -62,12 +62,13 @@ jvmcontract verify --contracts src/contract --classes build/main --module crossc
 jvmcontract prove --properties src/contract/properties.contract --classes build/main
 jvmcontract tla src/contract/IdempotentReceiver.decide.contract spec/IdempotentReceiverContract.tla
 jvmcontract tlc spec/IdempotentReceiver.tla --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/IdempotentReceiver.tla --config spec/IdempotentReceiverExpiring.cfg --library ../../tools/tla/standard-modules
 jvmcontract tla src/contract/CircuitBreaker.decide.contract spec/CircuitBreakerContract.tla
 jvmcontract tlc spec/CircuitBreaker.tla --library ../../tools/tla/standard-modules
 jvmcontract tlc spec/CircuitBreaker.tla --config spec/CircuitBreakerLive.cfg --library ../../tools/tla/standard-modules
 ```
 
-Compiling takes a second, the tests less, the four contracts milliseconds, the seven property proofs in about forty seconds with JBMC (the token bucket's refill time, with its remainder, is most of it), and TLC a second for each of the three model runs (168 states, 102 and 102).
+Compiling takes a second, the tests less, the four contracts milliseconds, the seven property proofs in about forty seconds with JBMC (the token bucket's refill time, with its remainder, is most of it), and TLC a second for each of the four model runs (168 states and 308, 102 and 102).
 No Gradle and no JVM start is needed for the contracts: `jvmcontract` reads the class files and the JDK's image directly.
 
 To change a kernel's behaviour on purpose: make the change, run `jvmcontract update --contracts src/contract --classes build/main --module crosscut`, and commit the contract diff with the code. To state a new guarantee: add a block to `properties.contract`.

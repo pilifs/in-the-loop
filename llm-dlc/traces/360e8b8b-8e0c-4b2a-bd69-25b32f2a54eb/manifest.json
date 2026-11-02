@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T07:15:49.818Z",
-  "duration_seconds": 139554,
+  "ended": "2026-11-02T07:37:56.896Z",
+  "duration_seconds": 140882,
   "stats": {
-    "turns": 71,
-    "api_calls": 892,
-    "tool_calls": 1461,
-    "tool_errors": 30,
-    "compactions": 15,
+    "turns": 75,
+    "api_calls": 922,
+    "tool_calls": 1490,
+    "tool_errors": 31,
+    "compactions": 16,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 27012,
-      "output_tokens": 2262405,
-      "cache_read_input_tokens": 178742403,
-      "cache_creation_input_tokens": 5004188
+      "input_tokens": 27942,
+      "output_tokens": 2337045,
+      "cache_read_input_tokens": 182197620,
+      "cache_creation_input_tokens": 5170144
     }
   },
   "tools": {
-    "Bash": 986,
+    "Bash": 1015,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -437,24 +437,38 @@
     {
       "index": 15,
       "started": "2026-11-02T06:56:12.649Z",
-      "ended": "2026-11-02T07:15:49.818Z",
+      "ended": "2026-11-02T07:18:40.578Z",
+      "turns": 4,
+      "api_calls": 30,
+      "usage": {
+        "input_tokens": 930,
+        "output_tokens": 84145,
+        "cache_read_input_tokens": 3766836,
+        "cache_creation_input_tokens": 191376
+      },
+      "peak_context_tokens": 206321
+    },
+    {
+      "index": 16,
+      "started": "2026-11-02T07:19:57.283Z",
+      "ended": "2026-11-02T07:37:56.896Z",
       "turns": 4,
       "api_calls": 29,
       "usage": {
         "input_tokens": 898,
-        "output_tokens": 83305,
-        "cache_read_input_tokens": 3564658,
-        "cache_creation_input_tokens": 187265
+        "output_tokens": 73800,
+        "cache_read_input_tokens": 3253039,
+        "cache_creation_input_tokens": 161845
       },
-      "peak_context_tokens": 202210
+      "peak_context_tokens": 176790
     }
   ],
   "log": {
-    "sha256": "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f",
-    "bytes": 40201175,
-    "lines": 13473,
-    "gzip_bytes": 6803755,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f.jsonl.gz"
+    "sha256": "656db09662f1947525e0b6b1918766bf1eeb5c750f04d05f7e124bc74ed6123d",
+    "bytes": 41566829,
+    "lines": 13924,
+    "gzip_bytes": 7050405,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/656db09662f1947525e0b6b1918766bf1eeb5c750f04d05f7e124bc74ed6123d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -609,6 +623,14 @@
       "summary": "Check the circuit-breaker model for liveness under fairness, a second configuration, with three new examples",
       "body": "The Crosscut circuit-breaker model, until now checked only for its invariants and only by the module's verify.sh, gains a liveness section: fairness conditions (the caller keeps calling, every permitted call completes, the clock ticks, nothing assumed of the dependency) and three temporal properties, one for each fate of the dependency: an open breaker probes again, a dependency that comes back for good is used again, a dependency that stays down gets the wait between its rounds of probes. A new configuration, CircuitBreakerLive.cfg, checks them; plain WF_vars is fast enough at 102 states. The owner in the model now applies every effect whichever event returns it: a request can start the wait, a completion can start a new metrics generation. The breaker joins build.py's models for the Crosscut app, beside the idempotent receiver, so model-checking examples can be written against it.\n\nThree examples. 075: an open breaker that restarts its wait on each refused call keeps every invariant and fails the first property, eight steps then a tick and a refused call forever, over a dependency that came back at step six. 076: a half-open breaker that judges its probes by their failure rate, as Resilience4j does, is verified under both configurations, with coverage showing one of its three rows taken and two out of reach of two probes at a threshold of one in two. 077: a half-open breaker that starts its probes over on a failed one keeps every invariant and fails the third property, fourteen steps then a six-step cycle of failing probes and resets, half-open forever; the first two properties pass on it, which is why there are three.\n\nVerified by building the three examples (verdicts as expected, tests pass after the patches update them), by the module's verify.sh (tests, contracts, seven property proofs, three model runs, all green), and by reading the generated pages. The Crosscut READMEs, the skill reference, the plugin README, the approaches table and the example counts are updated.",
       "log_sha256": "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f"
+    },
+    {
+      "change_id": "ptpvwuqnwlslosvxnsurrvomyrkmysvo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check the idempotent receiver's expiry rows under a second configuration in which the record's time to live can pass, with three new examples",
+      "body": "The idempotent-receiver model (examples/demo/apps/crosscut/spec/IdempotentReceiver.tla) never let the record expire, so the kernel's Expired rows were dead to it: the coverage report introduced with examples 072 to 074 listed them as never taken, and any change to them would have verified vacuously. The model now has a constant Expires and an Expire action, the sweeper asking the receiver what to do with a record whose time to live has passed, behind it. The base configuration keeps Expires = FALSE and its outright at-most-once statement; the new IdempotentReceiverExpiring.cfg sets it TRUE, and AtMostOnce counts the results since the sweeper last released the record: at most once per lifetime, which is what a time to live means. There is no clock, so the sweeper can fire at any point, the honest model of a sweeper whose clock measures age and nothing else. The replay invariant had to be restated: comparing a reply given earlier with the store now raised a false alarm on the committed kernel once the record could expire after the reply, so the receive action now records whether the replay had a response (REPLAYED or EMPTY) and the invariant forbids EMPTY.\n\nThree new examples, built by examples/demo/tools/build.py with the receiver model's new configuration listed in its BREAKER-style entry: 078, a sweeper that releases a record in progress by its age alone (the naive form of example 029's resolution) lets a retry execute beside the first attempt, a six-step counterexample that only the expiring configuration can produce; 079, a record that expires into a tombstone which refuses late retries, a new key state and effect, verified under both configurations with three of its six changed rows taken; 080, a record that drops its expired response but keeps its key replays a response that is gone, a seven-step counterexample. Examples 029 and 030 are regenerated with the second configuration (same verdicts).\n\nVerified by the Crosscut verify.sh (39 tests, the four contracts, seven JBMC proofs, and now four TLC runs: 168 and 308 states for the receiver, 102 and 102 for the breaker) and by building the five examples, each with its expected verdict. The Crosscut READMEs, the demo and top-level READMEs, the approaches table, the plugin README and the add-tla-model skill reference describe the configuration and the lesson about invariants an environment action can undo.",
+      "log_sha256": "656db09662f1947525e0b6b1918766bf1eeb5c750f04d05f7e124bc74ed6123d"
     }
   ],
   "logs": {
@@ -635,6 +657,12 @@
       "lines": 2046,
       "gzip_bytes": 1501541,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz"
+    },
+    "656db09662f1947525e0b6b1918766bf1eeb5c750f04d05f7e124bc74ed6123d": {
+      "bytes": 41566829,
+      "lines": 13924,
+      "gzip_bytes": 7050405,
+      "url": null
     },
     "6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d": {
       "bytes": 34366251,

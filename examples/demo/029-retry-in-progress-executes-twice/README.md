@@ -66,7 +66,14 @@ return switch (event) {
 
 ## What the verifier found
 
-TLC found a run of the system, 5 steps long, that violates the invariant **OneExecutionAtATime** (no two attempts under one key execute at the same time). Each step is one action of one part of the system:
+The model is checked under 2 configurations, and the verdict is the first that fails:
+
+| Configuration | What it checks | Model | Result |
+|---|---|---|---|
+| the record never expires (`spec/IdempotentReceiver.cfg`) | every run from the initial state, every interleaving within the configuration's bounds | Attempts = {a1, a2, a3}, Expires = FALSE | ✗ Violation: OneExecutionAtATime, 5-step trace |
+| expiring record (`spec/IdempotentReceiverExpiring.cfg`) | the same invariants, with the record's time to live allowed to pass at any point: the sweeper asks the receiver what to do with the record and applies the decision, and a release ends the record's lifetime, so `AtMostOnce` counts the results since the last release. The model has no clock, so the sweeper's clock has measured the record's age and nothing else, in particular not whether an execution is still running | Attempts = {a1, a2, a3}, Expires = TRUE | ✗ Violation: OneExecutionAtATime, 5-step trace |
+
+TLC found a run of the system under the record never expires, 5 steps long, that violates the invariant **OneExecutionAtATime** (no two attempts under one key execute at the same time). Each step is one action of one part of the system:
 
 1. **Initial state**: no record for the key, nothing sent, nothing executing, no response.
 2. **Send**, `IdempotentClient.send`: the client sends the request, or retries it without waiting for an answer. `inbox = {a1}`, `sent = {a1}`
@@ -74,7 +81,9 @@ TLC found a run of the system, 5 steps long, that violates the invariant **OneEx
 4. **Send**, `IdempotentClient.send`: the client sends the request, or retries it without waiting for an answer. `inbox = {a2}`, `sent = {a1, a2}`
 5. **Receive**, `IdempotencyFilter.doFilter`: the receiver looks the key up, decides, and applies the decision in one transaction. `executing = {a1, a2}`, `inbox = {}`
 
-The model is small (Attempts = {a1, a2, a3}), which is what keeps the trace readable. TLC explored every interleaving of the client's attempts, the receiver, and the attempts in flight and executing within those bounds.
+The model is small (Attempts = {a1, a2, a3}, Expires = FALSE), which is what keeps the trace readable. TLC explored every interleaving of the client's attempts, the receiver, and the attempts in flight and executing within those bounds.
+
+Under expiring record TLC found the same run, and reported it the same way.
 
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
@@ -115,13 +124,14 @@ Revert, and fix the cause: a worker that dies must release the key, which is the
 
 ## Evidence
 
-How the verdict was reached: TLC 2.19 explored 28 distinct states to depth 5 in 0 s, for the model Attempts = {a1, a2, a3}.
+How the verdict was reached: the record never expires: TLC 2.19 explored 28 distinct states to depth 5 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 29 distinct states to depth 5 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
+== the record never expires: spec/IdempotentReceiver.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304201] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440909] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/demo/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
@@ -132,9 +142,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-11-02 01:45:27)
+Starting... (2026-11-02 02:33:51)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:27.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:51.
 Error: Invariant OneExecutionAtATime is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -146,7 +156,7 @@ State 1: <Initial predicate>
 /\ inbox = {}
 /\ executing = {}
 
-State 2: <Send line 45, col 5 to line 48, col 65 of module IdempotentReceiver>
+State 2: <Send line 53, col 5 to line 56, col 65 of module IdempotentReceiver>
 /\ completed = 0
 /\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
 /\ key = "ABSENT"
@@ -155,7 +165,7 @@ State 2: <Send line 45, col 5 to line 48, col 65 of module IdempotentReceiver>
 /\ inbox = {a1}
 /\ executing = {}
 
-State 3: <Receive line 56, col 5 to line 65, col 44 of module IdempotentReceiver>
+State 3: <Receive line 65, col 5 to line 74, col 44 of module IdempotentReceiver>
 /\ completed = 0
 /\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
 /\ key = "IN_PROGRESS"
@@ -164,7 +174,7 @@ State 3: <Receive line 56, col 5 to line 65, col 44 of module IdempotentReceiver
 /\ inbox = {}
 /\ executing = {a1}
 
-State 4: <Send line 45, col 5 to line 48, col 65 of module IdempotentReceiver>
+State 4: <Send line 53, col 5 to line 56, col 65 of module IdempotentReceiver>
 /\ completed = 0
 /\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
 /\ key = "IN_PROGRESS"
@@ -173,7 +183,7 @@ State 4: <Send line 45, col 5 to line 48, col 65 of module IdempotentReceiver>
 /\ inbox = {a2}
 /\ executing = {a1}
 
-State 5: <Receive line 56, col 5 to line 65, col 44 of module IdempotentReceiver>
+State 5: <Receive line 65, col 5 to line 74, col 44 of module IdempotentReceiver>
 /\ completed = 0
 /\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
 /\ key = "IN_PROGRESS"
@@ -197,7 +207,85 @@ Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step 
 41 states generated, 28 distinct states found, 14 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
-Finished in 00s at (2026-11-02 01:45:27)
+Finished in 00s at (2026-11-02 02:33:51)
+
+== expiring record: spec/IdempotentReceiverExpiring.cfg ==
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440945] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file examples/demo/apps/crosscut/spec/IdempotentReceiver.tla
+Parsing file examples/demo/tools/tla/standard-modules/Naturals.tla
+Parsing file examples/demo/tools/tla/standard-modules/Sequences.tla
+Parsing file examples/demo/tools/tla/standard-modules/FiniteSets.tla
+Parsing file examples/demo/apps/crosscut/spec/IdempotentReceiverContract.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module IdempotentReceiverContract
+Semantic processing of module IdempotentReceiver
+Starting... (2026-11-02 02:33:52)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:52.
+Error: Invariant OneExecutionAtATime is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ completed = 0
+/\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
+/\ key = "ABSENT"
+/\ stored = FALSE
+/\ sent = {}
+/\ inbox = {}
+/\ executing = {}
+
+State 2: <Send line 53, col 5 to line 56, col 65 of module IdempotentReceiver>
+/\ completed = 0
+/\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
+/\ key = "ABSENT"
+/\ stored = FALSE
+/\ sent = {a1}
+/\ inbox = {a1}
+/\ executing = {}
+
+State 3: <Receive line 65, col 5 to line 74, col 44 of module IdempotentReceiver>
+/\ completed = 0
+/\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
+/\ key = "IN_PROGRESS"
+/\ stored = FALSE
+/\ sent = {a1}
+/\ inbox = {}
+/\ executing = {a1}
+
+State 4: <Send line 53, col 5 to line 56, col 65 of module IdempotentReceiver>
+/\ completed = 0
+/\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
+/\ key = "IN_PROGRESS"
+/\ stored = FALSE
+/\ sent = {a1, a2}
+/\ inbox = {a2}
+/\ executing = {a1}
+
+State 5: <Receive line 65, col 5 to line 74, col 44 of module IdempotentReceiver>
+/\ completed = 0
+/\ responses = (a1 :> "NONE" @@ a2 :> "NONE" @@ a3 :> "NONE")
+/\ key = "IN_PROGRESS"
+/\ stored = FALSE
+/\ sent = {a1, a2}
+/\ inbox = {}
+/\ executing = {a1, a2}
+
+Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step of the model takes: 6 of 15; never taken (9):
+  decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]
+  decide(ABSENT, Completed[]) => Unchanged
+  decide(ABSENT, Failed[]) => Unchanged
+  decide(ABSENT, Expired[]) => Unchanged
+  decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected
+  decide(COMPLETED, Request[sameFingerprint=false]) => Rejected
+  decide(COMPLETED, Request[sameFingerprint=true]) => Transition[next=COMPLETED, effects=[REPLAY_RESPONSE]]
+  decide(COMPLETED, Completed[]) => Unchanged
+  decide(COMPLETED, Failed[]) => Unchanged
+45 states generated, 29 distinct states found, 15 states left on queue.
+The depth of the complete state graph search is 5.
+The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
+Finished in 00s at (2026-11-02 02:33:52)
 ```
 
 </details>
@@ -234,7 +322,26 @@ Finished in 00s at (2026-11-02 01:45:27)
           "ruleId": "invariant-violated",
           "level": "error",
           "message": {
-            "text": "Invariant OneExecutionAtATime of spec/IdempotentReceiver.tla is violated after 5 steps"
+            "text": "Invariant OneExecutionAtATime of spec/IdempotentReceiver.tla (the record never expires) is violated after 5 steps"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java"
+                },
+                "region": {
+                  "startLine": 35
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "invariant-violated",
+          "level": "error",
+          "message": {
+            "text": "Invariant OneExecutionAtATime of spec/IdempotentReceiver.tla (expiring record) is violated after 5 steps"
           },
           "locations": [
             {

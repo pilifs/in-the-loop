@@ -1,6 +1,6 @@
 {
   "verdict": "verified",
-  "verdictLabel": "✓ Verified: all invariants hold in 131 states",
+  "verdictLabel": "✓ Verified: all invariants hold in 131 states, and under 1 more configuration",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.crosscut.Tests",
@@ -18,12 +18,12 @@
     "code": "    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Failed _ -> switch (state) {\n    // The failure is the response: a retry gets it back, instead of running the request again.\n    case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);\n    case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n};\ncase Expired _ -> switch (state) {\n"
   },
   "casesTotal": null,
-  "domain": "Attempts = {a1, a2, a3}",
+  "domain": "Attempts = {a1, a2, a3}, Expires = FALSE",
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/demo/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n+++ b/examples/demo/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n@@ -13,7 +13,7 @@\n decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected[reason=\"the key was reused for a different request\"]\n decide(IN_PROGRESS, Request[sameFingerprint=true])  => Rejected[reason=\"a request with this key is in progress\"]\n decide(IN_PROGRESS, Completed[])                    => Transition[next=COMPLETED, effects=[STORE_RESPONSE]]\n-decide(IN_PROGRESS, Failed[])                       => Transition[next=ABSENT, effects=[RELEASE_KEY]]\n+decide(IN_PROGRESS, Failed[])                       => Transition[next=COMPLETED, effects=[STORE_RESPONSE]]\n decide(IN_PROGRESS, Expired[])                      => Unchanged[reason=\"a key in progress does not expire\"]\n decide(IN_PROGRESS, null)                           => throws NullPointerException\n decide(COMPLETED, Request[sameFingerprint=false])   => Rejected[reason=\"the key was reused for a different request\"]\n",
-  "proof": "TLC 2.19 explored 131 distinct states to depth 8 in 0 s, for the model Attempts = {a1, a2, a3}",
+  "proof": "the record never expires: TLC 2.19 explored 131 distinct states to depth 8 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 429 distinct states to depth 13 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -34,7 +34,7 @@
   "coverage": {
     "configurations": [
       {
-        "label": "the model",
+        "label": "the record never expires",
         "fromRuns": true,
         "finished": true,
         "operators": [
@@ -56,6 +56,28 @@
             ]
           }
         ]
+      },
+      {
+        "label": "expiring record",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+            "reached": 7,
+            "total": 15,
+            "never": [
+              "decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]",
+              "decide(ABSENT, Completed[]) => Unchanged",
+              "decide(ABSENT, Failed[]) => Unchanged",
+              "decide(ABSENT, Expired[]) => Unchanged",
+              "decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Completed[]) => Unchanged",
+              "decide(COMPLETED, Failed[]) => Unchanged"
+            ]
+          }
+        ]
       }
     ],
     "changedRows": [
@@ -64,7 +86,8 @@
         "before": "Transition[next=ABSENT, effects=[RELEASE_KEY]]",
         "after": "Transition[next=COMPLETED, effects=[STORE_RESPONSE]]",
         "takenUnder": [
-          "the model"
+          "the record never expires",
+          "expiring record"
         ]
       }
     ],
@@ -74,5 +97,31 @@
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
   "violationKind": null,
-  "forever": null
+  "forever": null,
+  "configurations": [
+    {
+      "label": "the record never expires",
+      "cfg": "spec/IdempotentReceiver.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 131 states",
+      "domain": "Attempts = {a1, a2, a3}, Expires = FALSE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 131,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "expiring record",
+      "cfg": "spec/IdempotentReceiverExpiring.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 429 states",
+      "domain": "Attempts = {a1, a2, a3}, Expires = TRUE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 429,
+      "trace": null,
+      "forever": null
+    }
+  ]
 }

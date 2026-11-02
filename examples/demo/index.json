@@ -1190,6 +1190,52 @@
       "approach": "D1",
       "verdict": "violation",
       "existingTestsPassed": true
+    },
+    {
+      "id": "078",
+      "path": "078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt",
+      "title": "An in-progress record that expires by age lets a retry run beside the first attempt",
+      "summary": "An `Idempotency-Key` receiver's sweeper releases a key once its record's time to live has passed, but only a completed record: a record in progress never expires. Support still reports clients stuck in 409 loops after a worker died mid-request, and a developer makes the sweeper release records in progress too, on the reasoning that a record in progress for a whole time to live belongs to a worker that is gone. The contract diff is one row, and the model checker has never exercised it: the model's record did not expire. Under a second configuration in which it can, TLC finds a six-step run in which the record expires under a worker that is alive, and the client's retry executes beside it.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "critical",
+      "changeKind": "bug-fix",
+      "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "079",
+      "path": "079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once",
+      "title": "An expired key kept as a tombstone refuses late retries, proved at most once",
+      "summary": "An `Idempotency-Key` receiver releases a key when its record's time to live passes, so a retry that arrives after that is a new request and executes again. The developer makes the record expire in two steps instead: the response goes and the key stays as a tombstone that refuses a late retry, then the tombstone goes too. A new key state, a new effect, six new or changed rows in the contract, and a model whose type invariant has to learn the state. TLC checks every interleaving of three attempts under both configurations of the model, and every invariant holds in every state. The change is merged on a proof, with the coverage saying which of the new rows the runs exercised.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "080",
+      "path": "080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone",
+      "title": "Dropping an expired response but keeping its key replays a response that is gone",
+      "summary": "An `Idempotency-Key` receiver releases a key when its record's time to live passes, and a retry after that executes the request again. A developer wants both the storage back and the guarantee kept: when the time to live passes, drop the stored response, which is the bulk of the record, and keep the key, so that a late retry is recognised and never run twice. The contract diff is one row and a new effect; the tests pass. Under the configuration in which the record expires, TLC finds a seven-step run in which the late retry is recognised, and answered with a response that no longer exists.",
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

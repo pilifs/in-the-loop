@@ -4,24 +4,25 @@ Two TLA+ models, each around a kernel of this module: the [idempotent receiver](
 
 ## The idempotent-receiver model
 
-A TLA+ model of an `Idempotency-Key` receiver as a distributed system: a client that sends a request and retries it under the same key, the receiver with its record for the key, the attempts in flight between them, and the attempts executing inside the receiver.
-TLC explores every interleaving for the attempts in `IdempotentReceiver.cfg` and checks the invariants in every state it reaches.
+A TLA+ model of an `Idempotency-Key` receiver as a distributed system: a client that sends a request and retries it under the same key, the receiver with its record for the key, the attempts in flight between them, the attempts executing inside the receiver, and the sweeper that ends the record's time to live.
+TLC explores every interleaving for the attempts under two configurations, `IdempotentReceiver.cfg`, where the record never expires, and `IdempotentReceiverExpiring.cfg`, where its time to live can pass at any point, and checks the invariants in every state it reaches.
 This is approach D1 in [`approaches.md`](../../../../approaches.md), applied to the third subject system; the [Box Office model](../../boxoffice/spec/README.md) describes the idea at length.
 
 | File | Content |
 |---|---|
-| [`IdempotentReceiver.tla`](IdempotentReceiver.tla) | The model. One action per operation of the client (send, or retry) and of the receiver (decide on an arriving attempt, finish an execution with a result, lose an execution to a failure). Each action names the Java operation it stands for |
-| [`IdempotentReceiver.cfg`](IdempotentReceiver.cfg) | The bounds TLC checks: one request sent three times, and the list of invariants |
+| [`IdempotentReceiver.tla`](IdempotentReceiver.tla) | The model. One action per operation of the client (send, or retry), of the receiver (decide on an arriving attempt, finish an execution with a result, lose an execution to a failure) and of the sweeper (end the record's time to live). Each action names the Java operation it stands for |
+| [`IdempotentReceiver.cfg`](IdempotentReceiver.cfg) | The bounds TLC checks: one request sent three times, a record that never expires, and the list of invariants |
+| [`IdempotentReceiverExpiring.cfg`](IdempotentReceiverExpiring.cfg) | The second configuration: the same attempts and invariants, with the record's time to live allowed to pass at any point, so that the kernel's `Expired` rows, which the first configuration never takes, are exercised |
 | [`IdempotentReceiverContract.tla`](IdempotentReceiverContract.tla) | **Generated.** The receiver's decision rule, as the TLA+ operator `Decide(key, event)`, written by `jvmcontract tla` from the [behavioural contract](../src/contract/IdempotentReceiver.decide.contract) of `IdempotentReceiver#decide` |
 
 The invariants:
 
 - **OneExecutionAtATime.** No two attempts under one key execute at the same time.
-- **AtMostOnce.** Once an execution has produced a result, no attempt is executing and none ever will: the request's effect happens at most once.
-- **ReplayedResponsesExist.** A client is never answered with a stored response that does not exist.
+- **AtMostOnce.** Once an execution has produced a result, no attempt is executing and none ever will, for as long as the record lives: the request's effect happens at most once. Under `IdempotentReceiver.cfg` the record never expires and this is at most once outright. Under the expiring configuration a retry that arrives after the sweeper released the record is a new request to the receiver, which is what a time to live means, so the count starts over at each release: at most once per lifetime of the record.
+- **ReplayedResponsesExist.** A client is never answered with a stored response that does not exist. The model's replay answers with whatever is stored under the key, the response or nothing, and the invariant is that no client was ever answered with nothing. It is stated at the moment of the reply: an invariant that compared a reply given earlier with the store now would raise a false alarm once the record can expire after the reply.
 - **TypeOK.**
 
-What the model leaves out: one key, whose attempts all carry the same request, so the fingerprint always matches; the record does not expire within the run; the receiver's lookup of the record and its decision are one atomic step, which is what the filter's transaction provides.
+What the model leaves out: one key, whose attempts all carry the same request, so the fingerprint always matches; the receiver's lookup of the record and its decision are one atomic step, which is what the filter's transaction provides; and any clock, so that when the record expires the sweeper's clock has measured the record's age and nothing else, in particular not whether an execution is still running, which is what a sweeper's clock knows.
 An attempt that dies releases the key, so a retry after a failure executes again, which is at-most-once in the sense that matters: at most one execution ever produces a result.
 
 ### Run it
@@ -30,9 +31,11 @@ An attempt that dies releases the key, so a retry after a failure executes again
 cd examples/demo/apps/crosscut
 jvmcontract tla src/contract/IdempotentReceiver.decide.contract spec/IdempotentReceiverContract.tla
 jvmcontract tlc spec/IdempotentReceiver.tla --library ../../tools/tla/standard-modules
+jvmcontract tlc spec/IdempotentReceiver.tla --config spec/IdempotentReceiverExpiring.cfg --library ../../tools/tla/standard-modules
 ```
 
-TLC checks 168 states in under a second. [Example 029](../../../029-retry-in-progress-executes-twice/README.md) shows a four-step counterexample; [example 030](../../../030-stored-failures-proved-at-most-once/README.md) shows an intended change proved safe.
+TLC checks 168 states in under a second, and 308 under the expiring configuration. [Example 029](../../../029-retry-in-progress-executes-twice/README.md) shows a four-step counterexample; [example 030](../../../030-stored-failures-proved-at-most-once/README.md) shows an intended change proved safe.
+Examples 078 to 080 are about the record's expiry, which only the second configuration can judge, since the first takes none of the kernel's `Expired` rows: a sweeper that releases a record in progress by its age alone lets a retry execute beside the first attempt ([078](../../../078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md)); a record that expires into a tombstone which refuses a late retry is proved safe under both configurations ([079](../../../079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md)); and a record that drops its response but keeps its key replays a response that is gone ([080](../../../080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md)).
 
 ## The circuit-breaker model
 

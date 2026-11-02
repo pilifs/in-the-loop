@@ -725,6 +725,14 @@ RAFT = {
 IDEMPOTENCY = {
     "spec": "spec/IdempotentReceiver.tla",
     "cfg": "spec/IdempotentReceiver.cfg",
+    "label": "the record never expires",
+    "configurations": [
+        {"cfg": "spec/IdempotentReceiverExpiring.cfg", "label": "expiring record",
+         "what": "the same invariants, with the record's time to live allowed to pass at any point: the sweeper asks the "
+                 "receiver what to do with the record and applies the decision, and a release ends the record's lifetime, "
+                 "so `AtMostOnce` counts the results since the last release. The model has no clock, so the sweeper's clock "
+                 "has measured the record's age and nothing else, in particular not whether an execution is still running"},
+    ],
     "contract": "src/contract/IdempotentReceiver.decide.contract",
     "operator": "spec/IdempotentReceiverContract.tla",
     "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
@@ -736,11 +744,14 @@ IDEMPOTENCY = {
         "Receive": "`IdempotencyFilter.doFilter`: the receiver looks the key up, decides, and applies the decision in one transaction",
         "Finish": "`IdempotencyFilter.onCompleted`: an execution produced a result, which the receiver stores and returns",
         "Fail": "`IdempotencyFilter.onFailure`: an execution died without a result",
+        "Expire": "`IdempotencySweeper.sweep`: the record's time to live passed; the sweeper asks the receiver what to do "
+                  "with the record and applies the decision",
     },
     "invariants": {
         "TypeOK": "every variable has a value of its type",
         "OneExecutionAtATime": "no two attempts under one key execute at the same time",
-        "AtMostOnce": "once an execution has produced a result, no attempt is executing and none ever will",
+        "AtMostOnce": "once an execution has produced a result, no attempt is executing and none ever will, for as long as "
+                      "the record lives (in the configuration where it never expires, at most once outright)",
         "ReplayedResponsesExist": "a client is never answered with a stored response that does not exist",
     },
     "machine": "The receiver's decision rule inside the model is generated from the behavioural contract of "
