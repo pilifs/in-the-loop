@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-02T22:54:16.880Z",
-  "duration_seconds": 115883,
+  "ended": "2026-11-02T23:59:00.280Z",
+  "duration_seconds": 119767,
   "stats": {
-    "turns": 26,
-    "api_calls": 161,
-    "tool_calls": 163,
-    "tool_errors": 5,
+    "turns": 30,
+    "api_calls": 173,
+    "tool_calls": 171,
+    "tool_errors": 6,
     "compactions": 1,
     "peak_context_tokens": 360922,
     "usage": {
-      "input_tokens": 366,
-      "output_tokens": 288542,
-      "cache_read_input_tokens": 27465165,
-      "cache_creation_input_tokens": 634862
+      "input_tokens": 398,
+      "output_tokens": 293644,
+      "cache_read_input_tokens": 30288953,
+      "cache_creation_input_tokens": 643606
     }
   },
   "tools": {
-    "Bash": 132,
-    "Read": 17,
+    "Bash": 137,
+    "Read": 19,
     "Write": 7,
+    "AskUserQuestion": 3,
     "Agent": 2,
-    "AskUserQuestion": 2,
     "Edit": 1,
     "SendMessage": 1,
     "ToolSearch": 1
@@ -66,24 +66,24 @@
     {
       "index": 1,
       "started": "2026-11-02T01:43:11.953Z",
-      "ended": "2026-11-02T22:54:16.880Z",
-      "turns": 10,
-      "api_calls": 56,
+      "ended": "2026-11-02T23:59:00.280Z",
+      "turns": 14,
+      "api_calls": 68,
       "usage": {
-        "input_tokens": 122,
-        "output_tokens": 125702,
-        "cache_read_input_tokens": 7218923,
-        "cache_creation_input_tokens": 265062
+        "input_tokens": 154,
+        "output_tokens": 130804,
+        "cache_read_input_tokens": 10042711,
+        "cache_creation_input_tokens": 273806
       },
-      "peak_context_tokens": 229925
+      "peak_context_tokens": 240830
     }
   ],
   "log": {
-    "sha256": "99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790",
-    "bytes": 4590794,
-    "lines": 1695,
-    "gzip_bytes": 776391,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790.jsonl.gz"
+    "sha256": "c57c7e405aed2823ad04af91724656ef48fa49eb2cea8c735d0bff2e8c1affa5",
+    "bytes": 4759224,
+    "lines": 1785,
+    "gzip_bytes": 804207,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/c57c7e405aed2823ad04af91724656ef48fa49eb2cea8c735d0bff2e8c1affa5.jsonl.gz"
   },
   "subagents": [
     {
@@ -477,6 +477,14 @@
       "summary": "Add a verification pipeline: proofs and model checks queued as committed jobs and run asynchronously under resource limits",
       "body": "Development agents ran JBMC, TLC and build.py inline, which held them up for minutes at a time and let two sessions exhaust the machine together. Now an agent describes the verification a change needs as a job (verification/jobs/ID.json: title, description, capabilities, links, expectation, a rough estimate of CPUs, memory and duration, bash steps, and the files to bring back), commits it with the change marked (verification pending), and carries on. verification/pipeline.py submit writes jobs, and --example ID fills one in for a demo example.\n\npipeline.py run takes jobs from the latest commit, never the working copy, and runs each in a git archive of the commit that committed it. It runs several at once within a budget of workers, CPUs and memory, in priority order, and defers a job bigger than the runner allows rather than run it. Each step gets a systemd user scope with a hard MemoryMax (no swap), OOMPolicy=continue and a CPUQuota, and a timeout. JBMC's own limit and TLC's heap are set to fit inside the cap, and the scope's peak memory, CPU time, throttling and OOM kills are read from its cgroup before it goes away. A job that requires jvmcontract gets one built from lib/ at its commit, cached by the tree id of lib/. Results stay in an ignored state directory until pipeline.py collect brings them into verification/results/ID/ and applies the outputs of jobs that passed, unless a file changed since the job's commit, so another session's commit cannot sweep them up half-done. Each result records status, a one-line summary, what needs attention in words, every step's exit, time, memory and verdict lines from the log (JBMC, TLC, jvmcontract, build.py, cargo test, out-of-memory), the environment and tool versions, logs cut to head and tail past 2 MB, and a diff of the outputs. pipeline.py report gives a batch digest in Markdown or JSON, with the ones needing attention first and estimates compared with use per capability. resubmit reruns a job with other resources. The job and result formats are JSON schemas in verification/schema/. Configuration is pipeline.toml, a local override, and flags. Isolation is systemd or none, and the backend setting is the hook for a cloud runner, described in the README.\n\nverification/README.md documents the lifecycle, submitting, estimates, reading results and the runner. The /run-verification skill is the procedure for the agent that manages the pipeline, including committing results without sweeping in another session's files. CLAUDE.md tells development agents to queue proofs instead of running them. build.py gains --index-only, so collecting several examples regenerates the examples table once.\n\nVerified by verification/test_pipeline.py, 15 tests in throwaway git repositories, all passing. Covered: submit and validation, uncommitted jobs not run, outputs and verdict lines brought back, a failing step skipping the rest with its outputs kept and not applied, expected failure codes, timeouts, deferral and a bigger budget, jobs running side by side and one at a time, an output changed since the job's commit not overwritten, long logs cut with verdicts read from the whole log, resubmit, missing tools, a runner stopped mid-job leaving the job to run again, and under systemd an out-of-memory kill at a 100 MB cap and cgroup measurements. End to end, in a scratch clone: examples 076 (D1, TLC) and 052 (B11, JBMC) were submitted, run under systemd with jvmcontract built by the runner (63 s, 1.1 GB peak), and both gave their expected verdicts (12 s and 36 s, about 125 MB each). They were collected, with the examples table regenerated, and reported. The 1-CPU quota held the TLC step back 13.5 s, so the README now advises 2 CPUs for JVM work, and results flag heavy throttling. The pipeline has not yet run a real queue from a development session.",
       "log_sha256": "99f04bc3b418fdb7671331308afd20763618f0a88b2a4cca28129be8a3f06790"
+    },
+    {
+      "change_id": "xoooxlutkllqpktptktrzumoszwqzwny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the /review-findings decision on cut-off home paths in the feature loop's logs",
+      "body": "One finding in session 360e8b8b, of kind other-home-dir (20 occurrences), was the user's own home path cut off by process listings cut at 120 columns, inside a java -DTLA-Library= argument. The user reviewed the real values and accepted it as a false positive in their own terminal. review reports no open findings.",
+      "log_sha256": "c57c7e405aed2823ad04af91724656ef48fa49eb2cea8c735d0bff2e8c1affa5"
     }
   ],
   "logs": {
@@ -575,6 +583,12 @@
       "lines": 1156,
       "gzip_bytes": 448060,
       "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/9e309e52b8d7ee9e6c6a54091eb65197c2d5f2325188a315f515f90234047ade.jsonl.gz"
+    },
+    "c57c7e405aed2823ad04af91724656ef48fa49eb2cea8c735d0bff2e8c1affa5": {
+      "bytes": 4759224,
+      "lines": 1785,
+      "gzip_bytes": 804207,
+      "url": null
     },
     "ce3e37b3a59f265702c725f764e43ec623ba046a71c880c32a95a395310a62ca": {
       "bytes": 3445165,
