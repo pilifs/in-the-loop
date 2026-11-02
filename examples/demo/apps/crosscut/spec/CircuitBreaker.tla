@@ -6,7 +6,9 @@
 (* the sliding window of their outcomes, the probes of the half-open       *)
 (* state, and the clock that ends the open state's wait. TLC explores      *)
 (* every interleaving within the bounds in CircuitBreaker.cfg and checks   *)
-(* the invariants in every state it reaches.                               *)
+(* the invariants in every state it reaches; under CircuitBreakerLive.cfg  *)
+(* it checks the three liveness properties at the end of the module, under *)
+(* the fairness conditions of LiveSpec.                                    *)
 (*                                                                         *)
 (* The breaker's decision rule, Decide(state, event), is not written here. *)
 (* It is generated from the behavioural contract of CircuitBreaker#decide  *)
@@ -59,8 +61,9 @@ Needed == IF state = "HALF_OPEN" THEN PermittedProbes ELSE WindowSize
 (***************************************************************************)
 
 \* tryAcquirePermission: a caller asks for a call. The owner reports whether the wait has elapsed, and in
-\* HALF_OPEN lets only PermittedProbes calls through. RESET_METRICS starts a new generation: the window is
-\* cleared and the calls still in flight become stale.
+\* HALF_OPEN lets only PermittedProbes calls through. It applies whatever the kernel returns: PERMIT lets the
+\* call through, RESET_METRICS starts a new generation (the window is cleared and the calls still in flight
+\* become stale), START_WAIT starts the open state's wait, or starts it over.
 Request ==
     /\ current + stale < MaxInFlight
     /\ state = "HALF_OPEN" => Len(window) + current < PermittedProbes
@@ -70,11 +73,13 @@ Request ==
           /\ window' = IF reset THEN <<>> ELSE window
           /\ stale' = IF reset THEN stale + current ELSE stale
           /\ current' = IF Has(d, "PERMIT") THEN (IF reset THEN 1 ELSE current + 1) ELSE current
+          /\ waitLeft' = IF Has(d, "START_WAIT") THEN WaitDuration ELSE waitLeft
           /\ probedEarly' = (probedEarly \/ (state = "OPEN" /\ waitLeft > 0 /\ Has(d, "PERMIT")))
-    /\ UNCHANGED <<dependency, waitLeft, closedEarly>>
+    /\ UNCHANGED <<dependency, closedEarly>>
 
 \* onResult, for a call of the current generation: the owner records the outcome, judges the window, and
-\* reports both to the kernel. START_WAIT starts the timer and ends the generation.
+\* reports both to the kernel. START_WAIT starts the timer and ends the generation; RESET_METRICS starts a new
+\* one, here as on a request.
 Complete ==
     /\ current > 0
     /\ LET failed == (dependency = "DOWN")
@@ -82,10 +87,11 @@ Complete ==
            d == Decide(state, [kind |-> "CallCompleted", failed |-> failed,
                                 windowComplete |-> (Len(w) >= Needed), thresholdExceeded |-> Exceeded(w)])
            opens == Has(d, "START_WAIT")
+           reset == Has(d, "RESET_METRICS")
        IN /\ state' = IF d.kind = "Transition" THEN d.next ELSE state
-          /\ window' = IF Has(d, "RESET_METRICS") THEN <<>> ELSE w
-          /\ current' = IF opens THEN 0 ELSE current - 1
-          /\ stale' = IF opens THEN stale + current - 1 ELSE stale
+          /\ window' = IF reset THEN <<>> ELSE w
+          /\ current' = IF opens \/ reset THEN 0 ELSE current - 1
+          /\ stale' = IF opens \/ reset THEN stale + current - 1 ELSE stale
           /\ waitLeft' = IF opens THEN WaitDuration ELSE waitLeft
           /\ closedEarly' = (closedEarly \/ (state = "HALF_OPEN" /\ state' = "CLOSED" /\ Len(w) < PermittedProbes))
     /\ UNCHANGED <<dependency, probedEarly>>
@@ -157,5 +163,33 @@ ProbesAreLimited == state = "HALF_OPEN" => Len(window) + current <= PermittedPro
 \* A closed breaker never sits on a complete window whose failure rate is at the threshold: it opens on the
 \* call that completes it.
 ClosedOnlyBelowTheThreshold == state = "CLOSED" => ~(Len(window) = WindowSize /\ Exceeded(window))
+
+(***************************************************************************)
+(* Liveness. Checked by CircuitBreakerLive.cfg: the invariants above say   *)
+(* what the breaker never does, these say what it eventually does.         *)
+(***************************************************************************)
+
+\* Fairness: what the model assumes gets round to happening. The caller keeps calling, which is what an open
+\* breaker rejects and a half-open one probes with; every permitted call completes; and the clock ticks.
+\* Nothing is assumed of the dependency: whether it comes back, or stays down, is the premise of each property
+\* below, not an assumption of the model. Each condition is weak fairness: an action enabled from some point on
+\* is eventually taken. The model is small enough for TLC to compute ENABLED of these actions as it goes.
+Fairness ==
+    /\ WF_vars(Request)
+    /\ WF_vars(Complete)
+    /\ WF_vars(CompleteStale)
+    /\ WF_vars(Tick)
+
+LiveSpec == Spec /\ Fairness
+
+\* An open breaker does not stay open: its wait elapses, and the next call is let through as a probe.
+AnOpenBreakerProbesAgain == (state = "OPEN") ~> (state = "HALF_OPEN")
+
+\* A dependency that comes back for good is used again: from some point on the breaker is closed and stays so.
+ARecoveredDependencyIsUsed == <>[](dependency = "UP") => <>[](state = "CLOSED")
+
+\* A dependency that is down for good gets the wait between its probes: the breaker opens again and again,
+\* so that no round of probes is followed by another without a wait.
+ADeadDependencyIsLeftAlone == <>[](dependency = "DOWN") => []<>(state = "OPEN")
 
 =============================================================================

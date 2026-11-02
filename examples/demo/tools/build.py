@@ -775,8 +775,53 @@ CLASSINIT = {
                "the patched code, so the model checks the decisions the runtime really makes.",
 }
 
+BREAKER = {
+    "spec": "spec/CircuitBreaker.tla",
+    "cfg": "spec/CircuitBreaker.cfg",
+    "label": "two calls in flight",
+    "configurations": [
+        {"cfg": "spec/CircuitBreakerLive.cfg", "label": "fairness",
+         "what": "the three liveness properties, under the fairness conditions `Fairness`: the caller keeps calling, every "
+                 "permitted call completes, the clock ticks, and nothing is assumed of the dependency. A counterexample is a "
+                 "run that goes on forever without satisfying a property: a prefix, then a state or a cycle the system never leaves"},
+    ],
+    "contract": "src/contract/CircuitBreaker.decide.contract",
+    "operator": "spec/CircuitBreakerContract.tla",
+    "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+    "parts": "the caller, the owner of the breaker with its window, its probes and its wait, the dependency and the clock",
+    "initial": "the breaker closed, the window empty, no call in flight, no wait running, the dependency up or down",
+    "actions": {
+        "Initial predicate": "the initial state",
+        "Request": "`CircuitBreaker.tryAcquirePermission`: a caller asks for a call; the owner reports whether the wait has "
+                   "elapsed and applies the decision, which lets the call through, starts a new metrics generation, or starts the wait",
+        "Complete": "`CircuitBreaker.onResult`, for a call of the current generation: the owner records the outcome, judges "
+                    "the window, and applies the decision",
+        "CompleteStale": "`CircuitBreaker.onResult`, for a call from an earlier generation: its outcome is dropped",
+        "Tick": "the clock advances: one tick less of the open state's wait",
+        "DependencyFlips": "the dependency goes down, or comes back",
+    },
+    "invariants": {
+        "TypeOK": "every variable has a value of its type",
+        "NoCallBeforeTheWait": "an open breaker lets nothing through until its wait has elapsed",
+        "OpenShieldsTheDependency": "while open, the dependency receives no call of the current generation: everything in "
+                                    "flight was permitted before the breaker opened",
+        "ClosedOnlyAfterEveryProbe": "half-open closes only once every permitted probe has completed",
+        "ProbesAreLimited": "half-open lets at most the permitted number of probes through before it decides",
+        "ClosedOnlyBelowTheThreshold": "a closed breaker never sits on a complete window whose failure rate is at the threshold",
+        # The liveness properties, checked under fairness.
+        "AnOpenBreakerProbesAgain": "an open breaker does not stay open: its wait elapses, and the next call is let through as a probe",
+        "ARecoveredDependencyIsUsed": "a dependency that comes back for good is used again: from some point on the breaker is "
+                                      "closed and stays so",
+        "ADeadDependencyIsLeftAlone": "a dependency that is down for good gets the wait between its probes: the breaker opens "
+                                      "again and again, so that no round of probes is followed by another without a wait",
+    },
+    "machine": "The breaker's decision rule inside the model is generated from the behavioural contract of the patched code, "
+               "so the model checks the transitions the breaker really makes; the owner's part, the window, the probe cap and "
+               "the wait, is written in the model and applies whatever the rule returns.",
+}
+
 # The TLA+ models of each javac app, each built around the state machine of one symbol.
-TOOL_MODELS = {"quorum": [TWOPC, RAFT], "crosscut": [IDEMPOTENCY], "mica": [CLASSINIT]}
+TOOL_MODELS = {"quorum": [TWOPC, RAFT], "crosscut": [IDEMPOTENCY, BREAKER], "mica": [CLASSINIT]}
 
 
 def model_of(example):

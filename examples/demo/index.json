@@ -1142,6 +1142,54 @@
       "approach": "D1",
       "verdict": "verified",
       "existingTestsPassed": true
+    },
+    {
+      "id": "075",
+      "path": "075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load",
+      "title": "An open breaker that restarts its wait on each refused call never probes under load",
+      "summary": "An open circuit breaker refuses calls until its wait has passed, then lets a probe through. A developer makes each refused call start the wait over, so that a caller which keeps hammering a failing dependency holds the breaker open until it stops; the contract changes in one row, from a rejection to a transition that stays open and starts the wait, and the test of the open state is updated to say so. Every safety invariant of the model holds: an open breaker still lets nothing through before its wait, still shields the dependency, still probes a limited number of times. The liveness check, a second configuration of the same model under fairness conditions, finds the run in which the caller never stops: two failures open the breaker, the dependency comes back, and from then on every tick of the clock is answered by a call that starts the wait over. The breaker stays open forever over a dependency that has recovered.",
+      "categories": [
+        "functional",
+        "performance"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "076",
+      "path": "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live",
+      "title": "A half-open breaker that judges its probes as a window is proved safe and live",
+      "summary": "A half-open circuit breaker used to reopen on the first probe that failed. A developer makes it judge the probes together once the last has completed, as Resilience4j does: a failed probe is recorded like any other outcome, and the failure rate of the probes decides between closing and reopening. The contract changes in three rows, the test that expected the first failure to reopen is rewritten, and the model verifies the change under both configurations: every safety invariant in every state, and every liveness property under fairness, the three that say an open breaker probes again, a dependency that comes back is used again, and a dependency that stays down gets its wait between rounds of probes. The verdict comes with what it rests on: runs of the model take one of the three rows the change alters, a failed probe before the window is complete with the failure rate at the threshold, and the other two, a failed probe with the rate below the threshold, are rows the model's two probes and threshold of one in two can never produce.",
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+      "approach": "D1",
+      "verdict": "verified",
+      "existingTestsPassed": true
+    },
+    {
+      "id": "077",
+      "path": "077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency",
+      "title": "A half-open breaker that starts over on a failed probe keeps probing a dead dependency",
+      "summary": "A half-open circuit breaker reopens on a probe that fails, and the wait starts again. A developer makes a failed probe start the probes over instead, so that one bad probe does not condemn a dependency on its way back and the breaker closes on the permitted number of successes in a row; the contract changes in four rows, from reopening to a half-open state with its metrics reset, and the test of a failed probe is updated to say so. Every safety invariant holds. The liveness check finds the run in which the dependency stays down: the breaker opens, waits, probes, and from the first failed probe on it is half-open forever, probing a dead dependency at the rate of its probe cap, with no wait ever again. The property that fails is the one that says a dependency which stays down gets the wait between its rounds of probes.",
+      "categories": [
+        "functional",
+        "performance"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+      "approach": "D1",
+      "verdict": "violation",
+      "existingTestsPassed": true
     }
   ]
 }

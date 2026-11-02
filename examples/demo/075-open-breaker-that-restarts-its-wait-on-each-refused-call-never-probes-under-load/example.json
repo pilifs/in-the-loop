@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "075",
+  "title": "An open breaker that restarts its wait on each refused call never probes under load",
+  "summary": "An open circuit breaker refuses calls until its wait has passed, then lets a probe through. A developer makes each refused call start the wait over, so that a caller which keeps hammering a failing dependency holds the breaker open until it stops; the contract changes in one row, from a rejection to a transition that stays open and starts the wait, and the test of the open state is updated to say so. Every safety invariant of the model holds: an open breaker still lets nothing through before its wait, still shields the dependency, still probes a limited number of times. The liveness check, a second configuration of the same model under fairness conditions, finds the run in which the caller never stops: two failures open the breaker, the dependency comes back, and from then on every tick of the clock is answered by a call that starts the wait over. The breaker stays open forever over a dependency that has recovered.",
+  "categories": [
+    "functional",
+    "performance"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/demo/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In the OPEN state, answer a call before the wait has elapsed with a transition that stays OPEN and carries START_WAIT, instead of a rejection, with the reasoning in a comment: a caller that keeps hammering a failing dependency holds the breaker open until it stops, and the wait is measured from the last call refused rather than from the failure that opened the breaker. The owner refuses a call the decision does not permit, as before. The contract of `CircuitBreaker#decide` is regenerated, and the one row of an open breaker asked before its wait has elapsed goes from `Rejected` to a transition. The test of the open state expects the transition; the class comment describes the new rule.",
+    "patch": "change.patch"
+  },
+  "risk": "The wait exists so that the dependency gets a quiet period and the breaker then finds out whether it has recovered. A wait measured from the last refused call never elapses while calls keep coming, and under a circuit breaker calls keep coming: the breaker is there because callers do not stop, and a refusal is cheap, so a service under load refuses at the rate it is asked. The dependency recovers and nobody ever asks it; the outage lasts exactly as long as the traffic does, which for a service that is called continuously is forever, or until an operator notices that a breaker has been open for an hour and resets it by hand. Nothing in the safety invariants can state this, because every state the run visits is a state the breaker is allowed to be in: open, with a wait running, letting nothing through. It is the run that is wrong, not any state of it, and that is a liveness property. The tests pass, because the developer updated the one that expected a rejection, and a reviewer who reads the comment sees a reasonable intention: back off from a dependency that is being hammered.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The model is checked under two configurations. The first, every interleaving within the model's bounds, checks the six safety invariants and finds them all holding in 102 states: the change does not let a call through early, does not probe too often, does not close too soon. The second checks three liveness properties under the fairness conditions of `LiveSpec`: the caller keeps calling, every permitted call completes, and the clock ticks, with nothing assumed about whether the dependency comes back. The first property, that an open breaker eventually probes again, fails, and TLC shows the run: the dependency is down, two calls fail and the window opens the breaker with a wait of two ticks, the dependency comes back, the clock ticks once, and a call is refused and starts the wait over. From there the run is a cycle of two steps, a tick and a refused call, that the system never leaves, and in every state of it the breaker is open. The run respects every fairness condition: the clock does tick, and the caller does call; it is the rule that turns each call into a fresh wait. The other two properties are not reached, since TLC reports the first that fails. The breaker of example 026 could be seen flapping; this one cannot be seen doing anything, which is the point of checking liveness beside the invariants.",
+  "resolution": "Keep the wait measured from the moment the breaker opened, as Resilience4j's `waitDurationInOpenState` is, and let the refusals be free of side effects. If a dependency under load should get a longer quiet period, lengthen the wait, or grow it on each reopening, which is a change the liveness check can confirm: a wait that grows still elapses. Then keep the liveness configuration in the build, as this module's `verify.sh` now does, so that the next rule which keeps a breaker open is found by the run that shows it, rather than by the operator who resets the breaker by hand.",
+  "provenance": "Constructed from a familiar anti-pattern, a timer restarted by the events it is meant to outlast, applied to the circuit breaker's wait; the property it breaks is the one the half-open state exists for.",
+  "references": [
+    {
+      "title": "Resilience4j, CircuitBreaker: the OPEN, HALF_OPEN and CLOSED states, waitDurationInOpenState and permittedNumberOfCallsInHalfOpenState",
+      "url": "https://resilience4j.readme.io/docs/circuitbreaker"
+    },
+    {
+      "title": "Fowler, CircuitBreaker (2014): the half-open state and the timeout that ends the open one",
+      "url": "https://martinfowler.com/bliki/CircuitBreaker.html"
+    },
+    {
+      "title": "Nygard, Release It! (the circuit breaker pattern)",
+      "url": "https://pragprog.com/titles/mnee2/release-it-second-edition/"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 8: liveness and fairness, and section 14.3.5, checking liveness with TLC",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

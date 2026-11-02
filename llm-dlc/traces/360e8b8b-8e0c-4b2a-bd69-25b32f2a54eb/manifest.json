@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-02T06:51:51.296Z",
-  "duration_seconds": 138116,
+  "ended": "2026-11-02T07:15:49.818Z",
+  "duration_seconds": 139554,
   "stats": {
-    "turns": 67,
-    "api_calls": 862,
-    "tool_calls": 1432,
-    "tool_errors": 29,
-    "compactions": 14,
+    "turns": 71,
+    "api_calls": 892,
+    "tool_calls": 1461,
+    "tool_errors": 30,
+    "compactions": 15,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 26082,
-      "output_tokens": 2178207,
-      "cache_read_input_tokens": 174860202,
-      "cache_creation_input_tokens": 4815421
+      "input_tokens": 27012,
+      "output_tokens": 2262405,
+      "cache_read_input_tokens": 178742403,
+      "cache_creation_input_tokens": 5004188
     }
   },
   "tools": {
-    "Bash": 957,
+    "Bash": 986,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -423,24 +423,38 @@
     {
       "index": 14,
       "started": "2026-11-02T06:08:24.780Z",
-      "ended": "2026-11-02T06:51:51.296Z",
+      "ended": "2026-11-02T06:54:35.643Z",
       "turns": 4,
-      "api_calls": 81,
+      "api_calls": 82,
       "usage": {
-        "input_tokens": 2412,
-        "output_tokens": 142103,
-        "cache_read_input_tokens": 17081692,
-        "cache_creation_input_tokens": 302630
+        "input_tokens": 2444,
+        "output_tokens": 142996,
+        "cache_read_input_tokens": 17399235,
+        "cache_creation_input_tokens": 304132
       },
-      "peak_context_tokens": 317575
+      "peak_context_tokens": 319077
+    },
+    {
+      "index": 15,
+      "started": "2026-11-02T06:56:12.649Z",
+      "ended": "2026-11-02T07:15:49.818Z",
+      "turns": 4,
+      "api_calls": 29,
+      "usage": {
+        "input_tokens": 898,
+        "output_tokens": 83305,
+        "cache_read_input_tokens": 3564658,
+        "cache_creation_input_tokens": 187265
+      },
+      "peak_context_tokens": 202210
     }
   ],
   "log": {
-    "sha256": "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee",
-    "bytes": 38666692,
-    "lines": 12999,
-    "gzip_bytes": 6518104,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee.jsonl.gz"
+    "sha256": "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f",
+    "bytes": 40201175,
+    "lines": 13473,
+    "gzip_bytes": 6803755,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -587,6 +601,14 @@
       "summary": "Report what a model-checking verdict rests on: TLC coverage read back per contract row, a vacuous label, and three new examples",
       "body": "jvmcontract tlc gains --coverage: it passes TLC -coverage and reads the statistics back against every generated operator module the specification uses, arm by arm (an arm's guard is evaluated when no earlier arm matched, so an arm was taken as often as its guard minus the next arm's, summed over the actions that evaluate the operator; invariants take no step and are not counted). The report lists, per operator, how many rows of the contract a step of the model takes and the rows none does, in the contract's own case syntax; in --json it is the coverage field. TLC's report folds a subtree whose counts are all equal, which hid every row under an action that always takes the same one (Crosscut's Finish and Fail), so generated operators now start their first arm with a conjunct TLC evaluates twice, (\\A i \\in {1, 2} : i = i), and all seven committed operator modules are regenerated, the Box Office one by the Python generator, which emits the same. Coverage of a run that stops at a counterexample is partial and is left out.\n\nbuild.py runs every configuration with --coverage and records in result.json which rows the change altered (the contract diff before and after regeneration, reasons stripped since they are not in the model, null rows left out) and which configurations' runs take them. A verified verdict is labelled vacuous when every run finished and none from an initial state takes an altered row that decides; rows that throw are meant never to be taken and do not count, and the inductive step, which starts from admitted states rather than a run, counts separately. example.json may state expected.vacuous, which the generator checks like the verdict. Every model-checking page has a new section, what the verdict rests on: a table of rows taken per configuration, the altered rows with the runs that take them, and the rows no step takes under the primary configuration. All 23 model-checking examples are rebuilt; 068's page now shows that only four of its eight altered rows are ever taken, and 030's that its one altered row is.\n\nExamples 072 to 074 on the Raft election model: a vote rule that refuses a repeat request (072) and a follower that leads on a late majority (074) verify under all five configurations and are reported vacuous, since atomic RPCs never ask a voter twice or count a vote late; a vote rule that throws on a term the voter has not adopted (073) has nine rows no run takes, which KernelNeverThrows turns into the theorem the change asked for. Verified by the Rust tests (53 unit, 25 integration, including one for the coverage parser), the verify scripts of Quorum, Crosscut and Mica, and the generator, which checks every rebuilt verdict and vacuity against the example's expectation.",
       "log_sha256": "424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee"
+    },
+    {
+      "change_id": "pmplqqnqxllotqwxsnnkquxtnmtywwtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check the circuit-breaker model for liveness under fairness, a second configuration, with three new examples",
+      "body": "The Crosscut circuit-breaker model, until now checked only for its invariants and only by the module's verify.sh, gains a liveness section: fairness conditions (the caller keeps calling, every permitted call completes, the clock ticks, nothing assumed of the dependency) and three temporal properties, one for each fate of the dependency: an open breaker probes again, a dependency that comes back for good is used again, a dependency that stays down gets the wait between its rounds of probes. A new configuration, CircuitBreakerLive.cfg, checks them; plain WF_vars is fast enough at 102 states. The owner in the model now applies every effect whichever event returns it: a request can start the wait, a completion can start a new metrics generation. The breaker joins build.py's models for the Crosscut app, beside the idempotent receiver, so model-checking examples can be written against it.\n\nThree examples. 075: an open breaker that restarts its wait on each refused call keeps every invariant and fails the first property, eight steps then a tick and a refused call forever, over a dependency that came back at step six. 076: a half-open breaker that judges its probes by their failure rate, as Resilience4j does, is verified under both configurations, with coverage showing one of its three rows taken and two out of reach of two probes at a threshold of one in two. 077: a half-open breaker that starts its probes over on a failed one keeps every invariant and fails the third property, fourteen steps then a six-step cycle of failing probes and resets, half-open forever; the first two properties pass on it, which is why there are three.\n\nVerified by building the three examples (verdicts as expected, tests pass after the patches update them), by the module's verify.sh (tests, contracts, seven property proofs, three model runs, all green), and by reading the generated pages. The Crosscut READMEs, the skill reference, the plugin README, the approaches table and the example counts are updated.",
+      "log_sha256": "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f"
     }
   ],
   "logs": {
@@ -600,6 +622,12 @@
       "bytes": 38666692,
       "lines": 12999,
       "gzip_bytes": 6518104,
+      "url": null
+    },
+    "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f": {
+      "bytes": 40201175,
+      "lines": 13473,
+      "gzip_bytes": 6803755,
       "url": null
     },
     "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc": {

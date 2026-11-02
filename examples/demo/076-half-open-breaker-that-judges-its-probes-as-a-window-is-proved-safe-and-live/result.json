@@ -1,0 +1,153 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 20,
+    "code": " *\n * <p>CLOSED lets every call through and opens when a complete window's failure rate reaches the threshold. OPEN\n * rejects every call until the wait duration has passed, then lets a limited number of probe calls through as\n * HALF_OPEN. HALF_OPEN closes only once every permitted probe has completed with the failure rate below the\n * threshold; a probe that fails reopens the breaker at once.\n */\npublic final class CircuitBreaker {\n\n    // ...\n                        : unchanged(\"recorded in the sliding window\");\n                case OPEN -> unchanged(\"a call permitted before the breaker opened; its outcome is not recorded\");\n                case HALF_OPEN -> {\n                    if (call.failed()) {\n                        yield transition(OPEN, START_WAIT);\n                    }\n                    if (!call.windowComplete()) {\n                        yield unchanged(\"more probes to go\");\n                    }\n"
+  },
+  "after": {
+    "file": "examples/demo/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 20,
+    "code": " *\n * <p>CLOSED lets every call through and opens when a complete window's failure rate reaches the threshold. OPEN\n * rejects every call until the wait duration has passed, then lets a limited number of probe calls through as\n * HALF_OPEN. HALF_OPEN judges the probes together once the last has completed, as Resilience4j judges them: it\n * closes when their failure rate is below the threshold and reopens when it is not, a failed probe being recorded\n * like any other outcome rather than reopening the breaker at once.\n */\npublic final class CircuitBreaker {\n\n    // ...\n                        : unchanged(\"recorded in the sliding window\");\n                case OPEN -> unchanged(\"a call permitted before the breaker opened; its outcome is not recorded\");\n                case HALF_OPEN -> {\n                    // The probes are judged together, once the last has completed: a failed probe is recorded like\n                    // any other outcome, and the failure rate of the probes decides between closing and reopening.\n                    if (!call.windowComplete()) {\n                        yield unchanged(\"more probes to go\");\n                    }\n"
+  },
+  "casesTotal": null,
+  "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/demo/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/demo/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n",
+  "proof": "two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 98,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    CLOSED --> CLOSED: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    CLOSED --> CLOSED: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    CLOSED --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    CLOSED --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[RESET_METRICS, PERMIT]\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallRequested[waitElapsed=false] (Rejected)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "two calls in flight",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+            "reached": 14,
+            "total": 30,
+            "never": [
+              "decide(CLOSED, CallRequested[waitElapsed=false]) => Transition[next=CLOSED, effects=[PERMIT]]",
+              "decide(CLOSED, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallRequested[waitElapsed=false]) => Transition[next=HALF_OPEN, effects=[PERMIT]]",
+              "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Transition[next=CLOSED, effects=[RESET_METRICS]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+            "reached": 14,
+            "total": 30,
+            "never": [
+              "decide(CLOSED, CallRequested[waitElapsed=false]) => Transition[next=CLOSED, effects=[PERMIT]]",
+              "decide(CLOSED, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallRequested[waitElapsed=false]) => Transition[next=HALF_OPEN, effects=[PERMIT]]",
+              "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Transition[next=CLOSED, effects=[RESET_METRICS]]"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])",
+        "before": "Transition[next=OPEN, effects=[START_WAIT]]",
+        "after": "Unchanged[reason=\"more probes to go\"]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])",
+        "before": "Transition[next=OPEN, effects=[START_WAIT]]",
+        "after": "Unchanged[reason=\"more probes to go\"]",
+        "takenUnder": [
+          "two calls in flight",
+          "fairness"
+        ]
+      },
+      {
+        "case": "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])",
+        "before": "Transition[next=OPEN, effects=[START_WAIT]]",
+        "after": "Transition[next=CLOSED, effects=[RESET_METRICS]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "two calls in flight",
+      "cfg": "spec/CircuitBreaker.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 98 states",
+      "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 98,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "fairness",
+      "cfg": "spec/CircuitBreakerLive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 98 states",
+      "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 98,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}
