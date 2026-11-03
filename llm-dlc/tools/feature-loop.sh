@@ -23,8 +23,12 @@
 # and with neither, nor CYCLES, the loop runs until the session decides the
 # brief is done.
 #
-# FEATURE_LOOP_SESSION=ID resumes another session instead of the usual one, and
-# FEATURE_LOOP_SESSION=new starts a fresh session that the run's cycles share.
+# A brief may also set the session, model and effort in a "## Loop settings"
+# section of "- session: ID", "- model: ID" and "- effort: LEVEL" lines.
+# FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL and FEATURE_LOOP_EFFORT override
+# both the brief and the defaults. FEATURE_LOOP_SESSION=new starts a fresh
+# session that the run's cycles share, and a session id with no transcript yet
+# (one opened but never sent a message) is created by the first turn.
 #
 # With UNTIL, each commit is followed by one more turn, before the compact, in
 # which the session applies UNTIL to what it has done and ends its reply with
@@ -45,7 +49,7 @@
 
 set -uo pipefail
 
-SESSION_ID=${FEATURE_LOOP_SESSION:-360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb}
+SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
@@ -88,6 +92,16 @@ case "$PROMPT" in
       UNTIL=$(awk '/^## / { inside = ($0 ~ /^## +Loop until[[:space:]]*$/); next } inside' "$BRIEF" |
         tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//')
     fi
+    # "- key: value" lines under the brief's "## Loop settings" heading.
+    setting() {
+      awk -v key="$1" '
+        /^## / { inside = ($0 ~ /^## +Loop settings[[:space:]]*$/); next }
+        inside && match($0, "^[-*] +" key ": *") { v = substr($0, RLENGTH + 1); gsub(/[`[:space:]]/, "", v); print v; exit }
+      ' "$BRIEF"
+    }
+    v=$(setting session); [[ -n "$v" ]] && SESSION_ID=$v
+    v=$(setting model); [[ -n "$v" ]] && MODEL=$v
+    v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
     [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
     set -- "$BRIEF" "${@:2}"
     PROMPT=$(basename "$BRIEF" .md)
@@ -106,6 +120,14 @@ case "$PROMPT" in
     ;;
   *) usage ;;
 esac
+
+SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
+MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
+EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
+[[ "$SESSION_ID" == new || "$SESSION_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || {
+  echo "feature-loop.sh: not a session id: $SESSION_ID" >&2
+  exit 2
+}
 
 # Claude Code files a session under the directory it ran in, and the instruction
 # is meant for the root of the repo, so run there whatever the caller's directory.
@@ -153,10 +175,15 @@ mkdir -p "$SUMMARIES" || exit 1
 SUMMARY=$SUMMARIES/$(date +%F-%H%M%S)-$PROMPT.md
 START=$(jj log --no-graph -r @- -T change_id) || exit 1
 
-# A fresh session gets its id here and is created by the first turn.
+# A fresh session gets its id here, and it and a session with no transcript yet
+# are created by the first turn. Claude Code keeps transcripts under the working
+# directory's path with every other character turned into a dash.
 FRESH=
 if [[ "$SESSION_ID" == new ]]; then
   SESSION_ID=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
+  FRESH=1
+elif [[ ! -e "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/$(pwd | sed 's/[^A-Za-z0-9]/-/g')/$SESSION_ID.jsonl" ]]; then
+  log "session $SESSION_ID has no transcript yet: the first turn creates it"
   FRESH=1
 fi
 
@@ -168,7 +195,7 @@ fi
 {
   echo "# Feature loop: $PROMPT"
   echo
-  echo "Started $(date '+%F %T %Z'), ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, after change $START."
+  echo "Started $(date '+%F %T %Z'), ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, $MODEL at $EFFORT effort, after change $START."
   echo
   echo "> $INSTRUCTION"
   echo

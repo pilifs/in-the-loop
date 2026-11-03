@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record session traces
 
-change `nqyuxroptymr` · [log `9752bce249dd`](https://terminalvalue.net/raw-traces/374d30d0-bacd-47e6-8f29-163603b6560f/9752bce249dd05ec374e47091df1cad9277f7f1dd2e46e4016b5eca3f2691cc5.jsonl.gz)
+[`b736a57a26b0`](https://github.com/pilifs/in-the-loop/commit/b736a57a26b06db7ec3ded909dca11ea9e17f18e) · [log `9752bce249dd`](https://terminalvalue.net/raw-traces/374d30d0-bacd-47e6-8f29-163603b6560f/9752bce249dd05ec374e47091df1cad9277f7f1dd2e46e4016b5eca3f2691cc5.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

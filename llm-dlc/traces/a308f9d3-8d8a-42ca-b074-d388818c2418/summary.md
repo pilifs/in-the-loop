@@ -426,7 +426,7 @@ feature-loop.sh spring [CYCLES] sends the instruction to enhance jvmcontract for
 
 ### Record session traces
 
-change `nqyuxroptymr` · [log `021aafd86a24`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/021aafd86a2410020e3deb34be71fb8507b7b24da8d7a253823dd54821e65942.jsonl.gz)
+[`b736a57a26b0`](https://github.com/pilifs/in-the-loop/commit/b736a57a26b06db7ec3ded909dca11ea9e17f18e) · [log `021aafd86a24`](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/021aafd86a2410020e3deb34be71fb8507b7b24da8d7a253823dd54821e65942.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

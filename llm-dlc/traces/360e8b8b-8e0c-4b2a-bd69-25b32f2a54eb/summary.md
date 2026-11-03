@@ -424,7 +424,7 @@ Verified with new fixtures (FailuresController, FailureFlow, FailureListener, Ap
 
 ### Record session traces
 
-change `nqyuxroptymr` · [log `0e6ce4dd6991`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/0e6ce4dd69910af5efd8c7ba30a4a9905815d93e9bbc1a0799ba0a507b184638.jsonl.gz)
+[`b736a57a26b0`](https://github.com/pilifs/in-the-loop/commit/b736a57a26b06db7ec3ded909dca11ea9e17f18e) · [log `0e6ce4dd6991`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/0e6ce4dd69910af5efd8c7ba30a4a9905815d93e9bbc1a0799ba0a507b184638.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

@@ -1,7 +1,8 @@
 # Brief: make sync.py fast
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh):
-`FEATURE_LOOP_SESSION=new llm-dlc/tools/feature-loop.sh llm-dlc/loops/sync-performance.md`.
+`llm-dlc/tools/feature-loop.sh llm-dlc/loops/sync-performance.md`, in the session and with the
+model set under [Loop settings](#loop-settings).
 The loop runs until the session judges, by [Loop until](#loop-until), that the rest is not
 worth another cycle.
 
@@ -277,6 +278,11 @@ coordinator; then a measured recommendation on Go.
 Finishing one small feature does work proportional to that feature's new trace data and the
 metadata it affects, with little dependence on how many earlier sessions exist, and the
 numbers in the commit messages show it.
+
+## Loop settings
+
+- session: 5dfbc1bc-4bd7-4b48-a637-44ff84065b6b
+- model: claude-opus-5-5
 
 ## Loop until
 
