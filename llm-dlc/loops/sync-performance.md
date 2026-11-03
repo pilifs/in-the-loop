@@ -25,7 +25,7 @@ an order of work. Carry it out.
   speed-up. Keep a full, cache-free audit available (`sync --all`, `check --full` or similar).
 - **Published bytes stay identical.** Log content, hashes and identifiers of existing
   snapshots must not change. Already stored snapshots are never rewritten.
-- **Tests:** `llm-dlc/tools/test_review.py` and `test_metrics.py`, plus new ones for each
+- **Tests:** `llm-dlc/tools/test_review.py`, `test_metrics.py` and `test_performance.py`, plus new ones for each
   change. The redactor is tested with made-up values only (CLAUDE.md).
 - **Process docs move with the behaviour.** If commit comes to validate what it needs so that
   a separate `check` is no longer needed after each feature, update CLAUDE.md,
@@ -41,6 +41,56 @@ an order of work. Carry it out.
   Don't stop the loop over it while other work remains.
 - **Go is out of scope** for this loop. The third changeset ends with a measured
   recommendation on whether a Go coordinator is worth it, not with a port.
+
+## Keep the loop running
+
+The loop should run for as many cycles as there is useful work. A cycle stops it only by
+ending without a commit, by a decision reply without a clear last line, or by an edit to this
+brief. So:
+
+- **End every cycle with a commit.** If the planned piece is blocked, commit the largest part
+  that isn't: the measurements, the tests, the groundwork behind a switch that is off. Record
+  the rest under **Deferred for the user**. Never end a cycle with only a question.
+- **Don't pause for minor questions.** When the brief and CLAUDE.md leave a choice open, take
+  the conservative option that keeps every guarantee, say in the commit message what you chose
+  and why, and go on. Only what [Defer what needs the user](#how-to-work-through-it) lists is
+  deferred, and deferring never stops the loop.
+- **A denied command is information, not a stop.** Don't retry it unchanged. Work out what it
+  would have done that it shouldn't (a network call, a write outside the repo), change the
+  approach, and carry on.
+- **No side effects that reach the network** from commit, sync or check: no Langfuse, no R2,
+  no CDN, not even from a detached process. The Stop hook sends Langfuse its turns.
+- **Rules edits keep their stamp** when they change no result: run
+  `python3 llm-dlc/tools/sync.py stamp --equivalent`, which compares them with the stamped rules
+  at `@-` on every transcript, log and published file. Use a plain `stamp` only for a change in
+  what the rules find or redact. An open warning doesn't block either one. It becomes an
+  allow-list proposal, which the user settles whenever they choose.
+- **Findings in your own log are not a stop either.** Build made-up test values at run time
+  (`"203.0." + "113.7"`) so the transcript holds none. If one gets in anyway, propose it with
+  `sync.py allow propose ID --reason ...` and go on. A warning needs nothing from you.
+- **Long runs go in the background.** A full check, a stamp or a benchmark can take minutes:
+  run it in the background and wait for it, rather than letting a tool timeout end the turn.
+- **Don't edit this brief during a run.** That stops the loop. Put corrections in the commit
+  message instead.
+- **In the decision turn,** end with exactly `LOOP: continue` or `LOOP: stop`, on its own last
+  line. When in doubt, continue.
+
+## Progress
+
+Each run counts only its own commits, so work done in earlier runs is listed here.
+
+- **First changeset: done**, commit `rxowqurq` (2026-11-03). It added instrumentation
+  (`sync.py perf`, `~/.local/state/llm-traces/perf.jsonl`, `LLM_TRACES_PERF=1`), the
+  email-regex fix (`email_spans`) and an exact hint for `env-secret`. It also made check
+  decompress each snapshot once and check prefixes by digest, made snapshot sizes come from
+  memory with gzip level 6, rebuilt the global outputs once per sync, wrote generated files
+  only when they change, took Langfuse out of commit and sync entirely, and added
+  `stamp --equivalent`. Measured, old against new on the same state: check 126 s to 107 s
+  (5.46 GB to 2.47 GB decompressed), sync 78 s to 62 s, push's work 230 s to 212 s. Scanning,
+  not decompression, is about 85% of check's CPU. That is the main target of the second
+  changeset (a scan cache keyed by content). The /tmp measurement drivers were not committed:
+  use `sync.py perf`.
+- **Next: the second changeset.**
 
 ## What the evidence shows
 
@@ -148,8 +198,8 @@ retries from each starting position: quadratic. It runs in both redaction and le
   `@` positions and validate bounded candidate components.
 - **Don't truncate large strings or exempt them from scanning.** Those are the strings that
   may hold tool output and credentials.
-- Editing the rules means re-stamping them (`sync.py stamp`, see CLAUDE.md), which rescans
-  everything.
+- Editing the rules means re-stamping them. A pure speed-up keeps its date with
+  `sync.py stamp --equivalent` (see [Keep the loop running](#keep-the-loop-running)).
 
 ## 4. Historical Git/jj queries are too granular
 
@@ -193,7 +243,9 @@ tells "never attempted", "may have succeeded" and "verified through the CDN" apa
 post-upload content verification**: a HEAD or ETag is not evidence that the CDN serves bytes
 whose uncompressed SHA-256 matches the trailer, which the storage contract requires.
 
-**Langfuse.** `process()` calls `export_langfuse()` synchronously, and each request can wait
+**Langfuse.** (Done in the first changeset: commit and sync no longer contact Langfuse at all,
+by the user's decision. What follows is the review's original finding.) `process()` calls
+`export_langfuse()` synchronously, and each request can wait
 up to 15 s, so an outage makes one commit wait repeatedly. Use a durable local telemetry queue
 with background retries. The Stop hook also reads and redacts the whole transcript before
 checking whether Langfuse is configured or anything remains to export: check configuration
@@ -287,7 +339,7 @@ numbers in the commit messages show it.
 ## Loop until
 
 Go on while a cycle can still realize a substantial part of the reasonably attainable value
-of this brief. Stop when most of it has been realized: the remaining items are small or
+of this brief. The user prefers the loop to run as long as possible, so when in doubt, continue. Stop when most of it has been realized: the remaining items are small or
 speculative next to what is done, measured gains have flattened, or what is left needs the
 user's input (credentials, accounts, external services, decisions) and has been recorded as
 deferred. Don't go on to polish, and don't stop while a clear, measurable improvement that
