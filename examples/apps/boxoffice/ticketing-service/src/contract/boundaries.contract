@@ -5,7 +5,9 @@
 # a provider on the class path), then the configuration keys (what the classes read, what the application
 # files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,
 # response and message type) and the stored types (the shape of each document, and the query strings that
-# name a field it does not have). A `!` line is a place where something does not do what it says.
+# name a field it does not have). Under each entry point, what it reaches: the documents it reads and writes,
+# the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where
+# something does not do what it says.
 kind: boundaries
 module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 0 problems
 
@@ -19,21 +21,33 @@ net.terminalvalue.boxoffice.ticketing.api.ApiErrors: @RestControllerAdvice
 
 net.terminalvalue.boxoffice.ticketing.api.ConcertController: @RestController @RequestMapping("/concerts")
   POST /concerts => ResponseEntity<Concert> create(@Valid @RequestBody CreateConcert request)
+    reads ConcertDocument, SeatDocument
+    writes ConcertDocument, SeatDocument
   GET /concerts/{id} => Concert get(@PathVariable String id)
+    reads ConcertDocument, SeatDocument
   POST /concerts/{id}/holds => ResponseEntity<Hold> hold(@PathVariable String id, @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @Valid @RequestBody HoldSeats request)
+    reads ConcertDocument, HoldDocument
+    writes HoldDocument, SeatDocument
 
 net.terminalvalue.boxoffice.ticketing.api.HoldController: @RestController
   GET /holds/{id} => Hold get(@PathVariable String id)
+    reads HoldDocument
 
 net.terminalvalue.boxoffice.ticketing.api.OrderController: @RestController @RequestMapping("/orders")
   POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)
+    reads HoldDocument, OrderDocument, SeatDocument
+    writes OrderDocument, Outbox.Entry
   GET /orders/{id} => Order get(@PathVariable String id)
+    reads OrderDocument
   POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id)
+    reads OrderDocument
+    writes OrderDocument, Outbox.Entry, SeatDocument
 
 net.terminalvalue.boxoffice.ticketing.app.ConcertService: @Service
 
 net.terminalvalue.boxoffice.ticketing.app.HoldService: @Service
   @Scheduled(fixedDelayString = "${boxoffice.hold.sweep-interval:1s}") => void releaseExpiredHolds()
+    writes SeatDocument
 
 net.terminalvalue.boxoffice.ticketing.app.OrderService: @Service
 
@@ -43,6 +57,8 @@ net.terminalvalue.boxoffice.ticketing.app.PaymentEventHandler: @Service
 
 net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @Component
   @KafkaListener(topics = "payments.events", groupId = "ticketing") => void on(ConsumerRecord<String, String> record)
+    reads Inbox.Entry, OrderDocument, SeatDocument
+    writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument
 
 net.terminalvalue.boxoffice.ticketing.store.ConcertDocument: @Document("concerts")
   @Id String id

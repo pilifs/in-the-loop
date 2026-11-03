@@ -39,7 +39,9 @@ jvmcontract api CLASSES [--module NAME]
 # Validation constraints: a nested type's constraints no @Valid leads into, a body taken without @Valid, a group a
 # @Valid or @Validated leaves out, a constraint on a type its validator cannot handle; and the stored types: the
 # shape of each Spring Data MongoDB document under its stored names, with `!` lines for a query, update, index, sort,
-# projection or @Query string that names a field the document does not have. No JBMC.
+# projection or @Query string that names a field the document does not have; and under each entry point what it
+# reaches (reads, writes, sends, calls, publishes), with `!` lines for a GET with side effects and a read-only
+# transaction that writes. No JBMC.
 jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.

@@ -64,8 +64,9 @@ enum Command {
     },
     /// Print the boundary contract of a module: where the framework enters it (routes, listeners, schedules, bean
     /// definitions), the advice on each bean (transactions, security, validation, caching, retries), the places
-    /// where an annotation does not do what it says, the configuration keys, the wire types and the stored types, from the compiled
-    /// classes and the application files.
+    /// where an annotation does not do what it says, the configuration keys, the wire types and the stored types, and under
+    /// each entry point what it reaches (reads, writes, sends, calls, publishes), from the compiled classes and the
+    /// application files.
     Boundaries {
         /// Directories of classes or jars of the module.
         #[arg(required = true)]

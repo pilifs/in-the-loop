@@ -8,4 +8,5 @@ public @interface Query {
     String value() default "";
     String fields() default "";
     String sort() default "";
+    boolean delete() default false;
 }

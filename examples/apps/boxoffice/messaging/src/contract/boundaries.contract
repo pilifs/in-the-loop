@@ -5,7 +5,9 @@
 # a provider on the class path), then the configuration keys (what the classes read, what the application
 # files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,
 # response and message type) and the stored types (the shape of each document, and the query strings that
-# name a field it does not have). A `!` line is a place where something does not do what it says.
+# name a field it does not have). Under each entry point, what it reaches: the documents it reads and writes,
+# the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where
+# something does not do what it says.
 kind: boundaries
 module: messaging, 4 beans, 9 entry points, 0 advised methods, 2 configuration keys, 0 wire types, 2 stored types, 0 problems
 
@@ -27,6 +29,9 @@ net.terminalvalue.boxoffice.messaging.Outbox$Entry: @Document("outbox")
 
 net.terminalvalue.boxoffice.messaging.OutboxRelay:
   @Scheduled(fixedDelayString = "${boxoffice.outbox.poll-interval:100ms}") => void publishPending()
+    reads Outbox.Entry
+    writes Outbox.Entry
+    sends to Kafka
 
 activation: no application class in the module: every local class and every auto-configuration on the class path counts
   @Scheduled: @EnableScheduling on net.terminalvalue.boxoffice.messaging.MessagingConfiguration

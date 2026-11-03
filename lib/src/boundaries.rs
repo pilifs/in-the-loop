@@ -26,16 +26,22 @@
 //! The contract ends with the stored types ([`crate::store`]): the shape of each Spring Data MongoDB document
 //! (the `_id`, each field under its stored name, the embedded types), with a `!` line for every query, update,
 //! index, sort or projection string in the module that names a field the document does not have.
+//!
+//! Under each entry point and advised method go its reach lines ([`crate::reach`]): what it reads, writes, sends,
+//! calls and publishes, found by following the calls in the bytecode through the application's own classes to the
+//! data, messaging, HTTP client and event APIs. A `GET` with side effects and a read-only transaction that writes
+//! are `!` lines.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
-use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, Insn, Kind, Method, MethodDescriptor, Type, TypeTarget};
+use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, ElementValue, Insn, Kind, Method, MethodDescriptor, Type, TypeTarget};
 use crate::activation;
 use crate::classpath::ClassPath;
 use crate::config;
+use crate::reach;
 use crate::store;
 use crate::validation;
 use crate::wire;
@@ -126,7 +132,8 @@ const VALIDATION_PACKAGES: &[&str] = &["jakarta/validation/", "javax/validation/
 pub struct Member {
     /// `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)`, or the signature alone.
     pub line: String,
-    /// The advice on the member (`@Transactional(readOnly = true)`) and its problems (`! ...`), in that order.
+    /// The advice on the member (`@Transactional(readOnly = true)`), what it reaches (`reads A, B`, `writes C`,
+    /// `sends t`, `calls GET /x`, `publishes E`) and its problems (`! ...`), in that order.
     pub details: Vec<String>,
     /// Whether the framework calls this member (a route, a listener, a schedule, a bean definition).
     pub entry: bool,
@@ -205,7 +212,7 @@ fn mapping_paths(annotation: &Annotation) -> Vec<String> {
     paths
 }
 
-fn join_paths(prefix: &str, path: &str) -> String {
+pub(crate) fn join_paths(prefix: &str, path: &str) -> String {
     let mut out = String::new();
     for part in [prefix, path] {
         let part = part.trim_matches('/');
@@ -275,6 +282,15 @@ pub(crate) fn pushing(class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeS
         }
         i -= 1;
         let insn = &insns[i].1;
+        // `dup` pushes two copies of the value below it: either copy was pushed by the instruction before.
+        if matches!(insn, Insn::Dup) {
+            if depth < 2 {
+                depth = 0;
+                continue;
+            }
+            depth -= 1;
+            continue;
+        }
         let (pops, pushes) = stack_effect(class, insn)?;
         if pushes > depth {
             return (pushes == 1).then_some(i);
@@ -412,6 +428,7 @@ pub fn analyse(cp: &ClassPath) -> Result<Boundaries, Error> {
 pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&BTreeSet<String>>, resources: &[PathBuf]) -> Result<Boundaries, Error> {
     let mut boundaries = Boundaries::default();
     let classes = cp.application_classes()?;
+    let graph = reach::Graph::new(cp, &classes, local);
     let mut roots: Vec<String> = Vec::new();
     let mut field_only: BTreeSet<String> = BTreeSet::new();
     for (name, class) in &classes {
@@ -613,7 +630,19 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
                 problems.push(format!("! constraints on {} are not enforced: method validation goes through the proxy, which intercepts public instance methods only", constrained.join(", ")));
             }
 
+            // What the entry point or advised method reaches, and the places where that contradicts its contract.
+            let reached = if entries.is_empty() && applied.is_empty() { reach::Reach::default() } else { graph.reach(name, &method.name, &method.descriptor) };
+            if entries.iter().any(|e| e.starts_with("GET ") || e.starts_with("HEAD ")) {
+                let effects = reached.side_effects();
+                if !effects.is_empty() {
+                    problems.push(format!("! a GET that {}: a safe method with side effects, so a retry, a prefetch or a crawler changes state", effects.join(" and ")));
+                }
+            }
+            if !reached.writes.is_empty() && applied.iter().any(|a| a.simple_name() == "Transactional" && a.element("readOnly") == Some(&ElementValue::Boolean(true))) {
+                problems.push(format!("! @Transactional(readOnly = true) but writes {}: a read-only transaction drops or rejects writes", reached.writes.iter().cloned().collect::<Vec<_>>().join(", ")));
+            }
             let mut details = advice;
+            details.extend(reached.lines());
             let problem_count = problems.len();
             details.extend(problems);
             members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line(), source_file: None, source_class: None });
@@ -720,7 +749,9 @@ impl Boundaries {
             "# a provider on the class path), then the configuration keys (what the classes read, what the application".to_string(),
             "# files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,".to_string(),
             "# response and message type) and the stored types (the shape of each document, and the query strings that".to_string(),
-            "# name a field it does not have). A `!` line is a place where something does not do what it says.".to_string(),
+            "# name a field it does not have). Under each entry point, what it reaches: the documents it reads and writes,".to_string(),
+            "# the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where".to_string(),
+            "# something does not do what it says.".to_string(),
             "kind: boundaries".to_string(),
             format!("module: {module}, {}", self.stats()),
             String::new(),

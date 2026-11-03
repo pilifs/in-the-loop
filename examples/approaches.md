@@ -266,7 +266,11 @@ mapping layer writes it (the `@Id` as `_id`, a `@Field` rename, a `@Transient` l
 `Criteria.where`, an `Update.set` or `unset`, an `Index().on`, a `Sort.by`, a projection, a repository `@Query` or a
 `@CompoundIndex`. Nothing checks these strings otherwise: the driver sends them to the database, which matches,
 writes, indexes or sorts by whatever field that is, so a renamed record component leaves every query of it matching
-nothing and every test that goes through the same strings passing. The three Box Office modules
+nothing and every test that goes through the same strings passing. Under each entry point go the reach lines:
+what it reads and writes (documents, entities, tables), sends (topics), calls (HTTP requests) and publishes
+(application events), found by following the calls in the bytecode through the application's own classes to the
+framework APIs that do the work, so a handler that starts touching a new collection, topic or service changes the
+contract under its route; a GET that writes or sends, and a read-only transaction that writes, are `!` lines. The three Box Office modules
 with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
 their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
 `PATH`.

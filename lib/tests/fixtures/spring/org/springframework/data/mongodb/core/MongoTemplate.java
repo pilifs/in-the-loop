@@ -15,5 +15,7 @@ public class MongoTemplate {
     public long updateFirst(Query query, Update update, Class<?> entityClass) { return 0; }
     public long updateMulti(Query query, Update update, Class<?> entityClass) { return 0; }
     public <T> T insert(T object) { return object; }
+    public <T> T save(T object) { return object; }
+    public long remove(Query query, Class<?> entityClass) { return 0; }
     public IndexOperations indexOps(Class<?> entityClass) { return index -> ""; }
 }

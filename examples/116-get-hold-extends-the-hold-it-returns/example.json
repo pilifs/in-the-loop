@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "116",
+  "title": "GET /holds/{id} now extends the hold it returns: a polling checkout page keeps seats held for ever",
+  "summary": "The developer makes `GET /holds/{id}` keep the hold alive: `HoldService.get` pushes the expiry of the hold and of its seats forward on every call, so a customer filling in the payment form does not lose the seats under them. The checkout page polls that endpoint for its countdown, so a hold now never expires while a tab is open, a browser's prefetch or a monitor's probe keeps seats off the market, and a retried GET changes state. The boundary contract now says what each entry point reaches (the documents it reads and writes, the topics it sends to, the HTTP calls it makes, the events it publishes); the regenerated contract has `writes HoldDocument, SeatDocument` under the GET and a `!` line: a safe method with side effects.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "side-effecting-read",
+    "contract-diff-review"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.app.HoldService"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `TicketingStore.extend(holdId, expiresAt)`, which sets `expiresAt` on the hold and on the seats it still holds, and call it from `HoldService.get` whenever the hold has not expired yet, with the expiry the policy gives a new hold. `HoldController.get` is untouched: `GET /holds/{id}` calls the same service method as before.",
+    "patch": "change.patch"
+  },
+  "risk": "A GET is a safe method (RFC 9110, section 9.2.1): browsers prefetch it, proxies and clients retry it, link previews, crawlers and monitors issue it, and none of them expects to change anything. Here every GET pushes the hold's expiry two minutes out. The checkout page polls `GET /holds/{id}` every few seconds to show the countdown, so the hold never expires while the page is open, whether or not anyone is still there; `releaseExpiredHolds`, the sweep that returns seats to the market, never finds them, and the seats stay off sale until the tab is closed. A health probe or a bookmarked hold page does the same with nobody at the keyboard. No test notices: `HoldService.get` still returns the hold, the stored strings are all fields the documents have, and the system test that waits for a hold to expire reads it once.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "Under each entry point of the boundary contract go the lines that say what it reaches: `reads` and `writes` with the documents (or tables) they touch, `sends` with the topics, `calls` with the HTTP requests, `publishes` with the application events, found by following the calls in the bytecode from the handler through the application's own classes to the Spring Data, Kafka, HTTP client and event APIs. Before the change `GET /holds/{id} => Hold get(@PathVariable String id)` has one such line, `reads HoldDocument`. The change is a feature, so the runner regenerates the contract and the reviewer reads the diff: the GET gains `writes HoldDocument, SeatDocument` and the line `! a GET that writes HoldDocument and SeatDocument: a safe method with side effects, so a retry, a prefetch or a crawler changes state`. The new `!` line is the violation.",
+  "resolution": "Make the keep-alive a request of its own: `POST /holds/{id}/extension` (or a `PATCH` of the hold), which the page sends when the customer acts (a field edited, a button pressed), not on every poll, and which the policy can bound (at most so many extensions, or no later than so long after the hold was taken). The GET goes back to `reads HoldDocument` and its `!` line disappears; the new route appears with `writes HoldDocument, SeatDocument` under it, which is the diff a reviewer approves. Extending the hold inside `POST /orders` when the order is placed is the other honest place for the write.",
+  "notes": [
+    "The first example of the reach lines of a boundary contract (`lib/src/reach.rs`). For every entry point and advised method, the tool follows the calls in the bytecode through the application's own classes (the module and its sibling modules on the class path; a call into Spring, the JDK or a driver is a leaf) and classifies the leaves: the Spring Data templates and repositories, the JPA `EntityManager` and `JdbcTemplate` give `reads` and `writes` (of the class literal passed, else the static type of the entity argument, else the documents the method mentions; a table from the SQL constant), the Kafka, RabbitMQ, JMS and Spring Cloud Stream templates give `sends` (the topic when it is a constant, else `to Kafka`), `RestTemplate`, `RestClient`, `WebClient` and `@HttpExchange` or Feign interfaces give `calls GET /path`, `ApplicationEventPublisher` gives `publishes`. A virtual call goes to every local subtype that overrides the method, a lambda to its body whether or not the receiver runs it: a may-reach approximation, which is the right side to err on for a reviewer.",
+    "Two checks read these lines: a `GET` or `HEAD` route that writes, sends, publishes or makes a non-GET call is `! a GET that ...: a safe method with side effects`, and a `@Transactional(readOnly = true)` method that writes is `! @Transactional(readOnly = true) but writes ...: a read-only transaction drops or rejects writes` (Hibernate sets the flush mode to manual and silently keeps the changes, PostgreSQL rejects the statement, MongoDB ignores the flag). The Box Office contracts regenerated with reach lines under every route, listener and schedule and no `!` line: `POST /orders` reads `HoldDocument, OrderDocument, SeatDocument` and writes `OrderDocument, Outbox.Entry`, the payment listener reads `Inbox.Entry, OrderDocument, SeatDocument` and writes those plus `Outbox.Entry`, the outbox relay in the messaging module `sends to Kafka` (the topic is read from the entry, so it is not a constant). A nested class keeps its outer name so the two `Entry` records stay apart.",
+    "What the lines do not say: the order of the effects, the condition under which each happens (the write here runs only while the hold is unexpired; the line says `writes`), or anything a framework does on the module's behalf (a `@Transactional` commit, a Kafka offset commit, an audit aspect). A method called through reflection or a bean looked up by name is not followed; a data call whose entity argument is a `List` built elsewhere falls back to the documents the method mentions. The GET check is a statement about HTTP semantics, not about this application: a GET that records a metric or refreshes a cache is flagged the same way, and the line is for the reviewer to accept or move.",
+    "The change is a feature rather than a refactoring because the keep-alive is what the developer wants; the point of the example is that the contract puts the cost of the shortcut on the page the reviewer reads, as a side effect of a safe method, instead of leaving it to be found when the next concert sells out with half the seats held by abandoned tabs. The patch leaves the returned hold with its old `expiresAt`, which a reviewer would also ask about; it is not what the contract sees.",
+    "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+  ],
+  "provenance": "Constructed from the HTTP rule that GET is safe (RFC 9110, section 9.2.1) and the common touch-on-read shortcut (a session, a lease or a cache entry refreshed by the request that reads it), on the Box Office hold because its expiry is what returns seats to the market and the checkout page reads it in a loop."
+}

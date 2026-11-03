@@ -45,6 +45,7 @@ pub mod relocate;
 pub mod sarif;
 pub mod shrink;
 pub mod statemachine;
+pub mod reach;
 pub mod store;
 pub mod tla;
 pub mod trusted;

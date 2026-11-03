@@ -11,4 +11,10 @@ public interface NoteRepository extends MongoRepository<NoteDocument, String> {
 
     @Query(value = "{ 'txet': ?0 }", fields = "{ 'text': 1, 'by': 1 }")
     List<NoteDocument> search(String text);
+
+    /** A derived delete and a deleting query: writes, by name and by the annotation. */
+    void deleteByAuthor(String author);
+
+    @Query(value = "{ 'author': ?0 }", delete = true)
+    long purge(String author);
 }

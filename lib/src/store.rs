@@ -623,7 +623,7 @@ fn supertypes(signature: &str) -> Vec<Sig> {
 
 /// The domain type of a Spring Data repository interface: the first type argument of the `...Repository<T, ID>`
 /// it extends, directly or through another local interface.
-fn repository_domain(cp: &ClassPath, class: &ClassFile, depth: usize) -> Option<String> {
+pub(crate) fn repository_domain(cp: &ClassPath, class: &ClassFile, depth: usize) -> Option<String> {
     if !class.is_interface() || depth > 3 {
         return None;
     }

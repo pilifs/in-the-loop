@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T06:03:50.099Z",
-  "duration_seconds": 221635,
+  "ended": "2026-11-03T06:36:35.404Z",
+  "duration_seconds": 223600,
   "stats": {
-    "turns": 187,
-    "api_calls": 1947,
-    "tool_calls": 2454,
-    "tool_errors": 51,
-    "compactions": 31,
+    "turns": 191,
+    "api_calls": 1985,
+    "tool_calls": 2522,
+    "tool_errors": 53,
+    "compactions": 32,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 58068,
-      "output_tokens": 4123660,
-      "cache_read_input_tokens": 361617188,
-      "cache_creation_input_tokens": 9014149
+      "input_tokens": 59224,
+      "output_tokens": 4214920,
+      "cache_read_input_tokens": 366633601,
+      "cache_creation_input_tokens": 9222441
     }
   },
   "tools": {
-    "Bash": 1956,
+    "Bash": 2024,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -664,24 +664,38 @@
     {
       "index": 31,
       "started": "2026-11-03T05:39:57.065Z",
-      "ended": "2026-11-03T06:03:50.099Z",
+      "ended": "2026-11-03T06:11:07.334Z",
       "turns": 4,
-      "api_calls": 52,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 1514,
-        "output_tokens": 94098,
-        "cache_read_input_tokens": 7038032,
-        "cache_creation_input_tokens": 193483
+        "input_tokens": 1578,
+        "output_tokens": 95563,
+        "cache_read_input_tokens": 7457055,
+        "cache_creation_input_tokens": 196353
       },
-      "peak_context_tokens": 208398
+      "peak_context_tokens": 211298
+    },
+    {
+      "index": 32,
+      "started": "2026-11-03T06:12:23.852Z",
+      "ended": "2026-11-03T06:36:35.404Z",
+      "turns": 4,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 1092,
+        "output_tokens": 89795,
+        "cache_read_input_tokens": 4597390,
+        "cache_creation_input_tokens": 205422
+      },
+      "peak_context_tokens": 220367
     }
   ],
   "log": {
-    "sha256": "6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f",
-    "bytes": 72881527,
-    "lines": 27040,
-    "gzip_bytes": 12325007,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f.jsonl.gz"
+    "sha256": "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618",
+    "bytes": 74669387,
+    "lines": 27717,
+    "gzip_bytes": 12641518,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1036,6 +1050,14 @@
       "summary": "Add the stored types block to boundary contracts: the shape of each Spring Data MongoDB document as the mapper stores it, and a ! line for every query, update, index, sort, projection or @Query string that names a field the document does not have (verification pending)",
       "body": "A Criteria.where(\"expiresAt\"), an Update.set(\"status\", ...), an Index().on(\"holdId\", ASC), a Sort.by(\"createdAt\") or a repository @Query(\"{ 'customerId': ?0 }\") names a field as a string, and nothing checks the string: the driver sends it to the database, which matches, writes, indexes or sorts by whatever field that is. A renamed record component leaves every query of it matching nothing and every test that goes through the same strings passing. The new module lib/src/store.rs renders each @Document class of the module as a 'stored' block (the @Id or the property named id as _id, a @Field rename as 'due: Instant (dueAt)', @Transient and transient fields left out, the superclass's fields first, each embedded local type as its own 'record, embedded' block) and, under the document, a ! line for every field-name string in the module's bytecode and annotations that names a field it does not have: Criteria.where/and, the Update write and remove operators, Index.on, Sort.by (varargs read back from the array the compiler builds), Sort.Order, the projection's include/exclude, a repository method's @Query value/sort/fields (parsed as the loose JSON Spring accepts, with the $ operators transparent) and a document's @CompoundIndex definition. A string may use the Java or the stored name of a property, _id or the id property's name, a dotted path through embedded types, collections and maps, with $ segments and array indices skipped; a path into a leaf type (a String, an Instant, an enum) is a problem too. The document a string is about is the one the method names (a class literal passed to the template, or a new of the document); a helper that names none takes its callers' documents, and a string with none in reach is checked against every document of the module. The nearest property is suggested when it is within a few edits. The stats line gained 'N stored types', the contract header comment mentions the block, and examples/tools/build.py reads the new count.\n\nVerified with the library's Spring fixtures: new stubs for Spring Data (Id, Transient, Version, Field, Indexed, CompoundIndex, Index, Sort, Criteria, Update, Query, Field, MongoTemplate, repository Query, MongoRepository), a TaskDocument with embedded records, a map, a @Field rename and a @Transient component, a class document CounterDocument with the implicit id and transient and static fields, a NotesStore with one wrong string of each kind (a where, an Update.set and unset, an Index.on, a Sort.by, a path through an embedded type, a path into a String, a helper with no document of its own, a method with none in reach) and a NoteRepository with a wrong @Query key; the integration test asserts each stored block, each ! line and the paths that must not be problems, and the contract diff shows a renamed stored field. 88 unit and 29 integration tests pass. The three Box Office modules with documents regenerated with stored blocks (ticketing-service 4, payment-service 1, messaging 2) and no new problem: every field string of the application resolves. Example 115 renames HoldDocument.idempotencyKey to requestKey, a one-file IDE rename that leaves the three strings in TicketingStore naming the old field, so the idempotent retry of POST /concerts/{id}/holds holds the seats twice; confirmed by hand through Gradle's verifyBoundaries (three new ! lines under HoldDocument, 3 problems), queued as job 20261103-060133-example-115-a-hold-s-idempotency-key-ren for the pipeline since it compiles the module with Gradle. New defect tag schema-drift; lib/README.md, examples/approaches.md, the Box Office README, the verify-bytecode reference and the Gradle plugin's comment describe the block.",
       "log_sha256": "6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f"
+    },
+    {
+      "change_id": "kkoulumoumvrozswupsrunxqvotylxpz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add reach lines to boundary contracts: under each entry point what it reads, writes, sends, calls and publishes, from a call graph over the application's own classes, with a ! line for a GET with side effects and a read-only transaction that writes (verification pending)",
+      "body": "A boundary contract listed where Spring enters a module and what advice applies, but not what an entry point does. The new module lib/src/reach.rs follows the calls in the bytecode from each entry point and advised method through the application's own classes (the module and its sibling modules; a call into Spring, the JDK or a driver is a leaf) and classifies the leaves: the Spring Data templates and repositories, the JPA EntityManager and the JDBC helpers give reads and writes (of the class literal passed, else the static type of the entity argument, else the documents the method mentions; a table from the SQL constant), the Kafka, RabbitMQ, JMS, Spring Cloud Stream and AWS templates give sends, RestTemplate, RestClient, WebClient and @HttpExchange or Feign interfaces give HTTP calls, ApplicationEventPublisher gives events. Virtual calls go to every local subtype that overrides the method, lambdas to their bodies through the LambdaMetafactory bootstrap arguments. The lines go under the entry point as details (reads A, B / writes C / sends t / calls GET /x / publishes E). Two checks read them: a GET or HEAD route that writes, sends, publishes or makes a non-GET call is a ! line (a safe method with side effects), and a @Transactional(readOnly = true) method that writes is a ! line. The stack walk in boundaries::pushing now goes through dup, so a new X(...) argument is typed.\n\nVerified by the library's Spring fixtures (new TaskFlow, TasksController, Work, Notifier, KafkaNotifier, UserClient and TaskCreated, with stubs for KafkaTemplate, JdbcTemplate, RestClient, ApplicationEventPublisher and the HttpExchange annotations): one path of each kind, the two problems, and a handler that reaches nothing; 90 unit and 29 integration tests pass. The three Box Office modules regenerated with reach lines under every route, listener and schedule and no new problem (POST /orders reads HoldDocument, OrderDocument, SeatDocument and writes OrderDocument, Outbox.Entry; the payment listener reads and writes the inbox, the order, the seats and the outbox; the relay sends to Kafka). Example 116 makes GET /holds/{id} extend the hold it returns, a touch-on-read that keeps seats held while the checkout page polls; confirmed by hand through Gradle, the regenerated contract gains writes HoldDocument, SeatDocument and the ! line under the GET. Job 20261103-063503-example-116-get-holds-id-made-to-extend queued, since the example compiles the module with Gradle. New defect tag side-effecting-read; docs in lib/README.md, examples/approaches.md, the Box Office README and the plugin reference updated.",
+      "log_sha256": "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618"
     }
   ],
   "logs": {
@@ -1067,6 +1089,12 @@
       "bytes": 61319866,
       "lines": 22199,
       "gzip_bytes": 10325437,
+      "url": null
+    },
+    "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618": {
+      "bytes": 74669387,
+      "lines": 27717,
+      "gzip_bytes": 12641518,
       "url": null
     },
     "38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338": {

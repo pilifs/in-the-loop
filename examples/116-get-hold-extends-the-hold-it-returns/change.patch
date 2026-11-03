@@ -1,0 +1,44 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java
+index b32ad6f..edddba9 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java
+@@ -76,8 +76,17 @@ public class HoldService {
+         });
+     }
+ 
++    /**
++     * Returns the hold and keeps it alive: the checkout page shows the hold while the customer fills in the
++     * payment form, and should not lose the seats under them while they do.
++     */
+     public HoldDocument get(String holdId) {
+-        return store.hold(holdId).orElseThrow(() -> new NotFoundException("no hold " + holdId));
++        var hold = store.hold(holdId).orElseThrow(() -> new NotFoundException("no hold " + holdId));
++        Instant now = clock.instant();
++        if (hold.expiresAt().isAfter(now)) {
++            store.extend(hold.id(), policy.expiresAt(now));
++        }
++        return hold;
+     }
+ 
+     /**
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
+index ca580b5..500b8f3 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
+@@ -144,6 +144,16 @@ public class TicketingStore {
+         return Optional.ofNullable(mongo.findById(id, HoldDocument.class));
+     }
+ 
++    /** Pushes the expiry of {@code holdId}, and of the seats it still holds, to {@code expiresAt}. */
++    public void extend(String holdId, Instant expiresAt) {
++        mongo.updateFirst(
++                query(where("_id").is(holdId)), new Update().set("expiresAt", expiresAt), HoldDocument.class);
++        mongo.updateMulti(
++                query(where("holdId").is(holdId).and("status").is(SeatStatus.HELD)),
++                new Update().set("expiresAt", expiresAt),
++                SeatDocument.class);
++    }
++
+     public Optional<HoldDocument> holdByIdempotencyKey(String customerId, String key) {
+         return Optional.ofNullable(mongo.findOne(
+                 query(where("customerId").is(customerId).and("idempotencyKey").is(key)), HoldDocument.class));

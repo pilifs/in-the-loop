@@ -4516,6 +4516,47 @@
         "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
       ],
       "source": null
+    },
+    {
+      "id": "116",
+      "path": "examples/116-get-hold-extends-the-hold-it-returns",
+      "title": "GET /holds/{id} now extends the hold it returns: a polling checkout page keeps seats held for ever",
+      "summary": "The developer makes `GET /holds/{id}` keep the hold alive: `HoldService.get` pushes the expiry of the hold and of its seats forward on every call, so a customer filling in the payment form does not lose the seats under them. The checkout page polls that endpoint for its countdown, so a hold now never expires while a tab is open, a browser's prefetch or a monitor's probe keeps seats off the market, and a retried GET changes state. The boundary contract now says what each entry point reaches (the documents it reads and writes, the topics it sends to, the HTTP calls it makes, the events it publishes); the regenerated contract has `writes HoldDocument, SeatDocument` under the GET and a `!` line: a safe method with side effects.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.app.HoldService",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "contract-diff-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of the reach lines of a boundary contract (`lib/src/reach.rs`). For every entry point and advised method, the tool follows the calls in the bytecode through the application's own classes (the module and its sibling modules on the class path; a call into Spring, the JDK or a driver is a leaf) and classifies the leaves: the Spring Data templates and repositories, the JPA `EntityManager` and `JdbcTemplate` give `reads` and `writes` (of the class literal passed, else the static type of the entity argument, else the documents the method mentions; a table from the SQL constant), the Kafka, RabbitMQ, JMS and Spring Cloud Stream templates give `sends` (the topic when it is a constant, else `to Kafka`), `RestTemplate`, `RestClient`, `WebClient` and `@HttpExchange` or Feign interfaces give `calls GET /path`, `ApplicationEventPublisher` gives `publishes`. A virtual call goes to every local subtype that overrides the method, a lambda to its body whether or not the receiver runs it: a may-reach approximation, which is the right side to err on for a reviewer.",
+        "Two checks read these lines: a `GET` or `HEAD` route that writes, sends, publishes or makes a non-GET call is `! a GET that ...: a safe method with side effects`, and a `@Transactional(readOnly = true)` method that writes is `! @Transactional(readOnly = true) but writes ...: a read-only transaction drops or rejects writes` (Hibernate sets the flush mode to manual and silently keeps the changes, PostgreSQL rejects the statement, MongoDB ignores the flag). The Box Office contracts regenerated with reach lines under every route, listener and schedule and no `!` line: `POST /orders` reads `HoldDocument, OrderDocument, SeatDocument` and writes `OrderDocument, Outbox.Entry`, the payment listener reads `Inbox.Entry, OrderDocument, SeatDocument` and writes those plus `Outbox.Entry`, the outbox relay in the messaging module `sends to Kafka` (the topic is read from the entry, so it is not a constant). A nested class keeps its outer name so the two `Entry` records stay apart.",
+        "What the lines do not say: the order of the effects, the condition under which each happens (the write here runs only while the hold is unexpired; the line says `writes`), or anything a framework does on the module's behalf (a `@Transactional` commit, a Kafka offset commit, an audit aspect). A method called through reflection or a bean looked up by name is not followed; a data call whose entity argument is a `List` built elsewhere falls back to the documents the method mentions. The GET check is a statement about HTTP semantics, not about this application: a GET that records a metric or refreshes a cache is flagged the same way, and the line is for the reviewer to accept or move.",
+        "The change is a feature rather than a refactoring because the keep-alive is what the developer wants; the point of the example is that the contract puts the cost of the shortcut on the page the reviewer reads, as a side effect of a safe method, instead of leaving it to be found when the next concert sells out with half the seats held by abandoned tabs. The patch leaves the returned hold with its old `expiresAt`, which a reviewer would also ask about; it is not what the contract sees.",
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+      ],
+      "source": null
     }
   ]
 }

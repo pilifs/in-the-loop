@@ -5,7 +5,9 @@
 # a provider on the class path), then the configuration keys (what the classes read, what the application
 # files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,
 # response and message type) and the stored types (the shape of each document, and the query strings that
-# name a field it does not have). A `!` line is a place where something does not do what it says.
+# name a field it does not have). Under each entry point, what it reaches: the documents it reads and writes,
+# the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where
+# something does not do what it says.
 kind: boundaries
 module: payment-service, 6 beans, 3 entry points, 0 advised methods, 11 configuration keys, 2 wire types, 1 stored types, 1 problems
 
@@ -13,12 +15,16 @@ net.terminalvalue.boxoffice.payments.PaymentApplication: @SpringBootApplication 
 
 net.terminalvalue.boxoffice.payments.api.PaymentController: @RestController @RequestMapping("/payments")
   GET /payments => List<PaymentDocument> all()
+    reads PaymentDocument
   GET /payments/{orderId} => ResponseEntity<PaymentDocument> get(@PathVariable String orderId)
+    reads PaymentDocument
 
 net.terminalvalue.boxoffice.payments.app.PaymentCommandHandler: @Service
 
 net.terminalvalue.boxoffice.payments.app.PaymentCommandListener: @Component
   @KafkaListener(topics = "payments.commands", groupId = "payments") => void on(ConsumerRecord<String, String> record)
+    reads Inbox.Entry, PaymentDocument
+    writes Inbox.Entry, Outbox.Entry, PaymentDocument
 
 net.terminalvalue.boxoffice.payments.app.PaymentDocument: @Document("payments")
   @Id String orderId
