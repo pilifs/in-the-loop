@@ -177,7 +177,8 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
   default is a quarter of the machine, not of the cap). A job's `env` overrides both.
 - A job that requires `jvmcontract` gets one built from `lib/` at the job's commit, cached by the tree id of `lib/`,
   on `PATH` and in `$JVMCONTRACT`. The build is recorded as step 0 when it happens.
-- `link`: paths outside git that jobs need, linked into every export (the JBMC model fork in `libs/`).
+- `link`: paths outside git that jobs need, linked into every export (none by default; the JDK models that once
+  lived in a fork under `libs/` now ship with `jvmcontract`).
 
 On this machine (8 cores, 9 GB, WSL) the defaults leave room for one development session in the feature loop's 4 GB
 scope. Without it, `--memory 7G` is safe.

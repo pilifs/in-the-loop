@@ -678,7 +678,8 @@ fn generalized_quantifiers_fold_and_counterexamples_shrink() {
     let witness = evens.counterexample.unwrap();
     assert_eq!(witness.input, "evens(xs=[-1])", "{}", evens.output);
     assert_eq!(witness.outcome, "1");
-    assert!(witness.found.as_deref().unwrap().starts_with("evens(xs=["), "{:?}", witness.found);
+    // What JBMC found before shrinking depends on its solver (CaDiCaL lands on [-1] at once; MiniSAT on a longer array).
+    assert!(witness.found.as_deref().is_none_or(|f| f.starts_with("evens(xs=[")), "{:?}", witness.found);
     let unshrunk = prove_with("fixtures.Search#evens", None, Some("result == (\\num_of int i; 0 <= i && i < xs.length; xs[i] % 2 == 0)"), "evens-unshrunk", 8, false).unwrap();
     let witness = unshrunk.counterexample.unwrap();
     assert!(witness.found.is_none() && witness.shrink_runs == 0 && !unshrunk.output.contains("shrunk"), "{}", unshrunk.output);
@@ -844,4 +845,74 @@ fn draws_the_state_machine_of_a_contract() {
         assert_eq!(machine.unreachable(), vec!["PENDING_PAYMENT"]);
         assert!(machine.mermaid().contains("PENDING_PAYMENT --> CONFIRMED: PaymentCaptured[seatsStillHeld=true] → effects=[SELL_SEATS]"));
     }
+}
+
+#[test]
+fn the_interpreter_runs_the_models_where_the_jdk_is_modelled() {
+    use jvmcontract::interp::{Fault, Machine, Value};
+    let Some(classes) = fixtures() else { return };
+    let mut cp = ClassPath::new();
+    cp.add(classes).unwrap();
+    let cp = cp.with_default_jdk();
+    let mut m = Machine::new(&cp);
+    let hex = |m: &mut Machine, ch: u32| m.call_static("fixtures/Models", "hexDigit", "(C)I", vec![Value::Int(ch as i32)]).unwrap();
+    // Character.digit by the JDK's table: the Arabic-Indic zero and the fullwidth A are digits, as on a JVM.
+    assert_eq!(hex(&mut m, 0x0660), Some(Value::Int(0)));
+    assert_eq!(hex(&mut m, 0xFF21), Some(Value::Int(10)));
+    assert_eq!(hex(&mut m, 'F' as u32), Some(Value::Int(15)));
+    assert_eq!(hex(&mut m, 'g' as u32), Some(Value::Int(-1)));
+    // A static initializer that reads StandardCharsets.UTF_8 runs, on the model's instance.
+    let encoding = m.get_static("fixtures/Models", "ENCODING").unwrap();
+    assert_eq!(m.str_of(encoding).as_deref(), Some("UTF-8"));
+    let standard = |m: &mut Machine, first: char| m.call_static("fixtures/Models", "standard", "(C)Z", vec![Value::Int(first as i32)]).unwrap();
+    assert_eq!(standard(&mut m, 'u'), Some(Value::Int(1)));
+    assert_eq!(standard(&mut m, 'z'), Some(Value::Int(0)));
+    let canonical = m.call_static("fixtures/Models", "canonical", "(C)Ljava/lang/String;", vec![Value::Int('u' as i32)]).unwrap().unwrap();
+    assert_eq!(m.str_of(canonical).as_deref(), Some("UTF-8"), "an alias resolves to the canonical name");
+    // forName of a name that is none of the six throws the modelled exception, an IllegalArgumentException.
+    match m.call_static("fixtures/Models", "canonical", "(C)Ljava/lang/String;", vec![Value::Int('z' as i32)]) {
+        Err(Fault::Throw(r)) => {
+            let class = m.class_of(r);
+            assert_eq!(class, "java/nio/charset/UnsupportedCharsetException");
+            assert!(cp.is_subtype(&class, "java/lang/IllegalArgumentException"));
+        }
+        other => panic!("expected a throw, got {other:?}"),
+    }
+    assert_eq!(m.call_static("fixtures/Models", "boxed", "(I)I", vec![Value::Int(-7)]).unwrap(), Some(Value::Int(-7)), "boxing stays native");
+    // Without the models, the static read is beyond the interpreter and the digit comes from its native.
+    let mut off = ClassPath::new();
+    off.add(classes).unwrap();
+    let off = off.with_default_jdk().with_models(false);
+    let mut m = Machine::new(&off);
+    assert!(matches!(m.get_static("fixtures/Models", "ENCODING"), Err(Fault::Unsupported(_))));
+}
+
+#[test]
+fn proofs_over_modelled_jdk_classes_are_decided_by_the_models() {
+    // Models.<clinit> reads StandardCharsets.UTF_8, so every proof here also needs the charset models under JBMC.
+    // Character.digit comes from the model: the property holds by the JDK's table, and the witness against the
+    // stricter claim is a Unicode digit, which the interpreter replays on the same model.
+    let Some(all) = prove("fixtures.Models#hexDigit", None, Some("result >= -1 && result <= 15"), "models-digit") else { return };
+    assert_eq!(all.verdict, Verdict::Verified, "{}", all.output);
+    let ascii = prove("fixtures.Models#hexDigit", None, Some("result == -1 || ch < 128"), "models-unicode").unwrap();
+    assert_eq!(ascii.verdict, Verdict::Violation, "{}", ascii.output);
+    let witness = ascii.counterexample.unwrap();
+    assert!(witness.input.starts_with("hexDigit(ch="), "{}", witness.input);
+    assert!(!witness.outcome.contains("could not replay"), "{}", witness.outcome);
+    assert!(witness.values.iter().any(|v| !v.is_ascii()), "a digit beyond ASCII, such as the fullwidth zero: {:?}", witness.values);
+    assert!(witness.outcome.contains("returns") || witness.outcome.chars().any(|c| c.is_ascii_digit()), "replayed on the model to its digit value: {}", witness.outcome);
+    // Boxing: the JDK's Integer.valueOf reads the cache the tool models. Without the model JBMC indexes a
+    // nondeterministic array, and the proof fails for a reason the interpreter cannot replay.
+    let boxed = prove("fixtures.Models#boxed", None, Some("result == n"), "models-boxed").unwrap();
+    assert_eq!(boxed.verdict, Verdict::Verified, "{}", boxed.output);
+    let classes = fixtures().unwrap();
+    let mut options = property::Options::new(&[classes.to_path_buf()], "fixtures.Models#boxed");
+    options.assert = Some("result == n".into());
+    options.models = false;
+    let work = target_tmp().join("property-models-off");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    let without = property::run(&options).unwrap();
+    assert_ne!(without.verdict, Verdict::Verified, "{}", without.output);
+    assert!(!work.join("models").exists(), "no models directory is written when they are off");
 }

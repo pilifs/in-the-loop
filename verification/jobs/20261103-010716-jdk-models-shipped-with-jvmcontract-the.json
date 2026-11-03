@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-010716-jdk-models-shipped-with-jvmcontract-the",
+  "title": "JDK models shipped with jvmcontract: the integration tests that run JBMC on the model fixture",
+  "description": "The models of JDK classes JBMC has no bytecode for (the boxing caches, Character.digit generated from the JDK's table, java.nio.charset) now ship inside jvmcontract (lib/models, src/models.rs) and go on JBMC's class path by themselves; JBMC runs with --no-refine-strings, since its string solver replaced calls of java.lang.Character by its own approximations and gave them arbitrary results. The integration test proofs_over_modelled_jdk_classes_are_decided_by_the_models proves Character.digit's range over every char on the model, refutes a stricter claim with a Unicode digit the interpreter replays on the same model, proves that Integer.valueOf round-trips through the cache model, and checks that the same proof is not verified with --no-models. The rest of the suite checks that nothing else moved: the Box Office contracts are still identical to the committed ones, and every other JBMC and TLC test passes with the string solver off. JBMC is also asked for its bundled CaDiCaL solver by default (--sat-solver): with the string solver off, the MiniSAT path stalled for over ten minutes on the binary-search proof in arrays_are_quantified_over_and_witnessed, which CaDiCaL settles in about a second per stage.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "jbmc:models",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/models.rs",
+      "lib/models"
+    ],
+    "examples": [
+      "109"
+    ]
+  },
+  "expected": "exits 0; every test passes, among them the two new ones (the_interpreter_runs_the_models_where_the_jdk_is_modelled, proofs_over_modelled_jdk_classes_are_decided_by_the_models)",
+  "submitted": {
+    "at": "2026-11-03T01:07:16+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "javac",
+    "cargo",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m",
+    "notes": "the suite ran in a few minutes in the session; each JBMC test is a few seconds at 2 GB"
+  },
+  "steps": [
+    {
+      "name": "unit and integration tests",
+      "run": "cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

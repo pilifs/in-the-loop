@@ -232,8 +232,8 @@ impl<'a> Machine<'a> {
         if self.init.contains_key(class) {
             return Ok(());
         }
-        let Some(cf) = self.cp.application(class).map_err(|e| Fault::Unsupported(e.to_string()))? else {
-            self.init.insert(class.to_string(), InitState::Done); // JDK classes have no state here
+        let Some(cf) = self.cp.bytecode(class).map_err(|e| Fault::Unsupported(e.to_string()))? else {
+            self.init.insert(class.to_string(), InitState::Done); // JDK classes without a model have no state here
             return Ok(());
         };
         self.init.insert(class.to_string(), InitState::InProgress);
@@ -290,7 +290,7 @@ impl<'a> Machine<'a> {
             if let Some(v) = self.statics.get(&c).and_then(|f| f.get(name)) {
                 return Ok(*v);
             }
-            let Ok(Some(cf)) = self.cp.application(&c) else { break };
+            let Ok(Some(cf)) = self.cp.bytecode(&c) else { break };
             for iface in &cf.interfaces {
                 self.ensure_initialized(iface)?;
                 if let Some(v) = self.statics.get(iface).and_then(|f| f.get(name)) {
@@ -342,7 +342,7 @@ impl<'a> Machine<'a> {
         let mut base = Base::Object;
         let mut current = Some(class.to_string());
         while let Some(c) = current {
-            match self.cp.application(&c).map_err(|e| Fault::Unsupported(e.to_string()))? {
+            match self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))? {
                 Some(cf) => {
                     for field in cf.fields.iter().filter(|f| !f.is_static()) {
                         let t = Type::parse(&field.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
@@ -438,19 +438,36 @@ impl<'a> Machine<'a> {
         Ok(compiled)
     }
 
-    /// Calls a static method of an application class by name. The class is initialised first.
+    /// Calls a static method of an application class (or a model) by name. The class is initialised first.
     pub fn call_static(&mut self, class: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         self.ensure_initialized(class)?;
-        let cf = self.cp.application(class).map_err(|e| Fault::Unsupported(e.to_string()))?.ok_or_else(|| Fault::Unsupported(format!("class not found: {class}")))?;
-        let (owner, method) = self.cp.find_method(class, name, descriptor).ok_or_else(|| Fault::Unsupported(format!("method not found: {class}.{name}{descriptor}")))?;
-        let _ = cf;
+        if self.cp.bytecode(class).map_err(|e| Fault::Unsupported(e.to_string()))?.is_none() {
+            return Err(Fault::Unsupported(format!("class not found: {class}")));
+        }
+        let (owner, method) = self.cp.bytecode_method(class, name, descriptor).ok_or_else(|| Fault::Unsupported(format!("method not found: {class}.{name}{descriptor}")))?;
         self.invoke(&owner, &method, args)
+    }
+
+    /// A static call into the JDK: the model's bytecode when the tool has a model that defines the method, else
+    /// the interpreter's natives. The model is the definition both engines share, so it comes first.
+    fn call_static_jdk(&mut self, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+        if let Some((class, method)) = self.model_method(owner, name, descriptor) {
+            self.ensure_initialized(owner)?;
+            return self.invoke(&class, &method, args);
+        }
+        natives::invoke_static_jdk(self, owner, name, descriptor, args)
+    }
+
+    /// The method of a model that has code for `owner.name(descriptor)`, if the tool models the owner.
+    fn model_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        self.cp.model(owner)?;
+        self.cp.bytecode_method(owner, name, descriptor).filter(|(_, m)| m.code.is_some())
     }
 
     /// Constructs an instance of an application class: `new` followed by `<init>`.
     pub fn construct(&mut self, class: &str, descriptor: &str, args: Vec<Value>) -> Exec<Value> {
         let object = self.new_instance(class)?;
-        let cf = self.cp.application(class).ok().flatten().ok_or_else(|| Fault::Unsupported(format!("class not found: {class}")))?;
+        let cf = self.cp.bytecode(class).ok().flatten().ok_or_else(|| Fault::Unsupported(format!("class not found: {class}")))?;
         let init = cf.method("<init>", descriptor).ok_or_else(|| Fault::Unsupported(format!("no constructor {class}.<init>{descriptor}")))?.clone();
         let mut full = vec![object];
         full.extend(args);
@@ -464,10 +481,10 @@ impl<'a> Machine<'a> {
         let class = self.class_of(r);
         match self.heap.get(r) {
             Object::Instance { .. } => {
-                // The most specific application implementation, else the JDK method it inherits.
+                // The most specific application (or model) implementation, else the JDK method it inherits.
                 let mut current = Some(class.clone());
                 while let Some(c) = current {
-                    let Ok(Some(cf)) = self.cp.application(&c) else { break };
+                    let Ok(Some(cf)) = self.cp.bytecode(&c) else { break };
                     if let Some(m) = cf.method(name, descriptor) {
                         if m.code.is_some() {
                             let m = m.clone();
@@ -483,7 +500,7 @@ impl<'a> Machine<'a> {
                 }
                 // Default methods of application interfaces.
                 for iface in self.cp.all_interfaces(&class) {
-                    if let Ok(Some(cf)) = self.cp.application(&iface) {
+                    if let Ok(Some(cf)) = self.cp.bytecode(&iface) {
                         if let Some(m) = cf.method(name, descriptor) {
                             if m.code.is_some() {
                                 let m = m.clone();
@@ -886,7 +903,7 @@ impl<'a> Machine<'a> {
                 let result = if self.cp.is_application(&member.owner) {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {
-                    natives::invoke_static_jdk(self, &member.owner, &member.name, &member.descriptor, args)?
+                    self.call_static_jdk(&member.owner, &member.name, &member.descriptor, args)?
                 };
                 push_result(stack, result, &descriptor.ret)?;
             }
@@ -899,7 +916,7 @@ impl<'a> Machine<'a> {
             }
             Insn::New(index) => {
                 let name = pool.class_name(*index).map_err(|e| Fault::Unsupported(e.to_string()))?.to_string();
-                let v = if self.cp.is_application(&name) { self.new_instance(&name)? } else { natives::new_jdk_object(self, &name)? };
+                let v = if self.cp.has_bytecode(&name) { self.new_instance(&name)? } else { natives::new_jdk_object(self, &name)? };
                 stack.push(v);
             }
             Insn::NewArray(kind) => {
@@ -991,8 +1008,8 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
-        if let Ok(Some(_)) = self.cp.application(owner) {
-            if let Some((cf, m)) = self.cp.find_method(owner, name, descriptor) {
+        if let Ok(Some(_)) = self.cp.bytecode(owner) {
+            if let Some((cf, m)) = self.cp.bytecode_method(owner, name, descriptor) {
                 if m.code.is_some() {
                     let mut full = vec![receiver];
                     full.extend(args);

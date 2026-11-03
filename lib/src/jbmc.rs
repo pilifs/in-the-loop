@@ -25,6 +25,16 @@ pub struct JbmcRun {
     pub timeout: Duration,
     /// `--java-assume-inputs-interval`, such as `[0:20]`: a search stage over small inputs.
     pub stage: Option<String>,
+    /// Whether JBMC's string solver is on. Off by default: with it on, JBMC replaces every call of
+    /// `java.lang.Character` by an approximation of its own, in place of the class on the class path (the tool's
+    /// model among them), and was seen to give such a call an arbitrary result; off, strings are opaque objects,
+    /// which the proofs over primitives and arrays never look into.
+    pub refine_strings: bool,
+    /// The SAT solver JBMC is asked for (`--sat-solver`), `None` for its default. CaDiCaL by default: JBMC 6 bundles
+    /// it, and the MiniSAT path JBMC takes with the string solver off stalled for minutes on a binary search over
+    /// eight elements that CaDiCaL settles in a second. A build without the solver answers "unknown solver", and
+    /// the run is repeated with the default.
+    pub sat_solver: Option<String>,
     /// Where to write the log.
     pub log: PathBuf,
     pub extra_args: Vec<String>,
@@ -119,6 +129,12 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
     if let Some(stage) = &run.stage {
         cmd.extend(["--java-assume-inputs-interval".into(), stage.clone()]);
     }
+    if !run.refine_strings {
+        cmd.push("--no-refine-strings".into());
+    }
+    if let Some(solver) = &run.sat_solver {
+        cmd.extend(["--sat-solver".into(), solver.clone()]);
+    }
     cmd.extend(run.extra_args.iter().cloned());
     cmd
 }
@@ -175,7 +191,13 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
     }
     let started = std::time::Instant::now();
     let cwd = run.log.parent().filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(|| PathBuf::from("."));
-    let output = crate::tla::run_with_timeout(&cmd, &cwd, run.timeout)?;
+    let mut output = crate::tla::run_with_timeout(&cmd, &cwd, run.timeout)?;
+    if run.sat_solver.is_some() && output.contains("unknown solver '") {
+        // This JBMC was built without the solver asked for: its own default will do.
+        let fallback = JbmcRun { sat_solver: None, ..run.clone() };
+        let note = format!("note: {}; running again with JBMC's default solver\n", output.lines().find(|l| l.contains("unknown solver")).unwrap_or_default().trim());
+        output = note + &crate::tla::run_with_timeout(&limited(command(&fallback), memory_mb), &cwd, run.timeout)?;
+    }
     let seconds = started.elapsed().as_secs_f64();
     std::fs::write(&run.log, &output)?;
     let mut result = parse_output(&output, &run.class, &run.function, run.unwind, run.stage.clone());
@@ -451,6 +473,8 @@ mod tests {
             unwind: 16,
             timeout: Duration::from_secs(1),
             stage: None,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
             log: PathBuf::from("/tmp/work/jbmc.log"),
             extra_args: Vec::new(),
         };
@@ -458,6 +482,14 @@ mod tests {
         let classpath = &cmd[cmd.iter().position(|a| a == "--classpath").unwrap() + 1];
         assert!(classpath.starts_with('/'), "{classpath}");
         assert!(classpath.contains("/build/main") && classpath.ends_with("/tmp/work/harness"), "{classpath}");
+        assert!(cmd.contains(&"--no-refine-strings".to_string()), "the string solver is off unless asked for");
+        let mut refined = run.clone();
+        refined.refine_strings = true;
+        assert!(!command(&refined).contains(&"--no-refine-strings".to_string()));
+        assert!(cmd.windows(2).any(|w| w == ["--sat-solver", "cadical"]));
+        let mut plain = run.clone();
+        plain.sat_solver = None;
+        assert!(!command(&plain).contains(&"--sat-solver".to_string()));
     }
 
     /// A run of a stand-in for JBMC, whose body follows the answer to `--version`.
@@ -475,6 +507,8 @@ mod tests {
             unwind: 16,
             timeout: Duration::from_secs(30),
             stage: None,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
             log: dir.join(format!("{name}.log")),
             extra_args: Vec::new(),
         })
@@ -513,6 +547,17 @@ mod tests {
         let log = std::fs::read_to_string(&r.log).unwrap();
         assert!(log.lines().next().unwrap().parse::<u64>().unwrap() < u64::MAX / 1024, "{log}");
         assert_eq!(log.lines().nth(1), Some("1000"), "{log}");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own() {
+        let dir = tempfile::tempdir().unwrap();
+        let body = "for a in \"$@\"; do [ \"$a\" = --sat-solver ] && { echo \"unknown solver 'cadical'\"; exit 1; }; done; echo '** 0 of 3 failed (1 iterations)'; echo 'VERIFICATION SUCCESSFUL'";
+        let r = stand_in(dir.path(), "minisat-only", body);
+        assert_eq!(r.verdict, Verdict::Verified, "{:?}", r.problem);
+        let log = std::fs::read_to_string(&r.log).unwrap();
+        assert!(log.starts_with("note: unknown solver 'cadical'; running again"), "{log}");
     }
 
     #[test]

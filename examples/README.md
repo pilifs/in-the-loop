@@ -398,9 +398,9 @@ Take the next free number; constructed and real-world examples share the sequenc
 
 1. Run `/verify-bytecode <pull request>`. It leaves `report.md` and every harness, statement and JBMC log in its
    working directory. For a commit rather than a pull request, check out the commit and its parent into two worktrees
-   and run the same proofs by hand, as 109 did. When a library's class reads a JDK class JBMC has no model of, put the
-   [charset models](../libs/README.md) and the [cache models](../lib/jbmc-models/README.md) on `--classpath` before
-   concluding anything from a violation.
+   and run the same proofs by hand, as 109 did. When a library's class reads a JDK class JBMC has no model of, a
+   violation is an artifact until there is one: the tool's [models](../lib/models/README.md) are on the class path by
+   themselves (`jvmcontract models` lists them), and a class beyond them needs a model added there.
 2. Copy the report to `examples/NNN-<library>-<number>-short-name/README.md`. Keep every number tied to the run: the
    witness, the verdict lines and the times as the tool printed them, and the exact commands. Say what the run did not
    reach and why, and say so where a proof was made on a file compiled alone rather than by the library's build. Link

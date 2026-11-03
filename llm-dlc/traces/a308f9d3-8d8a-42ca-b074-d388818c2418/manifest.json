@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "a308f9d3-8d8a-42ca-b074-d388818c2418",
-  "status": "open",
+  "status": "ended",
   "title": "Feature-loop memory safeguards",
   "first_prompt": "There was a crash in here when experimenting with formal verification related to memory intensive tasks. This particular machine is running lightweight WSL on a small form factor laptop. We can try ru",
   "client": {
@@ -12,20 +12,20 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-01T14:42:53.464Z",
-  "ended": "2026-11-03T00:33:58.022Z",
-  "duration_seconds": 121865,
+  "ended": "2026-11-03T00:39:41.394Z",
+  "duration_seconds": 122208,
   "stats": {
-    "turns": 32,
-    "api_calls": 230,
+    "turns": 36,
+    "api_calls": 231,
     "tool_calls": 226,
     "tool_errors": 8,
-    "compactions": 1,
-    "peak_context_tokens": 402025,
+    "compactions": 2,
+    "peak_context_tokens": 402681,
     "usage": {
-      "input_tokens": 516,
-      "output_tokens": 385733,
-      "cache_read_input_tokens": 49082796,
-      "cache_creation_input_tokens": 804799
+      "input_tokens": 518,
+      "output_tokens": 386049,
+      "cache_read_input_tokens": 49484817,
+      "cache_creation_input_tokens": 805457
     }
   },
   "tools": {
@@ -71,24 +71,38 @@
     {
       "index": 1,
       "started": "2026-11-02T01:43:11.953Z",
-      "ended": "2026-11-03T00:33:58.022Z",
-      "turns": 16,
-      "api_calls": 125,
+      "ended": "2026-11-03T00:38:41.570Z",
+      "turns": 17,
+      "api_calls": 126,
       "usage": {
-        "input_tokens": 272,
-        "output_tokens": 222893,
-        "cache_read_input_tokens": 28836554,
-        "cache_creation_input_tokens": 434999
+        "input_tokens": 274,
+        "output_tokens": 223209,
+        "cache_read_input_tokens": 29238575,
+        "cache_creation_input_tokens": 435657
       },
-      "peak_context_tokens": 402025
+      "peak_context_tokens": 402681
+    },
+    {
+      "index": 2,
+      "started": "2026-11-03T00:39:41.429Z",
+      "ended": "2026-11-03T00:39:41.394Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "1f18a7e437882b09eff3f7ba23631a4e85e8e93da62a459288676b3b9ec7036d",
-    "bytes": 6438625,
-    "lines": 2255,
-    "gzip_bytes": 1113919,
-    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/1f18a7e437882b09eff3f7ba23631a4e85e8e93da62a459288676b3b9ec7036d.jsonl.gz"
+    "sha256": "0ec7a366c16542823637b459a8c934ce527b36355276f9840b613566b721c159",
+    "bytes": 6659864,
+    "lines": 2295,
+    "gzip_bytes": 1159873,
+    "path": "llm-dlc/traces/a308f9d3-8d8a-42ca-b074-d388818c2418/logs/0ec7a366c16542823637b459a8c934ce527b36355276f9840b613566b721c159.jsonl.gz"
   },
   "subagents": [
     {
@@ -494,15 +508,15 @@
     {
       "change_id": "ymmvrwmnwquvkwwrvwnrtqwynpnuxrsm",
       "commit_id": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
-      "immutable": false,
+      "immutable": true,
       "summary": "Make examples a router: one folder for every example, tags in three facets, a search, and per-example notes (verification pending)",
       "body": "The constructed examples (examples/demo/) and the real-world ones (examples/real-world/) are back in one folder, examples/NNN-slug/, with apps/, tools/, schema/ and index.json one level up. That is the layout before the split of 2026-11-01, so the Terminal-Value blog's links to example pages work again. The five real-world reports became examples 105 to 109, each with an example.json (origin real-world, source, verdictLabel) beside its hand-written report. Every relative markdown link was rewritten by resolving it at the old location; patches, example.json files, generated pages, scripts, lib's integration tests, the pipeline and the plugin README name the new paths. The move also fixes the apps' verify.sh, whose ../../../lib had pointed at nothing since the split.\n\nFor finding examples close to a task, every example.json now has origin and tags, from a controlled vocabulary in examples/tags.json: domain (what the code does, 26 tags), defect (what goes or could go wrong, 20) and technique (how it is verified beyond the approach, 21). The B11 technique tags (JML quantifiers, \\old, throws clauses) were derived from the apps' properties.contract, and confined-change from intendedInputs. build.py validates tags, skips real-world examples when running, gains --render-only (rewrite pages from result.json, running nothing), renders tags and notes on each page, and generates the router in examples/README.md: a table of all 109 and every example by approach and by tag, with anchors. index.json (examples-index/v2) carries tags and notes. examples/tools/find.py ranks examples by free text and filters by tag, approach, system, origin, verdict and missed-by-tests. It also fixes a renderer crash on the Box Office model-checking pages, which predated model configurations.\n\nPer-example narrative that had collected in shared pages moved into each example's new notes field: the fourteen 'Nor that ... (NNN)' paragraphs of the demo README, the D1 row of approaches.md (11,000 characters of model configurations, one per example group), and the real-world table's 'Next' column. 85 examples have notes, repeating model context where an example read alone would need it. examples/README.md was rewritten from the demo and real-world READMEs as the router: how to find an example, starting points by area, subject systems, approaches, verdicts, how to read a page, layout, how to run and add both kinds, and where notes go. approaches.md's D1 row is now a description of the approach, and its illustrative example links point at the pages. CLAUDE.md says where example notes go and that examples are found through the router.\n\nVerified so far: every example.json validates against the new schema and the tag vocabulary; build.py --render-only regenerated all 104 constructed pages, and their diffs against the old pages are paths, tags and notes only, apart from 011 and 012 (renderer wording that had not been regenerated), 046 (its current statement.java) and 014; markdown links are as before (11 broken, all template placeholders); example 014 was rerun at the new layout and matches its expectation; the four lib integration tests that read example paths pass; the pipeline tests pass; find.py was tried on several queries. Verification pending: jobs 20261103-002843-rerun-the-box-office-examples-after-the, -rerun-the-quorum-examples-after-the-exam, -rerun-the-crosscut-examples-after-the-ex and -rerun-the-mica-examples-after-the-exampl (verification/jobs/) rerun every constructed example at the new layout, one step per example.",
       "log_sha256": "6504b2b5c8a4c76068e065c0825a059c3940d7f16560ec8bb80bff2909056563"
     },
     {
       "change_id": "qqzwxqxonzwusxuumououoksuqkzupts",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d60616a87567e8dfc4b9ff26eec47352b4962b2d",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "1f18a7e437882b09eff3f7ba23631a4e85e8e93da62a459288676b3b9ec7036d"
@@ -532,6 +546,12 @@
       "lines": 1252,
       "gzip_bytes": 576640,
       "url": "https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/0c61391641236abf15bee18bdc42478108d34ea8e70bd009f2521c733ef95dca.jsonl.gz"
+    },
+    "0ec7a366c16542823637b459a8c934ce527b36355276f9840b613566b721c159": {
+      "bytes": 6659864,
+      "lines": 2295,
+      "gzip_bytes": 1159873,
+      "url": null
     },
     "1f18a7e437882b09eff3f7ba23631a4e85e8e93da62a459288676b3b9ec7036d": {
       "bytes": 6438625,

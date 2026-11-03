@@ -116,10 +116,10 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-02 00:14 UTC | [Real-world examples folder restructure](traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) | 12 | 7 | ended |
 | 2026-11-01 21:47 UTC | [JVM contract bytecode verification skill](traces/2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 12 | 16 | ended |
-| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 32 | 45 | open |
+| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 36 | 45 | ended |
 | 2026-11-01 11:13 UTC | [Feature loop cycle recovery](traces/8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 3 | 1 | ended |
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](traces/b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 7 | 3 | ended |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 149 | 29 | ended |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 157 | 30 | open |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](traces/24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 7 | ended |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | ended |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](traces/8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 21 | 11 | ended |

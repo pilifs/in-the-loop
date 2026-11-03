@@ -4,7 +4,7 @@
 
 Not a pull request: [a maintainer's commit](https://github.com/apache/commons-codec/commit/43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be) to `master` on 2026-09-18, compared with its parent `87f6aa28`. It changes `Hex.toDigit(char, int)`, the method every `decodeHex` overload calls per character, from `Character.digit(ch, 16)` to three explicit ASCII ranges, so that Unicode digits such as the Arabic-Indic zero `U+0660` or the fullwidth `０` are rejected instead of decoded; the Javadoc explains that such spellings could bypass textual blocklists that compare hexadecimal strings without decoding them. The exception message changes from `ch & 0xFF` to `ch & 0xFFFF`. Sixteen lines of tests.
 
-This is the record of a commit that the verifier could not handle as the skill runs today, and of what it took to get a verdict. `Hex`'s static initializer reads `StandardCharsets.UTF_8`, a class JBMC has no bytecode for; the tool's first answer was a violation that was an artifact of that, and so was its second, from `Integer.valueOf` boxing the exception message's arguments. With a model of `java.nio.charset` written for the occasion ([a fork of the CProver models library](../../libs/README.md)) and a model of the JDK's boxing caches ([`lib/jbmc-models/`](../../lib/jbmc-models/README.md)), the new `toDigit` is proved in full: the digit value for the twenty-two ASCII characters and `DecoderException` for every other `char`. The old `toDigit` stays out of reach, because `Character.digit` is not modelled either by JBMC or by the interpreter, and the regression proof needs both versions. The module's capability and API contracts are unchanged.
+This is the record of a commit that the verifier could not handle as the skill runs today, and of what it took to get a verdict. `Hex`'s static initializer reads `StandardCharsets.UTF_8`, a class JBMC has no bytecode for; the tool's first answer was a violation that was an artifact of that, and so was its second, from `Integer.valueOf` boxing the exception message's arguments. With a model of `java.nio.charset` written for the occasion (then a fork of the CProver models library, since moved into the tool as [`lib/models/`](../../lib/models/README.md)) and a model of the JDK's boxing caches (likewise), the new `toDigit` is proved in full: the digit value for the twenty-two ASCII characters and `DecoderException` for every other `char`. The old `toDigit` stays out of reach, because `Character.digit` is not modelled either by JBMC or by the interpreter, and the regression proof needs both versions. The module's capability and API contracts are unchanged.
 
 | Method | Proof | Verdict | Detail |
 |---|---|---|---|
@@ -58,7 +58,7 @@ The regression proof needs the old `toDigit`, which is `Character.digit(ch, 16)`
 
 - The commit and its parent were checked out from a `--filter=blob:none` clone of `apache/commons-codec` into two worktrees on 2026-11-02; the skill's `fetch-pr.sh` takes a pull request, and this is a commit, so the two `git worktree add` commands stood in for it.
 - The module has no compile-time dependencies, so both versions were compiled with `javac -proc:none -parameters -g` over `src/main/java` (135 classes each); Maven was not run.
-- Models: `java/nio/charset/{Charset,StandardCharsets,IllegalCharsetNameException,UnsupportedCharsetException}.java` from the fork's `charset-models` branch, and `java/lang/{Integer$IntegerCache,Long$LongCache,Short$ShortCache,Byte$ByteCache}.java` from `lib/jbmc-models/`, compiled with `javac --release 8` into one directory, `$MODELS`. For the `Character` experiment, `jimage extract` of `java/lang/Character*.class` and `java/lang/CharacterData*.class` from the JDK's `lib/modules` into `$CHARS`.
+- Models: `java/nio/charset/{Charset,StandardCharsets,IllegalCharsetNameException,UnsupportedCharsetException}.java` from the fork's `charset-models` branch, and `java/lang/{Integer$IntegerCache,Long$LongCache,Short$ShortCache,Byte$ByteCache}.java` from what was then `lib/jbmc-models/`, compiled with `javac --release 8` into one directory, `$MODELS`. Both sets now ship with the tool as [`lib/models/`](../../lib/models/README.md) and go on JBMC's class path by themselves. For the `Character` experiment, `jimage extract` of `java/lang/Character*.class` and `java/lang/CharacterData*.class` from the JDK's `lib/modules` into `$CHARS`.
 - Tools: `jvmcontract` from this repository, JBMC 6.11.0, JDK 25.
 - The commands behind the verdicts in the table:
 
@@ -78,3 +78,14 @@ jvmcontract api head-classes --module commons-codec > api-head.txt
 ```
 
 Verdicts: *Verified* means the proof covered every input within the stated bounds. *Violation* means a concrete input was found and replayed; for a regression proof that is a behaviour change, intended or not. *Unverifiable* means the tool gave no verdict, for the reason given; it is never a pass.
+
+## Since this run
+
+The gaps this run hit are closed in the tool, not in its class path: the charset and cache models ship with
+`jvmcontract` ([`lib/models/`](../../lib/models/README.md), listed by `jvmcontract models`) and go on JBMC's class
+path without `--classpath`; `Character.digit` has a model generated from the JDK's decimal-digit table, written out
+as 80 comparisons, so the old `toDigit` is within reach of the regression proof; and JBMC runs without its string
+solver, which replaced calls of `java.lang.Character` by approximations of its own ahead of any class on the class
+path (the "wrong answer" above was that solver's, not the tables'). The regression proof of `toDigit` between the
+two versions, which this run could not make, is queued as a verification job (see the job linked to this example);
+its result goes in `verification/results/`.

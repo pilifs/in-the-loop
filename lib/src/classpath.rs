@@ -1,9 +1,12 @@
-//! The closed world an analysis runs in: the application classes (directories and jars), and the JDK.
+//! The closed world an analysis runs in: the application classes (directories and jars), the JDK, and the tool's
+//! own models of a few JDK classes.
 //!
 //! Application classes are the code under verification. JDK classes are consulted for their *shape* only (their
 //! superclasses, interfaces and member declarations), from the JDK image when one is found and from a built-in
 //! table of `java.base` facts otherwise; their behaviour is never executed from bytecode but modelled by
-//! [`crate::interp`].
+//! [`crate::interp`]. The exception is the [`crate::models`]: class files the tool ships for JDK classes JBMC has
+//! no bytecode for, which the interpreter executes too, so that both engines compute the same function. A model's
+//! shape is used only where neither the application nor the JDK image has the class.
 
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
@@ -88,6 +91,8 @@ pub fn is_jdk_name(internal_name: &str) -> bool {
 pub enum Origin {
     Application,
     Jdk,
+    /// One of the tool's own [`crate::models`].
+    Model,
 }
 
 /// A class with where it came from.
@@ -101,6 +106,8 @@ pub struct Loaded {
 pub struct ClassPath {
     entries: Vec<Entry>,
     jdk: Option<JImage>,
+    /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
+    models: bool,
     cache: RefCell<HashMap<String, Option<Loaded>>>,
 }
 
@@ -114,7 +121,19 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, cache: RefCell::new(HashMap::new()) }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()) }
+    }
+
+    /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
+    /// into a modelled class is left to the interpreter's natives, as it was before the models existed.
+    pub fn with_models(mut self, models: bool) -> ClassPath {
+        self.models = models;
+        self.cache.borrow_mut().clear();
+        self
+    }
+
+    pub fn has_models(&self) -> bool {
+        self.models
     }
 
     /// Adds a directory of classes or a jar, by the path's kind.
@@ -188,7 +207,8 @@ impl ClassPath {
         Ok(out)
     }
 
-    /// Loads a class by internal name: the application entries first, then the JDK. `None` if nowhere.
+    /// Loads a class by internal name: the application entries first, then the JDK, then the tool's models. `None`
+    /// if nowhere.
     pub fn load(&self, name: &str) -> Result<Option<Loaded>, Error> {
         if let Some(cached) = self.cache.borrow().get(name) {
             return Ok(cached.clone());
@@ -211,7 +231,67 @@ impl ClassPath {
                 return Ok(Some(Loaded { class: Rc::new(class), origin: Origin::Jdk }));
             }
         }
+        if let Some(class) = self.model(name) {
+            return Ok(Some(Loaded { class, origin: Origin::Model }));
+        }
         Ok(None)
+    }
+
+    /// The tool's model of a JDK class, if it has one and models are on. This is the class to *execute* for the
+    /// name; for its shape, [`load`](Self::load) prefers the application and the JDK image.
+    pub fn model(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if !self.models {
+            return None;
+        }
+        let key = format!("model:{name}");
+        if let Some(cached) = self.cache.borrow().get(&key) {
+            return cached.as_ref().map(|l| l.class.clone());
+        }
+        let loaded = crate::models::class(name).ok().flatten().map(|class| Loaded { class: Rc::new(class), origin: Origin::Model });
+        let class = loaded.as_ref().map(|l| l.class.clone());
+        self.cache.borrow_mut().insert(key, loaded);
+        class
+    }
+
+    /// The class whose bytecode the interpreter runs for a name: an application class, else a model. `None` for
+    /// a JDK class without a model, whose behaviour is the interpreter's natives'.
+    pub fn bytecode(&self, name: &str) -> Result<Option<Rc<ClassFile>>, Error> {
+        if let Some(class) = self.application(name)? {
+            return Ok(Some(class));
+        }
+        Ok(self.model(name))
+    }
+
+    /// Whether [`bytecode`](Self::bytecode) has a class for the name.
+    pub fn has_bytecode(&self, name: &str) -> bool {
+        matches!(self.bytecode(name), Ok(Some(_)))
+    }
+
+    /// The method the interpreter runs for `owner.name(descriptor)`: declared by the class or inherited from a
+    /// superclass or interface that has bytecode here (an application class or a model). The search stops at the
+    /// first JDK class in the chain: what is inherited from the JDK is the natives' business.
+    pub fn bytecode_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        let mut current = Some(owner.to_string());
+        let mut hops = 0;
+        while let Some(c) = current {
+            let Ok(Some(class)) = self.bytecode(&c) else { break };
+            if let Some(m) = class.method(name, descriptor) {
+                return Some((class.clone(), m.clone()));
+            }
+            current = class.super_class.clone();
+            hops += 1;
+            if hops > 64 {
+                break;
+            }
+        }
+        for iface in self.all_interfaces(owner) {
+            if let Ok(Some(class)) = self.bytecode(&iface) {
+                if let Some(m) = class.method(name, descriptor) {
+                    return Some((class.clone(), m.clone()));
+                }
+            }
+        }
+        None
     }
 
     /// Loads an application class, or `None` if it is a JDK class or missing.
@@ -415,6 +495,34 @@ mod tests {
         assert!(cp.is_subtype("[Ljava/lang/Integer;", "[Ljava/lang/Number;"));
         assert_eq!(cp.jdk_declaring_class("java/lang/Enum", "ordinal").as_deref(), Some("java/lang/Enum"));
         assert_eq!(cp.jdk_declaring_class("java/lang/Enum", "hashCode").as_deref(), Some("java/lang/Enum"));
+    }
+}
+
+#[cfg(test)]
+mod model_tests {
+    use super::*;
+
+    #[test]
+    fn models_are_executed_but_shadow_neither_the_application_nor_the_jdk() {
+        let cp = ClassPath::new();
+        assert!(cp.model("java/nio/charset/Charset").is_some());
+        assert!(cp.bytecode("java/nio/charset/StandardCharsets").unwrap().is_some());
+        assert!(!cp.is_application("java/nio/charset/Charset"), "a model is not the code under analysis");
+        assert!(cp.is_subtype("java/nio/charset/StandardCharsets$Standard", "java/nio/charset/Charset"), "shape from the model where nothing else has the class");
+        let (class, method) = cp.bytecode_method("java/nio/charset/StandardCharsets$Standard", "name", "()Ljava/lang/String;").unwrap();
+        assert_eq!(class.name, "java/nio/charset/Charset");
+        assert_eq!(method.descriptor, "()Ljava/lang/String;");
+        assert!(cp.bytecode_method("java/nio/charset/Charset", "hashCode", "()I").is_some());
+        assert!(cp.bytecode_method("java/nio/charset/Charset", "getClass", "()Ljava/lang/Class;").is_none(), "inherited from Object: the natives' business");
+        let off = ClassPath::new().with_models(false);
+        assert!(off.model("java/nio/charset/Charset").is_none());
+        assert!(!off.has_bytecode("java/lang/Character"));
+        let with_jdk = ClassPath::new().with_default_jdk();
+        if with_jdk.has_jdk() {
+            let loaded = with_jdk.load("java/lang/Character").unwrap().unwrap();
+            assert_eq!(loaded.origin, Origin::Jdk, "the shape of a modelled class comes from the JDK image");
+            assert!(with_jdk.model("java/lang/Character").is_some());
+        }
     }
 }
 

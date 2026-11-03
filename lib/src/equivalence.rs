@@ -57,6 +57,13 @@ pub struct Options {
     pub jbmc: String,
     /// The JDK to take `java.lang.Math` from; found through `JAVA_HOME`/`PATH` when `None`.
     pub java_home: Option<PathBuf>,
+    /// Whether the tool's models of JDK classes ([`crate::models`]) go on JBMC's class path and into the replay
+    /// (they do, unless turned off to see what JBMC makes of the stubs).
+    pub models: bool,
+    /// Whether to run JBMC with its string solver ([`crate::jbmc::JbmcRun::refine_strings`]); off by default.
+    pub refine_strings: bool,
+    /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
+    pub sat_solver: Option<String>,
 }
 
 impl Options {
@@ -77,6 +84,9 @@ impl Options {
             timeout_seconds: 600,
             jbmc: "jbmc".into(),
             java_home: None,
+            models: true,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
         }
     }
 }
@@ -185,15 +195,23 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let statement = harness_dir.join(format!("{}.java", harness::CLASS));
     std::fs::write(&statement, &harness.source)?;
 
-    // 4. The JDK bytecode JBMC needs beyond its own models.
+    // 4. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
     let jdk_dir = work.join("jdk");
     if let Err(e) = extract_jdk_classes(&jdk_dir, options.java_home.as_deref()) {
         let _ = writeln!(out, "note: {e}; JBMC will use its own models of java.lang.Math");
     }
+    let models_dir = work.join("models");
+    if options.models {
+        crate::models::write_to(&models_dir)?;
+    }
 
-    // 5. Prove, or search for a counterexample: small inputs first, then all of them.
+    // 5. Prove, or search for a counterexample: small inputs first, then all of them. The models come last on the
+    // class path, so that a class the application or its class path has takes precedence.
     let mut classpath = vec![harness_dir.clone(), options.after.clone(), before_dir.clone(), jdk_dir.clone()];
     classpath.extend(options.classpath.iter().cloned());
+    if options.models {
+        classpath.push(models_dir.clone());
+    }
     let started = std::time::Instant::now();
     let mut last = None;
     // An array parameter is never null, and is bounded in length: the copying and comparing loops, and the
@@ -212,6 +230,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             unwind: options.unwind,
             timeout: Duration::from_secs(options.timeout_seconds),
             stage: stage.map(str::to_string),
+            refine_strings: options.refine_strings,
+            sat_solver: options.sat_solver.clone(),
             log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
             extra_args: extra_args.clone(),
         };
@@ -239,7 +259,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?;
+            let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
             let before_owner = format!("before/{class_internal}");
             let replay_both = |arguments: &[Argument]| -> (String, String) {
                 let before = witness::replay(&replay_cp, &before_owner, &method_name, &method.descriptor, &descriptor, arguments);

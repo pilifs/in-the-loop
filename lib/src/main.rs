@@ -116,6 +116,16 @@ enum Command {
         #[arg(long, default_value = "next")]
         next_field: String,
     },
+    /// List the models of JDK classes the tool ships (shared by JBMC and the interpreter), or write them out as a
+    /// class path entry.
+    Models {
+        /// Write every model's class file under this directory.
+        #[arg(long)]
+        write: Option<PathBuf>,
+        /// Print JSON.
+        #[arg(long)]
+        json: bool,
+    },
     /// Print the structure of a class file: constant pool size, members, attributes and bytecode.
     Inspect {
         class_file: PathBuf,
@@ -215,6 +225,19 @@ struct EquivalenceArgs {
     /// The `jbmc` executable.
     #[arg(long, default_value = "jbmc")]
     jbmc: String,
+    /// Leave the tool's models of JDK classes (`jvmcontract models`) off JBMC's class path and out of the replay,
+    /// to see what JBMC makes of its stubs.
+    #[arg(long)]
+    no_models: bool,
+    /// Run JBMC with its string solver on. It is off by default: with it on, JBMC replaces calls of
+    /// java.lang.Character by approximations of its own, ahead of the class on the class path.
+    #[arg(long)]
+    refine_strings: bool,
+    /// The SAT solver JBMC is asked for: `cadical` (bundled with JBMC 6, and much the faster on array proofs with
+    /// the string solver off), `minisat2`, or `default` for JBMC's own choice. A JBMC built without the solver
+    /// named is run again with its default.
+    #[arg(long, default_value = "cadical")]
+    sat_solver: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -268,6 +291,19 @@ struct ProveArgs {
     /// The `jbmc` executable.
     #[arg(long, default_value = "jbmc")]
     jbmc: String,
+    /// Leave the tool's models of JDK classes (`jvmcontract models`) off JBMC's class path and out of the replay,
+    /// to see what JBMC makes of its stubs.
+    #[arg(long)]
+    no_models: bool,
+    /// Run JBMC with its string solver on. It is off by default: with it on, JBMC replaces calls of
+    /// java.lang.Character by approximations of its own, ahead of the class on the class path.
+    #[arg(long)]
+    refine_strings: bool,
+    /// The SAT solver JBMC is asked for: `cadical` (bundled with JBMC 6, and much the faster on array proofs with
+    /// the string solver off), `minisat2`, or `default` for JBMC's own choice. A JBMC built without the solver
+    /// named is run again with its default.
+    #[arg(long, default_value = "cadical")]
+    sat_solver: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -337,6 +373,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.shrink = !args.no_shrink;
             options.timeout_seconds = args.timeout;
             options.jbmc = args.jbmc;
+            options.models = !args.no_models;
+            options.refine_strings = args.refine_strings;
+            options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));
@@ -378,6 +417,9 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.shrink = !args.no_shrink;
                 options.timeout_seconds = args.timeout;
                 options.jbmc = args.jbmc.clone();
+                options.models = !args.no_models;
+                options.refine_strings = args.refine_strings;
+                options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
@@ -456,6 +498,20 @@ fn run(cli: Cli) -> Result<i32, Error> {
             match format.as_str() {
                 "dot" => print!("{}", machine.dot()),
                 _ => print!("{}", machine.mermaid()),
+            }
+            Ok(0)
+        }
+        Command::Models { write, json } => {
+            if let Some(dir) = &write {
+                jvmcontract::models::write_to(dir)?;
+            }
+            if json {
+                println!("{}", serde_json::to_string_pretty(jvmcontract::models::MODELS).expect("serializable"));
+            } else {
+                print!("{}", jvmcontract::models::listing());
+                if let Some(dir) = &write {
+                    println!("written under {}", dir.display());
+                }
             }
             Ok(0)
         }

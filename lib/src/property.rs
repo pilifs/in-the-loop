@@ -63,6 +63,13 @@ pub struct Options {
     pub timeout_seconds: u64,
     pub jbmc: String,
     pub java_home: Option<PathBuf>,
+    /// Whether the tool's models of JDK classes ([`crate::models`]) go on JBMC's class path and into the replay
+    /// (they do, unless turned off to see what JBMC makes of the stubs).
+    pub models: bool,
+    /// Whether to run JBMC with its string solver ([`crate::jbmc::JbmcRun::refine_strings`]); off by default.
+    pub refine_strings: bool,
+    /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
+    pub sat_solver: Option<String>,
 }
 
 impl Options {
@@ -84,6 +91,9 @@ impl Options {
             timeout_seconds: 600,
             jbmc: "jbmc".into(),
             java_home: None,
+            models: true,
+            refine_strings: false,
+            sat_solver: Some("cadical".into()),
         }
     }
 }
@@ -230,10 +240,14 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     std::fs::write(&statement, &harness.source)?;
     let assertion = harness.assertion_text.clone();
 
-    // 3. The JDK bytecode JBMC needs beyond its own models.
+    // 3. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
     let jdk_dir = work.join("jdk");
     if let Err(e) = extract_jdk_classes(&jdk_dir, options.java_home.as_deref()) {
         let _ = writeln!(out, "note: {e}; JBMC will use its own models of java.lang.Math");
+    }
+    let models_dir = work.join("models");
+    if options.models {
+        crate::models::write_to(&models_dir)?;
     }
     // A declared JDK exception JBMC has no model of (a ClassFormatError, say) is taken from the JDK image with its
     // superclasses up to one JBMC models, so that the harness's handler for it and the method's `new` of it agree.
@@ -246,6 +260,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     classpath.extend(options.classes.iter().cloned());
     classpath.push(jdk_dir.clone());
     classpath.extend(options.classpath.iter().cloned());
+    if options.models {
+        classpath.push(models_dir.clone()); // last, so that a class the application or its class path has takes precedence
+    }
     let started = std::time::Instant::now();
     let mut last = None;
     // An array parameter is never null, and is bounded in length: a quantifier over it is a loop the unwinding
@@ -264,6 +281,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             unwind: options.unwind,
             timeout: Duration::from_secs(options.timeout_seconds),
             stage: stage.map(str::to_string),
+            refine_strings: options.refine_strings,
+            sat_solver: options.sat_solver.clone(),
             log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
             extra_args: extra_args.clone(),
         };
@@ -294,7 +313,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?;
+            let replay_cp = witness::classpath(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path))?.with_models(options.models);
             let replayed = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).
@@ -381,7 +400,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let mut shrink_runs = 0;
             let mut arguments = found.clone();
             if options.shrink {
-                let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?;
+                let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
                 let shrunk = witness::shrink_in_harness(&harness_cp, harness::PROPERTY_CLASS, &descriptor.params, found.clone());
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;

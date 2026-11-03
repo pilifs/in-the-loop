@@ -40,7 +40,7 @@
   },
   "verdictLabel": "✓ new version proved; ⚠ old version needs a model of Character.digit",
   "notes": [
-    "Needs the charset models (`libs/java-models-library`) and the cache models (`lib/jbmc-models`) on `--classpath`; before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, put them there.",
+    "The run recorded here needed the charset models (then a fork of the CProver models library) and the cache models on `--classpath` by hand; both now ship with jvmcontract (`lib/models`, `jvmcontract models`) and go on JBMC's class path by themselves, with a `Character.digit` model generated from the JDK's table that the old version's regression proof lacked. Before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, check the trace for the stub and add a model.",
     "A commit rather than a pull request: the commit and its parent were checked out into two worktrees and the skill's proofs run by hand.",
     "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets."
   ],

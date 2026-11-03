@@ -1,0 +1,141 @@
+//! The models of JDK classes that ship with the tool: class files compiled from the Java sources in `models/java`
+//! and embedded here, so that a proof needs neither a models jar on the class path nor a JDK to compile one.
+//!
+//! JBMC 6 embeds no model of the class library. The tool hands it the real bytecode of six JDK classes
+//! ([`crate::equivalence::JDK_CLASSES`]) and every other JDK class is a stub whose methods return nondeterministic
+//! values and whose static fields are nondeterministic references, which under `--throw-runtime-exceptions` become
+//! `NullPointerException`s and `ArrayIndexOutOfBoundsException`s on paths a JVM never takes: a class whose static
+//! initializer reads `StandardCharsets.UTF_8`, or a call that boxes with `Integer.valueOf`, was reported as a
+//! violation. A model is a small Java class with the behaviour that programs observe and none of the machinery:
+//! JBMC reads it from the class path in place of the stub, and the interpreter runs the same bytecode in place of
+//! its own natives for the methods the model defines, so that a counterexample found by one is replayed by the
+//! other on the same definition.
+//!
+//! The catalogue, with what each model keeps and leaves out, is `models/README.md`; `models/build.sh` recompiles the
+//! class files after a change, and a test checks that the embedded class files match the sources.
+
+use std::path::Path;
+
+use serde::Serialize;
+
+use crate::classfile::ClassFile;
+use crate::Error;
+
+/// One modelled class.
+#[derive(Debug, Clone, Serialize)]
+pub struct Model {
+    /// The internal name, such as `java/nio/charset/Charset`.
+    pub name: &'static str,
+    /// The source, relative to `models/`.
+    pub source: &'static str,
+    /// What the model is for, in a sentence.
+    pub note: &'static str,
+    #[serde(skip)]
+    pub bytes: &'static [u8],
+}
+
+macro_rules! model {
+    ($name:literal, $source:literal, $class:literal, $note:literal) => {
+        Model { name: $name, source: $source, note: $note, bytes: include_bytes!(concat!("../models/classes/", $class)) }
+    };
+}
+
+/// Every model, in class path order.
+pub const MODELS: &[Model] = &[
+    model!("java/lang/Integer$IntegerCache", "java/lang/Integer$IntegerCache.java", "java/lang/Integer$IntegerCache.class", "the nested cache the JDK's Integer.valueOf reads, declared empty so that boxing allocates (as the CProver models do) instead of indexing a nondeterministic array"),
+    model!("java/lang/Long$LongCache", "java/lang/Long$LongCache.java", "java/lang/Long$LongCache.class", "the nested cache the JDK's Long.valueOf reads, declared empty so that boxing allocates (as the CProver models do) instead of indexing a nondeterministic array"),
+    model!("java/lang/Short$ShortCache", "java/lang/Short$ShortCache.java", "java/lang/Short$ShortCache.class", "the nested cache the JDK's Short.valueOf reads, declared empty so that boxing allocates (as the CProver models do) instead of indexing a nondeterministic array"),
+    model!("java/lang/Byte$ByteCache", "java/lang/Byte$ByteCache.java", "java/lang/Byte$ByteCache.class", "the nested cache the JDK's Byte.valueOf reads, declared empty so that boxing allocates (as the CProver models do) instead of indexing a nondeterministic array"),
+    model!("java/lang/Character", "java/lang/Character.java", "java/lang/Character.class", "digit, isDigit and forDigit from the JDK's decimal-digit table, written out as comparisons (generated from the JDK); the rest of the class is left to each engine"),
+    model!("java/nio/charset/Charset", "java/nio/charset/Charset.java", "java/nio/charset/Charset.class", "a charset as a name: equality, ordering, forName and isSupported over the six standard charsets; no encoders, decoders or providers"),
+    model!("java/nio/charset/StandardCharsets", "java/nio/charset/StandardCharsets.java", "java/nio/charset/StandardCharsets.class", "the six standard charsets as named instances, so that a static initializer that reads one succeeds"),
+    model!("java/nio/charset/StandardCharsets$Standard", "java/nio/charset/StandardCharsets.java", "java/nio/charset/StandardCharsets$Standard.class", "the class of the six standard charsets"),
+    model!("java/nio/charset/IllegalCharsetNameException", "java/nio/charset/IllegalCharsetNameException.java", "java/nio/charset/IllegalCharsetNameException.class", "the exception Charset.forName throws for a null name"),
+    model!("java/nio/charset/UnsupportedCharsetException", "java/nio/charset/UnsupportedCharsetException.java", "java/nio/charset/UnsupportedCharsetException.class", "the exception Charset.forName throws for a name that is none of the six"),
+];
+
+/// The model of a class, by internal name.
+pub fn find(name: &str) -> Option<&'static Model> {
+    MODELS.iter().find(|m| m.name == name)
+}
+
+/// The class file of a model, parsed.
+pub fn class(name: &str) -> Result<Option<ClassFile>, Error> {
+    find(name).map(|m| ClassFile::parse(m.bytes).map_err(|e| Error::new(format!("the model of {name} does not parse: {e}")))).transpose()
+}
+
+/// Writes every model's class file under `dir`, as `dir/java/lang/Character.class` and so on: a class path entry
+/// for JBMC, or for any other tool that reads class files.
+pub fn write_to(dir: &Path) -> Result<(), Error> {
+    for model in MODELS {
+        let target = dir.join(format!("{}.class", model.name));
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        std::fs::write(&target, model.bytes)?;
+    }
+    Ok(())
+}
+
+/// The catalogue as text: one line per model.
+pub fn listing() -> String {
+    let mut s = String::new();
+    for model in MODELS {
+        s.push_str(&format!("{}  ({})\n    {}\n", model.name.replace('/', "."), model.source, model.note));
+    }
+    s
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_model_parses_as_the_class_it_names() {
+        for model in MODELS {
+            let class = ClassFile::parse(model.bytes).unwrap_or_else(|e| panic!("{}: {e}", model.name));
+            assert_eq!(class.name, model.name);
+            assert_eq!(class.major, 52, "{}: compiled for Java 8, which JBMC 6 reads", model.name);
+        }
+        assert!(find("java/lang/Character").is_some());
+        assert!(find("java/lang/Integer").is_none(), "the real Integer is extracted from the JDK, not modelled");
+        assert!(class("java/nio/charset/Charset").unwrap().unwrap().methods.iter().any(|m| m.name == "forName"));
+    }
+
+    #[test]
+    fn the_models_are_written_as_a_class_path_entry() {
+        let dir = tempfile::tempdir().unwrap();
+        write_to(dir.path()).unwrap();
+        for model in MODELS {
+            assert_eq!(std::fs::read(dir.path().join(format!("{}.class", model.name))).unwrap(), model.bytes);
+        }
+        assert!(listing().contains("java.nio.charset.StandardCharsets  (java/nio/charset/StandardCharsets.java)"));
+    }
+
+    /// The embedded class files are what `models/build.sh` makes of the sources: a model edited without a rebuild
+    /// fails here. Compared as disassembly, so that a javac of another version that lays out a constant pool
+    /// differently does not fail it.
+    #[test]
+    fn the_embedded_class_files_match_their_sources() {
+        let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
+        if !javac {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac not found: put it on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            eprintln!("javac not found; skipping");
+            return;
+        }
+        let models = Path::new(env!("CARGO_MANIFEST_DIR")).join("models");
+        let out = tempfile::tempdir().unwrap();
+        for package in ["lang", "nio/charset"] {
+            let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
+            let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g", "-d"]).arg(out.path()).args(&sources).status().unwrap();
+            assert!(status.success(), "the models compile");
+        }
+        for model in MODELS {
+            let compiled = std::fs::read(out.path().join(format!("{}.class", model.name))).unwrap_or_else(|e| panic!("{}: {e}", model.name));
+            let fresh = crate::classfile::describe(&ClassFile::parse(&compiled).unwrap(), true).unwrap();
+            let embedded = crate::classfile::describe(&ClassFile::parse(model.bytes).unwrap(), true).unwrap();
+            let body = |s: &str| s.lines().skip(1).collect::<Vec<_>>().join("\n");
+            assert_eq!(body(&embedded), body(&fresh), "{}: models/classes is stale; run models/build.sh", model.name);
+        }
+    }
+}

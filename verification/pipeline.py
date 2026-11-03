@@ -62,7 +62,7 @@ DEFAULTS = {
         "keep_workdirs": "failed",    # always | failed | never
         "log_max_bytes": "2M",        # longer logs are kept in full locally and as head and tail in the result
         "poll_seconds": 30,
-        "link": [],                   # paths outside git (libs/java-models-library) linked into every export
+        "link": [],                   # paths outside git linked into every export (none by default)
         "after_collect": [],          # commands run at the repo root after outputs are applied
     },
     "defaults": {"cpus": 1, "memory": "2G", "duration": "10m"},

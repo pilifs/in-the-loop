@@ -14,7 +14,8 @@
 //! | [`tla`] | **Protocol**: a TLA+ operator generated from a behavioural contract, for a model checked by TLC | TLC, over every interleaving within bounds |
 //!
 //! Nothing here starts a JVM. Class files are parsed by [`classfile`], the JDK's own classes are read from its
-//! image by [`jimage`] when their shape is needed, and the finite-domain executions run in [`interp`], an
+//! image by [`jimage`] when their shape is needed, a few JDK classes are replaced by [`models`] that both engines
+//! share, and the finite-domain executions run in [`interp`], an
 //! interpreter for the subset of the JVM that pure domain code uses, with a dynamic effect monitor that makes the
 //! purity proof complete over the executed domain.
 //!
@@ -32,6 +33,7 @@ pub mod interp;
 pub mod jbmc;
 pub mod jdk_facts;
 pub mod jimage;
+pub mod models;
 pub mod property;
 pub mod purity;
 pub mod relocate;
