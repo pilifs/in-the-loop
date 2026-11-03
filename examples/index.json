@@ -4394,6 +4394,45 @@
         "The patch changes no Java, so the module compiles as before and the existing tests pass as before; the runner compiles it anyway, since the contract is read from the classes and the files together. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
       ],
       "source": null
+    },
+    {
+      "id": "113",
+      "path": "examples/113-billing-constraints-without-valid-cascade",
+      "title": "A nested Billing record on PlaceOrder carries @NotBlank constraints that no @Valid leads into",
+      "summary": "Orders gain billing details for the receipt: a nested `Billing` record with `@NotBlank` and `@Email` on its fields, added to `PlaceOrder` as a `@NotNull` component. The handler validates the request with `@Valid`, so the author expects a blank name or a bad email to be refused. Bean Validation does not step into a nested object unless the property itself carries `@Valid`, so the only check that runs on the billing details is that they are present; every test posts valid ones and passes. The module's boundary contract lists each wire type with its constraints, and the regenerated contract has a `!` line under the new property saying that the constraints on `Billing` are not checked.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.api.OrderController$PlaceOrder",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "contract-diff-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of the validation checks on a boundary contract (`lib/src/validation.rs`): a nested type's constraints with no `@Valid` leading into them (this example), a `@RequestBody` taken without `@Valid` or `@Validated` while its type carries constraints, a `@Valid` or `@Validated(G.class)` that leaves out the constraints of other groups, a constraint on a type its validator cannot handle (`@Size` on an `int`, which Hibernate Validator rejects at the first validation with `UnexpectedTypeException`), a null check on a primitive, and constraints on a non-public method of a `@Validated` bean. Each is a `!` line under the property or the handler; the library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/Booking.java`) have one of each.",
+        "The contract now writes the constraints inside a type, read from the class file's type annotations (`RuntimeVisibleTypeAnnotations`): `rows: @NotEmpty List<@Pattern(regexp = \"[A-Z]\") String>` in the ticketing service's `CreateConcert`, which earlier contracts showed as `List<String>`. The type-use constraints are where `List<@Valid Item>` cascades from, so a cascade check needs them.",
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+      ],
+      "source": null
     }
   ]
 }

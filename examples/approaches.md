@@ -221,8 +221,10 @@ bean (the call never reaches the proxy; found by a walk back over the bytecode t
 advice on a private, static or final method or a final class (the CGLIB proxy cannot intercept it), a `@Transactional`
 method whose declared checked exception commits (Spring rolls back on unchecked exceptions only, unless `rollbackFor`
 names it), an `@Async` method whose non-`Future` result is lost, a `@Cacheable` method returning nothing, and
-constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean. Each is a
-`!` line in the contract, so introducing one changes the contract and the pull request shows it.
+constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean, or on a
+non-public method of one, a request body whose type carries constraints taken without `@Valid`, and a `@Valid` or
+`@Validated(G.class)` on a body with constraints in groups it does not validate. Each is a `!` line in the contract,
+so introducing one changes the contract and the pull request shows it.
 
 After the beans, the configuration keys, cross-checked three ways: what the classes read (`${...}` placeholders in
 any annotation, `@ConfigurationProperties` fields under their prefix, `@ConditionalOnProperty`,
@@ -242,7 +244,11 @@ component, a dropped `@JsonSubTypes` entry or a new enum constant changes no sig
 encodes and decodes with the same classes: in the contract it is a changed line, and the Jackson pitfalls that no
 test with the same classes can see (a permitted subtype that `@JsonSubTypes` does not list, a type id that is a
 class name, a polymorphic type without `@JsonTypeInfo`, a bean with no visible properties, a persistence type on
-the wire) are `!` lines, established against Jackson 3 as Spring Boot configures it. The three Box Office modules
+the wire) are `!` lines, established against Jackson 3 as Spring Boot configures it. The constraints on each
+property, inside the type too (`List<@NotBlank String>`), are checked as Hibernate Validator runs them: a nested
+type's constraints with no `@Valid` leading into them, a constraint on a type it has no validator for (`@Size` on an
+`int`, which fails at the first request, not at compile time) and a null check on a primitive are `!` lines under
+the property. The three Box Office modules
 with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
 their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
 `PATH`.

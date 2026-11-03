@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-044358-example-113-a-nested-billing-record-on-p",
+  "title": "Example 113: a nested Billing record on PlaceOrder carries constraints no @Valid leads into, caught by the validation checks of the boundary contract (B12)",
+  "description": "The first example of the validation checks on a boundary contract: jvmcontract reads the Bean Validation constraints on each wire type of the Box Office ticketing service, inside the types too (from the class file's type annotations), and writes a ! line under a property whose type carries constraints that no @Valid on the property or inside its type leads into, as Hibernate Validator does not cascade without one. The patch adds a nested Billing record with @NotBlank and @Email fields to PlaceOrder as a @NotNull component; the handler's @Valid validates PlaceOrder's own properties only, so a blank name or a bad email is accepted, and every test posts valid ones. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: constraints on Billing are not checked: no @Valid on billing. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/validation.rs",
+      "lib/src/wire.rs"
+    ],
+    "examples": [
+      "113"
+    ]
+  },
+  "expected": "build.py 113 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T04:43:58+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 113 (B12)",
+      "run": "python3 examples/tools/build.py 113",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/113-billing-constraints-without-valid-cascade"
+  ]
+}

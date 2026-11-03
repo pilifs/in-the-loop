@@ -118,6 +118,112 @@ impl Parser<'_> {
     }
 }
 
+/// A type from a signature or descriptor, kept as a tree: what a type annotation's path (JVMS 4.7.20.2) walks
+/// and what a validation constraint applies to.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Sig {
+    /// A class by internal name (`java/util/List`, `net/x/Outer$Inner`) with its type arguments, those of an inner
+    /// class after its outer's.
+    Class { name: String, args: Vec<Sig> },
+    Array(Box<Sig>),
+    /// A base type by descriptor letter (`I`).
+    Primitive(char),
+    Variable(String),
+    /// `?`, `? extends T` (`true`) or `? super T` (`false`).
+    Wildcard(Option<(bool, Box<Sig>)>),
+}
+
+impl Sig {
+    /// The type a type path leads to: into a type argument, an array's component or a wildcard's bound. `None`
+    /// when the path does not fit the type.
+    pub fn at(&self, path: &[(u8, u8)]) -> Option<&Sig> {
+        let Some(&(kind, index)) = path.first() else { return Some(self) };
+        let next = match (kind, self) {
+            (0, Sig::Array(elem)) => elem.as_ref(),
+            (2, Sig::Wildcard(Some((_, bound)))) => bound.as_ref(),
+            (3, Sig::Class { args, .. }) => args.get(index as usize)?,
+            // Kind 1 steps from an outer class to its inner; the inner's arguments are already here.
+            (1, Sig::Class { .. }) => self,
+            _ => return None,
+        };
+        next.at(&path[1..])
+    }
+
+    /// The class name when this is a class type.
+    pub fn class_name(&self) -> Option<&str> {
+        match self {
+            Sig::Class { name, .. } => Some(name),
+            _ => None,
+        }
+    }
+}
+
+impl Parser<'_> {
+    fn sig(&mut self) -> Option<Sig> {
+        match self.peek()? {
+            b'T' => {
+                self.pos += 1;
+                let name = self.identifier()?;
+                self.eat(b';').then_some(Sig::Variable(name))
+            }
+            b'[' => {
+                self.pos += 1;
+                Some(Sig::Array(Box::new(self.sig()?)))
+            }
+            b'L' => {
+                self.pos += 1;
+                let mut name = String::new();
+                let mut args = Vec::new();
+                loop {
+                    let mut part = self.identifier()?;
+                    while self.eat(b'/') {
+                        name.push_str(&part);
+                        name.push('/');
+                        part = self.identifier()?;
+                    }
+                    name.push_str(&part);
+                    if self.eat(b'<') {
+                        while !self.eat(b'>') {
+                            args.push(self.sig_argument()?);
+                        }
+                    }
+                    if self.eat(b'.') {
+                        name.push('$');
+                        continue;
+                    }
+                    break;
+                }
+                self.eat(b';').then_some(Sig::Class { name, args })
+            }
+            b'*' => {
+                self.pos += 1;
+                Some(Sig::Wildcard(None))
+            }
+            b => {
+                self.pos += 1;
+                Some(Sig::Primitive(b as char))
+            }
+        }
+    }
+
+    fn sig_argument(&mut self) -> Option<Sig> {
+        if self.eat(b'+') {
+            return Some(Sig::Wildcard(Some((true, Box::new(self.sig()?)))));
+        }
+        if self.eat(b'-') {
+            return Some(Sig::Wildcard(Some((false, Box::new(self.sig()?)))));
+        }
+        self.sig()
+    }
+}
+
+/// A field type, from its generic signature or its descriptor, as a tree.
+pub fn parse_type(signature: &str) -> Option<Sig> {
+    let mut p = Parser { s: signature.as_bytes(), pos: 0 };
+    let t = p.sig()?;
+    (p.pos == signature.len()).then_some(t)
+}
+
 /// The parameter types and the return type of a method signature, rendered with simple names, or `None` when the
 /// signature is not one this renderer understands.
 pub fn method_types(signature: &str) -> Option<(Vec<String>, String)> {
@@ -166,6 +272,17 @@ pub fn field_type(signature: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn types_parse_as_trees() {
+        let t = parse_type("Ljava/util/Map<Ljava/lang/String;Ljava/util/List<[I>;>;").unwrap();
+        assert_eq!(t.at(&[(3, 1), (3, 0), (0, 0)]), Some(&Sig::Primitive('I')));
+        assert_eq!(t.at(&[(3, 0)]).and_then(Sig::class_name), Some("java/lang/String"));
+        assert_eq!(t.at(&[(3, 2)]), None);
+        assert_eq!(parse_type("Lnet/example/Outer<TT;>.Inner<+Ljava/lang/Number;>;").unwrap().at(&[(1, 0), (3, 1), (2, 0)]).and_then(Sig::class_name), Some("java/lang/Number"));
+        assert_eq!(parse_type("I"), Some(Sig::Primitive('I')));
+        assert_eq!(parse_type("Ljava/lang/String;I"), None);
+    }
 
     #[test]
     fn signatures_render_as_source_does() {

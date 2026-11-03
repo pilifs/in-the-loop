@@ -1,0 +1,26 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java
+index 5bfc62e..9ba6328 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java
+@@ -1,7 +1,9 @@
+ package net.terminalvalue.boxoffice.ticketing.api;
+ 
+ import jakarta.validation.Valid;
++import jakarta.validation.constraints.Email;
+ import jakarta.validation.constraints.NotBlank;
++import jakarta.validation.constraints.NotNull;
+ import java.net.URI;
+ import java.time.Instant;
+ import java.util.List;
+@@ -25,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
+ @RequestMapping("/orders")
+ class OrderController {
+ 
+-    record PlaceOrder(@NotBlank String holdId, @NotBlank String paymentToken) {}
++    /** The billing details go on the receipt; the payment itself is by the token. */
++    record Billing(@NotBlank String name, @NotBlank @Email String email) {}
++
++    record PlaceOrder(@NotBlank String holdId, @NotBlank String paymentToken, @NotNull Billing billing) {}
+ 
+     record Order(
+             String id,

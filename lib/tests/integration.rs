@@ -1055,8 +1055,13 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("    ! constraints on seats are not enforced: the method is not a request handler and the class is not @Validated");
     // Class-level advice applies to every public instance method, and @Validated enforces the constraints.
     has("fixtures.spring.Quotas: @Service @Validated @Transactional(readOnly = true)\n  int remaining(@Positive int tenant)\n    ! self-invocation from refill(int)");
-    has("  int refill(int tenant)\n\n");
-    assert!(!text.contains("constraints on tenant"), "@Validated enforces the constraints");
+    has("  int refill(int tenant)\n  int quiet(@Positive int tenant)\n    ! constraints on tenant are not enforced: method validation goes through the proxy, which intercepts public instance methods only\n\n");
+    assert!(!text.contains("int remaining(@Positive int tenant)\n    ! constraints"), "@Validated enforces the constraints on a public method");
+    // Validation: a body's constraints run only under a @Valid, and only those of the groups asked for.
+    has("  POST /notes => Note create(@RequestBody Note note)\n    ! constraints on Note are not checked: no @Valid on note\n");
+    has("  POST /bookings => Booking book(@RequestBody Booking request)\n    ! constraints on Booking are not checked: no @Valid on request\n");
+    has("  POST /bookings/check => Booking check(@Valid @RequestBody Booking request)\n    ! @Valid validates the Default group only: @NotBlank(groups = fixtures.spring.OnCreate.class) on Booking.code is not checked\n");
+    has("  POST /bookings/create => Booking create(@Validated(fixtures.spring.OnCreate.class) @RequestBody Booking request)\n    ! @Validated(OnCreate.class) validates that group only: @Size(max = 10) on Booking.seats, @NotNull on Booking.rows, @NotBlank on Booking.labels and 2 more are not checked\n");
     assert!(!text.contains("helper"), "a static method is not under the class's advice");
     // The wire types: request and response bodies, listener payloads, Jackson-annotated types, and what they reach.
     has("wire fixtures.spring.Order: record\n  id: @NotBlank String\n  seats: @Min(1) int\n");
@@ -1075,6 +1080,9 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("wire fixtures.spring.Empty: class\n  ! no properties: it is written as {}\n");
     has("wire fixtures.spring.NoteDocument: record\n  ! a persistence type (@Document) is on the wire");
     has("wire fixtures.spring.Base: class\n  id: String\n");
+    // The constraints on a wire type, with the ones that cannot run as written.
+    has("wire fixtures.spring.Booking: record\n  seats: @Size(max = 10) int\n    ! @Size has no validator for int: the first validation throws UnexpectedTypeException\n  rows: @NotNull int\n    ! @NotNull on int can never fail: a primitive is never null\n  labels: List<@NotBlank String>\n  guest: Guest\n    ! constraints on Guest are not checked: no @Valid on guest\n  payer: @Valid Guest\n  party: List<@Valid Guest>\n  tier: @Min(1) Integer?\n  code: @NotBlank(groups = fixtures.spring.OnCreate.class) String\n\n");
+    has("wire fixtures.spring.Guest: record\n  name: @NotBlank String\n");
     // The configuration keys: what the classes read, what the files set, what the metadata declares, cross-checked.
     has("configuration: application-prod.properties, application.yaml\n");
     has("  holds.max-seats: int = 8, 12 (prod)\n    @ConfigurationProperties(\"holds\") HoldSettings.maxSeats\n");
@@ -1097,7 +1105,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (8, 9, 13, 21, 13, 27), "{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (9, 12, 13, 21, 15, 35), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1123,7 +1131,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (8 beans, 9 entry points, 13 advised methods, 21 configuration keys, 13 wire types, 27 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (9 beans, 12 entry points, 13 advised methods, 21 configuration keys, 15 wire types, 35 problems)"), "{}", outcome.output);
 
     let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n");
     std::fs::write(&file, edited).unwrap();

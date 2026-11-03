@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T04:08:08.806Z",
-  "duration_seconds": 214693,
+  "ended": "2026-11-03T04:44:54.264Z",
+  "duration_seconds": 216899,
   "stats": {
-    "turns": 172,
-    "api_calls": 1770,
-    "tool_calls": 2283,
+    "turns": 176,
+    "api_calls": 1824,
+    "tool_calls": 2336,
     "tool_errors": 50,
-    "compactions": 28,
+    "compactions": 29,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 52818,
-      "output_tokens": 3836280,
-      "cache_read_input_tokens": 337273125,
-      "cache_creation_input_tokens": 8439117
+      "input_tokens": 54426,
+      "output_tokens": 3916833,
+      "cache_read_input_tokens": 344177739,
+      "cache_creation_input_tokens": 8611929
     }
   },
   "tools": {
-    "Bash": 1790,
+    "Bash": 1843,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -620,24 +620,38 @@
     {
       "index": 28,
       "started": "2026-11-03T03:39:49.345Z",
-      "ended": "2026-11-03T04:08:08.806Z",
+      "ended": "2026-11-03T04:24:22.298Z",
       "turns": 4,
-      "api_calls": 38,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 1186,
-        "output_tokens": 110055,
-        "cache_read_input_tokens": 4479359,
-        "cache_creation_input_tokens": 199699
+        "input_tokens": 1410,
+        "output_tokens": 117564,
+        "cache_read_input_tokens": 6023024,
+        "cache_creation_input_tokens": 213160
       },
-      "peak_context_tokens": 214644
+      "peak_context_tokens": 228105
+    },
+    {
+      "index": 29,
+      "started": "2026-11-03T04:26:23.544Z",
+      "ended": "2026-11-03T04:44:54.264Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 1384,
+        "output_tokens": 73044,
+        "cache_read_input_tokens": 5360949,
+        "cache_creation_input_tokens": 159351
+      },
+      "peak_context_tokens": 174296
     }
   ],
   "log": {
-    "sha256": "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc",
-    "bytes": 67956706,
-    "lines": 24881,
-    "gzip_bytes": 11483347,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc.jsonl.gz"
+    "sha256": "92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8",
+    "bytes": 69586742,
+    "lines": 25630,
+    "gzip_bytes": 11749233,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -965,9 +979,17 @@
       "change_id": "ylrnntzvvupvplluozpvspymwpxvsnvy",
       "commit_id": null,
       "immutable": false,
-      "summary": null,
-      "body": "",
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc"
+    },
+    {
+      "change_id": "routlxkqstpzotxlnzulxxwqooozyznm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add validation checks to boundary contracts: the constraints inside a wire type's properties, and ! lines for a nested type no @Valid leads into, a body taken without @Valid, a group a @Valid or @Validated leaves out and a constraint on a type its validator cannot handle (verification pending)",
+      "body": "jvmcontract's boundary contract already listed the Bean Validation constraints on each property of a wire type. It now reads the constraints inside a type too (List<@NotBlank String>, from the class file's RuntimeVisibleTypeAnnotations, which the class file parser now reads, with a type tree in classfile/signature.rs to walk a type path) and checks them as Hibernate Validator will run them, in the new lib/src/validation.rs: a property whose type carries constraints that no @Valid on the property or inside its type leads into gets a ! line (Bean Validation does not cascade without one); a constraint on a type its validator cannot handle (@Size on an int, which the compiler accepts and the first validation throws UnexpectedTypeException for) and a null check on a primitive get one; a @RequestBody taken without @Valid or @Validated while its type is constrained is a ! line on the handler, as is a @Valid, which validates the Default group, or a @Validated(G.class), which validates G and the groups it extends, on a body with constraints in other groups; and constraints on a private or static method of a @Validated bean are reported as not enforced, since method validation goes through the proxy. The built-in constraints are matched against the JDK type families they validate (Hibernate Validator's, which Spring Boot ships: Min and Max take a CharSequence too); a custom constraint, a type that cannot be found, @Pattern expressions and group sequences are not judged.\n\nVerified with the library's Spring fixtures, which gain a Booking record with one of each case and a BookingsController taking it without @Valid, with @Valid and with @Validated(OnCreate.class), plus a private constrained method on the @Validated Quotas bean: 80 unit and 29 integration tests pass. The existing NotesController fixture turned out to take its Note body without @Valid, which the contract now reports. The four Box Office contracts were regenerated through Gradle: the ticketing service's CreateConcert and HoldSeats now show the type-use constraints on their lists that earlier contracts hid, and no module gains a problem. Example 113 adds a nested Billing record with @NotBlank fields to PlaceOrder as a @NotNull component without @Valid; its regenerated contract has the new ! line, confirmed by hand through Gradle, and its run is queued as job 20261103-044358-example-113-a-nested-billing-record-on-p. New defect tag validation-gap; docs in lib/README.md, approaches.md, the plugin reference and the Box Office README.",
+      "log_sha256": "92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8"
     }
   ],
   "logs": {
@@ -1072,6 +1094,12 @@
       "lines": 5180,
       "gzip_bytes": 3108340,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/84b6ab145c657124fdeb46d451eb2164188f77324398cc25e32ca2ebfe026b09.jsonl.gz"
+    },
+    "92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8": {
+      "bytes": 69586742,
+      "lines": 25630,
+      "gzip_bytes": 11749233,
+      "url": null
     },
     "9282ed25a83ab4efe045a2ab1e83991102abb2bc96554fecad2dc8f0f2f9b47c": {
       "bytes": 24317484,

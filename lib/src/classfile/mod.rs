@@ -13,7 +13,7 @@ pub mod writer;
 
 use std::fmt;
 
-pub use annotations::{Annotation, ElementValue};
+pub use annotations::{Annotation, ElementValue, TypeAnnotation, TypeTarget};
 pub use bytecode::{ArithOp, ArrayKind, CmpOp, Cond, Insn, Kind, Narrow};
 pub use describe::describe;
 pub use descriptor::{MethodDescriptor, Type};
@@ -904,6 +904,13 @@ fn visible_annotations(attributes: &[Attribute], pool: &ConstantPool) -> Result<
     }
 }
 
+fn visible_type_annotations(attributes: &[Attribute], pool: &ConstantPool) -> Result<Vec<annotations::TypeAnnotation>> {
+    match attributes.iter().find(|a| a.name == "RuntimeVisibleTypeAnnotations") {
+        Some(attr) => annotations::parse_type_annotations(&attr.data, pool),
+        None => Ok(Vec::new()),
+    }
+}
+
 fn signature_of(attributes: &[Attribute], pool: &ConstantPool) -> Option<String> {
     let attr = attributes.iter().find(|a| a.name == "Signature")?;
     if attr.data.len() != 2 {
@@ -934,6 +941,11 @@ impl Field {
     pub fn generic_signature(&self, pool: &ConstantPool) -> Option<String> {
         signature_of(&self.attributes, pool)
     }
+
+    /// The `RUNTIME` annotations on the field's type and the parts of it (`List<@NotBlank String>`).
+    pub fn type_annotations(&self, pool: &ConstantPool) -> Result<Vec<annotations::TypeAnnotation>> {
+        visible_type_annotations(&self.attributes, pool)
+    }
 }
 
 impl Method {
@@ -963,6 +975,11 @@ impl Method {
     /// The generic signature of the method, when it has type parameters or generic parameter or return types.
     pub fn generic_signature(&self, pool: &ConstantPool) -> Option<String> {
         signature_of(&self.attributes, pool)
+    }
+
+    /// The `RUNTIME` annotations on the method's return, parameter and other types.
+    pub fn type_annotations(&self, pool: &ConstantPool) -> Result<Vec<annotations::TypeAnnotation>> {
+        visible_type_annotations(&self.attributes, pool)
     }
 
     /// The exception classes the method declares with `throws`, as internal names (the `Exceptions` attribute).

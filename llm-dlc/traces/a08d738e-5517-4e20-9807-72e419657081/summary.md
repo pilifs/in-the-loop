@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `a08d738e-5517-4e20-9807-72e419657081` (open) |
+| Session | `a08d738e-5517-4e20-9807-72e419657081` (ended) |
 | When | 2026-11-03 02:23 UTC to 2026-11-03 04:08 UTC (105 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.317 |
@@ -62,9 +62,11 @@ Verified with the library's Spring fixtures, which gain an application.yaml and 
 
 The verification session ran concurrently and its two preceding commits (the results of 8 jobs, and the Quorum resubmission) swept in earlier states of this change's files; this commit completes them, and in turn carries the results of job 20261103-025524-example-110, which that session wrote while this one worked.
 
-### (in progress)
+### Record session traces
 
-change `ylrnntzvvupv`, not yet described
+change `ylrnntzvvupv` · [log `6daafbdb81a2`](https://terminalvalue.net/raw-traces/a08d738e-5517-4e20-9807-72e419657081/6daafbdb81a236b9efb1c165b0669d2f4f18197afdccc89a7165172272bf050a.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

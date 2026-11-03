@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "113",
+  "title": "A nested Billing record on PlaceOrder carries @NotBlank constraints that no @Valid leads into",
+  "summary": "Orders gain billing details for the receipt: a nested `Billing` record with `@NotBlank` and `@Email` on its fields, added to `PlaceOrder` as a `@NotNull` component. The handler validates the request with `@Valid`, so the author expects a blank name or a bad email to be refused. Bean Validation does not step into a nested object unless the property itself carries `@Valid`, so the only check that runs on the billing details is that they are present; every test posts valid ones and passes. The module's boundary contract lists each wire type with its constraints, and the regenerated contract has a `!` line under the new property saying that the constraints on `Billing` are not checked.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "validation-gap",
+    "contract-diff-review"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.api.OrderController$PlaceOrder"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Collect the customer's billing name and email with the order, for the receipt. A nested `Billing` record is added to `OrderController` with `@NotBlank String name` and `@NotBlank @Email String email`, and `PlaceOrder` gains a `@NotNull Billing billing` component. The handler already takes the request as `@Valid @RequestBody PlaceOrder`. The order service does not use the details yet; that is the next change.",
+    "patch": "change.patch"
+  },
+  "risk": "`@Valid` on the handler parameter validates `PlaceOrder`'s own properties: `holdId`, `paymentToken` and now that `billing` is not null. Cascading into `billing` needs a `@Valid` on the component (or on the type argument, for a list); without it the validator never looks at `Billing`, and `{\"name\": \"\", \"email\": \"not an address\"}` is accepted. The constraints compile, the handler is annotated, the request type is annotated, and every test that posts an order sends a valid billing block, so nothing fails. The same shape covers a list of items (`List<Item>` where `Item` carries constraints) and a record extracted from a flat request during a refactor, which moves the constraints one level down and out of reach.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The wire block of the boundary contract lists each property of a request type with its constraints (`holdId: @NotBlank String`), as before. Under a property whose type carries constraints that no `@Valid` on the property or inside its type leads into, the contract has a `!` line. The change is intended, so the runner regenerates the contract and the reviewer reads the diff: a new `Billing` block with its two constrained properties, and under `PlaceOrder` the new line `billing: @NotNull Billing` followed by `! constraints on Billing are not checked: no @Valid on billing`. A new `!` line in the regenerated contract is the violation.",
+  "resolution": "Write `@NotNull @Valid Billing billing`. The regenerated contract then shows `billing: @NotNull @Valid Billing` with no `!` line, which is the diff a reviewer approves. For a list, `List<@Valid Item>` or `@Valid List<Item>` both cascade, and the contract writes the type-use form into the type (`items: List<@Valid Item>`).",
+  "notes": [
+    "The first example of the validation checks on a boundary contract (`lib/src/validation.rs`): a nested type's constraints with no `@Valid` leading into them (this example), a `@RequestBody` taken without `@Valid` or `@Validated` while its type carries constraints, a `@Valid` or `@Validated(G.class)` that leaves out the constraints of other groups, a constraint on a type its validator cannot handle (`@Size` on an `int`, which Hibernate Validator rejects at the first validation with `UnexpectedTypeException`), a null check on a primitive, and constraints on a non-public method of a `@Validated` bean. Each is a `!` line under the property or the handler; the library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/Booking.java`) have one of each.",
+    "The contract now writes the constraints inside a type, read from the class file's type annotations (`RuntimeVisibleTypeAnnotations`): `rows: @NotEmpty List<@Pattern(regexp = \"[A-Z]\") String>` in the ticketing service's `CreateConcert`, which earlier contracts showed as `List<String>`. The type-use constraints are where `List<@Valid Item>` cascades from, so a cascade check needs them.",
+    "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+  ],
+  "provenance": "Constructed from a validation gap that Spring Boot developers hit when a flat request grows a nested object: Bean Validation cascades only through @Valid, the handler's own @Valid looks one level deep, and tests that send valid data cannot tell."
+}

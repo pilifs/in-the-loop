@@ -99,7 +99,7 @@ wire net.terminalvalue.boxoffice.ticketing.api.ConcertController$CreateConcert: 
   venue: @NotBlank String
   startsAt: @NotNull Instant
   priceCents: @PositiveOrZero long
-  rows: @NotEmpty List<String>
+  rows: @NotEmpty List<@Pattern(regexp = "[A-Z]") String>
   seatsPerRow: @Min(1) @Max(50) int
 
 wire net.terminalvalue.boxoffice.ticketing.api.ConcertController$Hold: record
@@ -112,7 +112,7 @@ wire net.terminalvalue.boxoffice.ticketing.api.ConcertController$Hold: record
 
 wire net.terminalvalue.boxoffice.ticketing.api.ConcertController$HoldSeats: record
   customerId: @NotBlank String
-  seats: @NotEmpty List<String>
+  seats: @NotEmpty List<@NotBlank String>
 
 wire net.terminalvalue.boxoffice.ticketing.api.ConcertController$Seat: record
   label: String

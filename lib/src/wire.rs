@@ -16,8 +16,9 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::rc::Rc;
 
 use crate::boundaries::{is_validation, render_all, Bean, Member};
-use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, Field, Method, MethodDescriptor, Type};
+use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, Field, Method, MethodDescriptor, Type, TypeAnnotation, TypeTarget};
 use crate::classpath::{ClassPath, Origin};
+use crate::validation;
 use crate::Error;
 
 pub fn is_jackson(a: &Annotation) -> bool {
@@ -219,13 +220,18 @@ impl TypeInfo {
     }
 }
 
-struct Prop {
-    implicit: String,
+pub(crate) struct Prop {
+    pub(crate) implicit: String,
     explicit: Option<String>,
     ty: Option<String>,
+    /// The type's generic signature, or its descriptor: what the constraints are checked against.
+    signature: Option<String>,
     creates: bool,
     ignored: bool,
-    constraints: Vec<Annotation>,
+    /// The validation annotations on the property itself (`@NotBlank`, `@Valid`).
+    pub(crate) constraints: Vec<Annotation>,
+    /// The validation annotations inside the type (`List<@NotBlank String>`), with their paths.
+    pub(crate) type_constraints: Vec<TypeAnnotation>,
     details: Vec<Annotation>,
     include: Option<Annotation>,
     source_line: Option<u16>,
@@ -233,7 +239,51 @@ struct Prop {
 
 impl Prop {
     fn new(implicit: &str) -> Prop {
-        Prop { implicit: implicit.to_string(), explicit: None, ty: None, creates: false, ignored: false, constraints: Vec::new(), details: Vec::new(), include: None, source_line: None }
+        Prop { implicit: implicit.to_string(), explicit: None, ty: None, signature: None, creates: false, ignored: false, constraints: Vec::new(), type_constraints: Vec::new(), details: Vec::new(), include: None, source_line: None }
+    }
+
+    /// Takes in the type annotations of one accessor: those on the target's type, below its top (the top-level
+    /// ones repeat the declaration annotations).
+    fn absorb_typed(&mut self, annotations: &[TypeAnnotation], target: &TypeTarget) {
+        for t in annotations.iter().filter(|t| &t.target == target && !t.path.is_empty() && is_validation(&t.annotation)) {
+            if !self.type_constraints.iter().any(|c| c.path == t.path && c.annotation.render() == t.annotation.render()) {
+                self.type_constraints.push(t.clone());
+            }
+        }
+    }
+
+    /// Whether validation steps into the value: `@Valid` on the property or inside its type.
+    pub(crate) fn cascades(&self) -> bool {
+        self.constraints.iter().any(validation::is_valid) || self.type_constraints.iter().any(|t| validation::is_valid(&t.annotation))
+    }
+
+    /// The classes the type names, outermost first.
+    pub(crate) fn referenced(&self) -> Vec<String> {
+        self.signature.as_deref().map(class_refs).unwrap_or_default()
+    }
+
+    /// The type as written, with the constraints inside it written in.
+    fn rendered_type(&self) -> String {
+        let mut ty = self.ty.clone().unwrap_or_else(|| "?".to_string());
+        for t in self.type_constraints.iter().rev() {
+            ty = validation::annotate(&ty, &t.path, &t.annotation.render());
+        }
+        ty
+    }
+
+    /// The constraints that cannot run as written: on a type without a validator, a null check on a primitive.
+    fn constraint_problems(&self, cp: &ClassPath) -> Vec<String> {
+        let mut out = Vec::new();
+        let Some(sig) = self.signature.as_deref().and_then(signature::parse_type) else { return out };
+        for c in self.constraints.iter().filter(|c| validation::is_constraint(c)) {
+            out.extend(validation::problem(cp, c, &sig));
+        }
+        for t in self.type_constraints.iter().filter(|t| validation::is_constraint(&t.annotation)) {
+            if let Some(part) = sig.at(&t.path) {
+                out.extend(validation::problem(cp, &t.annotation, part));
+            }
+        }
+        out
     }
 
     /// Takes in the annotations of one accessor: the consumed ones set the name, ignoral and inclusion, the
@@ -293,7 +343,7 @@ fn problem(text: String) -> Member {
 
 /// Loads an application class that the closure may follow: on the class path, from the module's own build when
 /// `local` says which those are.
-fn local_class(cp: &ClassPath, local: Option<&BTreeSet<String>>, name: &str) -> Option<Rc<ClassFile>> {
+pub(crate) fn local_class(cp: &ClassPath, local: Option<&BTreeSet<String>>, name: &str) -> Option<Rc<ClassFile>> {
     if local.is_some_and(|set| !set.contains(name)) {
         return None;
     }
@@ -355,7 +405,7 @@ fn type_name_of(class: &ClassFile) -> Option<String> {
 
 /// The properties of a class as Jackson finds them: record components; else public fields, public getters, setters
 /// and `@JsonProperty` members, of the superclasses first.
-fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFile) -> Vec<Prop> {
+pub(crate) fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFile) -> Vec<Prop> {
     let mut props: Vec<Prop> = Vec::new();
     fn prop<'a>(props: &'a mut Vec<Prop>, implicit: &str) -> &'a mut Prop {
         if let Some(i) = props.iter().position(|p| p.implicit == implicit) {
@@ -370,10 +420,13 @@ fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFil
             p.creates = true;
             if let Some(field) = class.fields.iter().find(|f| f.name == component.name) {
                 p.ty = Some(field_type_name(class, field));
+                p.signature = Some(field.generic_signature(&class.pool).unwrap_or_else(|| field.descriptor.clone()));
                 p.absorb(&field.annotations(&class.pool).unwrap_or_default());
+                p.absorb_typed(&field.type_annotations(&class.pool).unwrap_or_default(), &TypeTarget::Field);
             }
             if let Some(accessor) = class.methods.iter().find(|m| m.name == component.name && m.descriptor.starts_with("()")) {
                 p.absorb(&accessor.annotations(&class.pool).unwrap_or_default());
+                p.absorb_typed(&accessor.type_annotations(&class.pool).unwrap_or_default(), &TypeTarget::Return);
                 p.source_line = accessor.first_line();
             }
         }
@@ -393,8 +446,10 @@ fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFil
         }
         if p.ty.is_none() || field.access & flags::PUBLIC != 0 {
             p.ty = Some(field_type_name(class, field));
+            p.signature = Some(field.generic_signature(&class.pool).unwrap_or_else(|| field.descriptor.clone()));
         }
         p.absorb(&annotations);
+        p.absorb_typed(&field.type_annotations(&class.pool).unwrap_or_default(), &TypeTarget::Field);
     }
     for method in &class.methods {
         if method.is_static() || method.is_synthetic() || method.is_bridge() || method.is_constructor() || method.is_class_initializer() {
@@ -419,8 +474,10 @@ fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFil
             let p = prop(&mut props, &implicit);
             p.creates |= getter;
             p.ty = Some(return_type_name(class, method));
+            p.signature = method.generic_signature(&class.pool).and_then(|s| signature::method_parts(&s)).or_else(|| signature::method_parts(&method.descriptor)).map(|(_, ret)| ret);
             p.source_line = p.source_line.or(method.first_line());
             p.absorb(&annotations);
+            p.absorb_typed(&method.type_annotations(&class.pool).unwrap_or_default(), &TypeTarget::Return);
         } else if d.params.len() == 1 && d.ret == Type::Void {
             let implicit = method.name.strip_prefix("set").filter(|r| !r.is_empty()).map(decapitalize);
             if implicit.is_none() && !explicit {
@@ -431,8 +488,10 @@ fn properties(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFil
             p.creates = true;
             if p.ty.is_none() {
                 p.ty = parameter_type_names(class, method).into_iter().next();
+                p.signature = method.generic_signature(&class.pool).and_then(|s| signature::method_parts(&s)).or_else(|| signature::method_parts(&method.descriptor)).and_then(|(params, _)| params.into_iter().next());
             }
             p.absorb(&annotations);
+            p.absorb_typed(&method.type_annotations(&class.pool).unwrap_or_default(), &TypeTarget::Parameter(0));
         } else if explicit {
             let p = prop(&mut props, &method.name);
             p.absorb(&annotations);
@@ -585,13 +644,24 @@ fn shape(cp: &ClassPath, local: Option<&BTreeSet<String>>, class: &ClassFile) ->
         if !names.insert(name.clone()) {
             problems.push(problem(format!("two properties are named \"{name}\"")));
         }
-        let (ty, mut optional) = unwrap_optional(p.ty.as_deref().unwrap_or("?"));
+        let (ty, mut optional) = unwrap_optional(&p.rendered_type());
         if let Some(omit) = p.include.as_ref().or(class_include.as_ref()).and_then(omits) {
             optional |= omit || !is_primitive(&ty);
         }
         let constraints = if p.constraints.is_empty() { String::new() } else { format!("{} ", render_all(&p.constraints)) };
         let line = format!("{name}: {constraints}{ty}{}", if optional { "?" } else { "" });
-        lines.push(member(line, p.details.iter().map(Annotation::render).collect(), 0, p.source_line));
+        let mut details: Vec<String> = p.details.iter().map(Annotation::render).collect();
+        let mut prop_problems = p.constraint_problems(cp);
+        // A nested type's constraints run only when a @Valid leads into it.
+        if !p.cascades() {
+            let unreached: Vec<String> = p.referenced().into_iter().filter(|c| validation::constrained(cp, local, c)).map(|c| simple_name_of(&c)).collect();
+            if !unreached.is_empty() {
+                prop_problems.push(format!("constraints on {} are not checked: no @Valid on {name}", unreached.join(", ")));
+            }
+        }
+        let count = prop_problems.len();
+        details.extend(prop_problems.into_iter().map(|t| format!("! {t}")));
+        lines.push(member(line, details, count, p.source_line));
     }
     for method in &class.methods {
         let annotations = method.annotations(&class.pool).unwrap_or_default();

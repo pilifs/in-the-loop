@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE_USE})
 public @interface NotBlank {
 
+    Class<?>[] groups() default {};
 }

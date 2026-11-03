@@ -1,7 +1,9 @@
 //! The annotations kept in class files (JVMS 4.7.16 to 4.7.19): `RuntimeVisibleAnnotations` on classes, fields and
 //! methods, and `RuntimeVisibleParameterAnnotations`. A framework that acts on annotations at run time (Spring,
 //! Jakarta Validation, Resilience4j, Micrometer) declares them with `RUNTIME` retention, so they are all in the
-//! visible attributes; the invisible ones (`CLASS` retention) are compile-time facts and are not read.
+//! visible attributes; the invisible ones (`CLASS` retention) are compile-time facts and are not read. The type
+//! annotations (`RuntimeVisibleTypeAnnotations`, JVMS 4.7.20) are read for fields and methods: a constraint on a
+//! type argument (`List<@NotBlank String>`) is only there.
 
 use super::{Constant, ConstantPool, ParseError, Result};
 
@@ -25,6 +27,26 @@ pub enum ElementValue {
     Class(String),
     Annotation(Annotation),
     Array(Vec<ElementValue>),
+}
+
+/// Where a type annotation sits (JVMS 4.7.20.1): on a field's type, a method's return type, a parameter's type,
+/// or somewhere else (a type parameter, a supertype, a `throws` clause, a local variable, a cast).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TypeTarget {
+    Field,
+    Return,
+    Parameter(u8),
+    Other(u8),
+}
+
+/// An annotation on a type, with the path (JVMS 4.7.20.2) from the target's type to the annotated part: empty for
+/// the type itself, `(3, i)` into the i-th type argument, `(0, 0)` into an array's component, `(2, 0)` into a
+/// wildcard's bound, `(1, 0)` into an inner class.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TypeAnnotation {
+    pub target: TypeTarget,
+    pub path: Vec<(u8, u8)>,
+    pub annotation: Annotation,
 }
 
 impl Annotation {
@@ -216,6 +238,65 @@ pub fn parse_annotations(data: &[u8], pool: &ConstantPool) -> Result<Vec<Annotat
     let mut out = Vec::with_capacity(count as usize);
     for _ in 0..count {
         out.push(read_annotation(&mut r, pool)?);
+    }
+    Ok(out)
+}
+
+/// Parses a `RuntimeVisibleTypeAnnotations` attribute.
+pub fn parse_type_annotations(data: &[u8], pool: &ConstantPool) -> Result<Vec<TypeAnnotation>> {
+    let mut r = Reader { bytes: data, pos: 0 };
+    let count = r.u16()?;
+    let mut out = Vec::with_capacity(count as usize);
+    for _ in 0..count {
+        let target_type = r.u8()?;
+        let target = match target_type {
+            0x00 | 0x01 => {
+                r.u8()?;
+                TypeTarget::Other(target_type)
+            }
+            0x10 => {
+                r.u16()?;
+                TypeTarget::Other(target_type)
+            }
+            0x11 | 0x12 => {
+                r.u8()?;
+                r.u8()?;
+                TypeTarget::Other(target_type)
+            }
+            0x13 => TypeTarget::Field,
+            0x14 => TypeTarget::Return,
+            0x15 => TypeTarget::Other(target_type),
+            0x16 => TypeTarget::Parameter(r.u8()?),
+            0x17 => {
+                r.u16()?;
+                TypeTarget::Other(target_type)
+            }
+            0x40 | 0x41 => {
+                let entries = r.u16()?;
+                for _ in 0..entries {
+                    r.u16()?;
+                    r.u16()?;
+                    r.u16()?;
+                }
+                TypeTarget::Other(target_type)
+            }
+            0x42..=0x46 => {
+                r.u16()?;
+                TypeTarget::Other(target_type)
+            }
+            0x47..=0x4B => {
+                r.u16()?;
+                r.u8()?;
+                TypeTarget::Other(target_type)
+            }
+            other => return Err(ParseError(format!("type annotation: unknown target type {other:#x}"))),
+        };
+        let steps = r.u8()?;
+        let mut path = Vec::with_capacity(steps as usize);
+        for _ in 0..steps {
+            path.push((r.u8()?, r.u8()?));
+        }
+        out.push(TypeAnnotation { target, path, annotation: read_annotation(&mut r, pool)? });
     }
     Ok(out)
 }

@@ -33,7 +33,9 @@ jvmcontract api CLASSES [--module NAME]
 # read, what application.yaml under --resources sets, what the dependencies' metadata on --classpath declares), with
 # `!` lines for a key nothing binds, a deprecated key, a value of the wrong type; and the wire types: the JSON shape
 # of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing from
-# @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo. No JBMC.
+# @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo, and for the Bean
+# Validation constraints: a nested type's constraints no @Valid leads into, a body taken without @Valid, a group a
+# @Valid or @Validated leaves out, a constraint on a type its validator cannot handle. No JBMC.
 jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.

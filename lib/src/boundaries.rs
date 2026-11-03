@@ -22,9 +22,10 @@ use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
-use crate::classfile::{flags, signature, Annotation, ClassFile, Insn, Kind, Method, MethodDescriptor, Type};
+use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, Insn, Kind, Method, MethodDescriptor, Type, TypeTarget};
 use crate::classpath::ClassPath;
 use crate::config;
+use crate::validation;
 use crate::wire;
 use crate::Error;
 
@@ -547,9 +548,33 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             // The wire types: request bodies and responses of handlers, payloads of listeners.
             let (param_refs, ret_refs) = wire::method_refs(class, method);
             if handler || annotations.iter().any(|a| a.simple_name() == "ExceptionHandler") {
+                let type_annotations = method.type_annotations(&class.pool).unwrap_or_default();
                 for (i, list) in parameter_annotations.iter().enumerate() {
-                    if list.iter().any(|a| matches!(a.simple_name().as_str(), "RequestBody" | "RequestPart")) {
-                        roots.extend(param_refs[i].iter().cloned());
+                    if !list.iter().any(|a| matches!(a.simple_name().as_str(), "RequestBody" | "RequestPart")) {
+                        continue;
+                    }
+                    roots.extend(param_refs[i].iter().cloned());
+                    // The body's constraints run only under a @Valid or @Validated, and only those of the groups asked for.
+                    let constrained_types: Vec<&String> = param_refs[i].iter().filter(|c| validation::constrained(cp, local, c)).collect();
+                    if constrained_types.is_empty() {
+                        continue;
+                    }
+                    let pname = names.get(i).cloned().unwrap_or_else(|| format!("arg{i}"));
+                    let valid = list.iter().any(validation::is_valid) || type_annotations.iter().any(|t| t.target == TypeTarget::Parameter(i as u8) && validation::is_valid(&t.annotation));
+                    let validated = list.iter().find(|a| a.simple_name() == "Validated");
+                    if !valid && validated.is_none() {
+                        problems.push(format!("! constraints on {} are not checked: no @Valid on {pname}", constrained_types.iter().map(|c| simple_name_of(c)).collect::<Vec<_>>().join(", ")));
+                        continue;
+                    }
+                    let groups = validated.and_then(validation::validated_groups);
+                    let unchecked: Vec<String> = constrained_types.iter().flat_map(|c| validation::unchecked(cp, local, c, groups.as_deref())).collect();
+                    if unchecked.is_empty() {
+                        continue;
+                    }
+                    let shown = if unchecked.len() > 3 { format!("{} and {} more", unchecked[..3].join(", "), unchecked.len() - 3) } else { unchecked.join(", ") };
+                    match &groups {
+                        None => problems.push(format!("! @Valid validates the Default group only: {shown} {} not checked", if unchecked.len() == 1 { "is" } else { "are" })),
+                        Some(g) => problems.push(format!("! @Validated({}) validates {} only: {shown} {} not checked", g.iter().map(|c| format!("{}.class", simple_name_of(c))).collect::<Vec<_>>().join(", "), if g.len() == 1 { "that group" } else { "those groups" }, if unchecked.len() == 1 { "is" } else { "are" })),
                     }
                 }
                 roots.extend(ret_refs);
@@ -563,6 +588,8 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             let validated = class_validated || annotations.iter().any(|a| a.simple_name() == "Validated");
             if !constrained.is_empty() && !handler && !validated {
                 problems.push(format!("! constraints on {} are not enforced: the method is not a request handler and the class is not @Validated", constrained.join(", ")));
+            } else if !constrained.is_empty() && !handler && (method.is_private() || method.is_static()) {
+                problems.push(format!("! constraints on {} are not enforced: method validation goes through the proxy, which intercepts public instance methods only", constrained.join(", ")));
             }
 
             let mut details = advice;
