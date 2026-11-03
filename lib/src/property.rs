@@ -70,6 +70,9 @@ pub struct Options {
     pub refine_strings: bool,
     /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
     pub sat_solver: Option<String>,
+    /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
+    /// where the harness is within its fragment and JBMC elsewhere.
+    pub engine: crate::Engine,
 }
 
 impl Options {
@@ -94,6 +97,7 @@ impl Options {
             models: true,
             refine_strings: false,
             sat_solver: Some("cadical".into()),
+            engine: crate::Engine::Jbmc,
         }
     }
 }
@@ -265,6 +269,19 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let started = std::time::Instant::now();
     let mut last = None;
+    // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
+    // `auto`), or that is the answer (under `native`).
+    let mut stages: &[Option<&str>] = STAGES;
+    if options.engine != crate::Engine::Jbmc {
+        let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, Duration::from_secs(options.timeout_seconds), &work)?;
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native {
+            stages = &[];
+            last = Some(result);
+        } else {
+            let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
+        }
+    }
     // An array parameter is never null, and is bounded in length: a quantifier over it is a loop the unwinding
     // bound must cover.
     let extra_args = if has_arrays {
@@ -272,7 +289,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     } else {
         Vec::new()
     };
-    for stage in STAGES {
+    for stage in stages {
         let run = JbmcRun {
             executable: options.jbmc.clone(),
             class: harness::PROPERTY_CLASS.into(),

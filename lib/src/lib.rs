@@ -22,6 +22,7 @@
 //! Every verdict can be written as SARIF ([`sarif`]) for GitHub code scanning and SonarQube.
 
 pub mod api;
+pub mod bmc;
 pub mod capabilities;
 pub mod classfile;
 pub mod classpath;
@@ -47,6 +48,29 @@ pub mod witness;
 pub mod zip;
 
 use std::fmt;
+
+/// Which bounded model checker proves a harness: JBMC, the tool's own ([`bmc`]), or the tool's own where it
+/// can and JBMC elsewhere.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Engine {
+    Jbmc,
+    Native,
+    Auto,
+}
+
+impl std::str::FromStr for Engine {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Engine, Error> {
+        match s {
+            "jbmc" => Ok(Engine::Jbmc),
+            "native" => Ok(Engine::Native),
+            "auto" => Ok(Engine::Auto),
+            other => Err(Error::new(format!("unknown engine {other:?}: jbmc, native or auto"))),
+        }
+    }
+}
 
 /// An error of the tool itself (I/O, a malformed input, a missing external tool), as opposed to a verdict.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -39,6 +39,7 @@ as a class path entry for any other tool.
   path that stalled for minutes on a binary search over eight elements, so the tool asks for CaDiCaL, which JBMC 6
   bundles and which settles that proof in a second (`--sat-solver`; a JBMC built without it is run again with its
   default).
+- **The tool's own checker** (`--engine native`/`auto`, [`src/bmc`](../src/bmc/mod.rs)) runs a model's bytecode symbolically for the static methods it defines, as JBMC does from the class path.
 - **The interpreter** (`verify`, `derive`, and the replay of counterexamples) runs a model's bytecode for the methods
   the model defines, and its natives for the rest of the class. A model is not an application class: `is_application`
   is false for it, so capability and API contracts, purity and the closed-world walks are unchanged. A model's shape

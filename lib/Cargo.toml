@@ -25,9 +25,15 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 stacker = "0.1"
 clap = { version = "4", features = ["derive"] }
+cadical = "0.1"
 
 [dev-dependencies]
 tempfile = "3"
+
+# The bundled SAT solver is C++ built by cc, which takes the profile's optimisation level: unoptimised it is many
+# times slower, and tests run the solver.
+[profile.dev.package.cadical]
+opt-level = 3
 
 [profile.release]
 lto = true

@@ -238,6 +238,11 @@ struct EquivalenceArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
+    /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
+    /// for methods over integers without arrays or floating point), or `auto` (the tool's own where it applies,
+    /// JBMC elsewhere).
+    #[arg(long, default_value = "jbmc")]
+    engine: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -304,6 +309,11 @@ struct ProveArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
+    /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
+    /// for methods over integers without arrays or floating point), or `auto` (the tool's own where it applies,
+    /// JBMC elsewhere).
+    #[arg(long, default_value = "jbmc")]
+    engine: String,
     /// Print JSON.
     #[arg(long)]
     json: bool,
@@ -376,6 +386,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.models = !args.no_models;
             options.refine_strings = args.refine_strings;
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
+            options.engine = args.engine.parse()?;
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));
@@ -420,6 +431,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.models = !args.no_models;
                 options.refine_strings = args.refine_strings;
                 options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
+                options.engine = args.engine.parse()?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

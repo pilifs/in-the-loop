@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-015449-the-tool-s-own-bounded-model-checker-uni",
+  "title": "The tool's own bounded model checker: unit tests of the circuits and the cross-check with JBMC",
+  "description": "lib/src/bmc is a bounded model checker inside jvmcontract: the generated harness bytecode is executed symbolically over bit-vectors (lib/src/bmc/bits.rs, two's-complement circuits with gate hashing) and a bundled CaDiCaL decides feasibility at every branch and the input of a violation. --engine native uses it alone, --engine auto hands anything outside its fragment (arrays, floating point, static state, JDK calls beyond Math/Integer/Long) to JBMC with a note; the default stays jbmc. This job runs the whole suite in release: the circuit tests compare every operation with Rust's integer semantics on the edge cases; the engine tests prove and refute small harnesses (division by zero as an exception path, loop unwinding, multiplyExact's overflow condition); the integration test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs runs eight property proofs and three regression proofs with both checkers and requires the same verdicts and, where unique, the same shrunk witness, and checks the auto hand-over on an array proof.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "bmc:native",
+    "B9",
+    "B10"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/bits.rs"
+    ]
+  },
+  "expected": "exits 0; every test passes, among them bmc::bits::tests::*, bmc::tests::* and the_tools_own_checker_agrees_with_jbmc_on_integer_proofs",
+  "submitted": {
+    "at": "2026-11-03T01:54:49+00:00"
+  },
+  "requires": [
+    "jbmc",
+    "javac",
+    "cargo",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "8m",
+    "notes": "the suite took under two minutes in the session with CaDiCaL as JBMC's solver; the bmc unit tests about 30 s"
+  },
+  "steps": [
+    {
+      "name": "unit and integration tests",
+      "run": "cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

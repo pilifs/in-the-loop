@@ -916,3 +916,90 @@ fn proofs_over_modelled_jdk_classes_are_decided_by_the_models() {
     assert_ne!(without.verdict, Verdict::Verified, "{}", without.output);
     assert!(!work.join("models").exists(), "no models directory is written when they are off");
 }
+
+/// A property proof with the checker chosen.
+fn prove_engine(target: &str, assume: Option<&str>, assert: Option<&str>, throws: &[&str], engine: jvmcontract::Engine, name: &str) -> property::Outcome {
+    let classes = fixtures().unwrap();
+    let mut options = property::Options::new(&[classes.to_path_buf()], target);
+    options.assume = assume.map(str::to_string);
+    options.assert = assert.map(str::to_string);
+    options.throws = throws.iter().map(|t| t.to_string()).collect();
+    options.engine = engine;
+    let work = target_tmp().join(format!("property-{name}-{engine:?}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    property::run(&options).unwrap()
+}
+
+#[test]
+fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
+    use jvmcontract::Engine;
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    if fixtures().is_none() {
+        return;
+    }
+    let cases: &[(&str, Option<&str>, Option<&str>, &[&str], Verdict)] = &[
+        // In int arithmetic `2 * result` overflows near Integer.MAX_VALUE, which both checkers find; in long it holds.
+        ("fixtures.Laws#majority", Some("n > 0"), Some("2 * result > n && result <= n"), &[], Verdict::Violation),
+        ("fixtures.Laws#majority", Some("n > 0"), Some("2L * result > n && result <= n"), &[], Verdict::Verified),
+        ("fixtures.Laws#majority", None, Some("2L * result > n"), &[], Verdict::Violation),
+        ("fixtures.Laws#majority", None, Some("2L * result > n && result <= n"), &["java.lang.IllegalArgumentException when n <= 0"], Verdict::Verified),
+        ("fixtures.Laws#maxOf", None, Some("result >= a && result >= b && (result == a || result == b)"), &[], Verdict::Verified),
+        ("fixtures.Laws#roundedHalf", None, Some("2 * result >= n && 2 * result <= n + 1"), &[], Verdict::Violation),
+        ("fixtures.Overloads#twice(long)", None, Some("result == 2 * x"), &[], Verdict::Verified),
+        ("fixtures.Checks#protectedLength", Some("startPc >= 0 && endPc >= 0 && handlerPc >= 0 && codeLength >= 0 && startPc <= 65535 && endPc <= 65535 && handlerPc <= 65535 && codeLength <= 65535"), Some("result == endPc - startPc"), &["java.lang.ClassFormatError when startPc >= endPc || endPc >= codeLength || handlerPc >= codeLength"], Verdict::Violation),
+    ];
+    for (i, (target, assume, assert, throws, expected)) in cases.iter().enumerate() {
+        let native = prove_engine(target, *assume, *assert, throws, Engine::Native, &format!("agree-{i}"));
+        let jbmc = prove_engine(target, *assume, *assert, throws, Engine::Jbmc, &format!("agree-{i}"));
+        assert_eq!(native.verdict, *expected, "native on {target}: {}", native.output);
+        assert_eq!(jbmc.verdict, *expected, "JBMC on {target}: {}", jbmc.output);
+        assert!(native.output.contains("jvmcontract's own checker (CaDiCaL)"), "{}", native.output);
+        assert!(native.work.join("bmc.log").exists());
+        if *expected == Verdict::Violation {
+            // Both witnesses are replayed and shrunk by the interpreter, so the shrunk inputs agree where the
+            // smallest failing input is unique.
+            let (n, j) = (native.counterexample.unwrap(), jbmc.counterexample.unwrap());
+            assert_eq!(n.outcome, j.outcome, "{} vs {}", n.input, j.input);
+            if target.ends_with("majority") && assume.is_none() {
+                assert_eq!(n.input, j.input);
+            }
+        }
+    }
+    // Arrays are outside the engine's fragment: under `auto` it says so and JBMC takes over.
+    let correct = "(result == -1 && (\\forall int i; 0 <= i && i < sorted.length; sorted[i] != key)) || (result >= 0 && result < sorted.length && sorted[result] == key)";
+    let auto = prove_engine("fixtures.Search#find", Some("(\\forall int i; 0 < i && i < sorted.length; sorted[i - 1] < sorted[i])"), Some(correct), &[], Engine::Auto, "agree-arrays");
+    assert_eq!(auto.verdict, Verdict::Verified, "{}", auto.output);
+    assert!(auto.output.contains("note: the tool's own checker gave no verdict (outside the fragment: a int[] parameter); JBMC"), "{}", auto.output);
+    assert!(auto.output.contains("JBMC 6"), "{}", auto.output);
+    let native_only = prove_engine("fixtures.Search#find", None, Some(correct), &[], Engine::Native, "agree-arrays");
+    assert_eq!(native_only.verdict, Verdict::Unverifiable);
+    assert!(native_only.problem.unwrap().contains("outside the fragment"));
+
+    // A regression proof, both ways: the rounding refactor is refuted and the scoped tier change proved.
+    let after_source = PRICING_BEFORE
+        .replace("long total = Math.multiplyExact(priceCents, seats);", "long unit = seats >= 6 ? priceCents - priceCents / 10 : priceCents;")
+        .replace("return seats >= 6 ? total - total / 10 : total;", "return Math.multiplyExact(unit, seats);");
+    let tier = PRICING_BEFORE.replace("return seats >= 6 ? total - total / 10 : total;", "return seats >= 6 ? total - total / 5 : total;");
+    let (before, rounds, tier) = (compile_pricing("before-n", PRICING_BEFORE).unwrap(), compile_pricing("rounds-n", &after_source).unwrap(), compile_pricing("tier-n", &tier).unwrap());
+    let run = |after: &Path, scope: Option<&str>, engine: Engine, name: &str| {
+        let mut options = equivalence::Options::new(&before, after, "fixtures.Pricing#total");
+        options.unchanged_unless = scope.map(str::to_string);
+        options.engine = engine;
+        let work = target_tmp().join(format!("equivalence-{name}-{engine:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        equivalence::run(&options).unwrap()
+    };
+    let refuted = run(&rounds, None, Engine::Native, "rounds");
+    assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
+    assert!(refuted.output.contains("found by jvmcontract's own checker"), "{}", refuted.output);
+    let witness = refuted.counterexample.unwrap();
+    assert_ne!(witness.before, witness.after);
+    let proved = run(&tier, Some("seats >= 6"), Engine::Native, "tier");
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+    assert_eq!(run(&tier, None, Engine::Native, "tier-unscoped").verdict, Verdict::Violation);
+}

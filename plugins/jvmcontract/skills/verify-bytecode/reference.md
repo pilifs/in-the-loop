@@ -18,7 +18,7 @@ jvmcontract equivalence --before BASE_CLASSES --after HEAD_CLASSES --target T \
 
 # Property proof: the method satisfies a statement on every input, or the input where it does not.
 jvmcontract prove T --classes HEAD_CLASSES [--assume 'EXPR'] [--assert 'EXPR'] [--throws 'CLASS when EXPR']... \
-    [--classpath ...] [--max-array-length 8] [--unwind 16] [--timeout 600] [--work DIR] [--report DIR] [--json]
+    [--classpath ...] [--max-array-length 8] [--unwind 16] [--timeout 600] [--engine jbmc|native|auto] [--work DIR] [--report DIR] [--json]
 
 # Behavioural contract: every input of a finite domain, executed in the interpreter; prints the table. No JBMC.
 jvmcontract derive T --classes CLASSES [--classpath ...] [--json]
@@ -51,6 +51,7 @@ Refusals you will see, and what they mean:
 - `input domain is not finite` (from `derive`): an `int`, `long`, `String`, ... parameter. If static and primitive, use `equivalence`/`prove` instead.
 - `... is not known to be pure` / `writes static field` / `open to implementations outside the analysed code`: `derive` cannot prove purity; the method's behaviour depends on more than its arguments.
 - `cannot be verified: ... both versions agree on it` (equivalence) or a property witness on which the replay finds the property holding: JBMC had no bytecode for a method the target calls (a native method such as `Float.floatToRawIntBits`, a class missing from `--classpath`, or a JDK class it has no model of) and treated its result as arbitrary. Add the classpath entry, or report a tool limit. The tool ships models of a few JDK classes JBMC lacks (the boxing caches, `Character.digit`, `java.nio.charset`; `jvmcontract models` lists them) and puts them on JBMC's class path by itself; a violation in a class whose static initializer reads another JDK class is an artifact until that class has a model too (`lib/models/README.md` says how to add one).
+- `--engine auto` tries the tool's own checker first (methods over integers, no arrays or floating point) and hands anything else to JBMC with a `note:` line; it needs no JBMC for what it handles. The default is still JBMC.
 - JBMC timed out or was killed: the domain is too hard (64-bit division or multiplication on both sides, long loops, large arrays). Retry with smaller bounds and report the bounds as what was proved, or report it as not finished. Lower `--unwind` along with `--max-array-length`, or the smaller arrays save little: start at the array length plus 2, which is `--max-array-length 4 --unwind 6`, and the tool says so if a loop needs more. On one array method, 4 and 6 was proved in 275 s and 664 MB, while 4 and 8 had not finished at 170 s and 4 and 16 ran out of memory.
 
 ## The expression language
