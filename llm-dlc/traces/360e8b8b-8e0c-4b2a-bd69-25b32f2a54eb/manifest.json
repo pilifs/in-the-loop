@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T04:06:54.214Z",
-  "duration_seconds": 214619,
+  "ended": "2026-11-03T04:08:08.806Z",
+  "duration_seconds": 214693,
   "stats": {
     "turns": 172,
-    "api_calls": 1768,
-    "tool_calls": 2281,
+    "api_calls": 1770,
+    "tool_calls": 2283,
     "tool_errors": 50,
     "compactions": 28,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 52754,
-      "output_tokens": 3831221,
-      "cache_read_input_tokens": 336852577,
-      "cache_creation_input_tokens": 8433350
+      "input_tokens": 52818,
+      "output_tokens": 3836280,
+      "cache_read_input_tokens": 337273125,
+      "cache_creation_input_tokens": 8439117
     }
   },
   "tools": {
-    "Bash": 1788,
+    "Bash": 1790,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -620,24 +620,24 @@
     {
       "index": 28,
       "started": "2026-11-03T03:39:49.345Z",
-      "ended": "2026-11-03T04:06:54.214Z",
+      "ended": "2026-11-03T04:08:08.806Z",
       "turns": 4,
-      "api_calls": 36,
+      "api_calls": 38,
       "usage": {
-        "input_tokens": 1122,
-        "output_tokens": 104996,
-        "cache_read_input_tokens": 4058811,
-        "cache_creation_input_tokens": 193932
+        "input_tokens": 1186,
+        "output_tokens": 110055,
+        "cache_read_input_tokens": 4479359,
+        "cache_creation_input_tokens": 199699
       },
-      "peak_context_tokens": 208877
+      "peak_context_tokens": 214644
     }
   ],
   "log": {
-    "sha256": "054d64a9174ec077a3c0ddbeb39d23e931d0efe93f511fd94af61c201dda5c40",
-    "bytes": 67930424,
-    "lines": 24863,
-    "gzip_bytes": 11479931,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/054d64a9174ec077a3c0ddbeb39d23e931d0efe93f511fd94af61c201dda5c40.jsonl.gz"
+    "sha256": "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc",
+    "bytes": 67956706,
+    "lines": 24881,
+    "gzip_bytes": 11483347,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -957,9 +957,17 @@
       "change_id": "sutwottqqksxovqtolpnwutyvqvllzwl",
       "commit_id": null,
       "immutable": false,
-      "summary": "Record results for examples 110 and 111; resubmit the Quorum rerun with its measured memory (verification pending)",
-      "body": "Example 110 passed. Example 111 failed at build.py: its result.json is rejected by the schema ('newProblems' was unexpected), for the submitter to fix. The Quorum rerun was resubmitted at 2.7 GiB (first run peaked at 2.6 GiB) because the 4 GiB limit derived from 3 GiB did not fit the free memory.",
-      "log_sha256": "054d64a9174ec077a3c0ddbeb39d23e931d0efe93f511fd94af61c201dda5c40"
+      "summary": "Add the configuration block to boundary contracts: the keys a module's classes read, the keys its application files set and the keys the class path's metadata declares, cross-checked, with ! lines for a key nothing binds, a deprecated key and a value of the wrong type (verification pending)",
+      "body": "A Spring Boot module's boundary contract (B12) now has a configuration block between the beans and the wire types. lib/src/config.rs collects the keys from three places and compares them in Boot's relaxed canonical form: what the classes read (${key:default} placeholders in any annotation, the fields of a @ConfigurationProperties type under its prefix with nested types, lists as key[], maps as key.*, and a record's @DefaultValue; @ConditionalOnProperty; environment.getProperty with a constant key, found by the same stack walk that finds a self-invocation's receiver), what the application files under --resources set (application.yaml, profile files, --- profile documents, the config/ directory; a YAML subset reader of its own and a .properties reader), and what the configuration metadata on the class path declares (META-INF/spring-configuration-metadata.json, which every Spring Boot starter carries with types, sources and deprecations; ClassPath::resources reads a resource from every entry). Each key is one line with its type and the value per profile, or its default when no file sets it, and under it who reads it. The ! lines: a key set in a file that no class reads and no metadata declares, with the nearest known key named; a key the metadata marks deprecated, with its replacement and whether Boot still binds it; a value that is not of the key's type (integers, floating point, boolean, Duration, DataSize, Period, and an enum's constants resolved from the class path with relaxed matching); a placeholder default that is not. None of these fails a test, since tests do not run with the production profile and a missing key quietly takes its default. The stats line gains the count of configuration keys; the boundaries command takes --classpath and --resources, verify and update take --resources, and a finding on a configuration key is anchored to the line of the application file. The @ConfigurationProperties key lines of the bean block are gone, since the configuration block lists them with their values.\n\nVerified with the library's Spring fixtures, which gain an application.yaml and application-prod.properties with each kind of problem once, a metadata file with a deprecated key and a map-typed one, and classes reading keys through @ConditionalOnProperty, Environment and a nested @ConfigurationProperties record: 76 unit tests and 29 integration tests pass, the boundary test asserting each configuration line, the verifier's up-to-date and changed paths and the anchoring to the YAML line. The four Box Office contracts were regenerated through Gradle, whose boundaries convention now passes the resource directories and whose java conventions gain a printRuntimeClasspath task; the ticketing service's block lists its 14 keys with the Spring Boot starters' declarations and the keys the imported messaging module reads, with no problems. A scratch application.yaml against the real ticketing classes and class path produced the expected five problems (a mistyped key with its nearest neighbour, a Duration written as words, a port written as a word, a key with no reader, spring.data.mongodb.uri deprecated in Boot 4). Example 112 appends a prod profile document to the ticketing service's application.yaml with boxoffice.hold.max-seat: 12, one letter from the key the code reads; the change is intended, so the regenerated contract's new ! line is the violation. Its Gradle run is queued as job 20261103-040613-example-112-a-prod-profile-sets-the-hold. A new defect tag, configuration-drift, covers it.\n\nThe verification session ran concurrently and its two preceding commits (the results of 8 jobs, and the Quorum resubmission) swept in earlier states of this change's files; this commit completes them, and in turn carries the results of job 20261103-025524-example-110, which that session wrote while this one worked.",
+      "log_sha256": "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc"
+    },
+    {
+      "change_id": "ylrnntzvvupvplluozpvspymwpxvsnvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc"
     }
   ],
   "logs": {
@@ -969,10 +977,10 @@
       "gzip_bytes": 7614298,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a.jsonl.gz"
     },
-    "054d64a9174ec077a3c0ddbeb39d23e931d0efe93f511fd94af61c201dda5c40": {
-      "bytes": 67930424,
-      "lines": 24863,
-      "gzip_bytes": 11479931,
+    "08963a7726855bd9fa89fe93947eaa25c6bef2ba8a7dc91fce8135ca612c94cc": {
+      "bytes": 67956706,
+      "lines": 24881,
+      "gzip_bytes": 11483347,
       "url": null
     },
     "0e544d35d38c0636021ea4130dbd7d42ac8ef40d8f01cd81563b0c3603db761c": {
