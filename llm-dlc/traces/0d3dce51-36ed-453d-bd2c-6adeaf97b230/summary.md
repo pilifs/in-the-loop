@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `0d3dce51-36ed-453d-bd2c-6adeaf97b230` (open) |
+| Session | `0d3dce51-36ed-453d-bd2c-6adeaf97b230` (ended) |
 | When | 2026-11-03 13:48 UTC to 2026-11-03 14:16 UTC (27 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.317 |
@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Add an allow list for false-positive findings: an agent proposes a finding by id, a person approves it at a terminal, and check stops raising that value without a rescan
 
-change `pvvynlxnvtto` · [log `d3cacab877c8`](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)
+[`8581de750671`](https://github.com/pilifs/in-the-loop/commit/8581de750671ab8b5a7027cd74d3e0c85e2549f4) · [log `d3cacab877c8`](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)
 
 Work from session 0d3dce51, committed from another session at the user's request so that the repository could be pushed; its description here is read from the diff. Accepting a finding by id meant finding the value again with a scan of every file newer than the redaction stamp, and a class of false positives (version numbers that look like addresses) used to be settled by a new rule, which voided the stamp and rescanned everything. llm-dlc/allowlist.json settles them by value instead, through a new 'allow' command: listing entries with proposals masked, 'propose ID --reason' recording a proposal with the id, kind and masked value (open to agents), an approval step that prints the real values and asks a person once for 'false positive', direct entry of a value by a person, and 'drop' to remove entries. The list is published with its values, so it takes only the kinds the redactor leaves in a log and that are published anyway once accepted (public-ip, ipv6, mac-address, other-home-dir, auth-header, long-token); a finding the redactor would remove still goes through review accept, which keeps only a hash. The project settings deny agents the approval and direct-entry steps and direct edits to the list; CLAUDE.md, llm-dlc/README.md, the specification and the review-findings skill describe the new procedure, and the list of reviewed findings carries the entries a person recorded meanwhile. Verified: llm-dlc/tools/test_review.py, 25 tests, passes.
 
 ### Feature loop: keep a record of each run with the session's closing summary, let the session decide when to stop by instructions given on the command line or in a brief, and work from markdown briefs, starting with one to make sync.py fast
 
-change `ollyzntmpwyp` · [log `d3cacab877c8`](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)
+[`797a84d5a358`](https://github.com/pilifs/in-the-loop/commit/797a84d5a358a9154110b68ddadb81554852de64) · [log `d3cacab877c8`](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)
 
 Record: each run of llm-dlc/tools/feature-loop.sh writes llm-dlc/loop-summaries/DATE-PROMPT.md (gitignored, never pushed) with the instruction, a line per commit as it lands so that it survives a restart, and how the run ended. When it ends normally the session gets one more turn that only reports, a Markdown summary of the run's commits, pending or failed verification jobs, sync.py check warnings to judge before pushing and work deferred for the user's input, which the loop takes from the turn's result event and appends.
 
