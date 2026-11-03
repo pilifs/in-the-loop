@@ -17,5 +17,6 @@ public class MongoTemplate {
     public <T> T insert(T object) { return object; }
     public <T> T save(T object) { return object; }
     public long remove(Query query, Class<?> entityClass) { return 0; }
+    public long remove(Object entity) { return 0; }
     public IndexOperations indexOps(Class<?> entityClass) { return index -> ""; }
 }

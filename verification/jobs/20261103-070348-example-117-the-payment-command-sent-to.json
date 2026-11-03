@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-070348-example-117-the-payment-command-sent-to",
+  "title": "Example 117: the payment command sent to Kafka from inside the order transaction, a dual write, caught by the transaction placement of the reach lines (B12)",
+  "description": "The first example of the transaction placement of a boundary contract's reach lines: jvmcontract now carries a scope along the walk from each entry point (outside any transaction, inside one the method opens through its own @Transactional or a lambda handed to TransactionTemplate or to a helper that reaches it, or inside a @Transactional method of another class, which accounts for its own effects), with a ! line for a send or an HTTP call inside a transaction (a dual write), for an event published with no transaction while a @TransactionalEventListener waits for it, and for an after-commit listener that writes. The patch replaces the outbox in OrderService.place with a direct KafkaTemplate send of the ChargePayment command, inside the Transactions.run block that inserts the order: a retried transaction sends twice under fresh command ids, a rollback after the send has asked the payment service to charge for an order that does not exist, a crash between the commit and the send leaves the order waiting for ever. The change is a refactoring with the behaviour change intended, so the runner regenerates the contract and reports as the violation the new ! line under POST /orders (a transaction that sends to payments.commands: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced), next to the new sends payments.commands line and the writes line that loses Outbox.Entry. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/reach.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "117"
+    ]
+  },
+  "expected": "build.py 117 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T07:03:48+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 117 (B12)",
+      "run": "python3 examples/tools/build.py 117",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/117-payment-command-sent-from-inside-the-order-transaction"
+  ]
+}

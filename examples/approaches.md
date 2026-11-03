@@ -270,7 +270,10 @@ nothing and every test that goes through the same strings passing. Under each en
 what it reads and writes (documents, entities, tables), sends (topics), calls (HTTP requests) and publishes
 (application events), found by following the calls in the bytecode through the application's own classes to the
 framework APIs that do the work, so a handler that starts touching a new collection, topic or service changes the
-contract under its route; a GET that writes or sends, and a read-only transaction that writes, are `!` lines. The three Box Office modules
+contract under its route; a GET that writes or sends, and a read-only transaction that writes, are `!` lines. So are a
+send or an HTTP call inside a transaction (the dual write an outbox exists to avoid: a rollback leaves the message
+sent, a crash before the send leaves the commit unannounced), an event published with no transaction while a
+`@TransactionalEventListener` waits for it, and a write in an after-commit listener, which nothing commits. The three Box Office modules
 with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
 their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
 `PATH`.

@@ -11,6 +11,12 @@
 //! Cloud Stream templates give sends, `RestTemplate`, `RestClient`, `WebClient` and `@HttpExchange` or Feign
 //! interfaces give HTTP calls, `ApplicationEventPublisher` gives events.
 //!
+//! Each effect is also placed with respect to transactions: reached with no transaction on the path, or inside a
+//! transaction the method itself opens (its `@Transactional`, or a lambda it passes to `TransactionTemplate` or
+//! to a helper that runs its argument through one). A `@Transactional` method of another class on the path
+//! takes its effects for itself. The checks on dual writes (a send or an HTTP call inside a transaction), on
+//! an event published outside one, and on a write in an after-commit listener read these.
+//!
 //! What a read or write is of comes from the call site: a class literal argument (`find(query,
 //! SeatDocument.class)`), else the static type of the entity argument (`insert(hold)`, from the local variable
 //! table, a `new`, a field or the return type of the call that produced it), else the documents the method
@@ -77,10 +83,10 @@ const EXCHANGES: &[(&str, &str)] = &[
 /// reads or writes.
 const STORED: &[&str] = &["org/springframework/data/mongodb/core/mapping/Document", "jakarta/persistence/Entity", "javax/persistence/Entity", "org/springframework/data/relational/core/mapping/Table", "org/springframework/data/elasticsearch/annotations/Document", "org/springframework/data/redis/core/RedisHash"];
 
-/// What a method reaches, transitively: each set holds display names (`SeatDocument`, `payments.commands`,
-/// `GET /users/{id}`, `OrderPlaced`), sorted.
+/// A set of effects: each set holds display names (`SeatDocument`, `payments.commands`, `GET /users/{id}`,
+/// `OrderPlaced`), sorted.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-pub struct Reach {
+pub struct Effects {
     pub reads: BTreeSet<String>,
     pub writes: BTreeSet<String>,
     pub sends: BTreeSet<String>,
@@ -88,12 +94,37 @@ pub struct Reach {
     pub publishes: BTreeSet<String>,
 }
 
-impl Reach {
+/// What a method reaches, transitively, and where that stands with respect to transactions.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Reach {
+    /// Everything, on any path.
+    pub all: Effects,
+    /// Reached on a path with no transaction: not under the method's own `@Transactional`, not inside a lambda a
+    /// transaction runner executes, not under a `@Transactional` method of another class.
+    pub outside: Effects,
+    /// Reached inside a transaction this method opens: its own `@Transactional`, or a lambda it (or a callee)
+    /// passes to `TransactionTemplate` or to a helper that runs its argument through one. What a
+    /// `@Transactional` method of another class on the path reaches is left to that method.
+    pub inside: Effects,
+}
+
+/// Where on the walk a method runs with respect to transactions.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Scope {
+    /// No transaction on the path so far.
+    Outside,
+    /// Inside a transaction the root opened: by its own annotation, or by a lambda handed to a runner.
+    Own,
+    /// Inside a `@Transactional` method of another class, which accounts for its own effects.
+    Callee,
+}
+
+impl Effects {
     pub fn is_empty(&self) -> bool {
         self.reads.is_empty() && self.writes.is_empty() && self.sends.is_empty() && self.calls.is_empty() && self.publishes.is_empty()
     }
 
-    fn extend(&mut self, other: &Reach) {
+    fn extend(&mut self, other: &Effects) {
         self.reads.extend(other.reads.iter().cloned());
         self.writes.extend(other.writes.iter().cloned());
         self.sends.extend(other.sends.iter().cloned());
@@ -135,7 +166,7 @@ fn join(set: &BTreeSet<String>) -> String {
     set.iter().cloned().collect::<Vec<_>>().join(", ")
 }
 
-fn join_and(set: &BTreeSet<String>) -> String {
+pub(crate) fn join_and(set: &BTreeSet<String>) -> String {
     let items: Vec<&String> = set.iter().collect();
     match items.len() {
         0 => String::new(),
@@ -155,8 +186,20 @@ enum Effect {
 /// What one method does itself: its leaf effects and the application methods it calls, by key.
 #[derive(Default)]
 struct Direct {
-    reach: Reach,
+    reach: Effects,
     callees: Vec<String>,
+    /// The lambdas handed to a call that may run them inside a transaction: the callee's key (empty for
+    /// `TransactionTemplate` itself) and the lambda's.
+    scoped: Vec<(String, String)>,
+    /// Calls `TransactionTemplate.execute` (or `executeWithoutResult`) itself.
+    opens_transaction: bool,
+}
+
+const TRANSACTIONAL: &[&str] = &["org/springframework/transaction/annotation/Transactional", "jakarta/transaction/Transactional", "javax/transaction/Transactional"];
+
+/// `TransactionTemplate.execute(callback)` and the like: the callback runs inside a transaction.
+fn opens_transaction(member: &MemberRef) -> bool {
+    matches!(member.owner.as_str(), "org/springframework/transaction/support/TransactionTemplate" | "org/springframework/transaction/support/TransactionOperations") && member.name.starts_with("execute")
 }
 
 fn key(owner: &str, name: &str, descriptor: &str) -> String {
@@ -175,6 +218,10 @@ pub struct Graph<'a> {
     /// The direct subtypes of each followed class, among the followed classes.
     children: HashMap<String, Vec<String>>,
     direct: RefCell<HashMap<String, Rc<Direct>>>,
+    /// Whether each method runs a functional argument inside a transaction, once asked.
+    runners: RefCell<HashMap<String, bool>>,
+    /// Whether each method is `@Transactional` (itself or through its class), once asked.
+    annotated: RefCell<HashMap<String, bool>>,
 }
 
 impl<'a> Graph<'a> {
@@ -191,23 +238,104 @@ impl<'a> Graph<'a> {
                 children.entry(i.clone()).or_default().push(name.clone());
             }
         }
-        Graph { cp, classes, children, direct: RefCell::new(HashMap::new()) }
+        Graph { cp, classes, children, direct: RefCell::new(HashMap::new()), runners: RefCell::new(HashMap::new()), annotated: RefCell::new(HashMap::new()) }
     }
 
-    /// Everything the method reaches, transitively.
+    /// Everything the method reaches, transitively, placed with respect to transactions. A method is visited
+    /// once per scope it is reached in.
     pub fn reach(&self, owner: &str, name: &str, descriptor: &str) -> Reach {
         let mut out = Reach::default();
-        let mut seen: HashSet<String> = HashSet::new();
-        let mut work = vec![key(owner, name, descriptor)];
-        while let Some(k) = work.pop() {
-            if !seen.insert(k.clone()) {
+        let mut seen: HashSet<(String, Scope)> = HashSet::new();
+        let root = key(owner, name, descriptor);
+        let start = if self.transactional(&root) { Scope::Own } else { Scope::Outside };
+        let mut work = vec![(root, start)];
+        while let Some((k, scope)) = work.pop() {
+            if !seen.insert((k.clone(), scope)) {
                 continue;
             }
             let Some(direct) = self.direct(&k) else { continue };
-            out.extend(&direct.reach);
-            work.extend(direct.callees.iter().filter(|c| !seen.contains(*c)).cloned());
+            out.all.extend(&direct.reach);
+            match scope {
+                Scope::Outside => out.outside.extend(&direct.reach),
+                Scope::Own => out.inside.extend(&direct.reach),
+                Scope::Callee => {}
+            }
+            let owner_of = |k: &str| k.split_once('.').map(|(o, _)| o.to_string()).unwrap_or_default();
+            let caller_owner = owner_of(&k);
+            for c in &direct.callees {
+                // A `@Transactional` callee of another class takes its effects for itself; on `this` the proxy
+                // is bypassed and nothing changes. A lambda handed to a runner enters the root's own transaction.
+                let next = if scope == Scope::Callee || (owner_of(c) != caller_owner && self.transactional(c)) {
+                    Scope::Callee
+                } else if scope == Scope::Outside && direct.scoped.iter().any(|(runner, lambda)| lambda == c && (runner.is_empty() || self.runner(runner))) {
+                    Scope::Own
+                } else {
+                    scope
+                };
+                if !seen.contains(&(c.clone(), next)) {
+                    work.push((c.clone(), next));
+                }
+            }
         }
         out
+    }
+
+    /// Whether the method is `@Transactional`, itself or through its class (for an instance method), with a
+    /// propagation that joins or opens a transaction.
+    fn transactional(&self, k: &str) -> bool {
+        if let Some(t) = self.annotated.borrow().get(k) {
+            return *t;
+        }
+        let found = (|| {
+            let (owner, rest) = k.split_once('.')?;
+            let paren = rest.find('(')?;
+            let (name, descriptor) = rest.split_at(paren);
+            let class = self.classes.get(owner)?;
+            let method = class.method(name, descriptor)?;
+            let joins = |annotations: &[Annotation]| {
+                annotations.iter().any(|a| TRANSACTIONAL.contains(&a.type_name.as_str()) && !matches!(a.element("propagation"), Some(ElementValue::Enum(_, p)) if p == "NOT_SUPPORTED" || p == "NEVER"))
+            };
+            let own = method.annotations(&class.pool).ok()?;
+            if joins(&own) {
+                return Some(true);
+            }
+            if method.is_static() {
+                return Some(false);
+            }
+            Some(joins(&class.annotations().ok()?))
+        })()
+        .unwrap_or(false);
+        self.annotated.borrow_mut().insert(k.to_string(), found);
+        found
+    }
+
+    /// Whether a call to the method runs its functional arguments inside a transaction: it, or something it
+    /// reaches, is `@Transactional` or calls `TransactionTemplate`. An over-approximation: a lambda the method
+    /// takes may run outside the transaction it opens.
+    fn runner(&self, k: &str) -> bool {
+        if let Some(r) = self.runners.borrow().get(k) {
+            return *r;
+        }
+        let mut found = false;
+        let mut seen: HashSet<String> = HashSet::new();
+        let mut work = vec![k.to_string()];
+        while let Some(m) = work.pop() {
+            if !seen.insert(m.clone()) {
+                continue;
+            }
+            if self.transactional(&m) {
+                found = true;
+                break;
+            }
+            let Some(direct) = self.direct(&m) else { continue };
+            if direct.opens_transaction {
+                found = true;
+                break;
+            }
+            work.extend(direct.callees.iter().cloned());
+        }
+        self.runners.borrow_mut().insert(k.to_string(), found);
+        found
     }
 
     fn direct(&self, k: &str) -> Option<Rc<Direct>> {
@@ -237,6 +365,12 @@ impl<'a> Graph<'a> {
                 Insn::InvokeVirtual(idx) | Insn::InvokeSpecial(idx) | Insn::InvokeStatic(idx) | Insn::InvokeInterface(idx) => {
                     let Ok(member) = class.pool.member(*idx) else { continue };
                     if is_leaf(&member.owner) || !self.classes.contains_key(&member.owner) {
+                        if opens_transaction(&member) {
+                            out.opens_transaction = true;
+                            for lambda in self.lambda_args(class, &insns, &targets, i, &member, &bootstrap) {
+                                out.scoped.push((String::new(), lambda));
+                            }
+                        }
                         for effect in self.leaf(class, method, &insns, &targets, i, &member, &mut verb) {
                             apply(&mut out.reach, effect);
                         }
@@ -249,21 +383,45 @@ impl<'a> Graph<'a> {
                             apply(&mut out.reach, effect);
                         }
                     }
+                    let lambdas = self.lambda_args(class, &insns, &targets, i, &member, &bootstrap);
+                    for callee in &callees {
+                        for lambda in &lambdas {
+                            out.scoped.push((callee.clone(), lambda.clone()));
+                        }
+                    }
                     out.callees.extend(callees);
                 }
                 Insn::InvokeDynamic(idx) => {
-                    let Ok((bsm, _, _)) = class.pool.invoke_dynamic(*idx) else { continue };
-                    let Some(b) = bootstrap.get(usize::from(bsm)) else { continue };
-                    if b.method.member.owner != LAMBDA_METAFACTORY {
-                        continue;
-                    }
-                    if let Some(BootstrapArg::MethodHandle(h)) = b.args.get(1) {
-                        if self.classes.contains_key(&h.member.owner) {
-                            out.callees.extend(self.resolve(&h.member, h.kind != 5 && h.kind != 9));
-                        }
-                    }
+                    out.callees.extend(self.lambda_targets(class, &bootstrap, *idx));
                 }
                 _ => {}
+            }
+        }
+        out
+    }
+
+    /// The followed methods behind a lambda: the body the `LambdaMetafactory` call site names, when it is local.
+    fn lambda_targets(&self, class: &ClassFile, bootstrap: &[crate::classfile::BootstrapMethod], idx: u16) -> Vec<String> {
+        let Ok((bsm, _, _)) = class.pool.invoke_dynamic(idx) else { return Vec::new() };
+        let Some(b) = bootstrap.get(usize::from(bsm)) else { return Vec::new() };
+        if b.method.member.owner != LAMBDA_METAFACTORY {
+            return Vec::new();
+        }
+        match b.args.get(1) {
+            Some(BootstrapArg::MethodHandle(h)) if self.classes.contains_key(&h.member.owner) => self.resolve(&h.member, h.kind != 5 && h.kind != 9),
+            _ => Vec::new(),
+        }
+    }
+
+    /// The lambdas among the arguments of the call at `at`: the bodies of the `invokedynamic`s that pushed them.
+    fn lambda_args(&self, class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, member: &MemberRef, bootstrap: &[crate::classfile::BootstrapMethod]) -> Vec<String> {
+        let Ok(d) = MethodDescriptor::parse(&member.descriptor) else { return Vec::new() };
+        let n = d.params.len();
+        let mut out = Vec::new();
+        for position in 0..n {
+            let Some(pushed) = pushing(class, insns, targets, at, n - 1 - position) else { continue };
+            if let Insn::InvokeDynamic(idx) = &insns[pushed].1 {
+                out.extend(self.lambda_targets(class, bootstrap, *idx));
             }
         }
         out
@@ -350,6 +508,7 @@ impl<'a> Graph<'a> {
     }
 
     /// The effect of a call into the framework, if its owner and name are one the walk knows.
+    #[allow(clippy::too_many_arguments)]
     fn leaf(&self, class: &ClassFile, method: &Method, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, member: &MemberRef, verb: &mut Option<String>) -> Vec<Effect> {
         let owner = member.owner.as_str();
         let name = member.name.as_str();
@@ -571,11 +730,11 @@ impl<'a> Graph<'a> {
 
 /// A class as the lines name it: the simple name, with a nested class under its outer one (`Outbox.Entry`), so
 /// that two nested classes of one name stay apart.
-fn display(internal: &str) -> String {
+pub(crate) fn display(internal: &str) -> String {
     internal.rsplit('/').next().unwrap_or(internal).replace('$', ".")
 }
 
-fn apply(reach: &mut Reach, effect: Effect) {
+fn apply(reach: &mut Effects, effect: Effect) {
     match effect {
         Effect::Read(s) => reach.reads.insert(s),
         Effect::Write(s) => reach.writes.insert(s),
@@ -648,7 +807,7 @@ mod tests {
 
     #[test]
     fn side_effects_leave_out_reads_and_gets() {
-        let mut r = Reach::default();
+        let mut r = Effects::default();
         r.reads.insert("A".into());
         r.calls.insert("GET /x".into());
         assert!(r.side_effects().is_empty());

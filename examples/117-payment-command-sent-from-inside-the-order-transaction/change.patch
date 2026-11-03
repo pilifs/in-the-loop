@@ -1,0 +1,67 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
+index 954df2aba7..44f8d681f9 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
+@@ -3,35 +3,42 @@ public class OrderService {
+ import java.time.Clock;
+ import java.time.Instant;
+ import java.util.UUID;
++import net.terminalvalue.boxoffice.contracts.MessageCodec;
+ import net.terminalvalue.boxoffice.contracts.PaymentCommand;
+ import net.terminalvalue.boxoffice.contracts.Topics;
+-import net.terminalvalue.boxoffice.messaging.Outbox;
+ import net.terminalvalue.boxoffice.messaging.Transactions;
+ import net.terminalvalue.boxoffice.ticketing.domain.Decision;
+ import net.terminalvalue.boxoffice.ticketing.domain.OrderInput;
+ import net.terminalvalue.boxoffice.ticketing.domain.OrderStatus;
+ import net.terminalvalue.boxoffice.ticketing.store.OrderDocument;
+ import net.terminalvalue.boxoffice.ticketing.store.TicketingStore;
++import org.springframework.kafka.core.KafkaTemplate;
+ import org.springframework.stereotype.Service;
+ 
+ /**
+- * Orders, asynchronously: placing or cancelling an order records the intent and returns at once, and the payment
+- * service's answer arrives later over Kafka ({@link PaymentEventHandler}). Clients poll the order for its status.
++ * Orders, asynchronously: placing an order records it and sends the payment command straight to Kafka, and the
++ * payment service's answer arrives later over Kafka ({@link PaymentEventHandler}). Clients poll the order for its
++ * status. The command no longer goes through the outbox: it reaches the payment service as soon as the order is
++ * placed instead of on the relay's next poll.
+  */
+ @Service
+ public class OrderService {
+ 
+     private final TicketingStore store;
+     private final Transactions transactions;
+-    private final Outbox outbox;
++    private final KafkaTemplate<String, String> kafka;
+     private final OrderTransitions transitions;
+     private final Clock clock;
+ 
+     public OrderService(
+-            TicketingStore store, Transactions transactions, Outbox outbox, OrderTransitions transitions, Clock clock) {
++            TicketingStore store,
++            Transactions transactions,
++            KafkaTemplate<String, String> kafka,
++            OrderTransitions transitions,
++            Clock clock) {
+         this.store = store;
+         this.transactions = transactions;
+-        this.outbox = outbox;
++        this.kafka = kafka;
+         this.transitions = transitions;
+         this.clock = clock;
+     }
+@@ -62,10 +69,9 @@ public Created<OrderDocument> place(String holdId, String paymentToken) {
+                     now,
+                     now);
+             store.insert(order);
+-            outbox.enqueue(
+-                    Topics.PAYMENT_COMMANDS,
+-                    new PaymentCommand.ChargePayment(
+-                            UUID.randomUUID(), order.id(), now, order.customerId(), order.amountCents(), paymentToken));
++            var command = new PaymentCommand.ChargePayment(
++                    UUID.randomUUID(), order.id(), now, order.customerId(), order.amountCents(), paymentToken);
++            kafka.send(Topics.PAYMENT_COMMANDS, order.id(), MessageCodec.encode(command));
+             return new Created<>(order, true);
+         });
+     }

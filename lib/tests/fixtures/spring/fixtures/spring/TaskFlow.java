@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.client.RestClient;
 
 /** What each flow reaches: a document, a topic, an event, a table, a URL, through lambdas, interfaces and helpers. */
@@ -23,9 +24,10 @@ public class TaskFlow {
     private final UserClient users;
     private final RestClient client;
     private final JdbcTemplate jdbc;
+    private final TransactionTemplate transactions;
     private final Work work = new Work();
 
-    public TaskFlow(MongoTemplate mongo, NotesStore store, NoteRepository notes, KafkaTemplate<String, String> kafka, ApplicationEventPublisher events, Notifier notifier, UserClient users, RestClient client, JdbcTemplate jdbc) {
+    public TaskFlow(MongoTemplate mongo, NotesStore store, NoteRepository notes, KafkaTemplate<String, String> kafka, ApplicationEventPublisher events, Notifier notifier, UserClient users, RestClient client, JdbcTemplate jdbc, TransactionTemplate transactions) {
         this.mongo = mongo;
         this.store = store;
         this.notes = notes;
@@ -35,6 +37,7 @@ public class TaskFlow {
         this.users = users;
         this.client = client;
         this.jdbc = jdbc;
+        this.transactions = transactions;
     }
 
     /** Inside a lambda: the write (typed by the local variable), the send and the event are still reached. */
@@ -70,6 +73,23 @@ public class TaskFlow {
     public long audit(String id) {
         jdbc.update("insert into audit(id, at) values (?, now())", id);
         return jdbc.queryForObject("select count(*) from notes where author = ?", Long.class, id);
+    }
+
+    /** A transaction that sends and calls out: neither is part of it. */
+    @Transactional
+    public void rename(String id, String title) {
+        mongo.save(new TaskDocument(id, title, null, List.of(), null, Instant.EPOCH, Map.of(), 0));
+        kafka.send("tasks", id);
+        client.post().uri("/audit/{id}", id).retrieve().body(String.class);
+    }
+
+    /** The lambda runs inside the transaction a helper opens through TransactionTemplate: the send is inside it. */
+    public String close(String id) {
+        return work.atomically(transactions, () -> {
+            mongo.remove(new TaskDocument(id, id, null, List.of(), null, Instant.EPOCH, Map.of(), 0));
+            kafka.send("tasks", id);
+            return id;
+        });
     }
 
     /** Two HTTP calls: a declarative client and the fluent one. */

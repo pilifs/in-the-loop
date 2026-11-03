@@ -3,6 +3,7 @@ package fixtures.spring;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,18 @@ public class TasksController {
     @GetMapping("/tasks/{author}/archive")
     public void archive(@PathVariable String author) {
         flow.archive(author);
+    }
+
+    /** The service method is @Transactional: it accounts for its own send and call, the route does not. */
+    @PutMapping("/tasks/{id}")
+    public void rename(@PathVariable String id, @RequestParam String title) {
+        flow.rename(id, title);
+    }
+
+    /** The service method opens its transaction through a helper and a template: the route accounts for it. */
+    @PostMapping("/tasks/{id}/close")
+    public String close(@PathVariable String id) {
+        return flow.close(id);
     }
 
     /** A GET that only reads and calls other GETs: no problem. */

@@ -301,12 +301,12 @@
       "title": "Rust Java formal verification library",
       "status": "open",
       "started": "2026-10-31T16:29:55.396Z",
-      "ended": "2026-11-03T06:36:35.404Z",
+      "ended": "2026-11-03T07:05:55.604Z",
       "models": [
         "claude-fable-5-1"
       ],
-      "turns": 191,
-      "log_sha256": "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618",
+      "turns": 196,
+      "log_sha256": "b2dcfac1694efb944da246deedb72783f4183e1395cb37c7eb68919057cad8b4",
       "manifest": "traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/manifest.json",
       "summary": "traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md",
       "commits": [
@@ -534,6 +534,11 @@
           "change_id": "kkoulumoumvrozswupsrunxqvotylxpz",
           "commit_id": null,
           "summary": "Add reach lines to boundary contracts: under each entry point what it reads, writes, sends, calls and publishes, from a call graph over the application's own classes, with a ! line for a GET with side effects and a read-only transaction that writes (verification pending)"
+        },
+        {
+          "change_id": "rxonwtoplnluyoxzrktwzqooyoyxvxww",
+          "commit_id": null,
+          "summary": "Place each reach effect with respect to transactions: a send or an HTTP call from inside a transaction (a dual write), an event published outside one that a @TransactionalEventListener waits for, and an after-commit listener that writes are ! lines (verification pending)"
         }
       ]
     },

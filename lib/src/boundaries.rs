@@ -29,8 +29,10 @@
 //!
 //! Under each entry point and advised method go its reach lines ([`crate::reach`]): what it reads, writes, sends,
 //! calls and publishes, found by following the calls in the bytecode through the application's own classes to the
-//! data, messaging, HTTP client and event APIs. A `GET` with side effects and a read-only transaction that writes
-//! are `!` lines.
+//! data, messaging, HTTP client and event APIs, and placed with respect to transactions. A `GET` with side effects, a
+//! read-only transaction that writes, a transaction that sends or makes an HTTP call (a dual write), an event
+//! published with no transaction while a `@TransactionalEventListener` waits for it, and an after-commit listener
+//! that writes are `!` lines.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -429,6 +431,36 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
     let mut boundaries = Boundaries::default();
     let classes = cp.application_classes()?;
     let graph = reach::Graph::new(cp, &classes, local);
+    // The events a `@TransactionalEventListener` waits for, by the name the reach lines use: an event published
+    // with no transaction to commit never reaches one (unless it asks for fallbackExecution).
+    let mut transactional_listeners: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for (name, class) in &classes {
+        if local.is_some_and(|l| !l.contains(name)) {
+            continue;
+        }
+        for method in &class.methods {
+            let Ok(annotations) = method.annotations(&class.pool) else { continue };
+            let Some(listener) = annotations.iter().find(|a| a.simple_name() == "TransactionalEventListener") else { continue };
+            if listener.element("fallbackExecution") == Some(&ElementValue::Boolean(true)) {
+                continue;
+            }
+            let mut events = listener.classes("classes");
+            events.extend(listener.classes("value"));
+            if events.is_empty() {
+                if let Ok(d) = MethodDescriptor::parse(&method.descriptor) {
+                    if let Some(Type::Object(c)) = d.params.first() {
+                        events.push(c.clone());
+                    }
+                }
+            }
+            for event in events {
+                transactional_listeners.entry(reach::display(&event)).or_default().push(format!("{}.{}", simple_name_of(name), method.name));
+            }
+        }
+    }
+    // With a transactional Kafka producer, a send inside a transaction is synchronised with it (committed after
+    // the database commit, aborted on rollback): not atomic, but not the plain dual write either.
+    let kafka_transactional = config::read_files(resources)?.1.iter().any(|s| s.key == "spring.kafka.producer.transaction-id-prefix");
     let mut roots: Vec<String> = Vec::new();
     let mut field_only: BTreeSet<String> = BTreeSet::new();
     for (name, class) in &classes {
@@ -633,16 +665,43 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             // What the entry point or advised method reaches, and the places where that contradicts its contract.
             let reached = if entries.is_empty() && applied.is_empty() { reach::Reach::default() } else { graph.reach(name, &method.name, &method.descriptor) };
             if entries.iter().any(|e| e.starts_with("GET ") || e.starts_with("HEAD ")) {
-                let effects = reached.side_effects();
+                let effects = reached.all.side_effects();
                 if !effects.is_empty() {
                     problems.push(format!("! a GET that {}: a safe method with side effects, so a retry, a prefetch or a crawler changes state", effects.join(" and ")));
                 }
             }
-            if !reached.writes.is_empty() && applied.iter().any(|a| a.simple_name() == "Transactional" && a.element("readOnly") == Some(&ElementValue::Boolean(true))) {
-                problems.push(format!("! @Transactional(readOnly = true) but writes {}: a read-only transaction drops or rejects writes", reached.writes.iter().cloned().collect::<Vec<_>>().join(", ")));
+            if !reached.all.writes.is_empty() && applied.iter().any(|a| a.simple_name() == "Transactional" && a.element("readOnly") == Some(&ElementValue::Boolean(true))) {
+                problems.push(format!("! @Transactional(readOnly = true) but writes {}: a read-only transaction drops or rejects writes", reached.all.writes.iter().cloned().collect::<Vec<_>>().join(", ")));
+            }
+            // Dual writes: a send or an HTTP call inside a transaction this method opens is not part of it.
+            if !kafka_transactional && !reached.inside.sends.is_empty() {
+                let to: Vec<String> = reached.inside.sends.iter().map(|t| if t.starts_with("to ") { t.clone() } else { format!("to {t}") }).collect();
+                problems.push(format!("! a transaction that sends {}: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced", reach::join_and(&to.into_iter().collect())));
+            }
+            if !reached.inside.calls.is_empty() {
+                problems.push(format!("! a transaction that calls {}: the call is not part of the transaction, so a rollback does not undo it, and the transaction stays open for the round trip", reach::join_and(&reached.inside.calls)));
+            }
+            // An event published with no transaction to commit never reaches a @TransactionalEventListener.
+            for event in &reached.outside.publishes {
+                if let Some(listeners) = transactional_listeners.get(event) {
+                    let (verb, noun, run) = if listeners.len() == 1 { ("is", "a @TransactionalEventListener", "does") } else { ("are", "@TransactionalEventListeners", "do") };
+                    problems.push(format!("! publishes {event} outside a transaction: {} {verb} {noun}, which {run} not run when no transaction commits (fallbackExecution is false)", reach::join_and(&listeners.iter().cloned().collect())));
+                }
+            }
+            // After the commit, the transaction's resources are still bound to the thread and nothing commits again.
+            if let Some(listener) = annotations.iter().find(|a| a.simple_name() == "TransactionalEventListener") {
+                let phase = match listener.element("phase") {
+                    Some(ElementValue::Enum(_, p)) => p.clone(),
+                    _ => "AFTER_COMMIT".to_string(),
+                };
+                let own_transaction = applied.iter().any(|a| a.simple_name() == "Transactional" && matches!(a.element("propagation"), Some(ElementValue::Enum(_, p)) if p == "REQUIRES_NEW"));
+                let asynchronous = applied.iter().any(|a| a.simple_name() == "Async");
+                if phase != "BEFORE_COMMIT" && !own_transaction && !asynchronous && !reached.all.writes.is_empty() {
+                    problems.push(format!("! an {phase} listener that writes {}: the transaction has committed and nothing commits again, so a JPA or JDBC write here is never committed unless the method opens its own transaction (propagation = REQUIRES_NEW)", reach::join_and(&reached.all.writes)));
+                }
             }
             let mut details = advice;
-            details.extend(reached.lines());
+            details.extend(reached.all.lines());
             let problem_count = problems.len();
             details.extend(problems);
             members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line(), source_file: None, source_class: None });
