@@ -1304,9 +1304,9 @@ def new_id(title, at=None):
 
 def example_job_parts(example_id):
     """The step, outputs, requirements and capability of a job that runs one demo example through build.py."""
-    folders = sorted((ROOT / "examples/demo").glob(f"{example_id}-*"))
+    folders = sorted((ROOT / "examples").glob(f"{example_id}-*"))
     if len(folders) != 1:
-        sys.exit(f"example {example_id}: expected one folder examples/demo/{example_id}-*, found {len(folders)}")
+        sys.exit(f"example {example_id}: expected one folder examples/{example_id}-*, found {len(folders)}")
     folder = folders[0]
     example = json.loads((folder / "example.json").read_text())
     approach = example["approach"]["id"]
@@ -1321,7 +1321,7 @@ def example_job_parts(example_id):
     if approach == "D1":
         requires.append("tlc")
     rel = folder.relative_to(ROOT).as_posix()
-    return {"step": {"name": f"example {example_id} ({approach})", "run": f"python3 examples/demo/tools/build.py {example_id}",
+    return {"step": {"name": f"example {example_id} ({approach})", "run": f"python3 examples/tools/build.py {example_id}",
                      "cwd": "."},
             "output": rel, "requires": requires, "capability": approach,
             "expected": f"example {example_id} gives its expected verdict, {example['expected']['verdict']}"

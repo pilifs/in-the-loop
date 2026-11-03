@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "078",
+  "title": "An in-progress record that expires by age lets a retry run beside the first attempt",
+  "summary": "An `Idempotency-Key` receiver's sweeper releases a key once its record's time to live has passed, but only a completed record: a record in progress never expires. Support still reports clients stuck in 409 loops after a worker died mid-request, and a developer makes the sweeper release records in progress too, on the reasoning that a record in progress for a whole time to live belongs to a worker that is gone. The contract diff is one row, and the model checker has never exercised it: the model's record did not expire. Under a second configuration in which it can, TLC finds a six-step run in which the record expires under a worker that is alive, and the client's retry executes beside it.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "idempotency",
+    "race-condition",
+    "duplicate-delivery",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "On `Expired`, release a record in progress as a completed one is released, instead of leaving it alone. The reasoning: the sweeper only sends `Expired` for records older than the time to live, and no request takes that long, so a record still in progress at that age is one whose worker died without reporting `Failed`, and the key it holds is what keeps the client's retries in 409 loops. The contract diff is the case `decide(IN_PROGRESS, Expired[])`, from unchanged to a release; the test of the expiry rule gains the case.",
+    "patch": "change.patch"
+  },
+  "risk": "The receiver's record of a request in progress is the lock that keeps a retry from running beside the first attempt, and the sweeper's clock measures the record's age, not whether its worker is alive. A worker paused by garbage collection, waiting on a lock, or blocked on a slow payment provider is alive and will finish; the age of its record says nothing about it. With this change the sweeper releases the key under that worker, the retry finds no record and executes, and the customer is charged twice. This is the lease-expiry failure of distributed locks, inside the idempotency layer. The contract diff could not catch it: the row changed is the one the developer meant to change. Nor could the model as it was: its record never expired, so the row had never been taken by any run, and a verdict on this change would have rested on nothing. The question is what happens in every interleaving of a client that retries, a receiver still working, and a sweeper whose clock runs on its own, and only a model in which the record expires answers it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The receiver's rule in the model is generated from the regenerated contract, so the model runs the new rule. The model is now checked under two configurations: one in which the record never expires, which is the model as it was, and one in which the sweeper may end the record's time to live at any point, with no clock to say how old the record is or whether an execution is running, because the sweeper's clock knows neither. Under the first, every invariant holds in 168 states and the coverage shows the changed row taken by no step: that configuration cannot judge this change. Under the second, TLC reports the shortest run that breaks the invariant that no two attempts under one key execute at once: the client sends, the receiver executes, the client retries, the record expires under the running execution, and the receiver executes the retry. Six steps, the initial state and five actions, and the step the developer's reasoning left out is the expiry falling on a record whose worker is alive, which the model allows because a time to live is a duration and an execution's length is not bounded by it.",
+  "resolution": "Revert. A record in progress needs a lease its worker renews while it runs, and a sweeper that releases a lease is releasing one the worker stopped renewing, which is the signal the age of the record is not; or the worker's death is reported as `Failed` by whatever supervises it. The second configuration stays with the model, so the next change to how records expire is checked against a sweeper that can fire at any point.",
+  "notes": [
+    "The idempotency model (`apps/crosscut/spec`) has a client retrying against an `Idempotency-Key` receiver whose state machine is generated from its contract.",
+    "The model's second configuration lets the record's time to live pass at any point (the `Expires` constant), which exercises the kernel's `Expired` rows the first configuration never takes. At-most-once is counted per lifetime of the record, and the replay invariant is stated at the moment of the reply.",
+    "The sweeper releases a record in progress under a worker that is alive, so the retry executes beside the first attempt."
+  ],
+  "provenance": "Constructed from the resolution of example 029, which asks for a sweeper that releases keys held in progress for too long, implemented the way a lease timeout is usually implemented first: by age alone.",
+  "references": [
+    {
+      "title": "Stripe, Idempotent requests (keys are eligible to be removed after 24 hours; a request in progress under the key is answered 409)",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    },
+    {
+      "title": "Kleppmann, How to do distributed locking (2016): a lease that expires while its holder is paused lets a second holder in",
+      "url": "https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html"
+    },
+    {
+      "title": "IETF httpapi, The Idempotency-Key HTTP Header Field (draft): the retention period is the server's; 409 while a request is in progress, 422 on a key reused for another request",
+      "url": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/"
+    }
+  ]
+}

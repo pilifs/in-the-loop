@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "081",
+  "title": "A role machine that adopts the term of a stale reply sends a term backwards",
+  "summary": "A Raft server's role machine adopts the term of a reply to one of its own RPCs when that term is newer than its own, and otherwise leaves its role alone. A developer rewrites the rule as a switch over the reply's term, with the arm for the current term written out and every other term adopted, on the reasoning that a reply whose term differs from the server's own is a reply from a server out of step with it, and the term in the reply is the one to be in. The contract diff is three rows, one per role, for a reply from an older term, and the model checker had never taken any of them: an RPC in the model was one step, so a reply always carried the server's own term or a newer one. Under a sixth configuration in which a vote reply waits on the wire, TLC finds a five-step run in which a candidate that has moved on to term 2 takes the reply of term 1 and goes back to it, which the action property that terms never decrease reports.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "stale-messages",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": true,
+    "description": "In `RoleMachine.decide`, the `Response` case: the ternary that adopts a `NEWER` term and leaves the rest alone becomes a switch over the term, with `CURRENT` unchanged and a `default` arm that becomes a follower and adopts the term. The reasoning: a reply whose term is not the server's own comes from a server the cluster has moved on with or without, and the term in the reply is the one to be in. The contract diff is three rows, `decide(FOLLOWER, Response[term=OLDER])`, `decide(CANDIDATE, Response[term=OLDER])` and `decide(LEADER, Response[term=OLDER])`, from unchanged to a transition to `FOLLOWER` with `ADOPT_TERM`; the test of the reply rule gains the three terms.",
+    "patch": "change.patch"
+  },
+  "risk": "A reply's term is the term the voter was in when it answered, and a reply can arrive after the candidate has left that term: it timed out and started the next one while the reply was on the wire. Adopting the reply's term then sends the server back to a term it has finished with. `ADOPT_TERM` means what it meant for a newer term: the vote and the tally of the current term are forgotten, so the candidate loses the election it was running, and the server, back in the old term with no vote recorded, can grant a vote in it again, to a candidate that is still asking. A leader that takes a late reply of its candidacy steps down into the past. Raft's rules for terms are the one direction: a server moves to a newer term and never to an older one, and a message from an older term is dropped. The contract diff shows the three rows changing, under their names, and a reviewer who takes the change's premise, that a reply's term is always the server's own or newer, reads them as rows that never fire. The model as it was agreed with that reviewer: an RPC was one step, the request and the reply together, so the role machine never saw a reply from an older term, the coverage listed the three rows as taken by no step, and a verdict on this change would have been verified vacuously under all five configurations.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The role machine in the model is generated from the regenerated contract, so the model runs the new rule. The model is now checked under a sixth configuration, `RaftElectionDelayed.cfg`, in which the vote RPC is two steps rather than one: the voter's half, `Ask`, puts the reply on the wire with the term the voter answered in, and the candidate's half, `Answer`, takes it whenever the model likes, which can be after the candidate has timed out into a newer term, stepped down, or won. The reply's term then compares with the candidate's own as `OLDER`, which the one-step RPC never produces, and the role machine's three rows for it are taken. Under the five configurations as before, every invariant and action property holds and the coverage shows the three changed rows taken by no step. Under the sixth, TLC reports the shortest run that breaks the action property `TermsNeverDecrease`: server s1 times out into term 1, asks s2 for its vote and s2 grants it, with the reply waiting on the wire; s1 times out into term 2; s1 takes the reply, and the new rule adopts its term, 1. Five steps, the initial state and four actions, and the step the change's reasoning left out is the second timeout, which happens while the reply is on the wire. The property is one of steps: the states on either side are each a state the protocol allows, and only the step between them, a term going from 2 to 1, is wrong.",
+  "resolution": "Revert: a `NEWER` term is adopted, and every other reply changes no role. A reply from an older term is dropped, as the paper's rules for terms say and as `Server.onVote` already does with the vote in it; whether the role machine should see it at all is a question for the glue, and example 083 is the change that has it logged. The sixth configuration stays with the model, so the next change to the reply rows is checked against a reply that can arrive late.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "`RaftElectionDelayed.cfg` lets the reply to a vote request wait on the wire as a step of its own. The model's simplification that an RPC is one step had kept the role machine's rows for a reply from a term the candidate has left dead under the other configurations, which therefore verify such changes vacuously.",
+    "Found by the delayed configuration in five steps: the term goes backwards."
+  ],
+  "provenance": "Constructed from the rule for all servers in figure 2 of the paper (a term in a request or response that is newer than the server's own is adopted), rewritten with the comparison dropped, so that any term but the server's own is adopted; the model's own simplification, that an RPC is one step, is what had kept the dropped comparison from mattering.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.1, the rules for terms (a stale term is rejected, a newer one adopted), and figure 2, the rule for all servers on the term of a request or response",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014), section 3.4: leader election, and the note that a server discards an RPC response from a term it has left",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, section 8.9: action properties, [][A]_v",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

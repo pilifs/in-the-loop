@@ -1,0 +1,37 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java
+@@ -12,8 +12,8 @@
+ 
+ /**
+  * What a Raft follower does with a leader's AppendEntries request (Ongaro and Ousterhout, section 5.3): the
+- * consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so
+- * that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of
++ * consistency check first, which refuses the request unless the follower's log reaches the entry before the ones
++ * sent, so that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of
+  * whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the
+  * entries it now holds in common with it.
+  *
+@@ -31,8 +31,7 @@
+     public static Decision<LogMatch, AppendEffect> decide(LogMatch previous, AppendRequest request) {
+         return switch (previous) {
+             case MISSING -> rejected("no entry at the previous index");
+-            case CONFLICTING -> rejected("another entry at the previous index");
+-            case MATCHING -> switch (request.entry()) {
++            case CONFLICTING, MATCHING -> switch (request.entry()) { // an entry of another term at the previous index is overwritten by the leader's later entries in due course: no round trip to back up
+                 case NONE, SAME -> request.commitAhead()
+                         ? transition(MATCHING, ADVANCE_COMMIT)
+                         : unchanged("holds what was sent, and nothing new to commit");
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/AppendRuleTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/AppendRuleTest.java
+@@ -19,7 +19,10 @@
+ 
+     public static void refusesARequestWhosePreviousEntryItLacks() {
+         check(AppendRule.decide(MISSING, new AppendRequest(NewEntry.ABSENT, false)) instanceof Decision.Rejected, "log ends before the previous index");
+-        check(AppendRule.decide(CONFLICTING, new AppendRequest(NewEntry.ABSENT, true)) instanceof Decision.Rejected, "another entry at the previous index");
++    }
++
++    public static void takesTheEntriesAfterAConflictingPreviousEntry() {
++        equal(new Transition<>(MATCHING, List.of(APPEND, ADVANCE_COMMIT)), AppendRule.decide(CONFLICTING, new AppendRequest(NewEntry.ABSENT, true)));
+     }
+ 
+     public static void appendsAfterAMatchingEntry() {

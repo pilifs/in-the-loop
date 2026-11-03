@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "107",
+  "title": "apache/commons-lang#1585: ArrayUtils.subarray index arithmetic overflow",
+  "summary": "A pull request that clamps `ArrayUtils.subarray`'s end index from below, because `end - start` could overflow to a positive size. The overflow was found: the old version runs out of memory where the new returns an empty array. The change was proved confined to the inputs where the subtraction overflows; a length property is unverifiable because JBMC treats an array of computed size as one of any length.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "performance"
+  ],
+  "tags": [
+    "array-utilities",
+    "open-source-libraries",
+    "integer-overflow",
+    "buffer-bounds",
+    "pull-request-review",
+    "solver-limits",
+    "confined-change"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/ArrayUtils.java",
+    "symbol": "org.apache.commons.lang3.ArrayUtils#subarray"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "also": [
+      "B11",
+      "B10"
+    ]
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1585"
+  },
+  "change": {
+    "kind": "bug-fix"
+  },
+  "verdictLabel": "✗ the overflow found; ✓ change confined; ⚠ length property unverifiable",
+  "notes": [
+    "The first attempt crashed the tool: the interpreter replaying JBMC's witness tried to allocate the two-billion-element array literally. It now raises `OutOfMemoryError` for absurd arrays, fixed in the same commit as the record.",
+    "The confined change is stated as \"`end - start` overflows\" written without the overflow: `startIndexInclusive > 0 && endIndexExclusive < startIndexInclusive - 2147483647 - 1`."
+  ],
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+}

@@ -1,0 +1,39 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java
+@@ -68,10 +68,10 @@
+         switch (decision) {
+             case Transition<Phase, CoordinatorEffect> t -> {
+                 phase = t.next();
+-                log.write(phase, tally); // logged before it is acted on: a crash from here on loses the broadcast only
+-                for (CoordinatorEffect effect : t.effects()) {
++                for (CoordinatorEffect effect : t.effects()) { // the participants are waiting: send first, log after
+                     network.broadcast(effect == CoordinatorEffect.SEND_COMMIT ? Outcome.COMMIT : Outcome.ABORT);
+                 }
++                log.write(phase, tally);
+             }
+             case Unchanged<Phase, CoordinatorEffect> u -> log.write(phase, tally); // the tally is logged with every vote
+             case Decision.Rejected<Phase, CoordinatorEffect> r -> throw new IllegalStateException(r.reason());
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
+@@ -52,7 +52,7 @@
+         equal(Outcome.ABORT, network.decision());
+     }
+ 
+-    public static void aCrashAfterTheLogLosesTheBroadcastAndTheRestartSendsItAgain() {
++    public static void aCrashRightAfterTheDecisionStillLeavesItOut() {
+         Faults faults = new Faults();
+         CoordinatorLog log = new CoordinatorLog(faults);
+         Network network = new Network(faults);
+@@ -67,11 +67,7 @@
+             crashed = true;
+         }
+         check(crashed, "the scheduled crash happened");
+-        equal(Phase.COMMITTED, log.phase());
+-        equal(Outcome.NONE, network.decision());
+-        CoordinatorNode restarted = new CoordinatorNode(ALL, log, network);
+-        restarted.recover();
+-        equal(Outcome.COMMIT, network.decision());
++        equal(Outcome.COMMIT, network.decision()); // the participants hear the decision even if the coordinator dies right after
+     }
+ 
+     public static void aParticipantThatGivesUpNeverVotes() {

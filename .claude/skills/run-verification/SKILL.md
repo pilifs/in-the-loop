@@ -47,8 +47,8 @@ commands by hand to see: the runner is how they run, under limits.
 
 5. **Commit.** Follow `CLAUDE.md`: `python3 llm-dlc/tools/sync.py commit` with the message `collect` printed,
    reworded for a reader who did not see the run, then `sync.py check`. The commit should hold only
-   `verification/results/`, the outputs `collect` applied, the regenerated `examples/demo/README.md` and
-   `examples/demo/index.json`, and any jobs you resubmitted. If `jj st` shows other files, they are another
+   `verification/results/`, the outputs `collect` applied, the regenerated `examples/README.md` and
+   `examples/index.json`, and any jobs you resubmitted. If `jj st` shows other files, they are another
    session's: keep them out by moving them into a change of their own below yours, committing, and moving them back
    on top:
 

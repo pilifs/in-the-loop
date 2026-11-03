@@ -1,0 +1,35 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -55,9 +55,13 @@
+             case RequestVote vote -> vote.term() == NEWER
+                     ? transition(FOLLOWER, ADOPT_TERM)
+                     : unchanged("the vote itself is decided by the vote rule");
+-            case Response response -> response.term() == NEWER
+-                    ? transition(FOLLOWER, ADOPT_TERM)
+-                    : unchanged("a reply from the current or an older term changes no role");
++            case Response response -> switch (response.term()) {
++                case NEWER -> transition(FOLLOWER, ADOPT_TERM);
++                case CURRENT -> unchanged("a reply from the current term changes no role");
++                // A server answers with the term it has now, and ours only grows while we wait for it: a reply from
++                // an older term than our own is a reply to an RPC we never sent.
++                case OLDER -> throw new IllegalStateException("a reply from an older term than our own");
++            };
+         };
+     }
+ }
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
+@@ -35,4 +35,13 @@
+     public static void staleLeaderIsRejected() {
+         check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.AppendEntries(TermOrder.OLDER)) instanceof Decision.Rejected, "stale");
+     }
++
++    public static void aReplyFromAnOlderTermIsImpossible() {
++        try {
++            RoleMachine.decide(Role.CANDIDATE, new RoleEvent.Response(TermOrder.OLDER));
++        } catch (IllegalStateException expected) {
++            return;
++        }
++        throw new AssertionError("expected an IllegalStateException");
++    }
+ }

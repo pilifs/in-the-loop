@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "041",
+  "title": "Looking up StrictMath intrinsics by name on the host gives a pure interpreter reflection",
+  "summary": "The interpreter computes a fixed list of the guest's `StrictMath` functions on the host, by a `switch` on the name. A developer replaces the list with a `MethodHandles.Lookup.findStatic` on the host's `StrictMath`, so that any unary function works without maintaining the list. The capability contract of the module, every capability `none` until now, gains `reflection` at two call sites: the interpreter can now invoke host methods chosen by a string, and the string comes from the guest's constant pool.",
+  "origin": "constructed",
+  "categories": [
+    "security",
+    "determinism"
+  ],
+  "tags": [
+    "jvm-internals",
+    "interpreter-semantics",
+    "hidden-capability",
+    "security-boundary"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Intrinsics.java",
+    "symbol": "net.terminalvalue.mica.interp.Intrinsics#unary"
+  },
+  "approach": {
+    "id": "B10",
+    "name": "Capability contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": false,
+    "description": "Find the function with `MethodHandles.lookup().findStatic(StrictMath.class, name, methodType(double.class, double.class))` and call it with `invokeExact`; return empty when there is no such method. The six listed functions still work and any other unary `StrictMath` function now works too, with no list to keep in step with the JDK. The tests for the listed functions and for unknown names pass.",
+    "patch": "change.patch"
+  },
+  "risk": "An interpreter written in Java is a sandbox only as long as guest bytecode cannot reach the host. The capability contract is that boundary made explicit: the module reaches no clock, no file, no socket, no thread and no reflection, so whatever the guest does, the host computes arithmetic and nothing else. With this change the module holds a `Lookup` and resolves host methods from a name the guest supplies. Today the lookup is pinned to `StrictMath` and a `(D)D` signature; the next change that takes the class from the guest too (\"support `Math` as well\", \"support the guest's own natives\") turns the interpreter into a way to call any static method on the host, and a `switch` that could only ever compute `sin` is not there to stop it. The tests cannot see any of this: the listed functions compute the same values either way.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The capability contract is derived by inspecting every call site in the module's compiled classes against a table of JDK APIs that reach beyond computation. The committed contract has `reflection: none`; the patched classes call `MethodHandles.lookup` and `MethodHandles.Lookup.findStatic`, both in the reflection group, so the verifier reports two capability changes with their call sites, and the build fails. The verdict needs no execution and no assumption about what the name can be: the bytecode can call `findStatic`, and the contract said it could not.",
+  "resolution": "Keep the list, or generate it at build time from the JDK, but keep the call sites static: an intrinsic table of method references (`StrictMath::sin`) compiled into the module gives the same coverage with no lookup at run time. If a lookup is wanted, the contract diff adding `reflection` is what the reviewer approves, with the pinned class and signature named as the invariant the next reviewer must keep.",
+  "provenance": "Constructed from the intrinsic tables of bytecode interpreters, by replacing a table with a name lookup.",
+  "references": [
+    {
+      "title": "java.lang.invoke.MethodHandles.Lookup: findStatic",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/MethodHandles.Lookup.html#findStatic(java.lang.Class,java.lang.String,java.lang.invoke.MethodType)"
+    },
+    {
+      "title": "JVMS §2.11.3, Arithmetic: the strict floating-point semantics of StrictMath",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html#jvms-2.11.3"
+    }
+  ]
+}

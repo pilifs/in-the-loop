@@ -1,0 +1,29 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -52,9 +52,10 @@
+                 };
+                 case OLDER -> rejected("stale leader");
+             };
+-            case RequestVote vote -> vote.term() == NEWER
+-                    ? transition(FOLLOWER, ADOPT_TERM)
+-                    : unchanged("the vote itself is decided by the vote rule");
++            // A request for a vote changes no role. The vote rule already treats a candidate's newer term as a
++            // free vote, and adopting the term here let any server whose timer fired, even one that could not
++            // win, drag the whole cluster into a new term. A server adopts a term when it hears from a leader.
++            case RequestVote _ -> unchanged("the vote itself is decided by the vote rule");
+             case Response response -> response.term() == NEWER
+                     ? transition(FOLLOWER, ADOPT_TERM)
+                     : unchanged("a reply from the current or an older term changes no role");
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
+@@ -32,6 +32,10 @@
+                 RoleMachine.decide(Role.LEADER, new RoleEvent.AppendEntries(TermOrder.NEWER)));
+     }
+ 
++    public static void aVoteRequestChangesNoRole() {
++        check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.RequestVote(TermOrder.NEWER)) instanceof Decision.Unchanged, "a candidate is not a leader");
++    }
++
+     public static void staleLeaderIsRejected() {
+         check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.AppendEntries(TermOrder.OLDER)) instanceof Decision.Rejected, "stale");
+     }

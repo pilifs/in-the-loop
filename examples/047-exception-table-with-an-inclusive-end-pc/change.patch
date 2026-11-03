@@ -1,0 +1,26 @@
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java
+@@ -2,10 +2,10 @@
+ 
+ /**
+  * The exception table of a {@code Code} attribute (JVMS §4.7.3). An entry covers the instructions whose pc lies in
+- * the half-open range {@code [start_pc, end_pc)}, and when an instruction throws, the first entry in table order
+- * that covers its pc is taken (JVMS §2.10): javac relies on the order to put an inner handler before the outer one
+- * it is nested in. The specification calls the exclusive {@code end_pc} a historical mistake in the design of the
+- * virtual machine, and keeps it, because every class file ever compiled depends on it.
++ * the range {@code [start_pc, end_pc]}, and when an instruction throws, the first entry in table order that covers
++ * its pc is taken (JVMS §2.10): javac relies on the order to put an inner handler before the outer one it is
++ * nested in. The specification calls an exclusive {@code end_pc} a historical mistake in the design of the virtual
++ * machine; this implementation does not repeat it, so that a handler can cover the last instruction of a method.
+  */
+ public final class ExceptionTable {
+ 
+@@ -18,7 +18,7 @@
+      */
+     public static int handlerIndex(int[] startPc, int[] endPc, int pc) {
+         for (int i = 0; i < startPc.length; i++) {
+-            if (startPc[i] <= pc && pc < endPc[i]) {
++            if (startPc[i] <= pc && pc <= endPc[i]) {
+                 return i;
+             }
+         }

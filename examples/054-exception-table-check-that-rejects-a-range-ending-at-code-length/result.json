@@ -1,0 +1,49 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java",
+    "startLine": 12,
+    "code": "private ExceptionTable() {}\n\n/**\n * Checks an entry as the class file reader does (JVMS §4.7.3): {@code start_pc} is before {@code end_pc},\n * {@code end_pc} is at most {@code code_length} (the range is half-open, so a handler may cover the last\n * instruction by ending at the end of the code), and {@code handler_pc} is inside the code. An entry that\n * fails is a {@code ClassFormatError}: the class file is malformed, and the method is never run.\n */\npublic static void checkEntry(int startPc, int endPc, int handlerPc, int codeLength) {\n    if (startPc >= endPc || endPc > codeLength || handlerPc >= codeLength) {\n        throw new ClassFormatError(\"Illegal exception table range in class file\");\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java",
+    "startLine": 12,
+    "code": "private ExceptionTable() {}\n\n/**\n * Checks an entry as the class file reader does (JVMS §4.7.3): {@code start_pc} is before {@code end_pc}, and\n * all three of {@code start_pc}, {@code end_pc} and {@code handler_pc} are offsets inside the code. An entry\n * that fails is a {@code ClassFormatError}: the class file is malformed, and the method is never run.\n */\npublic static void checkEntry(int startPc, int endPc, int handlerPc, int codeLength) {\n    if (startPc >= endPc || endPc >= codeLength || handlerPc >= codeLength) {\n        throw new ClassFormatError(\"Illegal exception table range in class file\");\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "startPc: int × endPc: int × handlerPc: int × codeLength: int",
+  "counterexamples": [
+    {
+      "input": "checkEntry(startPc=0, endPc=1, handlerPc=0, codeLength=1)",
+      "contract": null,
+      "actual": "throws ClassFormatError(\"Illegal exception table range in class file\")",
+      "expected": "a normal return: no throws clause applies to this input"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain startPc: int × endPc: int × handlerPc: int × codeLength: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": null,
+    "assume": "startPc >= 0 && startPc <= 65535 && endPc >= 0 && endPc <= 65535 && handlerPc >= 0 && handlerPc <= 65535 && codeLength >= 1 && codeLength <= 65535",
+    "throws": [
+      "java.lang.ClassFormatError when startPc >= endPc || endPc > codeLength || handlerPc >= codeLength"
+    ]
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,25 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
+@@ -47,7 +47,8 @@ public final class IdempotentReceiver {
+                 case ABSENT, COMPLETED -> unchanged("no attempt is in progress");
+             };
+             case Failed _ -> switch (state) {
+-                case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);
++                // The failure is the response: a retry gets it back, instead of running the request again.
++                case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);
+                 case ABSENT, COMPLETED -> unchanged("no attempt is in progress");
+             };
+             case Expired _ -> switch (state) {
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
+@@ -31,8 +31,8 @@ public final class IdempotentReceiverTest {
+         check(IdempotentReceiver.decide(COMPLETED, new Request(false)) instanceof Decision.Rejected, "422");
+     }
+ 
+-    public static void aFailedAttemptReleasesTheKey() {
+-        equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(IN_PROGRESS, new Failed()));
++    public static void aFailedAttemptStoresTheFailure() {
++        equal(new Transition<>(COMPLETED, List.of(ReceiverEffect.STORE_RESPONSE)), IdempotentReceiver.decide(IN_PROGRESS, new Failed()));
+     }
+ 
+     public static void anExpiredKeyIsReleased() {

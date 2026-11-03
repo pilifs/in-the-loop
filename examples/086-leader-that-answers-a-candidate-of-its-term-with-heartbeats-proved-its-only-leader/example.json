@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "086",
+  "title": "A leader that answers a candidate of its term with heartbeats, proved its only leader",
+  "summary": "A Raft server's role machine leaves its role alone on a vote request from its own term, so a leader that hears a candidate of its term goes on leading and waits for its next heartbeat to make the candidate step down. A developer has the leader send its heartbeats at once instead: the row for a leader and a current-term request returns a transition to `LEADER` with `SEND_HEARTBEATS`, where it returned unchanged. A transition where there was an unchanged decision is a change in kind, on the row that example 085 turned into a step-down, and the reviewer wants to know that it keeps the role, adopts no term and frees no vote. Under all seven configurations every invariant and property holds, the two that are about the whole run included, at most one leader elected per term and one vote per server per term; the coverage shows the changed row taken under all seven configurations.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "agreement",
+    "tla-history-variables",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `RoleMachine.decide`, the `RequestVote` case becomes a switch over the request's term: `NEWER` adopts it as before, `OLDER` changes no role as before, and `CURRENT` has a leader return a transition to `LEADER` with `SEND_HEARTBEATS`, the other roles unchanged, with the comment that a candidate of the leader's own term is a server its heartbeats did not reach and the leader sends them now. The server performs the effect as it does after winning: a heartbeat to every other server. The contract diff is one row, `decide(LEADER, RequestVote[term=CURRENT])`, from unchanged to `Transition[next=LEADER, effects=[SEND_HEARTBEATS]]`; a test checks the three roles.",
+    "patch": "change.patch"
+  },
+  "risk": "The row is the one that example 085 changed into a step-down that lets a term elect twice, and the reviewer of this change sees the same row go from unchanged to a transition: the question is whether the transition keeps everything the step-down threw away, the role, the term and the vote, in every run in which a leader hears a candidate of its term, under the delayed configuration too, where the request can reach a leader that was a candidate when it asked. The contract diff says what the row returns, a transition to `LEADER` with one effect, and nothing about the runs; and the seventh configuration, the one that found example 085, is new, so the reviewer wants to see it pass on this change rather than take the row's word.",
+  "expected": {
+    "verdict": "verified",
+    "vacuous": false
+  },
+  "explanation": "The role machine in the model is generated from the regenerated contract, so the model runs the new rule, and the model's actions apply a transition's effects by name: `ADOPT_TERM` moves the term and forgets the vote, `SEND_HEARTBEATS` moves nothing, since a leader's heartbeats are an action of their own that the model takes whenever it likes, and the role after the decision is the decision's next role, `LEADER`. Every invariant and property holds under all seven configurations: the 610 states of three servers and three terms, the inductive step, four servers under symmetry, the liveness properties under fairness, the server left behind, the delayed replies, and the history, in which `elected` and `voted` record every term a server has led and every vote cast, and `AtMostOneLeaderPerTerm` and `AtMostOneVotePerTerm` hold in 4,798 states. The coverage shows the changed row taken under all seven configurations, the inductive step included, since a leader hearing a candidate of its own term is a state the invariant admits: it is the split-vote run the change is for, and the verdict is not vacuous. The row that example 085 showed electing a second leader is, with this effect, a row that elects no one, and the run that example 085 ends with, the candidate winning on the leader's vote, does not exist: the leader's ballot stays cast for itself, and the vote rule refuses.",
+  "resolution": "None needed. The page's coverage is the reviewer's answer: the row is reached under every configuration, the history configuration included, and nothing the row returns moves a term or frees a vote. The heartbeats the effect sends are the ones the model already assumes a leader sends; a server that performs the effect sends them sooner, which the model, having no clock, cannot tell from later.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "`RaftElectionHistory.cfg` adds two history variables, every term a server has led and every vote cast, so that the paper's claims about a whole run (at most one leader elected per term, one vote per server per term) are invariants. Every state invariant holds in such runs: a vote is forgotten the moment the voter moves on, and a leader that has stepped down is a follower like any other.",
+    "Answering such a candidate with heartbeats is proved the term's only leader under all seven configurations."
+  ],
+  "provenance": "Constructed as the remedy for a candidate the leader's heartbeats did not reach, the one that example 085's step-down was reaching for, done the way the paper does it: the leader asserts itself, and the candidate steps down on the heartbeat by the rule it already has.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 3, the election safety property (at most one leader can be elected in a given term), and section 5.2, one vote per server per term",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "TLC's coverage statistics (the -coverage option): how often each expression of the specification was evaluated",
+      "url": "https://lamport.azurewebsites.net/tla/current-tools.pdf"
+    },
+    {
+      "title": "Lamport and Merz, Auxiliary Variables in TLA+ (2017): history variables, which record what happened without changing what can happen",
+      "url": "https://lamport.azurewebsites.net/pubs/auxiliary.pdf"
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-002843-rerun-the-box-office-examples-after-the",
+  "title": "Rerun the Box Office examples after the examples move",
+  "description": "The examples moved from examples/demo/ and examples/real-world/ into one folder, examples/, with apps, tools and schema one level up, and every patch, example.json, generated page and script path rewritten. This reruns every constructed example of the subject system at the new layout, one step per example, to confirm that each still gives its expected verdict. Their pages were re-rendered from the old results with build.py --render-only, so a verdict that differs here is a regression of the move.",
+  "kind": "example",
+  "capabilities": [
+    "B8",
+    "B9",
+    "B10",
+    "D1"
+  ],
+  "links": {
+    "paths": [
+      "examples/README.md"
+    ],
+    "examples": [
+      "001",
+      "002",
+      "003",
+      "004",
+      "005",
+      "006",
+      "007",
+      "008",
+      "009",
+      "010",
+      "011",
+      "012"
+    ]
+  },
+  "expected": "example 001 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 002 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 003 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0; example 004 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 005 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 006 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 007 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 008 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 009 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 010 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 011 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 012 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-03T00:28:43+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "15m",
+    "notes": "a Box Office example takes seconds to a minute, as its patch is applied to a copy of the Gradle build"
+  },
+  "steps": [
+    {
+      "name": "example 001 (B8)",
+      "run": "python3 examples/tools/build.py 001",
+      "cwd": "."
+    },
+    {
+      "name": "example 002 (B8)",
+      "run": "python3 examples/tools/build.py 002",
+      "cwd": "."
+    },
+    {
+      "name": "example 003 (B8)",
+      "run": "python3 examples/tools/build.py 003",
+      "cwd": "."
+    },
+    {
+      "name": "example 004 (B8)",
+      "run": "python3 examples/tools/build.py 004",
+      "cwd": "."
+    },
+    {
+      "name": "example 005 (B8)",
+      "run": "python3 examples/tools/build.py 005",
+      "cwd": "."
+    },
+    {
+      "name": "example 006 (B9)",
+      "run": "python3 examples/tools/build.py 006",
+      "cwd": "."
+    },
+    {
+      "name": "example 007 (B9)",
+      "run": "python3 examples/tools/build.py 007",
+      "cwd": "."
+    },
+    {
+      "name": "example 008 (B9)",
+      "run": "python3 examples/tools/build.py 008",
+      "cwd": "."
+    },
+    {
+      "name": "example 009 (B10)",
+      "run": "python3 examples/tools/build.py 009",
+      "cwd": "."
+    },
+    {
+      "name": "example 010 (B10)",
+      "run": "python3 examples/tools/build.py 010",
+      "cwd": "."
+    },
+    {
+      "name": "example 011 (D1)",
+      "run": "python3 examples/tools/build.py 011",
+      "cwd": "."
+    },
+    {
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/001-merged-case-keeps-money",
+    "examples/002-equality-refactor-changes-null-handling",
+    "examples/003-timestamp-makes-decision-nondeterministic",
+    "examples/004-equivalent-refactor-passes",
+    "examples/005-intended-change-reviewed-as-contract-diff",
+    "examples/006-per-seat-discount-rounds-differently",
+    "examples/007-doubled-group-discount-proved-confined",
+    "examples/008-percentage-rewrite-leaks-outside-new-tier",
+    "examples/009-codec-loads-classes-named-by-payload",
+    "examples/010-sorted-payload-keeps-capabilities",
+    "examples/011-skipped-seat-check-strands-the-money",
+    "examples/012-deleting-the-sweeper-is-safe"
+  ]
+}

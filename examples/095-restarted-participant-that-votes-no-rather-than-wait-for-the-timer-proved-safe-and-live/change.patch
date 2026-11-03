@@ -1,0 +1,58 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java
+@@ -48,7 +48,7 @@
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+             case Restarted _ -> switch (state) {
+-                case WORKING -> transition(ABORTED); // no vote went out: the coordinator will presume abort
++                case WORKING -> transition(ABORTED, VOTE_NO); // no vote went out: say so, rather than leave it to the timer
+                 case PREPARED -> unchanged("holds its locks until the decision");
+                 case COMMITTED, ABORTED -> unchanged("already decided");
+             };
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/ParticipantTest.java
+@@ -44,7 +44,7 @@
+     public static void aRestartHoldsALoggedYesAndAbortsWithoutOne() {
+         equal(new Unchanged<>("holds its locks until the decision"),
+                 Participant.decide(ParticipantState.PREPARED, new Restarted()));
+-        equal(new Transition<ParticipantState, ParticipantEffect>(ParticipantState.ABORTED, List.of()),
++        equal(new Transition<>(ParticipantState.ABORTED, List.of(ParticipantEffect.VOTE_NO)),
+                 Participant.decide(ParticipantState.WORKING, new Restarted()));
+     }
+ }
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/NodesTest.java
+@@ -3,6 +3,7 @@
+ import static net.terminalvalue.quorum.Tests.check;
+ import static net.terminalvalue.quorum.Tests.equal;
+ 
++import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ 
+@@ -112,7 +113,7 @@
+         restarted.recover();
+         equal(ParticipantState.ABORTED, restarted.state());
+         equal(ParticipantState.ABORTED, log.state());
+-        check(network.inFlight().isEmpty(), "no vote went out");
++        equal(List.of(new VoteMessage("p1", Vote.NO)), network.inFlight());
+     }
+ 
+     private static ParticipantNode participant(String name, Network network) {
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/Traces.java
+@@ -122,11 +122,11 @@
+                         .vote("p2", Vote.YES).vote("p3", Vote.YES).deliver("p2").deliver("p3")
+                         .recover("p1")
+                         .learn("p1").learn("p2").learn("p3"),
+-                new Script("a participant crashes before voting, restarts aborted, and the coordinator aborts on its timer")
++                new Script("a participant crashes before voting, restarts voting no, and the coordinator aborts once every vote is in")
+                         .crash("p1")
+                         .vote("p2", Vote.YES).deliver("p2")
+-                        .recover("p1")
+-                        .timeout()
++                        .recover("p1").deliver("p1")
++                        .vote("p3", Vote.YES).deliver("p3")
+                         .learn("p2").learn("p3"),
+                 new Script("a participant crashes after logging its yes and before sending it, and the timer aborts")
+                         .voteCrashingAfter("p1", Vote.YES, 1)

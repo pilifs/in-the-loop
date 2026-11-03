@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "022",
+  "title": "A skew-tolerant tie-break for last-writer-wins lets replicas keep different values",
+  "summary": "Last-writer-wins resolution must be a total order on writes, or replicas that see the same two writes in different orders keep different values forever. The module states this as a law: `winner(a, b) == 1 - winner(b, a)` for distinct writes. A developer makes the tie-break tolerate clock skew, treating timestamps within five milliseconds as simultaneous and letting the node id decide. The prover finds two writes from the same node a couple of milliseconds apart that each replica resolves in favour of the one it saw first.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "replicated-data",
+    "clocks-and-time",
+    "agreement"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java",
+    "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Clocks on different nodes disagree by a few milliseconds, so a write that is two milliseconds \"later\" is not really later. Treat timestamps within a skew window as equal and fall back to the node id, which was already the tie-break for exactly equal timestamps. Both existing tests (later timestamp wins; equal timestamps go to the higher node) still pass.",
+    "patch": "change.patch"
+  },
+  "risk": "Every replica applies the same resolution rule to the same pair of writes, and convergence follows only if the rule is antisymmetric: whichever write a replica saw first, it must pick the same winner. The skew window breaks that for two writes from the same node within the window, where the node ids tie and the rule falls through to \"the first argument wins\". Replica A keeps its local write, replica B keeps its local write, anti-entropy exchanges them, and each keeps its own again. The register has two values for good, and a read repair cannot fix it because the repair uses the same rule. The window also makes the order non-transitive (a within 5 ms of b, b within 5 ms of c, a and c 10 ms apart), so three replicas can disagree three ways.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The properties file states the law for `winner`: on every pair of distinct writes (`tsA != tsB || nodeA != nodeB`), `result == 1 - winner(tsB, nodeB, tsA, nodeA)`. Calling the method inside its own property is how a law is stated, and the tool compiles the call into the harness. JBMC searches for a violating input over the two `long` timestamps and two `int` node ids and finds one within the first pass over small values: two writes from node 0, a couple of milliseconds apart, inside the skew window. The tool replays it: the method returns 0, \"the first write wins\", and by the symmetry of the input it returns 0 for the other order too. The old rule was proved antisymmetric over the whole domain (2^192 inputs) in the same way, and the old test suite never exercised two writes from one node within the window because nothing in the old rule made that case special.",
+  "resolution": "Do not put the skew window in the resolution rule. If close timestamps should not be ordered by their timestamps, compare something that is a total order on writes (the timestamp, then the node id, then a per-node sequence number), or use a clock that already orders causally related writes, such as the hybrid logical clock of examples 017 and 018. Whatever the rule, the law in the properties file is re-proved on every build.",
+  "provenance": "Constructed from the tie-breaking requirement of last-writer-wins registers (Shapiro et al.), by adding the kind of skew tolerance that gets proposed when clocks are found to disagree.",
+  "references": [
+    {
+      "title": "Shapiro, Preguiça, Baquero and Zawirski, A comprehensive study of Convergent and Commutative Replicated Data Types (LWW-Register, section 3.2.1)",
+      "url": "https://inria.hal.science/inria-00555588/document"
+    }
+  ]
+}

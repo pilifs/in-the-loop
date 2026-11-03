@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "082",
+  "title": "A role machine that treats a stale reply as impossible crashes on a late reply",
+  "summary": "A Raft server's role machine leaves its role alone on a reply from the current term or an older one. A developer makes a reply from an older term throw `IllegalStateException`, the exception the kernel already reserves for an input it holds impossible, on the reasoning that a server answers with the term it has now and the asking server's term only grows while it waits, so a reply cannot carry a term older than the server's own. That reasoning is the model's own simplification written into the Java: an RPC in the model was one step, so no run had ever handed the role machine such a reply, and the three rows that now throw had never been taken. Under the sixth configuration, in which a vote reply waits on the wire, the invariant that no reachable state lets the kernel throw fails in four steps: a candidate asks for a vote, times out into the next term, and the reply of the old term is waiting for it.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "stale-messages",
+    "exceptions",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": true,
+    "description": "In `RoleMachine.decide`, the `Response` case becomes a switch over the reply's term: `NEWER` adopts it as before, `CURRENT` changes no role as before, and `OLDER` throws `IllegalStateException`, with the comment that a server answers with the term it has now and ours only grows while we wait, so such a reply answers an RPC we never sent. The contract diff is three rows, `decide(FOLLOWER, Response[term=OLDER])`, `decide(CANDIDATE, Response[term=OLDER])` and `decide(LEADER, Response[term=OLDER])`, from unchanged to `throws IllegalStateException`; a test asserts the exception.",
+    "patch": "change.patch"
+  },
+  "risk": "A reply from an older term is routine: a candidate's election timer fires while its requests are out, it starts the next term, and the replies to the old term's requests arrive afterwards, each with the term the voter answered in. Raft's rules say to drop such a reply. With this change the server throws instead, in the handler of every late reply, and a cluster whose timeouts are short against its round trips crashes its candidates exactly when it is trying to elect one. The contract diff shows the three rows and the exception, and a reviewer who shares the premise, that a reply's term is never older than the server's own, approves it as the kernel's existing habit of naming the inputs it holds impossible, which examples 066 and 073 show working. The invariant `KernelNeverThrows` is what checks that habit, in every configuration, and under the five configurations the model had, the premise was true: an RPC was one step, the request and its reply together, so a server always answered with the term it had now and the asking server took the answer in the same step. The model's simplification and the change's premise were the same sentence.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The role machine in the model is generated from the regenerated contract, so the model runs the new rule, and every action's next state says whether a decision it goes through throws; `KernelNeverThrows` says that no reachable state allows a step that would. Under the five configurations as before, it holds, and the coverage shows the three throwing rows taken by no step, which is not a vacuous verdict: `KernelNeverThrows` is the statement that no run reaches them, and under those configurations none does. Under the sixth, `RaftElectionDelayed.cfg`, the vote RPC is two steps with the reply on the wire between them, and TLC reports the shortest run to a state the invariant fails in: s1 times out into term 1, asks s2 for its vote and s2 grants it, the reply waiting on the wire; s1 times out into term 2. Four steps, the initial state and three actions, and in the last state the step s1 would take next, taking the reply of term 1, makes the role machine throw. The run is the one the change's comment rules out, with the second timeout as the step it did not consider.",
+  "resolution": "Revert: a reply from an older term changes no role, and `Server.onVote` drops the vote in it. The exception the kernel reserves for impossible inputs is for inputs the protocol cannot deliver, such as a leader hearing a leader of its own term, which `KernelNeverThrows` proves under every configuration including this one; a late reply is an input the network delivers. The sixth configuration stays with the model, so that the next claim of impossibility about a reply is checked against a reply that can arrive late.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "`RaftElectionDelayed.cfg` lets the reply to a vote request wait on the wire as a step of its own. The model's simplification that an RPC is one step had kept the role machine's rows for a reply from a term the candidate has left dead under the other configurations, which therefore verify such changes vacuously.",
+    "Crashes on a routine late reply, found by the delayed configuration in four steps."
+  ],
+  "provenance": "Constructed from the model's own simplification, that an RPC is one step so that a server always answers with the term it has now, written into the Java as the exception the kernel reserves for an input it holds impossible, the way example 073 wrote the vote rule's precondition.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.1, the rules for terms (a stale term is rejected, a newer one adopted), and figure 2, the rule for all servers on the term of a request or response",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014), section 3.4: leader election, and the note that a server discards an RPC response from a term it has left",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 14: the TLC model checker, configuration files and constants",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

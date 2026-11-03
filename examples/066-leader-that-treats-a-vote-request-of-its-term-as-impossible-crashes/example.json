@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "066",
+  "title": "A leader that treats a vote request of its own term as impossible crashes on a split vote",
+  "summary": "The Raft role machine throws on one input, a leader hearing a leader of its own term, because election safety says it cannot happen. A developer extends the reasoning to vote requests: a candidate campaigning in a term that already has a leader is just as impossible, so a leader throws on a vote request of its own term too. The contract diff is one case, from unchanged to an exception, and is approved; the input is covered by a new test, which checks that it throws. The election model has an invariant for exactly this claim, that no input the protocol can deliver makes the role machine throw, and it fails in four steps: two servers time out into term 1, one wins with the third's vote, and the other, still a candidate of term 1, asks the new leader for its vote. A split vote makes the exception reachable, and the leader crashes on the loser's request.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "exceptions",
+    "tla-unreachable-exception",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": true,
+    "description": "Rewrite the `RequestVote` case as a switch on the request's term: `NEWER` adopts the term as before, `OLDER` is unchanged as before, and `CURRENT` is unchanged for a follower or candidate but throws `IllegalStateException` for a leader. The reasoning in the comment: a term has at most one leader, and its heartbeats keep every other server a follower, so a request for a vote in the leader's own term is as impossible as a second leader's heartbeat, which the role machine already treats as an error. The behavioural contract is regenerated and its diff is the one case `decide(LEADER, RequestVote[term=CURRENT])`, from unchanged to the exception; a test checks that it throws. The reviewer approves the diff: the existing exception for two leaders has the same shape.",
+    "patch": "change.patch"
+  },
+  "risk": "An exception in a decision kernel is a claim about the protocol: this input does not occur. The claim behind the existing exception is election safety, one leader per term, which the model proves. The claim behind the new one is false. Raft elects a leader out of split votes: two servers time out together, each votes for itself, and one of them collects a majority first. The one that lost is still a candidate of that term, asking the servers it has not asked, until the leader's heartbeat turns it back into a follower, and the leader itself is one of the servers it asks. Every split vote in which the loser's request reaches the leader before the leader's heartbeat reaches the loser throws inside the leader's RPC handler, and a leader that crashes on a common event leaves the cluster without one. The new test checks what the developer intends, that the input throws; no test asks whether the protocol delivers the input, and the reviewer, reading a one-case contract diff next to an exception of the same shape, has no reason to think it does.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The model's actions take no step whose role-machine decision throws, and the invariant `KernelNeverThrows` says there is never such a step to take: for every timer a server may have and every RPC a server may send in a reachable state, the decisions on both ends are not `Throws`. On the committed kernel the only throwing row is a leader's heartbeat to a leader of the same term, and the invariant holds in all 610 states by election safety: the exception is dead at the protocol level, which the model proves rather than assumes. On the patched kernel TLC reports a four-step run with three servers: s1 and s2 time out, so both are candidates of term 1 with their own vote; s3 grants s1 its vote, and s1 leads term 1; s2 is a candidate of term 1 with one vote left to ask for, s1's, and s1 is a leader of term 1. The request is the input the developer held impossible, and the invariant names the state in which the protocol delivers it. The inductive configuration starts from every state the invariant `Inductive` admits and finds one that violates `KernelNeverThrows` before any step is taken, a leader and a candidate of one term: nothing among the reasons for election safety rules out a candidate alongside a leader, since election safety is about leaders. Four servers reach the same kind of state, and the liveness configuration reports the same run as the first before it gets to the temporal properties.",
+  "resolution": "Revert to `unchanged`: the vote itself is the vote rule's to decide, and a leader of the same term refuses it, having voted for itself. The existing exception keeps its proof, and `KernelNeverThrows` stays in all four configurations, so the next input a developer holds impossible is checked against every run of the cluster before it is merged. An `IllegalStateException` in a kernel is a theorem about the protocol, and the model is where theorems about the protocol are checked.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "The invariant that no reachable state lets the generated kernel throw (`KernelNeverThrows`) turns the kernel's `IllegalStateException`, a claim that an input never occurs, into a checked theorem.",
+    "The exception is dead for the one input the kernel already threw on, and reachable in four steps for the new one, the loser of a split vote."
+  ],
+  "provenance": "Constructed from the role machine's own exception for two leaders in one term, by extending it to an input Raft's split votes make reachable (section 5.2 of the paper).",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 2, the rules for servers, and section 5.2, leader election and split votes",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): the invariant as TLC's initial predicate",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

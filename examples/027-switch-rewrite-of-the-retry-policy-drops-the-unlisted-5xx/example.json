@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "027",
+  "title": "A switch rewrite of the retry policy stops retrying the 5xx statuses it did not list",
+  "summary": "The retry policy is four `if` statements, and a developer rewrites them as one switch expression over the status, listing the retryable statuses by name, which reads better and is how the team now writes such tables. The regression proof compares the old and the new bytecode on every input, 2^96 of them, and finds a status in the five hundreds that the old code retried and the switch does not.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "dropped-case"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java",
+    "symbol": "net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace the `if` chain with `switch (status) { case 429, 503 -> true; case 408, 500, 502, 504 -> idempotent; default -> false; }`, guarded by the attempt count. The listed statuses are the ones every retry guide names, and the ones the tests use. The reviewer agreed it was the same policy, written as a table.",
+    "patch": "change.patch"
+  },
+  "risk": "The old rule retried any status from 500 to 599 except 501 for an idempotent request. The switch retries four of them. A proxy that answers 507 or 509 under storage pressure, a gateway that invents 520 to 530 for upstream failures, and the 505 some load balancers send are no longer retried, so the client sees the error on the first attempt. Nothing fails loudly: the error rate of a dependency that was being papered over by retries rises a little, and someone eventually notices that the retries that used to absorb a weekly blip stopped doing so some months ago.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The old and the new bytecode are compiled into one program, and a generated harness asserts that they return the same boolean on the same (status, idempotent, attempt, maxAttempts). JBMC searches small values first and finds nothing: the policy agrees on every status up to 20. The next pass covers statuses in the hundreds and finds one the old code retries and the new one does not, an idempotent request with attempts remaining and a status from 505 to 599 that the switch does not name. The tool replays it through both versions, and the two outcomes are what the report shows. Which such status the solver reports is up to it; any one fails the build. A test suite that uses only the well-known statuses, as this one does, cannot see the difference.",
+  "resolution": "Keep the switch for the named statuses and add the range as its own arm: `default -> idempotent && status >= 505 && status <= 599`. Or declare the change as intended, if the team wants to retry only named statuses, in which case the regression proof is told the inputs the change may affect and proves that nothing else moved.",
+  "notes": [
+    "The switch rewrite stops retrying the 5xx statuses it did not name."
+  ],
+  "provenance": "Constructed from the ordinary rewrite of a predicate as a table, which drops the ranges the predicate contained; the retry rule follows RFC 9110's guidance on which requests are safe to repeat.",
+  "references": [
+    {
+      "title": "RFC 9110, section 9.2.2: idempotent methods (\"a client ... can safely repeat a request\")",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2"
+    },
+    {
+      "title": "Spring Framework, RestClient and WebClient retry support",
+      "url": "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html"
+    }
+  ]
+}

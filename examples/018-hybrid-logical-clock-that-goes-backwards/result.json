@@ -1,0 +1,47 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": false,
+    "failures": [
+      "HybridLogicalClockTest.receiveContinuesTheLargerCounterOnEqualPhysicalParts"
+    ]
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
+    "startLine": 55,
+    "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long lastPhysical = physical(last);\n        long messagePhysical = physical(message);\n        if (nowMillis > lastPhysical && nowMillis > messagePhysical) {\n            return of(nowMillis, 0);\n        }\n        if (lastPhysical == messagePhysical) {\n            return of(lastPhysical, Math.max(logical(last), logical(message)) + 1L);\n        }\n        if (lastPhysical > messagePhysical) {\n            return of(lastPhysical, logical(last) + 1L);\n        }\n        return of(messagePhysical, logical(message) + 1L);\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
+    "startLine": 55,
+    "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long physical = Math.max(nowMillis, Math.max(physical(last), physical(message)));\n        if (physical == physical(last)) {\n            return of(physical, logical(last) + 1L);\n        }\n        if (physical == physical(message)) {\n            return of(physical, logical(message) + 1L);\n        }\n        return of(physical, 0);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "nowMillis: long × last: long × message: long",
+  "counterexamples": [
+    {
+      "input": "receive(nowMillis=0, last=0, message=1)",
+      "contract": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
+      "actual": "1"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
+    "assume": "nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

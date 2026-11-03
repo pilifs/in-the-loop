@@ -1,0 +1,100 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: deadlock, 5-step trace",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/ClassInitialization.java",
+    "startLine": 33,
+    "code": "case Request request -> switch (state) {\n    // Step 6: record the current thread as the initializer and run the initialization (steps 7 to 9).\n    case UNINITIALIZED -> transition(IN_PROGRESS, RUN_INITIALIZER);\n    case IN_PROGRESS -> request.byInitializingThread()\n            // Step 3: a recursive request by the initializing thread completes normally.\n            ? transition(IN_PROGRESS, PROCEED)\n            // Step 2: another thread is initializing; wait on LC, then repeat the procedure.\n            : transition(IN_PROGRESS, WAIT);\n    // Step 4: already initialized.\n    case INITIALIZED -> transition(INITIALIZED, PROCEED);\n    // Step 5: initialization failed once; it is not retried.\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/init/ClassInitialization.java",
+    "startLine": 33,
+    "code": "case Request request -> switch (state) {\n    // Step 6: record the current thread as the initializer and run the initialization (steps 7 to 9).\n    case UNINITIALIZED -> transition(IN_PROGRESS, RUN_INITIALIZER);\n    // Step 2: the class is being initialized; wait on LC until it is done, then repeat the procedure.\n    // One rule for every requester: the lock is what serializes initialization, and a class is not\n    // usable until its initializer has returned.\n    case IN_PROGRESS -> transition(IN_PROGRESS, WAIT);\n    // Step 4: already initialized.\n    case INITIALIZED -> transition(INITIALIZED, PROCEED);\n    // Step 5: initialization failed once; it is not retried.\n"
+  },
+  "casesTotal": null,
+  "domain": "Threads = {t1, t2, t3}",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/mica/src/contract/ClassInitialization.decide.contract\n+++ b/examples/apps/mica/src/contract/ClassInitialization.decide.contract\n@@ -11,7 +11,7 @@\n decide(UNINITIALIZED, Failed[error=true])                  => Rejected[reason=\"no initialization is in progress\"]\n decide(UNINITIALIZED, null)                                => throws NullPointerException\n decide(IN_PROGRESS, Request[byInitializingThread=false])   => Transition[next=IN_PROGRESS, effects=[WAIT]]\n-decide(IN_PROGRESS, Request[byInitializingThread=true])    => Transition[next=IN_PROGRESS, effects=[PROCEED]]\n+decide(IN_PROGRESS, Request[byInitializingThread=true])    => Transition[next=IN_PROGRESS, effects=[WAIT]]\n decide(IN_PROGRESS, Completed[])                           => Transition[next=INITIALIZED, effects=[NOTIFY_ALL]]\n decide(IN_PROGRESS, Failed[error=false])                   => Transition[next=ERRONEOUS, effects=[NOTIFY_ALL, WRAP_IN_EXCEPTION_IN_INITIALIZER_ERROR]]\n decide(IN_PROGRESS, Failed[error=true])                    => Transition[next=ERRONEOUS, effects=[NOTIFY_ALL, RETHROW]]\n",
+  "proof": "TLC 2.19 explored 49 distinct states to depth 5 in 0 s, for the model Threads = {t1, t2, t3}",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "initializer": "\"none\"",
+        "pc": "(t1 :> \"idle\" @@ t2 :> \"idle\" @@ t3 :> \"idle\")",
+        "runs": "0",
+        "state": "\"UNINITIALIZED\""
+      }
+    },
+    {
+      "step": 2,
+      "action": "Request",
+      "changes": {
+        "initializer": "t1",
+        "pc": "(t1 :> \"running\" @@ t2 :> \"idle\" @@ t3 :> \"idle\")",
+        "runs": "1",
+        "state": "\"IN_PROGRESS\""
+      }
+    },
+    {
+      "step": 3,
+      "action": "Recurse",
+      "changes": {
+        "pc": "(t1 :> \"waiting\" @@ t2 :> \"idle\" @@ t3 :> \"idle\")"
+      }
+    },
+    {
+      "step": 4,
+      "action": "Request",
+      "changes": {
+        "pc": "(t1 :> \"waiting\" @@ t2 :> \"waiting\" @@ t3 :> \"idle\")"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Request",
+      "changes": {
+        "pc": "(t1 :> \"waiting\" @@ t2 :> \"waiting\" @@ t3 :> \"waiting\")"
+      }
+    }
+  ],
+  "statesExplored": 49,
+  "invariant": "Deadlock",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ERRONEOUS: ERRONEOUS (terminal)\n    INITIALIZED: INITIALIZED (terminal)\n    UNINITIALIZED: UNINITIALIZED (no incoming transition)\n    ERRONEOUS --> ERRONEOUS: Request[byInitializingThread=false] → effects=[THROW_NO_CLASS_DEF_FOUND_ERROR]\n    ERRONEOUS --> ERRONEOUS: Request[byInitializingThread=true] → effects=[THROW_NO_CLASS_DEF_FOUND_ERROR]\n    INITIALIZED --> INITIALIZED: Request[byInitializingThread=false] → effects=[PROCEED]\n    INITIALIZED --> INITIALIZED: Request[byInitializingThread=true] → effects=[PROCEED]\n    IN_PROGRESS --> ERRONEOUS: Failed[error=false] → effects=[NOTIFY_ALL, WRAP_IN_EXCEPTION_IN_INITIALIZER_ERROR]\n    IN_PROGRESS --> ERRONEOUS: Failed[error=true] → effects=[NOTIFY_ALL, RETHROW]\n    IN_PROGRESS --> INITIALIZED: Completed[] → effects=[NOTIFY_ALL]\n    IN_PROGRESS --> IN_PROGRESS: Request[byInitializingThread=false] → effects=[WAIT]\n    IN_PROGRESS --> IN_PROGRESS: Request[byInitializingThread=true] → effects=[WAIT]\n    UNINITIALIZED --> IN_PROGRESS: Request[byInitializingThread=false] → effects=[RUN_INITIALIZER]\n    UNINITIALIZED --> IN_PROGRESS: Request[byInitializingThread=true] → effects=[RUN_INITIALIZER]\n    UNINITIALIZED --> UNINITIALIZED: Completed[] (Rejected)\n    UNINITIALIZED --> UNINITIALIZED: Failed[error=false] (Rejected)\n    UNINITIALIZED --> UNINITIALIZED: Failed[error=true] (Rejected)\n    INITIALIZED --> INITIALIZED: Completed[] (Rejected)\n    INITIALIZED --> INITIALIZED: Failed[error=false] (Rejected)\n    INITIALIZED --> INITIALIZED: Failed[error=true] (Rejected)\n    ERRONEOUS --> ERRONEOUS: Completed[] (Rejected)\n    ERRONEOUS --> ERRONEOUS: Failed[error=false] (Rejected)\n    ERRONEOUS --> ERRONEOUS: Failed[error=true] (Rejected)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "the model",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(IN_PROGRESS, Request[byInitializingThread=true])",
+        "before": "Transition[next=IN_PROGRESS, effects=[PROCEED]]",
+        "after": "Transition[next=IN_PROGRESS, effects=[WAIT]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": "deadlock",
+  "forever": null
+}

@@ -1,0 +1,253 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: AnOpenBreakerProbesAgain, 8-step trace then forever (fairness)",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 19,
+    "code": " * {@code CircuitBreakerStateMachine}), as a total function from (state, event) to a decision.\n *\n * <p>CLOSED lets every call through and opens when a complete window's failure rate reaches the threshold. OPEN\n * rejects every call until the wait duration has passed, then lets a limited number of probe calls through as\n * HALF_OPEN. HALF_OPEN closes only once every permitted probe has completed with the failure rate below the\n * threshold; a probe that fails reopens the breaker at once.\n */\npublic final class CircuitBreaker {\n\n    // ...\n                case CLOSED, HALF_OPEN -> transition(state, PERMIT);\n                case OPEN -> request.waitElapsed()\n                        ? transition(HALF_OPEN, RESET_METRICS, PERMIT)\n                        : rejected(\"the circuit breaker is open\");\n            };\n            case CallCompleted call -> switch (state) {\n                case CLOSED -> call.windowComplete() && call.thresholdExceeded()\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "startLine": 19,
+    "code": " * {@code CircuitBreakerStateMachine}), as a total function from (state, event) to a decision.\n *\n * <p>CLOSED lets every call through and opens when a complete window's failure rate reaches the threshold. OPEN\n * refuses every call until the wait duration has passed, each refused call starting the wait over, then lets a\n * limited number of probe calls through as HALF_OPEN. HALF_OPEN closes only once every permitted probe has\n * completed with the failure rate below the threshold; a probe that fails reopens the breaker at once.\n */\npublic final class CircuitBreaker {\n\n    // ...\n                case CLOSED, HALF_OPEN -> transition(state, PERMIT);\n                case OPEN -> request.waitElapsed()\n                        ? transition(HALF_OPEN, RESET_METRICS, PERMIT)\n                        // A call while open is refused, and starts the wait over: a caller that keeps hammering a\n                        // failing dependency holds the breaker open until it stops, and the wait is measured from\n                        // the last call refused rather than from the failure that opened the breaker.\n                        : transition(OPEN, START_WAIT);\n            };\n            case CallCompleted call -> switch (state) {\n                case CLOSED -> call.windowComplete() && call.thresholdExceeded()\n"
+  },
+  "casesTotal": null,
+  "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -15,7 +15,7 @@\n decide(CLOSED, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])      => Unchanged[reason=\"recorded in the sliding window\"]\n decide(CLOSED, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])       => Transition[next=OPEN, effects=[START_WAIT]]\n decide(CLOSED, null)                                                                          => throws NullPointerException\n-decide(OPEN, CallRequested[waitElapsed=false])                                                => Rejected[reason=\"the circuit breaker is open\"]\n+decide(OPEN, CallRequested[waitElapsed=false])                                                => Transition[next=OPEN, effects=[START_WAIT]]\n decide(OPEN, CallRequested[waitElapsed=true])                                                 => Transition[next=HALF_OPEN, effects=[RESET_METRICS, PERMIT]]\n decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false])      => Unchanged[reason=\"a call permitted before the breaker opened; its outcome is not recorded\"]\n decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])       => Unchanged[reason=\"a call permitted before the breaker opened; its outcome is not recorded\"]\n",
+  "proof": "two calls in flight: TLC 2.19 explored 102 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 102 distinct states in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "closedEarly": "FALSE",
+        "current": "0",
+        "dependency": "\"DOWN\"",
+        "probedEarly": "FALSE",
+        "stale": "0",
+        "state": "\"CLOSED\"",
+        "waitLeft": "0",
+        "window": "<<>>"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Request",
+      "changes": {
+        "current": "1"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Complete",
+      "changes": {
+        "current": "0",
+        "window": "<<TRUE>>"
+      }
+    },
+    {
+      "step": 4,
+      "action": "Request",
+      "changes": {
+        "current": "1"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Complete",
+      "changes": {
+        "current": "0",
+        "state": "\"OPEN\"",
+        "waitLeft": "2",
+        "window": "<<TRUE, TRUE>>"
+      }
+    },
+    {
+      "step": 6,
+      "action": "DependencyFlips",
+      "changes": {
+        "dependency": "\"UP\""
+      }
+    },
+    {
+      "step": 7,
+      "action": "Tick",
+      "changes": {
+        "waitLeft": "1"
+      }
+    },
+    {
+      "step": 8,
+      "action": "Request",
+      "changes": {
+        "waitLeft": "2"
+      }
+    }
+  ],
+  "statesExplored": 102,
+  "invariant": "AnOpenBreakerProbesAgain",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    CLOSED --> CLOSED: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    CLOSED --> CLOSED: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    CLOSED --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    CLOSED --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[RESET_METRICS, PERMIT]\n    OPEN --> OPEN: CallRequested[waitElapsed=false] → effects=[START_WAIT]\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    HALF_OPEN --> HALF_OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "two calls in flight",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+            "reached": 13,
+            "total": 30,
+            "never": [
+              "decide(CLOSED, CallRequested[waitElapsed=false]) => Transition[next=CLOSED, effects=[PERMIT]]",
+              "decide(CLOSED, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(CLOSED, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Unchanged",
+              "decide(OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallRequested[waitElapsed=false]) => Transition[next=HALF_OPEN, effects=[PERMIT]]",
+              "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true]) => Unchanged",
+              "decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true]) => Transition[next=OPEN, effects=[START_WAIT]]",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false]) => Transition[next=OPEN, effects=[START_WAIT]]",
+              "decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false]) => Transition[next=OPEN, effects=[START_WAIT]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(OPEN, CallRequested[waitElapsed=false])",
+        "before": "Rejected[reason=\"the circuit breaker is open\"]",
+        "after": "Transition[next=OPEN, effects=[START_WAIT]]",
+        "takenUnder": [
+          "two calls in flight"
+        ]
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": "temporal",
+  "forever": "returns to step 7 and repeats steps 7 to 8 forever",
+  "configurations": [
+    {
+      "label": "two calls in flight",
+      "cfg": "spec/CircuitBreaker.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 102 states",
+      "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 102,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "fairness",
+      "cfg": "spec/CircuitBreakerLive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: AnOpenBreakerProbesAgain, 8-step trace then forever",
+      "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+      "invariant": "AnOpenBreakerProbesAgain",
+      "violationKind": "temporal",
+      "statesExplored": 102,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "closedEarly": "FALSE",
+            "current": "0",
+            "dependency": "\"DOWN\"",
+            "probedEarly": "FALSE",
+            "stale": "0",
+            "state": "\"CLOSED\"",
+            "waitLeft": "0",
+            "window": "<<>>"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Request",
+          "changes": {
+            "current": "1"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Complete",
+          "changes": {
+            "current": "0",
+            "window": "<<TRUE>>"
+          }
+        },
+        {
+          "step": 4,
+          "action": "Request",
+          "changes": {
+            "current": "1"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Complete",
+          "changes": {
+            "current": "0",
+            "state": "\"OPEN\"",
+            "waitLeft": "2",
+            "window": "<<TRUE, TRUE>>"
+          }
+        },
+        {
+          "step": 6,
+          "action": "DependencyFlips",
+          "changes": {
+            "dependency": "\"UP\""
+          }
+        },
+        {
+          "step": 7,
+          "action": "Tick",
+          "changes": {
+            "waitLeft": "1"
+          }
+        },
+        {
+          "step": 8,
+          "action": "Request",
+          "changes": {
+            "waitLeft": "2"
+          }
+        }
+      ],
+      "forever": "returns to step 7 and repeats steps 7 to 8 forever"
+    }
+  ]
+}

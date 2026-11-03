@@ -1,0 +1,36 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
+@@ -22,7 +22,8 @@
+  * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a
+  * request still in progress is refused (409), because executing it again would do the work twice; a key reused with
+  * a different request is refused (422). An attempt that dies without a response releases the key, so that the
+- * client's retry can run.
++ * client's retry can run, and so does the sweeper when a record's time to live passes, whatever state the record
++ * is in.
+  *
+  * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two
+  * retries arriving together cannot both see ABSENT.
+@@ -50,10 +51,12 @@
+                 case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);
+                 case ABSENT, COMPLETED -> unchanged("no attempt is in progress");
+             };
++            // The sweeper releases every record whose time to live has passed, in progress or not: a record in
++            // progress for that long belongs to a worker that died without reporting, and holding the key keeps the
++            // client's retries in 409 loops.
+             case Expired _ -> switch (state) {
+-                case COMPLETED -> transition(ABSENT, RELEASE_KEY);
++                case COMPLETED, IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);
+                 case ABSENT -> unchanged("nothing to expire");
+-                case IN_PROGRESS -> unchanged("a key in progress does not expire");
+             };
+         };
+     }
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
+@@ -37,5 +37,6 @@
+ 
+     public static void anExpiredKeyIsReleased() {
+         equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(COMPLETED, new Expired()));
++        equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(IN_PROGRESS, new Expired()));
+     }
+ }

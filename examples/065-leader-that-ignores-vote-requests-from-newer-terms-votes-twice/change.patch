@@ -1,0 +1,14 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -52,7 +52,10 @@
+                 };
+                 case OLDER -> rejected("stale leader");
+             };
+-            case RequestVote vote -> vote.term() == NEWER
++            // A leader keeps serving until a newer leader's AppendEntries, or a reply from a newer term, proves the
++            // cluster has moved on. A vote request alone does not: a server that was partitioned and comes back with
++            // an inflated term would otherwise depose a working leader every time it retries.
++            case RequestVote vote -> vote.term() == NEWER && role != LEADER
+                     ? transition(FOLLOWER, ADOPT_TERM)
+                     : unchanged("the vote itself is decided by the vote rule");
+             case Response response -> response.term() == NEWER

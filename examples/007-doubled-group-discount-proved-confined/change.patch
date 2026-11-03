@@ -1,0 +1,40 @@
+--- a/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
++++ b/examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java
+@@ -38,11 +38,11 @@
+         return now.plus(ttl);
+     }
+ 
+-    /** A hold of this many seats or more is a group, and gets 10% off. */
++    /** A hold of this many seats or more is a group, and gets 20% off. */
+     public static final int GROUP_SIZE = 6;
+ 
+     /**
+-     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}
++     * The price of {@code seats} seats: the seat price times the count, less 20% for a group of {@link #GROUP_SIZE}
+      * seats or more. The discount is taken off the total and rounded down to the cent. Throws
+      * {@link ArithmeticException} rather than overflow.
+      */
+@@ -51,6 +51,6 @@
+             throw new IllegalArgumentException("price and seat count must not be negative");
+         }
+         long total = Math.multiplyExact(priceCents, seats);
+-        return seats >= GROUP_SIZE ? total - total / 10 : total;
++        return seats >= GROUP_SIZE ? total - total / 5 : total;
+     }
+ }
+--- a/examples/apps/boxoffice/ticketing-domain/src/test/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicyTest.java
++++ b/examples/apps/boxoffice/ticketing-domain/src/test/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicyTest.java
+@@ -33,10 +33,10 @@
+     }
+ 
+     @Test
+-    void groupsGetTenPercentOff() {
++    void groupsGetTwentyPercentOff() {
+         assertThat(HoldPolicy.totalCents(4500, 5)).isEqualTo(22500);
+-        assertThat(HoldPolicy.totalCents(4500, 6)).isEqualTo(24300);
+-        assertThat(HoldPolicy.totalCents(4500, 8)).isEqualTo(32400);
++        assertThat(HoldPolicy.totalCents(4500, 6)).isEqualTo(21600);
++        assertThat(HoldPolicy.totalCents(4500, 8)).isEqualTo(28800);
+     }
+ 
+     @Test

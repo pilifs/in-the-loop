@@ -1,0 +1,163 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-002843-rerun-the-crosscut-examples-after-the-ex",
+  "title": "Rerun the Crosscut examples after the examples move",
+  "description": "The examples moved from examples/demo/ and examples/real-world/ into one folder, examples/, with apps, tools and schema one level up, and every patch, example.json, generated page and script path rewritten. This reruns every constructed example of the subject system at the new layout, one step per example, to confirm that each still gives its expected verdict. Their pages were re-rendered from the old results with build.py --render-only, so a verdict that differs here is a regression of the move.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "D1",
+    "B8",
+    "B9",
+    "B10"
+  ],
+  "links": {
+    "paths": [
+      "examples/README.md"
+    ],
+    "examples": [
+      "023",
+      "024",
+      "025",
+      "026",
+      "027",
+      "028",
+      "029",
+      "030",
+      "031",
+      "032",
+      "033",
+      "075",
+      "076",
+      "077",
+      "078",
+      "079",
+      "080"
+    ]
+  },
+  "expected": "example 023 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 024 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 026 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 027 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 028 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 029 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 030 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 031 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 032 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 033 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 075 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 076 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 077 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 078 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 079 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 080 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-03T00:28:43+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m",
+    "notes": "about 50 seconds by the README"
+  },
+  "steps": [
+    {
+      "name": "example 023 (B11)",
+      "run": "python3 examples/tools/build.py 023",
+      "cwd": "."
+    },
+    {
+      "name": "example 024 (B11)",
+      "run": "python3 examples/tools/build.py 024",
+      "cwd": "."
+    },
+    {
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": "."
+    },
+    {
+      "name": "example 026 (B8)",
+      "run": "python3 examples/tools/build.py 026",
+      "cwd": "."
+    },
+    {
+      "name": "example 027 (B9)",
+      "run": "python3 examples/tools/build.py 027",
+      "cwd": "."
+    },
+    {
+      "name": "example 028 (B10)",
+      "run": "python3 examples/tools/build.py 028",
+      "cwd": "."
+    },
+    {
+      "name": "example 029 (D1)",
+      "run": "python3 examples/tools/build.py 029",
+      "cwd": "."
+    },
+    {
+      "name": "example 030 (D1)",
+      "run": "python3 examples/tools/build.py 030",
+      "cwd": "."
+    },
+    {
+      "name": "example 031 (B11)",
+      "run": "python3 examples/tools/build.py 031",
+      "cwd": "."
+    },
+    {
+      "name": "example 032 (B11)",
+      "run": "python3 examples/tools/build.py 032",
+      "cwd": "."
+    },
+    {
+      "name": "example 033 (B11)",
+      "run": "python3 examples/tools/build.py 033",
+      "cwd": "."
+    },
+    {
+      "name": "example 075 (D1)",
+      "run": "python3 examples/tools/build.py 075",
+      "cwd": "."
+    },
+    {
+      "name": "example 076 (D1)",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": "."
+    },
+    {
+      "name": "example 077 (D1)",
+      "run": "python3 examples/tools/build.py 077",
+      "cwd": "."
+    },
+    {
+      "name": "example 078 (D1)",
+      "run": "python3 examples/tools/build.py 078",
+      "cwd": "."
+    },
+    {
+      "name": "example 079 (D1)",
+      "run": "python3 examples/tools/build.py 079",
+      "cwd": "."
+    },
+    {
+      "name": "example 080 (D1)",
+      "run": "python3 examples/tools/build.py 080",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/023-abs-partitioner-sends-one-key-to-a-negative-partition",
+    "examples/024-clock-skew-applied-on-the-wrong-side-of-not-before",
+    "examples/025-transaction-that-commits-after-an-error",
+    "examples/026-half-open-breaker-that-closes-on-the-first-good-probe",
+    "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx",
+    "examples/028-retry-that-sleeps-on-the-caller-thread",
+    "examples/029-retry-in-progress-executes-twice",
+    "examples/030-stored-failures-proved-at-most-once",
+    "examples/031-rate-limiter-that-never-refills-under-steady-polling",
+    "examples/032-batch-listener-that-commits-past-a-failed-record",
+    "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond",
+    "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load",
+    "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live",
+    "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency",
+    "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt",
+    "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once",
+    "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone"
+  ]
+}

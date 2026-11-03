@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "048",
+  "title": "A constant-pool encoder that writes supplementary characters in four bytes, as UTF-8 does",
+  "summary": "The class-file writer encodes `CONSTANT_Utf8_info` in modified UTF-8, which has two differences from standard UTF-8: U+0000 takes two bytes, and a supplementary character is written as its two surrogates, three bytes each, never in the four-byte form. A developer who knows the second difference as CESU-8, the encoding every other tool deprecates, makes the encoder write the four-byte form for a surrogate pair, with a test for it. The property the build proves of the encoder is the sentence of JVMS §4.4.7 that forbids it: no byte of the encoding is zero, and none lies in `0xf0` to `0xff`. It is refuted on the first array that holds a surrogate pair.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "tags": [
+    "jvm-internals",
+    "class-files",
+    "text-encoding",
+    "jml-quantifiers",
+    "jml-old"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": false,
+    "description": "When a high surrogate is followed by a low one, combine them into the code point and write it in the four-byte form of UTF-8 (`F0..F4` lead byte, three continuation bytes), two bytes fewer than the two three-byte surrogates; other code units are encoded as before. The class comment is updated and a test for U+1F600 added. All tests pass.",
+    "patch": "change.patch"
+  },
+  "risk": "A `CONSTANT_Utf8_info` with a byte in `0xf0` to `0xff` is malformed, and HotSpot's class-file parser rejects the class with a `ClassFormatError` (\"Illegal UTF8 string in constant pool\"): the check is in the parser's UTF-8 verifier, which accepts the one-, two- and three-byte forms only. Any class whose constant pool holds a string with a character outside the Basic Multilingual Plane, an emoji in a string literal, a mathematical letter in an identifier, a CJK extension character in a resource key, now fails to load, from source that compiled fine. The encoding was never wrong: the runtime decodes a `CONSTANT_Utf8_info` into UTF-16 by code units, three bytes each, with no need to combine pairs, which is why the format keeps the surrogates.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `encodeInto` is stated over the byte array the method writes, with a quantifier: for every index below the count returned, the byte is not zero and `(out[i] & 0xff) < 0xf0`. The harness reads the array after the call, so the property is about what the method wrote. JBMC searches the symbolic arrays of every length up to eight and finds one that holds a high surrogate followed by a low one, on which the patched encoder writes a lead byte of `0xf0` or more; the tool shrinks the pair towards zero in its interpreter, which stops at `\\ud800` `\\udc00`, the first surrogate of each kind, that is U+10000, the first supplementary character, and shows the four bytes `F0 90 80 80` left in the buffer. The witness is the one the specification forbids, and the property as committed is the sentence of §4.4.7 that the change contradicts, which the tests that pass did not state.",
+  "resolution": "Revert, including the test. The encoder of a constant pool is not an encoder of text: its output is read by class loaders, which decode modified UTF-8 and nothing else, and `DataInputStream.readUTF` and the class-file API of the JDK do the same. The property stays as the regression test for the next reader who takes CESU-8 for a bug.",
+  "notes": [
+    "A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).",
+    "Supplementary characters written in four bytes, as in standard UTF-8, produce a class no JVM will load."
+  ],
+  "provenance": "Constructed from the second difference between modified UTF-8 and standard UTF-8 in JVMS §4.4.7, by \"fixing\" it.",
+  "references": [
+    {
+      "title": "JVMS §4.4.7, CONSTANT_Utf8_info: no byte may have the value (byte)0 or lie in the range (byte)0xf0 to (byte)0xff; supplementary characters are represented by their surrogates",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.4.7"
+    },
+    {
+      "title": "Unicode Technical Report #26: Compatibility Encoding Scheme for UTF-16 (CESU-8)",
+      "url": "https://www.unicode.org/reports/tr26/"
+    },
+    {
+      "title": "java.io.DataInput: modified UTF-8",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/DataInput.html#modified-utf-8"
+    }
+  ]
+}

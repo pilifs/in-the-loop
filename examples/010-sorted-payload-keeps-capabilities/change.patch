@@ -1,0 +1,19 @@
+--- a/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java
++++ b/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/MessageCodec.java
+@@ -1,6 +1,7 @@
+ package net.terminalvalue.boxoffice.contracts;
+ 
+ import tools.jackson.databind.DeserializationFeature;
++import tools.jackson.databind.MapperFeature;
+ import tools.jackson.databind.json.JsonMapper;
+ 
+ /**
+@@ -13,6 +14,8 @@
+     private static final JsonMapper MAPPER = JsonMapper.builder()
+             .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
++            // Stable key order, so that payloads diff cleanly in logs and in the dead-letter topic.
++            .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+             .build();
+ 
+     private MessageCodec() {}

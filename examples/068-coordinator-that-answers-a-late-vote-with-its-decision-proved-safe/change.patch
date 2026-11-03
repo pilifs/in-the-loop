@@ -1,0 +1,30 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java
+@@ -26,7 +26,10 @@
+                 case COLLECTING -> !tally.complete()
+                         ? unchanged("waiting for the remaining votes")
+                         : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);
+-                case COMMITTED, ABORTED -> unchanged("already decided");
++                // A vote that arrives after the decision is from a participant that may not have heard it, and a
++                // prepared participant holds its locks until it does: answer with the decision, again.
++                case COMMITTED -> transition(COMMITTED, SEND_COMMIT);
++                case ABORTED -> transition(ABORTED, SEND_ABORT);
+             };
+             case Timeout _ -> switch (phase) {
+                 case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/CoordinatorTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/CoordinatorTest.java
+@@ -34,6 +34,12 @@
+ 
+     public static void aDecisionIsFinal() {
+         check(Coordinator.decide(Phase.COMMITTED, new Timeout(true)) instanceof Decision.Unchanged, "committed stays");
+-        check(Coordinator.decide(Phase.ABORTED, new Tally(true, true)) instanceof Decision.Unchanged, "aborted stays");
++        equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
++                Coordinator.decide(Phase.ABORTED, new Tally(true, true)));
++    }
++
++    public static void answersALateVoteWithTheDecision() {
++        equal(new Transition<>(Phase.COMMITTED, List.of(CoordinatorEffect.SEND_COMMIT)),
++                Coordinator.decide(Phase.COMMITTED, new Tally(false, true)));
+     }
+ }

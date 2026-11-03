@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "105",
+  "title": "apache/commons-numbers#223: ArithmeticUtils.pow accepts (-2)^31, found and confined from bytecode",
+  "summary": "A pull request that lets `ArithmeticUtils.pow(int, int)` return `Integer.MIN_VALUE` for `(-2)^31` instead of throwing. The regression proof found the one changed input, `pow(-2, 31)`, from the two versions' bytecode in 185 s; the Javadoc was proved on the new version; and the change was proved confined to that input on all 2^64 others in 18 minutes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "open-source-libraries",
+    "integer-overflow",
+    "pull-request-review",
+    "confined-change"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Apache Commons Numbers",
+    "file": "commons-numbers-core/src/main/java/org/apache/commons/numbers/core/ArithmeticUtils.java",
+    "symbol": "org.apache.commons.numbers.core.ArithmeticUtils#pow"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "also": [
+      "B11"
+    ]
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-numbers",
+    "url": "https://github.com/apache/commons-numbers/pull/223"
+  },
+  "change": {
+    "kind": "bug-fix"
+  },
+  "verdictLabel": "✗ the intended change found; ✓ confined to it; ✓ Javadoc proved",
+  "notes": [
+    "Next: `pow(long, int)`, which the same pull request changed and the recorded run did not reach.",
+    "The confined-change proof did not finish in the default 300 s and took 1083 s with `--timeout 1500`: budget proofs over two full `int` ranges in tens of minutes."
+  ],
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+}

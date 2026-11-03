@@ -1,0 +1,35 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Recovery.java
+@@ -23,11 +23,10 @@
+ 
+     public static Decision<Phase, CoordinatorEffect> decide(Phase logged, RecoveryEvent event) {
+         return switch (event) {
+-            case Restarted _ -> switch (logged) {
+-                case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort
+-                case COMMITTED -> transition(COMMITTED, SEND_COMMIT);
+-                case ABORTED -> transition(ABORTED, SEND_ABORT);
+-            };
++            // Whatever the coordinator was doing when it crashed, abort is the safe way out: the participants hold
++            // their locks until they hear from it, and an abort releases them without the coordinator having to
++            // work out how far it had got. A transaction that was about to commit is lost, which a retry repairs.
++            case Restarted _ -> transition(ABORTED, SEND_ABORT);
+         };
+     }
+ }
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/twopc/RecoveryTest.java
+@@ -10,12 +10,9 @@
+ 
+     private RecoveryTest() {}
+ 
+-    public static void sendsALoggedCommitAgain() {
+-        equal(new Transition<>(Phase.COMMITTED, List.of(CoordinatorEffect.SEND_COMMIT)),
++    public static void abortsWhateverItWasDoing() {
++        equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
+                 Recovery.decide(Phase.COMMITTED, new Restarted()));
+-    }
+-
+-    public static void sendsALoggedAbortAgain() {
+         equal(new Transition<>(Phase.ABORTED, List.of(CoordinatorEffect.SEND_ABORT)),
+                 Recovery.decide(Phase.ABORTED, new Restarted()));
+     }

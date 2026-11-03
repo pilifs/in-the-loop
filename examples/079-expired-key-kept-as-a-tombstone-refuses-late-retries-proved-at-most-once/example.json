@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "079",
+  "title": "An expired key kept as a tombstone refuses late retries, proved at most once",
+  "summary": "An `Idempotency-Key` receiver releases a key when its record's time to live passes, so a retry that arrives after that is a new request and executes again. The developer makes the record expire in two steps instead: the response goes and the key stays as a tombstone that refuses a late retry, then the tombstone goes too. A new key state, a new effect, six new or changed rows in the contract, and a model whose type invariant has to learn the state. TLC checks every interleaving of three attempts under both configurations of the model, and every invariant holds in every state. The change is merged on a proof, with the coverage saying which of the new rows the runs exercised.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "idempotency",
+    "duplicate-delivery",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `EXPIRED` to `KeyState` and `DROP_RESPONSE` to `ReceiverEffect`. On `Expired`, a completed record moves to `EXPIRED` and drops its response instead of being released; an expired record is released. A `Request` on an expired key is refused; `Completed` and `Failed` on one are unchanged, as on any record with no attempt in progress. The model's `TypeOK` admits the new state and its sweeper action treats the new effect as the end of the stored response. The contract's domain grows from 24 to 30 cases; the test of the expiry rule is rewritten.",
+    "patch": "change.patch"
+  },
+  "risk": "None, and that is the point. A new state in a kernel of this kind is reviewed for the rows it adds, and the question that matters is not any row but their interleaving with the client and the sweeper: whether a retry can execute beside an attempt, run after a result within the record's lifetime, or be answered from a response that is no longer there, now that there is a state in which the key exists and the response does not. Example 080 is a change of the same intent, one row and one effect, that fails exactly that last question. Answering by inspection is how idempotency layers get their bugs; answering by model checking takes a second.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The receiver's rule in the model is generated from the regenerated contract, so the model runs the new rule, tombstone and all. Under the configuration in which the record never expires, nothing changes: 168 states, every invariant holds, and the coverage shows none of the new rows taken, because none can be. Under the configuration in which the sweeper may act at any point, TLC explores 399 states, and in every one no two attempts execute at once, at most one result is produced per lifetime of the record, and no client is answered with a stored response that does not exist: a retry that finds the tombstone is refused, and the response is only ever replayed while it is stored. The coverage lists which of the six rows the runs took, three: the completed record's `Expired`, and the tombstone's `Request` and `Expired`; and which no run can reach: `Completed` and `Failed` on a tombstone, since no attempt executes while the key is one, and a retry with another fingerprint, which the model's one request never sends.",
+  "resolution": "Merge. The second configuration and the coverage report are part of the build, so a later change to the tombstone's rows is checked against a sweeper that can fire at any point, and a change the runs never exercise is reported as such.",
+  "notes": [
+    "The idempotency model (`apps/crosscut/spec`) has a client retrying against an `Idempotency-Key` receiver whose state machine is generated from its contract.",
+    "The model's second configuration lets the record's time to live pass at any point (the `Expires` constant), which exercises the kernel's `Expired` rows the first configuration never takes. At-most-once is counted per lifetime of the record, and the replay invariant is stated at the moment of the reply.",
+    "A record that expires into a tombstone refusing late retries is proved safe under both configurations."
+  ],
+  "provenance": "Constructed to show an intended change that adds a state to a protocol's decision rule accepted on the strength of the model, to pair with example 080; the refusal of a late retry is one of the two things a server can do when a key's retention period has passed, the other being what the receiver did before.",
+  "references": [
+    {
+      "title": "Stripe, Idempotent requests (keys are eligible to be removed after 24 hours; a request in progress under the key is answered 409)",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    },
+    {
+      "title": "IETF httpapi, The Idempotency-Key HTTP Header Field (draft): the retention period is the server's; 409 while a request is in progress, 422 on a key reused for another request",
+      "url": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 14: the TLC model checker, configuration files and constants",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

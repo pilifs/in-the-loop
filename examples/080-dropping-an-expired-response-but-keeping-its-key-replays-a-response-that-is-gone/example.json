@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "080",
+  "title": "Dropping an expired response but keeping its key replays a response that is gone",
+  "summary": "An `Idempotency-Key` receiver releases a key when its record's time to live passes, and a retry after that executes the request again. A developer wants both the storage back and the guarantee kept: when the time to live passes, drop the stored response, which is the bulk of the record, and keep the key, so that a late retry is recognised and never run twice. The contract diff is one row and a new effect; the tests pass. Under the configuration in which the record expires, TLC finds a seven-step run in which the late retry is recognised, and answered with a response that no longer exists.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "idempotency",
+    "duplicate-delivery",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/crosscut/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add `DROP_RESPONSE` to `ReceiverEffect`. On `Expired`, a completed record stays `COMPLETED` and drops its response, instead of being released. The reasoning: the response body is what costs storage, the key is small, and keeping the key is what keeps a late retry from running the request a second time. The contract diff is the case `decide(COMPLETED, Expired[])`; the model's sweeper action treats the new effect as the end of the stored response; the test of the expiry rule is updated.",
+    "patch": "change.patch"
+  },
+  "risk": "The record now says the request completed and has nothing to say what the response was. The rule for a retry of a completed request is unchanged, and it replays the stored response: after the time to live, that is an empty body under a status code of the filter's choosing, delivered to a client that retried precisely because it had not seen the response. The customer is not charged twice; they are told nothing about whether they were charged at all. The change is the two-stores version of a familiar bug, the index outliving the data it indexes, and the contract diff could not catch it, because the row that misbehaves is the one that did not change. The model's record never expired until this cycle, so the row the change alters had never been taken by any run; the question is what a retry meets after the sweeper has acted, and only a model in which the sweeper acts answers it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The receiver's rule in the model is generated from the regenerated contract, so the model runs the new rule, and the model's sweeper applies the new effect: the stored response is gone, the key stays. The model's replay answers with whatever is stored under the key, the response or nothing, and the invariant says no client is ever answered with nothing. Under the configuration in which the record never expires every invariant holds, and the coverage shows the changed row taken by no step. Under the configuration in which the sweeper may act at any point, TLC reports the shortest run that breaks the invariant: the client sends, the receiver executes and finishes, the client retries, the response expires, and the receiver, finding the key completed, replays the response it no longer has. Seven steps, the initial state and six actions. Example 079 keeps the key after the response for the same reason and refuses the retry instead, and is verified under the same two configurations.",
+  "resolution": "Revert, or finish the design: a key whose response is gone is a different state from a key whose response is stored, with its own rule for a retry, which is example 079's tombstone. A single `COMPLETED` state that may or may not have a response is the record lying about itself, and the rule for a retry believes it.",
+  "notes": [
+    "The idempotency model (`apps/crosscut/spec`) has a client retrying against an `Idempotency-Key` receiver whose state machine is generated from its contract.",
+    "The model's second configuration lets the record's time to live pass at any point (the `Expires` constant), which exercises the kernel's `Expired` rows the first configuration never takes. At-most-once is counted per lifetime of the record, and the replay invariant is stated at the moment of the reply.",
+    "Answers a late retry with a response that is gone."
+  ],
+  "provenance": "Constructed from the storage pressure every idempotency store meets, resolved the way a cache with a separate index is usually resolved first: by expiring the data and not the index. To pair with example 079.",
+  "references": [
+    {
+      "title": "Stripe, Idempotent requests (keys are eligible to be removed after 24 hours; a request in progress under the key is answered 409)",
+      "url": "https://docs.stripe.com/api/idempotent_requests"
+    },
+    {
+      "title": "IETF httpapi, The Idempotency-Key HTTP Header Field (draft): the retention period is the server's; 409 while a request is in progress, 422 on a key reused for another request",
+      "url": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/"
+    }
+  ]
+}

@@ -1,0 +1,505 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 644 states, and under 6 more configurations",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": false,
+    "failures": [
+      "NodesTest.abortsOnceEveryVoteIsInAndOneIsNo"
+    ]
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 23,
+    "code": "public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {\n    return switch (event) {\n        case Tally tally -> switch (phase) {\n            case COLLECTING -> !tally.complete()\n                    ? unchanged(\"waiting for the remaining votes\")\n                    : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n            case COMMITTED, ABORTED -> unchanged(\"already decided\");\n        };\n        case Timeout _ -> switch (phase) {\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 23,
+    "code": "public static Decision<Phase, CoordinatorEffect> decide(Phase phase, CoordinatorEvent event) {\n    return switch (event) {\n        case Tally tally -> switch (phase) {\n            // One no decides the outcome: abort at once instead of keeping the other participants' locks\n            // until the last vote or the timeout.\n            case COLLECTING -> !tally.unanimous()\n                    ? transition(ABORTED, SEND_ABORT)\n                    : tally.complete() ? transition(COMMITTED, SEND_COMMIT) : unchanged(\"waiting for the remaining votes\");\n            case COMMITTED, ABORTED -> unchanged(\"already decided\");\n        };\n        case Timeout _ -> switch (phase) {\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -4,7 +4,7 @@\n target: net.terminalvalue.quorum.twopc.Coordinator#decide\n domain: Phase (4) × CoordinatorEvent (7) = 28 cases\n \n-decide(COLLECTING, Tally[complete=false, unanimous=false]) => Unchanged[reason=\"waiting for the remaining votes\"]\n+decide(COLLECTING, Tally[complete=false, unanimous=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=false, unanimous=true])  => Unchanged[reason=\"waiting for the remaining votes\"]\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n",
+  "proof": "three participants: TLC 2.19 explored 644 distinct states to depth 11 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 3,248 distinct states to depth 12 in 2 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 11,696 distinct states to depth 12 in 9 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,636 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 103 distinct states to depth 12 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 644,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=false, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=true] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 9,
+            "total": 18,
+            "never": [
+              "decide(COLLECTING, Timeout[unanimousSoFar=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 0,
+            "total": 3,
+            "never": [
+              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 6,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(WORKING, Restarted[]) => Transition[next=ABORTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(PREPARED, Restarted[]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(COMMITTED, Restarted[]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Restarted[]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 0,
+            "total": 3,
+            "never": [
+              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 6,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(WORKING, Restarted[]) => Transition[next=ABORTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(PREPARED, Restarted[]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(COMMITTED, Restarted[]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Restarted[]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "crashes",
+        "fromRuns": true,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 9,
+            "total": 18,
+            "never": [
+              "decide(COLLECTING, Timeout[unanimousSoFar=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 6,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(WORKING, Restarted[]) => Transition[next=ABORTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(PREPARED, Restarted[]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(COMMITTED, Restarted[]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Restarted[]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step with crashes",
+        "fromRuns": false,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 6,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(WORKING, Restarted[]) => Transition[next=ABORTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(PREPARED, Restarted[]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(COMMITTED, Restarted[]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Restarted[]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "participant crashes",
+        "fromRuns": true,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 9,
+            "total": 18,
+            "never": [
+              "decide(COLLECTING, Timeout[unanimousSoFar=false]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 10,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the inductive step with participant crashes",
+        "fromRuns": false,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "reached": 10,
+            "total": 18,
+            "never": [
+              "decide(COMMITTED, Tally[complete=false, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=false, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=false]) => Unchanged",
+              "decide(COMMITTED, Tally[complete=true, unanimous=true]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged",
+              "decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "reached": 3,
+            "total": 3,
+            "never": []
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "reached": 10,
+            "total": 28,
+            "never": [
+              "decide(WORKING, Learned[outcome=NONE]) => Unchanged",
+              "decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]",
+              "decide(PREPARED, Prepare[able=false]) => Rejected",
+              "decide(PREPARED, Prepare[able=true]) => Rejected",
+              "decide(PREPARED, GiveUp[]) => Rejected",
+              "decide(PREPARED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Prepare[able=false]) => Rejected",
+              "decide(COMMITTED, Prepare[able=true]) => Rejected",
+              "decide(COMMITTED, GiveUp[]) => Rejected",
+              "decide(COMMITTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(COMMITTED, Learned[outcome=ABORT]) => Unchanged",
+              "decide(ABORTED, Prepare[able=false]) => Rejected",
+              "decide(ABORTED, Prepare[able=true]) => Rejected",
+              "decide(ABORTED, GiveUp[]) => Rejected",
+              "decide(ABORTED, Learned[outcome=NONE]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=COMMIT]) => Unchanged",
+              "decide(ABORTED, Learned[outcome=ABORT]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
+        "counted": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COLLECTING, Tally[complete=false, unanimous=false])",
+        "before": "Unchanged[reason=\"waiting for the remaining votes\"]",
+        "after": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "takenUnder": [
+          "three participants",
+          "the inductive step",
+          "crashes",
+          "the inductive step with crashes",
+          "participant crashes",
+          "the inductive step with participant crashes"
+        ]
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 644 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 644,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 736 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 736,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "crashes",
+      "cfg": "spec/TwoPhaseCommitCrash.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 3,248 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 3248,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step with crashes",
+      "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 2,728 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 2728,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrash.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 11,696 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 11696,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the inductive step with participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 18,636 states",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 18636,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 103 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 103,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

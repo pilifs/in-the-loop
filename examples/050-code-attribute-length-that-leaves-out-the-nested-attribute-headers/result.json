@@ -1,0 +1,45 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+    "startLine": 3,
+    "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which is a six-byte header, the name index and\n * the length, followed by its {@code attribute_length} bytes of information.\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s: everything after the attribute's own six-byte header.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += 6 + nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+    "startLine": 3,
+    "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which contributes its {@code attribute_length}\n * (JVMS §4.7: the length of the subsequent information in bytes, not including the initial six bytes).\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
+  },
+  "casesTotal": null,
+  "domain": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
+  "counterexamples": [
+    {
+      "input": "attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])",
+      "contract": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+      "actual": "13"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as attributeLength(codeLength=18, exceptionTableLength=0, nestedAttributeLength=[1527, 503, 0, 6136, 7680, 496, 0]), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+    "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)"
+  },
+  "stateMachine": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

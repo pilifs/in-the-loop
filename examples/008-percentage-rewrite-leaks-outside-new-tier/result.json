@@ -1,0 +1,40 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-domain:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 41,
+    "code": "    /** A hold of this many seats or more is a group, and gets 10% off. */\n    public static final int GROUP_SIZE = 6;\n\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}\n     * seats or more. The discount is taken off the total and rounded down to the cent. Throws\n     * {@link ArithmeticException} rather than overflow.\n     */\n    public static long totalCents(long priceCents, int seats) {\n        if (priceCents < 0 || seats < 0) {\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long total = Math.multiplyExact(priceCents, seats);\n        return seats >= GROUP_SIZE ? total - total / 10 : total;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/HoldPolicy.java",
+    "startLine": 41,
+    "code": "    /** A hold of this many seats or more is a group, and gets 10% off. */\n    public static final int GROUP_SIZE = 6;\n\n    /** A hold of this many seats or more is a large group, and gets 20% off. */\n    public static final int LARGE_GROUP_SIZE = 8;\n\n    /**\n     * The price of {@code seats} seats: the seat price times the count, less 10% for a group of {@link #GROUP_SIZE}\n     * seats or more, or 20% for a large group of {@link #LARGE_GROUP_SIZE} or more. The discount is taken off the\n     * total and rounded down to the cent. Throws {@link ArithmeticException} rather than overflow.\n     */\n    public static long totalCents(long priceCents, int seats) {\n        if (priceCents < 0 || seats < 0) {\n            throw new IllegalArgumentException(\"price and seat count must not be negative\");\n        }\n        long total = Math.multiplyExact(priceCents, seats);\n        int percentOff = seats >= LARGE_GROUP_SIZE ? 20 : seats >= GROUP_SIZE ? 10 : 0;\n        return total * (100 - percentOff) / 100;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "priceCents: long × seats: int",
+  "counterexamples": [
+    {
+      "input": "totalCents(priceCents=13, seats=7)",
+      "contract": "82",
+      "actual": "81"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "084",
+  "title": "A candidate that stands down for a rival of its term votes twice in it",
+  "summary": "A Raft server's role machine leaves its role alone on a vote request from its own term; the vote rule refuses it, since the candidate has voted for itself. To cut split votes short, a developer makes a candidate that hears a rival of its own term stand down for it, as a follower of the term, so that the rival gets its vote. The contract diff is one row, and under the six configurations the model had, every invariant and action property holds: the server that stands down also drops its own tally, so no run elects two leaders. The paper's rule is that a server votes for at most one candidate per term, and the server that stood down has voted twice in the one term, for itself and for the rival; a seventh configuration, in which a history variable records every vote cast, reports it in four steps. The rule is what the paper's argument for election safety rests on, and the change breaks the argument whether or not this kernel goes on to break the conclusion.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "agreement",
+    "tla-history-variables",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In `RoleMachine.decide`, the `RequestVote` case becomes a switch over the request's term: `NEWER` adopts it as before, `OLDER` changes no role as before, and `CURRENT` makes a candidate a follower with `ADOPT_TERM`, the other roles unchanged, with the comment that two candidates of one term split its vote and the one that hears the other stands down for it. `ADOPT_TERM` on the server's own term forgets its vote, so the vote rule then sees an open ballot and grants the rival. The contract diff is one row, `decide(CANDIDATE, RequestVote[term=CURRENT])`, from unchanged to a transition to `FOLLOWER` with `ADOPT_TERM`; a test checks the three roles.",
+    "patch": "change.patch"
+  },
+  "risk": "A server votes for at most one candidate per term, and a candidate has voted for itself. The change has it vote again, for the rival, in the same term: `ADOPT_TERM` means what it means on a newer term, the vote is forgotten, and the vote rule, seeing an open ballot, grants. Raft's argument that a term has at most one leader is that two leaders would each hold a majority of the term's votes, and two majorities share a voter who voted once; a server that votes twice is the hole in it. The contract diff shows one row and a reviewer who takes the change's framing, that a candidate standing down is a candidate giving up, approves a remedy for split votes. The model as it was agreed with that reviewer: under the six configurations it had, every invariant and action property holds, because the candidate that stands down also drops its own tally, so its first vote counts for no one and this kernel never elects two leaders. The state invariants see the votes a server holds now, and a server that has moved on, or stood down, has forgotten the one it cast.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The role machine in the model is generated from the regenerated contract, so the model runs the new rule. The model is now checked under a seventh configuration, `RaftElectionHistory.cfg`, in which two history variables record what the state forgets: `elected`, every term a server has led, and `voted`, every vote cast, as the triple of voter, term and candidate; each step adds the leaders and the votes of the state it lands in, and nothing else about the run changes (Lamport and Merz call this a history variable). Two invariants say what must never have happened: `AtMostOneLeaderPerTerm`, and `AtMostOneVotePerTerm`, that no voter has two triples of one term with different candidates. Under the six configurations as before, every invariant and action property holds, and under the seventh TLC reports the shortest run that breaks `AtMostOneVotePerTerm`: s1 times out into term 1 and votes for itself; s2 does the same; s2 asks s1 for its vote, and the new rule makes s1 a follower of term 1 with its vote forgotten, so the vote rule grants, s2 holds two votes of three and leads term 1. Four steps, the initial state and three actions, and `voted` in the last state holds s1's two votes of term 1, for s1 and for s2. The other invariant holds in this run and in every other: s2 is the term's only leader, since s1's vote for itself was in a tally s1 dropped. The page lists the verdict of each configuration, so the reviewer sees that the six state-based ones pass and why the seventh does not.",
+  "resolution": "Revert: a vote request from the server's own term changes no role, and the vote rule, seeing a ballot cast for the server itself, refuses it. Split votes are what the randomized election timeouts of section 5.2 are for: the candidates time out at different moments, and the first to start the next term asks the others before their timers fire. The seventh configuration stays with the model, so the next change that has a server vote again in a term is reported as the broken rule, whether or not the configured runs go on to elect two leaders.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "`RaftElectionHistory.cfg` adds two history variables, every term a server has led and every vote cast, so that the paper's claims about a whole run (at most one leader elected per term, one vote per server per term) are invariants. Every state invariant holds in such runs: a vote is forgotten the moment the voter moves on, and a leader that has stepped down is a follower like any other.",
+    "Votes twice in its term: reported by the history configuration in four steps."
+  ],
+  "provenance": "Constructed as the remedy for split votes that a developer reaches for before reading section 5.2's, with the stand-down done by the effect the kernel already has for a newer term, `ADOPT_TERM`, which forgets the vote; the point of the example is the rule the paper's safety argument rests on, which only a record of the run can check.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): figure 3, the election safety property (at most one leader can be elected in a given term), and section 5.2, one vote per server per term",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Lamport and Merz, Auxiliary Variables in TLA+ (2017): history variables, which record what happened without changing what can happen",
+      "url": "https://lamport.azurewebsites.net/pubs/auxiliary.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 14: the TLC model checker, configuration files and constants",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

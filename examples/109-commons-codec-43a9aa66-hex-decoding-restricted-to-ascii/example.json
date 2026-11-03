@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "109",
+  "title": "apache/commons-codec 43a9aa66: Hex decoding restricted to ASCII, after modelling the JDK",
+  "summary": "A maintainer's commit that makes `Hex.toDigit` accept only ASCII hexadecimal digits, so that Unicode digits cannot bypass textual blocklists. Two false violations were traced to JDK classes JBMC has no model of and fixed with a forked charset models library and cache models; the new `toDigit` then proved in full, while the old one needs a model of `Character.digit`.",
+  "origin": "real-world",
+  "categories": [
+    "security",
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "open-source-libraries",
+    "security-boundary",
+    "pull-request-review",
+    "jdk-models",
+    "solver-limits"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Codec",
+    "file": "src/main/java/org/apache/commons/codec/binary/Hex.java",
+    "symbol": "org.apache.commons.codec.binary.Hex#toDigit"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "also": [
+      "B9"
+    ]
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-codec",
+    "url": "https://github.com/apache/commons-codec/commit/43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be"
+  },
+  "change": {
+    "kind": "bug-fix"
+  },
+  "verdictLabel": "✓ new version proved; ⚠ old version needs a model of Character.digit",
+  "notes": [
+    "Needs the charset models (`libs/java-models-library`) and the cache models (`lib/jbmc-models`) on `--classpath`; before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, put them there.",
+    "A commit rather than a pull request: the commit and its parent were checked out into two worktrees and the skill's proofs run by hand.",
+    "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets."
+  ],
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+}

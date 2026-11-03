@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "055",
+  "title": "An encoder that zero-terminates the string into the caller's buffer",
+  "summary": "`encodeInto` writes the modified UTF-8 encoding of a `char[]` into a buffer the caller provides and returns how many bytes it wrote. A developer adds a zero byte after the encoding when the buffer has room, so that the bytes can be handed to native code as a C string, which is what the encoding's zero-free form exists for. The property committed for the encoder now has a frame condition in JML's `\\old`: the bytes past what it wrote are as the call received them. The prover refutes the patched encoder on an empty string and a one-byte buffer, whose byte it zeroes.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "class-files",
+    "text-encoding",
+    "array-utilities",
+    "buffer-bounds",
+    "jml-quantifiers",
+    "jml-old"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "After the encoding loop, write a zero byte at `out[k]` when `k < out.length`, and say so in the comment: a terminated string for native code. The returned count is unchanged. The tests of the encoder pass, including the one that checks the byte after a six-byte encoding in a nine-byte buffer, which was already zero.",
+    "patch": "change.patch"
+  },
+  "risk": "The buffer is the caller's, and the contract of a method that returns how many bytes it wrote is that it wrote those and no others: a constant pool writer encodes one string after another into the same buffer, and a terminator written past `result` is the first byte of the previous string in the buffer, or of the next one, depending on the order. The byte it overwrites is zero exactly when there was nothing there, which is the case in every test, and in a buffer sized to the string by `encodedLengthOf` there is never room for it, so the terminator appears only in larger buffers, where it does the damage. A C string also needs the terminator to be inside the buffer, which `k < out.length` does not promise the caller.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `encodeInto` gained a conjunct, `(\\forall int i; result <= i && i < out.length; out[i] == \\old(out[i]))`: every byte past what the encoder wrote is what it was before the call. `\\old` is JML's, the value of an expression in the pre-state; the tool compiles it by copying the array in the generated harness before the call, as long as the bound on the arrays, and reading the copy in the assertion, while `out[i]` without it reads the array the method left behind. The two together are a frame condition, the shape of specification that says what a method does not touch, and it holds of the committed encoder in three seconds on every string of up to eight code units and every buffer of up to eight bytes. JBMC refutes the patched encoder at once, and the tool shrinks the witness to `encodeInto(chars=[], out=[-1])`: an empty string, a buffer of one non-zero byte, which the method returns 0 for and leaves as `[0]`. The witness is the whole bug: the byte the caller owned is gone, and nothing the method returns says so.",
+  "resolution": "Revert. A terminated copy for native code is a separate method, with a buffer it sizes itself, as JNI's `GetStringUTFChars` returns one; the encoder keeps its frame. The frame condition stays in the property, and the shrunk witness is the unit test to add: a non-zero byte past the encoding that must survive.",
+  "notes": [
+    "A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).",
+    "Writes one byte past what it returns into the caller's buffer, refuted against a frame condition stated with JML's `\\old`."
+  ],
+  "provenance": "Constructed from the use of modified UTF-8 in JNI (`GetStringUTFChars` returns a zero-terminated string), by adding the terminator to a method whose buffer is the caller's.",
+  "references": [
+    {
+      "title": "JVMS §4.4.7, CONSTANT_Utf8_info: why no byte of the encoding is zero",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.4.7"
+    },
+    {
+      "title": "JNI, GetStringUTFChars: the modified UTF-8 bytes of a string, zero-terminated, in a buffer the VM allocates",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/specs/jni/functions.html#getstringutfchars"
+    },
+    {
+      "title": "JML reference manual, predicates and specification expressions: \\old, the value of an expression in the pre-state",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "106",
+  "title": "apache/commons-lang#1750: ArrayUtils.reverse with Integer.MIN_VALUE as the end index",
+  "summary": "A pull request that stops `ArrayUtils.reverse(array, start, end)` wrapping an end index of `Integer.MIN_VALUE` to `Integer.MAX_VALUE`. The bug's input was found for all six primitive overloads and shrunk to an empty array; the change was proved confined to that end index on arrays of up to four; the new version was proved to throw on no input.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "open-source-libraries",
+    "integer-overflow",
+    "off-by-one",
+    "special-values",
+    "buffer-bounds",
+    "pull-request-review",
+    "confined-change"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/ArrayUtils.java",
+    "symbol": "org.apache.commons.lang3.ArrayUtils#reverse"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "also": [
+      "B11",
+      "B10"
+    ]
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1750"
+  },
+  "change": {
+    "kind": "bug-fix"
+  },
+  "verdictLabel": "✗ the bug's input found; ✓ change confined; ✓ new version never throws",
+  "notes": [
+    "Commons Lang compiles with `javac` alone, and its primitive-array methods prove in seconds to minutes at `--max-array-length 4 --unwind 6`. Next in `ArrayUtils`: `indexOf`, `isSorted`, and `BooleanUtils`."
+  ],
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+}

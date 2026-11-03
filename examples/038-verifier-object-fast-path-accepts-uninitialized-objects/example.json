@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "038",
+  "title": "A verifier fast path for \"everything is an Object\" lets an uninitialized object pass",
+  "summary": "The type checker's assignability relation answers `isAssignable(from, to)` over the verification types, with the uninitialized types assignable to themselves and `top` only. A developer hoists the most frequent answer, that every reference is assignable to `Object`, above the rarer checks. The behavioural contract of the relation, 289 pairs derived from the bytecode, changes in two: `uninitialized` and `uninitializedThis` are now assignable to `Object`, which is the hole a type-checking verifier exists to close.",
+  "origin": "constructed",
+  "categories": [
+    "security",
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "bytecode-verification",
+    "security-boundary"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/verify/Assignability.java",
+    "symbol": "net.terminalvalue.mica.verify.Assignability#isAssignable"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Move `if (to == OBJECT) return true;` up, to right after the primitive check: every receiver of an `invokevirtual` on an `Object` method and every store into an `Object[]` asks this question, so answer it before the null and uninitialized checks that almost never apply. The tests for primitives, null, the class hierarchy, interfaces, arrays and the uninitialized types all pass.",
+    "patch": "change.patch"
+  },
+  "risk": "A `new` instruction pushes an uninitialized object: memory of the right class whose constructor has not run, whose final fields are zero, whose invariants do not hold. The verifier's one job with it is to make sure nothing but the matching `invokespecial <init>` touches it until then. With this change, a method whose bytecode stores that object into an `Object` field, passes it to a method, or returns it, verifies. A constructor that throws no longer protects its class from half-built instances; a `final` field is observed as zero; a class that checks its arguments in its constructor can be instantiated without them. This is the class of verifier bug that has produced Java sandbox escapes: the type checker is the boundary between bytecode that was compiled by javac and bytecode that was written to do this. The tests check the uninitialized types against each other and against `top`, which still hold; the pair that changed is the one between the uninitialized types and the type everything is.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The relation is a pure function of two enum values, so its behaviour is finite: 17 by 17 pairs, null included. The tool proves purity from the bytecode (the enum's `superclass` walk and the recursion on array components among the eight methods it checks), runs all 289 pairs in its interpreter, and compares the outcomes with the committed contract. Two differ, `isAssignable(UNINITIALIZED, OBJECT)` and `isAssignable(UNINITIALIZED_THIS, OBJECT)`, both `false` before and `true` after. The reason is the order of two `if` statements: the `Object` answer is correct for every reference type and wrong for the two types that are not references yet, and the check that excluded them now comes second. Nothing else changed, which the other 287 pairs show.",
+  "resolution": "Revert the hoist, or hoist it below the uninitialized check, where it is still before the hierarchy walk and still answers the frequent query early. The JVMS states the relation as Prolog clauses in §4.10.1.2 and the uninitialized clauses are deliberately not reference clauses; a comment pointing there keeps the order from being tidied again. The contract keeps all 289 pairs under review.",
+  "notes": [
+    "The verifier answers \"everything is an `Object`\" one line too early, and an uninitialized object passes."
+  ],
+  "provenance": "Constructed from the `isAssignable` clauses of JVMS §4.10.1.2, by reordering two checks.",
+  "references": [
+    {
+      "title": "JVMS §4.10.1.2, Verification Type System: isAssignable, uninitialized and uninitializedThis",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.2"
+    },
+    {
+      "title": "JVMS §4.10.1.4, Instance Initialization Methods and Newly Created Objects",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.4"
+    }
+  ]
+}

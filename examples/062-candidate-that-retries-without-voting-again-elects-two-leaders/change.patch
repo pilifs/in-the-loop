@@ -1,0 +1,29 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -36,7 +36,11 @@
+     public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {
+         return switch (event) {
+             case ElectionTimeout _ -> switch (role) {
+-                case FOLLOWER, CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
++                case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
++                // A candidate whose election timed out tries again in a new term. Its tally already holds its own
++                // vote, cast when it first ran, so it need not vote again, and REQUEST_VOTES asks only the servers
++                // whose vote the tally lacks: the ones that never answered.
++                case CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, REQUEST_VOTES);
+                 case LEADER -> unchanged("a leader does not hold elections");
+             };
+             case VotesCounted votes -> switch (role) {
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
+@@ -32,6 +32,11 @@
+                 RoleMachine.decide(Role.LEADER, new RoleEvent.AppendEntries(TermOrder.NEWER)));
+     }
+ 
++    public static void candidateRetriesWithTheVotesItHolds() {
++        equal(new Transition<>(Role.CANDIDATE, List.of(RoleEffect.INCREMENT_TERM, RoleEffect.REQUEST_VOTES)),
++                RoleMachine.decide(Role.CANDIDATE, new RoleEvent.ElectionTimeout()));
++    }
++
+     public static void staleLeaderIsRejected() {
+         check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.AppendEntries(TermOrder.OLDER)) instanceof Decision.Rejected, "stale");
+     }

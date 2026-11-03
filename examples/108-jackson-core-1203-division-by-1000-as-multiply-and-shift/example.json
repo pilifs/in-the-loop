@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "108",
+  "title": "FasterXML/jackson-core#1203: division by 1000 as multiply-and-shift, nothing proved",
+  "summary": "A pull request that replaces `number / 1000` with `(int) (number * 274_877_907L >>> 38)` in `NumberOutput`. Nothing was proved: each proof pits a 64-bit multiplication against a 32-bit division, and the solver did not finish in its budget or ran out of memory. One witness documents the precondition, `number >= 0`.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "performance"
+  ],
+  "tags": [
+    "numeric-code",
+    "open-source-libraries",
+    "pull-request-review",
+    "solver-limits"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "jackson-core",
+    "file": "src/main/java/com/fasterxml/jackson/core/io/NumberOutput.java",
+    "symbol": "com.fasterxml.jackson.core.io.NumberOutput#divBy1000"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "plugins/jvmcontract/skills/verify-bytecode",
+    "also": [
+      "B11"
+    ]
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-core",
+    "url": "https://github.com/FasterXML/jackson-core/pull/1203"
+  },
+  "change": {
+    "kind": "refactor"
+  },
+  "verdictLabel": "⚠ unverifiable: solver budget; one precondition witness",
+  "notes": [
+    "Division against multiplication is what exhausts the solver. Next: a pull request to `CharTypes` or `NumberInput` without a division, or `divBy1000` as a verification job with a budget of tens of minutes."
+  ],
+  "provenance": "A real change to a published library, verified with the /verify-bytecode skill; the report is this folder's README.md."
+}

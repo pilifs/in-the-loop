@@ -1,0 +1,206 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-002843-rerun-the-mica-examples-after-the-exampl",
+  "title": "Rerun the Mica examples after the examples move",
+  "description": "The examples moved from examples/demo/ and examples/real-world/ into one folder, examples/, with apps, tools and schema one level up, and every patch, example.json, generated page and script path rewritten. This reruns every constructed example of the subject system at the new layout, one step per example, to confirm that each still gives its expected verdict. Their pages were re-rendered from the old results with build.py --render-only, so a verdict that differs here is a regression of the move.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "B9",
+    "B8",
+    "B10",
+    "D1"
+  ],
+  "links": {
+    "paths": [
+      "examples/README.md"
+    ],
+    "examples": [
+      "034",
+      "035",
+      "036",
+      "037",
+      "038",
+      "039",
+      "040",
+      "041",
+      "042",
+      "043",
+      "044",
+      "045",
+      "046",
+      "047",
+      "048",
+      "049",
+      "050",
+      "051",
+      "052",
+      "053",
+      "054",
+      "055",
+      "056"
+    ]
+  },
+  "expected": "example 034 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 035 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 036 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 037 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 038 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 039 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 040 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 041 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 042 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 043 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 044 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 045 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 046 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 047 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 048 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 049 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 050 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 051 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 052 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 053 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 054 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 055 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 056 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-03T00:28:43+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "memoryLimit": "4G",
+    "notes": "about two minutes by the README; array proofs under JBMC's 3 GB limit"
+  },
+  "steps": [
+    {
+      "name": "example 034 (B11)",
+      "run": "python3 examples/tools/build.py 034",
+      "cwd": "."
+    },
+    {
+      "name": "example 035 (B9)",
+      "run": "python3 examples/tools/build.py 035",
+      "cwd": "."
+    },
+    {
+      "name": "example 036 (B9)",
+      "run": "python3 examples/tools/build.py 036",
+      "cwd": "."
+    },
+    {
+      "name": "example 037 (B9)",
+      "run": "python3 examples/tools/build.py 037",
+      "cwd": "."
+    },
+    {
+      "name": "example 038 (B8)",
+      "run": "python3 examples/tools/build.py 038",
+      "cwd": "."
+    },
+    {
+      "name": "example 039 (B8)",
+      "run": "python3 examples/tools/build.py 039",
+      "cwd": "."
+    },
+    {
+      "name": "example 040 (B8)",
+      "run": "python3 examples/tools/build.py 040",
+      "cwd": "."
+    },
+    {
+      "name": "example 041 (B10)",
+      "run": "python3 examples/tools/build.py 041",
+      "cwd": "."
+    },
+    {
+      "name": "example 042 (D1)",
+      "run": "python3 examples/tools/build.py 042",
+      "cwd": "."
+    },
+    {
+      "name": "example 043 (D1)",
+      "run": "python3 examples/tools/build.py 043",
+      "cwd": "."
+    },
+    {
+      "name": "example 044 (B11)",
+      "run": "python3 examples/tools/build.py 044",
+      "cwd": "."
+    },
+    {
+      "name": "example 045 (B11)",
+      "run": "python3 examples/tools/build.py 045",
+      "cwd": "."
+    },
+    {
+      "name": "example 046 (B11)",
+      "run": "python3 examples/tools/build.py 046",
+      "cwd": "."
+    },
+    {
+      "name": "example 047 (B11)",
+      "run": "python3 examples/tools/build.py 047",
+      "cwd": "."
+    },
+    {
+      "name": "example 048 (B11)",
+      "run": "python3 examples/tools/build.py 048",
+      "cwd": "."
+    },
+    {
+      "name": "example 049 (B11)",
+      "run": "python3 examples/tools/build.py 049",
+      "cwd": "."
+    },
+    {
+      "name": "example 050 (B11)",
+      "run": "python3 examples/tools/build.py 050",
+      "cwd": "."
+    },
+    {
+      "name": "example 051 (B11)",
+      "run": "python3 examples/tools/build.py 051",
+      "cwd": "."
+    },
+    {
+      "name": "example 052 (B11)",
+      "run": "python3 examples/tools/build.py 052",
+      "cwd": "."
+    },
+    {
+      "name": "example 053 (B11)",
+      "run": "python3 examples/tools/build.py 053",
+      "cwd": "."
+    },
+    {
+      "name": "example 054 (B11)",
+      "run": "python3 examples/tools/build.py 054",
+      "cwd": "."
+    },
+    {
+      "name": "example 055 (B11)",
+      "run": "python3 examples/tools/build.py 055",
+      "cwd": "."
+    },
+    {
+      "name": "example 056 (B11)",
+      "run": "python3 examples/tools/build.py 056",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value",
+    "examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg",
+    "examples/036-switch-lowering-costs-in-int-overflow-on-wide-labels",
+    "examples/037-table-size-rewritten-with-leading-zeros-proved-equal",
+    "examples/038-verifier-object-fast-path-accepts-uninitialized-objects",
+    "examples/039-protected-access-without-the-receiver-rule",
+    "examples/040-nestmate-private-access-reviewed-as-a-contract-diff",
+    "examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection",
+    "examples/042-class-init-that-proceeds-while-another-thread-initializes",
+    "examples/043-class-init-that-waits-on-its-own-thread-deadlocks",
+    "examples/044-modified-utf8-with-a-one-byte-nul",
+    "examples/045-lookupswitch-midpoint-by-division-proved-safe-within-a-code-attribute",
+    "examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key",
+    "examples/047-exception-table-with-an-inclusive-end-pc",
+    "examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes",
+    "examples/049-stack-map-offset-loop-without-the-first-frame-special-case",
+    "examples/050-code-attribute-length-that-leaves-out-the-nested-attribute-headers",
+    "examples/051-constant-pool-index-that-counts-the-long-entry-itself",
+    "examples/052-max-stack-that-checks-the-depth-only-after-a-push",
+    "examples/053-idiv-that-leaves-division-by-zero-to-the-host",
+    "examples/054-exception-table-check-that-rejects-a-range-ending-at-code-length",
+    "examples/055-encoder-that-zero-terminates-into-the-callers-buffer",
+    "examples/056-switch-pair-sort-that-compares-keys-by-difference"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "026",
+  "title": "A half-open circuit breaker that closes on the first good probe flaps through an outage",
+  "summary": "A half-open breaker lets a few probe calls through and closes only once all of them are back with the failure rate under the threshold. A developer, chasing the latency of the calls that queue behind the probes, makes the first successful probe enough to close. The behavioural contract of the breaker, 44 cases derived from the bytecode, changes in two of them, and the state-machine view drawn from the patched code shows HALF_OPEN with its waiting state gone.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "performance"
+  ],
+  "tags": [
+    "resilience"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java",
+    "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": false,
+    "description": "Remove the \"more probes to go\" branch: a probe that came back is proof enough that the backend is up again, so close at once instead of holding the callers back for the remaining probes. The tests for opening, rejecting, probing, a failed probe and closing after a complete window all pass.",
+    "patch": "change.patch"
+  },
+  "risk": "A backend that is recovering answers some calls and times out on others, which is the state a breaker exists for. With this change one lucky probe closes the breaker, the full load of callers lands on the backend, the next window fails the threshold, the breaker opens, waits, half-opens, one probe succeeds, and the cycle repeats every wait duration for as long as the backend is struggling. From the backend's side it is a periodic stampede that keeps it from recovering; from the callers' side it is a latency and error pattern that comes and goes on the breaker's timer, which nobody correlates with a change to the breaker. The permitted number of probes in Resilience4j's half-open state is the sample size of a decision, and a sample of one decides nothing.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The breaker is a pure function of (state, event), and both types are finite: three states, and two event kinds carrying one and three booleans. The tool proves purity from the bytecode, executes all 44 inputs in its interpreter, and compares the outcomes with the committed contract. Two cases differ, both in HALF_OPEN with a successful probe and an incomplete window: with the failure rate under the threshold the breaker now closes instead of waiting, and with it over the threshold it now reopens instead of waiting. The first is the change the developer meant to make, and it is the bug; the second is a side effect of the same deleted line. The state-machine view on this page is drawn from the patched code, and HALF_OPEN has lost the `Unchanged` self-loop that stood for waiting.",
+  "resolution": "Revert. If the latency of the queued callers is the problem, lower the permitted number of probes or shorten the wait duration, both of which are configuration; the decision rule should keep requiring the window to complete. The contract keeps it that way: any further change to the breaker's 44 cases is a diff a reviewer sees.",
+  "notes": [
+    "Compare 076, the half-open rule that judges probes by failure rate, and 075 and 077, the rules that keep every invariant and still never recover."
+  ],
+  "provenance": "Constructed from the half-open semantics of Resilience4j's `CircuitBreakerStateMachine`, by replacing the wait for all permitted calls with the first success.",
+  "references": [
+    {
+      "title": "Resilience4j, CircuitBreaker: the HALF_OPEN state and permittedNumberOfCallsInHalfOpenState",
+      "url": "https://resilience4j.readme.io/docs/circuitbreaker"
+    },
+    {
+      "title": "Nygard, Release It! (the circuit breaker pattern)",
+      "url": "https://pragprog.com/titles/mnee2/release-it-second-edition/"
+    }
+  ]
+}

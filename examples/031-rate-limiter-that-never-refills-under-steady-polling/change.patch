@@ -1,0 +1,17 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java
+@@ -16,12 +16,8 @@ public final class TokenBucket {
+         return Math.min(capacity, tokens + earned);
+     }
+ 
+-    /**
+-     * The time up to which refills have been credited after the refill: {@code lastNanos} advanced by the whole
+-     * periods that earned a token, which is {@code nowNanos} less the part of a period that has not earned one yet.
+-     * That part is kept, so that a bucket polled more often than it refills still refills.
+-     */
++    /** The time of the refill, which is now. */
+     public static long lastAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {
+-        return nowNanos - (nowNanos - lastNanos) % periodNanos;
++        return nowNanos;
+     }
+ }

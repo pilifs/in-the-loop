@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "102",
+  "title": "A leader that moves a follower up on a refusal records entries the follower lacks",
+  "summary": "A Raft leader keeps, per follower, the index of the next entry to send and the last index it knows the follower's log to match its own: an accepted request moves both up, a refused one backs the next index up by one, and the commit rule counts the servers whose match index reaches an entry. A developer has every reply move the follower up, with the argument that whether the follower took the entries is the append rule's business and the next request compares the logs again. The tests pass and the contract diff is one row. The replication model's first configuration finds the consequence in twelve steps: s1, leader of term 1, appends an entry and replicates it to s2; s2 times out, wins term 2 with s1's vote and appends an entry of its own; it sends s3, whose log is empty, the new entry after the old one, which s3 refuses, lacking the old one, and the patched rule records s3 as holding both; s1 times out and wins term 3 with s3's vote, s3's log being empty; and s2, which has not heard of term 3, counts itself and s3 as a majority for its entry and marks both committed. Leader completeness is violated: the leader of term 3 lacks an entry the leader of term 2 has committed, and will overwrite it with its own.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "log-replication",
+    "lost-committed-data",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "patch": "change.patch",
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In `ReplyRule.decide`, the `AWAITED` arm no longer looks at whether the follower accepted: it returns `transition(ANSWERED, ADVANCE)` for every reply, with the comment that the record follows the request and the logs are compared again on the next one. The javadoc is reworded to match, and the test that a refusal backs up by one becomes a test that it moves the follower up as well."
+  },
+  "risk": "High. The change reads as a simplification of bookkeeping: the record moves with the request, and a follower that refused is behind, which the next request will find out. What it misses is what the record is for. The match index is what the commit rule counts: a leader marks an entry of its term committed once the match indices of a majority reach it, itself among them, and then applies it. A record that says a follower holds what it refused makes the leader count a server that holds nothing, and with three servers a leader and one such follower are a majority. The tests of the rule see one input and one output and pass; the error is in what another rule does with the output, four steps later.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The reply rule in the model is generated from the regenerated contract, so `Replicate` does what the patched row says: a refusal moves the follower's match index to the last entry sent, as an acceptance does. TLC's first configuration, three terms and two entries, finds the violation in twelve steps, 6,948 states in: the leader of term 2 sends a follower with an empty log its second entry, which the follower refuses, lacking the first, and the patched row records the follower as holding both; the first leader comes back as the leader of term 3, elected by that follower, whose log is empty, and the leader of term 2, which has not heard of it, counts itself and the follower as a majority and marks both entries committed. `LeaderCompleteness` is violated in that state: the leader of term 3 lacks an entry the leader of term 2 has committed, and whatever it appends at that index overwrites it. The figure 8 configuration verifies the change in 8,520 states: with one entry per leader's log, the only entry a follower can refuse is one the leader inherited, which the commit rule never commits by counting. The fairness configuration finds the follower never catching up, in ten steps: recorded as holding the entry, it is sent heartbeats from then on, each refused and each refusal recorded as progress. The delayed replies configuration, which checks the leader's record directly, finds a match index past the end of a follower's log in nine.",
+  "resolution": "Reject. A refusal is the consistency check failing: the follower does not hold the entry before the ones sent, and the only thing the leader learns is that the two logs agree somewhere earlier, so the next index backs up by one and the next request tries from there (Ongaro and Ousterhout, section 5.3, and the rules for leaders in figure 2). The match index moves on an acceptance alone, since it is what the commit rule counts, and it must never say more than the follower holds.",
+  "notes": [
+    "The Raft replication model (`apps/quorum/spec/RaftReplication.tla`) has the logs live, around the follower's append rule and the leader's commit rule as generated operators beside the role machine and the vote rule, and checks log matching, leader completeness and state machine safety, with an action property that no committed entry is ever overwritten. Its configurations are three terms with two entries, and the four terms of the paper's figure 8.",
+    "The leader's side of the RPC, `ReplyRule#decide`, is the replication model's third generated operator. `RaftReplicationDelayed.cfg` lets the reply wait on the wire, arrive after the leader has sent again or been deposed, arrive twice, or never, and checks the leader's record of its followers (`MatchIndexIsRight`, `NextIndexPastMatch`), which a one-step RPC cannot break.",
+    "Found by the first configuration: the follower is counted toward the majority that commits an entry the next leader, elected without it, overwrites; leader completeness broken in twelve steps."
+  ],
+  "provenance": "Constructed as the first example of the replication model's reply rule, the leader's side of the AppendEntries RPC as a third generated operator: the one change to the rule that breaks safety, found by the configuration that has had the model since the start.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication, the consistency check, and the nextIndex and matchIndex a leader keeps per follower; figure 2, the rules for leaders on an AppendEntries reply",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, log replication, and section 3.5 on the leader's bookkeeping",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): HandleAppendEntriesResponse, which moves nextIndex and matchIndex on success and decrements nextIndex on failure, and messages as a bag, so that a reply may be delivered after another",
+      "url": "https://github.com/ongardie/raft.tla"
+    }
+  ]
+}

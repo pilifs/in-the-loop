@@ -1,0 +1,115 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: NoMoneyStranded, 9-step trace",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java",
+    "startLine": 42,
+    "code": "    return;\n}\nOrderInput input = switch (event) {\n    case PaymentEvent.PaymentCaptured _ ->\n        new OrderInput.PaymentCaptured(store.heldBy(order.holdId()) == order.seatLabels().size());\n    case PaymentEvent.PaymentDeclined _ -> new OrderInput.PaymentDeclined();\n    case PaymentEvent.PaymentRefunded _ -> new OrderInput.PaymentRefunded();\n};\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java",
+    "startLine": 42,
+    "code": "    return;\n}\nOrderInput input = switch (event) {\n    // The hold was checked when the order was placed, so the seats are ours: no need to count them again.\n    case PaymentEvent.PaymentCaptured _ -> new OrderInput.PaymentCaptured(true);\n    case PaymentEvent.PaymentDeclined _ -> new OrderInput.PaymentDeclined();\n    case PaymentEvent.PaymentRefunded _ -> new OrderInput.PaymentRefunded();\n};\n"
+  },
+  "casesTotal": null,
+  "domain": "Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1, Sweeper = TRUE",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "TLC 2.19 explored 423 distinct states to depth 9 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1, Sweeper = TRUE",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "events": "<<>>",
+        "pOutbox": "<<>>",
+        "tOutbox": "<<>>",
+        "time": "0",
+        "payment": "(alice :> \"NONE\" @@ bob :> \"NONE\")",
+        "seat": "( s1 :> [ status |-> \"AVAILABLE\", holdId |-> \"none\", expiresAt |-> 0, orderId |-> \"none\" ] )",
+        "commands": "<<>>",
+        "dlt": "{}",
+        "hold": "( alice :> [expiresAt |-> 0, seats |-> {}] @@ bob :> [expiresAt |-> 0, seats |-> {}] )",
+        "order": "(alice :> \"NONE\" @@ bob :> \"NONE\")"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Hold",
+      "changes": {
+        "seat": "( s1 :> [ status |-> \"HELD\", holdId |-> alice, expiresAt |-> 1, orderId |-> \"none\" ] )",
+        "hold": "( alice :> [expiresAt |-> 1, seats |-> {s1}] @@ bob :> [expiresAt |-> 0, seats |-> {}] )"
+      }
+    },
+    {
+      "step": 3,
+      "action": "PlaceOrder",
+      "changes": {
+        "tOutbox": "<<[order |-> alice, kind |-> \"ChargePayment\"]>>",
+        "order": "(alice :> \"PENDING_PAYMENT\" @@ bob :> \"NONE\")"
+      }
+    },
+    {
+      "step": 4,
+      "action": "RelayCommand",
+      "changes": {
+        "tOutbox": "<<>>",
+        "commands": "<<[order |-> alice, kind |-> \"ChargePayment\"]>>"
+      }
+    },
+    {
+      "step": 5,
+      "action": "HandleCommand",
+      "changes": {
+        "pOutbox": "<<[order |-> alice, kind |-> \"PaymentCaptured\"]>>",
+        "payment": "(alice :> \"CAPTURED\" @@ bob :> \"NONE\")",
+        "commands": "<<>>"
+      }
+    },
+    {
+      "step": 6,
+      "action": "RelayEvent",
+      "changes": {
+        "events": "<<[order |-> alice, kind |-> \"PaymentCaptured\"]>>",
+        "pOutbox": "<<>>"
+      }
+    },
+    {
+      "step": 7,
+      "action": "Tick",
+      "changes": {
+        "time": "1"
+      }
+    },
+    {
+      "step": 8,
+      "action": "Hold",
+      "changes": {
+        "seat": "(s1 :> [status |-> \"HELD\", holdId |-> bob, expiresAt |-> 2, orderId |-> \"none\"])",
+        "hold": "( alice :> [expiresAt |-> 1, seats |-> {s1}] @@ bob :> [expiresAt |-> 2, seats |-> {s1}] )"
+      }
+    },
+    {
+      "step": 9,
+      "action": "HandleEvent",
+      "changes": {
+        "events": "<<>>",
+        "dlt": "{[order |-> alice, kind |-> \"PaymentCaptured\"]}"
+      }
+    }
+  ],
+  "statesExplored": 423,
+  "invariant": "NoMoneyStranded",
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

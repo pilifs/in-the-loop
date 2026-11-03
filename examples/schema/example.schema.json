@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pilifs/in-the-loop/examples/schema/example.schema.json",
+  "title": "Formal verification example (authored)",
+  "description": "What a person or agent writes for one example. A constructed example is a change to a subject system that examples/tools/build.py runs through a verifier; everything the verifier produces lives in result.json. A real-world example is a change to a published library, verified with /verify-bytecode; its report is the folder's README.md, and this file is what the router (examples/README.md, examples/index.json, examples/tools/find.py) knows of it.",
+  "type": "object",
+  "required": ["id", "title", "summary", "origin", "categories", "tags", "severity", "subject", "approach", "change"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "description": "Three-digit number, equal to the folder prefix. Constructed and real-world examples share one sequence.", "type": "string", "pattern": "^[0-9]{3}$" },
+    "title": { "description": "What happens, in one line. Shown in the table of contents.", "type": "string", "maxLength": 100 },
+    "summary": { "description": "Two or three sentences for a reader skimming the table of contents, or an agent deciding whether the example is relevant.", "type": "string" },
+    "origin": {
+      "description": "constructed: a change written for this repository's subject systems, run by build.py. real-world: a change to a published library, as it came.",
+      "enum": ["constructed", "real-world"]
+    },
+    "categories": {
+      "description": "What kind of breaking change the example is about.",
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "enum": ["functional", "security", "performance", "configuration", "determinism", "compatibility", "no-false-positive"] }
+    },
+    "tags": {
+      "description": "What the example is about, for matching it against a problem: tags from examples/tags.json, in three facets, domain (what the code does), defect (what goes or could go wrong) and technique (how it is verified, beyond the approach). build.py refuses a tag that is not in the vocabulary.",
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+    },
+    "severity": {
+      "description": "How bad it would be if the change shipped unnoticed. 'none' for changes that are safe.",
+      "enum": ["critical", "high", "medium", "low", "none"]
+    },
+    "subject": {
+      "type": "object", "required": ["system", "symbol"], "additionalProperties": false,
+      "properties": {
+        "system": { "description": "The application or library under verification.", "type": "string" },
+        "file": { "description": "The changed source file: repo-relative for a constructed example, relative to the library's repository for a real-world one.", "type": "string" },
+        "symbol": { "description": "The verified unit, as <class>#<method>.", "type": "string" }
+      }
+    },
+    "approach": {
+      "type": "object", "required": ["id", "name", "tool"], "additionalProperties": false,
+      "properties": {
+        "id": { "description": "Approach ID in examples/approaches.md, for example B8. For a constructed example it picks the runner.", "type": "string" },
+        "name": { "type": "string" },
+        "tool": { "description": "Repo-relative path of the verifier.", "type": "string" },
+        "also": { "description": "Other approaches the example uses, for a real-world example that runs several.", "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "source": {
+      "description": "For a real-world example: where the change came from.",
+      "type": "object", "required": ["kind", "repository", "url"], "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["pull-request", "commit"] },
+        "repository": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "change": {
+      "type": "object", "required": ["kind"], "additionalProperties": false,
+      "properties": {
+        "kind": { "description": "What the developer thought they were doing.", "enum": ["refactor", "cleanup", "feature", "bug-fix", "logging", "dependency-upgrade", "configuration"] },
+        "behaviourChangeIntended": { "description": "True if the developer meant to change behaviour, and so regenerates the contract.", "type": "boolean" },
+        "description": { "description": "The change in the developer's words, and why it looked right.", "type": "string" },
+        "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" },
+        "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" }
+      }
+    },
+    "risk": { "description": "What could go wrong in production if this change shipped unnoticed.", "type": "string" },
+    "expected": {
+      "type": "object", "required": ["verdict"], "additionalProperties": false,
+      "properties": {
+        "verdict": { "description": "The verdict the verifier must reach. The generator fails if it does not.", "enum": ["violation", "verified", "unverifiable"] },
+        "vacuous": { "description": "For model checking: the verdict rests on no row the change alters, because no run of the model takes one (TLC's coverage). The generator fails if this differs from what it finds; absent means false.", "type": "boolean" }
+      }
+    },
+    "verdictLabel": { "description": "For a real-world example, whose proofs give several verdicts: the verdicts in one line, as the table of contents shows them.", "type": "string" },
+    "explanation": { "description": "Why the verdict is right, and how the verifier reached it.", "type": "string" },
+    "resolution": { "description": "What the developer should do next.", "type": "string" },
+    "notes": {
+      "description": "What a reader or an agent should know about this example that is not in its other fields: which configuration or bound it needs and why, how it relates to other examples (by id), what was hard to get right, what to try next. Notes about one example go here, not in a shared README; a note may repeat context from a shared page, since an example is often read alone. Rendered on the example's page.",
+      "type": "array", "items": { "type": "string" }
+    },
+    "provenance": { "description": "Where the example came from: a real incident, a session, or constructed.", "type": "string" },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["title", "url"], "additionalProperties": false,
+        "properties": { "title": { "type": "string" }, "url": { "type": "string" } }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "origin": { "const": "constructed" } } },
+      "then": {
+        "required": ["risk", "expected", "explanation", "resolution"],
+        "properties": {
+          "subject": { "required": ["file"] },
+          "change": { "required": ["kind", "behaviourChangeIntended", "description", "patch"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "origin": { "const": "real-world" } } },
+      "then": { "required": ["source", "verdictLabel"] }
+    }
+  ]
+}

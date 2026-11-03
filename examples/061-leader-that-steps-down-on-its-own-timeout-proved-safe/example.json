@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "061",
+  "title": "A leader that steps down when its timer fires, proved to keep one leader per term",
+  "summary": "A Raft leader cut off from the majority keeps believing it leads, and keeps serving reads from a state the rest of the cluster has moved past, until some message from the newer term reaches it. A developer adds the check etcd calls CheckQuorum: a leader whose election timer fires, meaning no majority acknowledged it for a whole timeout, steps down to follower. The contract diff is one case and is approved. The election model proves the change keeps every invariant and both action properties, in 1,153 states: one leader per term, terms that never go backwards, and no leader that campaigns.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "agreement",
+    "tla-action-property",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In the `ElectionTimeout` case, make a `LEADER` transition to `FOLLOWER`, with no effects: it keeps its term and its vote, and its timer now runs as a follower's, so that it will run for office again if no leader is heard from. The reasoning in the comment: a leader whose timer fires has not heard from a majority in a whole timeout and may be partitioned away from a cluster that has elected a successor; stepping down stops it from serving stale reads. The behavioural contract is regenerated and its diff is the one case `decide(LEADER, ElectionTimeout[])`, unchanged to a transition; a test for it is added. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "A leader that leaves office on a timer is a new way for the cluster to lose its leader, and the question for the reviewer is whether it is also a new way to get two. It is not, and the model shows why: the server steps down in its own term, with its vote still recorded, so it can neither be elected nor elect anyone in that term, and a new term needs an election the old leader takes part in as a follower. The change is the one example 060 should have made: stepping down to follower is safe where resigning into a candidacy is not. Since the change is a disabled case made live, the risk the model rules out is a design risk, not a slip.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The election model's role machine is generated from the behavioural contract of the patched `RoleMachine#decide`, which the tool proves the bytecode satisfies on all 52 inputs. TLC checks every interleaving of three servers over three terms: the timers fire whenever the model likes, so the new step-down happens at every point at which a leader exists, including while a candidate of a newer term is canvassing and while the stepped-down leader's heartbeats are still being answered. It finds every invariant true in all 1,153 reachable states (up from 610, since a leader can now become a follower of its own term, a state the committed rule never reaches) and both action properties true on every step: `TermsNeverDecrease`, and `LeadersNeverCampaign`, which the step from leader to follower satisfies. Nothing in the model assumes the step-down happens for a reason; a leader with a healthy majority that steps down is as safe as one that was partitioned, just less available.",
+  "resolution": "Merge. The property the model does not check is availability: a leader that steps down needlessly costs an election, which is why etcd makes the check depend on acknowledgements from a majority rather than on the timer alone, and why the timeout should be a full election timeout rather than a heartbeat interval. That is a tuning question the model has nothing to say about; what it says is that no tuning of it can produce two leaders.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails."
+  ],
+  "provenance": "Constructed from the CheckQuorum option of etcd's Raft library, as a change to the role machine's handling of a leader's election timeout.",
+  "references": [
+    {
+      "title": "etcd raft, Config.CheckQuorum: a leader that has not heard from a majority in an election timeout steps down",
+      "url": "https://pkg.go.dev/go.etcd.io/raft/v3#Config"
+    },
+    {
+      "title": "Ongaro, Consensus: Bridging Theory and Practice (2014): chapter 3, the basic algorithm, and section 4.2.3, disruptive servers",
+      "url": "https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf"
+    },
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and figure 3, election safety",
+      "url": "https://raft.github.io/raft.pdf"
+    }
+  ]
+}

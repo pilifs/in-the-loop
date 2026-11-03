@@ -1,0 +1,168 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: all invariants hold in 168 states, and under 1 more configuration",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 5,
+    "code": "import static net.terminalvalue.crosscut.Decision.unchanged;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.EXECUTE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.RELEASE_KEY;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.REPLAY_RESPONSE;\n    // ...\n * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a\n * request still in progress is refused (409), because executing it again would do the work twice; a key reused with\n * a different request is refused (422). An attempt that dies without a response releases the key, so that the\n * client's retry can run.\n *\n * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two\n * retries arriving together cannot both see ABSENT.\n    // ...\n                case COMPLETED -> request.sameFingerprint()\n                        ? transition(COMPLETED, REPLAY_RESPONSE)\n                        : rejected(\"the key was reused for a different request\");\n            };\n            case Completed _ -> switch (state) {\n                case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);\n                case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n            };\n            case Failed _ -> switch (state) {\n                case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);\n                case ABSENT, COMPLETED -> unchanged(\"no attempt is in progress\");\n            };\n            case Expired _ -> switch (state) {\n                case COMPLETED -> transition(ABSENT, RELEASE_KEY);\n                case ABSENT -> unchanged(\"nothing to expire\");\n                case IN_PROGRESS -> unchanged(\"a key in progress does not expire\");\n            };\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java",
+    "startLine": 5,
+    "code": "import static net.terminalvalue.crosscut.Decision.unchanged;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.EXPIRED;\nimport static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.DROP_RESPONSE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.EXECUTE;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.RELEASE_KEY;\nimport static net.terminalvalue.crosscut.idempotency.ReceiverEffect.REPLAY_RESPONSE;\n    // ...\n * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a\n * request still in progress is refused (409), because executing it again would do the work twice; a key reused with\n * a different request is refused (422). An attempt that dies without a response releases the key, so that the\n * client's retry can run. A stored response expires in two steps: first the response goes and the key stays as a\n * tombstone, which refuses a retry (410) rather than running the request again, then the tombstone goes too.\n *\n * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two\n * retries arriving together cannot both see ABSENT.\n    // ...\n                case COMPLETED -> request.sameFingerprint()\n                        ? transition(COMPLETED, REPLAY_RESPONSE)\n                        : rejected(\"the key was reused for a different request\");\n                case EXPIRED -> rejected(\"the key has expired\");\n            };\n            case Completed _ -> switch (state) {\n                case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);\n                case ABSENT, COMPLETED, EXPIRED -> unchanged(\"no attempt is in progress\");\n            };\n            case Failed _ -> switch (state) {\n                case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);\n                case ABSENT, COMPLETED, EXPIRED -> unchanged(\"no attempt is in progress\");\n            };\n            case Expired _ -> switch (state) {\n                case COMPLETED -> transition(EXPIRED, DROP_RESPONSE);\n                case EXPIRED -> transition(ABSENT, RELEASE_KEY);\n                case ABSENT -> unchanged(\"nothing to expire\");\n                case IN_PROGRESS -> unchanged(\"a key in progress does not expire\");\n            };\n"
+  },
+  "casesTotal": null,
+  "domain": "Attempts = {a1, a2, a3}, Expires = FALSE",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n+++ b/examples/apps/crosscut/src/contract/IdempotentReceiver.decide.contract\n@@ -2,7 +2,7 @@\n # It lists the outcome of every possible input, and the build checks it against the bytecode.\n # A change here is a change in what the code does: review it like an API change.\n target: net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide\n-domain: KeyState (4) × ReceiverEvent (6) = 24 cases\n+domain: KeyState (5) × ReceiverEvent (6) = 30 cases\n \n decide(ABSENT, Request[sameFingerprint=false])      => Transition[next=IN_PROGRESS, effects=[EXECUTE]]\n decide(ABSENT, Request[sameFingerprint=true])       => Transition[next=IN_PROGRESS, effects=[EXECUTE]]\n@@ -20,8 +20,14 @@\n decide(COMPLETED, Request[sameFingerprint=true])    => Transition[next=COMPLETED, effects=[REPLAY_RESPONSE]]\n decide(COMPLETED, Completed[])                      => Unchanged[reason=\"no attempt is in progress\"]\n decide(COMPLETED, Failed[])                         => Unchanged[reason=\"no attempt is in progress\"]\n-decide(COMPLETED, Expired[])                        => Transition[next=ABSENT, effects=[RELEASE_KEY]]\n+decide(COMPLETED, Expired[])                        => Transition[next=EXPIRED, effects=[DROP_RESPONSE]]\n decide(COMPLETED, null)                             => throws NullPointerException\n+decide(EXPIRED, Request[sameFingerprint=false])     => Rejected[reason=\"the key has expired\"]\n+decide(EXPIRED, Request[sameFingerprint=true])      => Rejected[reason=\"the key has expired\"]\n+decide(EXPIRED, Completed[])                        => Unchanged[reason=\"no attempt is in progress\"]\n+decide(EXPIRED, Failed[])                           => Unchanged[reason=\"no attempt is in progress\"]\n+decide(EXPIRED, Expired[])                          => Transition[next=ABSENT, effects=[RELEASE_KEY]]\n+decide(EXPIRED, null)                               => throws NullPointerException\n decide(null, Request[sameFingerprint=false])        => throws NullPointerException\n decide(null, Request[sameFingerprint=true])         => throws NullPointerException\n decide(null, Completed[])                           => throws NullPointerException\n--- a/examples/apps/crosscut/src/contract/api.contract\n+++ b/examples/apps/crosscut/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: crosscut, 33 public types, 124 members\n+module: crosscut, 33 public types, 126 members\n \n net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected\n   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)\n@@ -41,11 +41,13 @@\n net.terminalvalue.crosscut.idempotency.KeyState: public final enum\n   public static final ABSENT: net.terminalvalue.crosscut.idempotency.KeyState\n   public static final COMPLETED: net.terminalvalue.crosscut.idempotency.KeyState\n+  public static final EXPIRED: net.terminalvalue.crosscut.idempotency.KeyState\n   public static final IN_PROGRESS: net.terminalvalue.crosscut.idempotency.KeyState\n   public static net.terminalvalue.crosscut.idempotency.KeyState valueOf(java.lang.String)\n   public static net.terminalvalue.crosscut.idempotency.KeyState[] values()\n \n net.terminalvalue.crosscut.idempotency.ReceiverEffect: public final enum\n+  public static final DROP_RESPONSE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final EXECUTE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final RELEASE_KEY: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n   public static final REPLAY_RESPONSE: net.terminalvalue.crosscut.idempotency.ReceiverEffect\n",
+  "proof": "the record never expires: TLC 2.19 explored 168 distinct states to depth 10 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 399 distinct states to depth 16 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE",
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": 168,
+  "invariant": null,
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=false] → effects=[EXECUTE]\n    ABSENT --> IN_PROGRESS: Request[sameFingerprint=true] → effects=[EXECUTE]\n    COMPLETED --> COMPLETED: Request[sameFingerprint=true] → effects=[REPLAY_RESPONSE]\n    COMPLETED --> EXPIRED: Expired[] → effects=[DROP_RESPONSE]\n    EXPIRED --> ABSENT: Expired[] → effects=[RELEASE_KEY]\n    IN_PROGRESS --> ABSENT: Failed[] → effects=[RELEASE_KEY]\n    IN_PROGRESS --> COMPLETED: Completed[] → effects=[STORE_RESPONSE]\n    ABSENT --> ABSENT: Completed[] (Unchanged)\n    ABSENT --> ABSENT: Failed[] (Unchanged)\n    ABSENT --> ABSENT: Expired[] (Unchanged)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=false] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Request[sameFingerprint=true] (Rejected)\n    IN_PROGRESS --> IN_PROGRESS: Expired[] (Unchanged)\n    COMPLETED --> COMPLETED: Request[sameFingerprint=false] (Rejected)\n    COMPLETED --> COMPLETED: Completed[] (Unchanged)\n    COMPLETED --> COMPLETED: Failed[] (Unchanged)\n    EXPIRED --> EXPIRED: Request[sameFingerprint=false] (Rejected)\n    EXPIRED --> EXPIRED: Request[sameFingerprint=true] (Rejected)\n    EXPIRED --> EXPIRED: Completed[] (Unchanged)\n    EXPIRED --> EXPIRED: Failed[] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "the record never expires",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+            "reached": 5,
+            "total": 20,
+            "never": [
+              "decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]",
+              "decide(ABSENT, Completed[]) => Unchanged",
+              "decide(ABSENT, Failed[]) => Unchanged",
+              "decide(ABSENT, Expired[]) => Unchanged",
+              "decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected",
+              "decide(IN_PROGRESS, Expired[]) => Unchanged",
+              "decide(COMPLETED, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Completed[]) => Unchanged",
+              "decide(COMPLETED, Failed[]) => Unchanged",
+              "decide(COMPLETED, Expired[]) => Transition[next=EXPIRED, effects=[DROP_RESPONSE]]",
+              "decide(EXPIRED, Request[sameFingerprint=false]) => Rejected",
+              "decide(EXPIRED, Request[sameFingerprint=true]) => Rejected",
+              "decide(EXPIRED, Completed[]) => Unchanged",
+              "decide(EXPIRED, Failed[]) => Unchanged",
+              "decide(EXPIRED, Expired[]) => Transition[next=ABSENT, effects=[RELEASE_KEY]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "expiring record",
+        "fromRuns": true,
+        "finished": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+            "reached": 9,
+            "total": 20,
+            "never": [
+              "decide(ABSENT, Request[sameFingerprint=false]) => Transition[next=IN_PROGRESS, effects=[EXECUTE]]",
+              "decide(ABSENT, Completed[]) => Unchanged",
+              "decide(ABSENT, Failed[]) => Unchanged",
+              "decide(ABSENT, Expired[]) => Unchanged",
+              "decide(IN_PROGRESS, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Request[sameFingerprint=false]) => Rejected",
+              "decide(COMPLETED, Completed[]) => Unchanged",
+              "decide(COMPLETED, Failed[]) => Unchanged",
+              "decide(EXPIRED, Request[sameFingerprint=false]) => Rejected",
+              "decide(EXPIRED, Completed[]) => Unchanged",
+              "decide(EXPIRED, Failed[]) => Unchanged"
+            ]
+          }
+        ]
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COMPLETED, Expired[])",
+        "before": "Transition[next=ABSENT, effects=[RELEASE_KEY]]",
+        "after": "Transition[next=EXPIRED, effects=[DROP_RESPONSE]]",
+        "takenUnder": [
+          "expiring record"
+        ]
+      },
+      {
+        "case": "decide(EXPIRED, Request[sameFingerprint=false])",
+        "before": null,
+        "after": "Rejected[reason=\"the key has expired\"]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(EXPIRED, Request[sameFingerprint=true])",
+        "before": null,
+        "after": "Rejected[reason=\"the key has expired\"]",
+        "takenUnder": [
+          "expiring record"
+        ]
+      },
+      {
+        "case": "decide(EXPIRED, Completed[])",
+        "before": null,
+        "after": "Unchanged[reason=\"no attempt is in progress\"]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(EXPIRED, Failed[])",
+        "before": null,
+        "after": "Unchanged[reason=\"no attempt is in progress\"]",
+        "takenUnder": []
+      },
+      {
+        "case": "decide(EXPIRED, Expired[])",
+        "before": null,
+        "after": "Transition[next=ABSENT, effects=[RELEASE_KEY]]",
+        "takenUnder": [
+          "expiring record"
+        ]
+      }
+    ],
+    "nullRows": 1,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": null,
+  "forever": null,
+  "configurations": [
+    {
+      "label": "the record never expires",
+      "cfg": "spec/IdempotentReceiver.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 168 states",
+      "domain": "Attempts = {a1, a2, a3}, Expires = FALSE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 168,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "expiring record",
+      "cfg": "spec/IdempotentReceiverExpiring.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 399 states",
+      "domain": "Attempts = {a1, a2, a3}, Expires = TRUE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 399,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

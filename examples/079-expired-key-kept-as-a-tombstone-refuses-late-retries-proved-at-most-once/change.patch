@@ -1,0 +1,109 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/KeyState.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/KeyState.java
+@@ -7,5 +7,7 @@
+     /** An attempt with this key is executing. */
+     IN_PROGRESS,
+     /** An attempt with this key finished and its response is stored. */
+-    COMPLETED
++    COMPLETED,
++    /** The stored response expired; the key is remembered for a while longer, so that a late retry is refused. */
++    EXPIRED
+ }
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/ReceiverEffect.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/ReceiverEffect.java
+@@ -9,5 +9,7 @@
+     /** Answer with the stored response. */
+     REPLAY_RESPONSE,
+     /** Delete the record. */
+-    RELEASE_KEY
++    RELEASE_KEY,
++    /** Delete the stored response and keep the record. */
++    DROP_RESPONSE
+ }
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiver.java
+@@ -5,7 +5,9 @@
+ import static net.terminalvalue.crosscut.Decision.unchanged;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;
++import static net.terminalvalue.crosscut.idempotency.KeyState.EXPIRED;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;
++import static net.terminalvalue.crosscut.idempotency.ReceiverEffect.DROP_RESPONSE;
+ import static net.terminalvalue.crosscut.idempotency.ReceiverEffect.EXECUTE;
+ import static net.terminalvalue.crosscut.idempotency.ReceiverEffect.RELEASE_KEY;
+ import static net.terminalvalue.crosscut.idempotency.ReceiverEffect.REPLAY_RESPONSE;
+@@ -22,7 +24,8 @@
+  * a key the server has not seen executes; a retry of a completed request gets the stored response; a retry of a
+  * request still in progress is refused (409), because executing it again would do the work twice; a key reused with
+  * a different request is refused (422). An attempt that dies without a response releases the key, so that the
+- * client's retry can run.
++ * client's retry can run. A stored response expires in two steps: first the response goes and the key stays as a
++ * tombstone, which refuses a retry (410) rather than running the request again, then the tombstone goes too.
+  *
+  * <p>The filter that owns the receiver looks the key up and applies the decision in one transaction, so that two
+  * retries arriving together cannot both see ABSENT.
+@@ -41,17 +44,19 @@
+                 case COMPLETED -> request.sameFingerprint()
+                         ? transition(COMPLETED, REPLAY_RESPONSE)
+                         : rejected("the key was reused for a different request");
++                case EXPIRED -> rejected("the key has expired");
+             };
+             case Completed _ -> switch (state) {
+                 case IN_PROGRESS -> transition(COMPLETED, STORE_RESPONSE);
+-                case ABSENT, COMPLETED -> unchanged("no attempt is in progress");
++                case ABSENT, COMPLETED, EXPIRED -> unchanged("no attempt is in progress");
+             };
+             case Failed _ -> switch (state) {
+                 case IN_PROGRESS -> transition(ABSENT, RELEASE_KEY);
+-                case ABSENT, COMPLETED -> unchanged("no attempt is in progress");
++                case ABSENT, COMPLETED, EXPIRED -> unchanged("no attempt is in progress");
+             };
+             case Expired _ -> switch (state) {
+-                case COMPLETED -> transition(ABSENT, RELEASE_KEY);
++                case COMPLETED -> transition(EXPIRED, DROP_RESPONSE);
++                case EXPIRED -> transition(ABSENT, RELEASE_KEY);
+                 case ABSENT -> unchanged("nothing to expire");
+                 case IN_PROGRESS -> unchanged("a key in progress does not expire");
+             };
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/idempotency/IdempotentReceiverTest.java
+@@ -4,6 +4,7 @@
+ import static net.terminalvalue.crosscut.Tests.equal;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.ABSENT;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.COMPLETED;
++import static net.terminalvalue.crosscut.idempotency.KeyState.EXPIRED;
+ import static net.terminalvalue.crosscut.idempotency.KeyState.IN_PROGRESS;
+ 
+ import java.util.List;
+@@ -35,7 +36,9 @@
+         equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(IN_PROGRESS, new Failed()));
+     }
+ 
+-    public static void anExpiredKeyIsReleased() {
+-        equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(COMPLETED, new Expired()));
++    public static void anExpiredKeyIsATombstoneBeforeItGoes() {
++        equal(new Transition<>(EXPIRED, List.of(ReceiverEffect.DROP_RESPONSE)), IdempotentReceiver.decide(COMPLETED, new Expired()));
++        check(IdempotentReceiver.decide(EXPIRED, new Request(true)) instanceof Decision.Rejected, "410");
++        equal(new Transition<>(ABSENT, List.of(ReceiverEffect.RELEASE_KEY)), IdempotentReceiver.decide(EXPIRED, new Expired()));
+     }
+ }
+--- a/examples/apps/crosscut/spec/IdempotentReceiver.tla
++++ b/examples/apps/crosscut/spec/IdempotentReceiver.tla
+@@ -108,7 +108,7 @@
+     /\ key # "ABSENT"
+     /\ LET d == Decide(key, [kind |-> "Expired"])
+        IN /\ key' = IF d.kind = "Transition" THEN d.next ELSE key
+-          /\ stored' = IF Has(d, "RELEASE_KEY") THEN FALSE ELSE stored
++          /\ stored' = IF Has(d, "RELEASE_KEY") \/ Has(d, "DROP_RESPONSE") THEN FALSE ELSE stored
+           /\ completed' = IF Has(d, "RELEASE_KEY") THEN 0 ELSE completed
+     /\ UNCHANGED <<sent, inbox, executing, responses>>
+ 
+@@ -136,7 +136,7 @@
+ (***************************************************************************)
+ 
+ TypeOK ==
+-    /\ key \in {"ABSENT", "IN_PROGRESS", "COMPLETED"}
++    /\ key \in {"ABSENT", "IN_PROGRESS", "COMPLETED", "EXPIRED"}
+     /\ sent \subseteq Attempts
+     /\ inbox \subseteq sent
+     /\ executing \subseteq sent

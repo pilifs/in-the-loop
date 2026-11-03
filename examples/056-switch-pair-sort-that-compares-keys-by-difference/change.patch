@@ -1,0 +1,21 @@
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
+@@ -44,7 +44,7 @@
+             int key = keys[i];
+             int offset = offsets[i];
+             int j = i;
+-            while (j > 0 && keys[j - 1] > key) {
++            while (j > 0 && compare(keys[j - 1], key) > 0) {
+                 keys[j] = keys[j - 1];
+                 offsets[j] = offsets[j - 1];
+                 j--;
+@@ -53,4 +53,9 @@
+             offsets[j] = offset;
+         }
+     }
++
++    /** The order of two case labels: negative, zero or positive, as a comparator's. */
++    static int compare(int a, int b) {
++        return a - b;
++    }
+ }

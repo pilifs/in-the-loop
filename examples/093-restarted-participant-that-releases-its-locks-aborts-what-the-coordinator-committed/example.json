@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "093",
+  "title": "A restarted participant that releases its locks aborts what the coordinator committed",
+  "summary": "A two-phase-commit participant that voted yes holds its locks until it hears the decision, through a crash and a restart: it cannot decide alone, which is the blocking property of the protocol. A developer has a restarted participant release its locks and abort, so that a crash does not leave the data locked while the coordinator is slow; the coordinator's timer, the comment says, covers the rest. The contract gains the row, the tests pass, and the model's first four configurations are as green as before, since no participant crashes in them. The sixth, in which they do, finds in eight steps a transaction the coordinator commits on three yes votes and a participant that voted yes, crashed in the same step, and restarts aborted. The inductive step with participant crashes refuses the restart too.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "distributed-transactions",
+    "agreement",
+    "crash-recovery",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Participant.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Participant#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "In `Participant.decide`, the `Restarted` row for `PREPARED` changes from `unchanged` (hold the locks until the decision) to `transition(ABORTED)`, with the comment that a restart releases the locks and the coordinator's timer covers the rest. The kernel test that a restart holds a logged yes becomes one that a restart aborts whatever was logged, and the node test that a participant which crashed after logging its yes restarts prepared becomes one that it restarts aborted. `Coordinator.decide` and `Recovery.decide` are untouched.",
+    "patch": "change.patch"
+  },
+  "risk": "High. The row reads as a robustness improvement: a participant that comes back from a crash should not sit on its locks while the coordinator makes up its mind, and every other restart in the module aborts. The protocol's answer, that a participant which voted yes has given up the right to decide, is a line in the textbook and not in the code; the glue, the tests and the contract diff all show a restart that aborts, and the contract diff is one row.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The participant's rule in the model is generated from the regenerated contract, so `ParticipantRecover` does what the patched row says. The sixth configuration, `TwoPhaseCommitParticipantCrash.cfg`, lets a participant crash once and the coordinator once, and TLC reports `Atomicity` violated after eight steps: the three participants vote yes, the third crashing right after its vote went out, so that `pup[p3]` is `FALSE` with the yes in the inbox; the coordinator counts the three votes and commits, since every vote is yes, with `decision = \"COMMIT\"` out; and the third participant restarts, reads `PREPARED` from its log, and aborts on the new row, with the coordinator's phase `COMMITTED` and the other two about to commit when they read the broadcast. The transaction ends committed on two participants and aborted on one, which is what atomicity forbids and what the yes vote promised: a prepared participant waits. The timer the comment relies on is the coordinator's, and it fires only while votes are missing; here none is. The seventh configuration, the inductive step with participant crashes, refuses the restart on its own, from an admitted state in which a prepared participant is down while the coordinator is still collecting: `ParticipantsAgreeWithTheirVotes` says a yes voter that aborted did so on the coordinator's say-so, and this one did not. The first four configurations keep their 728, 736, 3,448 and 2,728 states, since no participant crashes in them, and the recorded runs are regenerated from the patched classes and are all steps of the patched model: the trace check holds the nodes to the rule, not the rule to the protocol.",
+  "resolution": "Reject. A prepared participant holds its locks through a restart and waits for the decision; that wait is the blocking property of two-phase commit (Skeen, 1981), the price of a protocol with one coordinator, and what the developer wants is a different protocol: three-phase commit, or a replicated coordinator such as Lamport and Gray's Paxos commit. The sixth and seventh configurations check this row on every build.",
+  "notes": [
+    "The two-phase-commit model (`apps/quorum/spec/TwoPhaseCommit.tla`) is built like Box Office's: the coordinator's state machine is generated from its B8 contract. An example of this model is checked under every configuration the model lists, and its verdict is the first that fails.",
+    "Two configurations let the participants crash, between steps or between logging a vote and sending it, and restart on the participant's rule, a third generated operator (`Participant#decide`).",
+    "Releasing locks on restart breaks the blocking property of two-phase commit: the participant aborts what the coordinator committed on its yes vote."
+  ],
+  "provenance": "Constructed as the first example of participant crashes in the two-phase-commit model, to pair with 094 and 095: the textbook mistake on the participant's side, the one the blocking property exists to name, found as a run and as one step from an admitted state.",
+  "references": [
+    {
+      "title": "Skeen, Nonblocking Commit Protocols (1981): why a participant that voted yes cannot decide alone in two-phase commit, and what it takes to lift that",
+      "url": "https://dl.acm.org/doi/10.1145/582318.582339"
+    },
+    {
+      "title": "Bernstein, Hadzilacos and Goodman, Concurrency Control and Recovery in Database Systems (1987), chapter 7: the participant's recovery procedure in two-phase commit, and the blocking property",
+      "url": "https://www.microsoft.com/en-us/research/people/philbe/book/"
+    },
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit, the participants' and the coordinator's logs, and the write-ahead rule, log before act",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications, and Paxos commit, the non-blocking alternative",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "Lamport, Using TLC to Check Inductive Invariance (2018): checking that an invariant is inductive by starting TLC from every state it admits",
+      "url": "https://lamport.azurewebsites.net/tla/inductive-invariant.pdf"
+    }
+  ]
+}

@@ -1,0 +1,389 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: Atomicity, 3-step trace",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": false,
+    "failures": [
+      "NodesTest.abortsOnTheTimerWithAVoteMissing"
+    ]
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 28,
+    "code": "                : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n    case Timeout _ -> switch (phase) {\n        case COLLECTING -> transition(ABORTED, SEND_ABORT); // presumed abort\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n};\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "startLine": 28,
+    "code": "                : tally.unanimous() ? transition(COMMITTED, SEND_COMMIT) : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n    case Timeout timeout -> switch (phase) {\n        // The votes that did arrive were all yes: the missing participants are slow, not opposed, and\n        // aborting would throw away work that every voter was ready to commit.\n        case COLLECTING -> timeout.unanimousSoFar()\n                ? transition(COMMITTED, SEND_COMMIT)\n                : transition(ABORTED, SEND_ABORT);\n        case COMMITTED, ABORTED -> unchanged(\"already decided\");\n    };\n};\n"
+  },
+  "casesTotal": null,
+  "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/quorum/src/contract/Coordinator.decide.contract\n+++ b/examples/apps/quorum/src/contract/Coordinator.decide.contract\n@@ -9,7 +9,7 @@\n decide(COLLECTING, Tally[complete=true, unanimous=false])  => Transition[next=ABORTED, effects=[SEND_ABORT]]\n decide(COLLECTING, Tally[complete=true, unanimous=true])   => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, Timeout[unanimousSoFar=false])          => Transition[next=ABORTED, effects=[SEND_ABORT]]\n-decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=ABORTED, effects=[SEND_ABORT]]\n+decide(COLLECTING, Timeout[unanimousSoFar=true])           => Transition[next=COMMITTED, effects=[SEND_COMMIT]]\n decide(COLLECTING, null)                                   => throws NullPointerException\n decide(COMMITTED, Tally[complete=false, unanimous=false])  => Unchanged[reason=\"already decided\"]\n decide(COMMITTED, Tally[complete=false, unanimous=true])   => Unchanged[reason=\"already decided\"]\n",
+  "proof": "three participants: TLC 2.19 explored 27 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 737 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 33 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,729 distinct states to depth 2 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 88 distinct states to depth 3 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,637 distinct states to depth 2 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 103 distinct states to depth 12 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "crashes": "0",
+        "decision": "\"NONE\"",
+        "inbox": "{}",
+        "pcrashes": "0",
+        "phase": "\"COLLECTING\"",
+        "pstate": "(p1 :> \"WORKING\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")",
+        "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+        "up": "TRUE",
+        "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Vote",
+      "changes": {
+        "inbox": "{[from |-> p1, vote |-> \"NO\"]}",
+        "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")"
+      }
+    },
+    {
+      "step": 3,
+      "action": "CoordinatorTimeout",
+      "changes": {
+        "decision": "\"COMMIT\"",
+        "phase": "\"COMMITTED\""
+      }
+    }
+  ],
+  "statesExplored": 27,
+  "invariant": "Atomicity",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COLLECTING: COLLECTING (no incoming transition)\n    COMMITTED: COMMITTED (terminal)\n    COLLECTING --> ABORTED: Tally[complete=true, unanimous=false] → effects=[SEND_ABORT]\n    COLLECTING --> ABORTED: Timeout[unanimousSoFar=false] → effects=[SEND_ABORT]\n    COLLECTING --> COMMITTED: Tally[complete=true, unanimous=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COMMITTED: Timeout[unanimousSoFar=true] → effects=[SEND_COMMIT]\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=false] (Unchanged)\n    COLLECTING --> COLLECTING: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=false, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=false] (Unchanged)\n    COMMITTED --> COMMITTED: Tally[complete=true, unanimous=true] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=false] (Unchanged)\n    COMMITTED --> COMMITTED: Timeout[unanimousSoFar=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=false, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=false] (Unchanged)\n    ABORTED --> ABORTED: Tally[complete=true, unanimous=true] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=false] (Unchanged)\n    ABORTED --> ABORTED: Timeout[unanimousSoFar=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three participants",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "the inductive step",
+        "fromRuns": false,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "crashes",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "the inductive step with crashes",
+        "fromRuns": false,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "participant crashes",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "the inductive step with participant crashes",
+        "fromRuns": false,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "the recorded runs",
+        "fromRuns": true,
+        "finished": true,
+        "counted": false,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(COLLECTING, Timeout[unanimousSoFar=true])",
+        "before": "Transition[next=ABORTED, effects=[SEND_ABORT]]",
+        "after": "Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
+        "takenUnder": []
+      }
+    ],
+    "nullRows": 0,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": "invariant",
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 3-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 27,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"WORKING\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Vote",
+          "changes": {
+            "inbox": "{[from |-> p1, vote |-> \"NO\"]}",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")"
+          }
+        },
+        {
+          "step": 3,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 2-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 737,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "crashes",
+      "cfg": "spec/TwoPhaseCommitCrash.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 3-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 33,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"WORKING\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Vote",
+          "changes": {
+            "inbox": "{[from |-> p1, vote |-> \"NO\"]}",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")"
+          }
+        },
+        {
+          "step": 3,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "the inductive step with crashes",
+      "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 2-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 2729,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrash.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 3-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 88,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"WORKING\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Vote",
+          "changes": {
+            "inbox": "{[from |-> p1, vote |-> \"NO\"]}",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"WORKING\" @@ p3 :> \"WORKING\")"
+          }
+        },
+        {
+          "step": 3,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "the inductive step with participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: Atomicity, 2-step trace",
+      "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
+      "invariant": "Atomicity",
+      "violationKind": "invariant",
+      "statesExplored": 18637,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "crashes": "0",
+            "decision": "\"NONE\"",
+            "inbox": "{}",
+            "pcrashes": "0",
+            "phase": "\"COLLECTING\"",
+            "pstate": "(p1 :> \"ABORTED\" @@ p2 :> \"ABORTED\" @@ p3 :> \"ABORTED\")",
+            "pup": "(p1 :> TRUE @@ p2 :> TRUE @@ p3 :> TRUE)",
+            "up": "TRUE",
+            "votes": "(p1 :> \"NONE\" @@ p2 :> \"NONE\" @@ p3 :> \"NONE\")"
+          }
+        },
+        {
+          "step": 2,
+          "action": "CoordinatorTimeout",
+          "changes": {
+            "decision": "\"COMMIT\"",
+            "phase": "\"COMMITTED\""
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 103 states",
+      "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 103,
+      "trace": null,
+      "forever": null
+    }
+  ]
+}

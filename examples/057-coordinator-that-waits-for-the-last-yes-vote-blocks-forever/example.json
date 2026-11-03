@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "057",
+  "title": "A coordinator that waits for the last vote when every vote so far is yes blocks forever",
+  "summary": "When the vote collection times out, the two-phase-commit coordinator aborts: a participant that has not answered may have given up. A developer makes it keep collecting instead when every vote that did arrive was yes, so as not to throw away a transaction every responder approved. Every safety invariant of the protocol model still holds, and so does the contract diff the reviewer approves. The model's liveness property, that every participant eventually decides, does not: TLC shows a six-step run after which two prepared participants hold their locks forever.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "distributed-transactions",
+    "liveness",
+    "tla-liveness",
+    "tla-refinement",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/Coordinator.java",
+    "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "On a `Timeout` in `COLLECTING`, answer `unchanged` when `unanimousSoFar` is true, and abort as before when it is false. The reasoning in the comment: the missing participants may only be slow, and the next vote completes the tally, so a yes commits and a no aborts, as always. The contract diff is one case, `decide(COLLECTING, Timeout[unanimousSoFar=true])`, from a transition to `ABORTED` to unchanged, and a test for it is added. The reviewer approves the diff.",
+    "patch": "change.patch"
+  },
+  "risk": "A participant that voted yes is prepared: it holds its locks and cannot abort on its own, because the coordinator may still commit. That is the blocking property of two-phase commit, and the protocol lives with it because the coordinator is bound to decide: the timeout is what turns a participant that never answers into an abort. With this change, one participant that gives up before voting, a crash, a network partition, a client that went away, leaves a coordinator that waits for a vote that will never come, and every participant that voted yes waits with it, holding its locks, for as long as the system runs. No invariant is ever false: nothing wrong is observed, because nothing is observed at all. The unit tests check the decision on each input, and each decision is the intended one.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The model gained two things in this cycle, both temporal: fairness conditions, which say what each part of the system is assumed to get round to (participants vote or give up, the coordinator counts every vote that reaches it and fires its timer while votes are missing, participants apply a decision once made), and the property `EveryParticipantDecides`, `\\A p \\in Participants : <>(pstate[p] \\in {\"COMMITTED\", \"ABORTED\"})`, which TLC checks over every infinite behaviour that respects the fairness conditions. On the committed coordinator it holds in all 728 states. On the patched one TLC finds a counterexample: p1 and p2 vote yes, the coordinator counts the two votes, and p3 gives up without voting. The coordinator's timer fires, and fires again, and each time the rule says to keep collecting; p1 and p2 are prepared, and stay prepared. TLC reports the six steps and that the system stays in that state forever, which is what a liveness counterexample is: a finite prefix and an infinite rest. The tool checks the model's two temporal properties one at a time to name the violated one, since TLC does not. Deadlock detection would not have found this: the coordinator's timer is always enabled, so some action can always be taken; it is just that none of them helps. That is the difference between a deadlock and a liveness failure, and why the model states both.",
+  "resolution": "Revert. Gray's presumed-abort rule is the timeout's whole job: a participant that did not answer in time is treated as having voted no, so that the ones that voted yes are released. If slow participants are the concern, lengthen the timer, or give them one more period and abort after it, which example 058 does and proves live. The liveness property stays in the model's build, so that the next change to the timeout rule is checked against it.",
+  "notes": [
+    "The two-phase-commit model (`apps/quorum/spec/TwoPhaseCommit.tla`) is built like Box Office's: the coordinator's state machine is generated from its B8 contract. An example of this model is checked under every configuration the model lists, and its verdict is the first that fails.",
+    "This configuration states fairness conditions and a liveness property (every participant eventually decides), and checks that the model implements Lamport and Gray's transaction-commit specification, a refinement TLC checks step by step.",
+    "Waiting for the last vote when every vote so far is yes leaves a prepared participant holding its locks forever: a liveness failure no invariant and no deadlock check can state, found under the model's fairness conditions."
+  ],
+  "provenance": "Constructed from the blocking property of two-phase commit (Gray, 1978; Lamport and Gray, 2004), by removing the timeout that bounds it.",
+  "references": [
+    {
+      "title": "Gray, Notes on Data Base Operating Systems (1978): two-phase commit and the blocking of a prepared participant",
+      "url": "https://jimgray.azurewebsites.net/papers/dbos.pdf"
+    },
+    {
+      "title": "Lamport and Gray, Consensus on Transaction Commit: the TCommit and TwoPhase specifications",
+      "url": "https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf"
+    },
+    {
+      "title": "Lamport, Specifying Systems, chapter 8: liveness and fairness",
+      "url": "https://lamport.azurewebsites.net/tla/book.html"
+    }
+  ]
+}

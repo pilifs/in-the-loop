@@ -1,0 +1,11 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/twopc/CoordinatorNode.java
+@@ -73,7 +73,7 @@
+                     network.broadcast(effect == CoordinatorEffect.SEND_COMMIT ? Outcome.COMMIT : Outcome.ABORT);
+                 }
+             }
+-            case Unchanged<Phase, CoordinatorEffect> u -> log.write(phase, tally); // the tally is logged with every vote
++            case Unchanged<Phase, CoordinatorEffect> u -> { } // nothing decided, nothing to log: one write per decision, not per vote
+             case Decision.Rejected<Phase, CoordinatorEffect> r -> throw new IllegalStateException(r.reason());
+         }
+     }

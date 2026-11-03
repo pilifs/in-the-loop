@@ -1,0 +1,29 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -36,7 +36,11 @@
+     public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {
+         return switch (event) {
+             case ElectionTimeout _ -> switch (role) {
+-                case FOLLOWER, CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
++                case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
++                // A candidate whose election timed out stands down. Its next timeout starts a fresh election, after
++                // a full randomized wait, so a split vote is retried by the candidates one at a time rather than by
++                // all of them at once.
++                case CANDIDATE -> transition(FOLLOWER);
+                 case LEADER -> unchanged("a leader does not hold elections");
+             };
+             case VotesCounted votes -> switch (role) {
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
+@@ -32,6 +32,11 @@
+                 RoleMachine.decide(Role.LEADER, new RoleEvent.AppendEntries(TermOrder.NEWER)));
+     }
+ 
++    public static void candidateStandsDownOnTimeout() {
++        equal(new Transition<Role, RoleEffect>(Role.FOLLOWER, List.of()),
++                RoleMachine.decide(Role.CANDIDATE, new RoleEvent.ElectionTimeout()));
++    }
++
+     public static void staleLeaderIsRejected() {
+         check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.AppendEntries(TermOrder.OLDER)) instanceof Decision.Rejected, "stale");
+     }

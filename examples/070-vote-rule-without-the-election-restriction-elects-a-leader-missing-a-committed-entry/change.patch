@@ -1,0 +1,62 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java
+@@ -14,10 +14,10 @@
+ import net.terminalvalue.quorum.Decision;
+ 
+ /**
+- * Whether a Raft server grants its vote to a candidate (Ongaro and Ousterhout, section 5.4.1). The log comparison
+- * is the election restriction: a candidate's log must be at least as up to date as the voter's, where "up to date"
+- * compares the term of the last entry first and its index second. That order is what guarantees that a new leader
+- * holds every committed entry.
++ * Whether a Raft server grants its vote to a candidate (Ongaro and Ousterhout, section 5.2): a candidate from the
++ * past is refused, and otherwise a server votes once per term. The candidate's log is not compared: a leader that
++ * lacks entries collects them from the followers before it serves, as the primary of Viewstamped Replication does
++ * in a view change, so the vote need not wait for the candidate with the best log.
+  *
+  * <p>The decision is {@link #decide}, a total function from the voter's ballot and the request, each reduced to
+  * how it compares with the voter's own state; {@link #grant} does the comparing.
+@@ -31,8 +31,7 @@
+ 
+     /**
+      * The vote rule proper: a candidate from the past is refused; a newer term is a new vote, and in the current
+-     * term the vote is one per server, which the same candidate may collect again; and a candidate whose log is
+-     * behind the voter's is refused whatever its term.
++     * term the vote is one per server, which the same candidate may collect again.
+      */
+     public static Decision<Ballot, VoteEffect> decide(Ballot ballot, VoteRequest request) {
+         if (request.term() == OLDER) {
+@@ -40,9 +39,6 @@
+         }
+         if (request.term() == CURRENT && ballot == Ballot.FOR_ANOTHER) {
+             return rejected("one vote per term");
+-        }
+-        if (request.log() == BEHIND) {
+-            return rejected("a log behind the voter's");
+         }
+         return transition(FOR_THE_CANDIDATE, GRANT);
+     }
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/VoteRuleTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/VoteRuleTest.java
+@@ -27,8 +27,9 @@
+         check(VoteRule.grant(4, 2, 3, 10, 7, 5, 3, 10), "a new term is a new vote");
+     }
+ 
+-    public static void refusesAShorterLogOfTheSameTerm() {
+-        check(!VoteRule.grant(3, NO_VOTE, 3, 10, 7, 4, 3, 9), "shorter log");
++    public static void grantsWhateverTheLog() {
++        check(VoteRule.grant(3, NO_VOTE, 3, 10, 7, 4, 3, 9), "shorter log: the leader collects what it lacks");
++        check(VoteRule.grant(3, NO_VOTE, 3, 10, 7, 4, 2, 10), "older last entry: the same");
+     }
+ 
+     public static void theRuleGrantsOneVotePerTerm() {
+@@ -40,8 +41,8 @@
+         check(VoteRule.decide(Ballot.FOR_ANOTHER, new VoteRequest(TermOrder.NEWER, LogOrder.EVEN)) instanceof Decision.Transition, "a new term is a new vote");
+     }
+ 
+-    public static void theRuleRefusesThePastAndALogBehind() {
++    public static void theRuleRefusesOnlyThePast() {
+         check(VoteRule.decide(Ballot.OPEN, new VoteRequest(TermOrder.OLDER, LogOrder.AHEAD)) instanceof Decision.Rejected, "older term");
+-        check(VoteRule.decide(Ballot.OPEN, new VoteRequest(TermOrder.NEWER, LogOrder.BEHIND)) instanceof Decision.Rejected, "log behind");
++        check(VoteRule.decide(Ballot.OPEN, new VoteRequest(TermOrder.NEWER, LogOrder.BEHIND)) instanceof Decision.Transition, "log behind: the leader collects what it lacks");
+     }
+ }

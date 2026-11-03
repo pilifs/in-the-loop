@@ -276,7 +276,7 @@ Examples 102 to 104, on ReplyRule: a leader that moves a follower up on a refusa
 
 ### Record session traces
 
-change `kxwwpkkmlwuo` · [log `83f53a9a8bc5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/83f53a9a8bc5aee65f6fa881dde9b010180e6728b46c71faff02170a4f01147f.jsonl.gz)
+[`dc9dc828f6f5`](https://github.com/pilifs/in-the-loop/commit/dc9dc828f6f52514a4b0881fe9323c29a5bb59c4) · [log `83f53a9a8bc5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/83f53a9a8bc5aee65f6fa881dde9b010180e6728b46c71faff02170a4f01147f.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

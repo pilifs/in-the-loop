@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "070",
+  "title": "A vote rule without the election restriction elects a leader missing a committed entry",
+  "summary": "Raft's vote rule refuses a candidate whose log is behind the voter's, the election restriction, so that a leader never lacks a committed entry. A developer drops it for the approach of Viewstamped Replication, in which the new primary collects the log from a majority after it is chosen: the vote need not wait for the candidate with the best log, since a leader that lacks entries will fetch them before it serves. The contract of the vote rule changes in five rows, and the tests are updated to say so. The election model's four configurations with equal logs verify the change; the fifth, in which one server holds the log a deposed leader left behind, longer than the others' and of an older term, finds in three steps that this server is elected with one vote besides its own, lacking the entry the other two hold and have therefore committed. A Raft leader never collects entries: it makes the followers' logs match its own, and the committed entry would be overwritten.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "lost-committed-data",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Remove the check that refuses a candidate whose log is behind the voter's, and say why in the class comment: a leader that lacks entries collects them from the followers before it serves, as the primary of Viewstamped Replication does in a view change, so the vote need not wait for the candidate with the best log. The contract of `VoteRule#decide` is regenerated: the five rows of a candidate of the current or a newer term with a log behind the voter's go from refused to granted, where the ballot allows. The test of a shorter log now expects the vote, as does the test of the kernel.",
+    "patch": "change.patch"
+  },
+  "risk": "The election restriction is the half of Raft's safety argument that is about the log: a committed entry is on a majority of the servers, a leader has the votes of a majority, the two majorities share a server, and that server, holding the entry, voted for a candidate whose log was at least as up to date as its own. Drop the restriction and the leader can be the one server that was left behind: a leader of an earlier term, deposed before its entries were committed, with a log that is longer than everyone else's and behind them. Raft has no step in which a leader collects entries. A leader's log is append-only, and the AppendEntries RPC makes the followers' logs match the leader's, deleting what conflicts, so the committed entry is not fetched but overwritten on every follower, and a client that was told its write was durable loses it. The tests check what the developer intends. Four of the model's five configurations verify the change, since with every log the same there is no candidate to refuse; the reviewer sees a five-row diff of a rule whose comment cites a published protocol that works this way.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The logs in the model are fixed, since it has no replication: every server holds an entry of term 1 and, at index 2, an entry of term 2, except the servers in `LeftBehind`, which hold three entries of term 1, the log of a leader of term 1 that was deposed before it committed them (figure 7 of the paper, server f). `RaftElectionLogs.cfg` leaves s1 behind. The entry of term 2 is on s2 and s3, a majority, so it is committed, and `LeaderCompleteness` says a leader's log holds every committed entry. The model computes how each candidate's log compares with each voter's, by the term of the last entry first and by length second, as the Java's `grant` does, and gives the comparison to the generated vote rule. On the committed kernel a candidate whose log is behind is refused, s1 can hold no vote but its own, and the invariant holds in all 461 states. On the patched kernel TLC reports a three-step run, the initial state and two actions: s1 times out and is a candidate of term 1; s1 asks s2, whose ballot is open and which adopts term 1, and the rule grants although s1's log is behind; s1 holds two votes of three and leads term 1 without the committed entry. The other four configurations, in which every log is the same, verify the change, which is why the fifth exists: the election restriction is only ever exercised by a log that differs. The model checks it for the logs the configuration gives, a witness rather than a proof over every log a cluster could build.",
+  "resolution": "Keep the restriction: a candidate whose log is behind the voter's, by the term of its last entry and then by its length, is refused whatever its term and the voter's ballot. The two approaches are not interchangeable halves of one design: Viewstamped Replication's primary collects the log because its vote does not look at it, and Raft's leader never collects because its vote does, which is what lets the leader's log be the one the followers match. The property `VoteRule#grant` proves with JBMC covers the arithmetic of the comparison; the model is what shows which entry is lost.",
+  "notes": [
+    "The Raft election model (`apps/quorum/spec/RaftElection.tla`) is built around the role machine, generated from its contract, with election safety as an invariant and two action properties, `[][A]_v` formulas that constrain each step: terms never decrease, a leader never campaigns. An example is checked under all of the model's configurations, and its verdict is the first that fails.",
+    "The vote rule is the election model's second generated operator, brought in as an `INSTANCE`, and `RaftElectionLogs.cfg` gives one server the log a deposed leader left behind, which a leader elected without the election restriction would overwrite.",
+    "The rationale is Viewstamped Replication's, where a new leader collects what it lacks. Only the configuration that leaves a server behind can see the failure: the configurations with equal logs have nothing to refuse."
+  ],
+  "provenance": "Constructed from the alternative the Raft paper names and rejects in section 5.4.1, the view change of Viewstamped Replication, and the log of server f in figure 7, which the model's fifth configuration gives to one server.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election, and section 5.4.1, the election restriction",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Liskov and Cowling, Viewstamped Replication Revisited (2012): the view change, in which the new primary collects the log from a majority",
+      "url": "https://pmg.csail.mit.edu/papers/vr-revisited.pdf"
+    }
+  ]
+}

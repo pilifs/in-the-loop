@@ -1,0 +1,36 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -52,9 +52,16 @@
+                 };
+                 case OLDER -> rejected("stale leader");
+             };
+-            case RequestVote vote -> vote.term() == NEWER
+-                    ? transition(FOLLOWER, ADOPT_TERM)
+-                    : unchanged("the vote itself is decided by the vote rule");
++            case RequestVote vote -> switch (vote.term()) {
++                case NEWER -> transition(FOLLOWER, ADOPT_TERM);
++                // A candidate of the leader's own term is a server the leader's heartbeats did not reach. The
++                // leader steps aside, as a follower of the term, so that the election the candidate is holding can
++                // finish, and takes part in it on the follower's open ballot.
++                case CURRENT -> role == LEADER
++                        ? transition(FOLLOWER, ADOPT_TERM)
++                        : unchanged("the vote itself is decided by the vote rule");
++                case OLDER -> unchanged("the vote itself is decided by the vote rule");
++            };
+             case Response response -> response.term() == NEWER
+                     ? transition(FOLLOWER, ADOPT_TERM)
+                     : unchanged("a reply from the current or an older term changes no role");
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/raft/RoleMachineTest.java
+@@ -35,4 +35,11 @@
+     public static void staleLeaderIsRejected() {
+         check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.AppendEntries(TermOrder.OLDER)) instanceof Decision.Rejected, "stale");
+     }
++
++    public static void aLeaderYieldsToACandidateOfItsTerm() {
++        equal(new Transition<>(Role.FOLLOWER, List.of(RoleEffect.ADOPT_TERM)),
++                RoleMachine.decide(Role.LEADER, new RoleEvent.RequestVote(TermOrder.CURRENT)));
++        check(RoleMachine.decide(Role.FOLLOWER, new RoleEvent.RequestVote(TermOrder.CURRENT)) instanceof Decision.Unchanged, "follower");
++        check(RoleMachine.decide(Role.CANDIDATE, new RoleEvent.RequestVote(TermOrder.CURRENT)) instanceof Decision.Unchanged, "candidate");
++    }
+ }

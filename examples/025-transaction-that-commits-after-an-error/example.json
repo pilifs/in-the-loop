@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "025",
+  "title": "A rollback rule rewritten as \"unchecked means RuntimeException\" commits after an Error",
+  "summary": "Spring's default rollback rule is that a `RuntimeException` or an `Error` rolls the transaction back and a checked exception does not. The kernel writes it as \"anything but a checked exception\", and a developer rewrites it in the positive, as \"a runtime exception\", which is how most people remember the rule. The behavioural contract of the transaction boundary, 22 cases derived from the bytecode, changes in exactly one: a method that dies with an `Error` now commits whatever it had written.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "transactions",
+    "dropped-case",
+    "exceptions"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
+    "symbol": "net.terminalvalue.crosscut.tx.TransactionBoundary#exit"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Write the default rule as `threw.kind() == RUNTIME_EXCEPTION` instead of `threw.kind() != CHECKED_EXCEPTION`, with the comment \"the unchecked default\". The two read as the same rule to anyone who thinks of exceptions as checked or unchecked. The tests for a runtime exception, a checked exception, the explicit rules and rollback-only all pass.",
+    "patch": "change.patch"
+  },
+  "risk": "An `Error` is what a method dies of when something is badly wrong: an `OutOfMemoryError` halfway through a batch, a `StackOverflowError` in a recursive mapper, an `AssertionError` from an invariant check, a `NoClassDefFoundError` after a bad deployment. With this change the rows written before the error are committed, and the half-finished unit of work is durable: an order with its lines but not its payment, a transfer debited but not credited. Spring rolls back on `Error` for exactly this reason, and the rule is in the `@Transactional` Javadoc, but it is the half of the rule that people forget, because it almost never fires in a test suite.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The exit rule is a pure function of (completion, rollback-only), and both are finite: a return, or a throw of one of three kinds matched by one of three rules, times a boolean. The tool proves purity from the bytecode, executes all 22 inputs in its interpreter, and compares the outcomes with the committed contract. One case differs: `exit(Threw[kind=ERROR, rule=NONE], false)` was `ROLLBACK` and is now `COMMIT`. The other two `ERROR` cases with an explicit rule, and every rollback-only case, are unchanged, which is what makes the diff easy to read: it is exactly the forgotten half of the rule. Nothing had to be anticipated: the contract was generated from the previous version, and the diff is the review.",
+  "resolution": "Revert, or write the rule as Spring does, `instanceof RuntimeException || instanceof Error`, in the enum's terms. The contract is the right place to keep the rule: a change to any of its 22 cases is a one-line diff that a reviewer sees, and the case for `Error` no longer depends on anyone remembering it.",
+  "notes": [
+    "Commits after an `OutOfMemoryError`: \"a RuntimeException rolls back\" is not \"unchecked rolls back\"."
+  ],
+  "provenance": "Constructed from the default rollback rule of Spring's `DefaultTransactionAttribute.rollbackOn`, by replacing it with the half of the rule that is usually quoted.",
+  "references": [
+    {
+      "title": "Spring Framework, @Transactional: \"By default, a transaction will be rolled back on RuntimeException and Error but not on checked exceptions\"",
+      "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/rolling-back.html"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/RetryPolicy.java
+@@ -25,4 +25,18 @@ public final class RetryPolicy {
+         }
+         return status == 408 || (status >= 500 && status <= 599 && status != 501);
+     }
++
++    /**
++     * {@link #shouldRetry}, after waiting out the delay the server asked for ({@code Retry-After}), so that a client
++     * filter can retry inline without a scheduler of its own.
++     */
++    public static boolean retryAfterWaiting(int status, boolean idempotent, int attempt, int maxAttempts, long delayMillis) {
++        try {
++            Thread.sleep(delayMillis);
++        } catch (InterruptedException e) {
++            Thread.currentThread().interrupt();
++            return false;
++        }
++        return shouldRetry(status, idempotent, attempt, maxAttempts);
++    }
+ }

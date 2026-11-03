@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "054",
+  "title": "An exception table check that rejects a handler range ending at code_length",
+  "summary": "The class file reader checks each exception table entry as JVMS §4.7.3 requires: `start_pc` before `end_pc`, `end_pc` at most `code_length`, `handler_pc` inside the code. A developer makes the three offsets uniform, all of them less than `code_length`, reasoning that an offset into the code is an offset into the code. The property committed for the check is a throws clause, the specification's three conditions as the condition under which the reader throws `ClassFormatError`; the prover refutes the uniform check on the smallest method there is, one byte of code covered by a handler that ends where the code ends, which the patched reader rejects as malformed.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "tags": [
+    "jvm-internals",
+    "class-files",
+    "off-by-one",
+    "exceptions",
+    "throws-clause"
+  ],
+  "severity": "critical",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ExceptionTable.java",
+    "symbol": "net.terminalvalue.mica.classfile.ExceptionTable#checkEntry"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Check `end_pc` with the same comparison as `start_pc` and `handler_pc`: an offset inside the code, strictly less than `code_length`. The comment now says that all three are offsets into the code. The tests for well-formed entries, empty and inverted ranges, and ranges and handlers outside the code pass.",
+    "patch": "change.patch"
+  },
+  "risk": "`end_pc` is exclusive: the entry covers `[start_pc, end_pc)`, and a handler that covers the last instruction of a method has `end_pc == code_length`, an offset one past the code. javac emits such entries for every `try` whose body is the last thing in a method, which is most `try` blocks in most methods, so a reader that rejects them rejects most class files on disk with `ClassFormatError`. The specification explains the half-open range, and admits that it keeps a method of exactly 65535 bytes from protecting its last instruction, in the same paragraph. The tests check entries copied from `javap` output of a method with code after the `try`, in which no handler reaches the end of the code.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The property committed for `checkEntry` has no assertion, only a throws clause: `throws: ClassFormatError when startPc >= endPc || endPc > codeLength || handlerPc >= codeLength`, under the assumption that the four fields are `u2` and the code is not empty. JML calls this a `signals` clause; the tool reads it as two obligations, that the method throws `ClassFormatError` where the condition holds and returns where it does not, and compiles both into the generated harness, with a handler for the declared class (which JBMC has no model of, so the tool takes it and its superclass `LinkageError` from the JDK image) and a flag computed before the call. JBMC refutes the patched check at once, and the tool shrinks the witness: `checkEntry(startPc=0, endPc=1, handlerPc=0, codeLength=1)`, a method of one byte whose handler covers it, on which the patched reader throws `ClassFormatError` where the clause says no exception applies. The witness is the boundary the specification defines, and `end_pc` is the only field of the entry it affects.",
+  "resolution": "Revert, and keep the comment that says why `end_pc` is compared differently: the range is half-open, so `end_pc` may equal `code_length`, as HotSpot's own check (`end_pc > code_length` is the error) has it. The throws clause is the regression test, and the shrunk witness is the unit test to add: a handler that covers the last instruction.",
+  "notes": [
+    "The throws clause of the property brings the exceptional path under the proof.",
+    "Rejects every handler that covers the last instruction of a method, since `end_pc == code_length` is allowed."
+  ],
+  "provenance": "Constructed from the exception table checks of JVMS §4.7.3, by making the three offset checks uniform.",
+  "references": [
+    {
+      "title": "JVMS §4.7.3, the Code attribute: the constraints on start_pc, end_pc and handler_pc, and why end_pc is exclusive",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.3"
+    },
+    {
+      "title": "JVMS §4.8, format checking: a malformed class file is a ClassFormatError",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.8"
+    },
+    {
+      "title": "JML reference manual, method specifications: the signals clause, which states when a method throws and what holds then",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_9.html"
+    }
+  ]
+}

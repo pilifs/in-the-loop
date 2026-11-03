@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "103",
+  "title": "A leader that backs up on a refusal it has moved on from sends the follower what it holds",
+  "summary": "A Raft leader backs a follower's next index up by one when the follower refuses the request at it, and ignores a refusal it has already moved on from: a reply that arrives late, or arrives twice, about a request the follower has since accepted. A developer has every refusal back the follower up, with the argument that the follower lacked the entry when it answered and a round trip more is the most it can cost. The tests pass, the contract diff is one row, and the three configurations in which an RPC is one step verify the change: the rule is never handed a refusal it has moved on from, which TLC's coverage says. The replication model's fourth configuration, in which a reply waits on the wire and may be handed to the leader twice, finds the consequence in twelve steps: a leader of term 2 holding one entry sends a follower without it a heartbeat, which the follower refuses, backs up, sends the entry, which the follower takes, and then is handed the refusal again; it backs up again, below the entry it has just recorded the follower as holding, and from there sends that entry forever, since each acceptance of it tells the leader nothing its record does not hold. The invariant that the next index is past the match index is violated.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "log-replication",
+    "stale-messages",
+    "duplicate-delivery",
+    "tla-fault-configuration",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java",
+    "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "patch": "change.patch",
+    "kind": "bug-fix",
+    "behaviourChangeIntended": true,
+    "description": "In `ReplyRule.decide`, the `ANSWERED` arm returns `transition(ANSWERED, BACK_UP)` for a refusal instead of `unchanged`, with the comment that a refusal is news whenever it comes and costs one round trip more at most; an acceptance answered already still changes nothing. The javadoc is reworded to match, and the test that a late or repeated reply changes nothing is split: a late acceptance changes nothing, a refusal backs up whenever it comes."
+  },
+  "risk": "Medium. A round trip more is what the comment promises, and in a network that delivers every reply once and in order that is what it costs, which is why three of the four configurations verify the change: the one-step RPC never hands the rule a refusal of a request the leader has moved on from, so the changed row is never taken, which the coverage table shows. The question is what happens when a refusal is delivered after the follower has caught up, and the answer is not a round trip: the next index drops below the match index, the leader sends the entry the follower holds, and the acceptance of an entry the record already holds moves nothing, so the leader is stuck at that entry for as long as it leads.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The reply rule in the model is generated from the regenerated contract, so `Answer` backs up on a refusal the leader's record has answered already. The three one-step configurations verify the change (20,253, 8,838 and 14,388 states, the same as the committed rule's), with the changed row untaken under each, since `Replicate` hands the rule the reply to the request it has just sent and nothing else. `RaftReplicationDelayed.cfg` is the one that hands the rule such a refusal, and its run ends at the violation the row causes, so the coverage table, which counts finished runs, shows the row taken nowhere: after twelve steps, s1, leader of term 1, appends an entry and sends it to s2, whose acceptance waits on the wire; s2 times out, wins term 2 with s1's vote, and sends s3, whose log is empty, a heartbeat after the entry, which s3 refuses; s2 takes the refusal, the network keeping a copy, backs up and sends the entry, which s3 takes, and s2 records s3 as holding index 1 with index 2 next; then s2 takes the refusal again, and the patched row backs the next index up to 1, the entry s2 has just recorded s3 as holding. `NextIndexPastMatch` is violated in that state. From it, every request to s3 carries the entry s3 holds, and its acceptance, through an index the record holds already, is one the rule answers with nothing.",
+  "resolution": "Reject. A refusal answers one request, the one at the follower's next index at the time, and backs the leader up from it once; a refusal of a request the leader has since backed up from, or at an entry the leader has since recorded the follower as holding, is stale and changes nothing (etcd's MaybeDecrTo makes the same check: a rejection that does not answer the request at Next - 1 is ignored). The invariant that the next index is past the match index is what the fix keeps, and the delayed replies configuration is where it is tested.",
+  "notes": [
+    "The Raft replication model (`apps/quorum/spec/RaftReplication.tla`) has the logs live, around the follower's append rule and the leader's commit rule as generated operators beside the role machine and the vote rule, and checks log matching, leader completeness and state machine safety, with an action property that no committed entry is ever overwritten. Its configurations are three terms with two entries, and the four terms of the paper's figure 8.",
+    "The leader's side of the RPC, `ReplyRule#decide`, is the replication model's third generated operator. `RaftReplicationDelayed.cfg` lets the reply wait on the wire, arrive after the leader has sent again or been deposed, arrive twice, or never, and checks the leader's record of its followers (`MatchIndexIsRight`, `NextIndexPastMatch`), which a one-step RPC cannot break.",
+    "Verified by every one-step configuration, which never hands the rule such a refusal, and found by the delayed one, where the record contradicts itself and the follower is sent the entry it holds forever. Pairs with 104."
+  ],
+  "provenance": "Constructed as the second example of the reply rule, and the one the delayed replies configuration exists for: a change on the row that only a late or repeated reply reaches, which the three one-step configurations verify with the row untaken and the fourth finds.",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (extended version, 2014): section 5.3, log replication, the consistency check, and the nextIndex and matchIndex a leader keeps per follower; figure 2, the rules for leaders on an AppendEntries reply",
+      "url": "https://raft.github.io/raft.pdf"
+    },
+    {
+      "title": "Ongaro, the TLA+ specification of Raft (raft.tla): HandleAppendEntriesResponse, which moves nextIndex and matchIndex on success and decrements nextIndex on failure, and messages as a bag, so that a reply may be delivered after another",
+      "url": "https://github.com/ongardie/raft.tla"
+    },
+    {
+      "title": "etcd raft, tracker/progress.go: MaybeUpdate and MaybeDecrTo, which ignore a stale acceptance (an index at or below Match) and a stale rejection (one that does not answer the request at Next - 1)",
+      "url": "https://github.com/etcd-io/raft/blob/main/tracker/progress.go"
+    }
+  ]
+}

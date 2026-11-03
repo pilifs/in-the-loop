@@ -22,3 +22,11 @@ Don't run proofs and model checks inline: JBMC, TLC, `build.py` on a B9, B11 or 
 - Describe the work with `python3 verification/pipeline.py submit` (`--example ID` for a demo example), with a title, a description for a reader who did not see the session, the capabilities it exercises, and a rough estimate of CPUs, memory and duration.
 - Commit the job with the change, with `(verification pending)` at the end of the summary line and the job id in a paragraph, then carry on. Compiling and unit tests still run inline.
 - The pipeline is run by the agent managing it (`/run-verification`), not by the agent that submits. Results come back in `verification/results/`; read them with `python3 verification/pipeline.py report`.
+
+## Examples
+
+`examples/` is a router: every example, constructed or real-world, is one numbered folder, tagged from `examples/tags.json`, and found with `python3 examples/tools/find.py` (see [`examples/README.md`](examples/README.md)). Look there for examples close to your task before writing a new one.
+
+- Put what you learn about one example in that example's `notes` in its `example.json`, not in a shared README. Duplicating context there is fine: examples are often read alone.
+- Shared pages (`examples/README.md`, `examples/approaches.md`, the apps' and models' READMEs, `lib/README.md`) describe what holds for many examples, and point at examples by tag or number rather than narrating them. A new model configuration is described in its model's README.
+- Tag a new example with at least one domain and one defect tag; add to the vocabulary only when nothing fits. `python3 examples/tools/build.py --render-only NNN` rewrites a page and the router without running anything.

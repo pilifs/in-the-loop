@@ -1,0 +1,36 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/resilience/CircuitBreaker.java
+@@ -21,7 +21,8 @@
+  * <p>CLOSED lets every call through and opens when a complete window's failure rate reaches the threshold. OPEN
+  * rejects every call until the wait duration has passed, then lets a limited number of probe calls through as
+  * HALF_OPEN. HALF_OPEN closes only once every permitted probe has completed with the failure rate below the
+- * threshold; a probe that fails reopens the breaker at once.
++ * threshold; a probe that fails starts the probes over, so that the breaker closes on the permitted number of
++ * successes in a row.
+  */
+ public final class CircuitBreaker {
+ 
+@@ -42,7 +43,9 @@
+                 case OPEN -> unchanged("a call permitted before the breaker opened; its outcome is not recorded");
+                 case HALF_OPEN -> {
+                     if (call.failed()) {
+-                        yield transition(OPEN, START_WAIT);
++                        // One failed probe does not condemn a dependency on its way back: the probes start over, and
++                        // the breaker closes once the permitted number in a row have succeeded.
++                        yield transition(HALF_OPEN, RESET_METRICS);
+                     }
+                     if (!call.windowComplete()) {
+                         yield unchanged("more probes to go");
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/resilience/CircuitBreakerTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/resilience/CircuitBreakerTest.java
+@@ -31,8 +31,8 @@
+                 CircuitBreaker.decide(OPEN, new CallRequested(true)));
+     }
+ 
+-    public static void aFailedProbeReopens() {
+-        equal(new Transition<>(OPEN, List.of(BreakerEffect.START_WAIT)), CircuitBreaker.decide(HALF_OPEN, new CallCompleted(true, false, false)));
++    public static void aFailedProbeStartsTheProbesOver() {
++        equal(new Transition<>(HALF_OPEN, List.of(BreakerEffect.RESET_METRICS)), CircuitBreaker.decide(HALF_OPEN, new CallCompleted(true, false, false)));
+     }
+ 
+     public static void halfOpenClosesWhenEveryProbeSucceeded() {

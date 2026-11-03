@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "049",
+  "title": "A stack map offset loop without the first-frame special case, proved to place every frame",
+  "summary": "A `StackMapTable` frame carries an `offset_delta`, not an offset: the first frame applies at `offset_delta`, every later one at the previous frame's offset plus `offset_delta + 1`. The class file reader's loop says so, with a special case for the first frame. A developer removes the special case by starting the count one byte before the code, so that every frame, the first included, is `offset_delta + 1` past the previous one. The property committed for the reader is the specification's own arithmetic, stated with JML's `\\sum`, and a law stated with a call of the reader itself: no two frames share an offset. The prover checks the rewritten loop against both on every table up to the bound.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "jvm-internals",
+    "class-files",
+    "bytecode-verification",
+    "jml-quantifiers"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/StackMapTable.java",
+    "symbol": "net.terminalvalue.mica.classfile.StackMapTable#offsetOf"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Start the offset at -1 instead of 0 and add `offset_delta + 1` for every frame, instead of `offset_delta` for the first and `offset_delta + 1` for the rest. The comment states the rule of JVMS §4.7.4 in this form. The tests for the frame offsets pass.",
+    "patch": "change.patch"
+  },
+  "risk": "The `+ 1` is the kind of detail a reader of the specification gets wrong in either direction, and the two directions fail differently: a reader that adds one to the first frame places every frame one byte late, and a type checker that then finds no frame at a branch target rejects every class file with a loop; a reader that adds one to none places every frame but the first early, which fails only on methods with two or more frames. A rewrite that moves the `+ 1` from a conditional into an initial value is reviewed by reading, and the reviewer has to carry the arithmetic in their head for `k = 0` and for `k = 1` separately. The tests cover a table of three frames taken from `javap` and a table of consecutive frames with `offset_delta` 0.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The property committed for `offsetOf` is the arithmetic of JVMS §4.7.4 written out: for every `k` in the table, and every table of `u2` deltas up to eight frames long, `result == k + (\\sum int i; 0 <= i && i <= k; offsetDelta[i])`, the `k` being the `+ 1` of every frame but the first. The second conjunct is the reason the specification gives for the `+ 1`: `k == 0 || result > offsetOf(offsetDelta, k - 1)`, no two frames at one offset, stated by calling the reader on the previous frame, with the array passed through to the call. The tool compiles the sum to a loop and the call to an `invokestatic` in the generated harness, and JBMC proves both conjuncts of the rewritten loop in under a minute. What is proved is not that the rewrite equals the old loop, which a regression proof would say, but that it satisfies the specification, which is the statement a reviewer wants: the special case was redundant because the rule it encoded is the sum, and the sum holds of the loop without it.",
+  "resolution": "Merge. The `\\sum` is the specification's formula and stays as the property; the strictness law stays because it is the specification's stated reason for the formula, and because a future reader who drops the `+ 1` altogether fails it on the first table with two frames.",
+  "notes": [
+    "With its first-frame special case removed, the stack map offset loop still places every frame: a safe change."
+  ],
+  "provenance": "Constructed from the definition of the frame offsets in JVMS §4.7.4, and the specification's note that the formula `offset_delta + 1` for all but the first frame guarantees the absence of duplicates.",
+  "references": [
+    {
+      "title": "JVMS §4.7.4, the StackMapTable attribute: offset_delta, and why it is offset_delta + 1 for every frame but the first",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.4"
+    },
+    {
+      "title": "JML reference manual: quantified expressions, including the generalized quantifiers \\sum, \\num_of, \\max and \\min",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html#SEC147"
+    }
+  ]
+}
