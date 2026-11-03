@@ -1,0 +1,239 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-010716-jdk-models-shipped-with-jvmcontract-the",
+  "title": "JDK models shipped with jvmcontract: the integration tests that run JBMC on the model fixture",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m49s, peak 1.4 GiB (estimated 8m00s, 3.0 GiB); signals: cargo:tests×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261103-010716-jdk-models-shipped-with-jvmcontract-the.json",
+    "sha256": "59a70a75648d953f62c225e5a704076e628651fb631205925a9a62fa1595aec5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-010716-jdk-models-shipped-with-jvmcontract-the",
+      "title": "JDK models shipped with jvmcontract: the integration tests that run JBMC on the model fixture",
+      "description": "The models of JDK classes JBMC has no bytecode for (the boxing caches, Character.digit generated from the JDK's table, java.nio.charset) now ship inside jvmcontract (lib/models, src/models.rs) and go on JBMC's class path by themselves; JBMC runs with --no-refine-strings, since its string solver replaced calls of java.lang.Character by its own approximations and gave them arbitrary results. The integration test proofs_over_modelled_jdk_classes_are_decided_by_the_models proves Character.digit's range over every char on the model, refutes a stricter claim with a Unicode digit the interpreter replays on the same model, proves that Integer.valueOf round-trips through the cache model, and checks that the same proof is not verified with --no-models. The rest of the suite checks that nothing else moved: the Box Office contracts are still identical to the committed ones, and every other JBMC and TLC test passes with the string solver off. JBMC is also asked for its bundled CaDiCaL solver by default (--sat-solver): with the string solver off, the MiniSAT path stalled for over ten minutes on the binary-search proof in arrays_are_quantified_over_and_witnessed, which CaDiCaL settles in about a second per stage.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/models.rs",
+          "lib/models"
+        ],
+        "examples": [
+          "109"
+        ]
+      },
+      "expected": "exits 0; every test passes, among them the two new ones (the_interpreter_runs_the_models_where_the_jdk_is_modelled, proofs_over_modelled_jdk_classes_are_decided_by_the_models)",
+      "submitted": {
+        "at": "2026-11-03T01:07:16+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "javac",
+        "cargo",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "notes": "the suite ran in a few minutes in the session; each JBMC test is a few seconds at 2 GB"
+      },
+      "steps": [
+        {
+          "name": "unit and integration tests",
+          "run": "cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4abee307b92269414c1420282637ddfdd5461988",
+  "startedAt": "2026-11-03T03:34:56+00:00",
+  "finishedAt": "2026-11-03T03:36:46+00:00",
+  "wallSeconds": 110.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 890530,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": "the suite ran in a few minutes in the session; each JBMC test is a few seconds at 2 GB"
+  },
+  "usage": {
+    "peakMemoryBytes": 1512206336,
+    "wallSeconds": 109.9,
+    "cpuSeconds": 194.7,
+    "memoryOfEstimate": 0.47,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "unit and integration tests",
+      "run": "cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 109.876,
+      "cpuSeconds": 194.65,
+      "cpuThrottledSeconds": 10.64,
+      "peakMemoryBytes": 1512206336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-unit-and-integration-tests.log",
+        "lines": 160,
+        "bytes": 8089,
+        "sha256": "d794aa1bdd1987dc0870bfa6f4f5cf4201c43bcf77dc94186c2b55b5cc93ec2a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 4
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 114,
+          "text": "test result: ok. 58 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.18s",
+          "groups": [
+            "ok",
+            "58",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 120,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 153,
+          "text": "test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 52.01s",
+          "groups": [
+            "ok",
+            "27",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 159,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "",
+        "     Running tests/integration.rs (target/release/deps/integration-3a978f8718479df7)",
+        "",
+        "running 27 tests",
+        "test a_law_may_call_the_method_and_a_boolean_method_is_its_own_property ... ok",
+        "test a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness ... ok",
+        "test a_pure_finite_method_gets_a_complete_contract ... ok",
+        "test a_reference_parameter_is_refused_by_the_symbolic_verifier ... ok",
+        "test a_rounding_refactor_is_refuted_with_a_replayed_counterexample ... ok",
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_declaration ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "",
+        "test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 52.01s",
+        "",
+        "   Doc-tests jvmcontract",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-03T03:52:02+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

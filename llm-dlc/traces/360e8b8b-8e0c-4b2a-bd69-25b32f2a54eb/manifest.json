@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T03:32:26.344Z",
-  "duration_seconds": 212551,
+  "ended": "2026-11-03T03:52:15.088Z",
+  "duration_seconds": 213740,
   "stats": {
-    "turns": 168,
-    "api_calls": 1730,
-    "tool_calls": 2244,
+    "turns": 172,
+    "api_calls": 1750,
+    "tool_calls": 2263,
     "tool_errors": 50,
-    "compactions": 27,
+    "compactions": 28,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 51568,
-      "output_tokens": 3724634,
-      "cache_read_input_tokens": 332322285,
-      "cache_creation_input_tokens": 8235545
+      "input_tokens": 52178,
+      "output_tokens": 3782118,
+      "cache_read_input_tokens": 333920250,
+      "cache_creation_input_tokens": 8338117
     }
   },
   "tools": {
-    "Bash": 1751,
+    "Bash": 1770,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
@@ -606,24 +606,38 @@
     {
       "index": 27,
       "started": "2026-11-03T03:06:23.667Z",
-      "ended": "2026-11-03T03:32:26.344Z",
+      "ended": "2026-11-03T03:38:17.600Z",
       "turns": 4,
-      "api_calls": 55,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 1670,
-        "output_tokens": 118696,
-        "cache_read_input_tokens": 8476251,
-        "cache_creation_input_tokens": 219125
+        "input_tokens": 1734,
+        "output_tokens": 120287,
+        "cache_read_input_tokens": 8947732,
+        "cache_creation_input_tokens": 222998
       },
-      "peak_context_tokens": 234070
+      "peak_context_tokens": 237943
+    },
+    {
+      "index": 28,
+      "started": "2026-11-03T03:39:49.345Z",
+      "ended": "2026-11-03T03:52:15.088Z",
+      "turns": 4,
+      "api_calls": 18,
+      "usage": {
+        "input_tokens": 546,
+        "output_tokens": 55893,
+        "cache_read_input_tokens": 1126484,
+        "cache_creation_input_tokens": 98699
+      },
+      "peak_context_tokens": 113644
     }
   ],
   "log": {
-    "sha256": "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207",
-    "bytes": 66238644,
-    "lines": 24262,
-    "gzip_bytes": 11165922,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207.jsonl.gz"
+    "sha256": "0e544d35d38c0636021ea4130dbd7d42ac8ef40d8f01cd81563b0c3603db761c",
+    "bytes": 67241325,
+    "lines": 24591,
+    "gzip_bytes": 11374742,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/0e544d35d38c0636021ea4130dbd7d42ac8ef40d8f01cd81563b0c3603db761c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -922,6 +936,14 @@
       "summary": "Add wire types to boundary contracts: the JSON shape of each request, response and message as Jackson encodes it, with checks for a subtype missing from @JsonSubTypes, a type id that is a class name and a persistence type on the wire (verification pending)",
       "body": "A Spring Boot module's boundary contract now ends with its wire types (lib/src/wire.rs): one block per type reachable from the handlers' @RequestBody parameters and results, the message listeners' payloads and every Jackson-annotated class, followed through property types into the module and its sibling modules (the class path entries under --base) and stopped at library types. A block lists the properties as Jackson 3 finds them (record components; public fields, getters, setters and @JsonProperty members, superclasses included) under their wire names (@JsonProperty, @JsonNaming), with Bean Validation constraints before the type and a ? for a property that may be null or absent (Optional, @JsonInclude), enum constants with their @JsonProperty names or @JsonValue method, and for a polymorphic family the @JsonTypeInfo placement and each subtype's id. A renamed component, a dropped @JsonSubTypes entry or a new enum constant changes no signature and passes every test that uses the same classes on both sides; in the contract it is a changed line. The ! checks were established with a scratch program against the Jackson 3.1 jars Box Office uses: a permitted subtype of a sealed base that @JsonSubTypes does not list is written under its class name (Outer$Inner) and rejected when read back; a listed subtype without a name, or a permitted subtype of a base without @JsonSubTypes, gets the class name as its id; @JsonTypeInfo(use = CLASS) puts Java class names on the wire; an interface or abstract class without @JsonTypeInfo is written as the runtime class's properties with no id to read it back by; a bean with no visible properties is written as {}; two properties with one wire name; and a persistence type (@Document, @Entity, @Table) on the wire. The class-file reader gained a raw method_parts for signatures. A request type whose only framework annotations are its constraints is shown once, as a wire type.\n\nTwo bugs from the first boundary-contract commit are fixed on the way: update --add KIND with the contract file already present fell through to the method-target parser (the Gradle updateBoundaries tasks had never run), and the boxoffice.boundaries Gradle convention referenced the project at execution time, which Gradle's configuration cache refuses; it now captures plain values. update also leaves a module contract alone when nothing in it changed, so the Java tool's capabilities.contract in the contracts module keeps its header. The four Box Office contracts (ticketing-service, payment-service, messaging, and now contracts, whose wire types are the message families) were regenerated through ./gradlew updateBoundaries. The payment service's contract has a real ! line: GET /payments/{orderId} returns the Mongo PaymentDocument itself, gateway reference included; it is left as found and noted in the Box Office README.\n\nExample 111 (B12, Box Office contracts module): a PaymentVoided record added to the sealed PaymentEvent family, published by the payment service and handled in ticketing where the compiler demands the new switch case, without its @JsonSubTypes entry. The change is intended, so the runner (build.py run_boundaries) regenerates the contract, records the diff, and reports a ! line the old contract did not have as the violation: a new rule for intended changes. Verified inline: 71 unit and 29 integration tests pass (the Spring fixtures gained Jackson stand-ins and types exercising every wire feature and problem once, asserted line by line, with a renamed component failing verify); the patched PaymentEvent compiled against the Jackson jars renders the expected ! line. Job 20261103-032834-example-111-a-paymentvoided-event-added runs the example through Gradle on the pipeline.",
       "log_sha256": "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207"
+    },
+    {
+      "change_id": "pllnxyvmwmklkqptkrmknqxvstqlrwtr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 8 jobs: 6 passed, Mica rerun and Example 109 revisited failed",
+      "body": "Ran the queued jobs. Box Office, Crosscut, Quorum (148 of 160 outputs applied; 12 changed since the job's commit), the JDK-model integration tests, the native checker's unit tests and its Quorum/Crosscut cross-check passed. The Mica rerun failed at example 036: git apply of its change.patch does not apply to SwitchLowering.java. Example 109 revisited failed at step 3: the replay of JBMC's witness reports 'unsupported: reads static field java.nio.charset.StandardCharsets.UTF_8'. These two are findings for whoever owns them, not pipeline errors.",
+      "log_sha256": "0e544d35d38c0636021ea4130dbd7d42ac8ef40d8f01cd81563b0c3603db761c"
     }
   ],
   "logs": {
@@ -930,6 +952,12 @@
       "lines": 15257,
       "gzip_bytes": 7614298,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/04bd94e1dbda652a4d9f8e6e70f8b19497e59ad3eaa41ec24d3657b3de04eb1a.jsonl.gz"
+    },
+    "0e544d35d38c0636021ea4130dbd7d42ac8ef40d8f01cd81563b0c3603db761c": {
+      "bytes": 67241325,
+      "lines": 24591,
+      "gzip_bytes": 11374742,
+      "url": null
     },
     "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2": {
       "bytes": 52776707,

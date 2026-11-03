@@ -86,7 +86,7 @@ The two versions disagree. The prover found this input, and the generator replay
 
 | Input | Before | After |
 |---|---|---|
-| `shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)` | `true` | `false` |
+| `shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)` | `true` | `false` |
 
 One disagreeing input is enough to fail the build. The domain is `status: int × idempotent: boolean × attempt: int × maxAttempts: int`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -112,16 +112,16 @@ Keep the switch for the named statuses and add the range as its own arm: `defaul
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:
-  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)
+  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)
     before: true
     after:  false
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -204,7 +204,7 @@ public final class EquivalenceHarness {
           "ruleId": "behaviour-changed",
           "level": "error",
           "message": {
-            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
+            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
           },
           "locations": [
             {

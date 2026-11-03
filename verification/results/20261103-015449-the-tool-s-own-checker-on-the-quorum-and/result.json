@@ -1,0 +1,380 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-015449-the-tool-s-own-checker-on-the-quorum-and",
+  "title": "The tool's own checker on the Quorum and Crosscut property contracts: --engine auto against JBMC",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 11m15s, peak 168.3 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (compile quorum) was held back 4.6s by its 1-CPU quota in 3.8s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (compile crosscut) was held back 3.1s by its 1-CPU quota in 3.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-015449-the-tool-s-own-checker-on-the-quorum-and.json",
+    "sha256": "6534218e877300bf1a03310f770425006052f01ad9bc0bdbb0e2b4bfd9a3ce51",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-015449-the-tool-s-own-checker-on-the-quorum-and",
+      "title": "The tool's own checker on the Quorum and Crosscut property contracts: --engine auto against JBMC",
+      "description": "Runs both modules' properties.contract with jvmcontract prove --engine auto (the tool's own bounded model checker where the property is over integers, JBMC elsewhere) and again with --engine jbmc, and compares the verdicts property by property: they must all be verified under both, as the verify scripts record. The auto run's JSON says which properties the native engine decided (the proof line names 'jvmcontract's own checker (CaDiCaL)') and which went to JBMC with a note, and how long each took; that is the evidence for making auto the default later.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "examples/apps/quorum/src/contract/properties.contract",
+          "examples/apps/crosscut/src/contract/properties.contract"
+        ]
+      },
+      "expected": "the compare step prints 'quorum 5 properties agree' and 'crosscut 7 properties agree' with a count of those the native engine decided; exits 0",
+      "submitted": {
+        "at": "2026-11-03T01:54:49+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "javac",
+        "jvmcontract",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "6m",
+        "notes": "JBMC proves Quorum's five in about four seconds and Crosscut's seven in about forty; the native engine is quicker on what it takes"
+      },
+      "steps": [
+        {
+          "name": "compile quorum",
+          "run": "cd examples/apps/quorum && rm -rf build && javac -parameters -g -proc:none -d build/main $(find src/main/java -name '*.java')",
+          "cwd": "."
+        },
+        {
+          "name": "compile crosscut",
+          "run": "cd examples/apps/crosscut && rm -rf build && javac -parameters -g -proc:none -d build/main $(find src/main/java -name '*.java')",
+          "cwd": "."
+        },
+        {
+          "name": "quorum, both engines",
+          "run": "cd examples/apps/quorum && jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine auto --json > ../../../verification/.engines-quorum-auto.json; jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine jbmc --json > ../../../verification/.engines-quorum-jbmc.json",
+          "cwd": "."
+        },
+        {
+          "name": "crosscut, both engines",
+          "run": "cd examples/apps/crosscut && jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine auto --json > ../../../verification/.engines-crosscut-auto.json; jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine jbmc --json > ../../../verification/.engines-crosscut-jbmc.json",
+          "cwd": "."
+        },
+        {
+          "name": "compare",
+          "run": "python3 -c \"\nimport json\nfor app in ['quorum', 'crosscut']:\n    a = json.load(open(f'verification/.engines-{app}-auto.json')); j = json.load(open(f'verification/.engines-{app}-jbmc.json'))\n    outs = lambda d: d if isinstance(d, list) else d.get('outcomes', d.get('results', [d]))\n    pa, pj = {o['target']: o for o in outs(a)}, {o['target']: o for o in outs(j)}\n    assert pa.keys() == pj.keys(), (pa.keys(), pj.keys())\n    native = 0\n    for t in pa:\n        assert pa[t]['verdict'] == pj[t]['verdict'] == 'verified', (t, pa[t].get('verdict'), pj[t].get('verdict'), pa[t].get('problem'))\n        native += 'own checker' in (pa[t].get('proof') or '')\n    print(app, len(pa), 'properties agree;', native, 'decided by the tool\\'s own checker')\n\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.engines-quorum-auto.json",
+        "verification/.engines-quorum-jbmc.json",
+        "verification/.engines-crosscut-auto.json",
+        "verification/.engines-crosscut-jbmc.json"
+      ]
+    }
+  },
+  "sourceCommit": "d2a7f4f03af3f88a3536eee1b9d283a0431ec1f8",
+  "startedAt": "2026-11-03T03:39:23+00:00",
+  "finishedAt": "2026-11-03T03:51:57+00:00",
+  "wallSeconds": 754.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 890530,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": "JBMC proves Quorum's five in about four seconds and Crosscut's seven in about forty; the native engine is quicker on what it takes"
+  },
+  "usage": {
+    "peakMemoryBytes": 176500736,
+    "wallSeconds": 675.8,
+    "cpuSeconds": 672.1,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 1.88
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 77.23,
+      "cpuSeconds": 75.9,
+      "cpuThrottledSeconds": 0.102,
+      "peakMemoryBytes": 880103424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 8,
+        "bytes": 390,
+        "sha256": "8e3e9907aeca7fb8e796a91d788d69b3b16114c07c0566a261f025d4260931d0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling libc v0.2.191",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling cc v1.10.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/java-formal-verification/verification/.state/work/20261103-015449-the-tool-s-own-checker-on-the-quorum-and/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 17s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "compile quorum",
+      "run": "cd examples/apps/quorum && rm -rf build && javac -parameters -g -proc:none -d build/main $(find src/main/java -name '*.java')",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.839,
+      "cpuSeconds": 3.751,
+      "cpuThrottledSeconds": 4.57,
+      "peakMemoryBytes": 72720384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compile-quorum.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "compile crosscut",
+      "run": "cd examples/apps/crosscut && rm -rf build && javac -parameters -g -proc:none -d build/main $(find src/main/java -name '*.java')",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.016,
+      "cpuSeconds": 2.906,
+      "cpuThrottledSeconds": 3.096,
+      "peakMemoryBytes": 57159680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compile-crosscut.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "quorum, both engines",
+      "run": "cd examples/apps/quorum && jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine auto --json > ../../../verification/.engines-quorum-auto.json; jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine jbmc --json > ../../../verification/.engines-quorum-jbmc.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 8.653,
+      "cpuSeconds": 7.549,
+      "cpuThrottledSeconds": 0.006,
+      "peakMemoryBytes": 52142080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-quorum-both-engines.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "crosscut, both engines",
+      "run": "cd examples/apps/crosscut && jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine auto --json > ../../../verification/.engines-crosscut-auto.json; jvmcontract prove --properties src/contract/properties.contract --classes build/main --engine jbmc --json > ../../../verification/.engines-crosscut-jbmc.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 660.077,
+      "cpuSeconds": 657.901,
+      "cpuThrottledSeconds": 0.391,
+      "peakMemoryBytes": 176500736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-crosscut-both-engines.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "compare",
+      "run": "python3 -c \"\nimport json\nfor app in ['quorum', 'crosscut']:\n    a = json.load(open(f'verification/.engines-{app}-auto.json')); j = json.load(open(f'verification/.engines-{app}-jbmc.json'))\n    outs = lambda d: d if isinstance(d, list) else d.get('outcomes', d.get('results', [d]))\n    pa, pj = {o['target']: o for o in outs(a)}, {o['target']: o for o in outs(j)}\n    assert pa.keys() == pj.keys(), (pa.keys(), pj.keys())\n    native = 0\n    for t in pa:\n        assert pa[t]['verdict'] == pj[t]['verdict'] == 'verified', (t, pa[t].get('verdict'), pj[t].get('verdict'), pa[t].get('problem'))\n        native += 'own checker' in (pa[t].get('proof') or '')\n    print(app, len(pa), 'properties agree;', native, 'decided by the tool\\'s own checker')\n\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.023,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5402624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-compare.log",
+        "lines": 2,
+        "bytes": 128,
+        "sha256": "c863422ab99fd3a96f6e789ca833ff85ec0c37b82bed9aefc57c9631663cf779",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "quorum 6 properties agree; 5 decided by the tool's own checker",
+        "crosscut 7 properties agree; 6 decided by the tool's own checker"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.engines-quorum-auto.json",
+      "change": "added",
+      "bytes": 10667,
+      "sha256": "a68a6f039599d07c8c59d10e974f4b90d6dcc2d3a8457c82965b6afe357c6125",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.engines-quorum-jbmc.json",
+      "change": "added",
+      "bytes": 9896,
+      "sha256": "2633157a0e5a31a01192d311f5282a1511bd71622523b66769aa3c9b321c7b9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.engines-crosscut-auto.json",
+      "change": "added",
+      "bytes": 9977,
+      "sha256": "04a5bcc08e7ccddcfc932c38b4c330828c93d5ce0eb6c59b8a7a0fcb7533bb41",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.engines-crosscut-jbmc.json",
+      "change": "added",
+      "bytes": 9589,
+      "sha256": "0c33bfcaf5f7179bba6ecb469b5f4cdcac5b799e7793b8841a1672f71760174d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-03T03:52:02+00:00",
+    "applied": [
+      "verification/.engines-quorum-auto.json",
+      "verification/.engines-quorum-jbmc.json",
+      "verification/.engines-crosscut-auto.json",
+      "verification/.engines-crosscut-jbmc.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9648e3dbbd58b5615d5c639a37b3ceec2980fb32",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9648e3dbbd58b5615d5c639a37b3ceec2980fb32/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

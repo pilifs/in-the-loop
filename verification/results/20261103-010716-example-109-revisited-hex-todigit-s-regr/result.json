@@ -1,0 +1,319 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-010716-example-109-revisited-hex-todigit-s-regr",
+  "title": "Example 109 revisited: Hex#toDigit's regression proof with the Character.digit model",
+  "status": "failed",
+  "summary": "failed: 2 passed, 1 failed, 2 skipped step(s) in 10.5s, peak 91.9 MiB (estimated 10m00s, 2.0 GiB); signals: jvmcontract:fails×1",
+  "attention": [
+    "declared output verification/.work-109/work-old/jbmc.log was not produced",
+    "declared output verification/.work-109/work-change was not produced",
+    "declared output verification/.work-109/work-ascii was not produced",
+    "step 2 (compile) was held back 8.7s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (old toDigit decodes the Arabic-Indic zero) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-010716-example-109-revisited-hex-todigit-s-regr.json",
+    "sha256": "e846d072db675cfd97944fa7eba974449c084af897000d5ac7f49cd8a88af21e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-010716-example-109-revisited-hex-todigit-s-regr",
+      "title": "Example 109 revisited: Hex#toDigit's regression proof with the Character.digit model",
+      "description": "Example 109 (apache/commons-codec commit 43a9aa66, Hex.toDigit restricted to ASCII) could not make the regression proof between the old toDigit (Character.digit(ch, 16)) and the new one, because JBMC had no usable Character.digit: a stub, or the JDK's own tables read wrongly. jvmcontract now ships a Character model generated from the JDK's decimal-digit table and runs JBMC without its string solver. This job clones the two commits, compiles src/main/java of each with javac, and runs: (1) prove on the OLD version that toDigit(0x0660, 0) == 0, which the earlier run answered wrongly as violated; (2) equivalence between the versions, expected to find the intended change (a Unicode digit the old version decodes and the new one rejects); (3) equivalence with --unchanged-unless 'ch > 127', expected verified: on ASCII nothing changed. A violation in (3) would be a real finding about the commit.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/models/java/lang/Character.java"
+        ]
+      },
+      "expected": "step 3 verified in seconds; step 4 a violation whose witness is a non-ASCII digit, replayed in the interpreter (before: a digit value, after: DecoderException); step 5 verified over every char x int",
+      "submitted": {
+        "at": "2026-11-03T01:07:16+00:00"
+      },
+      "requires": [
+        "git",
+        "javac",
+        "jbmc",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "109's property proofs took under a second each; a clone with --filter=blob:none and two worktrees is the slow part"
+      },
+      "steps": [
+        {
+          "name": "clone",
+          "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+          "cwd": "."
+        },
+        {
+          "name": "compile",
+          "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+          "cwd": "verification/.work-109"
+        },
+        {
+          "name": "old toDigit decodes the Arabic-Indic zero",
+          "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+          "cwd": "verification/.work-109"
+        },
+        {
+          "name": "the change, found",
+          "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change; test $? -eq 1",
+          "cwd": "verification/.work-109"
+        },
+        {
+          "name": "nothing else changed on ASCII",
+          "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+          "cwd": "verification/.work-109"
+        }
+      ],
+      "outputs": [
+        "verification/.work-109/work-old/jbmc.log",
+        "verification/.work-109/work-change",
+        "verification/.work-109/work-ascii"
+      ]
+    }
+  },
+  "sourceCommit": "4abee307b92269414c1420282637ddfdd5461988",
+  "startedAt": "2026-11-03T03:34:44+00:00",
+  "finishedAt": "2026-11-03T03:34:55+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 890530,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "109's property proofs took under a second each; a clone with --filter=blob:none and two worktrees is the slow part"
+  },
+  "usage": {
+    "peakMemoryBytes": 96342016,
+    "wallSeconds": 10.5,
+    "cpuSeconds": 8.5,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.403,
+      "cpuSeconds": 0.083,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 20230144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "2d5694fb348541fae3d68a033b004800c9c79f8f6edb468d5763b1d8f389597a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.12s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "clone",
+      "run": "mkdir -p verification/.work-109 && cd verification/.work-109 && git clone --filter=blob:none https://github.com/apache/commons-codec codec && git -C codec worktree add ../base 87f6aa28 && git -C codec worktree add ../head 43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.815,
+      "cpuSeconds": 1.285,
+      "cpuThrottledSeconds": 0.285,
+      "peakMemoryBytes": 40624128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-clone.log",
+        "lines": 5,
+        "bytes": 263,
+        "sha256": "42b50e2a8231d660e25c4bef0ae9ae1121790ee9ecec27fd4fbaa2a5bf299c64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Cloning into 'codec'...",
+        "Preparing worktree (detached HEAD 87f6aa28)",
+        "HEAD is now at 87f6aa28 Reject ambiguous GitIdentifiers tree entry names",
+        "Preparing worktree (detached HEAD 43a9aa66)",
+        "HEAD is now at 43a9aa66 Restrict Hex decoding to ASCII hexadecimal characters"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "compile",
+      "run": "mkdir -p base-classes head-classes && javac -proc:none -parameters -g -nowarn -d base-classes $(find base/src/main/java -name '*.java') && javac -proc:none -parameters -g -nowarn -d head-classes $(find head/src/main/java -name '*.java')",
+      "cwd": "verification/.work-109",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 7.218,
+      "cpuSeconds": 7.035,
+      "cpuThrottledSeconds": 8.72,
+      "peakMemoryBytes": 96342016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compile.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "old toDigit decodes the Arabic-Indic zero",
+      "run": "jvmcontract prove 'org.apache.commons.codec.binary.Hex#toDigit' --classes base-classes --assume 'ch == 1632' --assert 'result == 0' --timeout 300 --work work-old",
+      "cwd": "verification/.work-109",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.425,
+      "cpuSeconds": 0.19,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 39632896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-old-todigit-decodes-the-arabic.log",
+        "lines": 6,
+        "bytes": 603,
+        "sha256": "00348e46d0d1eb9767106f75d1756fe57bf2eaf05c214c000853977550a9e312",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 1,
+          "text": "✗ Property of org.apache.commons.codec.binary.Hex#toDigit violated: `result == 0` where ch == 1632:",
+          "groups": [
+            "Property of org.apache.commons.codec.binary.Hex#toDigit violated: `result == 0` where ch == 1632:"
+          ]
+        }
+      ],
+      "tail": [
+        "✗ Property of org.apache.commons.codec.binary.Hex#toDigit violated: `result == 0` where ch == 1632:",
+        "  toDigit(ch='٠', index=0)",
+        "    outcome: <could not replay: <unsupported: reads static field java.nio.charset.StandardCharsets.UTF_8>>",
+        "  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed in the interpreter; domain ch: char × index: int)",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "the change, found",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --timeout 600 --work work-change; test $? -eq 1",
+      "cwd": "verification/.work-109",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 5,
+      "name": "nothing else changed on ASCII",
+      "run": "jvmcontract equivalence --before base-classes --after head-classes --target 'org.apache.commons.codec.binary.Hex#toDigit' --unchanged-unless 'ch > 127' --timeout 600 --work work-ascii",
+      "cwd": "verification/.work-109",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-03T03:52:02+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "2e9bebc689e5d9bbcbb77766bb2a2676fa762c5e",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/2e9bebc689e5d9bbcbb77766bb2a2676fa762c5e/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261103-010716-example-109-revisited-hex-todigit-s-regr"
+}

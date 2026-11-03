@@ -1,6 +1,6 @@
 {
   "verdict": "verified",
-  "verdictLabel": "✓ Verified: all invariants and properties hold in 610 states, and under 5 more configurations",
+  "verdictLabel": "✓ Verified: all invariants and properties hold in 610 states, and under 6 more configurations",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
@@ -18,12 +18,12 @@
     "code": "import static net.terminalvalue.quorum.raft.Role.LEADER;\nimport static net.terminalvalue.quorum.raft.RoleEffect.ADOPT_TERM;\nimport static net.terminalvalue.quorum.raft.RoleEffect.INCREMENT_TERM;\nimport static net.terminalvalue.quorum.raft.RoleEffect.LOG_STALE_REPLY;\nimport static net.terminalvalue.quorum.raft.RoleEffect.REQUEST_VOTES;\nimport static net.terminalvalue.quorum.raft.RoleEffect.RESET_ELECTION_TIMER;\nimport static net.terminalvalue.quorum.raft.RoleEffect.SEND_HEARTBEATS;\n    // ...\n            case RequestVote vote -> vote.term() == NEWER\n                    ? transition(FOLLOWER, ADOPT_TERM)\n                    : unchanged(\"the vote itself is decided by the vote rule\");\n            case Response response -> switch (response.term()) {\n                case NEWER -> transition(FOLLOWER, ADOPT_TERM);\n                case CURRENT -> unchanged(\"a reply from the current term changes no role\");\n                // A reply from a term this server has left is dropped, as before, and logged: how often replies arrive\n                // late is what the election timeout should be tuned against.\n                case OLDER -> transition(role, LOG_STALE_REPLY);\n            };\n        };\n    }\n}\n"
   },
   "casesTotal": null,
-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
-  "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -13,8 +13,8 @@\n decide(FOLLOWER, RequestVote[term=OLDER])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=CURRENT])     => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=NEWER])       => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(FOLLOWER, Response[term=OLDER])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(FOLLOWER, Response[term=OLDER])          => Transition[next=FOLLOWER, effects=[LOG_STALE_REPLY]]\n+decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n@@ -26,8 +26,8 @@\n decide(CANDIDATE, RequestVote[term=OLDER])      => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=CURRENT])    => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=NEWER])      => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(CANDIDATE, Response[term=OLDER])         => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(CANDIDATE, Response[term=OLDER])         => Transition[next=CANDIDATE, effects=[LOG_STALE_REPLY]]\n+decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n@@ -39,8 +39,8 @@\n decide(LEADER, RequestVote[term=OLDER])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=CURRENT])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(LEADER, Response[term=OLDER])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(LEADER, Response[term=OLDER])            => Transition[next=LEADER, effects=[LOG_STALE_REPLY]]\n+decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(LEADER, null)                            => throws NullPointerException\n decide(null, ElectionTimeout[])                 => throws NullPointerException\n@@ -52,7 +52,7 @@\n decide(null, RequestVote[term=OLDER])           => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=CURRENT])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=NEWER])           => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(null, Response[term=OLDER])              => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(null, Response[term=OLDER])              => Transition[next=null, effects=[LOG_STALE_REPLY]]\n+decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(null, Response[term=NEWER])              => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(null, null)                              => throws NullPointerException\n--- a/examples/apps/quorum/src/contract/api.contract\n+++ b/examples/apps/quorum/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: quorum, 29 public types, 117 members\n+module: quorum, 29 public types, 118 members\n \n net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected\n   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)\n@@ -72,6 +72,7 @@\n net.terminalvalue.quorum.raft.RoleEffect: public final enum\n   public static final ADOPT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n   public static final INCREMENT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n+  public static final LOG_STALE_REPLY: net.terminalvalue.quorum.raft.RoleEffect\n   public static final REQUEST_VOTES: net.terminalvalue.quorum.raft.RoleEffect\n   public static final RESET_ELECTION_TIMER: net.terminalvalue.quorum.raft.RoleEffect\n   public static final SEND_HEARTBEATS: net.terminalvalue.quorum.raft.RoleEffect\n",
-  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
+  "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -13,8 +13,8 @@\n decide(FOLLOWER, RequestVote[term=OLDER])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=CURRENT])     => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=NEWER])       => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(FOLLOWER, Response[term=OLDER])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(FOLLOWER, Response[term=OLDER])          => Transition[next=FOLLOWER, effects=[LOG_STALE_REPLY]]\n+decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n@@ -26,8 +26,8 @@\n decide(CANDIDATE, RequestVote[term=OLDER])      => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=CURRENT])    => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=NEWER])      => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(CANDIDATE, Response[term=OLDER])         => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(CANDIDATE, Response[term=OLDER])         => Transition[next=CANDIDATE, effects=[LOG_STALE_REPLY]]\n+decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n@@ -39,8 +39,8 @@\n decide(LEADER, RequestVote[term=OLDER])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=CURRENT])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(LEADER, Response[term=OLDER])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(LEADER, Response[term=OLDER])            => Transition[next=LEADER, effects=[LOG_STALE_REPLY]]\n+decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(LEADER, null)                            => throws NullPointerException\n decide(null, ElectionTimeout[])                 => throws NullPointerException\n@@ -52,7 +52,7 @@\n decide(null, RequestVote[term=OLDER])           => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=CURRENT])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=NEWER])           => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(null, Response[term=OLDER])              => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(null, Response[term=OLDER])              => Transition[next=null, effects=[LOG_STALE_REPLY]]\n+decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(null, Response[term=NEWER])              => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(null, null)                              => throws NullPointerException\n--- a/examples/apps/quorum/src/contract/api.contract\n+++ b/examples/apps/quorum/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: quorum, 63 public types, 247 members\n+module: quorum, 63 public types, 248 members\n \n net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected\n   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)\n@@ -149,6 +149,7 @@\n net.terminalvalue.quorum.raft.RoleEffect: public final enum\n   public static final ADOPT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n   public static final INCREMENT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n+  public static final LOG_STALE_REPLY: net.terminalvalue.quorum.raft.RoleEffect\n   public static final REQUEST_VOTES: net.terminalvalue.quorum.raft.RoleEffect\n   public static final RESET_ELECTION_TIMER: net.terminalvalue.quorum.raft.RoleEffect\n   public static final SEND_HEARTBEATS: net.terminalvalue.quorum.raft.RoleEffect\n",
+  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -37,6 +37,7 @@
         "label": "three servers",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -90,6 +91,7 @@
         "label": "the inductive step",
         "fromRuns": false,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -141,6 +143,7 @@
         "label": "four servers",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -194,6 +197,7 @@
         "label": "fairness",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -247,6 +251,7 @@
         "label": "a server left behind",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -292,6 +297,7 @@
         "label": "delayed replies",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -301,6 +307,60 @@
               "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
               "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
               "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 4,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "history",
+        "fromRuns": true,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Transition[next=FOLLOWER, effects=[LOG_STALE_REPLY]]",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Transition[next=CANDIDATE, effects=[LOG_STALE_REPLY]]",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Transition[next=LEADER, effects=[LOG_STALE_REPLY]]"
             ]
           },
           {
@@ -375,7 +435,7 @@
       "cfg": "spec/RaftElection.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 610 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 610,
@@ -387,7 +447,7 @@
       "cfg": "spec/RaftElectionInductive.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 17470,
@@ -399,7 +459,7 @@
       "cfg": "spec/RaftElectionFour.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 829 states",
-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 829,
@@ -411,7 +471,7 @@
       "cfg": "spec/RaftElectionLive.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 610 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 610,
@@ -423,7 +483,7 @@
       "cfg": "spec/RaftElectionLogs.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 461 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 461,
@@ -435,10 +495,22 @@
       "cfg": "spec/RaftElectionDelayed.cfg",
       "verdict": "verified",
       "summary": "✓ Verified: all invariants and properties hold in 20,351 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
       "invariant": null,
       "violationKind": null,
       "statesExplored": 20351,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "history",
+      "cfg": "spec/RaftElectionHistory.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants hold in 4,798 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 4798,
       "trace": null,
       "forever": null
     }

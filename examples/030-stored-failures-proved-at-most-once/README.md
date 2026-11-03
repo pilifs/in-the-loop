@@ -169,7 +169,7 @@ How the verdict was reached: the record never expires: TLC 2.19 explored 131 dis
 ```text
 == the record never expires: spec/IdempotentReceiver.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441187] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908987] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -180,9 +180,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-11-02 02:33:54)
+Starting... (2026-11-02 21:28:19)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:54.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:20.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -201,11 +201,11 @@ Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step 
 211 states generated, 131 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 8.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
-Finished in 00s at (2026-11-02 02:33:55)
+Finished in 00s at (2026-11-02 21:28:20)
 
 == expiring record: spec/IdempotentReceiverExpiring.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441223] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909044] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -216,9 +216,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module IdempotentReceiverContract
 Semantic processing of module IdempotentReceiver
-Starting... (2026-11-02 02:33:55)
+Starting... (2026-11-02 21:28:20)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:55.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:21.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -235,7 +235,7 @@ Rows of net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide a step 
 780 states generated, 429 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 13.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
-Finished in 00s at (2026-11-02 02:33:55)
+Finished in 00s at (2026-11-02 21:28:21)
 ```
 
 </details>

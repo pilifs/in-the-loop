@@ -1,0 +1,1400 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-002843-rerun-the-crosscut-examples-after-the-ex",
+  "title": "Rerun the Crosscut examples after the examples move",
+  "status": "passed",
+  "summary": "passed: 17 passed step(s) in 1m07s, peak 130.2 MiB (estimated 3m00s, 1.0 GiB); 36 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261103-002843-rerun-the-crosscut-examples-after-the-ex.json",
+    "sha256": "c764a1b1336b49aae11d8b094af714ce1d1f2a2ba53e89847d8ede8c543f0d49",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-002843-rerun-the-crosscut-examples-after-the-ex",
+      "title": "Rerun the Crosscut examples after the examples move",
+      "description": "The examples moved from examples/demo/ and examples/real-world/ into one folder, examples/, with apps, tools and schema one level up, and every patch, example.json, generated page and script path rewritten. This reruns every constructed example of the subject system at the new layout, one step per example, to confirm that each still gives its expected verdict. Their pages were re-rendered from the old results with build.py --render-only, so a verdict that differs here is a regression of the move.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "D1",
+        "B8",
+        "B9",
+        "B10"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "023",
+          "024",
+          "025",
+          "026",
+          "027",
+          "028",
+          "029",
+          "030",
+          "031",
+          "032",
+          "033",
+          "075",
+          "076",
+          "077",
+          "078",
+          "079",
+          "080"
+        ]
+      },
+      "expected": "example 023 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 024 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 026 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 027 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 028 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 029 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 030 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 031 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 032 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 033 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 075 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 076 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 077 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 078 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 079 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 080 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-03T00:28:43+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "about 50 seconds by the README"
+      },
+      "steps": [
+        {
+          "name": "example 023 (B11)",
+          "run": "python3 examples/tools/build.py 023",
+          "cwd": "."
+        },
+        {
+          "name": "example 024 (B11)",
+          "run": "python3 examples/tools/build.py 024",
+          "cwd": "."
+        },
+        {
+          "name": "example 025 (B8)",
+          "run": "python3 examples/tools/build.py 025",
+          "cwd": "."
+        },
+        {
+          "name": "example 026 (B8)",
+          "run": "python3 examples/tools/build.py 026",
+          "cwd": "."
+        },
+        {
+          "name": "example 027 (B9)",
+          "run": "python3 examples/tools/build.py 027",
+          "cwd": "."
+        },
+        {
+          "name": "example 028 (B10)",
+          "run": "python3 examples/tools/build.py 028",
+          "cwd": "."
+        },
+        {
+          "name": "example 029 (D1)",
+          "run": "python3 examples/tools/build.py 029",
+          "cwd": "."
+        },
+        {
+          "name": "example 030 (D1)",
+          "run": "python3 examples/tools/build.py 030",
+          "cwd": "."
+        },
+        {
+          "name": "example 031 (B11)",
+          "run": "python3 examples/tools/build.py 031",
+          "cwd": "."
+        },
+        {
+          "name": "example 032 (B11)",
+          "run": "python3 examples/tools/build.py 032",
+          "cwd": "."
+        },
+        {
+          "name": "example 033 (B11)",
+          "run": "python3 examples/tools/build.py 033",
+          "cwd": "."
+        },
+        {
+          "name": "example 075 (D1)",
+          "run": "python3 examples/tools/build.py 075",
+          "cwd": "."
+        },
+        {
+          "name": "example 076 (D1)",
+          "run": "python3 examples/tools/build.py 076",
+          "cwd": "."
+        },
+        {
+          "name": "example 077 (D1)",
+          "run": "python3 examples/tools/build.py 077",
+          "cwd": "."
+        },
+        {
+          "name": "example 078 (D1)",
+          "run": "python3 examples/tools/build.py 078",
+          "cwd": "."
+        },
+        {
+          "name": "example 079 (D1)",
+          "run": "python3 examples/tools/build.py 079",
+          "cwd": "."
+        },
+        {
+          "name": "example 080 (D1)",
+          "run": "python3 examples/tools/build.py 080",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/023-abs-partitioner-sends-one-key-to-a-negative-partition",
+        "examples/024-clock-skew-applied-on-the-wrong-side-of-not-before",
+        "examples/025-transaction-that-commits-after-an-error",
+        "examples/026-half-open-breaker-that-closes-on-the-first-good-probe",
+        "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx",
+        "examples/028-retry-that-sleeps-on-the-caller-thread",
+        "examples/029-retry-in-progress-executes-twice",
+        "examples/030-stored-failures-proved-at-most-once",
+        "examples/031-rate-limiter-that-never-refills-under-steady-polling",
+        "examples/032-batch-listener-that-commits-past-a-failed-record",
+        "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond",
+        "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load",
+        "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live",
+        "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency",
+        "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt",
+        "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once",
+        "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone"
+      ]
+    }
+  },
+  "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+  "startedAt": "2026-11-03T02:27:12+00:00",
+  "finishedAt": "2026-11-03T02:29:05+00:00",
+  "wallSeconds": 113.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 890530,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "about 50 seconds by the README"
+  },
+  "usage": {
+    "peakMemoryBytes": 136491008,
+    "wallSeconds": 67.1,
+    "cpuSeconds": 92.2,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 45.149,
+      "cpuSeconds": 57.072,
+      "cpuThrottledSeconds": 0.052,
+      "peakMemoryBytes": 896344064,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 44,
+        "bytes": 1497,
+        "sha256": "286758fa244e446b093c5e02b77d51ce8ecbd78c940a4c9aa1611f36d68569f1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling find-msvc-tools v0.1.15",
+        "   Compiling quote v1.0.47",
+        "   Compiling cc v1.10.0",
+        "   Compiling memchr v2.8.3",
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling psm v0.1.32",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling libc v0.2.191",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling zmij v1.0.23",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling heck v0.5.0",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/java-formal-verification/verification/.state/work/20261103-002843-rerun-the-crosscut-examples-after-the-ex/lib)",
+        "    Finished `release` profile [optimized] target(s) in 44.89s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 023 (B11)",
+      "run": "python3 examples/tools/build.py 023",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.608,
+      "cpuSeconds": 3.483,
+      "cpuThrottledSeconds": 0.227,
+      "peakMemoryBytes": 90488832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-023-b11.log",
+        "lines": 2,
+        "bytes": 156,
+        "sha256": "8771e8cc489133ebd1e48c1381d554d7e20d2550b21682c04eb636b31077dbb2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "023-abs-partitioner-sends-one-key-to-a-negative-partition: violation (as expected)",
+          "groups": [
+            "023",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "023-abs-partitioner-sends-one-key-to-a-negative-partition: running (B11)",
+        "023-abs-partitioner-sends-one-key-to-a-negative-partition: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 024 (B11)",
+      "run": "python3 examples/tools/build.py 024",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.618,
+      "cpuSeconds": 3.67,
+      "cpuThrottledSeconds": 0.221,
+      "peakMemoryBytes": 90329088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-024-b11.log",
+        "lines": 2,
+        "bytes": 150,
+        "sha256": "655b21e51da75a2a1c44dbf4c42259b38d2e1185caa28d14e4851dad2da20388",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "024-clock-skew-applied-on-the-wrong-side-of-not-before: violation (as expected)",
+          "groups": [
+            "024",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "024-clock-skew-applied-on-the-wrong-side-of-not-before: running (B11)",
+        "024-clock-skew-applied-on-the-wrong-side-of-not-before: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.407,
+      "cpuSeconds": 3.278,
+      "cpuThrottledSeconds": 0.352,
+      "peakMemoryBytes": 85590016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-025-b8.log",
+        "lines": 2,
+        "bytes": 127,
+        "sha256": "68a733e22efb4ab01d45429b61672034ad5c89653de93ec06b0da4566ad936a4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "025-transaction-that-commits-after-an-error: violation (as expected)",
+          "groups": [
+            "025",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "025-transaction-that-commits-after-an-error: running (B8)",
+        "025-transaction-that-commits-after-an-error: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 026 (B8)",
+      "run": "python3 examples/tools/build.py 026",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.213,
+      "cpuSeconds": 3.108,
+      "cpuThrottledSeconds": 0.262,
+      "peakMemoryBytes": 85876736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-026-b8.log",
+        "lines": 2,
+        "bytes": 155,
+        "sha256": "5ce2fa595f133675cead51d904c6a9e2dd651d4208be151fe8285a8223f0a98a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "026-half-open-breaker-that-closes-on-the-first-good-probe: violation (as expected)",
+          "groups": [
+            "026",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "026-half-open-breaker-that-closes-on-the-first-good-probe: running (B8)",
+        "026-half-open-breaker-that-closes-on-the-first-good-probe: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 027 (B9)",
+      "run": "python3 examples/tools/build.py 027",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.609,
+      "cpuSeconds": 5.722,
+      "cpuThrottledSeconds": 0.489,
+      "peakMemoryBytes": 90316800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-027-b9.log",
+        "lines": 2,
+        "bytes": 163,
+        "sha256": "d36c15ddc35c7e4097841809fbd2fba9a27d2f874cc202bdb2290a64e468ba3f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx: violation (as expected)",
+          "groups": [
+            "027",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx: running (B9)",
+        "027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 028 (B10)",
+      "run": "python3 examples/tools/build.py 028",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.225,
+      "cpuThrottledSeconds": 0.222,
+      "peakMemoryBytes": 88006656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-028-b10.log",
+        "lines": 2,
+        "bytes": 126,
+        "sha256": "1f6f88d9d47070cf55c04b5ddba915bcbc4aeb92dbaed73d785c2feda69f7799",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "028-retry-that-sleeps-on-the-caller-thread: violation (as expected)",
+          "groups": [
+            "028",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "028-retry-that-sleeps-on-the-caller-thread: running (B10)",
+        "028-retry-that-sleeps-on-the-caller-thread: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 029 (D1)",
+      "run": "python3 examples/tools/build.py 029",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.418,
+      "cpuSeconds": 5.725,
+      "cpuThrottledSeconds": 0.44,
+      "peakMemoryBytes": 96788480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-029-d1.log",
+        "lines": 2,
+        "bytes": 113,
+        "sha256": "81f5079783022d39739911fddb75c1ece4192e8cf50e64cab48707d169eb33a0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "029-retry-in-progress-executes-twice: violation (as expected)",
+          "groups": [
+            "029",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "029-retry-in-progress-executes-twice: running (D1)",
+        "029-retry-in-progress-executes-twice: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 030 (D1)",
+      "run": "python3 examples/tools/build.py 030",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.621,
+      "cpuSeconds": 6.071,
+      "cpuThrottledSeconds": 0.528,
+      "peakMemoryBytes": 106889216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-030-d1.log",
+        "lines": 2,
+        "bytes": 118,
+        "sha256": "4dee8b1400d6d2b82984d72e0a61104ae4f2c126739dcea94f58b51240fc7b73",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "030-stored-failures-proved-at-most-once: verified (as expected)",
+          "groups": [
+            "030",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "030-stored-failures-proved-at-most-once: running (D1)",
+        "030-stored-failures-proved-at-most-once: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 9,
+      "name": "example 031 (B11)",
+      "run": "python3 examples/tools/build.py 031",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.608,
+      "cpuSeconds": 3.863,
+      "cpuThrottledSeconds": 0.31,
+      "peakMemoryBytes": 90165248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/9-example-031-b11.log",
+        "lines": 2,
+        "bytes": 154,
+        "sha256": "81b094fa0a213e05532c35efbbd534e54d45eff63c8754f2681b657c383fc2e8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "031-rate-limiter-that-never-refills-under-steady-polling: violation (as expected)",
+          "groups": [
+            "031",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "031-rate-limiter-that-never-refills-under-steady-polling: running (B11)",
+        "031-rate-limiter-that-never-refills-under-steady-polling: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 10,
+      "name": "example 032 (B11)",
+      "run": "python3 examples/tools/build.py 032",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2.812,
+      "cpuSeconds": 3.819,
+      "cpuThrottledSeconds": 0.292,
+      "peakMemoryBytes": 86667264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/10-example-032-b11.log",
+        "lines": 2,
+        "bytes": 146,
+        "sha256": "094f3ec90e12489ea02b5d70bb32959e98afdd3d2ef24885b3fbe1277fa29051",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "032-batch-listener-that-commits-past-a-failed-record: violation (as expected)",
+          "groups": [
+            "032",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "032-batch-listener-that-commits-past-a-failed-record: running (B11)",
+        "032-batch-listener-that-commits-past-a-failed-record: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 11,
+      "name": "example 033 (B11)",
+      "run": "python3 examples/tools/build.py 033",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.42,
+      "cpuSeconds": 4.492,
+      "cpuThrottledSeconds": 0.307,
+      "peakMemoryBytes": 89419776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/11-example-033-b11.log",
+        "lines": 2,
+        "bytes": 155,
+        "sha256": "63ef35d4f4cce744f0dbbf5bb9193e7bf6d3d3a73ab37cf7587cf4091a91be68",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "033-cache-expiry-as-a-deadline-proved-on-every-nanosecond: verified (as expected)",
+          "groups": [
+            "033",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "033-cache-expiry-as-a-deadline-proved-on-every-nanosecond: running (B11)",
+        "033-cache-expiry-as-a-deadline-proved-on-every-nanosecond: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 12,
+      "name": "example 075 (D1)",
+      "run": "python3 examples/tools/build.py 075",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.425,
+      "cpuSeconds": 8.818,
+      "cpuThrottledSeconds": 1.023,
+      "peakMemoryBytes": 136491008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/12-example-075-d1.log",
+        "lines": 2,
+        "bytes": 209,
+        "sha256": "818018eda9f116ff26b08b370a8ac10d7366b56993c0f82bab614cf99610e44e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load: violation (as expected)",
+          "groups": [
+            "075",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load: running (D1)",
+        "075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 13,
+      "name": "example 076 (D1)",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.82,
+      "cpuSeconds": 6.687,
+      "cpuThrottledSeconds": 0.887,
+      "peakMemoryBytes": 127918080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/13-example-076-d1.log",
+        "lines": 2,
+        "bytes": 200,
+        "sha256": "17c69ec3948b2ac348ea2d7f4ecd54e2f413d33fffbbafe994c3d2320806cc32",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)",
+          "groups": [
+            "076",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: running (D1)",
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 14,
+      "name": "example 077 (D1)",
+      "run": "python3 examples/tools/build.py 077",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 8.46,
+      "cpuSeconds": 11.837,
+      "cpuThrottledSeconds": 2.58,
+      "peakMemoryBytes": 131227648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/14-example-077-d1.log",
+        "lines": 2,
+        "bytes": 217,
+        "sha256": "65cd347948ae3797fc2f285b26ebb44bf2b81769d02ca595665a2000abaf3ce7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency: violation (as expected)",
+          "groups": [
+            "077",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency: running (D1)",
+        "077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 15,
+      "name": "example 078 (D1)",
+      "run": "python3 examples/tools/build.py 078",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.616,
+      "cpuSeconds": 6.179,
+      "cpuThrottledSeconds": 0.669,
+      "peakMemoryBytes": 107778048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/15-example-078-d1.log",
+        "lines": 2,
+        "bytes": 209,
+        "sha256": "af77929e8a350f0770c66292208cd2c242b93a3854b7b6e1b5fc292671682ccc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt: violation (as expected)",
+          "groups": [
+            "078",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt: running (D1)",
+        "078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 16,
+      "name": "example 079 (D1)",
+      "run": "python3 examples/tools/build.py 079",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.619,
+      "cpuSeconds": 6.118,
+      "cpuThrottledSeconds": 0.496,
+      "peakMemoryBytes": 107941888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/16-example-079-d1.log",
+        "lines": 2,
+        "bytes": 192,
+        "sha256": "1b6466c1fc0efd699406224ab3f0c961d2d3d4c3cd8b837e39bd81afa458469e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once: verified (as expected)",
+          "groups": [
+            "079",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once: running (D1)",
+        "079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 17,
+      "name": "example 080 (D1)",
+      "run": "python3 examples/tools/build.py 080",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.615,
+      "cpuSeconds": 6.136,
+      "cpuThrottledSeconds": 0.59,
+      "peakMemoryBytes": 106823680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/17-example-080-d1.log",
+        "lines": 2,
+        "bytes": 209,
+        "sha256": "83f99785ad9c1b17e1de308861ba6b445d984515359b953f9775e718e5fc6be5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone: violation (as expected)",
+          "groups": [
+            "080",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone: running (D1)",
+        "080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/result.json",
+      "change": "modified",
+      "bytes": 2088,
+      "sha256": "59eaf5bde73cebebc9e9e307e576b331dff0e94e02e8e739a1343150e439fabc",
+      "sourceSha256": "bb9c23f153dfed84e2d07fb4ed74b6caeeca9fd1af23758cde56a5ce25c48129"
+    },
+    {
+      "path": "examples/024-clock-skew-applied-on-the-wrong-side-of-not-before/result.json",
+      "change": "modified",
+      "bytes": 2510,
+      "sha256": "d6728efb34a88d428ef5f0ab92c5e0ecd499ed662f992c0b00217bb2c3a1f8a4",
+      "sourceSha256": "9fdb0684d58722fc8a2758e7e4d054f32f8772bd17448a46584c93e4e91da357"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.json",
+      "change": "modified",
+      "bytes": 2431,
+      "sha256": "118b4b6950f0d04a482746e84a7bf4ef40db2a695970bfd5f220cc8ca9435d79",
+      "sourceSha256": "b0b2f4d13b390d86f312a22ada5d958dcafa9cda5baed50ce119fb0058c4ad00"
+    },
+    {
+      "path": "examples/026-half-open-breaker-that-closes-on-the-first-good-probe/result.json",
+      "change": "modified",
+      "bytes": 5611,
+      "sha256": "afca6a91cfb8d354f90aac85a035533f0972a95c2ab35ada9d86b749b181b055",
+      "sourceSha256": "34f2e05db8259faea234b3cf35a19e3b2e96fde3716e5102c7285acfedcc811d"
+    },
+    {
+      "path": "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md",
+      "change": "modified",
+      "bytes": 12737,
+      "sha256": "22cbe54774414f6236ea95a6dc99442b6f4d0777492961e1b236181c1ce50bfc",
+      "sourceSha256": "9c23e431684ac3a1eeedbea68f4c35bfe6ad31a80c17d49e79ee3ad0bc97daef"
+    },
+    {
+      "path": "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.json",
+      "change": "modified",
+      "bytes": 2433,
+      "sha256": "d9454ac6bdeaaa861e69069325b43af1962d494631bc3eea4b7d279be51e6318",
+      "sourceSha256": "ba043d8e33baf700f7ac58fb2b403326925cb57901030adcc8f3aadb7e8be007"
+    },
+    {
+      "path": "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.sarif",
+      "change": "modified",
+      "bytes": 2289,
+      "sha256": "1d8439de644b3c291163cc34275e8a8d805d6f228c0c561c1ae4eb704f95f9ce",
+      "sourceSha256": "8697a2288527a9982e3865104b1469d72703c0367cc877e82a9a4c68e06cce52"
+    },
+    {
+      "path": "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/verifier-output.txt",
+      "change": "modified",
+      "bytes": 657,
+      "sha256": "0c3d631c5fdfac79061e1049ebbb96b2ac9edef2833a86c6dedbc5c1977a853a",
+      "sourceSha256": "03a2d62839bb5151bb7ef412cf708d5963de0ea3ec4ca055c8f5217e64f82977"
+    },
+    {
+      "path": "examples/028-retry-that-sleeps-on-the-caller-thread/result.json",
+      "change": "modified",
+      "bytes": 2356,
+      "sha256": "41decc541562cdc003c15180b4a77f3907a147eb08832e2eccb73af230d8920a",
+      "sourceSha256": "d0a67982c3bea168870c204994681ce098bdcdcdce7cb4f11d0d173858a0cc73"
+    },
+    {
+      "path": "examples/029-retry-in-progress-executes-twice/README.md",
+      "change": "modified",
+      "bytes": 20675,
+      "sha256": "4bc67788072d09437ad5b86fe04b8d1cff599f77abcada7a2d2e89b8c03c5e76",
+      "sourceSha256": "ee6913fa5cff6a872313e303f5580dcab79e7c35b4061528a15e3c3d7fe833b8"
+    },
+    {
+      "path": "examples/029-retry-in-progress-executes-twice/result.json",
+      "change": "modified",
+      "bytes": 9064,
+      "sha256": "61ab3f9417455698384ef65866d85db64bc9a21501f70a1b4467093530250b80",
+      "sourceSha256": "e14d0886223f64104631a4c64eab767b7a2022f30132df61ad251484d1ed5818"
+    },
+    {
+      "path": "examples/029-retry-in-progress-executes-twice/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6760,
+      "sha256": "16bd6aba42b000a72dab733cd667df143fc0fb85746aee40078117ecdb4dc633",
+      "sourceSha256": "be97faf986c3a9ce0d9b05d74c7b1ed7e05ea35e4acb736f33fa988ccb433553"
+    },
+    {
+      "path": "examples/030-stored-failures-proved-at-most-once/README.md",
+      "change": "modified",
+      "bytes": 16589,
+      "sha256": "79c8f02a8f2d57dccdf48a6a28fbb566b582a8ac65f41dc49665c6d7df05660e",
+      "sourceSha256": "69caa06d63be1ab91eecb8d9596aa09f10842f07bf2dcd38b9edd89cf00a66f9"
+    },
+    {
+      "path": "examples/030-stored-failures-proved-at-most-once/result.json",
+      "change": "modified",
+      "bytes": 7282,
+      "sha256": "4bfe06bed54aa84c79b6f1341b9efb313b9a542d9f87aff653aac0a9b41f6870",
+      "sourceSha256": "7bf35b08fa5a11a2444b0d85c24775c47837c513683682dd11ac9c7338247a9c"
+    },
+    {
+      "path": "examples/030-stored-failures-proved-at-most-once/verifier-output.txt",
+      "change": "modified",
+      "bytes": 4411,
+      "sha256": "196df88626079b65f3447b9ce38385ecb6935109ae2fc5faeac7ae5a7220a015",
+      "sourceSha256": "25ea77eb981604607b443a7ec36a5e4a49077ba99dcb5187e2c927a5a2abba46"
+    },
+    {
+      "path": "examples/031-rate-limiter-that-never-refills-under-steady-polling/result.json",
+      "change": "modified",
+      "bytes": 2896,
+      "sha256": "5be31c937b6bc648e39a04563f870f48fc16a6c546e4a5c2cc808cf9854b584c",
+      "sourceSha256": "fd93ea9bfae80195fcda1a5e18cea13cae4a6cedaf980a56b53daacdaa408617"
+    },
+    {
+      "path": "examples/032-batch-listener-that-commits-past-a-failed-record/result.json",
+      "change": "modified",
+      "bytes": 2598,
+      "sha256": "1829515e52cc2287ceda6c1522cdde88f665f6a224c0015b18d47b043aff7480",
+      "sourceSha256": "9b608e2c62d4696260038f33e79c9798778566e51539d3dc3bb578ab0daf2580"
+    },
+    {
+      "path": "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/result.json",
+      "change": "modified",
+      "bytes": 1941,
+      "sha256": "85bac854f4060f571ff173a1452b90b62858f509e08be768ee79623c5fc977a2",
+      "sourceSha256": "d376dab78df2f5b89b615f294eaaaafa2e30e44c66ca24af35eee8adbc5aacab"
+    },
+    {
+      "path": "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md",
+      "change": "modified",
+      "bytes": 131317,
+      "sha256": "18555544c6190369142d470ac7c2b80ff19fcb04a1948ee428b957f24a18cc4d",
+      "sourceSha256": "3e4d5c3902cd0f6fac2e26b40cf7bef43c65505791bbaafe04a0001180676f01"
+    },
+    {
+      "path": "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/result.json",
+      "change": "modified",
+      "bytes": 15150,
+      "sha256": "11601e3e46ddb00c029718d9cdaa4b888d3ae48b5b7ada42ee26e3a39e021b04",
+      "sourceSha256": "6472259f7baaeed99652127d3347fbc9bcd3407e89d8581ed4a71c4d33d94817"
+    },
+    {
+      "path": "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/verifier-output.txt",
+      "change": "modified",
+      "bytes": 107233,
+      "sha256": "134aca134cdf9a07099cf35e1e448b47ef5b158ef49615fb6e0141d39041f7d2",
+      "sourceSha256": "41805b8750e8e584887dcdca8f1c66ca91bc7576df21d60928499abdca900632"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md",
+      "change": "modified",
+      "bytes": 28248,
+      "sha256": "5f3900327e4e1c7d7f9995e1702836e3f050a6f4241c81a31f30a16d892c1bad",
+      "sourceSha256": "265d8e0385878564bd9780cffdeaae30809132421df470db67066110c4c7b2dd"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "change": "modified",
+      "bytes": 15120,
+      "sha256": "84a7156eea168cee3a177624cfea3585506b48b8b2c37cd89b450c9d39c2e0d7",
+      "sourceSha256": "fcb64ab74bc97681a5b436a1ab6e66ed758be281c4fb089d0bf40532955de723"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6986,
+      "sha256": "b5cdfaadf159b391b0cc99febd45dcecc977b3cf7ea8cec5fa32ad6e27698485",
+      "sourceSha256": "1a128ca8310a9ccc492e285376c7f2c4daa2858b393796d0dbe678b65eb1bf87"
+    },
+    {
+      "path": "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md",
+      "change": "modified",
+      "bytes": 135036,
+      "sha256": "853fe7e9e8e0c653b2aeac33a4a83dfa04481a2f6d96e2d8696975aa59a367a8",
+      "sourceSha256": "5377bbd38a23ccc95ca8526bee9806aa6e6683974a0e6f578a0c469842390768"
+    },
+    {
+      "path": "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/result.json",
+      "change": "modified",
+      "bytes": 18229,
+      "sha256": "1ee9263dc70963e5b01ecda53568e0e17fb999b6fa717bca933449e96e6af063",
+      "sourceSha256": "cdb60f9a96eac7ba69789a288ebd26a2a1b0bf8010b62c9e92a8c240929e8507"
+    },
+    {
+      "path": "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/verifier-output.txt",
+      "change": "modified",
+      "bytes": 110111,
+      "sha256": "51954a4c476297968f6c6f705b25aeaa5d5b38a11b4f31977efd851c7f3b3a2d",
+      "sourceSha256": "303c98c3d8ae94599aad03af7925d758ab6d970f54fe9e70b19fc990814569b3"
+    },
+    {
+      "path": "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md",
+      "change": "modified",
+      "bytes": 24166,
+      "sha256": "4e50d38923533481b4c5cba6dc83bcb3c4a2a690eb92de5505fd530c3f699b80",
+      "sourceSha256": "844684e5337153f7627fb538770e445b83f483994314fe538c2a3a52b19f2868"
+    },
+    {
+      "path": "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/result.json",
+      "change": "modified",
+      "bytes": 10453,
+      "sha256": "edac6f41680a2b380560762c05f0fd395bdb3c97ec1a89392ad9251ef8c0f630",
+      "sourceSha256": "5be02a24a02ea6dc70317239c172696799138318a01e06f9ae31ee8b284531c7"
+    },
+    {
+      "path": "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/verifier-output.txt",
+      "change": "modified",
+      "bytes": 5687,
+      "sha256": "2633a5ab65b046258073e042f18dc6e182240fa2cc6e73bdf4a55482743e17a1",
+      "sourceSha256": "ae8bbbbf899cdc69c9caa81b60d3d8c7a159093e869f6e55e1d39372d0dee1f7"
+    },
+    {
+      "path": "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md",
+      "change": "modified",
+      "bytes": 28556,
+      "sha256": "2bd54b0ad8ac7c901979ad8110cf9fc82a9eca53c073ad4cbb759d4cc577fbdf",
+      "sourceSha256": "6811c28d94900f195bcf74f5365ed882c943190d4144faedfc582c148a7c108c"
+    },
+    {
+      "path": "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/result.json",
+      "change": "modified",
+      "bytes": 15982,
+      "sha256": "6f43b25a1a9ce08c03d9149821abd69c7e6f79986b6a0d8ca3bc1194a41872c3",
+      "sourceSha256": "9bb6cf9dc773f26db73cfe1f3873c77797fd4256b5f5eb9ddefe4951910ba0ea"
+    },
+    {
+      "path": "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/verifier-output.txt",
+      "change": "modified",
+      "bytes": 4850,
+      "sha256": "1a0d09aee075c2c477a38b65d8809398a9ccab4957c36fdba304a3d35a3eabac",
+      "sourceSha256": "63036b7be696d0ad8867ef1336ac4270f26c4fec5a334d055b1c9994824f17b5"
+    },
+    {
+      "path": "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md",
+      "change": "modified",
+      "bytes": 26603,
+      "sha256": "d645a227ca475ed2b2b734bb3a5d265266ed3218fddb697cc11e0197763269ff",
+      "sourceSha256": "d0bf6f0454481e110b9806a2228243d2dc821ea492aa6e60126f1d61f8b78269"
+    },
+    {
+      "path": "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/result.json",
+      "change": "modified",
+      "bytes": 13265,
+      "sha256": "6c2cd8e80fead658cecb5d8f80641c0f01b43c8a00fb8cf4ffadfb74ca9d3f0d",
+      "sourceSha256": "9c10777d96d73b25a851e6551ad60907de3e675074fe07aa66d1bbe6efb85d03"
+    },
+    {
+      "path": "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/verifier-output.txt",
+      "change": "modified",
+      "bytes": 5984,
+      "sha256": "f8b2e267decd10336f049a3f6a24231561e0fc0d35f6a1f78aef75844480b5bc",
+      "sourceSha256": "f863551e0845a3259eaaad2c470b45533e4bc4321e8c6c558ed9d441c5b4145b"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-03T03:52:01+00:00",
+    "applied": [
+      "examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/result.json",
+      "examples/024-clock-skew-applied-on-the-wrong-side-of-not-before/result.json",
+      "examples/025-transaction-that-commits-after-an-error/result.json",
+      "examples/026-half-open-breaker-that-closes-on-the-first-good-probe/result.json",
+      "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md",
+      "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.json",
+      "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.sarif",
+      "examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/verifier-output.txt",
+      "examples/028-retry-that-sleeps-on-the-caller-thread/result.json",
+      "examples/029-retry-in-progress-executes-twice/README.md",
+      "examples/029-retry-in-progress-executes-twice/result.json",
+      "examples/029-retry-in-progress-executes-twice/verifier-output.txt",
+      "examples/030-stored-failures-proved-at-most-once/README.md",
+      "examples/030-stored-failures-proved-at-most-once/result.json",
+      "examples/030-stored-failures-proved-at-most-once/verifier-output.txt",
+      "examples/031-rate-limiter-that-never-refills-under-steady-polling/result.json",
+      "examples/032-batch-listener-that-commits-past-a-failed-record/result.json",
+      "examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/result.json",
+      "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md",
+      "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/result.json",
+      "examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/verifier-output.txt",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt",
+      "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md",
+      "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/result.json",
+      "examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/verifier-output.txt",
+      "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md",
+      "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/result.json",
+      "examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/verifier-output.txt",
+      "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md",
+      "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/result.json",
+      "examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/verifier-output.txt",
+      "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md",
+      "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/result.json",
+      "examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "91044de09f783fa72d1c8c9a4767b04ae230a1a2",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/91044de09f783fa72d1c8c9a4767b04ae230a1a2/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

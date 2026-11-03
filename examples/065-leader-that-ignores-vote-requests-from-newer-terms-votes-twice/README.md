@@ -271,14 +271,14 @@ Revert. The rule the developer wanted exists, in Ongaro's thesis (section 4.2.3)
 
 ## Evidence
 
-How the verdict was reached: three servers: TLC 2.19 explored 657 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 2,855 distinct states to depth 13 in 2 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 657 distinct states to depth 8 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 607 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 24,515 distinct states to depth 15 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 91 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
+How the verdict was reached: three servers: TLC 2.19 explored 657 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 2,855 distinct states to depth 13 in 3 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 657 distinct states to depth 8 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 607 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 24,515 distinct states to depth 15 in 9 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 91 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three servers: spec/RaftElection.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2627785] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 943456] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -293,9 +293,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:21)
+Starting... (2026-11-02 21:37:09)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:21.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:09.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -405,11 +405,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 2156 states generated, 657 distinct states found, 307 states left on queue.
 The depth of the complete state graph search is 8.
 The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
-Finished in 01s at (2026-11-02 03:39:22)
+Finished in 01s at (2026-11-02 21:37:10)
 
 == the inductive step: spec/RaftElectionInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2627893] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 943564] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -424,7 +424,7 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:23)
+Starting... (2026-11-02 21:37:11)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -440,7 +440,7 @@ Computed 2048 initial states...
 Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
-Finished computing initial states: 17470 distinct states generated at 2026-11-02 03:39:28.
+Finished computing initial states: 17470 distinct states generated at 2026-11-02 21:37:17.
 Error: Invariant VotesAreBound is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -501,11 +501,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 17911 states generated, 17471 distinct states found, 17349 states left on queue.
 The depth of the complete state graph search is 2.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 05s at (2026-11-02 03:39:28)
+Finished in 06s at (2026-11-02 21:37:17)
 
 == four servers: spec/RaftElectionFour.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2628199] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 943928] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -520,9 +520,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:29)
+Starting... (2026-11-02 21:37:18)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:29.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:18.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -682,11 +682,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 21856 states generated, 2855 distinct states found, 429 states left on queue.
 The depth of the complete state graph search is 13.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 9 and the 95th percentile is 4).
-Finished in 02s at (2026-11-02 03:39:31)
+Finished in 03s at (2026-11-02 21:37:21)
 
 == fairness: spec/RaftElectionLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2628382] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 944139] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -701,10 +701,10 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:32)
+Starting... (2026-11-02 21:37:21)
 Implied-temporal checking--satisfiability problem has 4 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:32.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:22.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -814,11 +814,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 2156 states generated, 657 distinct states found, 307 states left on queue.
 The depth of the complete state graph search is 8.
 The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
-Finished in 02s at (2026-11-02 03:39:34)
+Finished in 02s at (2026-11-02 21:37:24)
 
 == a server left behind: spec/RaftElectionLogs.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2628517] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 944308] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -833,9 +833,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:35)
+Starting... (2026-11-02 21:37:24)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:35.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:25.
 Error: Invariant ElectionSafety is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -954,11 +954,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 3240 states generated, 607 distinct states found, 25 states left on queue.
 The depth of the complete state graph search is 10.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
-Finished in 01s at (2026-11-02 03:39:35)
+Finished in 01s at (2026-11-02 21:37:26)
 
 == delayed replies: spec/RaftElectionDelayed.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2628635] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 944453] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -973,9 +973,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:36)
+Starting... (2026-11-02 21:37:26)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:36.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:27.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -1010,11 +1010,11 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 142144 states generated, 24515 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 15.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 07s at (2026-11-02 03:39:43)
+Finished in 09s at (2026-11-02 21:37:35)
 
 == history: spec/RaftElectionHistory.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2629030] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 944917] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftElection.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -1029,9 +1029,9 @@ Semantic processing of module TLC
 Semantic processing of module RoleMachineContract
 Semantic processing of module VoteRuleContract
 Semantic processing of module RaftElection
-Starting... (2026-11-02 03:39:44)
+Starting... (2026-11-02 21:37:36)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 03:39:44.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:37:37.
 Error: Invariant AtMostOneVotePerTerm is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -1123,7 +1123,7 @@ Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes:
 168 states generated, 91 distinct states found, 61 states left on queue.
 The depth of the complete state graph search is 5.
 The average outdegree of the complete state graph is 3 (minimum is 1, the maximum 6 and the 95th percentile is 6).
-Finished in 00s at (2026-11-02 03:39:44)
+Finished in 00s at (2026-11-02 21:37:37)
 ```
 
 </details>

@@ -149,7 +149,7 @@ Move the jitter to the caller: the kernel returns the undithered delay, and the 
 
 ## Evidence
 
-The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.IllegalStateException.<init>`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
+The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.util.List.copyOf`, `java.util.List.of`.
 
 <details><summary>Verifier output</summary>
 
@@ -157,10 +157,16 @@ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lan
 ✗ Capabilities of module quorum differ from its contract:
   added randomness: net.terminalvalue.quorum.backoff.Backoff.delayMillis calls java.util.concurrent.ThreadLocalRandom.current
   added randomness: net.terminalvalue.quorum.backoff.Backoff.delayMillis calls java.util.concurrent.ThreadLocalRandom.nextLong
-  (27 classes, 100 methods, 2 capability uses, 0 libraries)
-✓ module quorum matches its API contract (25 public types, 97 members)
+  (70 classes, 272 methods, 2 capability uses, 0 libraries)
+✓ module quorum matches its API contract (63 public types, 247 members)
+✓ net.terminalvalue.quorum.raft.AppendRule#decide matches its contract (36 cases, 9 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.util.List.copyOf, java.util.List.of)
+✓ net.terminalvalue.quorum.raft.CommitRule#decide matches its contract (21 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>, java.lang.Record.<init>, java.util.List.copyOf, java.util.List.of)
+✓ net.terminalvalue.quorum.raft.ReplyRule#decide matches its contract (9 cases, 6 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.util.List.copyOf, java.util.List.of)
 ✓ net.terminalvalue.quorum.raft.RoleMachine#decide matches its contract (52 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.quorum.raft.VoteRule#decide matches its contract (40 cases, 7 methods proven pure, trusting java.lang.Record.<init>, java.util.List.copyOf, java.util.List.of)
 ✓ net.terminalvalue.quorum.twopc.Coordinator#decide matches its contract (28 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.quorum.twopc.Participant#decide matches its contract (40 cases, 9 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+✓ net.terminalvalue.quorum.twopc.Recovery#decide matches its contract (8 cases, 3 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 
 If the module is meant to have this capability, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers the new power and where it is used.
 ```

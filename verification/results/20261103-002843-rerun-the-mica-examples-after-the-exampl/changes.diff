@@ -1,0 +1,652 @@
+--- a/examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value/result.json
++++ b/examples/034-idiv-overflow-check-throws-where-the-jvm-returns-min-value/result.json
+@@ -44,6 +44,7 @@
+     ]
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/README.md
++++ b/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/README.md
+@@ -114,7 +114,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean.
++How the verdict was reached: found by JBMC 6.11.0 in 0.2 s as fcmp(a=NaN, b=0.0, nanIsGreater=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -123,7 +123,7 @@
+   fcmp(a=NaN, b=0.0, nanIsGreater=false)
+     before: -1
+     after:  1
+-  (found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean)
++  (found by JBMC 6.11.0 in 0.2 s as fcmp(a=NaN, b=0.0, nanIsGreater=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/result.json
++++ b/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/result.json
+@@ -29,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean",
++  "proof": "found by JBMC 6.11.0 in 0.2 s as fcmp(a=NaN, b=0.0, nanIsGreater=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -37,6 +37,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/verifier-output.txt
++++ b/examples/035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/verifier-output.txt
+@@ -2,6 +2,6 @@
+   fcmp(a=NaN, b=0.0, nanIsGreater=false)
+     before: -1
+     after:  1
+-  (found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean)
++  (found by JBMC 6.11.0 in 0.2 s as fcmp(a=NaN, b=0.0, nanIsGreater=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/037-table-size-rewritten-with-leading-zeros-proved-equal/result.json
++++ b/examples/037-table-size-rewritten-with-leading-zeros-proved-equal/result.json
+@@ -31,6 +31,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/README.md
++++ b/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/README.md
+@@ -128,8 +128,8 @@
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✗ Behaviour of net.terminalvalue.mica.verify.Assignability#isAssignable differs from its contract in 2 of 289 cases:
+--- a/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/result.json
++++ b/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/result.json
+@@ -50,6 +50,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/verifier-output.txt
++++ b/examples/038-verifier-object-fast-path-accepts-uninitialized-objects/verifier-output.txt
+@@ -1,5 +1,5 @@
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✗ Behaviour of net.terminalvalue.mica.verify.Assignability#isAssignable differs from its contract in 2 of 289 cases:
+--- a/examples/039-protected-access-without-the-receiver-rule/README.md
++++ b/examples/039-protected-access-without-the-receiver-rule/README.md
+@@ -96,8 +96,8 @@
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✗ Behaviour of net.terminalvalue.mica.link.AccessControl#check differs from its contract in 1 of 120 cases:
+   check(PROTECTED, SUBCLASS_IN_OTHER_PACKAGE, false, false)
+--- a/examples/039-protected-access-without-the-receiver-rule/result.json
++++ b/examples/039-protected-access-without-the-receiver-rule/result.json
+@@ -45,6 +45,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/039-protected-access-without-the-receiver-rule/verifier-output.txt
++++ b/examples/039-protected-access-without-the-receiver-rule/verifier-output.txt
+@@ -1,5 +1,5 @@
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✗ Behaviour of net.terminalvalue.mica.link.AccessControl#check differs from its contract in 1 of 120 cases:
+   check(PROTECTED, SUBCLASS_IN_OTHER_PACKAGE, false, false)
+--- a/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/README.md
++++ b/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/README.md
+@@ -127,8 +127,8 @@
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✓ net.terminalvalue.mica.verify.Assignability#isAssignable matches its contract (289 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalArgumentException.<init>, java.lang.String.valueOf, java.lang.invoke.StringConcatFactory.makeConcatWithConstants)
+--- a/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/result.json
++++ b/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/result.json
+@@ -39,6 +39,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/verifier-output.txt
++++ b/examples/040-nestmate-private-access-reviewed-as-a-contract-diff/verifier-output.txt
+@@ -1,5 +1,5 @@
+-✓ module mica matches its capability contract (26 classes, 96 methods, 0 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++✓ module mica matches its capability contract (30 classes, 106 methods, 0 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✓ net.terminalvalue.mica.verify.Assignability#isAssignable matches its contract (289 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalArgumentException.<init>, java.lang.String.valueOf, java.lang.invoke.StringConcatFactory.makeConcatWithConstants)
+--- a/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/README.md
++++ b/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/README.md
+@@ -177,8 +177,8 @@
+ ✗ Capabilities of module mica differ from its contract:
+   added reflection: net.terminalvalue.mica.interp.Intrinsics.<clinit> calls java.lang.invoke.MethodHandles.lookup
+   added reflection: net.terminalvalue.mica.interp.Intrinsics.unary calls java.lang.invoke.MethodHandles$Lookup.findStatic
+-  (26 classes, 97 methods, 2 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++  (30 classes, 107 methods, 2 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✓ net.terminalvalue.mica.verify.Assignability#isAssignable matches its contract (289 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalArgumentException.<init>, java.lang.String.valueOf, java.lang.invoke.StringConcatFactory.makeConcatWithConstants)
+--- a/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/result.json
++++ b/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/result.json
+@@ -18,7 +18,7 @@
+     "code": "package net.terminalvalue.mica.interp;\n\nimport java.lang.invoke.MethodHandle;\nimport java.lang.invoke.MethodHandles;\nimport java.lang.invoke.MethodType;\nimport java.util.OptionalDouble;\n\n/**\n * The interpreter's substitutes for the native methods of the guest's {@code java.lang.StrictMath}: computed on\n * the host, by name. Any unary double function of the host's {@code StrictMath} is found by its name, so the\n * list no longer has to be kept in step with the JDK.\n */\npublic final class Intrinsics {\n\n    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();\n    private static final MethodType UNARY = MethodType.methodType(double.class, double.class);\n\n    private Intrinsics() {}\n\n    /** The value of the unary function {@code name} of {@code java.lang.StrictMath} at {@code x}, if it is intrinsic. */\n    public static OptionalDouble unary(String name, double x) {\n        MethodHandle function;\n        try {\n            function = LOOKUP.findStatic(StrictMath.class, name, UNARY);\n        } catch (NoSuchMethodException | IllegalAccessException e) {\n            return OptionalDouble.empty();\n        }\n        try {\n            return OptionalDouble.of((double) function.invokeExact(x));\n        } catch (Throwable t) {\n            throw new IllegalStateException(name, t);\n        }\n    }\n}\n"
+   },
+   "casesTotal": 30,
+-  "domain": "26 classes, 97 methods",
++  "domain": "30 classes, 107 methods",
+   "counterexamples": [
+     {
+       "input": "reflection",
+@@ -50,6 +50,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/verifier-output.txt
++++ b/examples/041-math-intrinsics-through-method-handles-give-the-interpreter-reflection/verifier-output.txt
+@@ -1,8 +1,8 @@
+ ✗ Capabilities of module mica differ from its contract:
+   added reflection: net.terminalvalue.mica.interp.Intrinsics.<clinit> calls java.lang.invoke.MethodHandles.lookup
+   added reflection: net.terminalvalue.mica.interp.Intrinsics.unary calls java.lang.invoke.MethodHandles$Lookup.findStatic
+-  (26 classes, 97 methods, 2 capability uses, 0 libraries)
+-✓ module mica matches its API contract (24 public types, 105 members)
++  (30 classes, 107 methods, 2 capability uses, 0 libraries)
++✓ module mica matches its API contract (28 public types, 113 members)
+ ✓ net.terminalvalue.mica.init.ClassInitialization#decide matches its contract (30 cases, 7 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.mica.link.AccessControl#check matches its contract (120 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>)
+ ✓ net.terminalvalue.mica.verify.Assignability#isAssignable matches its contract (289 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalArgumentException.<init>, java.lang.String.valueOf, java.lang.invoke.StringConcatFactory.makeConcatWithConstants)
+--- a/examples/042-class-init-that-proceeds-while-another-thread-initializes/README.md
++++ b/examples/042-class-init-that-proceeds-while-another-thread-initializes/README.md
+@@ -153,7 +153,7 @@
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304636] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 914167] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/mica/spec/ClassInit.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -164,9 +164,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module ClassInitContract
+ Semantic processing of module ClassInit
+-Starting... (2026-11-02 01:45:32)
++Starting... (2026-11-02 21:29:32)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:32.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:32.
+ Error: Invariant UsedOnlyWhenInitialized is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -206,7 +206,7 @@
+ 8 states generated, 7 distinct states found, 4 states left on queue.
+ The depth of the complete state graph search is 3.
+ The average outdegree of the complete state graph is 3 (minimum is 3, the maximum 3 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 01:45:32)
++Finished in 00s at (2026-11-02 21:29:32)
+ ```
+ 
+ </details>
+--- a/examples/042-class-init-that-proceeds-while-another-thread-initializes/result.json
++++ b/examples/042-class-init-that-proceeds-while-another-thread-initializes/result.json
+@@ -65,6 +65,7 @@
+         "label": "the model",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/042-class-init-that-proceeds-while-another-thread-initializes/verifier-output.txt
++++ b/examples/042-class-init-that-proceeds-while-another-thread-initializes/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304636] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 914167] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/mica/spec/ClassInit.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module ClassInitContract
+ Semantic processing of module ClassInit
+-Starting... (2026-11-02 01:45:32)
++Starting... (2026-11-02 21:29:32)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:32.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:32.
+ Error: Invariant UsedOnlyWhenInitialized is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -52,4 +52,4 @@
+ 8 states generated, 7 distinct states found, 4 states left on queue.
+ The depth of the complete state graph search is 3.
+ The average outdegree of the complete state graph is 3 (minimum is 3, the maximum 3 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 01:45:32)
++Finished in 00s at (2026-11-02 21:29:32)
+--- a/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/README.md
++++ b/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/README.md
+@@ -154,7 +154,7 @@
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304870] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 914398] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/mica/spec/ClassInit.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -165,9 +165,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module ClassInitContract
+ Semantic processing of module ClassInit
+-Starting... (2026-11-02 01:45:34)
++Starting... (2026-11-02 21:29:35)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:34.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:36.
+ Error: Deadlock reached.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -217,7 +217,7 @@
+ 88 states generated, 49 distinct states found, 8 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 5).
+-Finished in 00s at (2026-11-02 01:45:34)
++Finished in 00s at (2026-11-02 21:29:36)
+ ```
+ 
+ </details>
+--- a/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/result.json
++++ b/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/result.json
+@@ -79,6 +79,7 @@
+         "label": "the model",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/verifier-output.txt
++++ b/examples/043-class-init-that-waits-on-its-own-thread-deadlocks/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2304870] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 914398] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/mica/spec/ClassInit.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module ClassInitContract
+ Semantic processing of module ClassInit
+-Starting... (2026-11-02 01:45:34)
++Starting... (2026-11-02 21:29:35)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 01:45:34.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:36.
+ Error: Deadlock reached.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -62,4 +62,4 @@
+ 88 states generated, 49 distinct states found, 8 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 5).
+-Finished in 00s at (2026-11-02 01:45:34)
++Finished in 00s at (2026-11-02 21:29:36)
+--- a/examples/044-modified-utf8-with-a-one-byte-nul/result.json
++++ b/examples/044-modified-utf8-with-a-one-byte-nul/result.json
+@@ -40,6 +40,7 @@
+     "assume": null
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/045-lookupswitch-midpoint-by-division-proved-safe-within-a-code-attribute/result.json
++++ b/examples/045-lookupswitch-midpoint-by-division-proved-safe-within-a-code-attribute/result.json
+@@ -34,6 +34,7 @@
+     "assume": "low >= 0 && low <= high && high < 8190"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/README.md
++++ b/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/README.md
+@@ -137,12 +137,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.3 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.6 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find satisfies `(result == -1 && (\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)` on every input where (\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]) (JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find satisfies `(result == -1 && (\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)` on every input where (\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]) (JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.6 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+--- a/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/result.json
++++ b/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/result.json
+@@ -23,7 +23,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.3 s; loops unwound 16 times with unwinding assertions",
++  "proof": "JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.6 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -34,6 +34,7 @@
+     "assume": "(\\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i])"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/verifier-output.txt
++++ b/examples/046-lookupswitch-bisection-rewritten-half-open-proved-to-find-every-key/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find satisfies `(result == -1 && (\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)` on every input where (\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]) (JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find satisfies `(result == -1 && (\forall int i; 0 <= i && i < matches.length; matches[i] != key)) || (result >= 0 && result < matches.length && matches[result] == key)` on every input where (\forall int i; 0 < i && i < matches.length; matches[i - 1] < matches[i]) (JBMC 6.11.0: 5 properties proved over matches: int[] of length ≤ 8 × key: int in 4.6 s; loops unwound 16 times with unwinding assertions)
+--- a/examples/047-exception-table-with-an-inclusive-end-pc/result.json
++++ b/examples/047-exception-table-with-an-inclusive-end-pc/result.json
+@@ -40,6 +40,7 @@
+     "assume": "startPc.length == endPc.length"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/README.md
++++ b/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/README.md
+@@ -182,7 +182,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 2.0 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
++How the verdict was reached: found by JBMC 6.11.0 in 2.5 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -190,7 +190,7 @@
+ ✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` where out.length >= 3 * chars.length:
+   encodeInto(chars=['\ud800', '\udc00'], out=[0, 0, 0, 0, 0, 0])
+     outcome: 4, leaving out=[-16, -112, -128, -128, 0, 0]
+-  (found by JBMC 6.11.0 in 2.0 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by JBMC 6.11.0 in 2.5 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+ ```
+--- a/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/result.json
++++ b/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/result.json
+@@ -29,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 2.0 s searching inputs in [0:20] as encodeInto(chars=['\\udbe4', '\\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
++  "proof": "found by JBMC 6.11.0 in 2.5 s searching inputs in [0:20] as encodeInto(chars=['\\udbe4', '\\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -40,6 +40,7 @@
+     "assume": "out.length >= 3 * chars.length"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/verifier-output.txt
++++ b/examples/048-constant-pool-encoder-that-writes-supplementary-characters-in-four-bytes/verifier-output.txt
+@@ -1,6 +1,6 @@
+ ✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` where out.length >= 3 * chars.length:
+   encodeInto(chars=['\ud800', '\udc00'], out=[0, 0, 0, 0, 0, 0])
+     outcome: 4, leaving out=[-16, -112, -128, -128, 0, 0]
+-  (found by JBMC 6.11.0 in 2.0 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by JBMC 6.11.0 in 2.5 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+--- a/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/README.md
++++ b/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/README.md
+@@ -104,12 +104,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 66.6 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.classfile.StackMapTable#offsetOf satisfies `result == k + (\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))` on every input where 0 <= k && k < offsetDelta.length && (\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535) (JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.classfile.StackMapTable#offsetOf satisfies `result == k + (\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))` on every input where 0 <= k && k < offsetDelta.length && (\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535) (JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 66.6 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+--- a/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/result.json
++++ b/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/result.json
+@@ -23,7 +23,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions",
++  "proof": "JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 66.6 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -34,6 +34,7 @@
+     "assume": "0 <= k && k < offsetDelta.length && (\\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535)"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/verifier-output.txt
++++ b/examples/049-stack-map-offset-loop-without-the-first-frame-special-case/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.mica.classfile.StackMapTable#offsetOf satisfies `result == k + (\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))` on every input where 0 <= k && k < offsetDelta.length && (\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535) (JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.classfile.StackMapTable#offsetOf satisfies `result == k + (\sum int i; 0 <= i && i <= k; offsetDelta[i]) && (k == 0 || result > offsetOf(offsetDelta, k - 1))` on every input where 0 <= k && k < offsetDelta.length && (\forall int i; 0 <= i && i < offsetDelta.length; offsetDelta[i] >= 0 && offsetDelta[i] <= 65535) (JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 66.6 s; loops unwound 16 times with unwinding assertions)
+--- a/examples/050-code-attribute-length-that-leaves-out-the-nested-attribute-headers/result.json
++++ b/examples/050-code-attribute-length-that-leaves-out-the-nested-attribute-headers/result.json
+@@ -40,6 +40,7 @@
+     "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/051-constant-pool-index-that-counts-the-long-entry-itself/result.json
++++ b/examples/051-constant-pool-index-that-counts-the-long-entry-itself/result.json
+@@ -40,6 +40,7 @@
+     "assume": "0 <= entry && entry < tags.length"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/052-max-stack-that-checks-the-depth-only-after-a-push/README.md
++++ b/examples/052-max-stack-that-checks-the-depth-only-after-a-push/README.md
+@@ -113,12 +113,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 30.5 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 25.1 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.asm.MaxStack#of satisfies `result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))` on every input where (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2) (JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 30.5 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.asm.MaxStack#of satisfies `result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))` on every input where (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2) (JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 25.1 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+--- a/examples/052-max-stack-that-checks-the-depth-only-after-a-push/result.json
++++ b/examples/052-max-stack-that-checks-the-depth-only-after-a-push/result.json
+@@ -23,7 +23,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 30.5 s; loops unwound 16 times with unwinding assertions",
++  "proof": "JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 25.1 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -34,6 +34,7 @@
+     "assume": "(\\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2)"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/052-max-stack-that-checks-the-depth-only-after-a-push/verifier-output.txt
++++ b/examples/052-max-stack-that-checks-the-depth-only-after-a-push/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.mica.asm.MaxStack#of satisfies `result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))` on every input where (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2) (JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 30.5 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.asm.MaxStack#of satisfies `result == (\max int k; 0 <= k && k <= delta.length; (\sum int i; 0 <= i && i < k; delta[i]))` on every input where (\forall int i; 0 <= i && i < delta.length; delta[i] >= -255 && delta[i] <= 2) (JBMC 6.11.0: 5 properties proved over delta: int[] of length ≤ 8 in 25.1 s; loops unwound 16 times with unwinding assertions)
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
+@@ -37,6 +37,7 @@
+     ]
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/054-exception-table-check-that-rejects-a-range-ending-at-code-length/result.json
++++ b/examples/054-exception-table-check-that-rejects-a-range-ending-at-code-length/result.json
+@@ -44,6 +44,7 @@
+     ]
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/README.md
++++ b/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/README.md
+@@ -121,7 +121,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.8 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
++How the verdict was reached: found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -129,7 +129,7 @@
+ ✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` where out.length >= 3 * chars.length:
+   encodeInto(chars=[], out=[-1])
+     outcome: 0, leaving out=[0]
+-  (found by JBMC 6.11.0 in 0.8 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+ ```
+--- a/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/result.json
++++ b/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/result.json
+@@ -29,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.8 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
++  "proof": "found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -40,6 +40,7 @@
+     "assume": "out.length >= 3 * chars.length"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/verifier-output.txt
++++ b/examples/055-encoder-that-zero-terminates-into-the-callers-buffer/verifier-output.txt
+@@ -1,6 +1,6 @@
+ ✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` where out.length >= 3 * chars.length:
+   encodeInto(chars=[], out=[-1])
+     outcome: 0, leaving out=[0]
+-  (found by JBMC 6.11.0 in 0.8 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
+--- a/examples/056-switch-pair-sort-that-compares-keys-by-difference/result.json
++++ b/examples/056-switch-pair-sort-that-compares-keys-by-difference/result.json
+@@ -43,6 +43,7 @@
+     ]
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }

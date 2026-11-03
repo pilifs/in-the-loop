@@ -1,0 +1,43 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: property holds on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "startLine": 11,
+    "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}.\n     * The one overflow, {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no\n     * exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend % divisor;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+    "startLine": 11,
+    "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}, which\n     * is what the host's own {@code idiv} throws, so the kernel does not check first. The one overflow,\n     * {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        return dividend % divisor;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "dividend: int × divisor: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
+    "assume": null,
+    "throws": [
+      "java.lang.ArithmeticException when divisor == 0"
+    ]
+  },
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

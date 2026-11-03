@@ -1,0 +1,1278 @@
+--- a/examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/result.json
++++ b/examples/023-abs-partitioner-sends-one-key-to-a-negative-partition/result.json
+@@ -40,6 +40,7 @@
+     "assume": "numPartitions > 0"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/024-clock-skew-applied-on-the-wrong-side-of-not-before/result.json
++++ b/examples/024-clock-skew-applied-on-the-wrong-side-of-not-before/result.json
+@@ -40,6 +40,7 @@
+     "assume": "skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/025-transaction-that-commits-after-an-error/result.json
++++ b/examples/025-transaction-that-commits-after-an-error/result.json
+@@ -45,6 +45,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/026-half-open-breaker-that-closes-on-the-first-good-probe/result.json
++++ b/examples/026-half-open-breaker-that-closes-on-the-first-good-probe/result.json
+@@ -50,6 +50,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": "stateDiagram-v2\n    CLOSED --> CLOSED: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    CLOSED --> CLOSED: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    CLOSED --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    CLOSED --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] → effects=[RESET_METRICS]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=false] → effects=[PERMIT]\n    HALF_OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[PERMIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] → effects=[START_WAIT]\n    HALF_OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] → effects=[START_WAIT]\n    OPEN --> HALF_OPEN: CallRequested[waitElapsed=true] → effects=[RESET_METRICS, PERMIT]\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    CLOSED --> CLOSED: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallRequested[waitElapsed=false] (Rejected)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false] (Unchanged)\n    OPEN --> OPEN: CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true] (Unchanged)\n",
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md
++++ b/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md
+@@ -86,7 +86,7 @@
+ 
+ | Input | Before | After |
+ |---|---|---|
+-| `shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)` | `true` | `false` |
++| `shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)` | `true` | `false` |
+ 
+ One disagreeing input is enough to fail the build. The domain is `status: int × idempotent: boolean × attempt: int × maxAttempts: int`; the search tries small values first so that the witness is readable, and would have covered all of it.
+ 
+@@ -112,16 +112,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int.
++How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ ✗ Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:
+-  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)
++  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)
+     before: true
+     after:  false
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+@@ -204,7 +204,7 @@
+           "ruleId": "behaviour-changed",
+           "level": "error",
+           "message": {
+-            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
++            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
+           },
+           "locations": [
+             {
+--- a/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.json
++++ b/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.json
+@@ -21,7 +21,7 @@
+   "domain": "status: int × idempotent: boolean × attempt: int × maxAttempts: int",
+   "counterexamples": [
+     {
+-      "input": "shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)",
++      "input": "shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)",
+       "contract": "true",
+       "actual": "false"
+     }
+@@ -29,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int",
++  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -37,6 +37,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.sarif
++++ b/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/result.sarif
+@@ -52,7 +52,7 @@
+           "ruleId": "behaviour-changed",
+           "level": "error",
+           "message": {
+-            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
++            "text": "Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:\n  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)\n    before: true\n    after:  false"
+           },
+           "locations": [
+             {
+--- a/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/verifier-output.txt
++++ b/examples/027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/verifier-output.txt
+@@ -1,7 +1,7 @@
+ ✗ Behaviour of net.terminalvalue.crosscut.retry.RetryPolicy#shouldRetry changed:
+-  shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)
++  shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)
+     before: true
+     after:  false
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/028-retry-that-sleeps-on-the-caller-thread/result.json
++++ b/examples/028-retry-that-sleeps-on-the-caller-thread/result.json
+@@ -50,6 +50,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/029-retry-in-progress-executes-twice/README.md
++++ b/examples/029-retry-in-progress-executes-twice/README.md
+@@ -138,7 +138,7 @@
+ ```text
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440909] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908665] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -149,9 +149,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:51)
++Starting... (2026-11-02 21:28:15)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:51.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:15.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -214,11 +214,11 @@
+ 41 states generated, 28 distinct states found, 14 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:33:51)
++Finished in 00s at (2026-11-02 21:28:15)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440945] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908732] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -229,9 +229,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:52)
++Starting... (2026-11-02 21:28:16)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:52.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:16.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -292,7 +292,7 @@
+ 45 states generated, 29 distinct states found, 15 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:33:52)
++Finished in 00s at (2026-11-02 21:28:16)
+ ```
+ 
+ </details>
+--- a/examples/029-retry-in-progress-executes-twice/result.json
++++ b/examples/029-retry-in-progress-executes-twice/result.json
+@@ -84,12 +84,14 @@
+         "label": "the record never expires",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       },
+       {
+         "label": "expiring record",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/029-retry-in-progress-executes-twice/verifier-output.txt
++++ b/examples/029-retry-in-progress-executes-twice/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440909] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908665] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:51)
++Starting... (2026-11-02 21:28:15)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:51.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:15.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -76,11 +76,11 @@
+ 41 states generated, 28 distinct states found, 14 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:33:51)
++Finished in 00s at (2026-11-02 21:28:15)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2440945] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908732] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -91,9 +91,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:52)
++Starting... (2026-11-02 21:28:16)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:52.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:16.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -154,4 +154,4 @@
+ 45 states generated, 29 distinct states found, 15 states left on queue.
+ The depth of the complete state graph search is 5.
+ The average outdegree of the complete state graph is 2 (minimum is 1, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:33:52)
++Finished in 00s at (2026-11-02 21:28:16)
+--- a/examples/030-stored-failures-proved-at-most-once/README.md
++++ b/examples/030-stored-failures-proved-at-most-once/README.md
+@@ -169,7 +169,7 @@
+ ```text
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441187] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908987] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -180,9 +180,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:54)
++Starting... (2026-11-02 21:28:19)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:54.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:20.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -201,11 +201,11 @@
+ 211 states generated, 131 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 8.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:55)
++Finished in 00s at (2026-11-02 21:28:20)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441223] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909044] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -216,9 +216,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:55)
++Starting... (2026-11-02 21:28:20)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:55.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:21.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -235,7 +235,7 @@
+ 780 states generated, 429 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 13.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:55)
++Finished in 00s at (2026-11-02 21:28:21)
+ ```
+ 
+ </details>
+--- a/examples/030-stored-failures-proved-at-most-once/result.json
++++ b/examples/030-stored-failures-proved-at-most-once/result.json
+@@ -37,6 +37,7 @@
+         "label": "the record never expires",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+@@ -61,6 +62,7 @@
+         "label": "expiring record",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+--- a/examples/030-stored-failures-proved-at-most-once/verifier-output.txt
++++ b/examples/030-stored-failures-proved-at-most-once/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441187] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 908987] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:54)
++Starting... (2026-11-02 21:28:19)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:54.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:20.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -32,11 +32,11 @@
+ 211 states generated, 131 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 8.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:55)
++Finished in 00s at (2026-11-02 21:28:20)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441223] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909044] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -47,9 +47,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:55)
++Starting... (2026-11-02 21:28:20)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:55.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:21.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -66,4 +66,4 @@
+ 780 states generated, 429 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 13.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:55)
++Finished in 00s at (2026-11-02 21:28:21)
+--- a/examples/031-rate-limiter-that-never-refills-under-steady-polling/result.json
++++ b/examples/031-rate-limiter-that-never-refills-under-steady-polling/result.json
+@@ -42,6 +42,7 @@
+     "assume": "periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/032-batch-listener-that-commits-past-a-failed-record/result.json
++++ b/examples/032-batch-listener-that-commits-past-a-failed-record/result.json
+@@ -40,6 +40,7 @@
+     "assume": "batchStart >= 0 && batchStart <= 4611686018427387903L && batchSize > 0 && batchSize <= 100000 && failedIndex >= -1 && failedIndex < batchSize"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/result.json
++++ b/examples/033-cache-expiry-as-a-deadline-proved-on-every-nanosecond/result.json
+@@ -34,6 +34,7 @@
+     "assume": "writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0"
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md
++++ b/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/README.md
+@@ -236,7 +236,7 @@
+ ```text
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2380504] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909913] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -247,9 +247,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:32)
++Starting... (2026-11-02 21:28:33)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:32.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:33.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -275,11 +275,11 @@
+ 294 states generated, 102 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:11:32)
++Finished in 00s at (2026-11-02 21:28:34)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2380673] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910052] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -290,11 +290,11 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:34)
++Starting... (2026-11-02 21:28:36)
+ Implied-temporal checking--satisfiability problem has 1 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:34.
+-Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-02 02:11:34)
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:36.
++Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-02 21:28:36)
+ Error: Temporal properties were violated.
+ 
+ Error: The following behavior constitutes a counter-example:
+@@ -381,8 +381,8 @@
+ 
+ Back to state 7: <Tick line 111, col 5 to line 113, col 88 of module CircuitBreaker>
+ 
+-Finished checking temporal properties in 00s at 2026-11-02 02:11:34
+-The coverage statistics at 2026-11-02 02:11:34
++Finished checking temporal properties in 00s at 2026-11-02 21:28:36
++The coverage statistics at 2026-11-02 21:28:36
+ <Init line 124, col 1 to line 124, col 4 of module CircuitBreaker>: 4:4
+   line 126, col 8 to line 126, col 36 of module CircuitBreaker: 2
+   line 127, col 8 to line 127, col 20 of module CircuitBreaker: 4
+@@ -1665,7 +1665,7 @@
+   ||||line 165, col 91 to line 165, col 96 of module CircuitBreaker: 10
+ End of statistics.
+ 294 states generated, 102 distinct states found, 0 states left on queue.
+-Finished in 00s at (2026-11-02 02:11:35)
++Finished in 00s at (2026-11-02 21:28:36)
+ (jvmcontract checked the temporal properties one at a time to name the violated one: AnOpenBreakerProbesAgain)
+ ```
+ 
+--- a/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/result.json
++++ b/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/result.json
+@@ -105,6 +105,7 @@
+         "label": "two calls in flight",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+@@ -136,6 +137,7 @@
+         "label": "fairness",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/verifier-output.txt
++++ b/examples/075-open-breaker-that-restarts-its-wait-on-each-refused-call-never-probes-under-load/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2380504] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909913] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:32)
++Starting... (2026-11-02 21:28:33)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:32.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:33.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -39,11 +39,11 @@
+ 294 states generated, 102 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:11:32)
++Finished in 00s at (2026-11-02 21:28:34)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2380673] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910052] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -54,11 +54,11 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:34)
++Starting... (2026-11-02 21:28:36)
+ Implied-temporal checking--satisfiability problem has 1 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:34.
+-Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-02 02:11:34)
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:36.
++Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-02 21:28:36)
+ Error: Temporal properties were violated.
+ 
+ Error: The following behavior constitutes a counter-example:
+@@ -145,8 +145,8 @@
+ 
+ Back to state 7: <Tick line 111, col 5 to line 113, col 88 of module CircuitBreaker>
+ 
+-Finished checking temporal properties in 00s at 2026-11-02 02:11:34
+-The coverage statistics at 2026-11-02 02:11:34
++Finished checking temporal properties in 00s at 2026-11-02 21:28:36
++The coverage statistics at 2026-11-02 21:28:36
+ <Init line 124, col 1 to line 124, col 4 of module CircuitBreaker>: 4:4
+   line 126, col 8 to line 126, col 36 of module CircuitBreaker: 2
+   line 127, col 8 to line 127, col 20 of module CircuitBreaker: 4
+@@ -1429,5 +1429,5 @@
+   ||||line 165, col 91 to line 165, col 96 of module CircuitBreaker: 10
+ End of statistics.
+ 294 states generated, 102 distinct states found, 0 states left on queue.
+-Finished in 00s at (2026-11-02 02:11:35)
++Finished in 00s at (2026-11-02 21:28:36)
+ (jvmcontract checked the temporal properties one at a time to name the violated one: AnOpenBreakerProbesAgain)
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
+@@ -229,7 +229,7 @@
+ ```text
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2384657] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910339] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -240,9 +240,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:12:55)
++Starting... (2026-11-02 21:28:39)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:12:55.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:40.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -267,11 +267,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:12:55)
++Finished in 00s at (2026-11-02 21:28:40)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2384762] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910399] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -282,12 +282,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:12:55)
++Starting... (2026-11-02 21:28:40)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:12:56.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-02 02:12:56)
+-Finished checking temporal properties in 00s at 2026-11-02 02:12:56
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:41.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-02 21:28:41)
++Finished checking temporal properties in 00s at 2026-11-02 21:28:41
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -312,7 +312,7 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:12:56)
++Finished in 00s at (2026-11-02 21:28:41)
+ ```
+ 
+ </details>
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
+@@ -37,6 +37,7 @@
+         "label": "two calls in flight",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+@@ -67,6 +68,7 @@
+         "label": "fairness",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2384657] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910339] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:12:55)
++Starting... (2026-11-02 21:28:39)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:12:55.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:40.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -38,11 +38,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:12:55)
++Finished in 00s at (2026-11-02 21:28:40)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2384762] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910399] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -53,12 +53,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:12:55)
++Starting... (2026-11-02 21:28:40)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:12:56.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-02 02:12:56)
+-Finished checking temporal properties in 00s at 2026-11-02 02:12:56
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:41.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-02 21:28:41)
++Finished checking temporal properties in 00s at 2026-11-02 21:28:41
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -83,4 +83,4 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:12:56)
++Finished in 00s at (2026-11-02 21:28:41)
+--- a/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md
++++ b/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/README.md
+@@ -237,7 +237,7 @@
+ ```text
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2381241] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910654] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -248,9 +248,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:40)
++Starting... (2026-11-02 21:28:44)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:40.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:44.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -276,11 +276,11 @@
+ 266 states generated, 94 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:11:41)
++Finished in 00s at (2026-11-02 21:28:44)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2381578] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911008] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -291,11 +291,11 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:45)
++Starting... (2026-11-02 21:28:49)
+ Implied-temporal checking--satisfiability problem has 1 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:45.
+-Checking temporal properties for the complete state space with 94 total distinct states at (2026-11-02 02:11:45)
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:49.
++Checking temporal properties for the complete state space with 94 total distinct states at (2026-11-02 21:28:49)
+ Error: Temporal properties were violated.
+ 
+ Error: The following behavior constitutes a counter-example:
+@@ -442,8 +442,8 @@
+ 
+ Back to state 9: <Request line 68, col 5 to line 78, col 44 of module CircuitBreaker>
+ 
+-Finished checking temporal properties in 00s at 2026-11-02 02:11:45
+-The coverage statistics at 2026-11-02 02:11:45
++Finished checking temporal properties in 00s at 2026-11-02 21:28:49
++The coverage statistics at 2026-11-02 21:28:49
+ <Init line 124, col 1 to line 124, col 4 of module CircuitBreaker>: 4:4
+   line 126, col 8 to line 126, col 36 of module CircuitBreaker: 2
+   line 127, col 8 to line 127, col 20 of module CircuitBreaker: 4
+@@ -1743,7 +1743,7 @@
+   ||||line 165, col 91 to line 165, col 96 of module CircuitBreaker: 10
+ End of statistics.
+ 266 states generated, 94 distinct states found, 0 states left on queue.
+-Finished in 00s at (2026-11-02 02:11:45)
++Finished in 00s at (2026-11-02 21:28:49)
+ (jvmcontract checked the temporal properties one at a time to name the violated one: ADeadDependencyIsLeftAlone)
+ ```
+ 
+--- a/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/result.json
++++ b/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/result.json
+@@ -151,6 +151,7 @@
+         "label": "two calls in flight",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+@@ -182,6 +183,7 @@
+         "label": "fairness",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/verifier-output.txt
++++ b/examples/077-half-open-breaker-that-starts-over-on-a-failed-probe-keeps-probing-a-dead-dependency/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2381241] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910654] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:40)
++Starting... (2026-11-02 21:28:44)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:40.
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:44.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -39,11 +39,11 @@
+ 266 states generated, 94 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:11:41)
++Finished in 00s at (2026-11-02 21:28:44)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2381578] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911008] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -54,11 +54,11 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-02 02:11:45)
++Starting... (2026-11-02 21:28:49)
+ Implied-temporal checking--satisfiability problem has 1 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-02 02:11:45.
+-Checking temporal properties for the complete state space with 94 total distinct states at (2026-11-02 02:11:45)
++Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:49.
++Checking temporal properties for the complete state space with 94 total distinct states at (2026-11-02 21:28:49)
+ Error: Temporal properties were violated.
+ 
+ Error: The following behavior constitutes a counter-example:
+@@ -205,8 +205,8 @@
+ 
+ Back to state 9: <Request line 68, col 5 to line 78, col 44 of module CircuitBreaker>
+ 
+-Finished checking temporal properties in 00s at 2026-11-02 02:11:45
+-The coverage statistics at 2026-11-02 02:11:45
++Finished checking temporal properties in 00s at 2026-11-02 21:28:49
++The coverage statistics at 2026-11-02 21:28:49
+ <Init line 124, col 1 to line 124, col 4 of module CircuitBreaker>: 4:4
+   line 126, col 8 to line 126, col 36 of module CircuitBreaker: 2
+   line 127, col 8 to line 127, col 20 of module CircuitBreaker: 4
+@@ -1506,5 +1506,5 @@
+   ||||line 165, col 91 to line 165, col 96 of module CircuitBreaker: 10
+ End of statistics.
+ 266 states generated, 94 distinct states found, 0 states left on queue.
+-Finished in 00s at (2026-11-02 02:11:45)
++Finished in 00s at (2026-11-02 21:28:49)
+ (jvmcontract checked the temporal properties one at a time to name the violated one: ADeadDependencyIsLeftAlone)
+--- a/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md
++++ b/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/README.md
+@@ -211,7 +211,7 @@
+ ```text
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441485] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911313] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -222,9 +222,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:58)
++Starting... (2026-11-02 21:28:53)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:58.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:53.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -243,11 +243,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:58)
++Finished in 00s at (2026-11-02 21:28:53)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441562] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911342] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -258,9 +258,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:59)
++Starting... (2026-11-02 21:28:54)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:59.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:54.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -327,7 +327,7 @@
+ 121 states generated, 75 distinct states found, 40 states left on queue.
+ The depth of the complete state graph search is 6.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 5).
+-Finished in 00s at (2026-11-02 02:33:59)
++Finished in 00s at (2026-11-02 21:28:54)
+ ```
+ 
+ </details>
+--- a/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/result.json
++++ b/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/result.json
+@@ -92,6 +92,7 @@
+         "label": "the record never expires",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+@@ -116,6 +117,7 @@
+         "label": "expiring record",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/verifier-output.txt
++++ b/examples/078-in-progress-record-that-expires-by-age-lets-a-retry-run-beside-the-first-attempt/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441485] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911313] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:58)
++Starting... (2026-11-02 21:28:53)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:58.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:53.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -32,11 +32,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:33:58)
++Finished in 00s at (2026-11-02 21:28:53)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2441562] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911342] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -47,9 +47,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:33:59)
++Starting... (2026-11-02 21:28:54)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:33:59.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:54.
+ Error: Invariant OneExecutionAtATime is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -116,4 +116,4 @@
+ 121 states generated, 75 distinct states found, 40 states left on queue.
+ The depth of the complete state graph search is 6.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 5).
+-Finished in 00s at (2026-11-02 02:33:59)
++Finished in 00s at (2026-11-02 21:28:54)
+--- a/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md
++++ b/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/README.md
+@@ -326,7 +326,7 @@
+ ```text
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2444077] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911622] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -337,9 +337,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:47)
++Starting... (2026-11-02 21:28:57)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:47.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:58.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -363,11 +363,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:34:47)
++Finished in 00s at (2026-11-02 21:28:58)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2444141] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911679] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -378,9 +378,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:48)
++Starting... (2026-11-02 21:28:58)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:48.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:59.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -400,7 +400,7 @@
+ 750 states generated, 399 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 16.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:34:48)
++Finished in 00s at (2026-11-02 21:28:59)
+ ```
+ 
+ </details>
+--- a/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/result.json
++++ b/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/result.json
+@@ -37,6 +37,7 @@
+         "label": "the record never expires",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+@@ -66,6 +67,7 @@
+         "label": "expiring record",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+--- a/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/verifier-output.txt
++++ b/examples/079-expired-key-kept-as-a-tombstone-refuses-late-retries-proved-at-most-once/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2444077] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911622] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:47)
++Starting... (2026-11-02 21:28:57)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:47.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:58.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -37,11 +37,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:34:47)
++Finished in 00s at (2026-11-02 21:28:58)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2444141] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911679] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -52,9 +52,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:48)
++Starting... (2026-11-02 21:28:58)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:48.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:28:59.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -74,4 +74,4 @@
+ 750 states generated, 399 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 16.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-02 02:34:48)
++Finished in 00s at (2026-11-02 21:28:59)
+--- a/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md
++++ b/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/README.md
+@@ -251,7 +251,7 @@
+ ```text
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2442060] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911937] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -262,9 +262,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:04)
++Starting... (2026-11-02 21:29:02)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:04.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:02.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -283,11 +283,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:34:04)
++Finished in 00s at (2026-11-02 21:29:02)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2442151] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911996] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -298,9 +298,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:05)
++Starting... (2026-11-02 21:29:03)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:05.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:03.
+ Error: Invariant ReplayedResponsesExist is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -378,7 +378,7 @@
+ 169 states generated, 94 distinct states found, 43 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:34:05)
++Finished in 00s at (2026-11-02 21:29:03)
+ ```
+ 
+ </details>
+--- a/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/result.json
++++ b/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/result.json
+@@ -102,6 +102,7 @@
+         "label": "the record never expires",
+         "fromRuns": true,
+         "finished": true,
++        "counted": true,
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide",
+@@ -126,6 +127,7 @@
+         "label": "expiring record",
+         "fromRuns": true,
+         "finished": false,
++        "counted": true,
+         "operators": []
+       }
+     ],
+--- a/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/verifier-output.txt
++++ b/examples/080-dropping-an-expired-response-but-keeping-its-key-replays-a-response-that-is-gone/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == the record never expires: spec/IdempotentReceiver.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2442060] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911937] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:04)
++Starting... (2026-11-02 21:29:02)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:04.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:02.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -32,11 +32,11 @@
+ 271 states generated, 168 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 02:34:04)
++Finished in 00s at (2026-11-02 21:29:02)
+ 
+ == expiring record: spec/IdempotentReceiverExpiring.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 910MB heap and 64MB offheap memory [pid: 2442151] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 911996] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/IdempotentReceiver.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -47,9 +47,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module IdempotentReceiverContract
+ Semantic processing of module IdempotentReceiver
+-Starting... (2026-11-02 02:34:05)
++Starting... (2026-11-02 21:29:03)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 02:34:05.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:29:03.
+ Error: Invariant ReplayedResponsesExist is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -127,4 +127,4 @@
+ 169 states generated, 94 distinct states found, 43 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 4 and the 95th percentile is 4).
+-Finished in 00s at (2026-11-02 02:34:05)
++Finished in 00s at (2026-11-02 21:29:03)

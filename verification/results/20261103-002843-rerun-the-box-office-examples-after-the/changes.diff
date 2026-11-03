@@ -1,0 +1,363 @@
+--- a/examples/001-merged-case-keeps-money/result.json
++++ b/examples/001-merged-case-keeps-money/result.json
+@@ -50,6 +50,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/002-equality-refactor-changes-null-handling/result.json
++++ b/examples/002-equality-refactor-changes-null-handling/result.json
+@@ -43,6 +43,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/003-timestamp-makes-decision-nondeterministic/result.json
++++ b/examples/003-timestamp-makes-decision-nondeterministic/result.json
+@@ -37,6 +37,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/004-equivalent-refactor-passes/result.json
++++ b/examples/004-equivalent-refactor-passes/result.json
+@@ -39,6 +39,7 @@
+   "invariant": null,
+   "property": null,
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/005-intended-change-reviewed-as-contract-diff/result.json
++++ b/examples/005-intended-change-reviewed-as-contract-diff/result.json
+@@ -37,6 +37,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/006-per-seat-discount-rounds-differently/README.md
++++ b/examples/006-per-seat-discount-rounds-differently/README.md
+@@ -113,7 +113,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
++How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -122,7 +122,7 @@
+   totalCents(priceCents=17, seats=6)
+     before: 92
+     after:  96
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/006-per-seat-discount-rounds-differently/result.json
++++ b/examples/006-per-seat-discount-rounds-differently/result.json
+@@ -29,12 +29,15 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
++  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/006-per-seat-discount-rounds-differently/verifier-output.txt
++++ b/examples/006-per-seat-discount-rounds-differently/verifier-output.txt
+@@ -2,6 +2,6 @@
+   totalCents(priceCents=17, seats=6)
+     before: 92
+     after:  96
+-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/007-doubled-group-discount-proved-confined/README.md
++++ b/examples/007-doubled-group-discount-proved-confined/README.md
+@@ -138,12 +138,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+--- a/examples/007-doubled-group-discount-proved-confined/result.json
++++ b/examples/007-doubled-group-discount-proved-confined/result.json
+@@ -23,12 +23,15 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions",
++  "proof": "JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/007-doubled-group-discount-proved-confined/verifier-output.txt
++++ b/examples/007-doubled-group-discount-proved-confined/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions)
+--- a/examples/008-percentage-rewrite-leaks-outside-new-tier/README.md
++++ b/examples/008-percentage-rewrite-leaks-outside-new-tier/README.md
+@@ -139,7 +139,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
++How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -148,7 +148,7 @@
+   totalCents(priceCents=13, seats=7)
+     before: 82
+     after:  81
+-  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/008-percentage-rewrite-leaks-outside-new-tier/result.json
++++ b/examples/008-percentage-rewrite-leaks-outside-new-tier/result.json
+@@ -29,12 +29,15 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
++  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/008-percentage-rewrite-leaks-outside-new-tier/verifier-output.txt
++++ b/examples/008-percentage-rewrite-leaks-outside-new-tier/verifier-output.txt
+@@ -2,6 +2,6 @@
+   totalCents(priceCents=13, seats=7)
+     before: 82
+     after:  81
+-  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+--- a/examples/009-codec-loads-classes-named-by-payload/result.json
++++ b/examples/009-codec-loads-classes-named-by-payload/result.json
+@@ -35,6 +35,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/010-sorted-payload-keeps-capabilities/result.json
++++ b/examples/010-sorted-payload-keeps-capabilities/result.json
+@@ -29,6 +29,9 @@
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/011-skipped-seat-check-strands-the-money/README.md
++++ b/examples/011-skipped-seat-check-strands-the-money/README.md
+@@ -117,7 +117,7 @@
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 129 and seed -1837054397490135959 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 2171873] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 5 and seed 370622075241664718 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 903612] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -128,9 +128,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-10-31 07:25:45)
++Starting... (2026-11-02 21:26:54)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-10-31 07:25:45.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:26:54.
+ Error: Invariant NoMoneyStranded is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -281,7 +281,7 @@
+ 646 states generated, 423 distinct states found, 165 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 3 and the 95th percentile is 3).
+-Finished in 00s at (2026-10-31 07:25:46)
++Finished in 00s at (2026-11-02 21:26:54)
+ ```
+ 
+ </details>
+--- a/examples/011-skipped-seat-check-strands-the-money/result.json
++++ b/examples/011-skipped-seat-check-strands-the-money/result.json
+@@ -110,6 +110,9 @@
+   ],
+   "statesExplored": 423,
+   "invariant": "NoMoneyStranded",
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/011-skipped-seat-check-strands-the-money/verifier-output.txt
++++ b/examples/011-skipped-seat-check-strands-the-money/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 129 and seed -1837054397490135959 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 2171873] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 5 and seed 370622075241664718 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 903612] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-10-31 07:25:45)
++Starting... (2026-11-02 21:26:54)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-10-31 07:25:45.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:26:54.
+ Error: Invariant NoMoneyStranded is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -163,4 +163,4 @@
+ 646 states generated, 423 distinct states found, 165 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 3 and the 95th percentile is 3).
+-Finished in 00s at (2026-10-31 07:25:46)
++Finished in 00s at (2026-11-02 21:26:54)
+--- a/examples/012-deleting-the-sweeper-is-safe/README.md
++++ b/examples/012-deleting-the-sweeper-is-safe/README.md
+@@ -220,7 +220,7 @@
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 25 and seed 2888136436821546642 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 2172147] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -231,9 +231,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-10-31 07:25:49)
++Starting... (2026-11-02 21:27:09)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-10-31 07:25:49.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -241,7 +241,7 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-10-31 07:25:50)
++Finished in 00s at (2026-11-02 21:27:10)
+ ```
+ 
+ </details>
+--- a/examples/012-deleting-the-sweeper-is-safe/result.json
++++ b/examples/012-deleting-the-sweeper-is-safe/result.json
+@@ -29,6 +29,9 @@
+   "trace": null,
+   "statesExplored": 3604,
+   "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt"
+ }
+--- a/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
++++ b/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 25 and seed 2888136436821546642 with 1 worker on 8 cores with 1719MB heap and 64MB offheap memory [pid: 2172147] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-10-31 07:25:49)
++Starting... (2026-11-02 21:27:09)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-10-31 07:25:49.
++Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -20,4 +20,4 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-10-31 07:25:50)
++Finished in 00s at (2026-11-02 21:27:10)

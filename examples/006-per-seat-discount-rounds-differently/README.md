@@ -113,7 +113,7 @@ Keep rounding on the total, and derive the displayed per-seat price from it. If 
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
 
 <details><summary>Verifier output</summary>
 
@@ -122,7 +122,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
   totalCents(priceCents=17, seats=6)
     before: 92
     after:  96
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

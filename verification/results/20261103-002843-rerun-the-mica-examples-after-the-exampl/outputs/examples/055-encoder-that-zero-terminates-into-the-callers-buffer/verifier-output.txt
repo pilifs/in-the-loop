@@ -1,0 +1,6 @@
+✗ Property of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto violated: `result <= out.length && (\forall int i; 0 <= i && i < result; out[i] != 0 && (out[i] & 0xff) < 0xf0) && (\forall int i; result <= i && i < out.length; out[i] == \old(out[i]))` where out.length >= 3 * chars.length:
+  encodeInto(chars=[], out=[-1])
+    outcome: 0, leaving out=[0]
+  (found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

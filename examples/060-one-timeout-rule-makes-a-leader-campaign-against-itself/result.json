@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -30,7 +30,7 @@\n decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n-decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n+decide(LEADER, ElectionTimeout[])               => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n decide(LEADER, VotesCounted[majority=false])    => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, VotesCounted[majority=true])     => Unchanged[reason=\"votes of an election this server is no longer in\"]\n decide(LEADER, AppendEntries[term=OLDER])       => Rejected[reason=\"stale leader\"]\n@@ -43,7 +43,7 @@\n decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(LEADER, null)                            => throws NullPointerException\n-decide(null, ElectionTimeout[])                 => throws NullPointerException\n+decide(null, ElectionTimeout[])                 => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n decide(null, VotesCounted[majority=false])      => throws NullPointerException\n decide(null, VotesCounted[majority=true])       => throws NullPointerException\n decide(null, AppendEntries[term=OLDER])         => Rejected[reason=\"stale leader\"]\n",
-  "proof": "three servers: TLC 2.19 explored 29 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 35 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 29 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 40 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 129 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 11,824 distinct states to depth 11 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+  "proof": "three servers: TLC 2.19 explored 29 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 35 distinct states to depth 5 in 0 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 29 distinct states to depth 4 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 40 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 129 distinct states to depth 5 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 11,824 distinct states to depth 11 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
   "problem": null,
   "statement": null,
   "trace": [
@@ -80,42 +80,49 @@
         "label": "three servers",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "the inductive step",
         "fromRuns": false,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "four servers",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "fairness",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "a server left behind",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "delayed replies",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       },
       {
         "label": "history",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",

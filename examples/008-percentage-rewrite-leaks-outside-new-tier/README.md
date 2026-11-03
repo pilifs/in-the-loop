@@ -139,7 +139,7 @@ Either leave the existing tier's arithmetic alone and add the new tier as its ow
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
 
 <details><summary>Verifier output</summary>
 
@@ -148,7 +148,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [
   totalCents(priceCents=13, seats=7)
     before: 82
     after:  81
-  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

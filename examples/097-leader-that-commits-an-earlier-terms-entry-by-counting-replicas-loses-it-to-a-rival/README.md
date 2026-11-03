@@ -270,14 +270,14 @@ Reject. An entry from an earlier term is committed by the entry of the current t
 
 ## Evidence
 
-How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 21 in 13 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 16,452 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 362,408 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
+How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 21 in 16 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 16,452 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 362,408 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3468230] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1002859] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -298,9 +298,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 08:41:56)
+Starting... (2026-11-02 21:53:58)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 08:41:57.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:01.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -355,11 +355,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 135589 states generated, 25666 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 21.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 3).
-Finished in 13s at (2026-11-02 08:42:08)
+Finished in 16s at (2026-11-02 21:54:14)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3468879] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1003664] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -380,9 +380,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 08:42:09)
+Starting... (2026-11-02 21:54:16)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 08:42:11.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:18.
 Error: Invariant LeaderCompleteness is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -400,7 +400,7 @@ State 1: <Initial predicate>
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> "none" @@ s3 :> "none")
 
-State 2: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
+State 2: <Timeout line 150, col 15 to line 150, col 79 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -415,7 +415,7 @@ State 2: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> "none")
 
-State 3: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
+State 3: <Canvass line 178, col 5 to line 180, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -430,7 +430,7 @@ State 3: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s1 @@ s3 :> "none")
 
-State 4: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
+State 4: <Timeout line 150, col 15 to line 150, col 79 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -445,7 +445,7 @@ State 4: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> "none")
 
-State 5: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
+State 5: <Canvass line 178, col 5 to line 180, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -460,7 +460,7 @@ State 5: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 6: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
+State 6: <ClientRequest line 189, col 5 to line 192, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -475,7 +475,7 @@ State 6: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftRepli
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 7: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftReplication>
+State 7: <ClientRequest line 189, col 5 to line 192, col 100 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -490,7 +490,7 @@ State 7: <ClientRequest line 184, col 5 to line 187, col 100 of module RaftRepli
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 8: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
+State 8: <Replicate line 281, col 5 to line 283, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -505,7 +505,7 @@ State 8: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplicatio
 /\ role = (s1 :> "FOLLOWER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> "none" @@ s2 :> s2 @@ s3 :> s2)
 
-State 9: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
+State 9: <Timeout line 150, col 15 to line 150, col 79 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -520,7 +520,7 @@ State 9: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 10: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
+State 10: <Canvass line 178, col 5 to line 180, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -535,7 +535,7 @@ State 10: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "FOLLOWER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> "none" @@ s3 :> s2)
 
-State 11: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplication>
+State 11: <Timeout line 150, col 15 to line 150, col 79 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -550,7 +550,7 @@ State 11: <Timeout line 146, col 15 to line 146, col 88 of module RaftReplicatio
 /\ role = (s1 :> "CANDIDATE" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 12: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
+State 12: <Canvass line 178, col 5 to line 180, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -565,7 +565,7 @@ State 12: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 13: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
+State 13: <Replicate line 281, col 5 to line 283, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -580,7 +580,7 @@ State 13: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 14: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplication>
+State 14: <Replicate line 281, col 5 to line 283, col 32 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -595,7 +595,7 @@ State 14: <Replicate line 274, col 5 to line 278, col 32 of module RaftReplicati
 /\ role = (s1 :> "LEADER" @@ s2 :> "CANDIDATE" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)
 
-State 15: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication>
+State 15: <Canvass line 178, col 5 to line 180, col 30 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -610,7 +610,7 @@ State 15: <Canvass line 172, col 5 to line 175, col 30 of module RaftReplication
 /\ role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")
 /\ votedFor = (s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)
 
-State 16: <AdvanceCommit line 333, col 5 to line 338, col 92 of module RaftReplication>
+State 16: <AdvanceCommit line 338, col 5 to line 343, col 92 of module RaftReplication>
 /\ matchIndex = ( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@
   s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@
   s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )
@@ -680,11 +680,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 55256 states generated, 10087 distinct states found, 466 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 06s at (2026-11-02 08:42:16)
+Finished in 08s at (2026-11-02 21:54:24)
 
 == fairness: spec/RaftReplicationLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3469226] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1004124] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -705,16 +705,16 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 08:42:17)
+Starting... (2026-11-02 21:54:24)
 Implied-temporal checking--satisfiability problem has 5 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 08:42:18.
-Checking 5 branches of temporal properties for the current state space with 3085 total distinct states at (2026-11-02 08:42:21)
-Finished checking temporal properties in 00s at 2026-11-02 08:42:21
-Checking 5 branches of temporal properties for the current state space with 51050 total distinct states at (2026-11-02 08:43:21)
-Finished checking temporal properties in 00s at 2026-11-02 08:43:21
-Checking 5 branches of temporal properties for the complete state space with 82260 total distinct states at (2026-11-02 08:43:59)
-Finished checking temporal properties in 00s at 2026-11-02 08:43:59
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:27.
+Checking 5 branches of temporal properties for the current state space with 3085 total distinct states at (2026-11-02 21:54:30)
+Finished checking temporal properties in 00s at 2026-11-02 21:54:30
+Checking 5 branches of temporal properties for the current state space with 55260 total distinct states at (2026-11-02 21:55:30)
+Finished checking temporal properties in 00s at 2026-11-02 21:55:30
+Checking 5 branches of temporal properties for the complete state space with 82260 total distinct states at (2026-11-02 21:55:57)
+Finished checking temporal properties in 00s at 2026-11-02 21:55:57
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -774,11 +774,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 83995 states generated, 16452 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 01min 43s at (2026-11-02 08:43:59)
+Finished in 01min 33s at (2026-11-02 21:55:58)
 
 == delayed replies: spec/RaftReplicationDelayed.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 8 cores with 2222MB heap and 64MB offheap memory [pid: 3473932] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1008718] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -799,9 +799,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 08:44:00)
+Starting... (2026-11-02 21:55:59)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 08:44:02.
+Finished computing initial states: 1 distinct state generated at 2026-11-02 21:56:02.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -861,7 +861,7 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 4792353 states generated, 362408 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 23.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 9 and the 95th percentile is 3).
-Finished in 04min 46s at (2026-11-02 08:48:47)
+Finished in 03min 58s at (2026-11-02 21:59:58)
 ```
 
 </details>

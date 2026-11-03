@@ -1,0 +1,40 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: property holds on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 11,
+    "code": "\n/** The index halfway between {@code low} and {@code high}, both inclusive. */\npublic static int midpoint(int low, int high) {\n    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 11,
+    "code": "\n/** The index halfway between {@code low} and {@code high}, both inclusive. */\npublic static int midpoint(int low, int high) {\n    // Written as the division it is; the unsigned shift was an idiom, not a requirement.\n    return (low + high) / 2;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\n"
+  },
+  "casesTotal": null,
+  "domain": "low: int × high: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over low: int × high: int in 0.2 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "result >= low && result <= high",
+    "assume": "low >= 0 && low <= high && high < 8190"
+  },
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

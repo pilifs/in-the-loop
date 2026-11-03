@@ -1,0 +1,390 @@
+{
+  "schema": "verification-results-index/v1",
+  "results": [
+    {
+      "id": "20261103-015449-the-tool-s-own-checker-on-the-quorum-and",
+      "title": "The tool's own checker on the Quorum and Crosscut property contracts: --engine auto against JBMC",
+      "status": "passed",
+      "summary": "passed: 5 passed step(s) in 11m15s, peak 168.3 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed",
+      "attention": [
+        "step 1 (compile quorum) was held back 4.6s by its 1-CPU quota in 3.8s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (compile crosscut) was held back 3.1s by its 1-CPU quota in 3.0s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "examples/apps/quorum/src/contract/properties.contract",
+          "examples/apps/crosscut/src/contract/properties.contract"
+        ]
+      },
+      "sourceCommit": "d2a7f4f03af3f88a3536eee1b9d283a0431ec1f8",
+      "finishedAt": "2026-11-03T03:51:57+00:00",
+      "wallSeconds": 675.8,
+      "peakMemoryBytes": 176500736,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 360.0,
+        "notes": "JBMC proves Quorum's five in about four seconds and Crosscut's seven in about forty; the native engine is quicker on what it takes"
+      },
+      "host": "FilSurface",
+      "result": "20261103-015449-the-tool-s-own-checker-on-the-quorum-and/result.json"
+    },
+    {
+      "id": "20261103-015449-the-tool-s-own-bounded-model-checker-uni",
+      "title": "The tool's own bounded model checker: unit tests of the circuits and the cross-check with JBMC",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m35s, peak 1.3 GiB (estimated 8m00s, 3.0 GiB); signals: cargo:tests×4",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "bmc:native",
+        "B9",
+        "B10"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/bits.rs"
+        ]
+      },
+      "sourceCommit": "d2a7f4f03af3f88a3536eee1b9d283a0431ec1f8",
+      "finishedAt": "2026-11-03T03:39:22+00:00",
+      "wallSeconds": 155.3,
+      "peakMemoryBytes": 1405546496,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 480.0,
+        "notes": "the suite took under two minutes in the session with CaDiCaL as JBMC's solver; the bmc unit tests about 30 s"
+      },
+      "host": "FilSurface",
+      "result": "20261103-015449-the-tool-s-own-bounded-model-checker-uni/result.json"
+    },
+    {
+      "id": "20261103-010716-jdk-models-shipped-with-jvmcontract-the",
+      "title": "JDK models shipped with jvmcontract: the integration tests that run JBMC on the model fixture",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m49s, peak 1.4 GiB (estimated 8m00s, 3.0 GiB); signals: cargo:tests×4",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/models.rs",
+          "lib/models"
+        ],
+        "examples": [
+          "109"
+        ]
+      },
+      "sourceCommit": "4abee307b92269414c1420282637ddfdd5461988",
+      "finishedAt": "2026-11-03T03:36:46+00:00",
+      "wallSeconds": 109.9,
+      "peakMemoryBytes": 1512206336,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 480.0,
+        "notes": "the suite ran in a few minutes in the session; each JBMC test is a few seconds at 2 GB"
+      },
+      "host": "FilSurface",
+      "result": "20261103-010716-jdk-models-shipped-with-jvmcontract-the/result.json"
+    },
+    {
+      "id": "20261103-010716-example-109-revisited-hex-todigit-s-regr",
+      "title": "Example 109 revisited: Hex#toDigit's regression proof with the Character.digit model",
+      "status": "failed",
+      "summary": "failed: 2 passed, 1 failed, 2 skipped step(s) in 10.5s, peak 91.9 MiB (estimated 10m00s, 2.0 GiB); signals: jvmcontract:fails×1",
+      "attention": [
+        "declared output verification/.work-109/work-old/jbmc.log was not produced",
+        "declared output verification/.work-109/work-change was not produced",
+        "declared output verification/.work-109/work-ascii was not produced",
+        "step 2 (compile) was held back 8.7s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (old toDigit decodes the Arabic-Indic zero) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "jbmc:models",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "109"
+        ],
+        "paths": [
+          "lib/models/java/lang/Character.java"
+        ]
+      },
+      "sourceCommit": "4abee307b92269414c1420282637ddfdd5461988",
+      "finishedAt": "2026-11-03T03:34:55+00:00",
+      "wallSeconds": 10.5,
+      "peakMemoryBytes": 96342016,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "109's property proofs took under a second each; a clone with --filter=blob:none and two worktrees is the slow part"
+      },
+      "host": "FilSurface",
+      "result": "20261103-010716-example-109-revisited-hex-todigit-s-regr/result.json"
+    },
+    {
+      "id": "20261103-002843-rerun-the-quorum-examples-after-the-exam",
+      "title": "Rerun the Quorum examples after the examples move",
+      "status": "passed",
+      "summary": "passed: 58 passed step(s) in 1h02m, peak 2.6 GiB (estimated 25m00s, 3.0 GiB); 160 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "took 1h02m, 2.51× the estimate",
+        "12 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+      ],
+      "capabilities": [
+        "D1",
+        "B11",
+        "B9",
+        "B8",
+        "B10"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "013",
+          "014",
+          "015",
+          "016",
+          "017",
+          "018",
+          "019",
+          "020",
+          "021",
+          "022",
+          "057",
+          "058",
+          "059",
+          "060",
+          "061",
+          "062",
+          "063",
+          "064",
+          "065",
+          "066",
+          "067",
+          "068",
+          "069",
+          "070",
+          "071",
+          "072",
+          "073",
+          "074",
+          "075",
+          "076",
+          "077",
+          "078",
+          "079",
+          "080",
+          "081",
+          "082",
+          "083",
+          "084",
+          "085",
+          "086",
+          "087",
+          "088",
+          "089",
+          "090",
+          "091",
+          "092",
+          "093",
+          "094",
+          "095",
+          "096",
+          "097",
+          "098",
+          "099",
+          "100",
+          "101",
+          "102",
+          "103",
+          "104"
+        ]
+      },
+      "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+      "finishedAt": "2026-11-03T03:34:43+00:00",
+      "wallSeconds": 3768.5,
+      "peakMemoryBytes": 2776674304,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 1500.0,
+        "notes": "about ten minutes by the README; the Raft replication examples check 600,000 states under the delayed configuration and want a larger TLC heap"
+      },
+      "host": "FilSurface",
+      "result": "20261103-002843-rerun-the-quorum-examples-after-the-exam/result.json"
+    },
+    {
+      "id": "20261103-002843-rerun-the-mica-examples-after-the-exampl",
+      "title": "Rerun the Mica examples after the examples move",
+      "status": "failed",
+      "summary": "failed: 22 passed, 1 failed step(s) in 2m43s, peak 150.5 MiB (estimated 5m00s, 3.0 GiB); 46 output file(s) changed; signals: example:as-expected×1",
+      "attention": [
+        "step 3 (example 036 (B9)) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B11",
+        "B9",
+        "B8",
+        "B10",
+        "D1"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "034",
+          "035",
+          "036",
+          "037",
+          "038",
+          "039",
+          "040",
+          "041",
+          "042",
+          "043",
+          "044",
+          "045",
+          "046",
+          "047",
+          "048",
+          "049",
+          "050",
+          "051",
+          "052",
+          "053",
+          "054",
+          "055",
+          "056"
+        ]
+      },
+      "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+      "finishedAt": "2026-11-03T02:31:50+00:00",
+      "wallSeconds": 163.6,
+      "peakMemoryBytes": 157806592,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 300.0,
+        "notes": "about two minutes by the README; array proofs under JBMC's 3 GB limit"
+      },
+      "host": "FilSurface",
+      "result": "20261103-002843-rerun-the-mica-examples-after-the-exampl/result.json"
+    },
+    {
+      "id": "20261103-002843-rerun-the-crosscut-examples-after-the-ex",
+      "title": "Rerun the Crosscut examples after the examples move",
+      "status": "passed",
+      "summary": "passed: 17 passed step(s) in 1m07s, peak 130.2 MiB (estimated 3m00s, 1.0 GiB); 36 output file(s) changed; signals: example:as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "B11",
+        "D1",
+        "B8",
+        "B9",
+        "B10"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "023",
+          "024",
+          "025",
+          "026",
+          "027",
+          "028",
+          "029",
+          "030",
+          "031",
+          "032",
+          "033",
+          "075",
+          "076",
+          "077",
+          "078",
+          "079",
+          "080"
+        ]
+      },
+      "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+      "finishedAt": "2026-11-03T02:29:05+00:00",
+      "wallSeconds": 67.1,
+      "peakMemoryBytes": 136491008,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "about 50 seconds by the README"
+      },
+      "host": "FilSurface",
+      "result": "20261103-002843-rerun-the-crosscut-examples-after-the-ex/result.json"
+    },
+    {
+      "id": "20261103-002843-rerun-the-box-office-examples-after-the",
+      "title": "Rerun the Box Office examples after the examples move",
+      "status": "passed",
+      "summary": "passed: 12 passed step(s) in 3m47s, peak 1.2 GiB (estimated 15m00s, 2.0 GiB); 22 output file(s) changed; signals: example:as-expected×1",
+      "attention": [],
+      "capabilities": [
+        "B8",
+        "B9",
+        "B10",
+        "D1"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "001",
+          "002",
+          "003",
+          "004",
+          "005",
+          "006",
+          "007",
+          "008",
+          "009",
+          "010",
+          "011",
+          "012"
+        ]
+      },
+      "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+      "finishedAt": "2026-11-03T02:27:12+00:00",
+      "wallSeconds": 227.8,
+      "peakMemoryBytes": 1274621952,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 900.0,
+        "notes": "a Box Office example takes seconds to a minute, as its patch is applied to a copy of the Gradle build"
+      },
+      "host": "FilSurface",
+      "result": "20261103-002843-rerun-the-box-office-examples-after-the/result.json"
+    }
+  ]
+}

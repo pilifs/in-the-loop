@@ -1,0 +1,943 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-002843-rerun-the-box-office-examples-after-the",
+  "title": "Rerun the Box Office examples after the examples move",
+  "status": "passed",
+  "summary": "passed: 12 passed step(s) in 3m47s, peak 1.2 GiB (estimated 15m00s, 2.0 GiB); 22 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261103-002843-rerun-the-box-office-examples-after-the.json",
+    "sha256": "01b2ad03d7a11893981ed35dcc5692e5b1d983db7a1602f136c82e41127af289",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-002843-rerun-the-box-office-examples-after-the",
+      "title": "Rerun the Box Office examples after the examples move",
+      "description": "The examples moved from examples/demo/ and examples/real-world/ into one folder, examples/, with apps, tools and schema one level up, and every patch, example.json, generated page and script path rewritten. This reruns every constructed example of the subject system at the new layout, one step per example, to confirm that each still gives its expected verdict. Their pages were re-rendered from the old results with build.py --render-only, so a verdict that differs here is a regression of the move.",
+      "kind": "example",
+      "capabilities": [
+        "B8",
+        "B9",
+        "B10",
+        "D1"
+      ],
+      "links": {
+        "paths": [
+          "examples/README.md"
+        ],
+        "examples": [
+          "001",
+          "002",
+          "003",
+          "004",
+          "005",
+          "006",
+          "007",
+          "008",
+          "009",
+          "010",
+          "011",
+          "012"
+        ]
+      },
+      "expected": "example 001 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 002 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 003 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0; example 004 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 005 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 006 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 007 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 008 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 009 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 010 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; example 011 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; example 012 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-03T00:28:43+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jbmc",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "15m",
+        "notes": "a Box Office example takes seconds to a minute, as its patch is applied to a copy of the Gradle build"
+      },
+      "steps": [
+        {
+          "name": "example 001 (B8)",
+          "run": "python3 examples/tools/build.py 001",
+          "cwd": "."
+        },
+        {
+          "name": "example 002 (B8)",
+          "run": "python3 examples/tools/build.py 002",
+          "cwd": "."
+        },
+        {
+          "name": "example 003 (B8)",
+          "run": "python3 examples/tools/build.py 003",
+          "cwd": "."
+        },
+        {
+          "name": "example 004 (B8)",
+          "run": "python3 examples/tools/build.py 004",
+          "cwd": "."
+        },
+        {
+          "name": "example 005 (B8)",
+          "run": "python3 examples/tools/build.py 005",
+          "cwd": "."
+        },
+        {
+          "name": "example 006 (B9)",
+          "run": "python3 examples/tools/build.py 006",
+          "cwd": "."
+        },
+        {
+          "name": "example 007 (B9)",
+          "run": "python3 examples/tools/build.py 007",
+          "cwd": "."
+        },
+        {
+          "name": "example 008 (B9)",
+          "run": "python3 examples/tools/build.py 008",
+          "cwd": "."
+        },
+        {
+          "name": "example 009 (B10)",
+          "run": "python3 examples/tools/build.py 009",
+          "cwd": "."
+        },
+        {
+          "name": "example 010 (B10)",
+          "run": "python3 examples/tools/build.py 010",
+          "cwd": "."
+        },
+        {
+          "name": "example 011 (D1)",
+          "run": "python3 examples/tools/build.py 011",
+          "cwd": "."
+        },
+        {
+          "name": "example 012 (D1)",
+          "run": "python3 examples/tools/build.py 012",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/001-merged-case-keeps-money",
+        "examples/002-equality-refactor-changes-null-handling",
+        "examples/003-timestamp-makes-decision-nondeterministic",
+        "examples/004-equivalent-refactor-passes",
+        "examples/005-intended-change-reviewed-as-contract-diff",
+        "examples/006-per-seat-discount-rounds-differently",
+        "examples/007-doubled-group-discount-proved-confined",
+        "examples/008-percentage-rewrite-leaks-outside-new-tier",
+        "examples/009-codec-loads-classes-named-by-payload",
+        "examples/010-sorted-payload-keeps-capabilities",
+        "examples/011-skipped-seat-check-strands-the-money",
+        "examples/012-deleting-the-sweeper-is-safe"
+      ]
+    }
+  },
+  "sourceCommit": "32ce00803797c0bd4b5fc8661a6af64ba5704703",
+  "startedAt": "2026-11-03T02:23:17+00:00",
+  "finishedAt": "2026-11-03T02:27:12+00:00",
+  "wallSeconds": 235.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 890530,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 900.0,
+    "notes": "a Box Office example takes seconds to a minute, as its patch is applied to a copy of the Gradle build"
+  },
+  "usage": {
+    "peakMemoryBytes": 1274621952,
+    "wallSeconds": 227.8,
+    "cpuSeconds": 387.6,
+    "memoryOfEstimate": 0.59,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 001 (B8)",
+      "run": "python3 examples/tools/build.py 001",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 23.665,
+      "cpuSeconds": 35.798,
+      "cpuThrottledSeconds": 2.406,
+      "peakMemoryBytes": 1274621952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-001-b8.log",
+        "lines": 2,
+        "bytes": 95,
+        "sha256": "c2806b94aeba7d79337fca136c7abc3eb790645e6a065bc964d7f3cce4b4396b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "001-merged-case-keeps-money: violation (as expected)",
+          "groups": [
+            "001",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "001-merged-case-keeps-money: running (B8)",
+        "001-merged-case-keeps-money: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 002 (B8)",
+      "run": "python3 examples/tools/build.py 002",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 17.248,
+      "cpuSeconds": 29.537,
+      "cpuThrottledSeconds": 3.48,
+      "peakMemoryBytes": 805470208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-002-b8.log",
+        "lines": 2,
+        "bytes": 127,
+        "sha256": "54e26e3a41a448348f151ffba38d6acb7091c7affb5c5fae412e030c6fb69a08",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "002-equality-refactor-changes-null-handling: violation (as expected)",
+          "groups": [
+            "002",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "002-equality-refactor-changes-null-handling: running (B8)",
+        "002-equality-refactor-changes-null-handling: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "example 003 (B8)",
+      "run": "python3 examples/tools/build.py 003",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 16.046,
+      "cpuSeconds": 28.154,
+      "cpuThrottledSeconds": 3.858,
+      "peakMemoryBytes": 777789440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-example-003-b8.log",
+        "lines": 2,
+        "bytes": 134,
+        "sha256": "33ba83ccacddc51f6ba902dd534f05f0090f2d7b256b6ae957cdf019b8ef64c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "003-timestamp-makes-decision-nondeterministic: unverifiable (as expected)",
+          "groups": [
+            "003",
+            "unverifiable"
+          ]
+        }
+      ],
+      "tail": [
+        "003-timestamp-makes-decision-nondeterministic: running (B8)",
+        "003-timestamp-makes-decision-nondeterministic: unverifiable (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 004 (B8)",
+      "run": "python3 examples/tools/build.py 004",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 16.689,
+      "cpuSeconds": 29.178,
+      "cpuThrottledSeconds": 4.61,
+      "peakMemoryBytes": 763764736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-004-b8.log",
+        "lines": 2,
+        "bytes": 100,
+        "sha256": "c55d07546a4dd42555eb1212b8e6af25f56c036553e811e45ec88f86c451317e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "004-equivalent-refactor-passes: verified (as expected)",
+          "groups": [
+            "004",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "004-equivalent-refactor-passes: running (B8)",
+        "004-equivalent-refactor-passes: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "example 005 (B8)",
+      "run": "python3 examples/tools/build.py 005",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 17.647,
+      "cpuSeconds": 31.587,
+      "cpuThrottledSeconds": 4.669,
+      "peakMemoryBytes": 773763072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-example-005-b8.log",
+        "lines": 2,
+        "bytes": 130,
+        "sha256": "2e23cac195ef053c513b3d76f9ec30b3d61706efc090862eba06a457e1530dd9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "005-intended-change-reviewed-as-contract-diff: verified (as expected)",
+          "groups": [
+            "005",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "005-intended-change-reviewed-as-contract-diff: running (B8)",
+        "005-intended-change-reviewed-as-contract-diff: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "example 006 (B9)",
+      "run": "python3 examples/tools/build.py 006",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 22.062,
+      "cpuSeconds": 39.179,
+      "cpuThrottledSeconds": 6.15,
+      "peakMemoryBytes": 833658880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-example-006-b9.log",
+        "lines": 2,
+        "bytes": 121,
+        "sha256": "9a0c47613e37f41371451a6e28fba2e84a0cbab7381fb90c6886359c9f2ddadf",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "006-per-seat-discount-rounds-differently: violation (as expected)",
+          "groups": [
+            "006",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "006-per-seat-discount-rounds-differently: running (B9)",
+        "006-per-seat-discount-rounds-differently: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "example 007 (B9)",
+      "run": "python3 examples/tools/build.py 007",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 31.933,
+      "cpuSeconds": 48.463,
+      "cpuThrottledSeconds": 5.879,
+      "peakMemoryBytes": 787034112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-example-007-b9.log",
+        "lines": 2,
+        "bytes": 124,
+        "sha256": "95660def4f41fe5235a9a8da6df3e88b8691cb1ccd65649145d862dd0e520495",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "007-doubled-group-discount-proved-confined: verified (as expected)",
+          "groups": [
+            "007",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "007-doubled-group-discount-proved-confined: running (B9)",
+        "007-doubled-group-discount-proved-confined: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 8,
+      "name": "example 008 (B9)",
+      "run": "python3 examples/tools/build.py 008",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 20.671,
+      "cpuSeconds": 37.217,
+      "cpuThrottledSeconds": 5.739,
+      "peakMemoryBytes": 789811200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/8-example-008-b9.log",
+        "lines": 2,
+        "bytes": 131,
+        "sha256": "e56a623d8022b11e68b53d39cdf4c6b7099f9780cae45060e0e9421cad4cc19c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "008-percentage-rewrite-leaks-outside-new-tier: violation (as expected)",
+          "groups": [
+            "008",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "008-percentage-rewrite-leaks-outside-new-tier: running (B9)",
+        "008-percentage-rewrite-leaks-outside-new-tier: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 9,
+      "name": "example 009 (B10)",
+      "run": "python3 examples/tools/build.py 009",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 16.246,
+      "cpuSeconds": 28.639,
+      "cpuThrottledSeconds": 3.964,
+      "peakMemoryBytes": 772149248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/9-example-009-b10.log",
+        "lines": 2,
+        "bytes": 122,
+        "sha256": "ea81fb952d65a573843bae196a5cb68d12d5ed489d10f764d5d88a5fbcfcad02",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "009-codec-loads-classes-named-by-payload: violation (as expected)",
+          "groups": [
+            "009",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "009-codec-loads-classes-named-by-payload: running (B10)",
+        "009-codec-loads-classes-named-by-payload: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 10,
+      "name": "example 010 (B10)",
+      "run": "python3 examples/tools/build.py 010",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 15.264,
+      "cpuSeconds": 27.024,
+      "cpuThrottledSeconds": 3.869,
+      "peakMemoryBytes": 764424192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/10-example-010-b10.log",
+        "lines": 2,
+        "bytes": 115,
+        "sha256": "04041b7598afa5b68d89bdee2199422c4d5688194730b48c9ac8837a6ed3851b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "010-sorted-payload-keeps-capabilities: verified (as expected)",
+          "groups": [
+            "010",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "010-sorted-payload-keeps-capabilities: running (B10)",
+        "010-sorted-payload-keeps-capabilities: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 11,
+      "name": "example 011 (D1)",
+      "run": "python3 examples/tools/build.py 011",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 15.439,
+      "cpuSeconds": 26.711,
+      "cpuThrottledSeconds": 3.182,
+      "peakMemoryBytes": 761450496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/11-example-011-d1.log",
+        "lines": 2,
+        "bytes": 121,
+        "sha256": "9a128161058b860bd8e3f88cbc3b8b16c5e711dc419300af78e356c5629d2869",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "011-skipped-seat-check-strands-the-money: violation (as expected)",
+          "groups": [
+            "011",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "011-skipped-seat-check-strands-the-money: running (D1)",
+        "011-skipped-seat-check-strands-the-money: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 12,
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 14.844,
+      "cpuSeconds": 26.14,
+      "cpuThrottledSeconds": 3.476,
+      "peakMemoryBytes": 757514240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/12-example-012-d1.log",
+        "lines": 2,
+        "bytes": 104,
+        "sha256": "1614495aa4c59dfab20e3aec3650e4c1e2023d16e579bcac859978bdd2c684f0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "012-deleting-the-sweeper-is-safe: verified (as expected)",
+          "groups": [
+            "012",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "012-deleting-the-sweeper-is-safe: running (D1)",
+        "012-deleting-the-sweeper-is-safe: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/001-merged-case-keeps-money/result.json",
+      "change": "modified",
+      "bytes": 3088,
+      "sha256": "55d749eb17e6190ab12eca426b21fda7c1d2b0123d18ce7a5cb41e557a74c392",
+      "sourceSha256": "be07eca15642a420b04131ec33f4ea2e5841cb2af95d921c17038adec54ea1a6"
+    },
+    {
+      "path": "examples/002-equality-refactor-changes-null-handling/result.json",
+      "change": "modified",
+      "bytes": 2938,
+      "sha256": "720dcd5abdf665e2b6c9afce3f7b311edf3925df1b5a00b885220117294936f7",
+      "sourceSha256": "016c4f7329272eac2710786380b55236b1d67a249e9b65ddce93083ad1268ce9"
+    },
+    {
+      "path": "examples/003-timestamp-makes-decision-nondeterministic/result.json",
+      "change": "modified",
+      "bytes": 1868,
+      "sha256": "550e36f59fa483559fc4074e95d9995315408b93b442200b2425fa6698d654ec",
+      "sourceSha256": "ddfb359813d9ab9b88b859ba7bc38a127d03aaa9dd462ade3ebcf3d3250b0cd6"
+    },
+    {
+      "path": "examples/004-equivalent-refactor-passes/result.json",
+      "change": "modified",
+      "bytes": 2540,
+      "sha256": "6f1ae648128a675d9a0895b9565e412d206ff609d9a7f788249c9171d4b4f3b0",
+      "sourceSha256": "5e9f41fbbddf923336f91a0bf2d2d580a7c66a70625bf0aad71bf7fa51dd041d"
+    },
+    {
+      "path": "examples/005-intended-change-reviewed-as-contract-diff/result.json",
+      "change": "modified",
+      "bytes": 3501,
+      "sha256": "01709dc710d8ece8f65106bfaf6b899ac18456ff80fb1c341a90758b9f192bfe",
+      "sourceSha256": "f5bef13208b2066a2ad398a7516b132667d5f227ca97d616eab8e659f8bd97d7"
+    },
+    {
+      "path": "examples/006-per-seat-discount-rounds-differently/README.md",
+      "change": "modified",
+      "bytes": 11469,
+      "sha256": "67fa1919d47c34e8662d97f7226038336138cddea8831f3ba54a6e8505b29770",
+      "sourceSha256": "2a4ebb8cb7845a585d88e40ccdf67f758d83e619c58b7a73e3044cc057271342"
+    },
+    {
+      "path": "examples/006-per-seat-discount-rounds-differently/result.json",
+      "change": "modified",
+      "bytes": 2599,
+      "sha256": "0e6ff96311c46e34dbb2980c4d278ecc62af0beebbe766238f6af7fff952dfe2",
+      "sourceSha256": "6931c863d4c698da15f2979b4110b174a75a6aa71aca424de131b77af46baa0a"
+    },
+    {
+      "path": "examples/006-per-seat-discount-rounds-differently/verifier-output.txt",
+      "change": "modified",
+      "bytes": 450,
+      "sha256": "47231f7ff62531d1db26ba347038eca6fc6bf922f6e85394c84bda4ce9050516",
+      "sourceSha256": "72eaa2fa199af1846219dee4de066e099481a03a89cea9d99e650ef4be974d31"
+    },
+    {
+      "path": "examples/007-doubled-group-discount-proved-confined/README.md",
+      "change": "modified",
+      "bytes": 11193,
+      "sha256": "4d90220eb23848b1a37edf1b0d4a8e9a9c0eb70b1b0ce30167ac26e6ac6a5d4d",
+      "sourceSha256": "801114e4da2f1fea72063e5d7c7c5d3dbaad7259f3bfe52576d0b5dd061e778e"
+    },
+    {
+      "path": "examples/007-doubled-group-discount-proved-confined/result.json",
+      "change": "modified",
+      "bytes": 2585,
+      "sha256": "1f6734d683b438568396b0d284a6783cccde0af41cbffe906911ae7ef565e08a",
+      "sourceSha256": "537a673a91254f1383deaac7eedc61b46c935f8ddf83bf84f04ce38c8ba113b5"
+    },
+    {
+      "path": "examples/007-doubled-group-discount-proved-confined/verifier-output.txt",
+      "change": "modified",
+      "bytes": 255,
+      "sha256": "ec88e4b1fd56cbd6da38aaba6af409febde062ababe6f053864fd66c0e49eaf6",
+      "sourceSha256": "d2b6b6b38dba7ce47cdfbe87377963b2790eee66b9269f2d06772a85ba251c1a"
+    },
+    {
+      "path": "examples/008-percentage-rewrite-leaks-outside-new-tier/README.md",
+      "change": "modified",
+      "bytes": 13115,
+      "sha256": "6630cfd09375604a767caf299ed273a12b7d474ccaa4735e4bac1b8ebef85557",
+      "sourceSha256": "42758afa9f654394e5e6c0525bffa25296195034e10364507ce4beda6c0319ce"
+    },
+    {
+      "path": "examples/008-percentage-rewrite-leaks-outside-new-tier/result.json",
+      "change": "modified",
+      "bytes": 3041,
+      "sha256": "2ee526a8cdef4801d162ee7271450c379bdd5a6eb5c486a8b961695a5a680c37",
+      "sourceSha256": "935c27f43466904afd920dc189f557bed05f6ac9d6953e41c6aa4affd15766a6"
+    },
+    {
+      "path": "examples/008-percentage-rewrite-leaks-outside-new-tier/verifier-output.txt",
+      "change": "modified",
+      "bytes": 491,
+      "sha256": "7f09181faedd484f69383bf4097441ad011b4dd7b64f9b2b573415ff1f1b8ece",
+      "sourceSha256": "786d088ebdda3056a3c567ea5ca10c56cfd1da8d3db23d161572d77a0b759f93"
+    },
+    {
+      "path": "examples/009-codec-loads-classes-named-by-payload/result.json",
+      "change": "modified",
+      "bytes": 3438,
+      "sha256": "edf4df987916582cd848c2da6bbd8e15e82d972af0edece5afcee436e188357a",
+      "sourceSha256": "daaccc93c0fe72fcc1250f3856420d81d4975b65eb18f60754af5651904f7664"
+    },
+    {
+      "path": "examples/010-sorted-payload-keeps-capabilities/result.json",
+      "change": "modified",
+      "bytes": 2055,
+      "sha256": "86be6345343e348c603f08e0d64f55ea5555234ebf96c386d20f9b4e51b5c5fc",
+      "sourceSha256": "98682dccf3fa69cb5353afff232a830112c82cad16ff9586fec8039f7311606d"
+    },
+    {
+      "path": "examples/011-skipped-seat-check-strands-the-money/README.md",
+      "change": "modified",
+      "bytes": 17102,
+      "sha256": "37b66d2a32792472de82e707e0e27bec815b65a598aed13365acb3655e1d69f3",
+      "sourceSha256": "f9deefeda634ec01357aac4e322b3c2c018e3dc088ae060bd6cd75fb483e02e7"
+    },
+    {
+      "path": "examples/011-skipped-seat-check-strands-the-money/result.json",
+      "change": "modified",
+      "bytes": 4314,
+      "sha256": "74b9265fa5401121ddb1c8a30955234130b003e9e633b81b652e682c08f4dcb5",
+      "sourceSha256": "95967ad7cb46755393fbee7b55e62b93d49eb597198348994e0e3d88b44d1b8a"
+    },
+    {
+      "path": "examples/011-skipped-seat-check-strands-the-money/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6120,
+      "sha256": "085aab844b5a7287ee6855517e0cbb6a73cab41ec8edf9949143b3b1d0a32a49",
+      "sourceSha256": "f939ea22ded96bbae59d20c2069882d9f80542c3ed17c29014e5ab94960cf7a6"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/README.md",
+      "change": "modified",
+      "bytes": 12673,
+      "sha256": "b6442322b534ba8ab4d7fb552e42e9fcadb8fbbfc8b53c3bb929e7cb8a35b86c",
+      "sourceSha256": "77c22f857240b8d62750263ba3001640e2eb3a6e9a9d3c1566d126314c1c5298"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "change": "modified",
+      "bytes": 3111,
+      "sha256": "227c0ad0edfc0235b2bd3d586384c0a8d21eac7223c556962ec04647858db191",
+      "sourceSha256": "b152a400f4067f94120af3902c2530f20d1dbc3f66eea882c6a20935579cf267"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1511,
+      "sha256": "9171f7627022847b0166d99fcf01f7864536075be85bf9b593892d8d7ae48dc5",
+      "sourceSha256": "6be11686021b96f6d5d967f7dfca79e8c220e26fd6a2bd02210edc3ba03f49b4"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-03T03:52:01+00:00",
+    "applied": [
+      "examples/001-merged-case-keeps-money/result.json",
+      "examples/002-equality-refactor-changes-null-handling/result.json",
+      "examples/003-timestamp-makes-decision-nondeterministic/result.json",
+      "examples/004-equivalent-refactor-passes/result.json",
+      "examples/005-intended-change-reviewed-as-contract-diff/result.json",
+      "examples/006-per-seat-discount-rounds-differently/README.md",
+      "examples/006-per-seat-discount-rounds-differently/result.json",
+      "examples/006-per-seat-discount-rounds-differently/verifier-output.txt",
+      "examples/007-doubled-group-discount-proved-confined/README.md",
+      "examples/007-doubled-group-discount-proved-confined/result.json",
+      "examples/007-doubled-group-discount-proved-confined/verifier-output.txt",
+      "examples/008-percentage-rewrite-leaks-outside-new-tier/README.md",
+      "examples/008-percentage-rewrite-leaks-outside-new-tier/result.json",
+      "examples/008-percentage-rewrite-leaks-outside-new-tier/verifier-output.txt",
+      "examples/009-codec-loads-classes-named-by-payload/result.json",
+      "examples/010-sorted-payload-keeps-capabilities/result.json",
+      "examples/011-skipped-seat-check-strands-the-money/README.md",
+      "examples/011-skipped-seat-check-strands-the-money/result.json",
+      "examples/011-skipped-seat-check-strands-the-money/verifier-output.txt",
+      "examples/012-deleting-the-sweeper-is-safe/README.md",
+      "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

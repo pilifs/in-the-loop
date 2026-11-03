@@ -21,7 +21,7 @@
   "domain": "status: int × idempotent: boolean × attempt: int × maxAttempts: int",
   "counterexamples": [
     {
-      "input": "shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0)",
+      "input": "shouldRetry(status=505, idempotent=true, attempt=-1, maxAttempts=0)",
       "contract": "true",
       "actual": "false"
     }
@@ -29,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": null,
-  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int",
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int",
   "problem": null,
   "statement": "statement.java",
   "trace": null,
@@ -37,6 +37,7 @@
   "invariant": null,
   "property": null,
   "stateMachine": null,
+  "coverage": null,
   "sarif": "result.sarif",
   "output": "verifier-output.txt"
 }

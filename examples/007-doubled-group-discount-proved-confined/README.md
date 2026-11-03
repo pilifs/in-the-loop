@@ -138,12 +138,12 @@ Merge. The condition `seats >= 6` is committed with the change, as its scope. A 
 
 ## Evidence
 
-How the verdict was reached: JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions.
+How the verdict was reached: JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 17.3 s; loops unwound 16 times with unwinding assertions)
+✓ net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy#totalCents behaves as before on every input where !(seats >= 6) (JBMC 6.11.0: 2 properties proved over priceCents: long × seats: int in 11.0 s; loops unwound 16 times with unwinding assertions)
 ```
 
 </details>

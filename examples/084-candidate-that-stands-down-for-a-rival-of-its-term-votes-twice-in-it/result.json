@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -24,7 +24,7 @@\n decide(CANDIDATE, AppendEntries[term=CURRENT])  => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]\n decide(CANDIDATE, AppendEntries[term=NEWER])    => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]\n decide(CANDIDATE, RequestVote[term=OLDER])      => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n-decide(CANDIDATE, RequestVote[term=CURRENT])    => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n+decide(CANDIDATE, RequestVote[term=CURRENT])    => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, RequestVote[term=NEWER])      => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, Response[term=OLDER])         => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n",
-  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 992 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 11,058 distinct states to depth 14 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 24 distinct states to depth 4 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 992 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 11,058 distinct states to depth 14 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 24 distinct states to depth 4 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
   "problem": null,
   "statement": null,
   "trace": [
@@ -84,6 +84,7 @@
         "label": "three servers",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -137,6 +138,7 @@
         "label": "the inductive step",
         "fromRuns": false,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -188,6 +190,7 @@
         "label": "four servers",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -241,6 +244,7 @@
         "label": "fairness",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -294,6 +298,7 @@
         "label": "a server left behind",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -339,6 +344,7 @@
         "label": "delayed replies",
         "fromRuns": true,
         "finished": true,
+        "counted": true,
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
@@ -386,6 +392,7 @@
         "label": "history",
         "fromRuns": true,
         "finished": false,
+        "counted": true,
         "operators": []
       }
     ],
