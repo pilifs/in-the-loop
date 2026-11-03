@@ -11,6 +11,7 @@
 # Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES]
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
+#   spring    make jvmcontract more useful to expert Spring Boot developers
 #   CYCLES    how many cycles to run; without it the loop runs until stopped
 #
 # While it runs, the number of cycles left can be changed by typing in its
@@ -29,7 +30,7 @@ MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
 SCOPE=feature-loop
 
 usage() {
-  echo "usage: feature-loop.sh features|tla [CYCLES]" >&2
+  echo "usage: feature-loop.sh features|tla|spring [CYCLES]" >&2
   exit 2
 }
 
@@ -43,6 +44,9 @@ case "$PROMPT" in
     ;;
   tla)
     INSTRUCTION="Add more advanced examples showcasing verification of TLA specs"
+    ;;
+  spring)
+    INSTRUCTION="Enhance the jvmcontract library to be more useful to expert Spring Boot developers. Think outside the box for this -- consider adding more base models, solvers, examples, or other features you feel may be very impactful that we haven't yet considered. Bias towards making enhancements a first-class citizen of the library itself, though feel free to look elsewhere for inspiration."
     ;;
   *) usage ;;
 esac
