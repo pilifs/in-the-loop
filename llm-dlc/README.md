@@ -27,6 +27,8 @@ llm-dlc/
   tools/redaction_rules.py          what counts as sensitive, and the stamp that says which files have been checked
   tools/metrics.py                  turns logs into the metrics tables; test_metrics.py tests it
   tools/feature-loop.sh             runs a named instruction unattended: instruction, commit, compact, repeat
+  tools/verification-loop.sh        keeps the verification queue empty: a fresh Sonnet session per run of /run-verification
+  tools/loop-common.sh              what the two loops share: log lines and the live display of a session
   infra/
     cdn/                            the Cloudflare Worker that serves the logs
     langfuse/                       an optional local Langfuse, for browsing traces
@@ -95,7 +97,7 @@ A session's last words cannot be in the log that a push from inside it publishes
 - print a raw transcript, `~/.claude.json`, or a real identifier while working on the redactor; test it with made-up values
 - mark a finding as a false positive yourself: tell the user what it is, and they run `sync.py review accept` in their own terminal
 
-## Feature loop
+## Unattended loops
 
 [`tools/feature-loop.sh`](tools/feature-loop.sh) resumes one Claude Code session and repeats the instruction you name, compacting the session after each commit: `features` adds features and examples to jvmcontract, and `tla` adds advanced TLA examples. A number after the name sets how many cycles to run; without one it runs until stopped. It also stops when a cycle makes no commit, because that may mean a person is needed, and it leaves that session uncompacted so its context is there to read.
 
@@ -119,6 +121,14 @@ A cycle under way always finishes, commit and compact included. When the count r
 
 It commits locally and pushes nothing. It has no spending limit.
 
+[`tools/verification-loop.sh`](tools/verification-loop.sh) does the same for the [verification queue](../verification/README.md). Whenever jobs are queued that this machine can run, or results wait to be collected, it starts a new Claude Code session on Sonnet 5.5 running [`/run-verification`](../.claude/skills/run-verification/SKILL.md), which runs, collects, triages, resubmits and commits until the queue is clear. Each run gets a fresh context, since the work is mechanical. When the queue is clear it checks it every minute (`VERIFICATION_LOOP_POLL` sets the seconds) for jobs committed since, and starts again when one appears.
+
+```bash
+llm-dlc/tools/verification-loop.sh
+```
+
+A run that leaves work behind, such as jobs it resubmitted, is followed by another, up to 4 in a row (`VERIFICATION_LOOP_RUNS`). A run that leaves exactly what it found isn't repeated: the loop waits until the queue changes, since what is left needs a person. Jobs too big for this machine, and jobs another runner holds, don't start a run. While it runs it reads `stop` (end after the run under way, or at once while waiting), `now` (check the queue at once) and `?` (show the queue) from its terminal, and prints them when it starts. It runs alongside the feature loop, whose scope the skill leaves memory for. It commits locally and pushes nothing.
+
 ## Sessions
 
 Newest first. Each row links to the session summary. The [traces overview](traces/README.md) adds them all up.
@@ -128,10 +138,10 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-02 00:14 UTC | [Real-world examples folder restructure](traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) | 12 | 7 | ended |
 | 2026-11-01 21:47 UTC | [JVM contract bytecode verification skill](traces/2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 12 | 16 | ended |
-| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 39 | 49 | open |
+| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 42 | 50 | open |
 | 2026-11-01 11:13 UTC | [Feature loop cycle recovery](traces/8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 3 | 1 | ended |
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](traces/b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 7 | 3 | ended |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 161 | 33 | open |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 161 | 33 | ended |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](traces/24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 7 | ended |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | ended |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](traces/8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 21 | 11 | ended |

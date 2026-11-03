@@ -126,6 +126,8 @@ The procedure is in the [`/run-verification` skill](../.claude/skills/run-verifi
 then `run` (in the background, or `--watch`), then `collect`, `report`, triage what needs attention, and commit the
 results with `sync.py commit`, keeping out other sessions' files.
 
+To keep the queue empty unattended, run `llm-dlc/tools/verification-loop.sh`: it starts a fresh session on Sonnet running the skill whenever there is work this machine can do, and watches for new jobs in between (see [`llm-dlc/README.md`](../llm-dlc/README.md#unattended-loops)).
+
 ## Reading results
 
 Read `status`, `summary` and `attention` first. For many results at once, `report` gives the ones that need
