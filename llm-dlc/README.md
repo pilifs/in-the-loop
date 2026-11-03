@@ -97,15 +97,25 @@ A session's last words cannot be in the log that a push from inside it publishes
 
 ## Feature loop
 
-[`tools/feature-loop.sh`](tools/feature-loop.sh) resumes one Claude Code session and repeats the instruction you name, compacting the session after each commit: `features` adds features and examples to jvmcontract, and `tla` adds advanced TLA examples. It stops when a cycle makes no commit, because that may mean a person is needed, and it leaves that session uncompacted so its context is there to read.
+[`tools/feature-loop.sh`](tools/feature-loop.sh) resumes one Claude Code session and repeats the instruction you name, compacting the session after each commit: `features` adds features and examples to jvmcontract, and `tla` adds advanced TLA examples. A number after the name sets how many cycles to run; without one it runs until stopped. It also stops when a cycle makes no commit, because that may mean a person is needed, and it leaves that session uncompacted so its context is there to read.
 
 It runs in a systemd scope capped at 4 GB (`FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. It won't start if less memory than the cap is available, or if `feature-loop.scope` is still active.
 
 ```bash
-llm-dlc/tools/feature-loop.sh tla
+llm-dlc/tools/feature-loop.sh tla 5
 ```
 
-To end it cleanly, type `stop` and Enter in its terminal while it runs: it finishes the cycle under way, commits and compacts, then exits 0. `resume` takes the request back, and `touch $XDG_RUNTIME_DIR/feature-loop.stop` stops it from another terminal.
+While it runs, it reads commands typed in its terminal, followed by Enter. It prints them when it starts and a reminder at each cycle:
+
+| Command | Effect |
+| --- | --- |
+| `+N`, `-N` | run N more or N fewer cycles after the current one (`+` and `-` alone mean 1) |
+| `=N`, `N` | run exactly N more cycles after the current one |
+| `0`, `stop` | end after the current cycle |
+| `inf` | no limit |
+| `?`, `help` | where the loop stands, or the list of commands |
+
+A cycle under way always finishes, commit and compact included. When the count reaches 0 the loop exits 0. Ctrl-C stops it at once, with exit status 130. Started without a terminal, it runs the number of cycles it was given.
 
 It commits locally and pushes nothing. It has no spending limit.
 
@@ -118,10 +128,10 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 |---|---|---|---|---|
 | 2026-11-02 00:14 UTC | [Real-world examples folder restructure](traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/summary.md) | 12 | 7 | ended |
 | 2026-11-01 21:47 UTC | [JVM contract bytecode verification skill](traces/2e359813-25c2-4259-888b-42d3a5f0eee6/summary.md) | 12 | 16 | ended |
-| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 37 | 48 | open |
+| 2026-11-01 14:42 UTC | [Feature-loop memory safeguards](traces/a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) | 39 | 49 | open |
 | 2026-11-01 11:13 UTC | [Feature loop cycle recovery](traces/8316bdd0-1ff3-47df-9d3d-67f2a2bdd1a6/summary.md) | 3 | 1 | ended |
 | 2026-10-31 22:46 UTC | [Llm-dlc loop script](traces/b337c438-c453-4e77-9b04-ac89ec125c41/summary.md) | 7 | 3 | ended |
-| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 161 | 32 | open |
+| 2026-10-31 16:29 UTC | [Rust Java formal verification library](traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/summary.md) | 161 | 33 | open |
 | 2026-10-31 15:07 UTC | [Trace data pipeline for llm-dlc](traces/24d088fa-8a2f-419c-9283-2557487b7d9f/summary.md) | 6 | 7 | ended |
 | 2026-10-31 14:07 UTC | [Sync script PII guards](traces/451eff2d-fef0-403d-bccc-98abb77fb2a9/summary.md) | 5 | 5 | ended |
 | 2026-10-31 01:39 UTC | [LLM formal verification examples](traces/8194b9db-b315-48b6-b0eb-b6280f96252b/summary.md) | 21 | 11 | ended |

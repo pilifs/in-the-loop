@@ -868,6 +868,14 @@
       "summary": "Let the feature loop be stopped after the current cycle by typing stop in its terminal",
       "body": "feature-loop.sh now reads its terminal in the background while claude works (claude gets /dev/null as input so they don't compete). Typing stop (or q) and Enter makes the loop exit 0 after the cycle under way has committed and compacted; resume withdraws the request, and touching $XDG_RUNTIME_DIR/feature-loop.stop does the same from another terminal or when there is no terminal. A stale stop file is cleared at start and on exit. Documented in llm-dlc/README.md. Verified with stubbed claude and jj under a pseudo-terminal: stop mid-cycle ended after that cycle, resume let it continue, and the stop file worked with stdin from /dev/null.",
       "log_sha256": "faa3b0b6fc7a484c40c6757c8fa59598ee790c09e5f06aaaf9f6bc13ec99929f"
+    },
+    {
+      "change_id": "xpyuxqzumlkxkypxnwlqosouqwpymntq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Give the feature loop a cycle count, adjustable while it runs, in place of the stop command",
+      "body": "feature-loop.sh takes an optional number of cycles after the prompt name (tla 5); without it the loop runs until stopped. While it runs it reads commands typed in its terminal: +N and -N add or remove cycles after the current one, =N or N sets how many remain, 0 or stop ends after the current cycle, inf removes the limit, and ? or help shows where it stands or the command list. The list is printed at start and a one-line reminder with the count at each cycle. The cycle under way always finishes, commit and compact included, and the loop exits 0 when the count reaches 0. The loop and the terminal reader share the count through a locked state file in XDG_RUNTIME_DIR, removed on exit; this replaces the stop/resume commands and stop file of the previous change. llm-dlc/README.md documents the commands in a table. Verified with stubbed claude and jj under a pseudo-terminal (the systemd scope step skipped): 2 cycles adjusted with +3 and -1 ran 4; unlimited with stop ran 2; -2 against no limit and unknown input were refused with help; 0 ended after cycle 1; no terminal with a count of 2 ran 2; bad arguments print usage and exit 2.",
+      "log_sha256": "faa3b0b6fc7a484c40c6757c8fa59598ee790c09e5f06aaaf9f6bc13ec99929f"
     }
   ],
   "logs": {
