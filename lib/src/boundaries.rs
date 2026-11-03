@@ -39,6 +39,7 @@ use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
+use crate::binding;
 use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, ElementValue, Insn, Kind, Method, MethodDescriptor, Type, TypeTarget};
 use crate::activation;
 use crate::classpath::ClassPath;
@@ -461,6 +462,26 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
     // With a transactional Kafka producer, a send inside a transaction is synchronised with it (committed after
     // the database commit, aborted on rollback): not atomic, but not the plain dual write either.
     let kafka_transactional = config::read_files(resources)?.1.iter().any(|s| s.key == "spring.kafka.producer.transaction-id-prefix");
+    // Every route of the module by its pattern, to find two handlers that claim the same requests.
+    let mut handlers: BTreeMap<String, Vec<(String, String)>> = BTreeMap::new();
+    for (name, class) in &classes {
+        if local.is_some_and(|l| !l.contains(name)) || class.access & (flags::ANNOTATION | flags::SYNTHETIC) != 0 {
+            continue;
+        }
+        let Ok(class_annotations) = class.annotations() else { continue };
+        let class_mappings: Vec<&Annotation> = class_annotations.iter().filter(|a| mapping_verb(a).is_some()).collect();
+        for method in &class.methods {
+            if method.is_synthetic() || method.is_bridge() {
+                continue;
+            }
+            let Ok(annotations) = method.annotations(&class.pool) else { continue };
+            for a in annotations.iter().filter(|a| mapping_verb(a).is_some()) {
+                for route in routes(&class_mappings, a) {
+                    handlers.entry(binding::pattern_key(&route)).or_default().push((format!("{}.{}", simple_name_of(name), method.name), route));
+                }
+            }
+        }
+    }
     let mut roots: Vec<String> = Vec::new();
     let mut field_only: BTreeSet<String> = BTreeSet::new();
     for (name, class) in &classes {
@@ -607,6 +628,13 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             }
             if annotations.iter().any(|a| a.simple_name() == "Scheduled" || a.simple_name() == "Schedules") && !d.params.is_empty() {
                 problems.push("! @Scheduled method takes parameters: the scheduler cannot call it".to_string());
+            }
+            // Whether each parameter of a handler can bind to the request, and whether another handler claims its routes.
+            let route_entries: Vec<String> = annotations.iter().filter(|a| mapping_verb(a).is_some()).flat_map(|a| routes(&class_mappings, a)).collect();
+            if !route_entries.is_empty() {
+                let reflective = method.reflective_parameter_names(&class.pool);
+                problems.extend(binding::check(&route_entries, &d, &param_types, &names, reflective.as_deref(), &parameter_annotations));
+                problems.extend(binding::clashes(&route_entries, &format!("{}.{}", simple_name_of(name), method.name), &handlers));
             }
             let constrained: Vec<String> = parameter_annotations
                 .iter()

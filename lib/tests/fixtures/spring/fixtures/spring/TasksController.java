@@ -1,5 +1,6 @@
 package fixtures.spring;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,18 @@ public class TasksController {
     @PostMapping("/tasks/{id}/close")
     public String close(@PathVariable String id) {
         return flow.close(id);
+    }
+
+    /** The template says {taskId}, the parameter says id: nothing binds it, a 500 on every request. */
+    @DeleteMapping("/tasks/{taskId}")
+    public void delete(@PathVariable String id) {
+        flow.exists(id);
+    }
+
+    /** A page number the request may leave out, in an int: Spring cannot pass null for it. */
+    @GetMapping("/tasks/page")
+    public long page(@RequestParam(required = false) int page) {
+        return page;
     }
 
     /** A GET that only reads and calls other GETs: no problem. */

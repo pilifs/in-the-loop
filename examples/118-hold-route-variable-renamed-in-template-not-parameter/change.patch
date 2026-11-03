@@ -1,0 +1,14 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java
+index a19be625e6..14395ee7ef 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java
+@@ -14,7 +14,8 @@ class HoldController {
+         this.holds = holds;
+     }
+ 
+-    @GetMapping("/holds/{id}")
++    /** The variable is named for what it is, as in the OpenAPI description; the order and concert routes follow. */
++    @GetMapping("/holds/{holdId}")
+     ConcertController.Hold get(@PathVariable String id) {
+         return ConcertController.Hold.of(holds.get(id));
+     }

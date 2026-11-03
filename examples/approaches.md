@@ -223,8 +223,11 @@ method whose declared checked exception commits (Spring rolls back on unchecked 
 names it), an `@Async` method whose non-`Future` result is lost, a `@Cacheable` method returning nothing, and
 constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean, or on a
 non-public method of one, a request body whose type carries constraints taken without `@Valid`, and a `@Valid` or
-`@Validated(G.class)` on a body with constraints in groups it does not validate. Each is a `!` line in the contract,
-so introducing one changes the contract and the pull request shows it.
+`@Validated(G.class)` on a body with constraints in groups it does not validate, a handler parameter that cannot bind
+to the request (a `@PathVariable` whose name is a variable of no template of its route, a name the compiler did not
+record for a binder that needs one, a `required = false` binder on a primitive) and two handlers whose routes match
+the same requests. Each is a `!` line in the contract, so introducing one changes the contract and the pull request
+shows it.
 
 Then what switches each kind of annotation on: `@Scheduled` needs `@EnableScheduling`, `@Async` `@EnableAsync`,
 `@Cacheable` `@EnableCaching`, `@PreAuthorize` `@EnableMethodSecurity`; `@Transactional`, `@KafkaListener` and method

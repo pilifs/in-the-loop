@@ -407,6 +407,15 @@ impl Method {
         MethodDescriptor::parse(&self.descriptor)
     }
 
+    /// The parameter names the compiler recorded in the `MethodParameters` attribute (`javac -parameters`), which are
+    /// the ones a framework sees through reflection; `None` when the attribute is missing or has a gap.
+    pub fn reflective_parameter_names(&self, pool: &ConstantPool) -> Option<Vec<String>> {
+        let count = self.parsed_descriptor().ok()?.params.len();
+        let attr = self.attributes.iter().find(|a| a.name == "MethodParameters")?;
+        let names = parse_method_parameters(&attr.data, pool).ok()?;
+        (names.len() == count && names.iter().all(|n| !n.is_empty())).then_some(names)
+    }
+
     /// Parameter names, from `MethodParameters` (javac `-parameters`) or else the `LocalVariableTable` (javac
     /// `-g`), or else `arg0`, `arg1`, ...
     pub fn parameter_names(&self, pool: &ConstantPool) -> Vec<String> {
@@ -415,12 +424,8 @@ impl Method {
             Err(_) => return Vec::new(),
         };
         let count = descriptor.params.len();
-        if let Some(attr) = self.attributes.iter().find(|a| a.name == "MethodParameters") {
-            if let Ok(names) = parse_method_parameters(&attr.data, pool) {
-                if names.len() == count && names.iter().all(|n| !n.is_empty()) {
-                    return names;
-                }
-            }
+        if let Some(names) = self.reflective_parameter_names(pool) {
+            return names;
         }
         if let Some(code) = &self.code {
             let mut names = Vec::with_capacity(count);

@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T07:05:55.604Z",
-  "duration_seconds": 225360,
+  "ended": "2026-11-03T07:28:12.453Z",
+  "duration_seconds": 226697,
   "stats": {
-    "turns": 196,
-    "api_calls": 2028,
-    "tool_calls": 2563,
+    "turns": 200,
+    "api_calls": 2061,
+    "tool_calls": 2595,
     "tool_errors": 53,
-    "compactions": 33,
+    "compactions": 34,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 60542,
-      "output_tokens": 4289074,
-      "cache_read_input_tokens": 371652175,
-      "cache_creation_input_tokens": 9380388
+      "input_tokens": 61568,
+      "output_tokens": 4331981,
+      "cache_read_input_tokens": 374690663,
+      "cache_creation_input_tokens": 9504645
     }
   },
   "tools": {
-    "Bash": 2064,
+    "Bash": 2096,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -692,24 +692,38 @@
     {
       "index": 33,
       "started": "2026-11-03T06:46:11.554Z",
-      "ended": "2026-11-03T07:05:55.604Z",
+      "ended": "2026-11-03T07:11:02.267Z",
       "turns": 4,
-      "api_calls": 38,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 1186,
-        "output_tokens": 72209,
-        "cache_read_input_tokens": 3898814,
-        "cache_creation_input_tokens": 150988
+        "input_tokens": 1218,
+        "output_tokens": 73507,
+        "cache_read_input_tokens": 4064715,
+        "cache_creation_input_tokens": 153624
       },
-      "peak_context_tokens": 165933
+      "peak_context_tokens": 168569
+    },
+    {
+      "index": 34,
+      "started": "2026-11-03T07:12:36.097Z",
+      "ended": "2026-11-03T07:28:12.453Z",
+      "turns": 4,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 994,
+        "output_tokens": 41609,
+        "cache_read_input_tokens": 2872587,
+        "cache_creation_input_tokens": 121621
+      },
+      "peak_context_tokens": 136566
     }
   ],
   "log": {
-    "sha256": "b2dcfac1694efb944da246deedb72783f4183e1395cb37c7eb68919057cad8b4",
-    "bytes": 76112235,
-    "lines": 28339,
-    "gzip_bytes": 12881214,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/b2dcfac1694efb944da246deedb72783f4183e1395cb37c7eb68919057cad8b4.jsonl.gz"
+    "sha256": "d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a",
+    "bytes": 77405579,
+    "lines": 28823,
+    "gzip_bytes": 13117220,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1080,6 +1094,14 @@
       "summary": "Place each reach effect with respect to transactions: a send or an HTTP call from inside a transaction (a dual write), an event published outside one that a @TransactionalEventListener waits for, and an after-commit listener that writes are ! lines (verification pending)",
       "body": "The reach lines of a boundary contract now carry a transaction scope along the walk from each entry point (lib/src/reach.rs): an effect is reached with no transaction on the path, inside a transaction the method opens (its own @Transactional, or a lambda it hands to TransactionTemplate.execute or to a helper that reaches it, such as Box Office's Transactions.run), or inside a @Transactional method of another class, which accounts for its own effects, so a ! line sits under the service method and not under every route that calls it. Four checks in lib/src/boundaries.rs read the placement: a transaction that sends to a topic, exchange or queue (the dual write an outbox exists to avoid; left alone when spring.kafka.producer.transaction-id-prefix makes the Kafka producer transactional), a transaction that makes an HTTP call, an event published with no transaction while a @TransactionalEventListener of the module or a sibling waits for it (Spring drops the event), and a @TransactionalEventListener in a phase after the commit whose reach writes without REQUIRES_NEW or @Async (nothing commits again, so a JPA or JDBC write is never committed). Verified by the Spring fixtures (new TaskAudit listeners, Work.atomically through a TransactionTemplate stub, TaskFlow.rename and close, two new routes; 90 unit and 29 integration tests pass) and by the three Box Office contracts, which regenerate unchanged. Example 117 replaces the outbox in OrderService.place with a direct KafkaTemplate send from inside Transactions.run; confirmed by hand with the Gradle verifyBoundaries task: POST /orders gains sends payments.commands and the dual-write ! line. New defect tag dual-write. Verification job 20261103-070348-example-117-the-payment-command-sent-to.",
       "log_sha256": "b2dcfac1694efb944da246deedb72783f4183e1395cb37c7eb68919057cad8b4"
+    },
+    {
+      "change_id": "wlvykrvyvvsnqqwxrstmtrrmqukpwnlt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add request binding checks to boundary contracts: a @PathVariable whose name is a variable of no template of its route, a binder whose parameter name the compiler did not record, a required = false binder on a primitive, two @RequestBody parameters, and two handlers on one route are ! lines (verification pending)",
+      "body": "A handler's parameters bind to the request at request time, by a name Spring takes from the annotation or from the bytecode, so a mismatch is neither a compile error nor a startup failure but a 500 on every request of the route, which the unit tests of the service do not make. The new module lib/src/binding.rs reads each handler's @PathVariable, @RequestParam, @RequestHeader, @CookieValue and @MatrixVariable against the route templates and the class file: a @PathVariable whose name (the annotation's value or name, else the parameter's as the MethodParameters attribute records it) is a variable of no template of the route is MissingPathVariableException; a binder with no name of its own on a parameter whose name is not in that attribute (no javac -parameters; Spring 6.1 no longer reads the LocalVariableTable) fails every request; a required = false binder with no defaultValue on a primitive cannot be given null; a second @RequestBody always reads an empty body. Two handlers on one route are found across the module: the same route on two methods, which Spring refuses at startup, and the same pattern under different variable names, which both match every such request with the same specificity, so Spring raises an ambiguity for it. Method::reflective_parameter_names exposes the MethodParameters names on their own, and parameter_names uses it.\n\nVerified by the integration fixtures: TasksController gains DELETE /tasks/{taskId} with @PathVariable String id and GET /tasks/page with @RequestParam(required = false) int page, a new TaskSearchController claims GET /tasks/open (identical to TasksController.open) and GET /tasks/{key}/owner (the pattern of TasksController.owner), and a new fixture set tests/fixtures/spring-legacy is compiled without -parameters so that its @PathVariable id has no name Spring can see while its @RequestParam(\"q\") and Map parameter need none; the contract has the expected ! line under each and the counts are (30 beans, 27 entry points, 65 problems). 92 unit tests and 29 integration tests pass. The four Box Office boundary contracts regenerate unchanged: every @PathVariable names a variable of its route, the modules compile with -parameters, no two handlers share a pattern. Example 118 renames the variable of HoldController's GET /holds/{id} template to {holdId} and leaves the parameter as it was; with the patch applied, ./gradlew :ticketing-service:verifyBoundaries --rerun reports the renamed route with the ! line (@PathVariable id matches no variable in /holds/{holdId}: MissingPathVariableException, a 500 on every request) and 1 problem. The example's pipeline run is job 20261103-072635-example-118-the-hold-route-s-path-variab. New defect tag request-binding; lib/README.md, examples/approaches.md, the plugin reference, the Box Office README and the Gradle plugin comment describe the checks.",
+      "log_sha256": "d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a"
     }
   ],
   "logs": {
@@ -1280,6 +1302,12 @@
       "lines": 8741,
       "gzip_bytes": 4678169,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/cf3e42d2c5722971245ce51ffc45ca216a0636ffb52f8994c0fb00de5782fce4.jsonl.gz"
+    },
+    "d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a": {
+      "bytes": 77405579,
+      "lines": 28823,
+      "gzip_bytes": 13117220,
+      "url": null
     },
     "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207": {
       "bytes": 66238644,

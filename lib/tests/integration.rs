@@ -76,7 +76,12 @@ fn spring_fixtures() -> Option<&'static Path> {
     static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
     DIR.get_or_init(|| {
         let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring");
-        compile("spring", &java_files(&src))
+        let out = compile("spring", &java_files(&src))?;
+        // One controller without `-parameters`: its bytecode has no MethodParameters attribute, as a framework sees it.
+        let legacy = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring-legacy");
+        let status = Command::new("javac").args(["-g", "-proc:none", "-cp"]).arg(&out).arg("-d").arg(&out).args(java_files(&legacy)).status().expect("javac runs");
+        assert!(status.success(), "legacy fixtures compile");
+        Some(out)
     })
     .as_deref()
 }
@@ -1099,9 +1104,14 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     // The reach lines: what an entry point reads, writes, sends, calls and publishes, through a lambda run by a
     // helper, another bean, an interface's implementation, a repository's derived and annotated methods, and the
     // declarative and fluent HTTP clients; and the two places where that contradicts the method's contract.
-    has("fixtures.spring.TasksController: @RestController\n  POST /tasks => String create(@RequestParam String title)\n    writes TaskDocument\n    sends tasks\n    publishes TaskCreated\n    ! publishes TaskCreated outside a transaction: TaskAudit.created and TaskAudit.creating are @TransactionalEventListeners, which do not run when no transaction commits (fallbackExecution is false)\n  GET /tasks/open => long open(@RequestParam String email)\n    reads TaskDocument\n");
+    has("fixtures.spring.TasksController: @RestController\n  POST /tasks => String create(@RequestParam String title)\n    writes TaskDocument\n    sends tasks\n    publishes TaskCreated\n    ! publishes TaskCreated outside a transaction: TaskAudit.created and TaskAudit.creating are @TransactionalEventListeners, which do not run when no transaction commits (fallbackExecution is false)\n  GET /tasks/open => long open(@RequestParam String email)\n    reads TaskDocument\n    ! GET /tasks/open is also mapped to TaskSearchController.open: Spring refuses the duplicate, so the context does not start\n");
     has("  GET /tasks/{author}/archive => void archive(@PathVariable String author)\n    writes NoteDocument\n    sends notices\n    ! a GET that writes NoteDocument and sends notices: a safe method with side effects, so a retry, a prefetch or a crawler changes state\n");
-    has("  GET /tasks/{id}/owner => String owner(@PathVariable String id)\n    reads NoteDocument\n    calls GET /profiles/{id}, GET /users/{id}\n\n");
+    has("  GET /tasks/{id}/owner => String owner(@PathVariable String id)\n    reads NoteDocument\n    calls GET /profiles/{id}, GET /users/{id}\n    ! GET /tasks/{id}/owner matches the same requests as GET /tasks/{key}/owner on TaskSearchController.owner: neither is more specific, so every request that matches is ambiguous, a 500\n\n");
+    // Request binding: a path variable the template does not have, an optional primitive, a name the compiler did not
+    // record (LegacyController is compiled without -parameters), and two handlers on one route.
+    has("  DELETE /tasks/{taskId} => void delete(@PathVariable String id)\n    reads NoteDocument\n    ! @PathVariable id matches no variable in /tasks/{taskId}: MissingPathVariableException, a 500 on every request\n  GET /tasks/page => long page(@RequestParam(required = false) int page)\n    ! @RequestParam(required = false) on int page: a primitive cannot be null, so a request without it fails with a 500 instead of a 400\n");
+    has("fixtures.spring.legacy.LegacyController: @RestController\n  GET /legacy/{id} => String get(@PathVariable String id, @RequestParam(\"q\") String query, @RequestParam Map<String, String> all)\n    ! @PathVariable id: the parameter's name is not in the bytecode (no MethodParameters attribute: compile with -parameters, or name it in the annotation), and Spring 6.1 reads nothing else, so the request fails with a 500\n\n");
+    has("fixtures.spring.TaskSearchController: @RestController\n  GET /tasks/open => long open()\n    ! GET /tasks/open is also mapped to TasksController.open: Spring refuses the duplicate, so the context does not start\n  GET /tasks/{key}/owner => String owner(@PathVariable String key)\n    ! GET /tasks/{key}/owner matches the same requests as GET /tasks/{id}/owner on TasksController.owner: neither is more specific, so every request that matches is ambiguous, a 500\n\n");
     has("fixtures.spring.TaskFlow: @Service\n  long audit(String id)\n    @Transactional(readOnly = true)\n    reads notes\n    writes audit\n    ! @Transactional(readOnly = true) but writes audit: a read-only transaction drops or rejects writes\n");
     // Where each effect stands with respect to transactions: a send and a call inside a @Transactional method are
     // dual writes, reported by that method and not by the route that calls it; a lambda run by a helper through
@@ -1109,7 +1119,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     // committed, a before-commit one joins; an event published with no transaction never reaches its
     // @TransactionalEventListener.
     has("  void rename(String id, String title)\n    @Transactional\n    writes TaskDocument\n    sends tasks\n    calls POST /audit/{id}\n    ! a transaction that sends to tasks: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced\n    ! a transaction that calls POST /audit/{id}: the call is not part of the transaction, so a rollback does not undo it, and the transaction stays open for the round trip\n\n");
-    has("  PUT /tasks/{id} => void rename(@PathVariable String id, @RequestParam String title)\n    writes TaskDocument\n    sends tasks\n    calls POST /audit/{id}\n  POST /tasks/{id}/close => String close(@PathVariable String id)\n    writes TaskDocument\n    sends tasks\n    ! a transaction that sends to tasks: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced\n  GET /tasks/{id}/owner");
+    has("  PUT /tasks/{id} => void rename(@PathVariable String id, @RequestParam String title)\n    writes TaskDocument\n    sends tasks\n    calls POST /audit/{id}\n  POST /tasks/{id}/close => String close(@PathVariable String id)\n    writes TaskDocument\n    sends tasks\n    ! a transaction that sends to tasks: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced\n  DELETE /tasks/{taskId}");
     has("fixtures.spring.TaskAudit: @Component\n  @TransactionalEventListener => void created(TaskCreated event)\n    writes audit\n    ! an AFTER_COMMIT listener that writes audit: the transaction has committed and nothing commits again, so a JPA or JDBC write here is never committed unless the method opens its own transaction (propagation = REQUIRES_NEW)\n  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) => void creating(TaskCreated event)\n    writes audit\n\n");
     // A handler that reaches nothing has no reach line; a GET that only reads is not a problem.
     has("  GET /orders/{id} => Order get(@PathVariable String id, @RequestParam(required = false) @Min(1) Integer version)\n  DELETE");
@@ -1153,7 +1163,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.stored.len(), found.problems()), (28, 22, 15, 21, 15, 5, 57), "{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.stored.len(), found.problems()), (30, 27, 15, 21, 15, 5, 65), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1179,7 +1189,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (28 beans, 22 entry points, 15 advised methods, 21 configuration keys, 15 wire types, 5 stored types, 57 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (30 beans, 27 entry points, 15 advised methods, 21 configuration keys, 15 wire types, 5 stored types, 65 problems)"), "{}", outcome.output);
 
     let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n").replace("  due: Instant (dueAt)\n", "  dueAt: Instant\n");
     std::fs::write(&file, edited).unwrap();

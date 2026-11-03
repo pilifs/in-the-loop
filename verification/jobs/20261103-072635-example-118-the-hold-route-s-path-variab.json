@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-072635-example-118-the-hold-route-s-path-variab",
+  "title": "Example 118: the hold route's path variable renamed in the template but not in the parameter, a 500 on every request, caught by the request binding checks (B12)",
+  "description": "The first example of the request binding checks of a boundary contract (lib/src/binding.rs): jvmcontract now reads each handler's parameter annotations against its routes and its bytecode, with a ! line for a @PathVariable whose name (the annotation's, else the parameter's as the MethodParameters attribute records it) is a variable of no template of the route, for a named binder on a parameter whose name the compiler did not record (no -parameters; Spring 6.1 reads nothing else), for a required = false binder with no defaultValue on a primitive, for two @RequestBody parameters, and for two handlers of the module whose routes match the same requests (the same route twice fails the context at startup, the same pattern under different variable names is an ambiguity every matching request hits). The patch renames the variable of HoldController's GET /holds/{id} template to {holdId} and leaves the parameter @PathVariable String id: Spring raises MissingPathVariableException, a 500, on every request of the route; the code compiles, the context starts, and the unit tests go through the service. The change is a rename in the developer's eyes, so the runner regenerates the contract and reports as the violation the new ! line under the renamed route (@PathVariable id matches no variable in /holds/{holdId}: MissingPathVariableException, a 500 on every request). The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/binding.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "118"
+    ]
+  },
+  "expected": "build.py 118 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T07:26:35+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 118 (B12)",
+      "run": "python3 examples/tools/build.py 118",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/118-hold-route-variable-renamed-in-template-not-parameter"
+  ]
+}

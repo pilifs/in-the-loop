@@ -22,6 +22,7 @@
 //! Every verdict can be written as SARIF ([`sarif`]) for GitHub code scanning and SonarQube.
 
 pub mod api;
+pub mod binding;
 pub mod bmc;
 pub mod boundaries;
 pub mod capabilities;

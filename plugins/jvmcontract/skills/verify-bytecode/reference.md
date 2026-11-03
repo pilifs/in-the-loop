@@ -42,7 +42,9 @@ jvmcontract api CLASSES [--module NAME]
 # projection or @Query string that names a field the document does not have; and under each entry point what it
 # reaches (reads, writes, sends, calls, publishes), with `!` lines for a GET with side effects, a read-only
 # transaction that writes, a transaction that sends or calls out (a dual write), an event published outside a
-# transaction that a @TransactionalEventListener waits for, and an after-commit listener that writes. No JBMC.
+# transaction that a @TransactionalEventListener waits for, and an after-commit listener that writes; and the request
+# binding of each handler, with `!` lines for a @PathVariable that names no variable of its route, a parameter name
+# the compiler did not record, a required = false binder on a primitive, and two handlers on one route. No JBMC.
 jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.
