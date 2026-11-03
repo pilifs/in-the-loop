@@ -62,6 +62,12 @@ The tla prompt stopped after seven cycles while features ran until a cycle made 
 
 Verified by running the real script, including its memory scope, with a stub claude in a temporary jj repo: tla and features each ran past seven cycles, stopped at the tenth when it made no commit with exit 1, nine compacts and their own text. No argument still gives exit 2. The loop has not been run against the real session.
 
+### Record session traces
+
+change `kxwwpkkmlwuo` · [log `d9e74acdb1d2`](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/d9e74acdb1d2b8e39f5ab44f15f8bf3ca25fb1ff02b9cbc2e7ec624e29111014.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/dfa830a1-4fb4-4d80-8e2c-d612b759742d/d9e74acdb1d2b8e39f5ab44f15f8bf3ca25fb1ff02b9cbc2e7ec624e29111014.jsonl.gz) has every step in between: reasoning, tool calls and their results.
