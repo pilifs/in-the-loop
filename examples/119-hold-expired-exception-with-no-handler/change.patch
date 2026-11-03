@@ -1,0 +1,34 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldExpiredException.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldExpiredException.java
+new file mode 100644
+index 0000000000..1e111e53f9
+--- /dev/null
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldExpiredException.java
+@@ -0,0 +1,15 @@ public class HoldExpiredException extends RuntimeException {
++package net.terminalvalue.boxoffice.ticketing.app;
++
++/** The hold the order names has expired, so its seats went back on sale: the client holds them again and retries. */
++public class HoldExpiredException extends RuntimeException {
++    private final String holdId;
++
++    public HoldExpiredException(String holdId) {
++        super("hold " + holdId + " has expired");
++        this.holdId = holdId;
++    }
++
++    public String holdId() {
++        return holdId;
++    }
++}
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
+index 954df2aba7..142ac89455 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java
+@@ -49,7 +49,7 @@ public Created<OrderDocument> place(String holdId, String paymentToken) {
+             var hold = store.hold(holdId).orElseThrow(() -> new NotFoundException("no hold " + holdId));
+             Instant now = clock.instant();
+             if (store.heldUnexpiredBy(holdId, now) != hold.seatLabels().size()) {
+-                throw new ConflictException("hold " + holdId + " has expired");
++                throw new HoldExpiredException(holdId);
+             }
+             var order = new OrderDocument(
+                     UUID.randomUUID().toString(),

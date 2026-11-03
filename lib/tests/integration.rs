@@ -1111,6 +1111,14 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     // record (LegacyController is compiled without -parameters), and two handlers on one route.
     has("  DELETE /tasks/{taskId} => void delete(@PathVariable String id)\n    reads NoteDocument\n    ! @PathVariable id matches no variable in /tasks/{taskId}: MissingPathVariableException, a 500 on every request\n  GET /tasks/page => long page(@RequestParam(required = false) int page)\n    ! @RequestParam(required = false) on int page: a primitive cannot be null, so a request without it fails with a 500 instead of a 400\n");
     has("fixtures.spring.legacy.LegacyController: @RestController\n  GET /legacy/{id} => String get(@PathVariable String id, @RequestParam(\"q\") String query, @RequestParam Map<String, String> all)\n    ! @PathVariable id: the parameter's name is not in the bytecode (no MethodParameters attribute: compile with -parameters, or name it in the annotation), and Spring 6.1 reads nothing else, so the request fails with a 500\n\n");
+    // What each route throws and what each exception becomes: a handler's status (from its body, its annotation or
+    // its builder), a @ResponseStatus on the exception, the status a ResponseStatusException carries, or a 500. A
+    // catch that swallows hides the exception, one that rethrows passes it, one that wraps throws the wrapper; an
+    // @Async callee throws on its own thread. An application exception nothing maps is a `!` line; a JDK one is not.
+    has("fixtures.spring.FailuresController: @RestController @RequestMapping(\"/failures\")\n  GET /failures/{id} => String find(@PathVariable String id)\n    reads NoteDocument\n    throws MissingException (404 by ApiErrors.missing)\n  POST /failures/{id}/expiry => void expire(@PathVariable String id)\n    throws ExpiredException (500), IllegalArgumentException (400 by ApiErrors.invalid), StaleException (409 by its @ResponseStatus)\n    ! throws ExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500\n  POST /failures/{id}/guarded => void guarded(@PathVariable String id)\n  POST /failures/{id}/retried => void retried(@PathVariable String id)\n    throws ExpiredException (500)\n    ! throws ExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500\n  POST /failures/{id}/wrapped => void wrapped(@PathVariable String id)\n    throws IllegalStateException (503 by FailuresController.unavailable)\n  GET /failures/{id}/gone => String gone(@PathVariable String id)\n    throws ResponseStatusException (410)\n  GET /failures/{id}/pick => String pick(@PathVariable String id)\n    throws NoSuchElementException (500)\n  @ExceptionHandler(java.lang.IllegalStateException.class) => ResponseEntity<Void> unavailable(IllegalStateException e)\n\n");
+    // A listener's throws line has no outcomes; two handlers for one type in an advice stop the context.
+    has("fixtures.spring.FailureListener: @Component\n  @KafkaListener(topics = \"failures\") => void on(String id)\n    throws ExpiredException, IllegalArgumentException, StaleException\n\n");
+    has("fixtures.spring.ApiErrors: @RestControllerAdvice\n  @ExceptionHandler => ProblemDetail missing(MissingException e)\n  @ExceptionHandler(java.lang.IllegalArgumentException.class) => void invalid()\n    @ResponseStatus(HttpStatus.BAD_REQUEST)\n  @ExceptionHandler => ResponseEntity<String> missingAgain(MissingException e)\n    ! @ExceptionHandler for MissingException twice in ApiErrors (missing and missingAgain): Spring refuses the ambiguity, so the context does not start\n\n");
     has("fixtures.spring.TaskSearchController: @RestController\n  GET /tasks/open => long open()\n    ! GET /tasks/open is also mapped to TasksController.open: Spring refuses the duplicate, so the context does not start\n  GET /tasks/{key}/owner => String owner(@PathVariable String key)\n    ! GET /tasks/{key}/owner matches the same requests as GET /tasks/{id}/owner on TasksController.owner: neither is more specific, so every request that matches is ambiguous, a 500\n\n");
     has("fixtures.spring.TaskFlow: @Service\n  long audit(String id)\n    @Transactional(readOnly = true)\n    reads notes\n    writes audit\n    ! @Transactional(readOnly = true) but writes audit: a read-only transaction drops or rejects writes\n");
     // Where each effect stands with respect to transactions: a send and a call inside a @Transactional method are
@@ -1163,7 +1171,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.stored.len(), found.problems()), (30, 27, 15, 21, 15, 5, 65), "{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.stored.len(), found.problems()), (35, 39, 16, 21, 17, 5, 70), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1189,7 +1197,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (30 beans, 27 entry points, 15 advised methods, 21 configuration keys, 15 wire types, 5 stored types, 65 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (35 beans, 39 entry points, 16 advised methods, 21 configuration keys, 17 wire types, 5 stored types, 70 problems)"), "{}", outcome.output);
 
     let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n").replace("  due: Instant (dueAt)\n", "  dueAt: Instant\n");
     std::fs::write(&file, edited).unwrap();

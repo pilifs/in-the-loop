@@ -22,6 +22,12 @@
 //! table, a `new`, a field or the return type of the call that produced it), else the documents the method
 //! mentions, else `a document`. A topic, a URL or a table is the constant string the call site passes; a value
 //! computed at run time is `to Kafka`, `a computed URL` or `SQL`.
+//!
+//! The same graph gives what each entry point throws ([`Graph::throws`]): the `throw` statements, `orElseThrow`
+//! suppliers and Spring `Assert` calls in every method it reaches, less the exceptions a `catch` on the path
+//! takes and does not rethrow. A handler that rethrows its caught variable (a `finally`, a retry loop, a log
+//! and rethrow) passes everything through. What becomes of each exception at the boundary is
+//! [`crate::failures`]'s question.
 
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -193,6 +199,23 @@ struct Direct {
     scoped: Vec<(String, String)>,
     /// Calls `TransactionTemplate.execute` (or `executeWithoutResult`) itself.
     opens_transaction: bool,
+    /// The exceptions the method throws itself, by internal name, less those a handler of its own catches without
+    /// rethrowing. A `ResponseStatusException` carries the status it was built with: `...ResponseStatusException:NOT_FOUND`.
+    throws: Vec<String>,
+    /// For each callee, one entry per site that calls it: the catch types of the handlers covering the site that
+    /// swallow what they catch (empty at a site under no such handler).
+    guards: HashMap<String, Vec<Vec<String>>>,
+}
+
+const RESPONSE_STATUS_EXCEPTIONS: &[&str] = &["org/springframework/web/server/ResponseStatusException", "org/springframework/web/ErrorResponseException"];
+const HTTP_STATUS: &str = "org/springframework/http/HttpStatus";
+
+/// A handler's range and what it catches (`Throwable` for a `finally` or a synchronized block's release), when
+/// its code never rethrows the caught variable.
+struct Swallowing {
+    start: u32,
+    end: u32,
+    catches: String,
 }
 
 const TRANSACTIONAL: &[&str] = &["org/springframework/transaction/annotation/Transactional", "jakarta/transaction/Transactional", "javax/transaction/Transactional"];
@@ -222,6 +245,8 @@ pub struct Graph<'a> {
     runners: RefCell<HashMap<String, bool>>,
     /// Whether each method is `@Transactional` (itself or through its class), once asked.
     annotated: RefCell<HashMap<String, bool>>,
+    /// Whether each method is `@Async` (itself or through its class), once asked.
+    asynchronous: RefCell<HashMap<String, bool>>,
 }
 
 impl<'a> Graph<'a> {
@@ -238,7 +263,7 @@ impl<'a> Graph<'a> {
                 children.entry(i.clone()).or_default().push(name.clone());
             }
         }
-        Graph { cp, classes, children, direct: RefCell::new(HashMap::new()), runners: RefCell::new(HashMap::new()), annotated: RefCell::new(HashMap::new()) }
+        Graph { cp, classes, children, direct: RefCell::new(HashMap::new()), runners: RefCell::new(HashMap::new()), annotated: RefCell::new(HashMap::new()), asynchronous: RefCell::new(HashMap::new()) }
     }
 
     /// Everything the method reaches, transitively, placed with respect to transactions. A method is visited
@@ -278,6 +303,80 @@ impl<'a> Graph<'a> {
             }
         }
         out
+    }
+
+    /// The exceptions the method may throw to its caller, by internal name: what every method it reaches throws
+    /// itself, less what a handler on the path catches without rethrowing. An exception escapes a callee when some
+    /// site that calls it is under no handler that takes the exception's type. An `@Async` callee of another class
+    /// throws on its own thread, and nothing reaches the caller.
+    pub fn throws(&self, owner: &str, name: &str, descriptor: &str) -> BTreeSet<String> {
+        let root = key(owner, name, descriptor);
+        let mut order = Vec::new();
+        let mut seen: HashSet<String> = HashSet::new();
+        let mut work = vec![root.clone()];
+        while let Some(k) = work.pop() {
+            if !seen.insert(k.clone()) {
+                continue;
+            }
+            let Some(direct) = self.direct(&k) else { continue };
+            order.push(k);
+            work.extend(direct.callees.iter().cloned());
+        }
+        let owner_of = |k: &str| k.split_once('.').map(|(o, _)| o.to_string()).unwrap_or_default();
+        let mut thrown: HashMap<String, BTreeSet<String>> = HashMap::new();
+        loop {
+            let mut changed = false;
+            for k in &order {
+                let Some(direct) = self.direct(k) else { continue };
+                let mut set: BTreeSet<String> = direct.throws.iter().cloned().collect();
+                for c in &direct.callees {
+                    if owner_of(c) != owner_of(k) && self.asynchronous(c) {
+                        continue;
+                    }
+                    let Some(from_callee) = thrown.get(c) else { continue };
+                    let sites = direct.guards.get(c);
+                    for e in from_callee {
+                        let escapes = sites.is_none_or(|sites| sites.iter().any(|catches| !catches.iter().any(|t| self.cp.is_subtype(base_type(e), t))));
+                        if escapes {
+                            set.insert(e.clone());
+                        }
+                    }
+                }
+                if thrown.get(k) != Some(&set) {
+                    thrown.insert(k.clone(), set);
+                    changed = true;
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+        thrown.remove(&root).unwrap_or_default()
+    }
+
+    /// Whether the method is `@Async`, itself or through its class (for an instance method).
+    fn asynchronous(&self, k: &str) -> bool {
+        if let Some(a) = self.asynchronous.borrow().get(k) {
+            return *a;
+        }
+        let found = (|| {
+            let (owner, rest) = k.split_once('.')?;
+            let paren = rest.find('(')?;
+            let (name, descriptor) = rest.split_at(paren);
+            let class = self.classes.get(owner)?;
+            let method = class.method(name, descriptor)?;
+            let is_async = |annotations: &[Annotation]| annotations.iter().any(|a| a.type_name == "org/springframework/scheduling/annotation/Async");
+            if is_async(&method.annotations(&class.pool).ok()?) {
+                return Some(true);
+            }
+            if method.is_static() {
+                return Some(false);
+            }
+            Some(is_async(&class.annotations().ok()?))
+        })()
+        .unwrap_or(false);
+        self.asynchronous.borrow_mut().insert(k.to_string(), found);
+        found
     }
 
     /// Whether the method is `@Transactional`, itself or through its class (for an instance method), with a
@@ -358,9 +457,21 @@ impl<'a> Graph<'a> {
         let Ok(insns) = code.instructions() else { return out };
         let targets = jump_targets(&insns, method);
         let bootstrap = class.bootstrap_methods().unwrap_or_default();
+        let (swallowing, caught_slots) = handlers(class, code, &insns, &targets);
+        let catches_at = |pc: u32| -> Vec<String> { swallowing.iter().filter(|h| h.start <= pc && pc < h.end).map(|h| h.catches.clone()).collect() };
+        // A throw at `pc` escapes the method unless a swallowing handler there takes its type. The compiler's own
+        // guards (the `MatchException` of an exhaustive switch, an `assert`) are not the application's.
+        let throws = |out: &mut Direct, pc: u32, e: String| {
+            if matches!(base_type(&e), "java/lang/MatchException" | "java/lang/AssertionError") {
+                return;
+            }
+            if !catches_at(pc).iter().any(|t| self.cp.is_subtype(base_type(&e), t)) && !out.throws.contains(&e) {
+                out.throws.push(e);
+            }
+        };
         // The verb of the fluent HTTP client chain being built (`client.get().uri(...)`).
         let mut verb: Option<String> = None;
-        for (i, (_, insn)) in insns.iter().enumerate() {
+        for (i, (pc, insn)) in insns.iter().enumerate() {
             match insn {
                 Insn::InvokeVirtual(idx) | Insn::InvokeSpecial(idx) | Insn::InvokeStatic(idx) | Insn::InvokeInterface(idx) => {
                     let Ok(member) = class.pool.member(*idx) else { continue };
@@ -373,6 +484,9 @@ impl<'a> Graph<'a> {
                         }
                         for effect in self.leaf(class, method, &insns, &targets, i, &member, &mut verb) {
                             apply(&mut out.reach, effect);
+                        }
+                        for e in self.leaf_throws(class, &insns, &targets, i, &member, &bootstrap) {
+                            throws(&mut out, *pc, e);
                         }
                         continue;
                     }
@@ -388,16 +502,137 @@ impl<'a> Graph<'a> {
                         for lambda in &lambdas {
                             out.scoped.push((callee.clone(), lambda.clone()));
                         }
+                        out.guards.entry(callee.clone()).or_default().push(catches_at(*pc));
                     }
                     out.callees.extend(callees);
                 }
                 Insn::InvokeDynamic(idx) => {
-                    out.callees.extend(self.lambda_targets(class, &bootstrap, *idx));
+                    for callee in self.lambda_targets(class, &bootstrap, *idx) {
+                        out.guards.entry(callee.clone()).or_default().push(catches_at(*pc));
+                        out.callees.push(callee);
+                    }
+                }
+                Insn::AThrow => {
+                    if let Some(e) = self.thrown_type(class, method, &insns, &targets, i, &caught_slots) {
+                        throws(&mut out, *pc, e);
+                    }
                 }
                 _ => {}
             }
         }
         out
+    }
+
+    /// What a `throw` at `at` throws: the class a `new` built (with its status, for a `ResponseStatusException`),
+    /// the type of the variable, field or call that produced the value; nothing for a caught variable thrown again
+    /// (the handler passes its exceptions through) or a value the walk cannot type.
+    fn thrown_type(&self, class: &ClassFile, method: &Method, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, caught_slots: &HashSet<u16>) -> Option<String> {
+        let k = pushing(class, insns, targets, at, 0)?;
+        let object = |t: &str| Type::parse(t).ok().and_then(|t| match t {
+            Type::Object(name) => Some(name),
+            _ => None,
+        });
+        match &insns[k].1 {
+            Insn::New(idx) => {
+                let name = class.pool.class_name(*idx).ok()?.to_string();
+                Some(self.with_status(class, insns, targets, k, at, name))
+            }
+            Insn::Load(Kind::Ref, slot) if caught_slots.contains(slot) => None,
+            Insn::Load(Kind::Ref, slot) => {
+                let pc = insns[k].0;
+                let code = method.code.as_ref()?;
+                let local = code.local_variables.iter().find(|v| v.index == *slot && u32::from(v.start_pc) <= pc && pc < u32::from(v.start_pc) + u32::from(v.length))?;
+                object(&local.descriptor)
+            }
+            Insn::InvokeVirtual(idx) | Insn::InvokeStatic(idx) | Insn::InvokeSpecial(idx) | Insn::InvokeInterface(idx) => {
+                let member = class.pool.member(*idx).ok()?;
+                match MethodDescriptor::parse(&member.descriptor).ok()?.ret {
+                    Type::Object(name) if name != "java/lang/Object" => Some(name),
+                    _ => None,
+                }
+            }
+            Insn::CheckCast(idx) => Some(class.pool.class_name(*idx).ok()?.to_string()),
+            Insn::GetField(idx) | Insn::GetStatic(idx) => object(&class.pool.member(*idx).ok()?.descriptor),
+            _ => None,
+        }
+    }
+
+    /// A `ResponseStatusException` (or `ErrorResponseException`) with the status its constructor was given, when
+    /// that is an `HttpStatus` constant: `org/springframework/web/server/ResponseStatusException:NOT_FOUND`.
+    fn with_status(&self, class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, new_at: usize, until: usize, name: String) -> String {
+        if !RESPONSE_STATUS_EXCEPTIONS.iter().any(|c| name == *c || self.cp.is_subtype(&name, c)) {
+            return name;
+        }
+        for i in new_at + 1..=until {
+            if let Insn::InvokeSpecial(idx) = &insns[i].1 {
+                let Ok(member) = class.pool.member(*idx) else { continue };
+                if member.owner != name || member.name != "<init>" {
+                    continue;
+                }
+                let Ok(d) = MethodDescriptor::parse(&member.descriptor) else { break };
+                if d.params.is_empty() {
+                    break;
+                }
+                if let Some(p) = pushing(class, insns, targets, i, d.params.len() - 1) {
+                    if let Insn::GetStatic(f) = &insns[p].1 {
+                        if let Ok(field) = class.pool.member(*f) {
+                            if field.owner == HTTP_STATUS {
+                                return format!("{name}:{}", field.name);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        name
+    }
+
+    /// What a call into the JDK or Spring throws by design: `Optional.orElseThrow` the exception its supplier
+    /// builds (or `NoSuchElementException` with no supplier), `Assert.state` an `IllegalStateException`, the other
+    /// `Assert` methods an `IllegalArgumentException`.
+    fn leaf_throws(&self, class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, at: usize, member: &MemberRef, bootstrap: &[crate::classfile::BootstrapMethod]) -> Vec<String> {
+        if member.owner == "org/springframework/util/Assert" {
+            return vec![if member.name.starts_with("state") { "java/lang/IllegalStateException" } else { "java/lang/IllegalArgumentException" }.to_string()];
+        }
+        if !(member.owner.starts_with("java/util/Optional") && member.name == "orElseThrow") {
+            return Vec::new();
+        }
+        if member.descriptor.starts_with("()") {
+            return vec!["java/util/NoSuchElementException".to_string()];
+        }
+        let Some(pushed) = pushing(class, insns, targets, at, 0) else { return Vec::new() };
+        let Insn::InvokeDynamic(idx) = &insns[pushed].1 else { return Vec::new() };
+        let Ok((bsm, _, _)) = class.pool.invoke_dynamic(*idx) else { return Vec::new() };
+        let Some(b) = bootstrap.get(usize::from(bsm)) else { return Vec::new() };
+        let Some(BootstrapArg::MethodHandle(h)) = b.args.get(1) else { return Vec::new() };
+        if h.kind == 8 {
+            return vec![h.member.owner.clone()];
+        }
+        let Ok(d) = MethodDescriptor::parse(&h.member.descriptor) else { return Vec::new() };
+        let Type::Object(name) = d.ret else { return Vec::new() };
+        if name == "java/lang/Object" || !self.cp.is_subtype(&name, "java/lang/Throwable") {
+            return Vec::new();
+        }
+        // A `ResponseStatusException` built in the supplier's body: the status is the `new` in the lambda's method.
+        if RESPONSE_STATUS_EXCEPTIONS.iter().any(|c| name == *c || self.cp.is_subtype(&name, c)) {
+            if let Some(lambda) = self.classes.get(&h.member.owner).and_then(|c| c.method(&h.member.name, &h.member.descriptor).map(|m| (c.clone(), m.clone()))) {
+                let (lambda_class, lambda_method) = lambda;
+                if let Some(code) = &lambda_method.code {
+                    if let Ok(body) = code.instructions() {
+                        let body_targets = jump_targets(&body, &lambda_method);
+                        for (i, (_, insn)) in body.iter().enumerate() {
+                            if let Insn::New(n) = insn {
+                                if lambda_class.pool.class_name(*n).ok() == Some(name.as_str()) {
+                                    return vec![self.with_status(&lambda_class, &body, &body_targets, i, body.len() - 1, name)];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        vec![name]
     }
 
     /// The followed methods behind a lambda: the body the `LambdaMetafactory` call site names, when it is local.
@@ -730,6 +965,38 @@ impl<'a> Graph<'a> {
 
 /// A class as the lines name it: the simple name, with a nested class under its outer one (`Outbox.Entry`), so
 /// that two nested classes of one name stay apart.
+/// The exception's class, without the status a `ResponseStatusException` carries.
+pub fn base_type(thrown: &str) -> &str {
+    thrown.split_once(':').map_or(thrown, |(t, _)| t)
+}
+
+/// The method's exception handlers that swallow what they catch, and the local slots every handler stores its
+/// exception in. A handler rethrows when some `athrow` after it throws the variable it stored at its entry: a
+/// `finally`, a `synchronized` release, a retry loop or a log-and-rethrow; such a handler passes its exceptions
+/// through and is not listed.
+fn handlers(class: &ClassFile, code: &crate::classfile::Code, insns: &[(u32, Insn)], targets: &BTreeSet<u32>) -> (Vec<Swallowing>, HashSet<u16>) {
+    let mut swallowing = Vec::new();
+    let mut slots = HashSet::new();
+    for h in &code.exception_table {
+        let entry = insns.iter().position(|(pc, _)| *pc == u32::from(h.handler_pc));
+        let slot = match entry.map(|i| &insns[i].1) {
+            Some(Insn::Store(Kind::Ref, n)) => Some(*n),
+            _ => None,
+        };
+        let rethrows = match (entry, slot) {
+            (Some(entry), Some(n)) => {
+                slots.insert(n);
+                insns.iter().enumerate().skip(entry + 1).any(|(j, (_, insn))| matches!(insn, Insn::AThrow) && pushing(class, insns, targets, j, 0).is_some_and(|k| k > entry && matches!(insns[k].1, Insn::Load(Kind::Ref, m) if m == n)))
+            }
+            _ => false,
+        };
+        if !rethrows {
+            swallowing.push(Swallowing { start: u32::from(h.start_pc), end: u32::from(h.end_pc), catches: h.catch_type.clone().unwrap_or_else(|| "java/lang/Throwable".to_string()) });
+        }
+    }
+    (swallowing, slots)
+}
+
 pub(crate) fn display(internal: &str) -> String {
     internal.rsplit('/').next().unwrap_or(internal).replace('$', ".")
 }

@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-075520-example-119-holdexpiredexception-replace",
+  "title": "Example 119: HoldExpiredException replaces the ConflictException of POST /orders with no handler mapping it, a 500 instead of a 409, caught by the throws lines of the boundary contract (B12)",
+  "description": "The first example of the throws lines and the exception outcomes of a boundary contract (Graph::throws in lib/src/reach.rs, lib/src/failures.rs): under each route jvmcontract now lists the exceptions the handler can throw (throw statements, orElseThrow suppliers and Spring Assert calls in everything it reaches, less what a catch on the path takes without rethrowing) and what each becomes (the @ExceptionHandler that takes it, the controller's own first and then the advices in @Order, with the status it answers; the @ResponseStatus on the exception; the status a ResponseStatusException carries; or a 500), with a ! line for an exception type of the module's own that nothing maps and for two handlers of one type in one advice. The patch adds HoldExpiredException, a RuntimeException carrying the hold id, and throws it from OrderService.place where ConflictException was thrown; ApiErrors is not touched, so Spring answers a 500 from the container's error page instead of the 409 problem detail. The code compiles, the context starts, the unit tests go through the service. The change is a refactoring in the developer's eyes, so the runner regenerates the contract and reports as the violation the new ! line under POST /orders (throws HoldExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500). The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/failures.rs",
+      "lib/src/reach.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "119"
+    ]
+  },
+  "expected": "build.py 119 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T07:55:20+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 119 (B12)",
+      "run": "python3 examples/tools/build.py 119",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/119-hold-expired-exception-with-no-handler"
+  ]
+}

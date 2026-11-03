@@ -32,7 +32,10 @@
 //! data, messaging, HTTP client and event APIs, and placed with respect to transactions. A `GET` with side effects, a
 //! read-only transaction that writes, a transaction that sends or makes an HTTP call (a dual write), an event
 //! published with no transaction while a `@TransactionalEventListener` waits for it, and an after-commit listener
-//! that writes are `!` lines.
+//! that writes are `!` lines. Under each entry point also goes what it throws, and for a route what each exception
+//! becomes ([`crate::failures`]): the `@ExceptionHandler` that takes it and the status it answers with, the
+//! `@ResponseStatus` on the exception, or a 500. An application exception nothing maps, and a second handler for a
+//! type an advice already handles, are `!` lines.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -40,6 +43,7 @@ use std::path::{Path, PathBuf};
 use serde::Serialize;
 
 use crate::binding;
+use crate::failures;
 use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, ElementValue, Insn, Kind, Method, MethodDescriptor, Type, TypeTarget};
 use crate::activation;
 use crate::classpath::ClassPath;
@@ -462,6 +466,9 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
     // With a transactional Kafka producer, a send inside a transaction is synchronised with it (committed after
     // the database commit, aborted on rollback): not atomic, but not the plain dual write either.
     let kafka_transactional = config::read_files(resources)?.1.iter().any(|s| s.key == "spring.kafka.producer.transaction-id-prefix");
+    // The exception handlers, to say what each exception a route throws becomes.
+    let exception_handlers = failures::Handlers::collect(cp, &classes, local);
+    let is_local = |c: &str| classes.contains_key(c) && local.is_none_or(|l| l.contains(c));
     // Every route of the module by its pattern, to find two handlers that claim the same requests.
     let mut handlers: BTreeMap<String, Vec<(String, String)>> = BTreeMap::new();
     for (name, class) in &classes {
@@ -492,6 +499,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             continue;
         }
         let all_class_annotations = class.annotations().map_err(|e| Error::new(format!("{name}: {e}")))?;
+        let class_annotation_names: Vec<String> = all_class_annotations.iter().map(|a| a.type_name.clone()).collect();
         let mut jackson = all_class_annotations.iter().any(wire::is_jackson);
         let class_annotations: Vec<Annotation> = all_class_annotations.into_iter().filter(is_framework).collect();
         let class_mappings: Vec<&Annotation> = class_annotations.iter().filter(|a| mapping_verb(a).is_some()).collect();
@@ -692,6 +700,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
 
             // What the entry point or advised method reaches, and the places where that contradicts its contract.
             let reached = if entries.is_empty() && applied.is_empty() { reach::Reach::default() } else { graph.reach(name, &method.name, &method.descriptor) };
+            let mut throws_line: Option<String> = None;
             if entries.iter().any(|e| e.starts_with("GET ") || e.starts_with("HEAD ")) {
                 let effects = reached.all.side_effects();
                 if !effects.is_empty() {
@@ -728,8 +737,23 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
                     problems.push(format!("! an {phase} listener that writes {}: the transaction has committed and nothing commits again, so a JPA or JDBC write here is never committed unless the method opens its own transaction (propagation = REQUIRES_NEW)", reach::join_and(&reached.all.writes)));
                 }
             }
+            // What it throws, and what each exception becomes at the boundary.
+            if !entries.is_empty() {
+                let thrown = graph.throws(name, &method.name, &method.descriptor);
+                if handler {
+                    let (line, unmapped) = failures::describe(cp, &exception_handlers, name, &class_annotation_names, &thrown, &is_local);
+                    throws_line = line;
+                    problems.extend(unmapped);
+                } else {
+                    throws_line = failures::list(&thrown);
+                }
+            }
+            if annotations.iter().any(|a| a.simple_name() == "ExceptionHandler") {
+                problems.extend(exception_handlers.duplicate(name, &method.name));
+            }
             let mut details = advice;
             details.extend(reached.all.lines());
+            details.extend(throws_line);
             let problem_count = problems.len();
             details.extend(problems);
             members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line(), source_file: None, source_class: None });
@@ -837,8 +861,9 @@ impl Boundaries {
             "# files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,".to_string(),
             "# response and message type) and the stored types (the shape of each document, and the query strings that".to_string(),
             "# name a field it does not have). Under each entry point, what it reaches: the documents it reads and writes,".to_string(),
-            "# the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where".to_string(),
-            "# something does not do what it says.".to_string(),
+            "# the topics it sends to, the HTTP calls it makes, the events it publishes, the exceptions it throws and what".to_string(),
+            "# each becomes (the handler that takes it, or a 500). A `!` line is a place where something does not do".to_string(),
+            "# what it says.".to_string(),
             "kind: boundaries".to_string(),
             format!("module: {module}, {}", self.stats()),
             String::new(),

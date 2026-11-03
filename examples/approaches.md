@@ -225,8 +225,10 @@ constraints on the parameters of a method that is neither a request handler nor 
 non-public method of one, a request body whose type carries constraints taken without `@Valid`, and a `@Valid` or
 `@Validated(G.class)` on a body with constraints in groups it does not validate, a handler parameter that cannot bind
 to the request (a `@PathVariable` whose name is a variable of no template of its route, a name the compiler did not
-record for a binder that needs one, a `required = false` binder on a primitive) and two handlers whose routes match
-the same requests. Each is a `!` line in the contract, so introducing one changes the contract and the pull request
+record for a binder that needs one, a `required = false` binder on a primitive), two handlers whose routes match
+the same requests, an exception of the module's own that a route can throw and nothing turns into a response (no
+`@ExceptionHandler` takes it, no `@ResponseStatus` on it: a 500), and two `@ExceptionHandler` methods for one type in
+one advice. Each is a `!` line in the contract, so introducing one changes the contract and the pull request
 shows it.
 
 Then what switches each kind of annotation on: `@Scheduled` needs `@EnableScheduling`, `@Async` `@EnableAsync`,
@@ -276,7 +278,10 @@ framework APIs that do the work, so a handler that starts touching a new collect
 contract under its route; a GET that writes or sends, and a read-only transaction that writes, are `!` lines. So are a
 send or an HTTP call inside a transaction (the dual write an outbox exists to avoid: a rollback leaves the message
 sent, a crash before the send leaves the commit unannounced), an event published with no transaction while a
-`@TransactionalEventListener` waits for it, and a write in an after-commit listener, which nothing commits. The three Box Office modules
+`@TransactionalEventListener` waits for it, and a write in an after-commit listener, which nothing commits. Under each
+route, `throws` lists the exceptions it can throw and what each becomes (`NotFoundException (404 by ApiErrors.notFound)`,
+`StaleException (409 by its @ResponseStatus)`, or `(500)`), so a handler that starts throwing something new, or an
+exception whose handler no longer matches it, changes the contract too. The three Box Office modules
 with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
 their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
 `PATH`.

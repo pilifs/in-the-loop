@@ -44,7 +44,9 @@ jvmcontract api CLASSES [--module NAME]
 # transaction that writes, a transaction that sends or calls out (a dual write), an event published outside a
 # transaction that a @TransactionalEventListener waits for, and an after-commit listener that writes; and the request
 # binding of each handler, with `!` lines for a @PathVariable that names no variable of its route, a parameter name
-# the compiler did not record, a required = false binder on a primitive, and two handlers on one route. No JBMC.
+# the compiler did not record, a required = false binder on a primitive, and two handlers on one route; and under
+# each route what it throws and what each exception becomes (the handler and its status, a @ResponseStatus, or a 500),
+# with a `!` line for an exception of the module's own that nothing maps. No JBMC.
 jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.

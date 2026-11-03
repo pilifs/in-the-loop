@@ -4,7 +4,8 @@
 // metadata declares), the wire types (the JSON shape of each request, response and message) and the stored types
 // (the shape of each Mongo document, with the query strings that name a field it does not have), and under each
 // entry point what it reaches (reads, writes, sends, calls, publishes; a send from inside a transaction is a `!`
-// line, and so is a @PathVariable that names no variable of its route). `check` fails
+// line, and so is a @PathVariable that names no variable of its route or an exception of the module's own that no
+// @ExceptionHandler maps; under each route, what it throws and what each exception becomes). `check` fails
 // when the compiled classes or the application files no longer match it, and
 // `updateBoundaries` rewrites it from the code. The verifier is jvmcontract, the Rust tool in lib/, which reads the
 // class files directly; the tasks are skipped when it is not on the PATH, so the build still works without it.

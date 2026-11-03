@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T07:28:12.453Z",
-  "duration_seconds": 226697,
+  "ended": "2026-11-03T07:55:54.798Z",
+  "duration_seconds": 228359,
   "stats": {
-    "turns": 200,
-    "api_calls": 2061,
-    "tool_calls": 2595,
-    "tool_errors": 53,
-    "compactions": 34,
+    "turns": 206,
+    "api_calls": 2122,
+    "tool_calls": 2654,
+    "tool_errors": 54,
+    "compactions": 35,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 61568,
-      "output_tokens": 4331981,
-      "cache_read_input_tokens": 374690663,
-      "cache_creation_input_tokens": 9504645
+      "input_tokens": 63282,
+      "output_tokens": 4425145,
+      "cache_read_input_tokens": 382679150,
+      "cache_creation_input_tokens": 9698335
     }
   },
   "tools": {
-    "Bash": 2096,
+    "Bash": 2154,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
-    "ToolSearch": 25,
+    "ToolSearch": 26,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 6
@@ -706,24 +706,38 @@
     {
       "index": 34,
       "started": "2026-11-03T07:12:36.097Z",
-      "ended": "2026-11-03T07:28:12.453Z",
-      "turns": 4,
-      "api_calls": 32,
+      "ended": "2026-11-03T07:33:13.097Z",
+      "turns": 6,
+      "api_calls": 38,
       "usage": {
-        "input_tokens": 994,
-        "output_tokens": 41609,
-        "cache_read_input_tokens": 2872587,
-        "cache_creation_input_tokens": 121621
+        "input_tokens": 1158,
+        "output_tokens": 43661,
+        "cache_read_input_tokens": 3715322,
+        "cache_creation_input_tokens": 128533
       },
-      "peak_context_tokens": 136566
+      "peak_context_tokens": 143478
+    },
+    {
+      "index": 35,
+      "started": "2026-11-03T07:34:26.396Z",
+      "ended": "2026-11-03T07:55:54.798Z",
+      "turns": 4,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 1550,
+        "output_tokens": 91112,
+        "cache_read_input_tokens": 7145752,
+        "cache_creation_input_tokens": 186778
+      },
+      "peak_context_tokens": 201723
     }
   ],
   "log": {
-    "sha256": "d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a",
-    "bytes": 77405579,
-    "lines": 28823,
-    "gzip_bytes": 13117220,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a.jsonl.gz"
+    "sha256": "e518eace3592e15fed111e0751c297ef78b6256455482f7d6a5c4e0747d10344",
+    "bytes": 79209481,
+    "lines": 29668,
+    "gzip_bytes": 13407327,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/e518eace3592e15fed111e0751c297ef78b6256455482f7d6a5c4e0747d10344.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1102,6 +1116,14 @@
       "summary": "Add request binding checks to boundary contracts: a @PathVariable whose name is a variable of no template of its route, a binder whose parameter name the compiler did not record, a required = false binder on a primitive, two @RequestBody parameters, and two handlers on one route are ! lines (verification pending)",
       "body": "A handler's parameters bind to the request at request time, by a name Spring takes from the annotation or from the bytecode, so a mismatch is neither a compile error nor a startup failure but a 500 on every request of the route, which the unit tests of the service do not make. The new module lib/src/binding.rs reads each handler's @PathVariable, @RequestParam, @RequestHeader, @CookieValue and @MatrixVariable against the route templates and the class file: a @PathVariable whose name (the annotation's value or name, else the parameter's as the MethodParameters attribute records it) is a variable of no template of the route is MissingPathVariableException; a binder with no name of its own on a parameter whose name is not in that attribute (no javac -parameters; Spring 6.1 no longer reads the LocalVariableTable) fails every request; a required = false binder with no defaultValue on a primitive cannot be given null; a second @RequestBody always reads an empty body. Two handlers on one route are found across the module: the same route on two methods, which Spring refuses at startup, and the same pattern under different variable names, which both match every such request with the same specificity, so Spring raises an ambiguity for it. Method::reflective_parameter_names exposes the MethodParameters names on their own, and parameter_names uses it.\n\nVerified by the integration fixtures: TasksController gains DELETE /tasks/{taskId} with @PathVariable String id and GET /tasks/page with @RequestParam(required = false) int page, a new TaskSearchController claims GET /tasks/open (identical to TasksController.open) and GET /tasks/{key}/owner (the pattern of TasksController.owner), and a new fixture set tests/fixtures/spring-legacy is compiled without -parameters so that its @PathVariable id has no name Spring can see while its @RequestParam(\"q\") and Map parameter need none; the contract has the expected ! line under each and the counts are (30 beans, 27 entry points, 65 problems). 92 unit tests and 29 integration tests pass. The four Box Office boundary contracts regenerate unchanged: every @PathVariable names a variable of its route, the modules compile with -parameters, no two handlers share a pattern. Example 118 renames the variable of HoldController's GET /holds/{id} template to {holdId} and leaves the parameter as it was; with the patch applied, ./gradlew :ticketing-service:verifyBoundaries --rerun reports the renamed route with the ! line (@PathVariable id matches no variable in /holds/{holdId}: MissingPathVariableException, a 500 on every request) and 1 problem. The example's pipeline run is job 20261103-072635-example-118-the-hold-route-s-path-variab. New defect tag request-binding; lib/README.md, examples/approaches.md, the plugin reference, the Box Office README and the Gradle plugin comment describe the checks.",
       "log_sha256": "d2144dfb29d833af3ea2fcfc45a67bd75ca171ff66953953635a09869a8b951a"
+    },
+    {
+      "change_id": "wzlvuvkkmuxyyonozmqqnorsnnwuouzk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add throws lines to boundary contracts: under each route what it throws and what each exception becomes (the @ExceptionHandler that takes it and its status, a @ResponseStatus, a ResponseStatusException's status, or a 500), with ! lines for an exception of the module's own that nothing maps and for two handlers of one type in one advice (verification pending)",
+      "body": "jvmcontract's boundary contract now lists under each entry point the exceptions it can throw, found over the same call graph as the reach lines: the throw statements (a new, a typed local, what a method returned or a cast produced), the suppliers of Optional.orElseThrow and Spring's Assert calls in everything the entry point reaches, less what a catch on the path takes without rethrowing (a handler that rethrows its variable, such as a finally or the retry loop in Box Office's Transactions.run, passes everything through; one that wraps throws the wrapper); an @Async callee of another class throws on its own thread, and the compiler's own MatchException and assert are left out. For a route each exception is followed by what Spring makes of it, in Spring's order: the @ExceptionHandler in the controller or in a @ControllerAdvice (by @Order, matched by its packages, types and annotations, the closest type winning) with the status it answers (its @ResponseStatus, the first HttpStatus constant its body loads, or the literal it passes to ResponseEntity.status), the @ResponseStatus on the exception's class, the status a ResponseStatusException was built with, or (500). An exception type of the module's own that nothing maps is a ! line; a JDK or framework exception is listed as a 500 without one, since a guard that fired is a 500 by design. Two @ExceptionHandler methods for one type in one advice are a ! line too (Spring refuses the ambiguity at startup). A listener, a schedule or a bean method gets its throws line without outcomes. New module lib/src/failures.rs; Graph::throws in lib/src/reach.rs with the per-method throw and catch analysis.\n\nVerified with new fixtures (FailuresController, FailureFlow, FailureListener, ApiErrors and stubs of HttpStatus, ProblemDetail, ResponseEntity, ResponseStatusException and Assert): 94 unit tests and 29 integration tests pass, clippy reports nothing in the changed files. The four Box Office contracts are regenerated with their throws lines and no ! line (every application exception of the three modules has its handler; the messaging and contracts files were rewritten to carry the new header). Example 119 (HoldExpiredException thrown from OrderService.place with no handler in ApiErrors, a 500 instead of a 409) was confirmed by hand through Gradle: the regenerated ticketing-service contract gains the ! line under POST /orders and 1 problem. Its pipeline run is job 20261103-075520-example-119-holdexpiredexception-replace. New defect tag unmapped-exception; docs updated in lib/README.md, examples/approaches.md, the Box Office README and Gradle plugin, the plugin reference and the CLI help.",
+      "log_sha256": "e518eace3592e15fed111e0751c297ef78b6256455482f7d6a5c4e0747d10344"
     }
   ],
   "logs": {
@@ -1332,6 +1354,12 @@
       "lines": 1113,
       "gzip_bytes": 864621,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e3f0a086ef4ed58298ff8b082bc197ef3ca34408ad53d16f942a211eb5e2027b.jsonl.gz"
+    },
+    "e518eace3592e15fed111e0751c297ef78b6256455482f7d6a5c4e0747d10344": {
+      "bytes": 79209481,
+      "lines": 29668,
+      "gzip_bytes": 13407327,
+      "url": null
     },
     "f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b": {
       "bytes": 36086895,
