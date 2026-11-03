@@ -226,6 +226,16 @@ non-public method of one, a request body whose type carries constraints taken wi
 `@Validated(G.class)` on a body with constraints in groups it does not validate. Each is a `!` line in the contract,
 so introducing one changes the contract and the pull request shows it.
 
+Then what switches each kind of annotation on: `@Scheduled` needs `@EnableScheduling`, `@Async` `@EnableAsync`,
+`@Cacheable` `@EnableCaching`, `@PreAuthorize` `@EnableMethodSecurity`; `@Transactional`, `@KafkaListener` and method
+validation are switched on by an auto-configuration when its conditions hold, `@Valid` by a Bean Validation provider
+on the class path. The activation block names, per family the module uses, the configuration that carries the switch
+and how it is reached (local, imported, scanned, auto-configured), from the component scan, the `@Import`s, the nested
+configuration classes and the auto-configuration imports on the class path, with Boot's class-path conditions
+evaluated. A family nothing enables is a `!` line naming the nearest miss: the switch on a class that is not a
+component, outside the scanned packages, or on an auto-configuration whose condition fails. The code compiles, the
+context starts and the tests pass without the switch; in the contract it is a changed line.
+
 After the beans, the configuration keys, cross-checked three ways: what the classes read (`${...}` placeholders in
 any annotation, `@ConfigurationProperties` fields under their prefix, `@ConditionalOnProperty`,
 `environment.getProperty` with a constant), what the application files set (`application.yaml`, profile files and

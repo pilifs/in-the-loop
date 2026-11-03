@@ -1,5 +1,6 @@
 package fixtures.spring;
 
+import io.micrometer.core.annotation.Timed;
 import jakarta.validation.constraints.Positive;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ public class Quotas {
         return tenant;
     }
 
+    @Timed("quotas.refill")
     public int refill(int tenant) {
         return remaining(tenant) + quiet(tenant) + 1;
     }

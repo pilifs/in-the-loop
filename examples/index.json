@@ -4433,6 +4433,47 @@
         "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
       ],
       "source": null
+    },
+    {
+      "id": "114",
+      "path": "examples/114-cacheable-without-enable-caching",
+      "title": "A @Cacheable on the concert lookup with no @EnableCaching in scope: every call still reads Mongo",
+      "summary": "A concert does not change after it is created, and every hold and order reads it, so the developer puts `@Cacheable(\"concerts\")` on the store's lookup. The annotation compiles, the context starts, every test passes, and nothing is cached: no configuration in the ticketing service's scope carries `@EnableCaching`, and Spring Boot does not switch caching on by itself. The module's boundary contract has an activation block that names, for each kind of annotation the module uses, what enables it; the regenerated contract has a new line `@Cacheable: nothing enables it` with a `!` line under it.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.store.TicketingStore",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot",
+          "caching"
+        ],
+        "defect": [
+          "inert-annotation"
+        ],
+        "technique": [
+          "contract-diff-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of the activation block of a boundary contract (`lib/src/activation.rs`): for each family of annotations the module uses (`@Scheduled`, `@Async`, `@Cacheable`, `@PreAuthorize`, `@Secured`, `@RolesAllowed`, `@Transactional`, `@Retryable`, `@Aspect`, `@KafkaListener`, `@RabbitListener`, `@JmsListener`, `@WebFilter`, `@Valid`, `@Validated`, `@Timed`, `@Counted`, `@Observed`), the switch that enables it, or a `!` line when nothing does. The `!` line names the nearest miss when there is one: a class that carries the switch but is not a component, a configuration outside the scanned packages, or an auto-configuration whose `@ConditionalOnClass` or `@ConditionalOnResource` fails (`no TimedAspect bean on a configuration in scope (MetricsAspectsAutoConfiguration defines one, but org.aspectj.weaver.Advice is not on the class path)`). The library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/App.java` and `fixtures/boot/`) have one of each.",
+        "What counts as a configuration in scope follows Spring's own rules as far as the class files show them: the local classes with a stereotype (meta-annotations followed, so `@Service` is a `@Component`) in the packages the application class scans (its own, or `scanBasePackages`), the classes of the class path in those packages, the `@Import`s of each, their nested configuration classes, and the auto-configurations the class path's `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` files and `spring.factories` list minus the application's `exclude`s. `@ConditionalOnClass`, `@ConditionalOnMissingClass`, `@ConditionalOnResource` and `@ConditionalOnWebApplication` are evaluated against the class path; `@ConditionalOnBean`, `@ConditionalOnProperty` and `@Profile` are taken as met, so a switch behind a property the contract cannot see is reported as present. Spring Boot 4 lists its auto-configurations per module jar (`spring-boot-kafka`, `spring-boot-transaction`, `spring-boot-validation`), and the walk reads every jar's file.",
+        "The example is caching because `@Cacheable` needs no new dependency, so the patch is one annotation. The `@Valid` case is the one developers hit most, since Spring Boot 2.3 moved Hibernate Validator out of the web starter: a build that drops `spring-boot-starter-validation` keeps compiling against `jakarta.validation-api`, and every `@Valid` on every handler goes quiet. In the activation block that is `@Valid: nothing enables it` with `! no Bean Validation provider on the class path (spring-boot-starter-validation adds Hibernate Validator)`.",
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+      ],
+      "source": null
     }
   ]
 }

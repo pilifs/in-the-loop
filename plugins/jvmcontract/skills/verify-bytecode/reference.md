@@ -29,7 +29,9 @@ jvmcontract capabilities --each lib/*.jar          # one contract per jar, for a
 jvmcontract api CLASSES [--module NAME]
 # A Spring Boot module's boundaries: routes, listeners, schedules, bean definitions, the advice on each bean, `!`
 # lines where an annotation does not do what it says (self-invocation, advice the proxy cannot intercept, a checked
-# exception that commits, a lost @Async result, constraints never enforced); the configuration keys (what the classes
+# exception that commits, a lost @Async result, constraints never enforced); what enables each kind of annotation (an
+# @Enable annotation on a configuration in scope, an auto-configuration whose conditions hold, a Bean Validation
+# provider on the class path), with a `!` line for a family nothing enables; the configuration keys (what the classes
 # read, what application.yaml under --resources sets, what the dependencies' metadata on --classpath declares), with
 # `!` lines for a key nothing binds, a deprecated key, a value of the wrong type; and the wire types: the JSON shape
 # of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing from

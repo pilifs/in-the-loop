@@ -1,0 +1,21 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
+index ca580b5a76..4ad3893ad2 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java
+@@ -8,6 +8,7 @@
+ import java.util.Optional;
+ import net.terminalvalue.boxoffice.ticketing.domain.OrderStatus;
+ import net.terminalvalue.boxoffice.ticketing.domain.SeatStatus;
++import org.springframework.cache.annotation.Cacheable;
+ import org.springframework.data.domain.Sort;
+ import org.springframework.data.mongodb.core.MongoTemplate;
+ import org.springframework.data.mongodb.core.index.Index;
+@@ -59,6 +60,8 @@ public void insert(ConcertDocument concert) {
+                 SeatDocument.class);
+     }
+ 
++    /** A concert does not change after it is created, and every hold and order reads it: cache it. */
++    @Cacheable("concerts")
+     public Optional<ConcertDocument> concert(String id) {
+         return Optional.ofNullable(mongo.findById(id, ConcertDocument.class));
+     }

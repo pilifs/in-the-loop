@@ -1055,7 +1055,24 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("    ! constraints on seats are not enforced: the method is not a request handler and the class is not @Validated");
     // Class-level advice applies to every public instance method, and @Validated enforces the constraints.
     has("fixtures.spring.Quotas: @Service @Validated @Transactional(readOnly = true)\n  int remaining(@Positive int tenant)\n    ! self-invocation from refill(int)");
-    has("  int refill(int tenant)\n  int quiet(@Positive int tenant)\n    ! constraints on tenant are not enforced: method validation goes through the proxy, which intercepts public instance methods only\n\n");
+    has("  int refill(int tenant)\n    @Timed(\"quotas.refill\")\n  int quiet(@Positive int tenant)\n    ! constraints on tenant are not enforced: method validation goes through the proxy, which intercepts public instance methods only\n\n");
+
+    // The activation block: what enables each annotation family the module uses. The application class scans its
+    // own package; a switch on the application class, on an imported configuration and on a nested class of an
+    // auto-configuration each count; a provider on the class path enables @Valid; and a family nothing enables is
+    // a `!` line naming the nearest miss (a configuration outside the scanned packages, a class that is not a
+    // component, an auto-configuration whose condition fails).
+    has("activation: fixtures.spring.App (@SpringBootApplication), scanning fixtures.spring\n");
+    has("  @Scheduled: @EnableScheduling on fixtures.spring.App\n");
+    has("  @Cacheable: @EnableCaching on fixtures.shared.SharedConfiguration, imported by App\n");
+    has("  @Transactional: @EnableTransactionManagement on FakeTransactionAutoConfiguration.EnableTransactionManagementConfiguration, auto-configured\n");
+    has("  @Valid: Bean Validation provider org.hibernate.validator.HibernateValidator in metadata\n");
+    has("  @Validated: Bean Validation provider org.hibernate.validator.HibernateValidator in metadata; MethodValidationPostProcessor bean on FakeValidationAutoConfiguration, auto-configured\n");
+    has("  @Async: nothing enables it\n    ! no @EnableAsync on a configuration in scope (fixtures.other.AsyncConfiguration has @EnableAsync, but is outside the scanned packages (fixtures.spring)): an @Async method runs on the caller's thread, which waits for it\n");
+    has("  @PreAuthorize: nothing enables it\n    ! no @EnableMethodSecurity on a configuration in scope: every caller is authorized\n");
+    has("  @KafkaListener: nothing enables it\n    ! no @EnableKafka on a configuration in scope (fixtures.spring.KafkaSwitch has @EnableKafka, but is not a component): the listener never receives a message\n");
+    has("  @Timed: nothing enables it\n    ! no TimedAspect bean on a configuration in scope (FakeMetricsAutoConfiguration defines one, but org.aspectj.weaver.Advice is not on the class path): no timer is recorded\n");
+    assert!(!text.contains("@Secured:"), "a family the module does not use has no line:\n{text}");
     assert!(!text.contains("int remaining(@Positive int tenant)\n    ! constraints"), "@Validated enforces the constraints on a public method");
     // Validation: a body's constraints run only under a @Valid, and only those of the groups asked for.
     has("  POST /notes => Note create(@RequestBody Note note)\n    ! constraints on Note are not checked: no @Valid on note\n");
@@ -1105,7 +1122,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (9, 12, 13, 21, 15, 35), "{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (19, 14, 13, 21, 15, 39), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1131,7 +1148,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (9 beans, 12 entry points, 13 advised methods, 21 configuration keys, 15 wire types, 35 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (19 beans, 14 entry points, 13 advised methods, 21 configuration keys, 15 wire types, 39 problems)"), "{}", outcome.output);
 
     let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n");
     std::fs::write(&file, edited).unwrap();

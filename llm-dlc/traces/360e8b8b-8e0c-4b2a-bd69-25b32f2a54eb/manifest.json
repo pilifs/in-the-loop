@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T04:44:54.264Z",
-  "duration_seconds": 216899,
+  "ended": "2026-11-03T05:30:21.012Z",
+  "duration_seconds": 219626,
   "stats": {
-    "turns": 176,
-    "api_calls": 1824,
-    "tool_calls": 2336,
+    "turns": 181,
+    "api_calls": 1887,
+    "tool_calls": 2397,
     "tool_errors": 50,
-    "compactions": 29,
+    "compactions": 30,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 54426,
-      "output_tokens": 3916833,
-      "cache_read_input_tokens": 344177739,
-      "cache_creation_input_tokens": 8611929
+      "input_tokens": 56354,
+      "output_tokens": 4026289,
+      "cache_read_input_tokens": 352901372,
+      "cache_creation_input_tokens": 8811102
     }
   },
   "tools": {
-    "Bash": 1843,
+    "Bash": 1901,
     "Edit": 199,
-    "Write": 180,
+    "Write": 181,
     "Read": 62,
-    "ToolSearch": 21,
+    "ToolSearch": 23,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 6
@@ -186,6 +186,7 @@
     "examples/tools/build.py",
     "lib/Cargo.toml",
     "lib/README.md",
+    "lib/src/activation.rs",
     "lib/src/api.rs",
     "lib/src/capabilities.rs",
     "lib/src/classfile/bytecode.rs",
@@ -634,24 +635,38 @@
     {
       "index": 29,
       "started": "2026-11-03T04:26:23.544Z",
-      "ended": "2026-11-03T04:44:54.264Z",
-      "turns": 4,
-      "api_calls": 47,
+      "ended": "2026-11-03T05:01:49.996Z",
+      "turns": 5,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 1384,
-        "output_tokens": 73044,
-        "cache_read_input_tokens": 5360949,
-        "cache_creation_input_tokens": 159351
+        "input_tokens": 1550,
+        "output_tokens": 76040,
+        "cache_read_input_tokens": 6610706,
+        "cache_creation_input_tokens": 168175
       },
-      "peak_context_tokens": 174296
+      "peak_context_tokens": 183090
+    },
+    {
+      "index": 30,
+      "started": "2026-11-03T05:03:39.714Z",
+      "ended": "2026-11-03T05:30:21.012Z",
+      "turns": 4,
+      "api_calls": 56,
+      "usage": {
+        "input_tokens": 1762,
+        "output_tokens": 106460,
+        "cache_read_input_tokens": 7473876,
+        "cache_creation_input_tokens": 190349
+      },
+      "peak_context_tokens": 205294
     }
   ],
   "log": {
-    "sha256": "92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8",
-    "bytes": 69586742,
-    "lines": 25630,
-    "gzip_bytes": 11749233,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8.jsonl.gz"
+    "sha256": "78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582",
+    "bytes": 71175166,
+    "lines": 26349,
+    "gzip_bytes": 12018700,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -990,6 +1005,14 @@
       "summary": "Add validation checks to boundary contracts: the constraints inside a wire type's properties, and ! lines for a nested type no @Valid leads into, a body taken without @Valid, a group a @Valid or @Validated leaves out and a constraint on a type its validator cannot handle (verification pending)",
       "body": "jvmcontract's boundary contract already listed the Bean Validation constraints on each property of a wire type. It now reads the constraints inside a type too (List<@NotBlank String>, from the class file's RuntimeVisibleTypeAnnotations, which the class file parser now reads, with a type tree in classfile/signature.rs to walk a type path) and checks them as Hibernate Validator will run them, in the new lib/src/validation.rs: a property whose type carries constraints that no @Valid on the property or inside its type leads into gets a ! line (Bean Validation does not cascade without one); a constraint on a type its validator cannot handle (@Size on an int, which the compiler accepts and the first validation throws UnexpectedTypeException for) and a null check on a primitive get one; a @RequestBody taken without @Valid or @Validated while its type is constrained is a ! line on the handler, as is a @Valid, which validates the Default group, or a @Validated(G.class), which validates G and the groups it extends, on a body with constraints in other groups; and constraints on a private or static method of a @Validated bean are reported as not enforced, since method validation goes through the proxy. The built-in constraints are matched against the JDK type families they validate (Hibernate Validator's, which Spring Boot ships: Min and Max take a CharSequence too); a custom constraint, a type that cannot be found, @Pattern expressions and group sequences are not judged.\n\nVerified with the library's Spring fixtures, which gain a Booking record with one of each case and a BookingsController taking it without @Valid, with @Valid and with @Validated(OnCreate.class), plus a private constrained method on the @Validated Quotas bean: 80 unit and 29 integration tests pass. The existing NotesController fixture turned out to take its Note body without @Valid, which the contract now reports. The four Box Office contracts were regenerated through Gradle: the ticketing service's CreateConcert and HoldSeats now show the type-use constraints on their lists that earlier contracts hid, and no module gains a problem. Example 113 adds a nested Billing record with @NotBlank fields to PlaceOrder as a @NotNull component without @Valid; its regenerated contract has the new ! line, confirmed by hand through Gradle, and its run is queued as job 20261103-044358-example-113-a-nested-billing-record-on-p. New defect tag validation-gap; docs in lib/README.md, approaches.md, the plugin reference and the Box Office README.",
       "log_sha256": "92168e7493335c86b0e6e02a08cdf9d70b6e4e8b5fbd8dcbc3b5385f134ee2c8"
+    },
+    {
+      "change_id": "slkqqnszzwzsuxryxzpxspvuxlztousw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the activation block to boundary contracts: what switches each kind of annotation on (an @Enable annotation on a configuration in scope, an auto-configuration whose conditions hold, a Bean Validation provider), with a ! line for a family nothing enables (verification pending)",
+      "body": "A Spring annotation is read only by the interceptor some switch registers: @Scheduled needs @EnableScheduling, @Async @EnableAsync, @Cacheable @EnableCaching, @PreAuthorize @EnableMethodSecurity (@Secured and @RolesAllowed its securedEnabled and jsr250Enabled), @Retryable @EnableRetry, an @Aspect @EnableAspectJAutoProxy; @Transactional, @KafkaListener, @RabbitListener, @JmsListener and method validation are switched on by Spring Boot's auto-configuration when its conditions hold, @Timed, @Counted and @Observed by aspect beans the AspectJ weaver makes possible, @Valid by a Bean Validation provider on the class path. Without the switch the code compiles, the context starts and every test that does not depend on the advice passes, while the method is never scheduled, cached or secured. The new lib/src/activation.rs adds an activation block to the boundary contract, between the beans and the configuration keys: the header names the application class and the packages it scans, and each family the module uses is a line naming what enables it and how that configuration is reached (local, imported by the application class, scanned from a dependency, auto-configured), or 'nothing enables it' with a ! line naming the nearest miss: a class that carries the switch but is not a component, a configuration outside the scanned packages, or an auto-configuration whose @ConditionalOnClass or @ConditionalOnResource fails. The configurations in scope follow Spring's rules as far as class files show them: local components in the scanned packages (meta-annotations followed), class-path classes in those packages, the @Import closure, nested static configuration classes, and the auto-configurations every jar's META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports and spring.factories list minus the application's excludes, with @ConditionalOnClass, @ConditionalOnMissingClass, @ConditionalOnResource and @ConditionalOnWebApplication evaluated against the class path and the other conditions taken as met.\n\nVerified by the library's unit tests (84) and integration tests (29): the Spring fixtures gained an application class (fixtures/spring/App.java), an imported configuration, one outside the scanned package, a non-component class carrying @EnableKafka, and four fake auto-configurations shaped like Boot's (a nested @EnableTransactionManagement class, a @ConditionalOnClass that fails, a @ConditionalOnResource provider check, an aspect bean behind the AspectJ weaver), listed in the fixtures' AutoConfiguration.imports with a ValidationProvider service file. The four Box Office contracts were regenerated through Gradle: the ticketing service shows @Scheduled enabled by MessagingConfiguration imported from the messaging module, @KafkaListener by KafkaAnnotationDrivenConfiguration.EnableKafkaConfiguration auto-configured, and @Valid by Hibernate Validator 9.1.3 on the class path; no module gains a problem. Example 114 puts @Cacheable on TicketingStore.concert with no @EnableCaching in scope; the regenerated contract's new ! line was confirmed by hand through Gradle, and the pipeline run is job 20261103-052906-example-114-a-cacheable-on-the-concert-l. New defect tag inert-annotation. Docs: lib/README.md, examples/approaches.md, the verify-bytecode reference and the Box Office README.",
+      "log_sha256": "78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582"
     }
   ],
   "logs": {
@@ -1076,6 +1099,12 @@
       "lines": 9912,
       "gzip_bytes": 5239182,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/700cc427ddcc81b7b4c8be36c81af43baf3b6e6158b07ccbd68ae07e9f9bed41.jsonl.gz"
+    },
+    "78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582": {
+      "bytes": 71175166,
+      "lines": 26349,
+      "gzip_bytes": 12018700,
+      "url": null
     },
     "80784ccd5b081286108430db6a088234eb15f0baf0b48884cb1e63adeb3fe5f7": {
       "bytes": 43252841,

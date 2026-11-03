@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "114",
+  "title": "A @Cacheable on the concert lookup with no @EnableCaching in scope: every call still reads Mongo",
+  "summary": "A concert does not change after it is created, and every hold and order reads it, so the developer puts `@Cacheable(\"concerts\")` on the store's lookup. The annotation compiles, the context starts, every test passes, and nothing is cached: no configuration in the ticketing service's scope carries `@EnableCaching`, and Spring Boot does not switch caching on by itself. The module's boundary contract has an activation block that names, for each kind of annotation the module uses, what enables it; the regenerated contract has a new line `@Cacheable: nothing enables it` with a `!` line under it.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "caching",
+    "inert-annotation",
+    "contract-diff-review"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.store.TicketingStore"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Cache the concert documents. `TicketingStore.concert(String id)` gains `@Cacheable(\"concerts\")`: a concert is immutable once created, and the hold and order paths read it on every request. `org.springframework.cache.annotation.Cacheable` is in `spring-context`, which every Boot application has, so nothing else changes.",
+    "patch": "change.patch"
+  },
+  "risk": "`@Cacheable` is read by the cache interceptor that `@EnableCaching` registers, and by nothing else. Spring Boot's `CacheAutoConfiguration` configures a cache manager only once something has switched caching on; it does not switch it on. The ticketing service's application class carries `@SpringBootApplication` and `@Import(MessagingConfiguration.class)`, and neither it, the imported configuration nor any auto-configuration on the class path carries `@EnableCaching`. So the annotation is inert: every call runs the method and reads Mongo, the result is never stored, and no test can tell, because a cache that is never consulted behaves exactly like no cache. The same shape covers `@Async` without `@EnableAsync` (the method runs on the caller's thread), `@Scheduled` without `@EnableScheduling` (the job never runs), `@PreAuthorize` without `@EnableMethodSecurity` (every caller is authorized), `@Retryable` without `@EnableRetry`, `@Timed` without the AspectJ weaver that Boot's aspect configuration is conditional on, and `@Valid` without a Bean Validation provider on the class path after `spring-boot-starter-validation` is dropped from the build.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The boundary contract's activation block lists, for each kind of annotation the module's classes use, what enables it and how that configuration is reached: `@Scheduled: @EnableScheduling on net.terminalvalue.boxoffice.messaging.MessagingConfiguration, imported by TicketingApplication`, `@KafkaListener: @EnableKafka on KafkaAnnotationDrivenConfiguration.EnableKafkaConfiguration, auto-configured`, `@Valid: Bean Validation provider org.hibernate.validator.HibernateValidator in hibernate-validator-9.1.3.Final.jar`. The configurations in scope are the local components in the scanned package, their `@Import`s and nested configuration classes, and the auto-configurations the class path's `AutoConfiguration.imports` files list, with Boot's class-path conditions evaluated. The change is intended, so the runner regenerates the contract and the reviewer reads the diff: under `TicketingStore` the new advised method `Optional<ConcertDocument> concert(String id)` with its `@Cacheable(\"concerts\")`, and in the activation block the new line `@Cacheable: nothing enables it` followed by `! no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted`. The new `!` line is the violation.",
+  "resolution": "Put `@EnableCaching` on `TicketingApplication` (Boot then configures a `ConcurrentMapCacheManager`, or the cache provider on the class path). The regenerated contract reads `@Cacheable: @EnableCaching on net.terminalvalue.boxoffice.ticketing.TicketingApplication` with no `!` line, which is the diff a reviewer approves, and the review can then turn to what the cache implies: an entry per concert that is never evicted, and an `Optional.empty()` that Spring stores as a null value.",
+  "notes": [
+    "The first example of the activation block of a boundary contract (`lib/src/activation.rs`): for each family of annotations the module uses (`@Scheduled`, `@Async`, `@Cacheable`, `@PreAuthorize`, `@Secured`, `@RolesAllowed`, `@Transactional`, `@Retryable`, `@Aspect`, `@KafkaListener`, `@RabbitListener`, `@JmsListener`, `@WebFilter`, `@Valid`, `@Validated`, `@Timed`, `@Counted`, `@Observed`), the switch that enables it, or a `!` line when nothing does. The `!` line names the nearest miss when there is one: a class that carries the switch but is not a component, a configuration outside the scanned packages, or an auto-configuration whose `@ConditionalOnClass` or `@ConditionalOnResource` fails (`no TimedAspect bean on a configuration in scope (MetricsAspectsAutoConfiguration defines one, but org.aspectj.weaver.Advice is not on the class path)`). The library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/App.java` and `fixtures/boot/`) have one of each.",
+    "What counts as a configuration in scope follows Spring's own rules as far as the class files show them: the local classes with a stereotype (meta-annotations followed, so `@Service` is a `@Component`) in the packages the application class scans (its own, or `scanBasePackages`), the classes of the class path in those packages, the `@Import`s of each, their nested configuration classes, and the auto-configurations the class path's `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` files and `spring.factories` list minus the application's `exclude`s. `@ConditionalOnClass`, `@ConditionalOnMissingClass`, `@ConditionalOnResource` and `@ConditionalOnWebApplication` are evaluated against the class path; `@ConditionalOnBean`, `@ConditionalOnProperty` and `@Profile` are taken as met, so a switch behind a property the contract cannot see is reported as present. Spring Boot 4 lists its auto-configurations per module jar (`spring-boot-kafka`, `spring-boot-transaction`, `spring-boot-validation`), and the walk reads every jar's file.",
+    "The example is caching because `@Cacheable` needs no new dependency, so the patch is one annotation. The `@Valid` case is the one developers hit most, since Spring Boot 2.3 moved Hibernate Validator out of the web starter: a build that drops `spring-boot-starter-validation` keeps compiling against `jakarta.validation-api`, and every `@Valid` on every handler goes quiet. In the activation block that is `@Valid: nothing enables it` with `! no Bean Validation provider on the class path (spring-boot-starter-validation adds Hibernate Validator)`.",
+    "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+  ],
+  "provenance": "Constructed from the Spring Boot gotcha that an advice annotation is inert until something switches its interceptor on: @Cacheable without @EnableCaching, @Async without @EnableAsync, @Scheduled without @EnableScheduling, @PreAuthorize without @EnableMethodSecurity. The code compiles, the context starts, and a cache that is never consulted is indistinguishable from no cache in every test."
+}

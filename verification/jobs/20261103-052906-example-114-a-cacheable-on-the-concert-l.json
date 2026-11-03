@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-052906-example-114-a-cacheable-on-the-concert-l",
+  "title": "Example 114: a @Cacheable on the concert lookup with no @EnableCaching in scope, caught by the activation block of the boundary contract (B12)",
+  "description": "The first example of the activation block of a boundary contract: jvmcontract names, for each kind of annotation the Box Office ticketing service uses, what switches it on (an @Enable annotation on a configuration in scope, an auto-configuration whose class-path conditions hold, a Bean Validation provider on the class path) and writes a ! line for a family nothing enables. The patch puts @Cacheable(\"concerts\") on TicketingStore.concert(String); no configuration in scope carries @EnableCaching and Spring Boot does not switch caching on by itself, so every call still reads Mongo and every test passes. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/activation.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "114"
+    ]
+  },
+  "expected": "build.py 114 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T05:29:06+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 114 (B12)",
+      "run": "python3 examples/tools/build.py 114",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/114-cacheable-without-enable-caching"
+  ]
+}
