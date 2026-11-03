@@ -13,7 +13,8 @@ llm-dlc/index.json                                        checked in; one row pe
 llm-dlc/traces/README.md                                  checked in; every session added up
 llm-dlc/traces/metrics.json                               checked in; every session added up, as data
 llm-dlc/pricing.json                                      checked in; list prices, written by hand
-llm-dlc/reviewed-findings.json                            checked in; false positives a person reviewed
+llm-dlc/allowlist.json                                    checked in; false positives by value, proposed and approved
+llm-dlc/reviewed-findings.json                            checked in; false positives a person reviewed, by hash
 llm-dlc/traces-readme-template.md                         checked in; the template for that README
 llm-dlc/summary-template.md                               checked in; the template for summary.md
 llm-dlc/session-notes/<session-id>.md                     checked in; optional, written by hand
@@ -213,7 +214,19 @@ python3 llm-dlc/tools/sync.py review                               # open findin
 python3 llm-dlc/tools/sync.py review accept <id>... --reason "why"  # a person, at a terminal
 ```
 
-Listing is open to anyone. Accepting is a person's decision: the command shows the real value, asks for a typed confirmation, and refuses a shell with no terminal or one that Claude Code started. The project settings also deny agents direct edits to the list. These stop an agent acting by accident, not one set on getting round them, so the record that counts is the file's history: the list is published, and each change to it is in a commit with its session. An agent that finds a false positive asks the person. The first four entries were authorized in chat by the maintainer on 2026-10-31, before the command existed, and say so.
+Listing is open to anyone. Accepting is a person's decision: the command shows the real value, asks for a typed confirmation, and refuses a shell with no terminal or one that Claude Code started. The project settings also deny agents direct edits to the list. These stop an agent acting by accident, not one set on getting round them, so the record that counts is the file's history: the list is published, and each change to it is in a commit with its session. The first four entries were authorized in chat by the maintainer on 2026-10-31, before the command existed, and say so.
+
+**The allow list.** Accepting by id means finding the value again, which takes a scan of every file newer than the stamp, and a class of false positives (version numbers that look like addresses) used to be settled by a new rule, which voids the stamp and rescans everything. `llm-dlc/allowlist.json` settles them by value instead, without touching the rules. An agent that judges a finding a likely false positive proposes it by id, with a reason; the proposal holds the kind and the masked value, never the real one. A person approves proposals at a terminal: the command shows each real value with its count and where it occurs, asks for one typed confirmation for all of them, and writes the value into the entry. Values come from a cache of the last scan's findings (`~/.local/state/llm-traces/finding-values.json`, readable by its owner only), so neither proposing nor approving scans unless an id is not in it. Approved values are left out the same way as reviewed ones, and since the list is data, not rules, the stamp stays valid. A person can also add a value before anything finds it.
+
+```bash
+python3 llm-dlc/tools/sync.py allow                                       # entries: approved values, proposals masked
+python3 llm-dlc/tools/sync.py allow propose <id>... --reason "why"         # anyone, an agent included
+python3 llm-dlc/tools/sync.py allow approve [<id>...]                      # a person, at a terminal
+python3 llm-dlc/tools/sync.py allow add <value> --kind <kind> --reason "why"  # a person, at a terminal
+python3 llm-dlc/tools/sync.py allow drop <id>...                           # remove entries
+```
+
+The list is published with its values, so it takes only the kinds that the redactor leaves in a log and that are published anyway once accepted: `public-ip`, `ipv6`, `mac-address`, `other-home-dir`, `auth-header` and `long-token`. A finding of a kind the redactor removes would be published by the list itself, so it goes through `review accept`, which keeps only a hash. `check` warns while proposals wait for a person, and fails if a proposal holds a value, an approved entry's id does not match its kind and value, the rules would not find the value as that kind, or the value holds something the redactor removes.
 
 Not everything can be a rule. **Read a log before you upload it.** `sync.py scan` previews what a push would publish for each session: the redaction markers by kind, and *warnings* about things no rule removes and a person should judge: public IP addresses, home directories of other users, authorization and cookie headers, long mixed-case tokens of unknown format. A four-part version number looks like an IP address, so one is skipped only when its surroundings say it is a version, such as `openjdk version`, `java.base@`, or an SDK listing row; `root@<ip>` still warns. `check` prints the same warnings for logs that are not yet uploaded, and `push` prints them for each log as it goes up. Output is masked, because it lands in the transcript of the session that runs it.
 

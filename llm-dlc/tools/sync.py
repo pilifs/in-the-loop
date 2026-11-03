@@ -42,6 +42,13 @@ Commands:
   sync.py review show ID        where one finding occurs, masked
   sync.py review accept ID... --reason TEXT
                                 record findings as false positives; a person at a terminal only
+  sync.py allow                 the allow list: false positives by value, approved or proposed
+  sync.py allow propose ID... --reason TEXT
+                                propose open warn findings for the allow list (an agent may)
+  sync.py allow approve [ID...] approve proposals, all or those named; a person at a terminal only
+  sync.py allow add VALUE --kind KIND --reason TEXT
+                                allow a value before it is found; a person at a terminal only
+  sync.py allow drop ID...      remove entries, proposed or approved
   sync.py stamp                 after a change to redaction_rules.py: rescan everything, then
                                 record the rules as applied, so older files aren't scanned again
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
@@ -73,7 +80,7 @@ from pathlib import Path
 
 import metrics  # llm-dlc/tools/metrics.py
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
-from redaction_rules import NEVER_REVIEWED, REDACTION_POLICY, older_than_stamp
+from redaction_rules import NEVER_REVIEWED, REDACTION_POLICY, REVIEW_PATTERNS, older_than_stamp
 
 REPO = Path(__file__).resolve().parents[2]
 CHANGES = REPO / "llm-dlc"
@@ -110,6 +117,16 @@ ACCEPTED_LOGS = frozenset({
 REVIEWED = CHANGES / "reviewed-findings.json"
 REVIEWED_SCHEMA = "llm-trace-reviewed/v1"
 CONFIRMATION = "false positive"
+# The allow list: false positives named by their value, so that a person can read the list and add
+# to it without a scan. An agent proposes an entry by finding id, and the value stays out of the
+# file until a person approves it at a terminal. Only kinds the redactor leaves in the logs can be
+# listed: a value it removes would be published by the list itself.
+ALLOWLIST = CHANGES / "allowlist.json"
+ALLOWLIST_SCHEMA = "llm-trace-allowlist/v1"
+ALLOWABLE_KINDS = frozenset(kind for kind, _, _ in REVIEW_PATTERNS)
+# Real values of the findings the last scan saw, by id, so that proposing and approving need no
+# rescan. Local to this machine and never printed to an agent.
+FINDINGS_CACHE = STATE / "finding-values.json"
 TRAILER = "LLM-Trace"
 TRAILER_RE =re.compile(rf"^{TRAILER}: (\S+)(?: sha256:([0-9a-f]{{64}}))?\s*$", re.M)
 LINK_TRAILERS = ("LLM-Trace-Summary", "LLM-Trace-Log")  # convenience links next to LLM-Trace
@@ -210,12 +227,21 @@ def load_reviewed() -> dict[str, dict]:
     return json.loads(REVIEWED.read_text())["findings"] if REVIEWED.exists() else {}
 
 
+def load_allowlist() -> dict[str, dict]:
+    return json.loads(ALLOWLIST.read_text())["entries"] if ALLOWLIST.exists() else {}
+
+
+def allowed_ids() -> dict[str, dict]:
+    """Approved entries of the allow list, by finding id, as load_reviewed gives them."""
+    return {fid: e for fid, e in load_allowlist().items() if e.get("status") == "approved"}
+
+
 class Redactor(redaction_rules.Rules):
     """The rules with this machine's literals, less the false positives a person has reviewed."""
 
     def __init__(self) -> None:
         super().__init__(*personal_literals())
-        self.reviewed = load_reviewed()
+        self.reviewed = load_reviewed() | allowed_ids()
         self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
         self._latest: tuple[str, tuple] | None = None  # callers ask about one text twice
 
@@ -1327,7 +1353,32 @@ def open_findings(redact: Redactor, everything: bool = False) -> dict[str, dict]
                                                                      "count": 0, "where": set()})
                     row["count"] += n
                     row["where"].add(where)
+    remember_findings(found)
     return found
+
+
+def load_findings_cache() -> dict[str, dict]:
+    try:
+        return json.loads(FINDINGS_CACHE.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def remember_findings(found: dict[str, dict]) -> None:
+    """Keep what a scan found, merged with what earlier scans did, for `allow propose` and
+    `allow approve`. The file holds real values, so only its owner can read it."""
+    cache = load_findings_cache()
+    for fid, f in found.items():
+        cache[fid] = {"level": f["level"], "kind": f["kind"], "value": f["value"], "count": f["count"],
+                      "where": sorted(f["where"])}
+    try:
+        STATE.mkdir(parents=True, exist_ok=True)
+        tmp = FINDINGS_CACHE.with_suffix(".tmp")
+        tmp.touch(mode=0o600)
+        tmp.write_text(json.dumps(cache, ensure_ascii=False))
+        tmp.replace(FINDINGS_CACHE)
+    except OSError:
+        pass  # a cache: the next propose or approve scans instead
 
 
 def person_at_terminal() -> bool:
@@ -1402,8 +1453,10 @@ def cmd_review(args: list[str]) -> int:
     at a terminal; an agent is sent back to ask."""
     if not args:
         found = open_findings(Redactor())
+        proposed = load_allowlist()
         for fid, f in sorted(found.items(), key=lambda kv: (kv[1]["level"], kv[1]["kind"])):
-            print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+            print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}"
+                  + ("  (proposed for the allow list)" if fid in proposed else ""))
         print(f"{len(found)} open finding(s)")
         return 0
     if args[0] == "show" and len(args) == 2:
@@ -1458,6 +1511,196 @@ def reviewed_problems() -> list[str]:
             if not str(entry.get(field) or "").strip():
                 errors.append(f"{REVIEWED.name}: {fid[:8]} has no {field}")
     return errors
+
+
+def save_allowlist(entries: dict[str, dict]) -> None:
+    ALLOWLIST.write_text(json.dumps({"schema": ALLOWLIST_SCHEMA, "entries": dict(sorted(entries.items()))},
+                                    indent=2, ensure_ascii=False) + "\n")
+
+
+def _who() -> str:
+    return "agent" if os.environ.get("CLAUDECODE") else _cmd("git", "config", "--get", "user.name") or "maintainer"
+
+
+def _split_reason(args: list[str]) -> tuple[list[str], str]:
+    if "--reason" not in args:
+        return args, ""
+    at = args.index("--reason")
+    return args[:at], " ".join(args[at + 1:]).strip()
+
+
+def _resolve(prefixes: list[str], pool: dict[str, dict]) -> tuple[dict[str, str], list[str]]:
+    """Prefix -> full id for those that name exactly one id in the pool, and those that don't."""
+    done, missing = {}, []
+    for prefix in prefixes:
+        matches = [fid for fid in pool if fid.startswith(prefix)]
+        if len(matches) == 1:
+            done[prefix] = matches[0]
+        else:
+            missing.append(prefix)
+    return done, missing
+
+
+def _value_problem(kind: str, value: str, redact: Redactor) -> str | None:
+    """Why this value cannot be on the allow list as this kind, if it can't."""
+    if kind not in ALLOWABLE_KINDS:
+        return (f"{kind} is not a kind the allow list takes ({', '.join(sorted(ALLOWABLE_KINDS))}); "
+                f"the redactor removes it from logs, so the list would publish it: use `review accept`")
+    leaks, reviewable = redact.hits_of_line(json.dumps(value))
+    if leaks:
+        return f"it holds {sorted({k for k, _ in leaks})}, which the redactor removes"
+    if (kind, value) not in reviewable:
+        return f"the rules do not find it as {kind}"
+    return None
+
+
+def cmd_allow(args: list[str]) -> int:
+    """The allow list. Listing, proposing and dropping are open to anyone. Approving and adding
+    are a person's decision, made at a terminal where they see the real value. None of these
+    scans the logs unless a value is not known from the last scan."""
+    entries = load_allowlist()
+    if not args:
+        for fid, e in sorted(entries.items(), key=lambda kv: (kv[1]["status"], kv[1]["kind"])):
+            shown = e["value"] if e["status"] == "approved" else e.get("masked", "")
+            print(f"{fid[:8]}  {e['status']:8}  {e['kind']}  {shown}  ({e['reason']}; {e['proposed_by']}"
+                  + (f", approved by {e['authorized_by']}" if e["status"] == "approved" else "") + ")")
+        waiting = sum(e["status"] == "proposed" for e in entries.values())
+        print(f"{len(entries) - waiting} approved, {waiting} proposed"
+              + ("; a person approves with: python3 llm-dlc/tools/sync.py allow approve" if waiting else ""))
+        return 0
+    cmd, rest = args[0], args[1:]
+    if cmd == "propose":
+        ids, reason = _split_reason(rest)
+        if not ids or not reason:
+            print("usage: sync.py allow propose ID... --reason TEXT", file=sys.stderr)
+            return 2
+        cache = load_findings_cache()
+        done, missing = _resolve(ids, cache)
+        if missing:  # not seen by the last scan: scan once
+            cache = {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(Redactor()).items()}
+            done, missing = _resolve(ids, cache)
+        if missing:
+            print(f"cannot propose {', '.join(missing)}: no single finding has that id", file=sys.stderr)
+            return 1
+        redact = Redactor()
+        for prefix, fid in done.items():
+            f = cache[fid]
+            if problem := _value_problem(f["kind"], f["value"], redact):
+                print(f"cannot propose {prefix}: {problem}", file=sys.stderr)
+                return 1
+        for fid in done.values():
+            if entries.get(fid, {}).get("status") != "approved":
+                entries[fid] = {"kind": cache[fid]["kind"], "masked": _mask(cache[fid]["value"]), "status": "proposed",
+                                "reason": reason, "proposed_by": _who(), "proposed_on": time.strftime("%Y-%m-%d")}
+        save_allowlist(entries)
+        print(f"proposed {len(done)} entr{'y' if len(done) == 1 else 'ies'} in {ALLOWLIST.relative_to(REPO)}; "
+              f"they stay open until a person runs: python3 llm-dlc/tools/sync.py allow approve")
+        return 0
+    if cmd == "drop":
+        done, missing = _resolve(rest, entries)
+        if not rest or missing:
+            print(f"usage: sync.py allow drop ID...; no single entry for {', '.join(missing)}", file=sys.stderr)
+            return 1
+        for fid in done.values():
+            del entries[fid]
+        save_allowlist(entries)
+        print(f"dropped {len(done)} entr{'y' if len(done) == 1 else 'ies'}")
+        return 0
+    if cmd not in ("approve", "add"):
+        print(__doc__)
+        return 2
+    if not person_at_terminal():
+        print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command.",
+              file=sys.stderr)
+        return 1
+    redact, today, who = Redactor(), time.strftime("%Y-%m-%d"), _cmd("git", "config", "--get", "user.name") or "maintainer"
+    if cmd == "add":
+        values, reason = _split_reason(rest)
+        kind = values[values.index("--kind") + 1] if "--kind" in values[:-1] else ""
+        values = [v for i, v in enumerate(values) if v != "--kind" and (i == 0 or values[i - 1] != "--kind")]
+        if len(values) != 1 or not kind or not reason:
+            print("usage: sync.py allow add VALUE --kind KIND --reason TEXT", file=sys.stderr)
+            return 2
+        if problem := _value_problem(kind, values[0], redact):
+            print(f"cannot allow it: {problem}", file=sys.stderr)
+            return 1
+        fid = finding_id(kind, values[0])
+        chosen = {fid: {"kind": kind, "masked": _mask(values[0]), "reason": reason, "proposed_by": who,
+                        "proposed_on": today, "value": values[0]}}
+        print(f"{fid[:8]}  {kind}\n    {values[0]}")
+    else:
+        proposed = {fid: e for fid, e in entries.items() if e["status"] == "proposed"}
+        done, missing = _resolve(rest, proposed) if rest else ({fid: fid for fid in proposed}, [])
+        if missing:
+            print(f"no single proposal for {', '.join(missing)}", file=sys.stderr)
+            return 1
+        if not done:
+            print("nothing proposed")
+            return 0
+        cache = load_findings_cache()
+        if any(fid not in cache for fid in done.values()):
+            print("some values are not known from the last scan; scanning…")
+            cache |= {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(redact).items()}
+        chosen = {}
+        for fid in done.values():
+            e = proposed[fid]
+            if fid not in cache:
+                print(f"{fid[:8]}  {e['kind']}  no longer found anywhere; left as proposed (drop it with `allow drop`)")
+                continue
+            f = cache[fid]
+            problem = ("the cached value does not match the id" if finding_id(e["kind"], f["value"]) != fid
+                       else _value_problem(e["kind"], f["value"], redact))
+            if problem:
+                print(f"{fid[:8]}  {e['kind']}  cannot be approved: {problem}")
+                continue
+            print(f"{fid[:8]}  {e['kind']}  ×{f['count']}  in {', '.join(f['where'])}  ({e['reason']}; {e['proposed_by']})"
+                  f"\n    {f['value']}")
+            chosen[fid] = {**e, "value": f["value"]}
+        if not chosen:
+            return 1
+    if input(f"Type \"{CONFIRMATION}\" to allow {len(chosen)} value(s): ").strip() != CONFIRMATION:
+        print("nothing recorded")
+        return 1
+    for fid, e in chosen.items():
+        entries[fid] = {**e, "status": "approved", "authorized_by": who, "approved_on": today}
+    save_allowlist(entries)
+    print(f"allowed {len(chosen)} value(s) in {ALLOWLIST.relative_to(REPO)}; commit it to publish the decision. "
+          f"Nothing needs rescanning: the next check leaves these values out.")
+    return 0
+
+
+def allowlist_problems(redact: Redactor) -> tuple[list[str], list[str]]:
+    """(errors, warnings) about the allow list. A proposal must not hold its value, since nobody
+    has judged it yet; an approved entry must name a value that its id and kind describe, and
+    that the redactor would leave in a log."""
+    if not ALLOWLIST.exists():
+        return [], []
+    doc = json.loads(ALLOWLIST.read_text())
+    name = ALLOWLIST.name
+    if doc.get("schema") != ALLOWLIST_SCHEMA:
+        return [f"{name}: unknown schema {doc.get('schema')}"], []
+    errors, waiting = [], 0
+    for fid, e in doc.get("entries", {}).items():
+        if not re.fullmatch(r"[0-9a-f]{32}", fid):
+            errors.append(f"{name}: bad id {fid[:12]}")
+        status = e.get("status")
+        required = ("kind", "reason", "proposed_by", "proposed_on") + (
+            ("value", "authorized_by", "approved_on") if status == "approved" else ())
+        errors += [f"{name}: {fid[:8]} has no {field}" for field in required if not str(e.get(field) or "").strip()]
+        if status == "proposed":
+            waiting += 1
+            if "value" in e:
+                errors.append(f"{name}: {fid[:8]} is only proposed but holds its value, which nobody has judged yet")
+        elif status != "approved":
+            errors.append(f"{name}: {fid[:8]} has unknown status {status}")
+        elif e.get("value") and e.get("kind"):
+            if finding_id(e["kind"], e["value"]) != fid:
+                errors.append(f"{name}: {fid[:8]} does not match its kind and value")
+            if problem := _value_problem(e["kind"], e["value"], redact):
+                errors.append(f"{name}: {fid[:8]}: {problem}")
+    warnings = [f"{name}: {waiting} proposed entr{'y awaits' if waiting == 1 else 'ies await'} a person: "
+                f"python3 llm-dlc/tools/sync.py allow approve"] if waiting else []
+    return errors, warnings
 
 
 def cmd_commit(args: list[str]) -> int:
@@ -1529,6 +1772,9 @@ def cmd_push(args: list[str]) -> int:
 def cmd_check(remote: bool = False) -> int:
     redact, errors, notes, warnings = Redactor(), [], [], []
     errors += reviewed_problems()
+    found_errors, found_warnings = allowlist_problems(redact)
+    errors += found_errors
+    warnings += found_warnings
     left_out = 0
     manifests = all_manifests()
     for sid, m in manifests.items():
@@ -1615,8 +1861,9 @@ def cmd_check(remote: bool = False) -> int:
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
     if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup():
         errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
-    if REVIEWED.exists() and (leaks := redact.leaks(REVIEWED.read_text())):
-        errors.append(f"unredacted {leaks} in {REVIEWED.relative_to(REPO)}")
+    for listed in (REVIEWED, ALLOWLIST):
+        if listed.exists() and (leaks := redact.leaks(listed.read_text())):
+            errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -1678,6 +1925,8 @@ def main(argv: list[str]) -> int:
         return cmd_scan(args)
     elif cmd == "review":
         return cmd_review(args)
+    elif cmd == "allow":
+        return cmd_allow(args)
     elif cmd == "stamp":
         return cmd_stamp()
     elif cmd == "init":

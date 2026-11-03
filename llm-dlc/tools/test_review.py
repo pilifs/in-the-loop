@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for reviewed false positives in sync.py. Run: python3 llm-dlc/tools/test_review.py
+"""Tests for reviewed false positives and the allow list in sync.py. Run: python3 llm-dlc/tools/test_review.py
 Values are split in the source so that this file's own transcript raises no finding."""
 import io
 import json
@@ -90,6 +90,93 @@ class Authorization(unittest.TestCase):
                 self.assertNotIn(HOME_A, path.read_text())
                 self.assertEqual((entry["kind"], entry["reason"]), ("other-home-dir", "test"))
                 self.assertEqual(sync.reviewed_problems(), [])
+
+
+class Allowlist(unittest.TestCase):
+    """The allow list: an agent proposes by id, a person approves, and neither needs a scan."""
+    IP = "203.0." + "113.7"  # documentation range, which the rules do not treat as reserved
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        tmp = Path(self.tmp.name)
+        self.path, self.fid = tmp / "allowlist.json", sync.finding_id("public-ip", self.IP)
+        self.cache = {self.fid: {"level": "warn", "kind": "public-ip", "value": self.IP, "count": 2, "where": ["s"]}}
+        (tmp / "cache.json").write_text(json.dumps(self.cache))
+        self.patches = [mock.patch.object(sync, "ALLOWLIST", self.path), mock.patch.object(sync, "REPO", tmp),
+                        mock.patch.object(sync, "REVIEWED", tmp / "reviewed.json"),
+                        mock.patch.object(sync, "FINDINGS_CACHE", tmp / "cache.json"),
+                        mock.patch.object(sync, "open_findings", side_effect=AssertionError("scanned")),
+                        mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO())]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def as_person(self, answer=sync.CONFIRMATION):
+        return mock.patch.object(sync, "person_at_terminal", return_value=True), \
+            mock.patch("builtins.input", return_value=answer)
+
+    def test_a_proposal_holds_no_value_and_does_not_hide_the_finding(self):
+        self.assertEqual(sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version"]), 0)
+        self.assertNotIn(self.IP, self.path.read_text())
+        self.assertEqual(sync.load_allowlist()[self.fid]["status"], "proposed")
+        self.assertIn("public-ip", sync.Redactor().review_hits(line(self.IP)))
+        errors, warnings = sync.allowlist_problems(sync.Redactor())
+        self.assertEqual(errors, [])
+        self.assertTrue(any("allow approve" in w for w in warnings))
+
+    def test_an_agent_cannot_approve(self):
+        sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version"])
+        with mock.patch.dict("os.environ", {"CLAUDECODE": "1"}):
+            self.assertEqual(sync.cmd_allow(["approve"]), 1)
+        self.assertEqual(sync.load_allowlist()[self.fid]["status"], "proposed")
+
+    def test_a_person_approves_without_a_scan_and_the_value_is_left_out(self):
+        sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version"])
+        terminal, answer = self.as_person("no")
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["approve"]), 1)
+        terminal, answer = self.as_person()
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["approve"]), 0)
+        entry = sync.load_allowlist()[self.fid]
+        self.assertEqual((entry["status"], entry["value"]), ("approved", self.IP))
+        r = sync.Redactor()
+        self.assertEqual(r.review(line(self.IP)), [])
+        self.assertEqual(r.skipped["public-ip"], 1)
+        self.assertEqual(sync.allowlist_problems(r), ([], []))
+
+    def test_a_person_can_add_a_value_before_it_is_found(self):
+        terminal, answer = self.as_person()
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["add", self.IP, "--kind", "public-ip", "--reason", "a version"]), 0)
+            self.assertEqual(sync.cmd_allow(["add", HOME_A, "--kind", "public-ip", "--reason", "x"]), 1)
+        self.assertEqual(list(sync.load_allowlist()), [self.fid])
+
+    def test_a_kind_the_redactor_removes_cannot_be_listed(self):
+        address = "someone" + "@" + "corp.test"
+        fid = sync.finding_id("email", address)
+        sync.FINDINGS_CACHE.write_text(json.dumps({fid: {"level": "ERROR", "kind": "email", "value": address,
+                                                         "count": 1, "where": ["s"]}}))
+        self.assertEqual(sync.cmd_allow(["propose", fid[:8], "--reason", "x"]), 1)
+        self.assertFalse(self.path.exists())
+
+    def test_an_unknown_id_scans_once(self):
+        with mock.patch.object(sync, "open_findings", return_value={}) as scan:
+            self.assertEqual(sync.cmd_allow(["propose", "ffffffff", "--reason", "x"]), 1)
+        scan.assert_called_once()
+
+    def test_a_proposal_with_its_value_or_an_entry_with_the_wrong_id_is_an_error(self):
+        base = {"kind": "public-ip", "reason": "r", "proposed_by": "a", "proposed_on": "2000-01-01"}
+        sync.save_allowlist({self.fid: {**base, "status": "proposed", "value": self.IP},
+                             "b" * 32: {**base, "status": "approved", "value": self.IP, "authorized_by": "p",
+                                        "approved_on": "2000-01-01"}})
+        errors, _ = sync.allowlist_problems(sync.Redactor())
+        self.assertTrue(any("nobody has judged" in e for e in errors))
+        self.assertTrue(any("does not match" in e for e in errors))
 
 
 class Problems(unittest.TestCase):
