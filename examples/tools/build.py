@@ -323,13 +323,15 @@ def run_boundaries(folder, example, tmp, module, result):
         verdict = "violation"
     changes = boundary_changes(output)
     m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) configuration keys, (\d+) wire types, "
-                  r"(\d+) problems\)", output)
+                  r"(?:(\d+) stored types, )?(\d+) problems\)", output)
     result.update({
         "verdict": verdict,
         "counterexamples": changes,
         "newProblems": new_problems,
         "domain": (f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, "
-                   f"{m.group(4)} configuration keys, {m.group(5)} wire types, {m.group(6)} problems") if m else None,
+                   f"{m.group(4)} configuration keys, {m.group(5)} wire types, "
+                   + (f"{m.group(6)} stored types, " if m.group(6) else "")
+                   + f"{m.group(7)} problems") if m else None,
         "verdictLabel": {
             "violation": (f"{VERDICT_LABEL[verdict]}: {len(new_problems)} new problem{'s' if len(new_problems) != 1 else ''}"
                           if new_problems else

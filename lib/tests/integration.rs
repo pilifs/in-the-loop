@@ -1096,6 +1096,18 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("wire fixtures.spring.Shape: interface\n  ! no @JsonTypeInfo: a Shape is written as the properties of its runtime class, with no type id to read it back by\n");
     has("wire fixtures.spring.Empty: class\n  ! no properties: it is written as {}\n");
     has("wire fixtures.spring.NoteDocument: record\n  ! a persistence type (@Document) is on the wire");
+    // The stored types: each document's shape under its stored names, and the query strings that name no field.
+    has("stored fixtures.spring.CounterDocument: class, collection \"counterDocument\"\n  _id: String (id)\n  value: long\n  version: @Version Long\n  ! NotesStore.anywhere() queries \"nowhere\": not a field of any document in the module (CounterDocument, NoteDocument, TaskDocument), so the condition tests a field that is never set\n  ! NotesStore.bump(String) writes \"valeu\": not a field of CounterDocument (value?), so the update writes a field that nothing reads back\n\n");
+    has("stored fixtures.spring.NoteDocument: record, collection \"notes\"\n  _id: String (id)\n  text: String\n  by: String (author)\n  createdAt: @Indexed Instant\n  labels: List<String>\n  ! @CompoundIndex on NoteDocument indexes \"created\": not a field of NoteDocument (createdAt?), so the index is on a field that is never set\n  ! @Query on NoteRepository.search(String) queries \"txet\": not a field of NoteDocument (text?), so the condition tests a field that is never set\n  ! NotesStore(MongoTemplate) indexes \"created\": not a field of NoteDocument (createdAt?), so the index is on a field that is never set\n  ! NotesStore.rename(String, String) queries \"txt\": not a field of NoteDocument (text?), so the condition tests a field that is never set\n  ! NotesStore.rename(String, String) writes \"views\": not a field of NoteDocument, so the update writes a field that nothing reads back\n\n");
+    has("stored fixtures.spring.TaskDocument: record, collection \"tasks\"\n  _id: String (id)\n  title: String\n  assignee: Assignee\n  steps: List<Step>\n  due: Instant (dueAt)\n  createdAt: Instant\n  labels: Map<String, String>\n");
+    has("  ! NotesStore.openTasksOf(String) queries \"assignee.mail\": \"mail\" is not a field of Assignee (email?), so the condition tests a field that is never set\n");
+    has("  ! NotesStore.openTasksOf(String) queries \"assignee.email.domain\": \"assignee.email\" is a String, which has no fields, so the condition tests a field that is never set\n");
+    has("  ! NotesStore.openTasksOf(String) sorts by \"titel\": not a field of TaskDocument (title?), so the sort orders by a field that is never set\n");
+    has("  ! NotesStore.done() removes \"archived\": not a field of TaskDocument, so the update changes nothing\n");
+    has("stored fixtures.spring.TaskDocument$Assignee: record, embedded\n  name: String\n  email: String\n");
+    for fine in ["queries \"steps.done\"", "queries \"labels.team\"", "queries \"steps.0.label\"", "writes \"due\"", "writes \"steps.$.done\"", "queries \"by\"", "queries \"id\"", "queries \"author\"", "sorts by \"createdAt\"", "projects \"by\""] {
+        assert!(!text.contains(fine), "a path through an embedded type, a map, a stored name or an id is a field, {fine:?} is not a problem:\n{text}");
+    }
     has("wire fixtures.spring.Base: class\n  id: String\n");
     // The constraints on a wire type, with the ones that cannot run as written.
     has("wire fixtures.spring.Booking: record\n  seats: @Size(max = 10) int\n    ! @Size has no validator for int: the first validation throws UnexpectedTypeException\n  rows: @NotNull int\n    ! @NotNull on int can never fail: a primitive is never null\n  labels: List<@NotBlank String>\n  guest: Guest\n    ! constraints on Guest are not checked: no @Valid on guest\n  payer: @Valid Guest\n  party: List<@Valid Guest>\n  tier: @Min(1) Integer?\n  code: @NotBlank(groups = fixtures.spring.OnCreate.class) String\n\n");
@@ -1122,7 +1134,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (19, 14, 13, 21, 15, 39), "{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.stored.len(), found.problems()), (23, 14, 13, 21, 15, 5, 50), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1148,15 +1160,16 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (19 beans, 14 entry points, 13 advised methods, 21 configuration keys, 15 wire types, 39 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (23 beans, 14 entry points, 13 advised methods, 21 configuration keys, 15 wire types, 5 stored types, 50 problems)"), "{}", outcome.output);
 
-    let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n");
+    let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n").replace("  due: Instant (dueAt)\n", "  dueAt: Instant\n");
     std::fs::write(&file, edited).unwrap();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 1, "{}", outcome.output);
     assert!(outcome.output.contains("  added fixtures.spring.OrderService: void warm(): ! @Cacheable on a void method caches nothing"), "{}", outcome.output);
     assert!(outcome.output.contains("  added fixtures.spring.OrdersController: DELETE /orders/{id} => void purge(@PathVariable String id): @PreAuthorize(\"hasRole('ADMIN')\")"), "{}", outcome.output);
     assert!(outcome.output.contains("  added wire fixtures.spring.PaymentEvent$Captured: amountCents: long\n") && outcome.output.contains("  removed wire fixtures.spring.PaymentEvent$Captured: amount: long\n"), "{}", outcome.output);
+    assert!(outcome.output.contains("  added stored fixtures.spring.TaskDocument: due: Instant (dueAt)\n") && outcome.output.contains("  removed stored fixtures.spring.TaskDocument: dueAt: Instant\n"), "{}", outcome.output);
     let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
     assert_eq!(finding.uri.as_deref(), Some("tests/fixtures/spring/fixtures/spring/OrderService.java"));
     assert!(finding.line > 1, "anchored to the member's line, found {}", finding.line);

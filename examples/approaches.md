@@ -246,7 +246,7 @@ key named), a key Boot has deprecated, a value not of the key's type (`int`, `Du
 placeholder default that is not are `!` lines. Tests do not run with the production profile, and a missing key
 quietly takes its default, so none of these fails a build; in the contract each is a changed line.
 
-The contract ends with the wire types: the JSON shape of every request body, response body and message type
+Then come the wire types: the JSON shape of every request body, response body and message type
 reachable from the module's handlers, listeners and Jackson-annotated classes, as Jackson will encode it (record
 components, public getters and fields, `@JsonProperty` names, a naming strategy, `@JsonInclude`, enum constants,
 `@JsonTypeInfo` placement and each subtype's id). The bytes are what the other side depends on, and a renamed
@@ -258,7 +258,15 @@ the wire) are `!` lines, established against Jackson 3 as Spring Boot configures
 property, inside the type too (`List<@NotBlank String>`), are checked as Hibernate Validator runs them: a nested
 type's constraints with no `@Valid` leading into them, a constraint on a type it has no validator for (`@Size` on an
 `int`, which fails at the first request, not at compile time) and a null check on a primitive are `!` lines under
-the property. The three Box Office modules
+the property.
+
+The contract ends with the stored types: the shape of every Spring Data MongoDB document the module keeps, as the
+mapping layer writes it (the `@Id` as `_id`, a `@Field` rename, a `@Transient` left out, the embedded types), with a
+`!` line under the document for every string in the module's code that names a field it does not have: a
+`Criteria.where`, an `Update.set` or `unset`, an `Index().on`, a `Sort.by`, a projection, a repository `@Query` or a
+`@CompoundIndex`. Nothing checks these strings otherwise: the driver sends them to the database, which matches,
+writes, indexes or sorts by whatever field that is, so a renamed record component leaves every query of it matching
+nothing and every test that goes through the same strings passing. The three Box Office modules
 with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
 their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
 `PATH`.

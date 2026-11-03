@@ -18,10 +18,14 @@
 //! scope, an `@Async` with no `@EnableAsync`, a `@Valid` with no Bean Validation provider is read by nobody; each is a
 //! `!` line.
 //!
-//! The contract ends with the wire types: the JSON shape of every request body, response body and message type
-//! reachable from the module's handlers, listeners and Jackson-annotated classes, from [`crate::wire`]. A renamed
-//! record component or a subtype missing from `@JsonSubTypes` changes no signature and passes every test that
-//! encodes and decodes with the same classes; here it is a changed line.
+//! Then come the wire types: the JSON shape of every request body, response body and message type reachable
+//! from the module's handlers, listeners and Jackson-annotated classes, from [`crate::wire`]. A renamed record
+//! component or a subtype missing from `@JsonSubTypes` changes no signature and passes every test that encodes
+//! and decodes with the same classes; here it is a changed line.
+//!
+//! The contract ends with the stored types ([`crate::store`]): the shape of each Spring Data MongoDB document
+//! (the `_id`, each field under its stored name, the embedded types), with a `!` line for every query, update,
+//! index, sort or projection string in the module that names a field the document does not have.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -32,6 +36,7 @@ use crate::classfile::{flags, signature, simple_name_of, Annotation, ClassFile, 
 use crate::activation;
 use crate::classpath::ClassPath;
 use crate::config;
+use crate::store;
 use crate::validation;
 use crate::wire;
 use crate::Error;
@@ -159,6 +164,11 @@ pub struct Boundaries {
     /// The wire types, by binary name with dots: the header is the kind of type and how it is encoded, the members
     /// are its properties (`name: Type`), subtypes, enum constants and `!` problems.
     pub types: BTreeMap<String, Bean>,
+    /// The stored types ([`store`]), by binary name with dots: a `@Document` class or a type embedded in one; the
+    /// header is the kind of type and its collection, the members its fields under their stored names and the `!`
+    /// problems: the strings in the module's queries that name a field the document does not have.
+    #[serde(default)]
+    pub stored: BTreeMap<String, Bean>,
 }
 
 fn is_framework(annotation: &Annotation) -> bool {
@@ -632,6 +642,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
     }
     boundaries.activation = activation::analyse(cp, &classes, only)?;
     boundaries.configuration = config::analyse(cp, local, resources)?;
+    boundaries.stored = store::analyse(cp, only, local)?;
     Ok(boundaries)
 }
 
@@ -653,11 +664,11 @@ impl Boundaries {
     }
 
     pub fn stats(&self) -> String {
-        format!("{} beans, {} entry points, {} advised methods, {} configuration keys, {} wire types, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.configuration_keys(), self.types.len(), self.problems())
+        format!("{} beans, {} entry points, {} advised methods, {} configuration keys, {} wire types, {} stored types, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.configuration_keys(), self.types.len(), self.stored.len(), self.problems())
     }
 
-    /// The beans, then the activation and configuration blocks, then the wire types under their `wire ` prefix,
-    /// as the contract lists them.
+    /// The beans, then the activation and configuration blocks, then the wire types under their `wire ` prefix and
+    /// the stored types under `stored `, as the contract lists them.
     fn blocks(&self) -> impl Iterator<Item = (String, &Bean)> {
         self.beans
             .iter()
@@ -665,6 +676,7 @@ impl Boundaries {
             .chain(self.activation.iter().map(|b| ("activation".to_string(), b)))
             .chain(self.configuration.iter().map(|b| ("configuration".to_string(), b)))
             .chain(self.types.iter().map(|(n, b)| (format!("wire {n}"), b)))
+            .chain(self.stored.iter().map(|(n, b)| (format!("stored {n}"), b)))
     }
 
     /// Comparable entries: `type: annotations`, `type: member` and `type: member: detail` lines.
@@ -690,7 +702,8 @@ impl Boundaries {
             for (name, bean) in self.blocks() {
                 for m in &bean.members {
                     if entry == format!("{name}: {}", m.line) || entry.starts_with(&format!("{name}: {}: ", m.line)) {
-                        return Some((name.strip_prefix("wire ").unwrap_or(&name).to_string(), m));
+                        let class = name.strip_prefix("wire ").or_else(|| name.strip_prefix("stored ")).unwrap_or(&name);
+                        return Some((class.to_string(), m));
                     }
                 }
             }
@@ -705,8 +718,9 @@ impl Boundaries {
             "# advice on each bean (transactions, security, validation, caching, retries), from the annotations in the".to_string(),
             "# compiled classes, then what enables each kind of annotation (an @Enable annotation, an auto-configuration,".to_string(),
             "# a provider on the class path), then the configuration keys (what the classes read, what the application".to_string(),
-            "# files set, what the class path's metadata declares), then the wire types: the JSON shape of each request,".to_string(),
-            "# response and message type. A `!` line is a place where an annotation or a setting does not do what it says.".to_string(),
+            "# files set, what the class path's metadata declares), then the wire types (the JSON shape of each request,".to_string(),
+            "# response and message type) and the stored types (the shape of each document, and the query strings that".to_string(),
+            "# name a field it does not have). A `!` line is a place where something does not do what it says.".to_string(),
             "kind: boundaries".to_string(),
             format!("module: {module}, {}", self.stats()),
             String::new(),

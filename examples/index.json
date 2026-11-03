@@ -4474,6 +4474,48 @@
         "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
       ],
       "source": null
+    },
+    {
+      "id": "115",
+      "path": "examples/115-renamed-document-field-queried-by-name",
+      "title": "HoldDocument.idempotencyKey renamed, the query strings not: a retried POST holds the seats twice",
+      "summary": "The developer renames `HoldDocument.idempotencyKey` to `requestKey`; the IDE renames the component and its javadoc, the hold is built positionally, so nothing else changes and everything compiles. The mapper now stores the key under `requestKey`, while `TicketingStore.holdByIdempotencyKey` still runs `where(\"idempotencyKey\")` and the unique index is still on `idempotencyKey`: the lookup matches nothing, the index covers nothing, and a client that retries `POST /concerts/{id}/holds` with the same `Idempotency-Key` gets a second hold on other seats. The boundary contract's stored types block shows the document's shape and checks every field-name string in the module against it; the regenerated contract has three new `!` lines under `HoldDocument`.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot",
+          "idempotency"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "contract-diff-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of the stored types block of a boundary contract (`lib/src/store.rs`): the shape of each Spring Data MongoDB document as the mapping layer writes it (the `@Id` or the property named `id` as `_id`, a `@Field` rename as `due: Instant (dueAt)`, `@Transient` and `transient` fields left out, embedded local types as their own `record, embedded` blocks), and under each document a `!` line for every string in the module that names a field it does not have. The strings come from the bytecode: the constant pushed as the field argument of `Criteria.where`/`and`, the `Update` operators (`set`, `unset`, `inc`, `push`, `pull`, `rename`, ...), `Index.on`, `Sort.by` (varargs read back from the array the compiler builds), `Sort.Order.asc`/`desc`, the projection's `include`/`exclude`, and from the annotations: a repository method's `@Query` (`value`, `sort`, `fields`, parsed as the loose JSON Spring accepts, with the `$` operators transparent) and a document's `@CompoundIndex(def)`.",
+        "A string names a property by its Java name or its stored name, as Spring's query mapper accepts both (`where(\"due\")` and `where(\"dueAt\")` both reach a `@Field(\"due\") Instant dueAt`), `_id` and the id property's own name both reach the id, a dotted path goes through an embedded type's fields, through a collection or array to its element and through a map to any key, and stops at a leaf: `\"assignee.email\" is a String, which has no fields`. `$`-segments (`steps.$.done`) and array indices are skipped. The nearest property is suggested when one is within a few edits (`not a field of NoteDocument (createdAt?)`); here `requestKey` is too far from `idempotencyKey` for a hint. The library's Spring fixtures (`lib/tests/fixtures/spring/fixtures/spring/NotesStore.java`, `NoteRepository.java`, `TaskDocument.java`) have one wrong string of each kind.",
+        "Which document a string is about is read from the method: the document classes it passes to the template or instantiates. `holdByIdempotencyKey` names `HoldDocument.class` alone, so its line says `not a field of HoldDocument`; the constructor creates indexes for `SeatDocument`, `HoldDocument` and `OrderDocument`, so the two lines from it name all three (the string is a field of none), and the line goes under the first. A private helper that names no document (`makeAvailable()` in the same store) takes the documents of the methods that call it. The checks cover Spring Data MongoDB; JPA queries are JPQL, which Hibernate validates at startup, and derived query methods (`findByHoldId`) are checked by Spring Data at startup, so neither needs a contract line. Aggregation pipelines are not followed: a stage after a `group` names computed fields.",
+        "The three Box Office modules with documents gained stored types blocks with this feature (ticketing-service 4, payment-service 1, messaging 2) and no `!` line: every one of their forty-odd field strings resolves, including `where(\"_id\")` on `PaymentDocument`, whose id property is `orderId`, and `Sort.by(\"_id\")` on the outbox. The example renames the one field that only strings read, so that the whole breakage is in the strings; a rename of `SeatDocument.label` would break the hold itself (every hold conflicts, which a test sees at once), while this one breaks only the retry.",
+        "The patch changes the Java of the module, so the runner compiles it with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+      ],
+      "source": null
     }
   ]
 }

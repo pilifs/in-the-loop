@@ -1,0 +1,19 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java
+index c3d1828..39a959d 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java
+@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
+  * A customer's claim on some seats until {@code expiresAt}. The seats themselves record whether the claim still
+  * stands; this document only remembers what was asked for and what it costs.
+  *
+- * @param idempotencyKey the client's {@code Idempotency-Key}, if it sent one
++ * @param requestKey the client's {@code Idempotency-Key}, if it sent one
+  */
+ @Document("holds")
+ public record HoldDocument(
+@@ -20,4 +20,4 @@ public record HoldDocument(
+         long amountCents,
+         Instant createdAt,
+         Instant expiresAt,
+-        String idempotencyKey) {}
++        String requestKey) {}

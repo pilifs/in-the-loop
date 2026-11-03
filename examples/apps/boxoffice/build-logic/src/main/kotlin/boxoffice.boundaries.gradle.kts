@@ -1,7 +1,8 @@
 // The module's boundary contract (src/contract/boundaries.contract): where Spring enters the module (routes,
 // listeners, schedules, bean definitions), the advice on each bean, the places where an annotation does not do
 // what it says, the configuration keys (what the classes read, what application.yaml sets, what the class path's
-// metadata declares) and the wire types (the JSON shape of each request, response and message). `check` fails
+// metadata declares), the wire types (the JSON shape of each request, response and message) and the stored types
+// (the shape of each Mongo document, with the query strings that name a field it does not have). `check` fails
 // when the compiled classes or the application files no longer match it, and
 // `updateBoundaries` rewrites it from the code. The verifier is jvmcontract, the Rust tool in lib/, which reads the
 // class files directly; the tasks are skipped when it is not on the PATH, so the build still works without it.

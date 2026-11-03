@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T05:30:21.012Z",
-  "duration_seconds": 219626,
+  "ended": "2026-11-03T06:03:50.099Z",
+  "duration_seconds": 221635,
   "stats": {
-    "turns": 181,
-    "api_calls": 1887,
-    "tool_calls": 2397,
-    "tool_errors": 50,
-    "compactions": 30,
+    "turns": 187,
+    "api_calls": 1947,
+    "tool_calls": 2454,
+    "tool_errors": 51,
+    "compactions": 31,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 56354,
-      "output_tokens": 4026289,
-      "cache_read_input_tokens": 352901372,
-      "cache_creation_input_tokens": 8811102
+      "input_tokens": 58068,
+      "output_tokens": 4123660,
+      "cache_read_input_tokens": 361617188,
+      "cache_creation_input_tokens": 9014149
     }
   },
   "tools": {
-    "Bash": 1901,
+    "Bash": 1956,
     "Edit": 199,
-    "Write": 181,
+    "Write": 182,
     "Read": 62,
-    "ToolSearch": 23,
+    "ToolSearch": 24,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 6
@@ -214,6 +214,7 @@
     "lib/src/relocate.rs",
     "lib/src/sarif.rs",
     "lib/src/statemachine.rs",
+    "lib/src/store.rs",
     "lib/src/tla.rs",
     "lib/src/trusted.rs",
     "lib/src/verifier.rs",
@@ -649,24 +650,38 @@
     {
       "index": 30,
       "started": "2026-11-03T05:03:39.714Z",
-      "ended": "2026-11-03T05:30:21.012Z",
-      "turns": 4,
-      "api_calls": 56,
+      "ended": "2026-11-03T05:38:31.378Z",
+      "turns": 6,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 1762,
-        "output_tokens": 106460,
-        "cache_read_input_tokens": 7473876,
-        "cache_creation_input_tokens": 190349
+        "input_tokens": 1962,
+        "output_tokens": 109733,
+        "cache_read_input_tokens": 9151660,
+        "cache_creation_input_tokens": 199913
       },
-      "peak_context_tokens": 205294
+      "peak_context_tokens": 214830
+    },
+    {
+      "index": 31,
+      "started": "2026-11-03T05:39:57.065Z",
+      "ended": "2026-11-03T06:03:50.099Z",
+      "turns": 4,
+      "api_calls": 52,
+      "usage": {
+        "input_tokens": 1514,
+        "output_tokens": 94098,
+        "cache_read_input_tokens": 7038032,
+        "cache_creation_input_tokens": 193483
+      },
+      "peak_context_tokens": 208398
     }
   ],
   "log": {
-    "sha256": "78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582",
-    "bytes": 71175166,
-    "lines": 26349,
-    "gzip_bytes": 12018700,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582.jsonl.gz"
+    "sha256": "6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f",
+    "bytes": 72881527,
+    "lines": 27040,
+    "gzip_bytes": 12325007,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1013,6 +1028,14 @@
       "summary": "Add the activation block to boundary contracts: what switches each kind of annotation on (an @Enable annotation on a configuration in scope, an auto-configuration whose conditions hold, a Bean Validation provider), with a ! line for a family nothing enables (verification pending)",
       "body": "A Spring annotation is read only by the interceptor some switch registers: @Scheduled needs @EnableScheduling, @Async @EnableAsync, @Cacheable @EnableCaching, @PreAuthorize @EnableMethodSecurity (@Secured and @RolesAllowed its securedEnabled and jsr250Enabled), @Retryable @EnableRetry, an @Aspect @EnableAspectJAutoProxy; @Transactional, @KafkaListener, @RabbitListener, @JmsListener and method validation are switched on by Spring Boot's auto-configuration when its conditions hold, @Timed, @Counted and @Observed by aspect beans the AspectJ weaver makes possible, @Valid by a Bean Validation provider on the class path. Without the switch the code compiles, the context starts and every test that does not depend on the advice passes, while the method is never scheduled, cached or secured. The new lib/src/activation.rs adds an activation block to the boundary contract, between the beans and the configuration keys: the header names the application class and the packages it scans, and each family the module uses is a line naming what enables it and how that configuration is reached (local, imported by the application class, scanned from a dependency, auto-configured), or 'nothing enables it' with a ! line naming the nearest miss: a class that carries the switch but is not a component, a configuration outside the scanned packages, or an auto-configuration whose @ConditionalOnClass or @ConditionalOnResource fails. The configurations in scope follow Spring's rules as far as class files show them: local components in the scanned packages (meta-annotations followed), class-path classes in those packages, the @Import closure, nested static configuration classes, and the auto-configurations every jar's META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports and spring.factories list minus the application's excludes, with @ConditionalOnClass, @ConditionalOnMissingClass, @ConditionalOnResource and @ConditionalOnWebApplication evaluated against the class path and the other conditions taken as met.\n\nVerified by the library's unit tests (84) and integration tests (29): the Spring fixtures gained an application class (fixtures/spring/App.java), an imported configuration, one outside the scanned package, a non-component class carrying @EnableKafka, and four fake auto-configurations shaped like Boot's (a nested @EnableTransactionManagement class, a @ConditionalOnClass that fails, a @ConditionalOnResource provider check, an aspect bean behind the AspectJ weaver), listed in the fixtures' AutoConfiguration.imports with a ValidationProvider service file. The four Box Office contracts were regenerated through Gradle: the ticketing service shows @Scheduled enabled by MessagingConfiguration imported from the messaging module, @KafkaListener by KafkaAnnotationDrivenConfiguration.EnableKafkaConfiguration auto-configured, and @Valid by Hibernate Validator 9.1.3 on the class path; no module gains a problem. Example 114 puts @Cacheable on TicketingStore.concert with no @EnableCaching in scope; the regenerated contract's new ! line was confirmed by hand through Gradle, and the pipeline run is job 20261103-052906-example-114-a-cacheable-on-the-concert-l. New defect tag inert-annotation. Docs: lib/README.md, examples/approaches.md, the verify-bytecode reference and the Box Office README.",
       "log_sha256": "78365d8c384e54a40bf6947dca8cdde7eb3b123be5b138b4c7f7cb11b6afd582"
+    },
+    {
+      "change_id": "mwlxwzpmmqylulqlwlrtosrnxtttrtuq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the stored types block to boundary contracts: the shape of each Spring Data MongoDB document as the mapper stores it, and a ! line for every query, update, index, sort, projection or @Query string that names a field the document does not have (verification pending)",
+      "body": "A Criteria.where(\"expiresAt\"), an Update.set(\"status\", ...), an Index().on(\"holdId\", ASC), a Sort.by(\"createdAt\") or a repository @Query(\"{ 'customerId': ?0 }\") names a field as a string, and nothing checks the string: the driver sends it to the database, which matches, writes, indexes or sorts by whatever field that is. A renamed record component leaves every query of it matching nothing and every test that goes through the same strings passing. The new module lib/src/store.rs renders each @Document class of the module as a 'stored' block (the @Id or the property named id as _id, a @Field rename as 'due: Instant (dueAt)', @Transient and transient fields left out, the superclass's fields first, each embedded local type as its own 'record, embedded' block) and, under the document, a ! line for every field-name string in the module's bytecode and annotations that names a field it does not have: Criteria.where/and, the Update write and remove operators, Index.on, Sort.by (varargs read back from the array the compiler builds), Sort.Order, the projection's include/exclude, a repository method's @Query value/sort/fields (parsed as the loose JSON Spring accepts, with the $ operators transparent) and a document's @CompoundIndex definition. A string may use the Java or the stored name of a property, _id or the id property's name, a dotted path through embedded types, collections and maps, with $ segments and array indices skipped; a path into a leaf type (a String, an Instant, an enum) is a problem too. The document a string is about is the one the method names (a class literal passed to the template, or a new of the document); a helper that names none takes its callers' documents, and a string with none in reach is checked against every document of the module. The nearest property is suggested when it is within a few edits. The stats line gained 'N stored types', the contract header comment mentions the block, and examples/tools/build.py reads the new count.\n\nVerified with the library's Spring fixtures: new stubs for Spring Data (Id, Transient, Version, Field, Indexed, CompoundIndex, Index, Sort, Criteria, Update, Query, Field, MongoTemplate, repository Query, MongoRepository), a TaskDocument with embedded records, a map, a @Field rename and a @Transient component, a class document CounterDocument with the implicit id and transient and static fields, a NotesStore with one wrong string of each kind (a where, an Update.set and unset, an Index.on, a Sort.by, a path through an embedded type, a path into a String, a helper with no document of its own, a method with none in reach) and a NoteRepository with a wrong @Query key; the integration test asserts each stored block, each ! line and the paths that must not be problems, and the contract diff shows a renamed stored field. 88 unit and 29 integration tests pass. The three Box Office modules with documents regenerated with stored blocks (ticketing-service 4, payment-service 1, messaging 2) and no new problem: every field string of the application resolves. Example 115 renames HoldDocument.idempotencyKey to requestKey, a one-file IDE rename that leaves the three strings in TicketingStore naming the old field, so the idempotent retry of POST /concerts/{id}/holds holds the seats twice; confirmed by hand through Gradle's verifyBoundaries (three new ! lines under HoldDocument, 3 problems), queued as job 20261103-060133-example-115-a-hold-s-idempotency-key-ren for the pipeline since it compiles the module with Gradle. New defect tag schema-drift; lib/README.md, examples/approaches.md, the Box Office README, the verify-bytecode reference and the Gradle plugin's comment describe the block.",
+      "log_sha256": "6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f"
     }
   ],
   "logs": {
@@ -1081,6 +1104,12 @@
       "lines": 2046,
       "gzip_bytes": 1501541,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc.jsonl.gz"
+    },
+    "6474e8bb227997ad678120d8d2b212da705a579e37c6fefd9204b5bac7d88b4f": {
+      "bytes": 72881527,
+      "lines": 27040,
+      "gzip_bytes": 12325007,
+      "url": null
     },
     "656db09662f1947525e0b6b1918766bf1eeb5c750f04d05f7e124bc74ed6123d": {
       "bytes": 41566829,

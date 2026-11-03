@@ -33,11 +33,13 @@ jvmcontract api CLASSES [--module NAME]
 # @Enable annotation on a configuration in scope, an auto-configuration whose conditions hold, a Bean Validation
 # provider on the class path), with a `!` line for a family nothing enables; the configuration keys (what the classes
 # read, what application.yaml under --resources sets, what the dependencies' metadata on --classpath declares), with
-# `!` lines for a key nothing binds, a deprecated key, a value of the wrong type; and the wire types: the JSON shape
+# `!` lines for a key nothing binds, a deprecated key, a value of the wrong type; the wire types: the JSON shape
 # of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing from
 # @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo, and for the Bean
 # Validation constraints: a nested type's constraints no @Valid leads into, a body taken without @Valid, a group a
-# @Valid or @Validated leaves out, a constraint on a type its validator cannot handle. No JBMC.
+# @Valid or @Validated leaves out, a constraint on a type its validator cannot handle; and the stored types: the
+# shape of each Spring Data MongoDB document under its stored names, with `!` lines for a query, update, index, sort,
+# projection or @Query string that names a field the document does not have. No JBMC.
 jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.
