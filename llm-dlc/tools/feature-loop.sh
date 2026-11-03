@@ -8,37 +8,93 @@
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine.
 #
-# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES]
+# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
-#   CYCLES    how many cycles to run; without it the loop runs until stopped
+#   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
+#   CYCLES    how many cycles to run at most; without it there is no limit
+#   UNTIL     instructions the session weighs after each commit to decide whether
+#             the loop goes on; a second argument that isn't a count is UNTIL
+#
+# A brief is fixed for the run: each cycle tells the session to read it again in
+# full, so it outlives every compact, and a brief that changes while the loop
+# runs stops it. Without UNTIL, a brief's own "## Loop until" section is UNTIL,
+# and with neither, nor CYCLES, the loop runs until the session decides the
+# brief is done.
+#
+# FEATURE_LOOP_SESSION=ID resumes another session instead of the usual one, and
+# FEATURE_LOOP_SESSION=new starts a fresh session that the run's cycles share.
+#
+# With UNTIL, each commit is followed by one more turn, before the compact, in
+# which the session applies UNTIL to what it has done and ends its reply with
+# "LOOP: continue" or "LOOP: stop". A stop ends the loop after that cycle like
+# running out of cycles does; a reply with neither stops it as needing attention.
 #
 # While it runs, the number of cycles left can be changed by typing in its
 # terminal (see HELP below): +N, -N, =N, inf, or 0 or stop to end after the
 # cycle under way. A cycle always finishes, commit and compact included.
 #
-# Exits 0 when the cycles run out, 1 when a cycle made no commit or the scope
-# cannot start, 2 for a bad argument, and 130 if interrupted.
+# Each run keeps a log in llm-dlc/loop-summaries/ (gitignored, never pushed): a
+# line per commit as it lands, so it survives a restart, and when the cycles run
+# out the session's own summary of the run, written for the person reading it.
+#
+# Exits 0 when the cycles run out or the session decides to stop, 1 when a cycle
+# made no commit, the session's decision was unclear, the brief changed or the
+# scope cannot start, 2 for a bad argument, and 130 if interrupted.
 
 set -uo pipefail
 
-SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
+SESSION_ID=${FEATURE_LOOP_SESSION:-360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb}
 MODEL=claude-fable-5-1
 EFFORT=high
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
 SCOPE=feature-loop
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring [CYCLES]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
-(( $# >= 1 && $# <= 2 )) || usage
+(( $# >= 1 && $# <= 3 )) || usage
 PROMPT=$1
-CYCLES=${2:-inf}
-[[ "$CYCLES" == inf || "$CYCLES" =~ ^[1-9][0-9]*$ ]] || usage
+CYCLES=inf
+UNTIL=
+is_count() { [[ "$1" == inf || "$1" =~ ^[1-9][0-9]*$ ]]; }
+if (( $# == 3 )); then
+  is_count "$2" && [[ -n "$3" ]] || usage
+  CYCLES=$2 UNTIL=$3
+elif (( $# == 2 )); then
+  if is_count "$2"; then CYCLES=$2; else UNTIL=$2; fi
+fi
+[[ -z "$UNTIL" || -n "${UNTIL//[[:space:]]/}" ]] || usage
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
+BRIEF=
 case "$PROMPT" in
+  *.md)
+    # Found from the caller's directory or the repo's, and named relative to the
+    # repo when it is inside it, which is where the loop runs.
+    if [[ -f "$PROMPT" ]]; then
+      BRIEF=$(realpath "$PROMPT")
+    elif [[ -f "$ROOT/$PROMPT" ]]; then
+      BRIEF=$(realpath "$ROOT/$PROMPT")
+    else
+      echo "feature-loop.sh: no brief at $PROMPT" >&2
+      exit 2
+    fi
+    # Without UNTIL, the text under the brief's "## Loop until" heading, up to
+    # the next heading, on one line.
+    if [[ -z "$UNTIL" ]]; then
+      UNTIL=$(awk '/^## / { inside = ($0 ~ /^## +Loop until[[:space:]]*$/); next } inside' "$BRIEF" |
+        tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//')
+    fi
+    [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
+    set -- "$BRIEF" "${@:2}"
+    PROMPT=$(basename "$BRIEF" .md)
+    if [[ -z "$UNTIL" && "$CYCLES" == inf ]]; then
+      UNTIL="Stop when everything the brief in $BRIEF asks for is done, or when what is left needs a person's decision first."
+    fi
+    ;;
   features)
     INSTRUCTION="Add more advanced features along with examples to the jvmcontract library."
     ;;
@@ -53,7 +109,7 @@ esac
 
 # Claude Code files a session under the directory it ran in, and the instruction
 # is meant for the root of the repo, so run there whatever the caller's directory.
-cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
+cd "$ROOT" || exit 1
 
 # log and show_progress
 source llm-dlc/tools/loop-common.sh
@@ -90,6 +146,44 @@ contain() {
     "$BASH" llm-dlc/tools/feature-loop.sh "$@"
 }
 contain "$@"
+
+# The run's record: what it was asked, a line per commit, and how it ended.
+SUMMARIES=llm-dlc/loop-summaries
+mkdir -p "$SUMMARIES" || exit 1
+SUMMARY=$SUMMARIES/$(date +%F-%H%M%S)-$PROMPT.md
+START=$(jj log --no-graph -r @- -T change_id) || exit 1
+
+# A fresh session gets its id here and is created by the first turn.
+FRESH=
+if [[ "$SESSION_ID" == new ]]; then
+  SESSION_ID=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
+  FRESH=1
+fi
+
+brief_hash() { sha256sum "$BRIEF" | cut -d' ' -f1; }
+if [[ -n "$BRIEF" ]]; then
+  BRIEF_HASH=$(brief_hash) || exit 1
+  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. Take the next piece of work it calls for that this run's earlier commits (\`jj log -r '$START..@-'\`) have not done, finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief; if it is wrong or out of date, say so in the commit message."
+fi
+{
+  echo "# Feature loop: $PROMPT"
+  echo
+  echo "Started $(date '+%F %T %Z'), ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, after change $START."
+  echo
+  echo "> $INSTRUCTION"
+  echo
+  [[ -n "$BRIEF" ]] && { echo "Brief \`$BRIEF\` at sha256 $BRIEF_HASH."; echo; }
+  if [[ -n "$UNTIL" ]]; then
+    echo "After each commit the session decides whether to go on:"
+    echo
+    echo "> $UNTIL"
+    echo
+  fi
+  echo "## Commits"
+  echo
+} >"$SUMMARY"
+note() { printf '%s\n' "$*" >>"$SUMMARY"; }
+log "keeping a record of this run in $SUMMARY"
 
 HELP='while it runs, type a command and Enter:
   +N / -N   run N more / N fewer cycles after this one (+ and - alone mean 1)
@@ -178,13 +272,78 @@ cleanup() {
   rm -f "$STATE" "$LOCK"
 }
 trap cleanup EXIT
-trap 'exit 130' INT TERM
+trap 'note; note "Interrupted $(date "+%F %T") during cycle $cycle."; exit 130' INT TERM
 
 # `auto` is the mode this session has always run in. With -p nobody can answer a
 # prompt, so anything auto mode would ask about is denied rather than left hanging.
+# A second argument names a file that receives the raw event stream as well.
 run_claude() {
-  claude -p "$1" --resume "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
-    --permission-mode auto --output-format stream-json --verbose </dev/null | show_progress
+  local session=(--resume "$SESSION_ID")
+  [[ -n "$FRESH" ]] && session=(--session-id "$SESSION_ID")
+  FRESH=
+  claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" \
+    --permission-mode auto --output-format stream-json --verbose </dev/null |
+    tee ${2:+"$2"} | show_progress
+}
+
+# Print the text of the last result event in a stream-json file.
+result_text() {
+  python3 -c '
+import json, sys
+text = None
+for line in open(sys.argv[1], encoding="utf-8"):
+    try:
+        e = json.loads(line)
+    except ValueError:
+        continue
+    if isinstance(e, dict) and e.get("type") == "result" and isinstance(e.get("result"), str):
+        text = e["result"]
+if text and text.strip():
+    print(text.strip())
+else:
+    sys.exit(1)
+' "$1"
+}
+
+# Ask the session for a summary of the run's commits and append it to the record.
+# It is only a report: it changes nothing, so it can't affect what a push publishes.
+summarize() {
+  local stream
+  stream=$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/feature-loop-summary.XXXXXX") || return 1
+  log "summarizing the run into $SUMMARY"
+  run_claude "The feature loop is ending after $cycle cycle(s). Summarize the work this run committed, the revisions that \`jj log -r '$START..@-'\` lists, for the user, who was not watching and will read it later. For each commit say what it adds and how it was verified; then list the verification jobs still pending or failed (\`python3 verification/pipeline.py status\` and \`report\`), the warnings \`python3 llm-dlc/tools/sync.py check\` reports that they must judge before pushing, the work deferred because it needs their input, such as credentials or a decision, with what each item needs, and anything else that needs their attention. Reply with the summary in Markdown and nothing else. This turn only reports: don't edit files, commit, push or submit jobs." "$stream" ||
+    log "summary: claude exited with status $?"
+  note
+  note "## Summary"
+  note
+  if ! result_text "$stream" >>"$SUMMARY"; then
+    note "No summary came back; the commits above are the record. Session $SESSION_ID has the details."
+    log "summary: no text came back"
+  fi
+  rm -f "$stream"
+}
+
+# With UNTIL: ask the session whether the loop goes on after this cycle's commit,
+# while it still has the cycle in context. Sets $decision to continue, stop or
+# unclear, and records the answer.
+decide() {
+  local stream answer verdict
+  stream=$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/feature-loop-decide.XXXXXX") || { decision=unclear; return; }
+  log "cycle $cycle: asking whether to go on"
+  run_claude "Cycle $cycle of the feature loop is committed. Before the next cycle starts, decide whether the loop should go on, by these instructions from the user: $UNTIL
+
+Weigh them against what this run has done so far (\`jj log -r '$START..@-'\` lists its commits) and what is left. Reply with two or three sentences on why, then a last line that is exactly \`LOOP: continue\` or \`LOOP: stop\`. This turn only decides: don't edit files, commit, push or submit jobs." "$stream" ||
+    log "cycle $cycle: decision turn exited with status $?"
+  answer=$(result_text "$stream") || answer=
+  rm -f "$stream"
+  verdict=$(printf '%s\n' "$answer" | awk 'NF { last = $0 } END { print last }' | tr -d '`*_ \t\r' | tr '[:upper:]' '[:lower:]')
+  case "$verdict" in
+    loop:continue) decision=continue ;;
+    loop:stop) decision=stop ;;
+    *) decision=unclear ;;
+  esac
+  log "cycle $cycle: the session says $decision"
+  note "  - decided to $decision: $(printf '%s' "$answer" | sed '/^[[:space:]`*_]*LOOP:/Id' | tr '\n' ' ' | sed 's/  */ /g; s/ *$//')"
 }
 
 # `sync.py commit` finishes @ and starts an empty change, so a commit moves @-.
@@ -207,6 +366,11 @@ with_state standing
 while :; do
   with_state next_cycle
   before=$(last_change) || exit 1
+  if [[ -n "$BRIEF" && "$(brief_hash)" != "$BRIEF_HASH" ]]; then
+    log "the brief $BRIEF changed during the run, stopping before cycle $cycle"
+    note; note "Stopped $(date '+%F %T'): the brief changed before cycle $cycle; restart the loop to work from the new one."
+    exit 1
+  fi
 
   log "cycle $cycle: $PROMPT instruction"
   with_state standing
@@ -216,16 +380,40 @@ while :; do
   after=$(last_change) || exit 1
   if [[ "$after" == "$before" ]]; then
     log "cycle $cycle: no commit, stopping; session $SESSION_ID needs attention"
+    note; note "Stopped $(date '+%F %T'): cycle $cycle made no commit; session $SESSION_ID needs attention."
     exit 1
   fi
   log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
+  note "- cycle $cycle, $(date '+%F %T'), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+
+  decision=continue
+  # The last cycle of a count ends the loop anyway, so there is nothing to decide.
+  if [[ -n "$UNTIL" ]]; then
+    read -r _ left <"$STATE"
+    [[ "$left" == 0 ]] || decide
+  fi
+  if [[ "$decision" == unclear ]]; then
+    log "cycle $cycle: no clear decision, stopping; session $SESSION_ID needs attention"
+    note; note "Stopped $(date '+%F %T'): after cycle $cycle the session gave no clear LOOP: continue or LOOP: stop; session $SESSION_ID needs attention."
+    exit 1
+  fi
 
   log "cycle $cycle: compact"
   run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
 
   read -r cycle remaining <"$STATE"
+  if [[ "$decision" == stop ]]; then
+    log "the session decided to stop: stopping after cycle $cycle"
+    summarize
+    note; note "Ended $(date '+%F %T') after $cycle cycle(s): the session decided the work was done."
+    log "record of the run: $SUMMARY"
+    exit 0
+  fi
   if [[ "$remaining" == 0 ]]; then
     log "no cycles left: stopping after cycle $cycle"
+    summarize
+    note; note "Ended $(date '+%F %T') after $cycle cycle(s)."
+    log "record of the run: $SUMMARY"
     exit 0
   fi
 done

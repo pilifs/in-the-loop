@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 17, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-03 14:26 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-03 14:27 UTC |
 | Prompts | 408 |
-| Model calls | 3,321 |
-| Tool calls | 4,198 (127 failed) |
+| Model calls | 3,323 |
+| Tool calls | 4,200 (127 failed) |
 | Compactions | 47 |
 | Subagents | 3 |
-| Tokens written | 6,473,981 |
-| Tokens read | 609,413,484 (97.6% from cache) |
-| Commits with a trace | 109 |
-| Log snapshots | 150 (434.7 MB gzipped, 118 uploaded) |
+| Tokens written | 6,474,781 |
+| Tokens read | 609,723,006 (97.6% from cache) |
+| Commits with a trace | 110 |
+| Log snapshots | 151 (439.7 MB gzipped, 118 uploaded) |
 
 ## Sessions
 
@@ -42,8 +42,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-03 04:08 UTC | [374d30d0-bacd-47e6-8f29-163603b6560f](374d30d0-bacd-47e6-8f29-163603b6560f/summary.md) | ended | 0 min | `claude-sonnet-5-5` | 1 | 9 | 8 | 1 | 0 | 35,481 | 0 |
 | 2026-11-03 13:35 UTC | [Sync.py review findings](52bfcdac-3587-46f2-b2cd-c49c2f7a5021/summary.md) | ended | 26 min | `claude-sonnet-5-5` | 6 | 15 | 11 | 3 | 0 | 56,166 | 1 |
 | 2026-11-03 13:40 UTC | [Verification pipeline job queue](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | ended | 37 min | `claude-sonnet-5-5` | 1 | 3 | 2 | 1 | 0 | 49,729 | 1 |
-| 2026-11-03 13:48 UTC | [sync.py redaction allow list](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | open | 27 min | `claude-opus-5-5` | 6 | 40 | 40 | 4 | 0 | 130,007 | 1 |
-| 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | open | 31 min | `claude-opus-5-5` | 5 | 49 | 46 | 2 | 0 | 153,174 | 1 |
+| 2026-11-03 13:48 UTC | [sync.py redaction allow list](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | open | 27 min | `claude-opus-5-5` | 6 | 40 | 40 | 4 | 0 | 130,007 | 2 |
+| 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | open | 33 min | `claude-opus-5-5` | 5 | 51 | 48 | 2 | 0 | 155,130 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -69,13 +69,13 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`52bfcdac`](52bfcdac-3587-46f2-b2cd-c49c2f7a5021/summary.md) | 2,534 | 36 | 28,489 | 739,976 | 96.3% | 303 |
 | [`bb39c22a`](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 453 | 6 | 20,191 | 126,090 | 86.2% | 323 |
 | [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 34,095 | 88 | 102,329 | 4,020,426 | 97.5% | 121 |
-| [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 46,232 | 106 | 119,934 | 5,210,608 | 97.7% | 115 |
+| [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 47,032 | 110 | 121,890 | 5,518,170 | 97.8% | 120 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 3,365 | 80.2% | 17 |
+| `Bash` | 3,367 | 80.2% | 17 |
 | `Edit` | 321 | 7.6% | 8 |
 | `Write` | 257 | 6.1% | 8 |
 | `Read` | 153 | 3.6% | 12 |
@@ -204,6 +204,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 107 | [`32ce0080`](https://github.com/pilifs/in-the-loop/commit/32ce00803797c0bd4b5fc8661a6af64ba5704703) | Make examples a router: one folder for every example, tags in three facets, a search, and per-example notes (verification pending) | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/6504b2b5c8a4c76068e065c0825a059c3940d7f16560ec8bb80bff2909056563.jsonl.gz)) |
 | 108 | [`d60616a8`](https://github.com/pilifs/in-the-loop/commit/d60616a87567e8dfc4b9ff26eec47352b4962b2d) | Record session traces | [`a308f9d3`](a308f9d3-8d8a-42ca-b074-d388818c2418/summary.md) ([log](https://terminalvalue.net/raw-traces/a308f9d3-8d8a-42ca-b074-d388818c2418/1f18a7e437882b09eff3f7ba23631a4e85e8e93da62a459288676b3b9ec7036d.jsonl.gz)) |
 | 109 | change `pvvynlxn` | Add an allow list for false-positive findings: an agent proposes a finding by id, a person approves it at a terminal, and check stops raising that value without a rescan | [`52bfcdac`](52bfcdac-3587-46f2-b2cd-c49c2f7a5021/summary.md) ([log](https://terminalvalue.net/raw-traces/52bfcdac-3587-46f2-b2cd-c49c2f7a5021/02ff4afea47f43143af218693e092755ac078fc813b5a22110ffe3fb04a8190b.jsonl.gz)), [`bb39c22a`](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) ([log](https://terminalvalue.net/raw-traces/bb39c22a-5d6e-48b2-af0a-45d8b973d822/ca92bc66a8c77d43720e0cc46814fa3d6e585e58c2d92ace81fa356be1ada00e.jsonl.gz)), [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) ([log](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)), [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) ([log](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/25e4c41e4dcb79e336fcd0b1da3d8e468a4f8559738bea84b4407af0e0b76b45.jsonl.gz)) |
+| 110 | change `ollyzntm` | Feature loop: keep a record of each run with the session's closing summary, let the session decide when to stop by instructions given on the command line or in a brief, and work from markdown briefs, starting with one to make sync.py fast | [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) ([log](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz)), [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) ([log](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/7c0df4e6d7baac5a82353f223d347b0413c25e9308853e2529ccaa90f81a8732.jsonl.gz)) |
 
 ## Logs
 
@@ -227,7 +228,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`52bfcdac`](52bfcdac-3587-46f2-b2cd-c49c2f7a5021/summary.md) | 1 | 0 | 0.1 MB | `02ff4afea47f`, not uploaded |
 | [`bb39c22a`](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 1 | 0 | 0.1 MB | `ca92bc66a8c7`, not uploaded |
 | [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 1 | 0 | 0.2 MB | `d3cacab877c8`, not uploaded |
-| [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 1 | 0 | 5.0 MB | `25e4c41e4dcb`, not uploaded |
+| [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 2 | 0 | 10.0 MB | `7c0df4e6d7ba`, not uploaded |
 
 ## Session notes
 
