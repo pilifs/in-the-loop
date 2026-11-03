@@ -62,6 +62,20 @@ enum Command {
         #[arg(long, default_value = "module")]
         module: String,
     },
+    /// Print the boundary contract of a module: where the framework enters it (routes, listeners, schedules, bean
+    /// definitions), the advice on each bean (transactions, security, validation, caching, retries), and the places
+    /// where an annotation does not do what it says, from the annotations in the compiled classes.
+    Boundaries {
+        /// Directories of classes or jars of the module.
+        #[arg(required = true)]
+        paths: Vec<PathBuf>,
+        /// Print JSON instead of the contract text.
+        #[arg(long)]
+        json: bool,
+        /// The module name for the contract header.
+        #[arg(long, default_value = "module")]
+        module: String,
+    },
     /// Turn a behavioural contract into a TLA+ operator, for a model checked by TLC.
     Tla {
         /// The contract file (`OrderLifecycle.decide.contract`).
@@ -170,7 +184,7 @@ struct ContractArgs {
     /// The module name, for the capability and API contract headers.
     #[arg(long, default_value = "module")]
     module: String,
-    /// A target to add: `pkg.Class#method`, `capabilities`, or `api` (repeatable).
+    /// A target to add: `pkg.Class#method`, `capabilities`, `api`, or `boundaries` (repeatable).
     #[arg(long = "add")]
     add: Vec<String>,
     /// Report the execution cost of each derivation.
@@ -478,6 +492,20 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             let surface = jvmcontract::api::analyse(&cp)?;
             print!("{}", surface.render(&module));
+            Ok(0)
+        }
+        Command::Boundaries { paths, json, module } => {
+            let mut cp = ClassPath::new();
+            for p in &paths {
+                cp.add(p)?;
+            }
+            let cp = cp.with_default_jdk();
+            let boundaries = jvmcontract::boundaries::analyse(&cp)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&boundaries).expect("serializable"));
+            } else {
+                print!("{}", boundaries.render(&module));
+            }
             Ok(0)
         }
         Command::Tla { contract, output, module, operator } => {

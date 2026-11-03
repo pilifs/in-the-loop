@@ -19,6 +19,7 @@ Approaches (the ids are those of examples/approaches.md):
   B9   regression verification: old and new bytecode compared symbolically  (equivalence; JBMC)
   B10  capability contracts: what a module's bytecode can reach             (verify)
   B11  property proofs: a stated property of one method, on every input     (prove; JBMC)
+  B12  boundary contracts: a Spring Boot module's routes, listeners, schedules, advice and the places advice does not apply (verify)
   D1   protocol model checking: the system in TLA+, driven by a contract    (spec; TLC)
 
 Four subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
@@ -277,6 +278,47 @@ def run_contracts(folder, example, tmp, module, result):
         "verified": f"{VERDICT_LABEL[verdict]}: all {cases} cases match",
         "unverifiable": VERDICT_LABEL[verdict],
     }[verdict]
+
+
+def run_boundaries(folder, example, tmp, module, result):
+    """B12 on a Box Office module: the patched copy compiled by Gradle, then `jvmcontract verify` over the module's
+    contracts directory, where the boundary contract lives. The verifier is the Rust tool, not the Gradle build's."""
+    build = tmp / BUILD_ROOT
+    gradle(build, f":{module}:compileJava")
+    classes = build / module / "build/classes/java/main"
+    contracts = build / module / "src/contract"
+    report = build / module / "build/reports/contracts"
+    anchor = ["--sources", str(build / module / "src/main/java"), "--base", str(tmp), "--report", str(report)]
+    if example["change"]["behaviourChangeIntended"]:
+        old = {f.name: f.read_text() for f in contracts.glob("*.contract")}
+        proc = subprocess.run([jvmcontract(), "update", "--contracts", str(contracts), "--classes", str(classes),
+                               "--module", module, "--add", "boundaries"], text=True, capture_output=True)
+        if proc.returncode != 0:
+            sys.exit(f"jvmcontract update failed:\n{proc.stdout}{proc.stderr}")
+        result["contractDiff"] = "".join(
+            "".join(difflib.unified_diff(
+                old.get(f.name, "").splitlines(True), f.read_text().splitlines(True),
+                f"a/{BUILD_ROOT}/{module}/src/contract/{f.name}", f"b/{BUILD_ROOT}/{module}/src/contract/{f.name}"))
+            for f in sorted(contracts.glob("*.contract")))
+    proc = subprocess.run([jvmcontract(), "verify", "--contracts", str(contracts), "--classes", str(classes),
+                           "--module", module, *anchor], text=True, capture_output=True)
+    output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
+    if proc.returncode == 2:
+        sys.exit(f"jvmcontract failed:\n{output}")
+    write_evidence(folder, output, report / "contracts.sarif")
+    verdict = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+    changes = boundary_changes(output)
+    m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) problems\)", output)
+    result.update({
+        "verdict": verdict,
+        "counterexamples": changes,
+        "domain": f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, {m.group(4)} problems" if m else None,
+        "verdictLabel": {
+            "violation": f"{VERDICT_LABEL[verdict]}: {len(changes)} boundary change{'s' if len(changes) != 1 else ''}",
+            "verified": f"{VERDICT_LABEL[verdict]}: boundaries unchanged",
+            "unverifiable": VERDICT_LABEL[verdict],
+        }[verdict],
+    })
 
 
 def run_equivalence(folder, example, tmp, module, result):
@@ -1287,7 +1329,7 @@ def run_tool_tlc(folder, example, root, module, result):
 TOOL_RUNNERS = {"B8": run_tool_contracts, "B9": run_tool_equivalence, "B10": run_tool_contracts,
                 "B11": run_tool_property, "D1": run_tool_tlc}
 RUNNERS = {
-    "boxoffice": {"B8": run_contracts, "B9": run_equivalence, "B10": run_contracts, "D1": run_tlc},
+    "boxoffice": {"B8": run_contracts, "B9": run_equivalence, "B10": run_contracts, "B12": run_boundaries, "D1": run_tlc},
     **{app: TOOL_RUNNERS for app in TOOL_APPS},
 }
 
@@ -1392,6 +1434,16 @@ def capability_changes(output):
         kind, capability, use = m.groups()
         found.append({"input": capability, "contract": None if kind == "added" else use,
                       "actual": use if kind == "added" else None})
+    return found
+
+
+def boundary_changes(output):
+    """Added and removed boundary entries (B12), as counterexample rows: the bean and member are the input."""
+    found = []
+    for m in re.finditer(r"^  (added|removed) ([^:\n]+): (.*)$", output, re.M):
+        kind, bean, entry = m.groups()
+        found.append({"input": bean, "contract": None if kind == "added" else entry,
+                      "actual": entry if kind == "added" else None})
     return found
 
 
@@ -1658,6 +1710,32 @@ def findings_capabilities(ex, res):
     return out
 
 
+def findings_boundaries(ex, res):
+    if res["verdict"] == "violation":
+        out = [
+            f"The module's boundaries differ from their contract in {len(res['counterexamples'])} "
+            f"line{'s' if len(res['counterexamples']) != 1 else ''}:",
+            "",
+            "| Bean | The contract has | The bytecode now has |",
+            "|---|---|---|",
+        ]
+        for c in res["counterexamples"]:
+            out.append(f"| {code(c['input'])} | {code(c['contract']) if c['contract'] else '*(nothing)*'} "
+                       f"| {code(c['actual']) if c['actual'] else '*(removed)*'} |")
+        out += ["", "A line is a route, listener, schedule, bean definition or configuration key, the advice on a "
+                    "member, or a `!` line where an annotation does not do what it says; a member's line changes "
+                    "with its signature and parameter annotations."]
+        return out
+    if res["verdict"] == "unverifiable":
+        return ["The verifier refused to produce a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
+    out = [f"The boundary contract is unchanged: the module ({res['domain']}) has exactly the entry points, advice "
+           "and problems it had before."]
+    if res["contractDiff"]:
+        out += ["", "Because the change was intended, the developer regenerated the contract. This diff is what the "
+                    "reviewer approves:", "", "```diff", res["contractDiff"].rstrip("\n"), "```"]
+    return out
+
+
 def findings_property(ex, res):
     prop = res.get("property") or {}
     assume = prop.get("assume")
@@ -1864,7 +1942,7 @@ def coverage_lines(res):
     return out
 
 
-FINDINGS = {"B8": findings_contracts, "B9": findings_equivalence, "B10": findings_capabilities,
+FINDINGS = {"B8": findings_contracts, "B9": findings_equivalence, "B10": findings_capabilities, "B12": findings_boundaries,
             "B11": findings_property, "D1": findings_tlc}
 
 
@@ -1930,7 +2008,7 @@ def render_index(folders):
             by_tag.setdefault(t, []).append((ex["id"], folder.name))
     tag_lines = ["#### Approach: which verifier", ""]
     names = {"B8": "Behavioural contracts", "B9": "Regression verification", "B10": "Capability contracts",
-             "B11": "Property proofs", "D1": "Protocol model checking"}
+             "B11": "Property proofs", "B12": "Boundary contracts", "D1": "Protocol model checking"}
     for approach, name in names.items():
         members = [(ex["id"], folder.name) for folder, ex, _ in examples
                    if approach in [ex["approach"]["id"], *ex["approach"].get("also", [])]]

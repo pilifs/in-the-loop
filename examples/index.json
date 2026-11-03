@@ -4270,11 +4270,51 @@
       "vacuous": false,
       "existingTestsPassed": null,
       "notes": [
-        "Needs the charset models (`libs/java-models-library`) and the cache models (`lib/jbmc-models`) on `--classpath`; before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, put them there.",
+        "The run recorded here needed the charset models (then a fork of the CProver models library) and the cache models on `--classpath` by hand; both now ship with jvmcontract (`lib/models`, `jvmcontract models`) and go on JBMC's class path by themselves, with a `Character.digit` model generated from the JDK's table that the old version's regression proof lacked. Before concluding anything from a violation in a class that reads a JDK class JBMC has no model of, check the trace for the stub and add a model.",
         "A commit rather than a pull request: the commit and its parent were checked out into two worktrees and the skill's proofs run by hand.",
         "Next in Commons Codec: `MurmurHash3` and `PureJavaCrc32`, whose classes read no charsets."
       ],
       "source": "https://github.com/apache/commons-codec/commit/43a9aa663c1b10b32a7cc6bbc1eccc10bba5f9be"
+    },
+    {
+      "id": "110",
+      "path": "examples/110-idempotency-key-header-drops-request-validation",
+      "title": "An Idempotency-Key header added to POST /orders drops the request body's validation on the way",
+      "summary": "Clients already send an `Idempotency-Key` on `POST /concerts/{id}/holds`, so a developer makes `POST /orders` accept the same header, writing the handler's new parameter list by hand. The `@Valid` on the request body does not survive the edit. Every test passes: they post well-formed orders. The module's boundary contract, the routes and the advice on each read from the compiled classes, shows the `POST /orders` line changing from a validated body to an unvalidated one, next to the header that was added.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.ticketing.api.OrderController#place",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot",
+          "payments"
+        ],
+        "defect": [
+          "security-boundary",
+          "dropped-case"
+        ],
+        "technique": []
+      },
+      "categories": [
+        "security",
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of approach B12, the boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): where Spring enters a module and the advice on each bean, from the annotations in the class files. The three Box Office modules with Spring annotations carry theirs in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the PATH (`verifyBoundaries`, `updateBoundaries`).",
+        "Box Office keeps its transactions programmatic (`Transactions`), so none of the contract's `!` lines (self-invocation of a `@Transactional` method, advice on a private or final method, a checked exception that commits, a lost `@Async` result) occur here; the library's Spring fixtures (`lib/tests/fixtures/spring`) have one of each. An example of a `@Transactional` self-invocation needs a service with `@Transactional` beans: a candidate for Crosscut's framework glue, which the kernels there deliberately leave out.",
+        "The runner (`build.py`, `run_boundaries`) compiles the patched module with Gradle and runs `jvmcontract verify` over its `src/contract` directory; it does not use the Gradle build's own `verifyBoundaries` task, so it works without the tool on the PATH of the Gradle daemon. The existing tests are the module's Spring Boot tests, which need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+      ],
+      "source": null
     }
   ]
 }

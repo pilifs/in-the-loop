@@ -28,6 +28,7 @@ pub const RULES: &[(&str, &str)] = &[
     ("unverifiable", "The method cannot be verified: it is not pure, or its inputs are not finite."),
     ("capability-changed", "The module's bytecode reaches a capability, or a library, that its contract does not list."),
     ("api-changed", "The module's public API differs from its contract."),
+    ("boundaries-changed", "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."),
     ("property-violated", "An input exists on which the method violates its stated property."),
     ("invariant-violated", "The model checker found a behaviour of the model that violates an invariant."),
 ];

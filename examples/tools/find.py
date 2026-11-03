@@ -54,7 +54,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument("query", nargs="*", help="words to look for")
     p.add_argument("--tag", action="append", default=[], help="a tag from examples/tags.json; repeatable, all must match")
-    p.add_argument("--approach", action="append", default=[], help="B8 B9 B10 B11 D1; repeatable, any may match")
+    p.add_argument("--approach", action="append", default=[], help="B8 B9 B10 B11 B12 D1; repeatable, any may match")
     p.add_argument("--system", help="Box Office, Quorum, Crosscut, Mica, or a library's name (substring)")
     p.add_argument("--origin", choices=["constructed", "real-world"])
     p.add_argument("--verdict", choices=["violation", "verified", "unverifiable"])

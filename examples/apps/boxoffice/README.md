@@ -87,6 +87,7 @@ Placing an order, step by step:
 
 These are the properties the verification scenarios target. `system-tests` checks the safety properties at quiescence after every test, and `OrderLifecycleTest` model-checks the state machine for every input sequence up to six inputs long.
 `OrderLifecycle#decide` also has a [behavioural contract](ticketing-domain/src/contract/OrderLifecycle.decide.contract), which `./gradlew check` verifies against the bytecode ([`examples/tools/contracts`](../../tools/contracts/README.md)), and the `contracts` and `ticketing-domain` modules have [capability contracts](contracts/src/contract/capabilities.contract) that say what their bytecode can reach.
+The three modules that carry Spring annotations have [boundary contracts](ticketing-service/src/contract/boundaries.contract) ([payment-service](payment-service/src/contract/boundaries.contract), [messaging](messaging/src/contract/boundaries.contract)): every route, Kafka listener, scheduled job, bean definition and configuration key, with the validation and other advice on each, read from the compiled classes by [`jvmcontract`](../../../lib/README.md#how-a-boundary-contract-is-checked), the Rust tool, and checked by `./gradlew check` when it is on the `PATH` (`updateBoundaries` rewrites them).
 The safety invariants below are also checked over every interleaving of the two services, Kafka and the clock by the TLA+ model in [`spec/`](spec/README.md).
 
 **Safety**

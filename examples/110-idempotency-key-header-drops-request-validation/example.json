@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "110",
+  "title": "An Idempotency-Key header added to POST /orders drops the request body's validation on the way",
+  "summary": "Clients already send an `Idempotency-Key` on `POST /concerts/{id}/holds`, so a developer makes `POST /orders` accept the same header, writing the handler's new parameter list by hand. The `@Valid` on the request body does not survive the edit. Every test passes: they post well-formed orders. The module's boundary contract, the routes and the advice on each read from the compiled classes, shows the `POST /orders` line changing from a validated body to an unvalidated one, next to the header that was added.",
+  "origin": "constructed",
+  "categories": [
+    "security",
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "payments",
+    "security-boundary",
+    "dropped-case"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.api.OrderController#place"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": false,
+    "description": "Accept an `Idempotency-Key` header on `POST /orders`, as `POST /concerts/{id}/holds` does, so that clients can send it on every POST. An order is already idempotent per hold, so the handler takes the header and does nothing with it. The parameter list is written out again with the header first, as in the hold handler.",
+    "patch": "change.patch"
+  },
+  "risk": "`@Valid` is the only thing that makes Spring run Bean Validation on a request body. Without it, `@NotBlank` on `PlaceOrder.holdId` and `paymentToken` is decoration: a body with a blank hold id reaches `OrderService.place`, which looks the hold up and answers 404 instead of 400, and a blank payment token reaches the payment command that goes out over Kafka, where the payment service rejects it asynchronously and the order ends `DECLINED` after a round trip through two services. The MockMvc tests post valid bodies and pass; a test for the blank case would catch it, and nobody writes one for a change that only adds a header. The annotation that was lost is not in the code's control flow, so no test that exercises the code notices.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The boundary contract of `ticketing-service` has one line per handler: `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)`. The tool reads the `RUNTIME` annotations of every parameter from the class file, so the handler's line is its route and its guards, and after the change the line reads `place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)`: the header appears, and `@Valid` does not. `verify` reports the old line removed and the new one added, which is two boundary changes and a failed build. A reviewer who reads the diff sees the header arrive and the validation leave in the same line, and the fix is one annotation. The contract is complete over the module's annotations by construction, so the same diff would show a route widened, a `@PreAuthorize` dropped or a scheduled job added, with no test written for any of them.",
+  "resolution": "Put `@Valid` back on the body (`@Valid @RequestBody PlaceOrder request`), and regenerate the contract so that it records the header: the diff a reviewer then approves is one added parameter on one route. For a service with many handlers, the same contract lists each `@Valid` next to its route, so the review question \"is every request body validated?\" is answered by reading one file.",
+  "notes": [
+    "The first example of approach B12, the boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): where Spring enters a module and the advice on each bean, from the annotations in the class files. The three Box Office modules with Spring annotations carry theirs in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the PATH (`verifyBoundaries`, `updateBoundaries`).",
+    "Box Office keeps its transactions programmatic (`Transactions`), so none of the contract's `!` lines (self-invocation of a `@Transactional` method, advice on a private or final method, a checked exception that commits, a lost `@Async` result) occur here; the library's Spring fixtures (`lib/tests/fixtures/spring`) have one of each. An example of a `@Transactional` self-invocation needs a service with `@Transactional` beans: a candidate for Crosscut's framework glue, which the kernels there deliberately leave out.",
+    "The runner (`build.py`, `run_boundaries`) compiles the patched module with Gradle and runs `jvmcontract verify` over its `src/contract` directory; it does not use the Gradle build's own `verifyBoundaries` task, so it works without the tool on the PATH of the Gradle daemon. The existing tests are the module's Spring Boot tests, which need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+  ],
+  "provenance": "Constructed from the most common way Bean Validation is lost in a Spring MVC controller: a handler signature rewritten by hand, with the body's `@Valid` left out, which no test notices because tests post valid bodies."
+}

@@ -27,6 +27,10 @@ jvmcontract derive T --classes CLASSES [--classpath ...] [--json]
 jvmcontract capabilities CLASSES [--module NAME] [--json]
 jvmcontract capabilities --each lib/*.jar          # one contract per jar, for a dependency change
 jvmcontract api CLASSES [--module NAME]
+# A Spring Boot module's boundaries: routes, listeners, schedules, bean definitions, configuration keys, the advice on
+# each bean, and `!` lines where an annotation does not do what it says (self-invocation, advice the proxy cannot
+# intercept, a checked exception that commits, a lost @Async result, constraints never enforced). No JBMC.
+jvmcontract boundaries CLASSES [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.
 jvmcontract inspect path/to/Class.class [--code]
@@ -42,7 +46,7 @@ Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`
 |---|---|---|---|
 | `equivalence`, `prove` | `static` | primitives, and arrays of `int`, `long`, `short`, `byte`, `char`, `boolean` (never `null`, every length up to `--max-array-length`); `float`/`double` scalars are fine, `double[]` is not | `jbmc`; a JDK (the tool reads `java.lang.Math`, `StrictMath`, `Integer`, `Long`, `Short`, `Byte` and declared exception classes from the JDK image) |
 | `derive` | static, or an instance method of an enum, record or sealed type | enums, booleans, records and sealed interfaces of those (each reference parameter also takes `null`); must be pure | nothing |
-| `capabilities`, `api` | a module | | nothing |
+| `capabilities`, `api`, `boundaries` | a module | | nothing (`boundaries` reads the class path and the JDK image for the exception hierarchy) |
 
 Refusals you will see, and what they mean:
 

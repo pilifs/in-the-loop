@@ -203,6 +203,33 @@ amount split `n` ways add up to the amount" with `floorDiv` inside a loop, which
 Properties of that kind need an SMT backend or a deductive prover (level A), and are better stated as laws the
 solver can check without reasoning about division.
 
+### B12. Boundary contracts (in [`lib/`](../lib/README.md#how-a-boundary-contract-is-checked))
+
+The lockfile idea applied to the part of a Spring Boot service that is not in its control flow. The framework
+enters a service through annotations (`@PostMapping`, `@KafkaListener`, `@Scheduled`, `@EventListener`, `@Bean`,
+`@ConfigurationProperties`), and what it promises to do around each entry is an annotation too (`@Transactional`,
+`@PreAuthorize`, `@Valid`, `@Cacheable`, `@Async`, `@Retryable`), applied by a proxy in front of the bean. No unit
+test exercises a proxy, so a dropped guard, a widened route, a changed rollback rule or a new scheduled job is
+invisible until production. The tool reads the `RUNTIME` annotations from the class files and writes them out as one
+contract per module: a block per bean, a line per entry point with its route composed from the class and method
+mappings, the handler's signature with its parameter annotations, and the advice on it, checked in and diffed on
+every build like the other contracts.
+
+The same reading finds where an annotation does not do what it says, which is the class of Spring bug that expert
+developers know by name and still ship: a `@Transactional` or `@PreAuthorize` method called on `this` from the same
+bean (the call never reaches the proxy; found by a walk back over the bytecode to the receiver, lambdas included),
+advice on a private, static or final method or a final class (the CGLIB proxy cannot intercept it), a `@Transactional`
+method whose declared checked exception commits (Spring rolls back on unchecked exceptions only, unless `rollbackFor`
+names it), an `@Async` method whose non-`Future` result is lost, a `@Cacheable` method returning nothing, and
+constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean. Each is a
+`!` line in the contract, so introducing one changes the contract and the pull request shows it. The three Box Office
+modules with Spring annotations carry their contracts in `src/contract/boundaries.contract`, checked by
+`./gradlew check` when `jvmcontract` is on the `PATH`.
+
+What this is not: a static analyser's rule set. The contract is complete over the module's annotations by
+construction, the checks are closed-world facts about the bytecode (the receiver is `this`, the method is private,
+the exception is checked), and a reviewer reads the diff, not a list of warnings.
+
 ### B6. Proof-carrying bytecode (outside the box)
 
 The JVM's own bytecode verifier is already a proof checker: `StackMapTable` frames are type certificates.

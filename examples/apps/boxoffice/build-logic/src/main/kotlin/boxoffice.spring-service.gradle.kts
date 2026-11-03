@@ -1,6 +1,7 @@
 // A deployable Spring Boot service.
 plugins {
     id("boxoffice.java-conventions")
+    id("boxoffice.boundaries")
     id("org.springframework.boot")
 }
 

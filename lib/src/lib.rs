@@ -23,6 +23,7 @@
 
 pub mod api;
 pub mod bmc;
+pub mod boundaries;
 pub mod capabilities;
 pub mod classfile;
 pub mod classpath;

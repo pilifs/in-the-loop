@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 use jvmcontract::classpath::ClassPath;
 use jvmcontract::contract::Contract;
 use jvmcontract::verifier::{self, ContractsRun, Verifier};
-use jvmcontract::{capabilities, equivalence, property, tla, Verdict};
+use jvmcontract::{boundaries, capabilities, equivalence, property, tla, Verdict};
 
 fn has(program: &str) -> bool {
     let found = Command::new(program).arg("--version").output().map(|o| o.status.success()).unwrap_or(false);
@@ -67,6 +67,16 @@ fn fixtures() -> Option<&'static Path> {
     DIR.get_or_init(|| {
         let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/java");
         compile("fixtures", &java_files(&src))
+    })
+    .as_deref()
+}
+
+/// The Spring fixtures: stand-ins for the framework's annotation types, and beans that use them.
+fn spring_fixtures() -> Option<&'static Path> {
+    static DIR: OnceLock<Option<PathBuf>> = OnceLock::new();
+    DIR.get_or_init(|| {
+        let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring");
+        compile("spring", &java_files(&src))
     })
     .as_deref()
 }
@@ -1002,4 +1012,80 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
     let proved = run(&tier, Some("seats >= 6"), Engine::Native, "tier");
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
     assert_eq!(run(&tier, None, Engine::Native, "tier-unscoped").verdict, Verdict::Violation);
+}
+
+#[test]
+fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply() {
+    let Some(dir) = spring_fixtures() else { return };
+    let found = boundaries::analyse(&classpath(dir)).unwrap();
+    let text = found.render("spring");
+    let has = |line: &str| assert!(text.contains(line), "expected {line:?} in:\n{text}");
+
+    // Routes compose the class prefix, the verb and the conditions; the guards are their own lines.
+    has("fixtures.spring.OrdersController: @RestController @RequestMapping(\"/orders\")");
+    has("  POST /orders (consumes application/json) => Order place(@Valid @RequestBody Order request)");
+    has("  GET /orders/{id} => Order get(@PathVariable String id, @RequestParam(required = false) @Min(1) Integer version)");
+    has("  DELETE /orders/{id} => void purge(@PathVariable String id)\n    @PreAuthorize(\"hasRole('ADMIN')\")");
+    has("  GET /orders/count, GET /orders/total, HEAD /orders/count, HEAD /orders/total => int count()");
+    assert!(!text.contains("describe"), "a method without framework annotations is not a boundary");
+    // Schedules, bean definitions and configuration keys.
+    has("  @Scheduled(fixedDelayString = \"${orders.sweep:1s}\") => void sweep()");
+    has("fixtures.spring.HoldSettings: @ConfigurationProperties(\"holds\")\n  holds.max-seats: int\n  holds.ttl: Duration");
+    has("  @Value(\"${orders.limit:5}\") int limit");
+    // The places where the advice does not apply.
+    has("  Order place(String holdId)\n    @Transactional\n    ! self-invocation from audited(String)");
+    has("    ! self-invocation from placeAll(String, int): the call does not go through the proxy, so @Transactional does not apply to it");
+    has("    ! self-invocation from a lambda in placeAll(String, int)");
+    has("    ! commits on IOException: a checked exception is not a rollback cause unless rollbackFor names it");
+    assert!(!text.contains("self-invocation from delegate"), "a call on another instance goes through its proxy");
+    has("  void audited(String holdId)\n    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = java.io.IOException.class)\n  void named");
+    has("    @Transactional(rollbackForClassName = \"IOException\")\n    ! commits on InterruptedException");
+    has("    ! @Transactional on a private method: the proxy cannot intercept it");
+    has("    ! @Transactional on a static method: the proxy cannot intercept it");
+    has("    ! @Transactional on a method of a final class: the CGLIB proxy cannot subclass it");
+    has("    ! @Async returns Order: a result that is not a Future is lost, the caller gets null");
+    has("  CompletableFuture<Order> computeLater(String id)\n    @Async\n  void warm()");
+    has("    ! @Cacheable on a void method caches nothing");
+    has("    ! @Scheduled method takes parameters: the scheduler cannot call it");
+    has("    ! constraints on seats are not enforced: the method is not a request handler and the class is not @Validated");
+    // Class-level advice applies to every public instance method, and @Validated enforces the constraints.
+    has("fixtures.spring.Quotas: @Service @Validated @Transactional(readOnly = true)\n  int remaining(@Positive int tenant)\n    ! self-invocation from refill(int)");
+    has("  int refill(int tenant)\n\n");
+    assert!(!text.contains("constraints on tenant"), "@Validated enforces the constraints");
+    assert!(!text.contains("helper"), "a static method is not under the class's advice");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.problems()), (5, 6, 13, 15), "{text}");
+
+    // The file reads back as exactly the entries it was written from.
+    assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
+
+    // As a contract: written by `update`, checked by `verify`, and a dropped guard is a violation anchored to the handler.
+    let contracts = target_tmp().join("contracts-boundaries");
+    let _ = std::fs::remove_dir_all(&contracts);
+    let mut run = ContractsRun::new(&contracts);
+    run.classes = vec![dir.to_path_buf()];
+    run.sources = vec![Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring")];
+    run.base = Path::new(env!("CARGO_MANIFEST_DIR")).to_path_buf();
+    run.module = "spring".into();
+    run.add = vec!["boundaries".into()];
+    run.update = true;
+    let outcome = verifier::run(&run).unwrap();
+    assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
+    let file = contracts.join("boundaries.contract");
+    assert_eq!(std::fs::read_to_string(&file).unwrap(), text);
+
+    run.update = false;
+    run.add.clear();
+    let outcome = verifier::run(&run).unwrap();
+    assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (5 beans, 6 entry points, 13 advised methods, 15 problems)"), "{}", outcome.output);
+
+    let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "");
+    std::fs::write(&file, edited).unwrap();
+    let outcome = verifier::run(&run).unwrap();
+    assert_eq!(outcome.exit_code, 1, "{}", outcome.output);
+    assert!(outcome.output.contains("  added fixtures.spring.OrderService: void warm(): ! @Cacheable on a void method caches nothing"), "{}", outcome.output);
+    assert!(outcome.output.contains("  added fixtures.spring.OrdersController: DELETE /orders/{id} => void purge(@PathVariable String id): @PreAuthorize(\"hasRole('ADMIN')\")"), "{}", outcome.output);
+    let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
+    assert_eq!(finding.uri.as_deref(), Some("tests/fixtures/spring/fixtures/spring/OrderService.java"));
+    assert!(finding.line > 1, "anchored to the member's line, found {}", finding.line);
 }

@@ -4,13 +4,16 @@
 //! analyses can inspect sealed hierarchies (`PermittedSubclasses`), records (`Record`), bootstrap methods
 //! (`BootstrapMethods`), line numbers, parameter names and inner-class relations without a JVM.
 
+pub mod annotations;
 pub mod bytecode;
 pub mod describe;
 pub mod descriptor;
+pub mod signature;
 pub mod writer;
 
 use std::fmt;
 
+pub use annotations::{Annotation, ElementValue};
 pub use bytecode::{ArithOp, ArrayKind, CmpOp, Cond, Insn, Kind, Narrow};
 pub use describe::describe;
 pub use descriptor::{MethodDescriptor, Type};
@@ -892,6 +895,87 @@ pub fn encode_modified_utf8(s: &str) -> Vec<u8> {
         }
     }
     out
+}
+
+fn visible_annotations(attributes: &[Attribute], pool: &ConstantPool) -> Result<Vec<Annotation>> {
+    match attributes.iter().find(|a| a.name == "RuntimeVisibleAnnotations") {
+        Some(attr) => annotations::parse_annotations(&attr.data, pool),
+        None => Ok(Vec::new()),
+    }
+}
+
+fn signature_of(attributes: &[Attribute], pool: &ConstantPool) -> Option<String> {
+    let attr = attributes.iter().find(|a| a.name == "Signature")?;
+    if attr.data.len() != 2 {
+        return None;
+    }
+    pool.utf8(u16::from_be_bytes([attr.data[0], attr.data[1]])).ok().map(str::to_string)
+}
+
+impl ClassFile {
+    /// The class's annotations with `RUNTIME` retention.
+    pub fn annotations(&self) -> Result<Vec<Annotation>> {
+        visible_annotations(&self.attributes, &self.pool)
+    }
+
+    /// The generic signature (JVMS 4.7.9.1) of the class, when it has type parameters or generic supertypes.
+    pub fn generic_signature(&self) -> Option<String> {
+        signature_of(&self.attributes, &self.pool)
+    }
+}
+
+impl Field {
+    /// The field's annotations with `RUNTIME` retention.
+    pub fn annotations(&self, pool: &ConstantPool) -> Result<Vec<Annotation>> {
+        visible_annotations(&self.attributes, pool)
+    }
+
+    /// The generic signature of the field's type, when it is generic.
+    pub fn generic_signature(&self, pool: &ConstantPool) -> Option<String> {
+        signature_of(&self.attributes, pool)
+    }
+}
+
+impl Method {
+    /// The method's annotations with `RUNTIME` retention.
+    pub fn annotations(&self, pool: &ConstantPool) -> Result<Vec<Annotation>> {
+        visible_annotations(&self.attributes, pool)
+    }
+
+    /// The `RUNTIME` annotations of each parameter, aligned with the descriptor's parameters. The compiler leaves
+    /// out the synthetic and mandated leading parameters (an inner class's outer instance, an enum constructor's
+    /// name and ordinal), so a shorter list is aligned to the end.
+    pub fn parameter_annotations(&self, pool: &ConstantPool) -> Result<Vec<Vec<Annotation>>> {
+        let count = self.parsed_descriptor().map(|d| d.params.len()).unwrap_or(0);
+        let mut lists = match self.attributes.iter().find(|a| a.name == "RuntimeVisibleParameterAnnotations") {
+            Some(attr) => annotations::parse_parameter_annotations(&attr.data, pool)?,
+            None => Vec::new(),
+        };
+        if lists.len() > count {
+            lists.truncate(count);
+        }
+        while lists.len() < count {
+            lists.insert(0, Vec::new());
+        }
+        Ok(lists)
+    }
+
+    /// The generic signature of the method, when it has type parameters or generic parameter or return types.
+    pub fn generic_signature(&self, pool: &ConstantPool) -> Option<String> {
+        signature_of(&self.attributes, pool)
+    }
+
+    /// The exception classes the method declares with `throws`, as internal names (the `Exceptions` attribute).
+    pub fn declared_exceptions(&self, pool: &ConstantPool) -> Result<Vec<String>> {
+        let Some(attr) = self.attributes.iter().find(|a| a.name == "Exceptions") else { return Ok(Vec::new()) };
+        let mut r = Reader { bytes: &attr.data, pos: 0 };
+        let count = r.u16()?;
+        let mut out = Vec::with_capacity(count as usize);
+        for _ in 0..count {
+            out.push(pool.class_name(r.u16()?)?.to_string());
+        }
+        Ok(out)
+    }
 }
 
 #[cfg(test)]

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-025524-example-110-an-idempotency-key-header-on",
+  "title": "Example 110: an Idempotency-Key header on POST /orders drops the body's @Valid, caught by the boundary contract (B12)",
+  "description": "The first example of approach B12, boundary contracts: jvmcontract reads the Spring annotations of the ticketing-service classes and checks them against src/contract/boundaries.contract. The patch adds an Idempotency-Key header parameter to OrderController#place and loses the @Valid on the request body. Expected: a violation with two boundary changes (the old POST /orders line removed, the new one added without @Valid). The runner compiles the patched module with Gradle (offline, from the Gradle cache) and runs jvmcontract verify; the module's Spring Boot tests run first and need Docker for Testcontainers, so they may fail without it, which the page records separately from the verdict.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "110"
+    ]
+  },
+  "expected": "build.py 110 exits 0: verdict violation, 2 boundary changes, matches expected",
+  "submitted": {
+    "at": "2026-11-03T02:55:24+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/110-idempotency-key-header-drops-request-validation"
+  ]
+}

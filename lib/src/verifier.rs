@@ -11,7 +11,7 @@
 //! This module also holds the `verify`/`update` workflow over a directory of contract files, as the command line
 //! and build plugins run it.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
@@ -327,6 +327,8 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
     let check_capabilities = capabilities_file.exists() || take(&mut added, "capabilities");
     let api_file = run.contracts.join(crate::api::FILE_NAME);
     let check_api = api_file.exists() || take(&mut added, "api");
+    let boundaries_file = run.contracts.join(crate::boundaries::FILE_NAME);
+    let check_boundaries = boundaries_file.exists() || take(&mut added, "boundaries");
     if run.contracts.is_dir() {
         let mut files: Vec<PathBuf> = std::fs::read_dir(&run.contracts)?
             .filter_map(|e| e.ok().map(|e| e.path()))
@@ -335,7 +337,7 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
         files.sort();
         for file in files {
             let name = file.file_name().and_then(|n| n.to_str()).unwrap_or("");
-            if name == capabilities::FILE_NAME || name == crate::api::FILE_NAME || name == crate::property::FILE_NAME {
+            if name == capabilities::FILE_NAME || name == crate::api::FILE_NAME || name == crate::boundaries::FILE_NAME || name == crate::property::FILE_NAME {
                 continue; // the module-level contracts; properties are proved by `prove --properties`
             }
             let contract = Contract::read(&file)?;
@@ -345,8 +347,8 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
     for target in &added {
         targets.entry(target.clone()).or_insert_with(|| run.contracts.join(Contract::file_name(target)));
     }
-    if targets.is_empty() && !check_capabilities && !check_api {
-        let _ = writeln!(out, "No contracts in {}. Add one with: update --add <class>#<method>, or the module's capability contract with: update --add capabilities", run.contracts.display());
+    if targets.is_empty() && !check_capabilities && !check_api && !check_boundaries {
+        let _ = writeln!(out, "No contracts in {}. Add one with: update --add <class>#<method>, or the module's capability, API or boundary contract with: update --add capabilities|api|boundaries", run.contracts.display());
         return Ok(Outcome { output: out, findings, exit_code: 0 });
     }
 
@@ -355,6 +357,9 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
     }
     if check_api {
         check_api_contract(run, &cp, &api_file, &mut out, &mut findings)?;
+    }
+    if check_boundaries {
+        check_boundary_contract(run, &cp, &boundaries_file, &mut out, &mut findings)?;
     }
 
     let mut verifier = Verifier::new(&cp);
@@ -464,6 +469,45 @@ fn check_capability_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, ou
         }
     }
     findings.push(Finding::new("capability-changed", message, uri, line));
+    Ok(())
+}
+
+fn check_boundary_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, out: &mut String, findings: &mut Vec<Finding>) -> Result<(), Error> {
+    if run.classes.is_empty() {
+        return Err(Error::new("--classes DIR is required for the boundary contract"));
+    }
+    // The module's own classes are the beans; the rest of the class path resolves the exception hierarchy.
+    let mut module_cp = ClassPath::new();
+    for path in &run.classes {
+        if path.exists() {
+            module_cp.add(path)?;
+        }
+    }
+    let module: BTreeSet<String> = module_cp.application_class_names()?.into_iter().collect();
+    let boundaries = crate::boundaries::analyse_in(cp, Some(&module))?;
+    let stats = boundaries.stats();
+    if run.update {
+        boundaries.write(file, &run.module)?;
+        let _ = writeln!(out, "✓ wrote {} ({stats})", file.display());
+        return Ok(());
+    }
+    let diff = crate::boundaries::diff(&crate::boundaries::read(file)?, &boundaries.entries());
+    if diff.is_empty() {
+        let _ = writeln!(out, "✓ module {} matches its boundary contract ({stats})", run.module);
+        return Ok(());
+    }
+    let message = format!("Boundaries of module {} differ from their contract:\n{}", run.module, diff.join("\n"));
+    let _ = writeln!(out, "✗ {message}");
+    let _ = writeln!(out, "  ({stats})");
+    let mut uri = None;
+    let mut line = 1;
+    if let Some((class, member)) = boundaries.first_added(&diff) {
+        if let Some(source) = sarif::source_file(&class.replace('.', "/"), &run.sources) {
+            uri = Some(sarif::relative_uri(&run.base, &source));
+            line = u32::from(member.source_line.unwrap_or(1)).max(1);
+        }
+    }
+    findings.push(Finding::new("boundaries-changed", message, uri, line));
     Ok(())
 }
 
