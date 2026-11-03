@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import string
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -68,7 +69,37 @@ SECRET_PATTERNS = [
      r"\1[REDACTED:env-secret]"),
 ]
 
+# Cheap first tests for rules that are slow on text they do not match: a rule's hint matches
+# somewhere in any text the rule matches, so text the hint does not match is skipped, with the
+# same result. env-secret backtracks through every word looking for its keywords. Each keyword
+# holds one of the hint's words with only letters after it, and the rule needs its separator
+# right after the keyword; both compared case-insensitively by the same engine, so ſ, the Kelvin
+# sign and dotted İ fold alike. Half the cost on real logs (Nov 3 2026).
+HINTS = {"env-secret": r"(?i)(?:pass|secret|token|credential|key|auth)[A-Z0-9_]*[\"']?\s*[=:]"}
+
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}(?![A-Za-z0-9\-])")
+# EMAIL_RE retries its local part from every character of a run of local-part characters, which
+# is quadratic on a long run, @ or not. email_spans finds the same matches in linear time; EMAIL_RE
+# stays as their definition and is what the tests compare against.
+_LOCAL_CHARS = frozenset(string.ascii_letters + string.digits + "._%+-")  # [A-Za-z0-9._%+\-]
+_EMAIL_DOMAIN_RE = re.compile(r"[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}(?![A-Za-z0-9\-])")
+
+
+def email_spans(s: str):
+    """(start, end) of each match of EMAIL_RE.finditer(s). A match holds one @, its local part is
+    the run of local-part characters before it, and that run cannot reach back past where the last
+    match ended: so each @ is looked at once, and its run is walked back from it."""
+    pos = 0
+    while (at := s.find("@", pos)) >= 0:
+        start = at
+        while start > pos and s[start - 1] in _LOCAL_CHARS:
+            start -= 1
+        if start < at and (m := _EMAIL_DOMAIN_RE.match(s, at + 1)):
+            yield start, m.end()
+            pos = m.end()
+        else:
+            pos = at + 1
+
 # Windows account names in paths seen from WSL: /mnt/c/Users/<name>, C:\Users\<name>.
 WIN_USER_RE = re.compile(r"((?:/mnt/[A-Za-z]/Users/|[A-Za-z]:\\+Users\\+)(?:[^/\\\s\"'<>|]+))")
 WIN_SHARED = {"public", "default", "default user", "all users", "user", "desktop.ini"}
@@ -165,8 +196,10 @@ class Rules:
         # keeps its escapes, so there is no word boundary before the name.
         self.user_re = (re.compile(rf"(?:(?<=\\[nrt])|(?<![A-Za-z0-9_])){re.escape(user)}\b")
                         if len(user) >= 3 else None)
+        self._user_hint = (self.user_re, user)  # the name the pattern holds, as long as it is this pattern
         self.secret_res = [(p[0], re.compile(p[1], re.S), p[2] if len(p) > 2 else f"[REDACTED:{p[0]}]")
                            for p in SECRET_PATTERNS]
+        self.hints = {kind: re.compile(hint) for kind, hint in HINTS.items()}
         self.review_res = [(kind, re.compile(pattern), keep) for kind, pattern, keep in REVIEW_PATTERNS]
         self._seen: dict[bytes, tuple[list, list]] = {}  # logs repeat each other's lines: see hits_of_text
 
@@ -180,14 +213,35 @@ class Rules:
         prefix, name = re.match(r"(.*[/\\])([^/\\]*)$", path).groups()
         return path if name.lower() in WIN_SHARED else prefix + "user"
 
+    def _may_match(self, kind: str, text: str) -> bool:
+        """False only when the rule of this kind cannot match the text: see HINTS."""
+        hint = self.hints.get(kind)
+        return hint is None or hint.search(text) is not None
+
+    def _user_may_match(self, text: str) -> bool:
+        if self.user_re is None:
+            return False
+        rx, user = self._user_hint
+        return rx is not self.user_re or user in text  # the pattern matches the name, case and all
+
+    def _emails_redacted(self, text: str) -> str:
+        """EMAIL_RE.sub of the addresses that are not public, by email_spans."""
+        out, last = [], 0
+        for start, end in email_spans(text):
+            address = text[start:end]
+            out += [text[last:start], address if self._public_email(address) else "[REDACTED:email]"]
+            last = end
+        return "".join(out) + text[last:] if out else text
+
     def string(self, text: str) -> str:
         for _kind, rx, rep in self.literals:
             text = rx.sub(lambda _m, r=rep: r, text)
-        for _kind, rx, rep in self.secret_res:
-            text = rx.sub(rep, text)
-        text = EMAIL_RE.sub(lambda m: m.group(0) if self._public_email(m.group(0)) else "[REDACTED:email]", text)
+        for kind, rx, rep in self.secret_res:
+            if self._may_match(kind, text):  # tested on the text this rule gets, after the ones before
+                text = rx.sub(rep, text)
+        text = self._emails_redacted(text)
         text = WIN_USER_RE.sub(self._win_user, text)
-        if self.user_re:
+        if self._user_may_match(text):
             text = self.user_re.sub("user", text)
         return text
 
@@ -206,11 +260,14 @@ class Rules:
         return ("\n".join(out) + "\n" if out else "").encode()
 
     def _leaks_in(self, s: str, out: list) -> None:
-        for kind, rx, _ in self.literals + self.secret_res:
+        for kind, rx, _ in self.literals:
             out += [(kind, m.group(0)) for m in rx.finditer(s)]
-        out += [("email", m.group(0)) for m in EMAIL_RE.finditer(s) if not self._public_email(m.group(0))]
+        for kind, rx, _ in self.secret_res:
+            if self._may_match(kind, s):
+                out += [(kind, m.group(0)) for m in rx.finditer(s)]
+        out += [("email", s[a:b]) for a, b in email_spans(s) if not self._public_email(s[a:b])]
         out += [("windows-user", m.group(0)) for m in WIN_USER_RE.finditer(s) if self._win_user(m) != m.group(0)]
-        if self.user_re:
+        if self._user_may_match(s):
             out += [("username", m.group(0)) for m in self.user_re.finditer(s)]
 
     def _reviewable_in(self, s: str, out: list) -> None:
@@ -264,11 +321,12 @@ def older_than_stamp(path: Path) -> bool:
     return RULES_HASH == source_hash() and path.stat().st_mtime < generated
 
 
-def write_stamp() -> None:
-    """Record these rules as applied to everything up to now."""
+def write_stamp(generated: str | None = None) -> None:
+    """Record these rules as applied to everything up to now, or up to `generated`: the date of the
+    last stamp, kept by rules shown to give the same results as the ones stamped then."""
     file = Path(__file__)
     text = file.read_text()
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    now = generated or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
     head = text[:text.rindex(_STAMP_MARK)]
     file.write_text(head + f"""{_STAMP_MARK}: written by `sync.py stamp`; the hash covers everything above this line.
 RULES_HASH = "{source_hash()}"
@@ -279,6 +337,6 @@ RULES_STAMP = f"{{RULES_HASH}}@{{RULES_GENERATED}}"
 
 _STAMP_MARK = "# --- " + "stamp"
 # --- stamp: written by `sync.py stamp`; the hash covers everything above this line.
-RULES_HASH = "c88cdf5f07fe663ffe4b9fb8d6838b3bfe30e2d1e55ee361eb770ce52be76f0a"
+RULES_HASH = "e84de1eb43f93c594b06dcf8bf7e3ac050c3636a78cad483b2ebd341e1e9c04f"
 RULES_GENERATED = "2026-11-01T23:27:26+00:00"
 RULES_STAMP = f"{RULES_HASH}@{RULES_GENERATED}"

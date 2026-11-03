@@ -50,8 +50,16 @@ Commands:
                                 allow a value before it is found; a person at a terminal only
   sync.py allow drop ID...      remove entries, proposed or approved
   sync.py stamp                 after a change to redaction_rules.py: rescan everything, then
-                                record the rules as applied, so older files aren't scanned again
+                                record the rules as applied, so older files aren't scanned again;
+                                open warnings become allow-list proposals, open errors refuse it
+  sync.py stamp --equivalent    keep the last stamp's date for rules that give the same results as
+                                the stamped ones at @- on every transcript, log and published file
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
+  sync.py perf [N] [COMMAND]    where the last N commands' time went: phases, bytes, cache hits,
+                                subprocesses, network requests (LLM_TRACES_PERF=1 prints each as it ends)
+  sync.py langfuse SID[:live]...
+                                send sessions' finished turns to Langfuse by hand (commit and sync never do;
+                                the Stop hook does at the end of each turn)
 
 Standard library only. The hook never fails a session; errors go to
 ~/.local/state/llm-traces/hook.log.
@@ -59,11 +67,13 @@ Standard library only. The hook never fails a session; errors go to
 from __future__ import annotations
 
 import base64
+import contextlib
 import gzip
 import hashlib
 import json
 import os
 import re
+import resource
 import shutil
 import socket
 import string
@@ -142,9 +152,107 @@ CDN_BUCKET = "llm-traces"
 CDN_DIR = CHANGES / "infra" / "cdn"
 NODE = shutil.which("node") or str(Path.home() / ".local" / "bin" / "node")
 WRANGLER = CDN_DIR / "node_modules" / "wrangler" / "bin" / "wrangler.js"  # pinned in llm-dlc/infra/cdn/package.json
+PERF_LOG = STATE / "perf.jsonl"  # one record per command: where its time went (`sync.py perf`)
+PERF_LOG_LINES = 2000          # kept when the file is trimmed
+# Snapshots are named by their uncompressed content, so the level changes only the .gz bytes of
+# new snapshots, never an identifier, and stored ones are never rewritten. On a 79 MB log (Nov 3
+# 2026): level 9, Python's default, 1.66 s and 16.9% of the size; 6, 1.25 s and 17.0%; 3, 0.49 s and
+# 20.2%; 1, 0.42 s and 21.9%. Decompression takes 0.2 s at any level.
+GZIP_LEVEL = 6
+
+
+def _child_cpu() -> float:
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return usage.ru_utime + usage.ru_stime
+
+
+class Perf:
+    """Where one command's time goes: wall time, its own CPU time and its subprocesses', per phase
+    (nested phases are named by path, a/b), and counters of bytes, cache hits, subprocesses and
+    network requests. Every command appends one record to PERF_LOG; LLM_TRACES_PERF=1 prints it
+    too. Holds names and numbers only, no paths or content."""
+
+    def __init__(self) -> None:
+        self.wall, self.cpu, self.child = time.perf_counter(), time.process_time(), _child_cpu()
+        self.phases: dict[str, list[float]] = {}  # path -> [calls, wall, cpu, child cpu]
+        self.counters: Counter = Counter()
+        self._stack: list[str] = []
+
+    @contextlib.contextmanager
+    def phase(self, name: str):
+        self._stack.append(name)
+        path = "/".join(self._stack)
+        wall, cpu, child = time.perf_counter(), time.process_time(), _child_cpu()
+        try:
+            yield
+        finally:
+            self._stack.pop()
+            row = self.phases.setdefault(path, [0, 0.0, 0.0, 0.0])
+            row[0] += 1
+            row[1] += time.perf_counter() - wall
+            row[2] += time.process_time() - cpu
+            row[3] += _child_cpu() - child
+
+    def count(self, key: str, n: float = 1) -> None:
+        self.counters[key] += n
+
+    def record(self, command: str) -> dict:
+        r3 = lambda x: round(x, 3)
+        return {"command": command, "at": datetime.now().isoformat(timespec="seconds"),
+                "wall": r3(time.perf_counter() - self.wall), "cpu": r3(time.process_time() - self.cpu),
+                "child_cpu": r3(_child_cpu() - self.child),
+                "phases": {k: {"calls": int(c), "wall": r3(w), "cpu": r3(u), "child_cpu": r3(ch)}
+                           for k, (c, w, u, ch) in self.phases.items()},
+                "counters": {k: r3(v) if isinstance(v, float) else v for k, v in sorted(self.counters.items())}}
+
+
+perf = Perf()
+
+
+def format_perf(record: dict) -> str:
+    lines = [f"{record['command']} at {record['at']}: {record['wall']:.1f} s wall, {record['cpu']:.1f} s CPU, "
+             f"{record['child_cpu']:.1f} s in subprocesses"]
+    for path, p in sorted(record["phases"].items(), key=lambda kv: -kv[1]["wall"]):
+        lines.append(f"  {p['wall']:8.2f} s wall {p['cpu']:8.2f} s cpu {p['child_cpu']:7.2f} s sub  ×{p['calls']:<4} {path}")
+    for key, n in record["counters"].items():
+        lines.append(f"  {n:>14,} {key}" if isinstance(n, int) else f"  {n:>14,.3f} {key}")
+    return "\n".join(lines)
+
+
+def save_perf(command: str) -> dict:
+    """Append this command's record to PERF_LOG, trimmed to its last PERF_LOG_LINES lines now and then."""
+    record = perf.record(command)
+    try:
+        STATE.mkdir(parents=True, exist_ok=True)
+        with open(PERF_LOG, "a") as f:
+            f.write(json.dumps(record) + "\n")
+        if PERF_LOG.stat().st_size > 4 * 1024 * 1024:
+            kept = PERF_LOG.read_text().splitlines()[-PERF_LOG_LINES:]
+            tmp = PERF_LOG.with_suffix(f".{os.getpid()}.tmp")
+            tmp.write_text("\n".join(kept) + "\n")
+            tmp.replace(PERF_LOG)
+    except OSError:
+        pass  # measurements only
+    if os.environ.get("LLM_TRACES_PERF"):
+        print(format_perf(record), file=sys.stderr)
+    return record
+
+
+def cmd_perf(args: list[str]) -> int:
+    """The last N command records (default 5), or those of one command: `perf [N] [COMMAND]`."""
+    n = int(args[0]) if args and args[0].isdigit() else 5
+    command = next((a for a in args if not a.isdigit()), None)
+    try:
+        records = [json.loads(line) for line in PERF_LOG.read_text().splitlines() if line.strip()]
+    except (OSError, ValueError):
+        records = []
+    records = [r for r in records if command in (None, r["command"])][-n:]
+    print("\n\n".join(format_perf(r) for r in records) or "no measurements yet")
+    return 0
 
 
 def _cmd(*args: str) -> str:
+    perf.count(f"subprocess {Path(args[0]).name}")
     try:
         return subprocess.run(args, capture_output=True, text=True, timeout=10, cwd=REPO).stdout.strip()
     except (OSError, subprocess.SubprocessError):
@@ -260,8 +368,18 @@ class Redactor(redaction_rules.Rules):
 
     def _hits(self, text: str) -> tuple:
         if self._latest is None or self._latest[0] is not text:
-            self._latest = (text, self.hits_of_text(text))
+            before = len(self._seen)
+            with perf.phase("scan"):
+                self._latest = (text, self.hits_of_text(text))
+            perf.count("scan texts")
+            perf.count("scan chars", len(text))
+            perf.count("scan lines scanned (not cached)", len(self._seen) - before)
         return self._latest[1]
+
+    def __call__(self, jsonl: str) -> bytes:
+        with perf.phase("redact"):
+            perf.count("redact chars", len(jsonl))
+            return super().__call__(jsonl)
 
     def leak_hits(self, text: str) -> dict[str, Counter]:
         """What the redactor would still change in this text, by kind, without reviewed false
@@ -401,27 +519,54 @@ def log_path(sid: str, sha: str) -> Path:
 
 
 def store_log(sid: str, data: bytes) -> dict:
-    """Content-addressed snapshot: named by the sha256 of the uncompressed bytes, never rewritten."""
-    sha = hashlib.sha256(data).hexdigest()
-    path = log_path(sid, sha)
-    if not path.exists():
-        path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_suffix(".tmp")
-        tmp.write_bytes(gzip.compress(data, mtime=0))  # mtime=0: same input, same .gz bytes
-        tmp.replace(path)
-    return {"sha256": sha, **log_info(sid, sha), "path": str(path.relative_to(REPO))}
+    """Content-addressed snapshot: named by the sha256 of the uncompressed bytes, never rewritten.
+    Its sizes come from the bytes in hand; `check` is what proves a stored file holds them."""
+    with perf.phase("store log"):
+        sha = hashlib.sha256(data).hexdigest()
+        path = log_path(sid, sha)
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(f".{os.getpid()}.tmp")
+            with perf.phase("compress"):
+                tmp.write_bytes(gzip.compress(data, compresslevel=GZIP_LEVEL, mtime=0))  # mtime=0: same input, same .gz bytes
+            tmp.replace(path)
+            perf.count("log snapshots written")
+            perf.count("log bytes compressed", len(data))
+        return {"sha256": sha, "bytes": len(data), "lines": data.count(b"\n"), "gzip_bytes": path.stat().st_size,
+                "path": str(path.relative_to(REPO))}
 
 
 def log_info(sid: str, sha: str) -> dict:
     """Sizes of a stored log: its content in bytes and lines, and the gzip file in bytes."""
-    gz = log_path(sid, sha).read_bytes()
-    data = gzip.decompress(gz)
-    return {"bytes": len(data), "lines": data.count(b"\n"), "gzip_bytes": len(gz)}
+    data = load_log(sid, sha)
+    return {"bytes": len(data), "lines": data.count(b"\n"), "gzip_bytes": log_path(sid, sha).stat().st_size}
 
 
 def load_log(sid: str, sha: str) -> bytes | None:
     path = log_path(sid, sha)
-    return gzip.decompress(path.read_bytes()) if path.exists() else None
+    if not path.exists():
+        return None
+    with perf.phase("decompress"):
+        data = gzip.decompress(path.read_bytes())
+    perf.count("log loads")
+    perf.count("log bytes decompressed", len(data))
+    return data
+
+
+def write_if_changed(path: Path, text: str) -> bool:
+    """Write a generated file only when its content differs, atomically. Whether it was written."""
+    try:
+        if path.read_text() == text:
+            perf.count("generated files unchanged")
+            return False
+    except OSError:
+        pass
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(text)
+    tmp.replace(path)
+    perf.count("generated files written")
+    return True
 
 
 # --------------------------------------------------------------------------- manifest
@@ -436,11 +581,7 @@ def load_manifest(sid: str) -> dict:
 
 
 def save_manifest(sid: str, m: dict) -> None:
-    path = manifest_path(sid)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(m, indent=2, ensure_ascii=False) + "\n")
-    tmp.replace(path)
+    write_if_changed(manifest_path(sid), json.dumps(m, indent=2, ensure_ascii=False) + "\n")
 
 
 def all_manifests() -> dict[str, dict]:
@@ -451,25 +592,29 @@ def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor) ->
     """A transcript's log. One older than the rules' stamp was redacted by them when `known`, its
     last log, was stored."""
     if known and older_than_stamp(transcript) and (data := load_log(sid, known)) is not None:
+        perf.count("transcripts not redacted again (older than the stamp)")
         return data
     return redact(transcript.read_text(errors="replace"))
 
 
-def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, dict, list[dict]]:
-    """Snapshot one session's log (and subagent logs) and rewrite its manifest."""
+def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, dict, list[dict], list[tuple]]:
+    """Snapshot one session's log (and subagent logs) and rewrite its manifest. Returns the session
+    id, the manifest, the log's entries, and (agent, entries) of each subagent log."""
     sid = transcript.stem
     old = load_manifest(sid)
     data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact)
     entries = read_jsonl(data)
     log = store_log(sid, data)
     known_subagents = {s["agent"]: s["log"]["sha256"] for s in old.get("subagents", [])}
-    subagents = []
+    subagents, subagent_entries = [], []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
         sub_data = redacted(sub, sid, known_subagents.get(sub.stem), redact)
-        s = summarize(read_jsonl(sub_data), redact.string(str(REPO)))
+        sub_entries = read_jsonl(sub_data)
+        s = summarize(sub_entries, redact.string(str(REPO)))
         subagents.append({"agent": sub.stem, "models": s["models"], "stats": s["stats"],
                           "log": store_log(sid, sub_data)})
+        subagent_entries.append((sub.stem, sub_entries))
     m = {
         "schema": SCHEMA,
         "session_id": sid,
@@ -483,15 +628,20 @@ def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, 
         "generator": "llm-dlc/tools/sync.py",
     }
     save_manifest(sid, m)
-    return sid, m, entries
+    return sid, m, entries, subagent_entries
 
 
 # --------------------------------------------------------------------------- jj
 
 def jj(*args: str) -> subprocess.CompletedProcess:
     # Snapshotting must not skip files; the default limit for new files is 1 MiB.
-    return subprocess.run([JJ, "--quiet", "--config", "snapshot.max-new-file-size=100MiB", *args],
-                          capture_output=True, text=True, timeout=60, cwd=REPO)
+    started = time.perf_counter()
+    try:
+        return subprocess.run([JJ, "--quiet", "--config", "snapshot.max-new-file-size=100MiB", *args],
+                              capture_output=True, text=True, timeout=60, cwd=REPO)
+    finally:
+        perf.count(f"subprocess jj {args[0]}")
+        perf.count(f"subprocess jj {args[0]} seconds", time.perf_counter() - started)
 
 
 def has_jj() -> bool:
@@ -744,7 +894,7 @@ def render_summary(sid: str, m: dict, entries: list[dict], repo_prefix: str) -> 
         "subagents": subagents.strip() or "*None.*",
     }
     text = string.Template(SUMMARY_TEMPLATE.read_text()).safe_substitute(values)
-    summary_path(sid).write_text(re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n")
+    write_if_changed(summary_path(sid), re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n")
 
 
 INDEX_BEGIN, INDEX_END = "<!-- index:begin (generated by llm-dlc/tools/sync.py) -->", "<!-- index:end -->"
@@ -754,15 +904,19 @@ def metrics_path(sid: str) -> Path:
     return session_dir(sid) / "metrics.json"
 
 
-def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor) -> str:
-    """metrics.json of a session, from its redacted logs and manifest and from the price list."""
-    subagents = [(s["agent"], read_jsonl(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
+def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
+                    subagents: list[tuple[str, list[dict]]] | None = None) -> str:
+    """metrics.json of a session, from its redacted logs and manifest and from the price list.
+    `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them."""
+    if subagents is None:
+        subagents = [(s["agent"], read_jsonl(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
     return metrics.dumps(metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string))
 
 
-def render_rollup() -> str:
+def render_rollup(manifests: dict[str, dict] | None = None) -> str:
     """llm-dlc/traces/metrics.json: a function of the session metrics files, like the overview."""
-    found = [(m, json.loads(metrics_path(sid).read_text())) for sid, m in all_manifests().items()
+    manifests = all_manifests() if manifests is None else manifests
+    found = [(m, json.loads(metrics_path(sid).read_text())) for sid, m in manifests.items()
              if m.get("schema") == SCHEMA and metrics_path(sid).exists()]
     found.sort(key=lambda pair: pair[0].get("started") or "")
     return metrics.dumps(metrics.rollup(found, json.loads(PRICING.read_text())))
@@ -797,8 +951,8 @@ def write_index() -> None:
     """llm-dlc/index.json lists every session with the commits it made, so a reader can go from
     a commit or a date to a session without opening every manifest. The same rows are rendered as
     a table in llm-dlc/README.md, between the index markers."""
-    rows = []
-    for sid, m in all_manifests().items():
+    rows, manifests = [], all_manifests()
+    for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             continue
         rows.append({
@@ -812,9 +966,7 @@ def write_index() -> None:
         })
     rows.sort(key=lambda r: r["started"] or "")
     index = {"schema": INDEX_SCHEMA, "sessions": rows}
-    tmp = INDEX.with_suffix(".tmp")
-    tmp.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n")
-    tmp.replace(INDEX)
+    write_if_changed(INDEX, json.dumps(index, indent=2, ensure_ascii=False) + "\n")
     if CHANGES_README.exists():
         table = ["| Started | Session | Prompts | Commits | Status |", "|---|---|---|---|---|"]
         for r in reversed(rows):
@@ -824,9 +976,9 @@ def write_index() -> None:
         readme = CHANGES_README.read_text()
         start, end = readme.find(INDEX_BEGIN), readme.find(INDEX_END)
         if 0 <= start < end:
-            CHANGES_README.write_text(readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
-    TRACES_README.write_text(render_traces_readme())
-    METRICS_ROLLUP.write_text(render_rollup())
+            write_if_changed(CHANGES_README, readme[:start + len(INDEX_BEGIN)] + "\n" + "\n".join(table) + "\n" + readme[end:])
+    write_if_changed(TRACES_README, render_traces_readme(manifests))
+    write_if_changed(METRICS_ROLLUP, render_rollup(manifests))
 
 
 def _table(header: list[str], rows: list[list]) -> str:
@@ -849,10 +1001,11 @@ def _cached_share(u: dict) -> str:
     return f"{u['cache_read_input_tokens'] / read:.1%}" if read else "n/a"
 
 
-def render_traces_readme() -> str:
+def render_traces_readme(manifests: dict[str, dict] | None = None) -> str:
     """llm-dlc/traces/README.md: every session added up. It is a function of the manifests and the
     session notes alone, so a sync rewrites it identically and `check` can tell when it is stale."""
-    manifests = {sid: m for sid, m in all_manifests().items() if m.get("schema") == SCHEMA}
+    manifests = {sid: m for sid, m in (all_manifests() if manifests is None else manifests).items()
+                 if m.get("schema") == SCHEMA}
     ordered = sorted(manifests.items(), key=lambda kv: kv[1].get("started") or "")
     active = [(sid, m) for sid, m in ordered if m["stats"]["turns"]]
     idle = [sid for sid, m in ordered if not m["stats"]["turns"]]
@@ -1035,10 +1188,9 @@ def turn_spans(sid: str, n: int, turn: list[dict], m: dict) -> list[dict]:
 
 
 def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool) -> int:
-    env = read_env(LANGFUSE_ENV)
-    host, pk, sk = env.get("LANGFUSE_HOST"), env.get("LANGFUSE_INIT_PROJECT_PUBLIC_KEY"), env.get("LANGFUSE_INIT_PROJECT_SECRET_KEY")
-    if not (host and pk and sk):
+    if (config := langfuse_config()) is None:
         return 0
+    host, pk, sk = config
     state_file = STATE / f"{sid}.json"
     done = set(json.loads(state_file.read_text())["exported"]) if state_file.exists() else set()
     turns = turns_of(entries)
@@ -1054,6 +1206,7 @@ def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool) -> int:
                                  method="POST", headers={
         "Content-Type": "application/json", "Content-Encoding": "gzip",
         "Authorization": "Basic " + base64.b64encode(f"{pk}:{sk}".encode()).decode()})
+    perf.count("network requests langfuse")
     with urllib.request.urlopen(req, timeout=15) as r:
         r.read()
     STATE.mkdir(parents=True, exist_ok=True)
@@ -1068,6 +1221,7 @@ def log_url(sid: str, sha: str) -> str:
 
 
 def fetch_log(url: str) -> bytes:
+    perf.count("network requests CDN")
     req = urllib.request.Request(url, headers={"User-Agent": "llm-traces-sync"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return gzip.decompress(r.read())
@@ -1097,6 +1251,7 @@ def upload_log(sid: str, sha: str, redact: Redactor) -> str:
     key = f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz"
     if not WRANGLER.exists():
         raise FileNotFoundError("wrangler is not installed; run: python3 llm-dlc/tools/sync.py init")
+    perf.count("subprocess wrangler r2 put")
     r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "put", key, "--remote",
                         "--file", str(path), "--content-type", "application/gzip"],
                        cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
@@ -1136,6 +1291,7 @@ def cloudflare(method: str, path: str, token: str, body: dict | None = None) -> 
     req = urllib.request.Request(f"https://api.cloudflare.com/client/v4{path}", method=method,
                                  data=json.dumps(body).encode() if body is not None else None,
                                  headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+    perf.count("network requests Cloudflare API")
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return json.load(r)
@@ -1199,24 +1355,48 @@ def cmd_unpublish(args: list[str]) -> int:
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool,
             publishing: bool = False) -> dict:
-    """Bring a session's tracked files up to date. live: the last turn may be unfinished (Langfuse
-    waits for it). current: the session is the one running now, so @ is its working copy.
+    """Bring a session's own tracked files up to date; the caller rebuilds the global ones once,
+    with write_index. Langfuse is not contacted: the Stop hook sends turns. live: the last turn may be
+    unfinished. current: the session is the one running now, so @ is its working copy.
     publishing: @ is a trace record, which carries every session with log no commit points at yet."""
     known = {c.get("log_sha256") for c in load_manifest(transcript.stem).get("commits", [])}
-    sid, m, entries = sync_session(transcript, redact, status)
+    with perf.phase("snapshot"):
+        sid, m, entries, subagents = sync_session(transcript, redact, status)
     if publishing:
         current = bool(m["stats"]["turns"]) and m["log"]["sha256"] not in known
     if has_jj():
-        link_commits(sid, m, current, publishing)
+        with perf.phase("link commits"):
+            link_commits(sid, m, current, publishing)
     finalize_logs(sid, m)
-    render_summary(sid, m, entries, redact.string(str(REPO)))
-    metrics_path(sid).write_text(session_metrics(sid, m, entries, redact))
-    write_index()
-    try:
-        export_langfuse(sid, entries, m, live)
-    except OSError as e:  # Langfuse down: those turns are retried next time
-        log(f"langfuse export deferred for {sid}: {e}")
+    with perf.phase("summary and metrics"):
+        render_summary(sid, m, entries, redact.string(str(REPO)))
+        write_if_changed(metrics_path(sid), session_metrics(sid, m, entries, redact, subagents))
     return m
+
+
+def langfuse_config() -> tuple[str, str, str] | None:
+    env = read_env(LANGFUSE_ENV)
+    host, pk, sk = env.get("LANGFUSE_HOST"), env.get("LANGFUSE_INIT_PROJECT_PUBLIC_KEY"), env.get("LANGFUSE_INIT_PROJECT_SECRET_KEY")
+    return (host, pk, sk) if host and pk and sk else None
+
+
+def cmd_langfuse(args: list[str]) -> int:
+    """Send these sessions' finished turns to Langfuse from their stored, already redacted logs, by
+    hand: for sessions whose Stop hook ran while Langfuse was down. Commit and sync never contact
+    Langfuse. The first failure stops it, and only sent turns are recorded, so a rerun resumes."""
+    for arg in args:
+        sid, _, flag = arg.partition(":")
+        try:
+            m = load_manifest(sid)
+            data = load_log(sid, m["log"]["sha256"]) if m.get("log") else None
+            if data is not None:
+                export_langfuse(sid, read_jsonl(data), m, live=flag == "live")
+        except OSError as e:
+            log(f"langfuse export deferred for {sid}: {e}")
+            return 1
+        except Exception:
+            log(traceback.format_exc())
+    return 0
 
 
 def cmd_hook() -> None:
@@ -1224,6 +1404,8 @@ def cmd_hook() -> None:
     is kept on disk until a commit or a push records it, so nothing depends on this running."""
     try:
         payload = json.load(sys.stdin)
+        if langfuse_config() is None:  # before reading and redacting the whole transcript
+            return
         transcript, redact = Path(payload["transcript_path"]), Redactor()
         entries = read_jsonl(redact(transcript.read_text(errors="replace")))
         m = {**load_manifest(transcript.stem), **summarize(entries, redact.string(str(REPO)))}
@@ -1265,6 +1447,7 @@ def cmd_hook_commit() -> None:
         jj("edit", parents[0]["change_id"])  # abandons @ if it is empty and has no message
         try:
             process(transcript, Redactor(), "open", live=False, current=True)
+            write_index()
         finally:
             jj("edit", at["change_id"]) if changed or at["description"] else jj("new")
     except Exception:
@@ -1277,10 +1460,13 @@ def cmd_sync(args: list[str], publishing: bool = False) -> None:
     redact = Redactor()
     for p in paths:
         live = time.time() - p.stat().st_mtime < LIVE_SECONDS
-        m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing)
+        with perf.phase("process"):
+            m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing)
         s = m["stats"]
         print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
+    with perf.phase("index"):
+        write_index()  # once, after every session: it reads all their manifests
 
 
 def cmd_scan(args: list[str]) -> int:
@@ -1432,18 +1618,121 @@ def show_finding(prefix: str, limit: int = 4) -> int:
     return 0
 
 
-def cmd_stamp() -> int:
+def cmd_stamp(args: list[str]) -> int:
     """After a change to the rules: apply them to everything, then record that, so that the files
-    of this moment aren't scanned again. Findings in those files stop being reported at that
-    point, so any that are open have to be settled first."""
+    of this moment aren't scanned again. Findings in those files stop being reported at that point.
+    An open error refuses the stamp, since it must be fixed or settled first. An open warning does
+    not: it goes on the allow list as a proposal, unless it is there already, and `check` warns
+    about the proposal until a person approves or drops it. With --equivalent, the rules keep the
+    date of their last stamp instead, if they give the same results as the stamped ones."""
+    if args == ["--equivalent"]:
+        return stamp_equivalent()
+    if args:
+        print("usage: sync.py stamp [--equivalent]", file=sys.stderr)
+        return 2
     found = open_findings(Redactor(), everything=True)
     for fid, f in sorted(found.items()):
         print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
-    if found:
-        print(f"refused: {len(found)} open finding(s) would stop being reported; settle them first", file=sys.stderr)
+    blocking = {fid for fid, f in found.items() if f["level"] == "ERROR" or f["kind"] not in ALLOWABLE_KINDS}
+    if blocking:
+        print(f"refused: {len(blocking)} open error(s) would stop being reported; fix or settle them first", file=sys.stderr)
         return 1
+    if carried := carry_as_proposals(found):
+        print(f"warn  {carried} open warning(s) proposed for the allow list, so they keep warning in `check` "
+              f"until a person runs: python3 llm-dlc/tools/sync.py allow approve (or drops them)")
     redaction_rules.write_stamp()
     print(f"stamped {redaction_rules.source_hash()[:12]}")
+    return 0
+
+
+def carry_as_proposals(found: dict[str, dict]) -> int:
+    """Propose open warnings that the allow list does not hold yet. A proposal holds no value."""
+    entries, added = load_allowlist(), 0
+    for fid, f in sorted(found.items()):
+        if fid not in entries:
+            entries[fid] = {"kind": f["kind"], "masked": _mask(f["value"]), "status": "proposed",
+                            "reason": f"open when the rules were stamped on {time.strftime('%Y-%m-%d')}; not judged yet",
+                            "proposed_by": _who(), "proposed_on": time.strftime("%Y-%m-%d")}
+            added += 1
+    if added:
+        save_allowlist(entries)
+    return added
+
+
+RULES_FILE = "llm-dlc/tools/redaction_rules.py"
+
+
+def rules_differences(old: redaction_rules.Rules, new: redaction_rules.Rules, lines) -> int:
+    """How many of these lines the two sets of rules redact differently, or find different
+    findings in, before or after redaction."""
+    differ = 0
+    for line in lines:
+        redacted = new(line)
+        out = redacted.decode().rstrip("\n")
+        differ += (old(line) != redacted or old.hits_of_line(line) != new.hits_of_line(line)
+                   or (out != line and old.hits_of_line(out) != new.hits_of_line(out)))
+    return differ
+
+
+def stamp_equivalent(rev: str = "@-") -> int:
+    """Keep the last stamp's date for rules whose results are unchanged: the rules committed at
+    `rev`, which must carry a valid stamp, and the current ones must redact every line of every
+    transcript, stored log and published file the same, and find the same in it. Then the files
+    checked under the old stamp are checked under these rules too, and nothing is rescanned."""
+    if redaction_rules.RULES_HASH == redaction_rules.source_hash():
+        print("the rules' stamp is valid; nothing to do")
+        return 0
+    import importlib.util
+    import tempfile
+    r = jj("file", "show", "-r", rev, RULES_FILE)
+    if r.returncode:
+        print(f"refused: no {RULES_FILE} at {rev}", file=sys.stderr)
+        return 1
+    with tempfile.TemporaryDirectory() as d:
+        path = Path(d) / "stamped_rules.py"
+        path.write_text(r.stdout)
+        spec = importlib.util.spec_from_file_location("stamped_rules", path)
+        stamped = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(stamped)
+        if stamped.RULES_HASH != stamped.source_hash():
+            print(f"refused: the rules at {rev} are not stamped either; run: python3 llm-dlc/tools/sync.py stamp",
+                  file=sys.stderr)
+            return 1
+        pairs, user = personal_literals()
+        old, new = stamped.Rules(pairs, user), redaction_rules.Rules(pairs, user)
+    seen: set[bytes] = set()
+
+    def lines():
+        def distinct(text: str):
+            for line in text.splitlines():
+                key = hashlib.blake2b(line.encode(errors="replace"), digest_size=16).digest()
+                if key not in seen:
+                    seen.add(key)
+                    yield line
+        src = claude_project_dir()
+        for p in sorted(src.glob("*.jsonl")):
+            subdir = p.parent / p.stem / "subagents"
+            for t in [p] + (sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []):
+                yield from distinct(t.read_text(errors="replace"))
+        for gz in sorted(TRACES.glob("*/logs/*.jsonl.gz")):
+            yield from distinct(gzip.decompress(gz.read_bytes()).decode(errors="replace"))
+        for sid in all_manifests():
+            for f in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):
+                if f.exists():
+                    yield from distinct(f.read_text())
+        for f in (REVIEWED, ALLOWLIST):
+            if f.exists():
+                yield from distinct(f.read_text())
+
+    with perf.phase("compare rules"):
+        differ = rules_differences(old, new, lines())
+    if differ:
+        print(f"refused: the rules give different results on {differ} of {len(seen)} line(s); "
+              f"run: python3 llm-dlc/tools/sync.py stamp", file=sys.stderr)
+        return 1
+    redaction_rules.write_stamp(stamped.RULES_GENERATED)
+    print(f"stamped {redaction_rules.source_hash()[:12]}, keeping the date {stamped.RULES_GENERATED}: "
+          f"{len(seen):,} distinct lines give the same results under the rules at {rev}")
     return 0
 
 
@@ -1769,14 +2058,22 @@ def cmd_push(args: list[str]) -> int:
     return subprocess.run([JJ, "--config", "snapshot.max-new-file-size=100MiB", "git", "push", *args], cwd=REPO).returncode
 
 
-def cmd_check(remote: bool = False) -> int:
-    redact, errors, notes, warnings = Redactor(), [], [], []
-    errors += reviewed_problems()
-    found_errors, found_warnings = allowlist_problems(redact)
-    errors += found_errors
-    warnings += found_warnings
-    left_out = 0
-    manifests = all_manifests()
+def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
+    """sha256 of data[:n] for each length n that data has, in one pass over data."""
+    hasher, at, out, view = hashlib.sha256(), 0, {}, memoryview(data)
+    for n in sorted(lengths):
+        if n > len(data):
+            break
+        hasher.update(view[at:n])
+        at = n
+        out[n] = hasher.copy().hexdigest()
+    return out
+
+
+def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool) -> tuple[list, list, list, int]:
+    """(errors, warnings, notes, logs left out as older than the stamp) for each session's logs,
+    files and metrics."""
+    errors, warnings, notes, left_out = [], [], [], 0
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             errors.append(f"{sid}: unknown schema {m.get('schema')}")
@@ -1786,6 +2083,9 @@ def cmd_check(remote: bool = False) -> int:
         referenced |= {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
         for sha in sorted(referenced - logs.keys()):
             errors.append(f"{sid}: log {sha[:12]} is referenced but missing from logs")
+        # Each stored log is read once: the current one is kept for the metrics and the prefix
+        # check, and of the others only the length, once their content is shown to match their name.
+        current_sha, current, verified = m["log"]["sha256"], None, {}
         for sha, info in logs.items():
             url = info.get("url")
             if url and url != log_url(sid, sha):
@@ -1799,7 +2099,13 @@ def cmd_check(remote: bool = False) -> int:
                 elif not url:
                     errors.append(f"{sid}: log {sha[:12]} is neither stored locally nor uploaded")
                 continue
-            if hashlib.sha256(data).hexdigest() != sha:
+            if sha == current_sha:
+                current = data
+            with perf.phase("hash"):
+                matches = hashlib.sha256(data).hexdigest() == sha
+            if matches:
+                verified[sha] = len(data)
+            else:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             if older_than_stamp(log_path(sid, sha)):
                 left_out += 1
@@ -1818,52 +2124,95 @@ def cmd_check(remote: bool = False) -> int:
                                     f"withdraw it with unpublish --reason, or add it to ACCEPTED_LOGS in sync.py")
             if not url:  # not public yet: what a person should look at before pushing
                 warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.review(text)]
+            del data, text  # one log in memory at a time, besides the current one
         if not summary_path(sid).exists():
             errors.append(f"{sid}: summary.md is missing (run: python3 llm-dlc/tools/sync.py sync {sid})")
         for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):  # committed, so published
             if path.exists() and (leaks := redact.leaks(path.read_text())):
                 errors.append(f"{sid}: unredacted {leaks} in {path.relative_to(REPO)}")
-        # Logs are append-only: every log a commit points at should be a prefix of the current one.
-        data = load_log(sid, m["log"]["sha256"])
-        found_errors, found_warnings = metrics_problems(sid, m, data, redact)
+        if current is None and current_sha not in logs:
+            current = load_log(sid, current_sha)
+        with perf.phase("metrics"):
+            found_errors, found_warnings = metrics_problems(sid, m, current, redact)
         errors += found_errors
         warnings += found_warnings
-        current = data or b""
-        rewritten = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")
-                     and (old := load_log(sid, c["log_sha256"])) and not current.startswith(old)}
+        # Logs are append-only: every log a commit points at should be a prefix of the current one.
+        # A verified log is one when the current log's first as many bytes have its hash.
+        current = current or b""
+        pointed = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
+        with perf.phase("prefixes"):
+            digests = prefix_digests(current, {verified[sha] for sha in pointed if sha in verified})
+            rewritten = {sha for sha in pointed if sha in verified and verified[sha] and digests.get(verified[sha]) != sha}
+            rewritten |= {sha for sha in pointed - verified.keys()  # unlisted or not matching its name: compare bytes
+                          if (old := load_log(sid, sha)) and not current.startswith(old)}
         if rewritten:
             notes.append(f"{sid}: {len(rewritten)} older log(s) are not a prefix of the current log, "
                          f"as after a redaction policy change")
         if accepted:
             notes.append(f"{sid}: {accepted} published log(s) have findings that were reviewed and accepted")
-    if has_jj():
-        for c in jj_commits(f'description(substring:"{TRAILER}:")'):
-            for sid, sha in TRAILER_RE.findall(c["description"]):
-                where = f"change {c['change_id'][:12]}"
-                if not sha:
-                    notes.append(f"{where}: legacy trailer without sha256 for {sid}")
-                elif sid not in manifests:
-                    errors.append(f"{where}: session {sid} has no manifest")
-                elif sha not in manifests[sid].get("logs", {}):
-                    errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
-                else:
-                    # The manifest committed in the same tree should name the same log.
-                    for path in (manifest_path(sid).relative_to(REPO), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES)):
-                        if (r := jj("file", "show", "-r", c["commit_id"], str(path))).returncode == 0:
-                            break
-                    tree_sha = json.loads(r.stdout).get("log", {}).get("sha256") if r.returncode == 0 else None
-                    if tree_sha != sha:
-                        notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
-                                     f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
+    return errors, warnings, notes, left_out
+
+
+def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
+    """(errors, notes) for every commit with a trace trailer: its session and log are known, and
+    the manifest committed with it names the same log."""
+    errors, notes = [], []
+    if not has_jj():
+        return errors, notes
+    for c in jj_commits(f'description(substring:"{TRAILER}:")'):
+        for sid, sha in TRAILER_RE.findall(c["description"]):
+            where = f"change {c['change_id'][:12]}"
+            if not sha:
+                notes.append(f"{where}: legacy trailer without sha256 for {sid}")
+            elif sid not in manifests:
+                errors.append(f"{where}: session {sid} has no manifest")
+            elif sha not in manifests[sid].get("logs", {}):
+                errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
+            else:
+                # The manifest committed in the same tree should name the same log.
+                for path in (manifest_path(sid).relative_to(REPO), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES)):
+                    if (r := jj("file", "show", "-r", c["commit_id"], str(path))).returncode == 0:
+                        break
+                tree_sha = json.loads(r.stdout).get("log", {}).get("sha256") if r.returncode == 0 else None
+                if tree_sha != sha:
+                    notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
+                                 f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
+    return errors, notes
+
+
+def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str]:
+    """Errors in the files generated over all sessions, and in the review lists."""
+    errors = []
     if INDEX.exists() and {r["session_id"] for r in json.loads(INDEX.read_text())["sessions"]} != set(manifests):
         errors.append("llm-dlc/index.json does not list exactly the sessions in llm-dlc/traces (run sync)")
-    if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme():
+    if not TRACES_README.exists() or TRACES_README.read_text() != render_traces_readme(manifests):
         errors.append("llm-dlc/traces/README.md does not match the manifests (run sync)")
-    if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup():
+    if not METRICS_ROLLUP.exists() or METRICS_ROLLUP.read_text() != render_rollup(manifests):
         errors.append("llm-dlc/traces/metrics.json does not match the session metrics (run sync)")
     for listed in (REVIEWED, ALLOWLIST):
         if listed.exists() and (leaks := redact.leaks(listed.read_text())):
             errors.append(f"unredacted {leaks} in {listed.relative_to(REPO)}")
+    return errors
+
+
+def cmd_check(remote: bool = False) -> int:
+    redact, errors, notes, warnings = Redactor(), [], [], []
+    errors += reviewed_problems()
+    found_errors, found_warnings = allowlist_problems(redact)
+    errors += found_errors
+    warnings += found_warnings
+    manifests = all_manifests()
+    with perf.phase("sessions"):
+        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote)
+    errors += found_errors
+    warnings += found_warnings
+    notes += found_notes
+    with perf.phase("trailers"):
+        found_errors, found_notes = check_trailers(manifests)
+    errors += found_errors
+    notes += found_notes
+    with perf.phase("global files"):
+        errors += check_global_files(manifests, redact)
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -1904,7 +2253,17 @@ def log(msg: str) -> None:
 
 
 def main(argv: list[str]) -> int:
-    cmd, args = (argv[0], argv[1:]) if argv else ("", [])
+    cmd = argv[0] if argv else ""
+    try:
+        with perf.phase(cmd or "help"):
+            return run(cmd, argv[1:])
+    finally:
+        # The hooks run after every tool call and turn; only the runs that did something are kept.
+        if cmd != "perf" and not (cmd.startswith("hook") and perf.phases.get(cmd, [0, 0])[1] < 0.5):
+            save_perf(cmd)
+
+
+def run(cmd: str, args: list[str]) -> int:
     if cmd == "hook":
         cmd_hook()
     elif cmd == "hook-commit":
@@ -1928,7 +2287,11 @@ def main(argv: list[str]) -> int:
     elif cmd == "allow":
         return cmd_allow(args)
     elif cmd == "stamp":
-        return cmd_stamp()
+        return cmd_stamp(args)
+    elif cmd == "langfuse":
+        return cmd_langfuse(args)
+    elif cmd == "perf":
+        return cmd_perf(args)
     elif cmd == "init":
         cmd_init()
     else:
