@@ -288,12 +288,15 @@ def run_boundaries(folder, example, tmp, module, result):
     build = tmp / BUILD_ROOT
     gradle(build, f":{module}:compileJava")
     classes = build / module / "build/classes/java/main"
+    resources = build / module / "src/main/resources"
+    classpath = gradle_runtime_classpath(build, module)
     contracts = build / module / "src/contract"
     report = build / module / "build/reports/contracts"
     anchor = ["--sources", str(build / module / "src/main/java"), "--base", str(tmp), "--report", str(report)]
     if example["change"]["behaviourChangeIntended"]:
         old = {f.name: f.read_text() for f in contracts.glob("*.contract")}
         proc = subprocess.run([jvmcontract(), "update", "--contracts", str(contracts), "--classes", str(classes),
+                               "--classpath", classpath, "--resources", str(resources),
                                "--module", module, "--add", "boundaries"], text=True, capture_output=True)
         if proc.returncode != 0:
             sys.exit(f"jvmcontract update failed:\n{proc.stdout}{proc.stderr}")
@@ -307,6 +310,7 @@ def run_boundaries(folder, example, tmp, module, result):
     else:
         new_problems = []
     proc = subprocess.run([jvmcontract(), "verify", "--contracts", str(contracts), "--classes", str(classes),
+                           "--classpath", classpath, "--resources", str(resources),
                            "--module", module, *anchor], text=True, capture_output=True)
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
     if proc.returncode == 2:
@@ -318,13 +322,14 @@ def run_boundaries(folder, example, tmp, module, result):
     if new_problems and verdict == "verified":
         verdict = "violation"
     changes = boundary_changes(output)
-    m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) wire types, (\d+) problems\)", output)
+    m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) configuration keys, (\d+) wire types, "
+                  r"(\d+) problems\)", output)
     result.update({
         "verdict": verdict,
         "counterexamples": changes,
         "newProblems": new_problems,
-        "domain": (f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, {m.group(4)} wire types, "
-                   f"{m.group(5)} problems") if m else None,
+        "domain": (f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, "
+                   f"{m.group(4)} configuration keys, {m.group(5)} wire types, {m.group(6)} problems") if m else None,
         "verdictLabel": {
             "violation": (f"{VERDICT_LABEL[verdict]}: {len(new_problems)} new problem{'s' if len(new_problems) != 1 else ''}"
                           if new_problems else
@@ -333,6 +338,15 @@ def run_boundaries(folder, example, tmp, module, result):
             "unverifiable": VERDICT_LABEL[verdict],
         }[verdict],
     })
+
+
+def gradle_runtime_classpath(build, module):
+    """The module's runtime class path as Gradle resolves it, through the build's `printRuntimeClasspath` task: the
+    dependency jars carry the configuration metadata that declares the framework's keys, and the sibling modules'
+    classes are followed for wire types and configuration keys."""
+    proc = gradle(build, f":{module}:printRuntimeClasspath")
+    lines = [line for line in proc.stdout.splitlines() if line.strip()]
+    return lines[-1].strip() if lines else ""
 
 
 def problem_lines(contract):

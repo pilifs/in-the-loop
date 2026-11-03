@@ -1,6 +1,8 @@
 // The module's boundary contract (src/contract/boundaries.contract): where Spring enters the module (routes,
-// listeners, schedules, bean definitions, configuration keys), the advice on each bean, the places where an
-// annotation does not do what it says, and the wire types (the JSON shape of each request, response and message). `check` fails when the compiled classes no longer match it, and
+// listeners, schedules, bean definitions), the advice on each bean, the places where an annotation does not do
+// what it says, the configuration keys (what the classes read, what application.yaml sets, what the class path's
+// metadata declares) and the wire types (the JSON shape of each request, response and message). `check` fails
+// when the compiled classes or the application files no longer match it, and
 // `updateBoundaries` rewrites it from the code. The verifier is jvmcontract, the Rust tool in lib/, which reads the
 // class files directly; the tasks are skipped when it is not on the PATH, so the build still works without it.
 plugins {
@@ -23,16 +25,19 @@ fun Exec.configureBoundaries(mode: String) {
     val classes: FileCollection = sourceSets.main.get().output.classesDirs
     val classpath: Provider<String> = configurations.runtimeClasspath.map { it.asPath }
     val sources: List<String> = sourceSets.main.get().java.srcDirs.map { it.path }
+    val resources: List<String> = sourceSets.main.get().resources.srcDirs.map { it.path }
     val moduleName = project.name
     val root = rootDir.path
     val contracts = contractsDir.asFile.path
     val report = reportDir.get().asFile.path
     inputs.files(classes)
+    inputs.files(resources.map { fileTree(it) })
     doFirst {
         val args = mutableListOf("jvmcontract", mode, "--contracts", contracts, "--module", moduleName)
         classes.forEach { args += listOf("--classes", it.path) }
         args += listOf("--classpath", classpath.get())
         sources.forEach { args += listOf("--sources", it) }
+        resources.forEach { args += listOf("--resources", it) }
         args += listOf("--base", root, "--report", report)
         if (mode == "update") args += listOf("--add", "boundaries")
         commandLine(args)

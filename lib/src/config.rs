@@ -13,10 +13,10 @@
 //! and flow mappings are read as text.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::boundaries::{Bean, Member};
-use crate::classfile::{flags, signature, Annotation, ClassFile, Constant, ElementValue, Field, Insn, MethodDescriptor, Type};
+use crate::classfile::{flags, Annotation, ClassFile, Constant, ElementValue, Field, Insn, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::wire;
 use crate::Error;
@@ -765,10 +765,17 @@ impl Scan<'_> {
             return;
         }
         visited.push(class.name.clone());
-        for field in &class.fields {
-            if field.is_static() || field.access & flags::SYNTHETIC != 0 {
-                continue;
-            }
+        let instance_fields = class.fields.iter().filter(|f| !f.is_static() && f.access & flags::SYNTHETIC == 0).count();
+        // A record's `@DefaultValue`s are on the canonical constructor's parameters, in component order.
+        let defaults: Vec<Option<String>> = class
+            .methods
+            .iter()
+            .filter(|m| m.is_constructor() && MethodDescriptor::parse(&m.descriptor).is_ok_and(|d| d.params.len() == instance_fields))
+            .find_map(|m| m.parameter_annotations(&class.pool).ok())
+            .map(|lists| lists.iter().map(|list| list.iter().find(|a| a.simple_name() == "DefaultValue").and_then(|a| a.strings("value").into_iter().next())).collect())
+            .unwrap_or_default();
+        for (index, field) in class.fields.iter().filter(|f| !f.is_static() && f.access & flags::SYNTHETIC == 0).enumerate() {
+            let default = defaults.get(index).cloned().flatten();
             let ty = wire::field_type_name(class, field);
             let key = if prefix.is_empty() { canonical(&field.name) } else { format!("{prefix}.{}", canonical(&field.name)) };
             let site = format!("{site_prefix} {}.{}", simple_class(&class.name), field.name);
@@ -781,15 +788,15 @@ impl Scan<'_> {
                             continue;
                         }
                     }
-                    self.out.push(Binding { key, shape: Shape::Exact, ty: Some(ty), ty_class: Some(c), default: None, site, class: class.name.clone(), line });
+                    self.out.push(Binding { key, shape: Shape::Exact, ty: Some(ty), ty_class: Some(c), default: default.clone(), site, class: class.name.clone(), line });
                 }
                 Some(c) => {
                     let shape = shape_of_type(&c.replace('/', "."));
-                    self.out.push(Binding { key, shape, ty: Some(ty), ty_class: Some(c), default: None, site, class: class.name.clone(), line });
+                    self.out.push(Binding { key, shape, ty: Some(ty), ty_class: Some(c), default: default.clone(), site, class: class.name.clone(), line });
                 }
                 None => {
                     let shape = if field.descriptor.starts_with('[') { Shape::List } else { Shape::Exact };
-                    self.out.push(Binding { key, shape, ty: Some(ty), ty_class: None, default: None, site, class: class.name.clone(), line });
+                    self.out.push(Binding { key, shape, ty: Some(ty), ty_class: None, default: default.clone(), site, class: class.name.clone(), line });
                 }
             }
         }
@@ -965,10 +972,15 @@ fn mismatch(cp: &ClassPath, value: &str, ty: &str, ty_class: Option<&str>) -> Op
             if constants.iter().any(|c| canonical(c).replace('-', "") == wanted) {
                 return None;
             }
-            return Some(format!("{value:?} is not a {}: one of {}", simple_class(&class.name).replace('$', "."), constants.join(", ")));
+            let name = simple_class(&class.name).replace('$', ".");
+            return Some(format!("{value:?} is not {} {name}: one of {}", article(&name), constants.join(", ")));
         }
     };
-    (!ok).then(|| format!("{value:?} is not a {simple}"))
+    (!ok).then(|| format!("{value:?} is not {} {simple}", article(&simple)))
+}
+
+fn article(noun: &str) -> &'static str {
+    if noun.chars().next().is_some_and(|c| matches!(c.to_ascii_lowercase(), 'a' | 'e' | 'i' | 'o' | 'u')) { "an" } else { "a" }
 }
 
 fn distance(a: &str, b: &str) -> usize {
@@ -1016,7 +1028,7 @@ fn quote(value: &str) -> String {
 
 /// The configuration block of a module: `None` when it has neither application files nor keys read by its
 /// classes. The header names the files; each member is one key.
-pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[PathBuf]) -> Result<Option<(String, Bean)>, Error> {
+pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[PathBuf]) -> Result<Option<Bean>, Error> {
     let (files, settings) = read_files(resources)?;
     let bindings = bindings(cp, local)?;
     if files.is_empty() && bindings.is_empty() {
@@ -1174,7 +1186,9 @@ pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[Pa
 
     let members = keys
         .into_iter()
-        .map(|(_, k)| {
+        .map(|(_, mut k)| {
+            // The default profile's value first, then the profiles in file order.
+            k.values.sort_by_key(|(profile, _)| profile.is_some());
             let mut line = k.display.clone();
             if let Some(t) = &k.ty {
                 line.push_str(&format!(": {}", simple_type(t)));
@@ -1191,8 +1205,8 @@ pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[Pa
                     parts.push(format!("default {}", quote(d)));
                 }
             }
-            if !parts.is_empty() {
-                line.push(' ');
+            if let Some(first) = parts.first() {
+                line.push_str(if first.starts_with('=') || k.ty.is_none() { " " } else { ", " });
                 line.push_str(&parts.join(", "));
             }
             let mut details = k.details;
@@ -1202,7 +1216,7 @@ pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[Pa
         })
         .collect();
     let header = if files.is_empty() { "no application files".to_string() } else { files.join(", ") };
-    Ok(Some((header, Bean { annotations: header, members })))
+    Ok(Some(Bean { annotations: header, members }))
 }
 
 #[cfg(test)]
@@ -1265,7 +1279,7 @@ mod tests {
     fn values_are_checked_against_their_type() {
         let cp = ClassPath::new();
         assert_eq!(mismatch(&cp, "8", "int", None), None);
-        assert_eq!(mismatch(&cp, "eight", "java.lang.Integer", None).as_deref(), Some("\"eight\" is not a Integer"));
+        assert_eq!(mismatch(&cp, "eight", "java.lang.Integer", None).as_deref(), Some("\"eight\" is not an Integer"));
         assert_eq!(mismatch(&cp, "2m", "java.time.Duration", None), None);
         assert_eq!(mismatch(&cp, "PT2M", "Duration", None), None);
         assert_eq!(mismatch(&cp, "2 minutes", "Duration", None).as_deref(), Some("\"2 minutes\" is not a Duration"));

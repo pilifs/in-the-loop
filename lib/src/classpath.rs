@@ -184,6 +184,29 @@ impl ClassPath {
         self.entries.iter().map(Entry::display).collect()
     }
 
+    /// Every copy of a resource across the entries (`META-INF/spring-configuration-metadata.json` is in many
+    /// jars), each with the entry it came from.
+    pub fn resources(&self, name: &str) -> Result<Vec<(String, Vec<u8>)>, Error> {
+        let mut out = Vec::new();
+        for entry in &self.entries {
+            let bytes = match entry {
+                Entry::Dir(dir) => {
+                    let file = dir.join(name);
+                    if !file.is_file() {
+                        continue;
+                    }
+                    std::fs::read(&file).map_err(|e| Error::new(format!("cannot read {}: {e}", file.display())))?
+                }
+                Entry::Jar(zip, _) => match zip.read(name)? {
+                    Some(bytes) => bytes,
+                    None => continue,
+                },
+            };
+            out.push((entry.display(), bytes));
+        }
+        Ok(out)
+    }
+
     /// Every application class name, in entry order and sorted within an entry.
     pub fn application_class_names(&self) -> Result<Vec<String>, Error> {
         let mut names = Vec::new();

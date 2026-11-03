@@ -34,3 +34,13 @@ tasks.withType<Test>().configureEach {
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
+
+// The runtime class path as one PATH-separated line, for tools that run outside the build: examples/tools/build.py
+// runs jvmcontract over a module with the dependency jars on the class path, whose configuration metadata declares
+// the framework's keys.
+val runtimeClasspath: Provider<String> = configurations.runtimeClasspath.map { it.asPath }
+tasks.register("printRuntimeClasspath") {
+    description = "Prints the module's runtime class path as one line."
+    val classpath = runtimeClasspath
+    doLast { println(classpath.get()) }
+}

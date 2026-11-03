@@ -27,6 +27,7 @@ pub mod boundaries;
 pub mod capabilities;
 pub mod classfile;
 pub mod classpath;
+pub mod config;
 pub mod contract;
 pub mod domain;
 pub mod equivalence;

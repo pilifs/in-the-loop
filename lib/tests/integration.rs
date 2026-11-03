@@ -1017,7 +1017,12 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
 #[test]
 fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply() {
     let Some(dir) = spring_fixtures() else { return };
-    let found = boundaries::analyse(&classpath(dir)).unwrap();
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring");
+    let mut cp = ClassPath::new();
+    cp.add(dir).unwrap();
+    cp.add(&fixtures.join("metadata")).unwrap();
+    let cp = cp.with_default_jdk();
+    let found = boundaries::analyse_in(&cp, None, None, &[fixtures.join("resources")]).unwrap();
     let text = found.render("spring");
     let has = |line: &str| assert!(text.contains(line), "expected {line:?} in:\n{text}");
 
@@ -1030,7 +1035,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     assert!(!text.contains("describe"), "a method without framework annotations is not a boundary");
     // Schedules, bean definitions and configuration keys.
     has("  @Scheduled(fixedDelayString = \"${orders.sweep:1s}\") => void sweep()");
-    has("fixtures.spring.HoldSettings: @ConfigurationProperties(\"holds\")\n  holds.max-seats: int\n  holds.ttl: Duration");
+    has("fixtures.spring.HoldSettings: @ConfigurationProperties(\"holds\")\n\n");
     has("  @Value(\"${orders.limit:5}\") int limit");
     // The places where the advice does not apply.
     has("  Order place(String holdId)\n    @Transactional\n    ! self-invocation from audited(String)");
@@ -1070,7 +1075,29 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("wire fixtures.spring.Empty: class\n  ! no properties: it is written as {}\n");
     has("wire fixtures.spring.NoteDocument: record\n  ! a persistence type (@Document) is on the wire");
     has("wire fixtures.spring.Base: class\n  id: String\n");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.types.len(), found.problems()), (7, 9, 13, 13, 21), "{text}");
+    // The configuration keys: what the classes read, what the files set, what the metadata declares, cross-checked.
+    has("configuration: application-prod.properties, application.yaml\n");
+    has("  holds.max-seats: int = 8, prod: 12\n    @ConfigurationProperties(\"holds\") HoldSettings.maxSeats\n");
+    has("  holds.ttl: Duration = \"2 minutes\"\n    @ConfigurationProperties(\"holds\") HoldSettings.ttl\n    ! \"2 minutes\" is not a Duration\n");
+    has("  holds.region: Region = eu-west\n    @ConfigurationProperties(\"holds\") HoldSettings.region\n    ! \"eu-west\" is not a Region: one of EU, US\n");
+    has("  holds.rows[]: List<String>\n    @ConfigurationProperties(\"holds\") HoldSettings.rows\n");
+    has("  holds.rows[0]: String = A\n    under holds.rows[] (@ConfigurationProperties(\"holds\") HoldSettings.rows)\n");
+    has("  holds.limits.*: Map<String, Integer>\n");
+    has("  holds.limits.vip: Integer = 2\n    under holds.limits.* (@ConfigurationProperties(\"holds\") HoldSettings.limits)\n");
+    has("  holds.alerts.enabled: boolean = yes\n    @ConfigurationProperties(\"holds\") HoldSettings$Alerts.enabled\n");
+    has("  holds.alerts.channel: String\n    @ConfigurationProperties(\"holds\") HoldSettings$Alerts.channel\n");
+    has("  holds.enabled: String = true\n    @ConditionalOnProperty(havingValue = \"true\") on Settings\n");
+    has("  holds.max-seat = 6\n    ! nothing binds it: no class on the class path reads it and no configuration metadata declares it; nearest known key: holds.max-seats\n");
+    has("  holds.retries: int, default many\n    @Value on Settings.retries, default many\n    ! the default \"many\" is not an int\n");
+    has("  gateway.url: String = http://localhost:9000\n    Environment.getProperty in Settings.gateway(), default http://localhost\n");
+    has("  gateway.limit: Integer = ten\n    Environment.getProperty in Settings.limit()\n    ! \"ten\" is not an Integer\n");
+    has("  gateway.token: String\n    Environment.containsProperty in Settings.hasToken()\n");
+    has("  orders.sweep: Duration, default 1s\n    @Scheduled in OrderService.sweep(), default 1s\n");
+    has("  server.port: Integer = 8080, prod: 80\n    declared by ServerProperties\n");
+    has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
+    has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
+    assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.configuration_keys(), found.types.len(), found.problems()), (8, 9, 13, 21, 13, 27), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1080,7 +1107,9 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     let _ = std::fs::remove_dir_all(&contracts);
     let mut run = ContractsRun::new(&contracts);
     run.classes = vec![dir.to_path_buf()];
-    run.sources = vec![Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/spring")];
+    run.classpath = vec![fixtures.join("metadata")];
+    run.sources = vec![fixtures.clone()];
+    run.resources = vec![fixtures.join("resources")];
     run.base = Path::new(env!("CARGO_MANIFEST_DIR")).to_path_buf();
     run.module = "spring".into();
     run.add = vec!["boundaries".into()];
@@ -1094,7 +1123,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (7 beans, 9 entry points, 13 advised methods, 13 wire types, 21 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (8 beans, 9 entry points, 13 advised methods, 21 configuration keys, 13 wire types, 27 problems)"), "{}", outcome.output);
 
     let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n");
     std::fs::write(&file, edited).unwrap();
@@ -1106,4 +1135,12 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
     assert_eq!(finding.uri.as_deref(), Some("tests/fixtures/spring/fixtures/spring/OrderService.java"));
     assert!(finding.line > 1, "anchored to the member's line, found {}", finding.line);
+
+    // A configuration change alone: the finding is anchored to the line of the application file.
+    std::fs::write(&file, text.replace("  server.port: Integer = 8080, prod: 80\n", "  server.port: Integer = 8080\n")).unwrap();
+    let outcome = verifier::run(&run).unwrap();
+    assert_eq!(outcome.exit_code, 1, "{}", outcome.output);
+    assert!(outcome.output.contains("  added configuration: server.port: Integer = 8080, prod: 80\n"), "{}", outcome.output);
+    let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
+    assert_eq!((finding.uri.as_deref(), finding.line), (Some("tests/fixtures/spring/resources/application.yaml"), 17));
 }

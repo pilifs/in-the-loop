@@ -63,12 +63,20 @@ enum Command {
         module: String,
     },
     /// Print the boundary contract of a module: where the framework enters it (routes, listeners, schedules, bean
-    /// definitions), the advice on each bean (transactions, security, validation, caching, retries), and the places
-    /// where an annotation does not do what it says, from the annotations in the compiled classes.
+    /// definitions), the advice on each bean (transactions, security, validation, caching, retries), the places
+    /// where an annotation does not do what it says, the configuration keys and the wire types, from the compiled
+    /// classes and the application files.
     Boundaries {
         /// Directories of classes or jars of the module.
         #[arg(required = true)]
         paths: Vec<PathBuf>,
+        /// Further class path entries (dependency jars, whose configuration metadata declares the framework's keys;
+        /// repeatable, or PATH-separated).
+        #[arg(long = "classpath")]
+        classpath: Vec<String>,
+        /// Resource roots with the application files (`application.yaml`, `application-prod.properties`).
+        #[arg(long = "resources")]
+        resources: Vec<PathBuf>,
         /// Print JSON instead of the contract text.
         #[arg(long)]
         json: bool,
@@ -175,6 +183,9 @@ struct ContractArgs {
     /// Source roots, to anchor findings to lines (repeatable).
     #[arg(long = "sources")]
     sources: Vec<PathBuf>,
+    /// Resource roots with the application files (`application.yaml`) the boundary contract checks (repeatable).
+    #[arg(long = "resources")]
+    resources: Vec<PathBuf>,
     /// The directory SARIF paths are relative to.
     #[arg(long)]
     base: Option<PathBuf>,
@@ -351,6 +362,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             run.classes = args.classes.classes.clone();
             run.classpath = args.classes.classpath_entries();
             run.sources = args.sources.iter().map(|s| std::fs::canonicalize(s).unwrap_or_else(|_| s.clone())).collect();
+            run.resources = args.resources.clone();
             if let Some(base) = args.base {
                 run.base = std::fs::canonicalize(&base).unwrap_or(base);
             }
@@ -494,13 +506,21 @@ fn run(cli: Cli) -> Result<i32, Error> {
             print!("{}", surface.render(&module));
             Ok(0)
         }
-        Command::Boundaries { paths, json, module } => {
+        Command::Boundaries { paths, classpath, resources, json, module } => {
             let mut cp = ClassPath::new();
             for p in &paths {
                 cp.add(p)?;
             }
+            let mut module_cp = ClassPath::new();
+            for p in &paths {
+                module_cp.add(p)?;
+            }
+            let module_classes: std::collections::BTreeSet<String> = module_cp.application_class_names()?.into_iter().collect();
+            for list in &classpath {
+                cp.add_path_list(list)?;
+            }
             let cp = cp.with_default_jdk();
-            let boundaries = jvmcontract::boundaries::analyse(&cp)?;
+            let boundaries = jvmcontract::boundaries::analyse_in(&cp, Some(&module_classes), Some(&module_classes), &resources)?;
             if json {
                 println!("{}", serde_json::to_string_pretty(&boundaries).expect("serializable"));
             } else {

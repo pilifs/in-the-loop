@@ -1,0 +1,32 @@
+# The application file of the Spring fixtures: each kind of configuration problem once, next to settings that are fine.
+holds:
+  max-seats: 8
+  ttl: 2 minutes # not a Duration
+  region: eu-west # not a Region constant
+  rows: [A, B]
+  limits:
+    vip: 2
+  alerts:
+    enabled: yes
+  enabled: true # @ConditionalOnProperty on Settings
+  maxSeat: 6 # nothing binds it
+gateway:
+  url: "http://localhost:9000"
+  limit: ten # Environment.getProperty(.., Integer.class)
+server:
+  port: 8080
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost/test # deprecated in the metadata
+  kafka:
+    producer:
+      properties:
+        enable.idempotence: true
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+server:
+  port: 80

@@ -284,7 +284,7 @@ struct Shape {
 }
 
 fn member(line: String, details: Vec<String>, problems: usize, source_line: Option<u16>) -> Member {
-    Member { line, details, entry: false, advised: false, problems, source_line }
+    Member { line, details, entry: false, advised: false, problems, source_line, source_file: None, source_class: None }
 }
 
 fn problem(text: String) -> Member {

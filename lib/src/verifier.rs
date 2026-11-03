@@ -262,6 +262,8 @@ pub struct ContractsRun {
     pub classpath: Vec<PathBuf>,
     /// Source roots, to anchor findings to lines.
     pub sources: Vec<PathBuf>,
+    /// Resource roots, where the application files (`application.yaml`) of the boundary contract live.
+    pub resources: Vec<PathBuf>,
     /// The base the SARIF paths are relative to.
     pub base: PathBuf,
     /// Where to write `contracts.sarif`, if anywhere.
@@ -283,6 +285,7 @@ impl ContractsRun {
             classes: Vec::new(),
             classpath: Vec::new(),
             sources: Vec::new(),
+            resources: Vec::new(),
             base: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
             report: None,
             module: "module".into(),
@@ -501,7 +504,7 @@ fn check_boundary_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, out:
             local.extend(sibling.application_class_names()?);
         }
     }
-    let boundaries = crate::boundaries::analyse_in(cp, Some(&module), Some(&local))?;
+    let boundaries = crate::boundaries::analyse_in(cp, Some(&module), Some(&local), &run.resources)?;
     let stats = boundaries.stats();
     if run.update {
         if file.exists() && crate::boundaries::read(file).is_ok_and(|old| crate::boundaries::diff(&old, &boundaries.entries()).is_empty()) {
@@ -523,7 +526,11 @@ fn check_boundary_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, out:
     let mut uri = None;
     let mut line = 1;
     if let Some((class, member)) = boundaries.first_added(&diff) {
-        if let Some(source) = sarif::source_file(&class.replace('.', "/"), &run.sources) {
+        let class = member.source_class.clone().unwrap_or_else(|| class.replace('.', "/"));
+        if let Some(file) = &member.source_file {
+            uri = Some(sarif::relative_uri(&run.base, file));
+            line = u32::from(member.source_line.unwrap_or(1)).max(1);
+        } else if let Some(source) = sarif::source_file(&class, &run.sources) {
             uri = Some(sarif::relative_uri(&run.base, &source));
             line = u32::from(member.source_line.unwrap_or(1)).max(1);
         }

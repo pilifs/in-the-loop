@@ -18,12 +18,13 @@
 //! encodes and decodes with the same classes; here it is a changed line.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
 use crate::classfile::{flags, signature, Annotation, ClassFile, Insn, Kind, Method, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
+use crate::config;
 use crate::wire;
 use crate::Error;
 
@@ -119,8 +120,13 @@ pub struct Member {
     /// Whether the framework applies advice to it, on the member or on the whole class.
     pub advised: bool,
     pub problems: usize,
-    /// The member's first source line, when the class was compiled with line numbers.
+    /// The member's first source line, when the class was compiled with line numbers; for a configuration key,
+    /// the line of the file that sets it.
     pub source_line: Option<u16>,
+    /// The file the line is in, when it is not the class's own source (a configuration key set in a file).
+    pub source_file: Option<PathBuf>,
+    /// The class the line is in, when the block is not a class (a configuration key read by a class).
+    pub source_class: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -134,6 +140,10 @@ pub struct Bean {
 pub struct Boundaries {
     /// By binary name with dots.
     pub beans: BTreeMap<String, Bean>,
+    /// The configuration keys: the files read in the header, one member per key with its type and values, the
+    /// classes that read it and the `!` problems ([`config`]). `None` when the module has no application files and
+    /// reads no keys.
+    pub configuration: Option<Bean>,
     /// The wire types, by binary name with dots: the header is the kind of type and how it is encoded, the members
     /// are its properties (`name: Type`), subtypes, enum constants and `!` problems.
     pub types: BTreeMap<String, Bean>,
@@ -221,27 +231,21 @@ fn routes(class_mappings: &[&Annotation], method: &Annotation) -> Vec<String> {
     out
 }
 
-fn kebab(name: &str) -> String {
-    let mut out = String::new();
-    for c in name.chars() {
-        if c.is_ascii_uppercase() {
-            if !out.is_empty() {
-                out.push('-');
-            }
-            out.push(c.to_ascii_lowercase());
-        } else {
-            out.push(c);
-        }
-    }
-    out
-}
 
 /// The receiver of a call on an instance method of the same class, when it is `this` loaded directly before the
 /// arguments: `this.m(a, b)` compiles to `aload_0`, the arguments, `invokevirtual`. The walk goes back over the
 /// argument expressions counting stack values, and gives up (`None`) at a jump target, a stack shuffle it does
 /// not model, or a receiver that is anything else.
 fn receiver_is_this(class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, call: usize, arguments: usize) -> Option<bool> {
-    let mut depth = arguments;
+    let at = pushing(class, insns, targets, call, arguments)?;
+    Some(matches!(insns[at].1, Insn::Load(Kind::Ref, 0)))
+}
+
+/// The index of the instruction that pushed the value `depth` slots below the top of the stack at `call` (`0` is
+/// the last argument, `arguments` the receiver), walking back over the instructions before it; `None` at a jump
+/// target or a stack shuffle the walk does not model.
+pub(crate) fn pushing(class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet<u32>, call: usize, depth: usize) -> Option<usize> {
+    let mut depth = depth;
     let mut i = call;
     while i > 0 {
         if targets.contains(&insns[i].0) {
@@ -251,7 +255,7 @@ fn receiver_is_this(class: &ClassFile, insns: &[(u32, Insn)], targets: &BTreeSet
         let insn = &insns[i].1;
         let (pops, pushes) = stack_effect(class, insn)?;
         if pushes > depth {
-            return Some(pushes == 1 && matches!(insn, Insn::Load(Kind::Ref, 0)));
+            return (pushes == 1).then_some(i);
         }
         depth = depth - pushes + pops;
     }
@@ -289,7 +293,7 @@ fn stack_effect(class: &ClassFile, insn: &Insn) -> Option<(usize, usize)> {
     })
 }
 
-fn jump_targets(insns: &[(u32, Insn)], method: &Method) -> BTreeSet<u32> {
+pub(crate) fn jump_targets(insns: &[(u32, Insn)], method: &Method) -> BTreeSet<u32> {
     let mut targets = BTreeSet::new();
     for (_, insn) in insns {
         match insn {
@@ -375,14 +379,15 @@ fn is_checked(cp: &ClassPath, exception: &str) -> bool {
 
 /// The boundaries of every application class on the class path.
 pub fn analyse(cp: &ClassPath) -> Result<Boundaries, Error> {
-    analyse_in(cp, None, None)
+    analyse_in(cp, None, None, &[])
 }
 
 /// The boundaries of the named application classes (internal names), or of all of them; the whole class path
 /// resolves the types the checks ask about (which exceptions are checked, what an `@Async` method returns). The
 /// wire types are followed into `local` classes (the module and its sibling modules), or into every application
-/// class when `local` is `None`.
-pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&BTreeSet<String>>) -> Result<Boundaries, Error> {
+/// class when `local` is `None`; the configuration keys are those the local classes read and those the
+/// application files under `resources` set.
+pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&BTreeSet<String>>, resources: &[PathBuf]) -> Result<Boundaries, Error> {
     let mut boundaries = Boundaries::default();
     let classes = cp.application_classes()?;
     let mut roots: Vec<String> = Vec::new();
@@ -405,20 +410,6 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
         let mut members = Vec::new();
         let mut method_members = false;
 
-        // Configuration properties: the keys the class binds, with Boot's relaxed names.
-        if let Some(props) = class_annotations.iter().find(|a| a.simple_name() == "ConfigurationProperties") {
-            let mut prefix = props.strings("prefix");
-            prefix.extend(props.strings("value"));
-            let prefix = prefix.into_iter().next().unwrap_or_default();
-            for field in &class.fields {
-                if field.is_static() || field.access & flags::SYNTHETIC != 0 {
-                    continue;
-                }
-                let t = field.generic_signature(&class.pool).and_then(|s| signature::field_type(&s)).or_else(|| Type::parse(&field.descriptor).ok().map(|t| t.simple_name())).unwrap_or_else(|| field.descriptor.clone());
-                let key = if prefix.is_empty() { kebab(&field.name) } else { format!("{prefix}.{}", kebab(&field.name)) };
-                members.push(Member { line: format!("{key}: {t}"), details: Vec::new(), entry: false, advised: false, problems: 0, source_line: None });
-            }
-        }
 
         for field in &class.fields {
             if field.access & flags::SYNTHETIC != 0 {
@@ -431,7 +422,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
                 continue;
             }
             let t = wire::field_type_name(class, field);
-            members.push(Member { line: format!("{} {t} {}", render_all(&annotations), field.name), details: Vec::new(), entry: false, advised: false, problems: 0, source_line: None });
+            members.push(Member { line: format!("{} {t} {}", render_all(&annotations), field.name), details: Vec::new(), entry: false, advised: false, problems: 0, source_line: None, source_file: None, source_class: None });
         }
 
         for method in &class.methods {
@@ -577,7 +568,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             let mut details = advice;
             let problem_count = problems.len();
             details.extend(problems);
-            members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line() });
+            members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line(), source_file: None, source_class: None });
             method_members = true;
         }
 
@@ -601,6 +592,7 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option
             boundaries.beans.remove(&name);
         }
     }
+    boundaries.configuration = config::analyse(cp, local, resources)?;
     Ok(boundaries)
 }
 
@@ -614,16 +606,21 @@ impl Boundaries {
     }
 
     pub fn problems(&self) -> usize {
-        self.beans.values().chain(self.types.values()).flat_map(|b| &b.members).map(|m| m.problems).sum()
+        self.blocks().flat_map(|(_, b)| &b.members).map(|m| m.problems).sum()
+    }
+
+    pub fn configuration_keys(&self) -> usize {
+        self.configuration.as_ref().map_or(0, |c| c.members.len())
     }
 
     pub fn stats(&self) -> String {
-        format!("{} beans, {} entry points, {} advised methods, {} wire types, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.types.len(), self.problems())
+        format!("{} beans, {} entry points, {} advised methods, {} configuration keys, {} wire types, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.configuration_keys(), self.types.len(), self.problems())
     }
 
-    /// The beans, then the wire types under their `wire ` prefix, as the contract lists them.
+    /// The beans, then the configuration block, then the wire types under their `wire ` prefix, as the contract
+    /// lists them.
     fn blocks(&self) -> impl Iterator<Item = (String, &Bean)> {
-        self.beans.iter().map(|(n, b)| (n.clone(), b)).chain(self.types.iter().map(|(n, b)| (format!("wire {n}"), b)))
+        self.beans.iter().map(|(n, b)| (n.clone(), b)).chain(self.configuration.iter().map(|b| ("configuration".to_string(), b))).chain(self.types.iter().map(|(n, b)| (format!("wire {n}"), b)))
     }
 
     /// Comparable entries: `type: annotations`, `type: member` and `type: member: detail` lines.
@@ -662,8 +659,9 @@ impl Boundaries {
             "# Boundary contract, generated by jvmcontract. Do not edit: regenerate it with `jvmcontract update`.".to_string(),
             "# It lists where the framework enters this module (routes, listeners, schedules, bean definitions) and the".to_string(),
             "# advice on each bean (transactions, security, validation, caching, retries), from the annotations in the".to_string(),
-            "# compiled classes, then the wire types: the JSON shape of each request, response and message type.".to_string(),
-            "# A `!` line is a place where an annotation does not do what it says.".to_string(),
+            "# compiled classes, then the configuration keys (what the classes read, what the application files set,".to_string(),
+            "# what the class path's metadata declares), then the wire types: the JSON shape of each request, response".to_string(),
+            "# and message type. A `!` line is a place where an annotation or a setting does not do what it says.".to_string(),
             "kind: boundaries".to_string(),
             format!("module: {module}, {}", self.stats()),
             String::new(),
@@ -745,7 +743,6 @@ mod tests {
         assert_eq!(routes(&[&class], &any), vec!["ANY /orders"]);
         assert_eq!(routes(&[], &any), vec!["ANY /"]);
         assert_eq!(join_paths("/a/", "/b"), "/a/b");
-        assert_eq!(kebab("sweepInterval"), "sweep-interval");
     }
 
     #[test]
