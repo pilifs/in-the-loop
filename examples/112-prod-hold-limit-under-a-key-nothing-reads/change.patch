@@ -1,0 +1,18 @@
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml b/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml
+index 7d1aa1a..475f82c 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml
++++ b/examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml
+@@ -32,3 +32,13 @@ boxoffice:
+     sweep-interval: 1s
+   outbox:
+     poll-interval: 100ms
++
++---
++# Production: a hold may take a whole row.
++spring:
++  config:
++    activate:
++      on-profile: prod
++boxoffice:
++  hold:
++    max-seat: 12

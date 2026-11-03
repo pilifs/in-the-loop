@@ -26,7 +26,7 @@ net.terminalvalue.boxoffice.payments.gateway.FakePaymentGateway: @Component
 configuration: application.yaml
   boxoffice.gateway.slow-delay: Duration = 5s
     @Value in FakePaymentGateway(...), slowDelay, default 5s
-  boxoffice.outbox.batch-size: int default 100
+  boxoffice.outbox.batch-size: int, default 100
     @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100
   boxoffice.outbox.poll-interval: Duration = 100ms
     @Scheduled in OutboxRelay.publishPending(), default 100ms

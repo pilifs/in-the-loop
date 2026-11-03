@@ -27,8 +27,8 @@ net.terminalvalue.boxoffice.messaging.OutboxRelay:
   @Scheduled(fixedDelayString = "${boxoffice.outbox.poll-interval:100ms}") => void publishPending()
 
 configuration: no application files
-  boxoffice.outbox.batch-size: int default 100
+  boxoffice.outbox.batch-size: int, default 100
     @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100
-  boxoffice.outbox.poll-interval: Duration default 100ms
+  boxoffice.outbox.poll-interval: Duration, default 100ms
     @Scheduled in OutboxRelay.publishPending(), default 100ms
 

@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-032834-example-111-a-paymentvoided-event-added",
+  "title": "Example 111: a PaymentVoided event added to the sealed PaymentEvent family without its @JsonSubTypes entry, caught by the wire types of the boundary contract (B12)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m20s, peak 978.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (example 111 (B12)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-032834-example-111-a-paymentvoided-event-added.json",
+    "sha256": "a74b7f4627c8ac16abe24d75102f76aa4ac439d99a3b25ee631c084c8d7f3560",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-032834-example-111-a-paymentvoided-event-added",
+      "title": "Example 111: a PaymentVoided event added to the sealed PaymentEvent family without its @JsonSubTypes entry, caught by the wire types of the boundary contract (B12)",
+      "description": "The first example of the wire types in a boundary contract: jvmcontract reads the Jackson annotations and the PermittedSubclasses attribute of the Box Office contracts module and writes the JSON shape of each message family into src/contract/boundaries.contract. The patch adds a PaymentVoided record to the sealed PaymentEvent interface, publishes it in payment-service and handles it in ticketing-service, without adding it to @JsonSubTypes. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: PaymentVoided is a permitted subtype that @JsonSubTypes does not list, written under the type id PaymentEvent$PaymentVoided which a reader rejects (checked against Jackson 3.1). The runner compiles the patched contracts module with Gradle offline and runs jvmcontract update then verify; the module's own tests (MessageCodecTest) run first and pass, since they round-trip only the events they name.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/wire.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "111"
+        ]
+      },
+      "expected": "build.py 111 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-03T03:28:34+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 111 (B12)",
+          "run": "python3 examples/tools/build.py 111",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/111-new-payment-event-missing-from-json-subtypes"
+      ]
+    }
+  },
+  "sourceCommit": "c3d06568d7ce3cb1ae562100841aa30e642d9519",
+  "startedAt": "2026-11-03T04:05:33+00:00",
+  "finishedAt": "2026-11-03T04:06:54+00:00",
+  "wallSeconds": 81.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 1226581,
+    "workers": 1,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 3865470566
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3865470566,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1025667072,
+    "wallSeconds": 80.8,
+    "cpuSeconds": 112.1,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 111 (B12)",
+      "run": "python3 examples/tools/build.py 111",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 80.819,
+      "cpuSeconds": 112.065,
+      "cpuThrottledSeconds": 0.068,
+      "peakMemoryBytes": 1025667072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-111-b12.log",
+        "lines": 2,
+        "bytes": 327,
+        "sha256": "904cde0058ffce3c96d324bd3d0c043533295f4753c54a5c3aa93bf556e68462",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "111-new-payment-event-missing-from-json-subtypes: running (B12)",
+        "/home/filip/code/java-formal-verification/verification/.state/work/20261103-032834-example-111-a-paymentvoided-event-added/examples/111-new-payment-event-missing-from-json-subtypes/result.json: Additional properties are not allowed ('newProblems' was unexpected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/111-new-payment-event-missing-from-json-subtypes/result.json",
+      "change": "added",
+      "bytes": 4032,
+      "sha256": "28dfafb7c027d031a865a10d5593f4e86ebdc02094462a0f19a8be9bdfe1d2c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/111-new-payment-event-missing-from-json-subtypes/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/111-new-payment-event-missing-from-json-subtypes/verifier-output.txt",
+      "change": "added",
+      "bytes": 514,
+      "sha256": "3135a5982682a8fa49fd4973b70a8998319414aeab1ee739395835d9e9d76609",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-03T04:06:57+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/111-new-payment-event-missing-from-json-subtypes/result.json",
+      "examples/111-new-payment-event-missing-from-json-subtypes/result.sarif",
+      "examples/111-new-payment-event-missing-from-json-subtypes/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261103-032834-example-111-a-paymentvoided-event-added"
+}

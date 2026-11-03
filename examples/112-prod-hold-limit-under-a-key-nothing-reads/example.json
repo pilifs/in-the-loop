@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "112",
+  "title": "A prod profile raises the hold seat limit under boxoffice.hold.max-seat, a key nothing reads",
+  "summary": "Production wants a hold to be able to take a whole row, so a profile document for `prod` is added to the ticketing service's `application.yaml` with `boxoffice.hold.max-seat: 12`. The key the code reads is `max-seats`. Spring Boot ignores a key nothing binds, so production keeps the default of 8, and no test runs with the `prod` profile. The module's boundary contract lists each configuration key with the value each profile gives it and who reads it; the regenerated contract has a new line for the mistyped key, with a `!` under it that names the nearest known key.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "configuration-drift",
+    "contract-diff-review"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml",
+    "symbol": "net.terminalvalue.boxoffice.ticketing.TicketingApplication#holdPolicy"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Let a hold in production take up to 12 seats instead of 8, so that a group can hold a whole row. The limit is a configuration key, `boxoffice.hold.max-seats`, read by the `HoldPolicy` bean with a default of 8, so the change is a profile document appended to `application.yaml`, activated by `spring.config.activate.on-profile: prod`. The key is written as `max-seat`.",
+    "patch": "change.patch"
+  },
+  "risk": "Spring Boot binds `@Value(\"${boxoffice.hold.max-seats:8}\")` by looking the key up in the environment; a key under any other name is simply not there, and the placeholder's default applies. Nothing logs an unknown key. The service starts cleanly in production with a hold limit of 8, the value the change was meant to raise, and the first group that tries to hold 12 seats is refused with the same error as before the deploy. The module's tests run with the default profile, where the document is inactive, so they cannot see the key at all, and a test for the limit would assert 8 and pass. The same silence covers a key renamed in the code but not in the file, a profile file with a typo in its name, and a key that a Spring Boot upgrade retires.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The boundary contract of `ticketing-service` has a `configuration` block: one line per key, with the value each application file and profile gives it and, under it, the class that reads it (`boxoffice.hold.max-seats: int = 8`, then `@Value in TicketingApplication.holdPolicy(int, Duration), maxSeats, default 8`). The keys come from three places compared in Boot's relaxed form: the `${...}` placeholders, `@ConfigurationProperties` fields and `environment.getProperty` calls in the module and its sibling modules; the `application*.yaml` and `.properties` files, profile documents included; and the configuration metadata that every Spring Boot starter carries, which declares the framework's own keys. A key set in a file that no class reads and no metadata declares is a `!` line. The change is intended, so the runner regenerates the contract and the reviewer reads the diff: the `max-seats` line is unchanged, still `= 8` with no production value, and a new line `boxoffice.hold.max-seat = 12 (prod)` appears with `! nothing binds it: no class on the class path reads it and no configuration metadata declares it; nearest known key: boxoffice.hold.max-seats`. A new `!` line in the regenerated contract is the violation.",
+  "resolution": "Write the key the code reads: `max-seats: 12` under `boxoffice.hold` in the `prod` document. The regenerated contract then shows `boxoffice.hold.max-seats: int = 8, 12 (prod)` and no `!` line, which is the diff a reviewer approves. A team that wants the typo to fail the build rather than the review can keep the contract's problem count at zero: `verifyBoundaries` fails on any difference from the checked-in contract, and the checked-in contract has no `!` lines.",
+  "notes": [
+    "The first example of the configuration block of a boundary contract (`lib/src/config.rs`): the keys the classes read, the keys the application files set and the keys the class path's configuration metadata declares, cross-checked. The runner passes the module's resource directory with `--resources` and the runtime class path from Gradle's `printRuntimeClasspath` task with `--classpath`, so the metadata in the Spring Boot jars is read; without the class path, every `spring.*` and `server.*` key would be reported as unbound.",
+    "The other `!` lines of the block, each in the library's Spring fixtures (`lib/tests/fixtures/spring/resources/application.yaml`): a key the metadata marks deprecated (`spring.data.mongodb.uri` in Spring Boot 4, which no longer binds it and names `spring.mongodb.uri`), a value that is not of the key's type (`ttl: 2 minutes` for a `Duration`, `port: eighty`, an enum constant that does not exist), and a placeholder default that is not (`${holds.retries:many}` for an `int`). A key no file sets is not a problem, since it may come from the environment: it is shown with its default and no value.",
+    "The patch changes no Java, so the module compiles as before and the existing tests pass as before; the runner compiles it anyway, since the contract is read from the classes and the files together. The Spring Boot tests of the module need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
+  ],
+  "provenance": "Constructed from the most common configuration bug in a Spring Boot service: a key written under a name nothing reads, which Boot ignores without a log line, in a profile no test activates."
+}

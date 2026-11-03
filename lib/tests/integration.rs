@@ -1077,7 +1077,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("wire fixtures.spring.Base: class\n  id: String\n");
     // The configuration keys: what the classes read, what the files set, what the metadata declares, cross-checked.
     has("configuration: application-prod.properties, application.yaml\n");
-    has("  holds.max-seats: int = 8, prod: 12\n    @ConfigurationProperties(\"holds\") HoldSettings.maxSeats\n");
+    has("  holds.max-seats: int = 8, 12 (prod)\n    @ConfigurationProperties(\"holds\") HoldSettings.maxSeats\n");
     has("  holds.ttl: Duration = \"2 minutes\"\n    @ConfigurationProperties(\"holds\") HoldSettings.ttl\n    ! \"2 minutes\" is not a Duration\n");
     has("  holds.region: Region = eu-west\n    @ConfigurationProperties(\"holds\") HoldSettings.region\n    ! \"eu-west\" is not a Region: one of EU, US\n");
     has("  holds.rows[]: List<String>\n    @ConfigurationProperties(\"holds\") HoldSettings.rows\n");
@@ -1093,7 +1093,7 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  gateway.limit: Integer = ten\n    Environment.getProperty in Settings.limit()\n    ! \"ten\" is not an Integer\n");
     has("  gateway.token: String\n    Environment.containsProperty in Settings.hasToken()\n");
     has("  orders.sweep: Duration, default 1s\n    @Scheduled in OrderService.sweep(), default 1s\n");
-    has("  server.port: Integer = 8080, prod: 80\n    declared by ServerProperties\n");
+    has("  server.port: Integer = 8080, 80 (prod)\n    declared by ServerProperties\n");
     has("  spring.data.mongodb.uri = mongodb://localhost/test\n    ! deprecated since 4.0.0, no longer bound: use spring.mongodb.uri\n");
     has("  spring.kafka.producer.properties.enable.idempotence: String = true\n    under spring.kafka.producer.properties.*, declared by KafkaProperties$Producer\n");
     assert!(!text.contains("on-profile"), "the profile selector is not a key of the contract:\n{text}");
@@ -1137,10 +1137,10 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     assert!(finding.line > 1, "anchored to the member's line, found {}", finding.line);
 
     // A configuration change alone: the finding is anchored to the line of the application file.
-    std::fs::write(&file, text.replace("  server.port: Integer = 8080, prod: 80\n", "  server.port: Integer = 8080\n")).unwrap();
+    std::fs::write(&file, text.replace("  server.port: Integer = 8080, 80 (prod)\n", "  server.port: Integer = 8080\n")).unwrap();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 1, "{}", outcome.output);
-    assert!(outcome.output.contains("  added configuration: server.port: Integer = 8080, prod: 80\n"), "{}", outcome.output);
+    assert!(outcome.output.contains("  added configuration: server.port: Integer = 8080, 80 (prod)\n"), "{}", outcome.output);
     let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
     assert_eq!((finding.uri.as_deref(), finding.line), (Some("tests/fixtures/spring/resources/application.yaml"), 17));
 }

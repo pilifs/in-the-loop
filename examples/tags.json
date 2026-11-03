@@ -49,7 +49,8 @@
     "write-ahead-ordering": "The order of logging and sending: a side effect before the record that should precede it",
     "exceptions": "The exceptional path: what throws, when, and an exception claimed unreachable",
     "buffer-bounds": "Reading or writing past what a buffer or array holds, or allocating absurd sizes",
-    "composition": "A bug between components each of whose contracts approves it: glue, assumptions about who runs first"
+    "composition": "A bug between components each of whose contracts approves it: glue, assumptions about who runs first",
+    "configuration-drift": "A setting and the code that reads it no longer agree: a key mistyped or set under a prefix nothing binds, a key renamed in the code but not in application.yaml, a key the framework has deprecated, a value of the wrong type. Reach for it when the change is in a configuration file, a @ConfigurationProperties prefix or a @Value placeholder, and no test runs with the profile in question."
   },
   "technique": {
     "contract-diff-review": "An intended change reviewed as the diff of a derived contract",

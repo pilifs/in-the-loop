@@ -27,12 +27,14 @@ jvmcontract derive T --classes CLASSES [--classpath ...] [--json]
 jvmcontract capabilities CLASSES [--module NAME] [--json]
 jvmcontract capabilities --each lib/*.jar          # one contract per jar, for a dependency change
 jvmcontract api CLASSES [--module NAME]
-# A Spring Boot module's boundaries: routes, listeners, schedules, bean definitions, configuration keys, the advice on
-# each bean, `!` lines where an annotation does not do what it says (self-invocation, advice the proxy cannot
-# intercept, a checked exception that commits, a lost @Async result, constraints never enforced), and the wire types:
-# the JSON shape of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing
-# from @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo. No JBMC.
-jvmcontract boundaries CLASSES [--module NAME] [--json]
+# A Spring Boot module's boundaries: routes, listeners, schedules, bean definitions, the advice on each bean, `!`
+# lines where an annotation does not do what it says (self-invocation, advice the proxy cannot intercept, a checked
+# exception that commits, a lost @Async result, constraints never enforced); the configuration keys (what the classes
+# read, what application.yaml under --resources sets, what the dependencies' metadata on --classpath declares), with
+# `!` lines for a key nothing binds, a deprecated key, a value of the wrong type; and the wire types: the JSON shape
+# of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing from
+# @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo. No JBMC.
+jvmcontract boundaries CLASSES [--classpath JARS] [--resources DIR] [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.
 jvmcontract inspect path/to/Class.class [--code]

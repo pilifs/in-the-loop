@@ -1193,21 +1193,16 @@ pub fn analyse(cp: &ClassPath, local: Option<&BTreeSet<String>>, resources: &[Pa
             if let Some(t) = &k.ty {
                 line.push_str(&format!(": {}", simple_type(t)));
             }
-            let mut parts: Vec<String> = Vec::new();
-            for (profile, value) in &k.values {
-                match profile {
-                    None => parts.push(format!("= {}", quote(value))),
-                    Some(p) => parts.push(format!("{p}: {}", quote(value))),
-                }
-            }
-            if k.values.is_empty() {
-                if let Some(d) = &k.default {
-                    parts.push(format!("default {}", quote(d)));
-                }
-            }
-            if let Some(first) = parts.first() {
-                line.push_str(if first.starts_with('=') || k.ty.is_none() { " " } else { ", " });
-                line.push_str(&parts.join(", "));
+            // `= 8`, `= 8, 12 (prod)`, `= 12 (prod)`; or `, default 8` when no file sets the key.
+            let values: Vec<String> = k.values.iter().map(|(profile, value)| match profile {
+                None => quote(value),
+                Some(p) => format!("{} ({p})", quote(value)),
+            }).collect();
+            if !values.is_empty() {
+                line.push_str(&format!(" = {}", values.join(", ")));
+            } else if let Some(d) = &k.default {
+                line.push_str(if k.ty.is_some() { ", " } else { " " });
+                line.push_str(&format!("default {}", quote(d)));
             }
             let mut details = k.details;
             let problems = k.problems.len();

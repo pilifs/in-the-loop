@@ -207,7 +207,7 @@ solver can check without reasoning about division.
 
 The lockfile idea applied to the part of a Spring Boot service that is not in its control flow. The framework
 enters a service through annotations (`@PostMapping`, `@KafkaListener`, `@Scheduled`, `@EventListener`, `@Bean`,
-`@ConfigurationProperties`), and what it promises to do around each entry is an annotation too (`@Transactional`,
+`@ConfigurationProperties`) and through the keys of `application.yaml`, and what it promises to do around each entry is an annotation too (`@Transactional`,
 `@PreAuthorize`, `@Valid`, `@Cacheable`, `@Async`, `@Retryable`), applied by a proxy in front of the bean. No unit
 test exercises a proxy, so a dropped guard, a widened route, a changed rollback rule or a new scheduled job is
 invisible until production. The tool reads the `RUNTIME` annotations from the class files and writes them out as one
@@ -223,6 +223,16 @@ method whose declared checked exception commits (Spring rolls back on unchecked 
 names it), an `@Async` method whose non-`Future` result is lost, a `@Cacheable` method returning nothing, and
 constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean. Each is a
 `!` line in the contract, so introducing one changes the contract and the pull request shows it.
+
+After the beans, the configuration keys, cross-checked three ways: what the classes read (`${...}` placeholders in
+any annotation, `@ConfigurationProperties` fields under their prefix, `@ConditionalOnProperty`,
+`environment.getProperty` with a constant), what the application files set (`application.yaml`, profile files and
+`---` documents), and what the configuration metadata on the class path declares, which every Spring Boot starter
+carries with types and deprecations. Names are compared in Boot's relaxed form. Each key is a line with its type,
+the value per profile, and who reads it; a key set in a file that nothing binds (the typo, with the nearest known
+key named), a key Boot has deprecated, a value not of the key's type (`int`, `Duration`, an enum's constants) and a
+placeholder default that is not are `!` lines. Tests do not run with the production profile, and a missing key
+quietly takes its default, so none of these fails a build; in the contract each is a changed line.
 
 The contract ends with the wire types: the JSON shape of every request body, response body and message type
 reachable from the module's handlers, listeners and Jackson-annotated classes, as Jackson will encode it (record

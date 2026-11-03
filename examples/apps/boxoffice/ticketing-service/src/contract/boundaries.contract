@@ -63,7 +63,7 @@ configuration: application.yaml
     @Scheduled in HoldService.releaseExpiredHolds(), default 1s
   boxoffice.hold.ttl: Duration = 2m
     @Value in TicketingApplication.holdPolicy(int, Duration), ttl, default 2m
-  boxoffice.outbox.batch-size: int default 100
+  boxoffice.outbox.batch-size: int, default 100
     @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100
   boxoffice.outbox.poll-interval: Duration = 100ms
     @Scheduled in OutboxRelay.publishPending(), default 100ms
