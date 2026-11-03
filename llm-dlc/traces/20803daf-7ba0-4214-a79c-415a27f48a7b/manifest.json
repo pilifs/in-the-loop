@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "20803daf-7ba0-4214-a79c-415a27f48a7b",
-  "status": "ended",
+  "status": "open",
   "title": "Overnight Spring Boot feature loop commits",
   "first_prompt": "Summarize commits made overnight by the Spring Boot feature loop since last remote push",
   "client": {
@@ -54,11 +54,11 @@
     }
   ],
   "log": {
-    "sha256": "917ad4097975d981d31cbdf0da40673d4b22798428c138f68f9ec4fa4f9325bb",
-    "bytes": 8115659,
-    "lines": 643,
-    "gzip_bytes": 5071219,
-    "path": "llm-dlc/traces/20803daf-7ba0-4214-a79c-415a27f48a7b/logs/917ad4097975d981d31cbdf0da40673d4b22798428c138f68f9ec4fa4f9325bb.jsonl.gz"
+    "sha256": "7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2",
+    "bytes": 8118144,
+    "lines": 647,
+    "gzip_bytes": 5073496,
+    "path": "llm-dlc/traces/20803daf-7ba0-4214-a79c-415a27f48a7b/logs/7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -93,6 +93,14 @@
       "summary": "Feature loop: a brief names its session, model and effort under Loop settings; the sync-performance brief runs on Opus 5.5 in its own session",
       "body": "feature-loop.sh reads '- session: ID', '- model: ID' and '- effort: LEVEL' from a brief's '## Loop settings' section; FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL and FEATURE_LOOP_EFFORT override the brief and the defaults (the usual session, Fable, high effort), the session id is validated, and the run record names the model and effort. A session id with no transcript in this project yet, such as a session opened but never sent a message, is created by the first turn with --session-id instead of failing on --resume. llm-dlc/loops/sync-performance.md now sets session 5dfbc1bc-4bd7-4b48-a637-44ff84065b6b, created by the user for it, and model claude-opus-5-5. Verified with stubbed claude and jj: the brief's settings applied, the first turn creating the missing session and later turns resuming it, an existing transcript resumed from the start, environment overrides, a named prompt keeping its defaults, and an invalid id rejected.",
       "log_sha256": "db0d1dd6ede164eea81483bd7a96ab0d2c80ca50d17ac4a1294d0b28106bf183"
+    },
+    {
+      "change_id": "wpltksnpzwwtpwpxnxtmznmzrlpquyvp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "langfuse-loop.sh: send unsent turns to Langfuse as they appear",
+      "body": "sync.py langfuse gains --pending (sessions whose latest stored log has turns not yet sent; a state-file mark by log sha keeps the check cheap) and --all (send them). llm-dlc/tools/langfuse-loop.sh polls that list, runs --all, retries while Langfuse is down, and takes stop/now/? commands like verification-loop.sh, with no Claude session. Verified against the local Langfuse: 19 pending sessions sent, then the loop idles on 'nothing to send'.",
+      "log_sha256": "7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2"
     }
   ],
   "logs": {
@@ -108,17 +116,17 @@
       "gzip_bytes": 5043663,
       "url": "https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/2bc06bbf6898c600d8f4af7bdc450a858d56ba77605f9bf3066aadcbc1c45687.jsonl.gz"
     },
+    "7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2": {
+      "bytes": 8118144,
+      "lines": 647,
+      "gzip_bytes": 5073496,
+      "url": null
+    },
     "7c0df4e6d7baac5a82353f223d347b0413c25e9308853e2529ccaa90f81a8732": {
       "bytes": 7868663,
       "lines": 524,
       "gzip_bytes": 5035361,
       "url": "https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/7c0df4e6d7baac5a82353f223d347b0413c25e9308853e2529ccaa90f81a8732.jsonl.gz"
-    },
-    "917ad4097975d981d31cbdf0da40673d4b22798428c138f68f9ec4fa4f9325bb": {
-      "bytes": 8115659,
-      "lines": 643,
-      "gzip_bytes": 5071219,
-      "url": null
     },
     "db0d1dd6ede164eea81483bd7a96ab0d2c80ca50d17ac4a1294d0b28106bf183": {
       "bytes": 8037423,

@@ -57,9 +57,10 @@ Commands:
   sync.py init                  per-clone jj config (file size limit, trace-push alias)
   sync.py perf [N] [COMMAND]    where the last N commands' time went: phases, bytes, cache hits,
                                 subprocesses, network requests (LLM_TRACES_PERF=1 prints each as it ends)
-  sync.py langfuse SID[:live]...
+  sync.py langfuse SID[:live]... | --all | --pending
                                 send sessions' finished turns to Langfuse by hand (commit and sync never do;
-                                the Stop hook does at the end of each turn)
+                                the Stop hook does at the end of each turn); --pending lists the sessions
+                                with turns to send, --all sends them (tools/langfuse-loop.sh waits for more)
 
 Standard library only. The hook never fails a session; errors go to
 ~/.local/state/llm-traces/hook.log.
@@ -1380,17 +1381,55 @@ def langfuse_config() -> tuple[str, str, str] | None:
     return (host, pk, sk) if host and pk and sk else None
 
 
+def langfuse_todo() -> list[str]:
+    """Sessions with a stored log that has finished turns not yet sent to Langfuse, cheaply: a
+    session whose latest log was found fully sent is marked in its state file by that log's sha."""
+    todo = []
+    for sid, m in all_manifests().items():
+        sha = (m.get("log") or {}).get("sha256")
+        state_file = STATE / f"{sid}.json"
+        try:
+            marked = json.loads(state_file.read_text()).get("complete") if state_file.exists() else None
+        except ValueError:
+            marked = None
+        if sha and marked != sha:
+            todo.append(sid)
+    return todo
+
+
+def langfuse_send(sid: str, live: bool | None = None) -> None:
+    """Send one session's finished turns from its stored log. Every finished turn is sent and the log marked
+    done; a session still running keeps its last turn for the Stop hook."""
+    if langfuse_config() is None:  # nothing is sent, so nothing is complete
+        raise OSError("no Langfuse configured (llm-dlc/infra/langfuse/.env)")
+    m = load_manifest(sid)
+    data = load_log(sid, m["log"]["sha256"]) if m.get("log") else None
+    if data is None:
+        return
+    live = m.get("status") != "ended" if live is None else live
+    export_langfuse(sid, read_jsonl(data), m, live=live)
+    state_file = STATE / f"{sid}.json"
+    state = json.loads(state_file.read_text()) if state_file.exists() else {"exported": []}
+    state["complete"] = m["log"]["sha256"]  # this log has nothing more to send (a live one keeps its last turn)
+    STATE.mkdir(parents=True, exist_ok=True)
+    state_file.write_text(json.dumps(state))
+
+
 def cmd_langfuse(args: list[str]) -> int:
     """Send these sessions' finished turns to Langfuse from their stored, already redacted logs, by
     hand: for sessions whose Stop hook ran while Langfuse was down. Commit and sync never contact
-    Langfuse. The first failure stops it, and only sent turns are recorded, so a rerun resumes."""
+    Langfuse. The first failure stops it, and only sent turns are recorded, so a rerun resumes.
+    --pending lists the sessions that have turns to send; --all sends for all of them."""
+    if args == ["--pending"]:
+        for sid in langfuse_todo():
+            print(sid)
+        return 0
+    if args == ["--all"]:
+        args = langfuse_todo()
     for arg in args:
         sid, _, flag = arg.partition(":")
         try:
-            m = load_manifest(sid)
-            data = load_log(sid, m["log"]["sha256"]) if m.get("log") else None
-            if data is not None:
-                export_langfuse(sid, read_jsonl(data), m, live=flag == "live")
+            langfuse_send(sid, True if flag == "live" else None)
         except OSError as e:
             log(f"langfuse export deferred for {sid}: {e}")
             return 1
