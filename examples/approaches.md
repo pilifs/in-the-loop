@@ -222,9 +222,20 @@ advice on a private, static or final method or a final class (the CGLIB proxy ca
 method whose declared checked exception commits (Spring rolls back on unchecked exceptions only, unless `rollbackFor`
 names it), an `@Async` method whose non-`Future` result is lost, a `@Cacheable` method returning nothing, and
 constraints on the parameters of a method that is neither a request handler nor on a `@Validated` bean. Each is a
-`!` line in the contract, so introducing one changes the contract and the pull request shows it. The three Box Office
-modules with Spring annotations carry their contracts in `src/contract/boundaries.contract`, checked by
-`./gradlew check` when `jvmcontract` is on the `PATH`.
+`!` line in the contract, so introducing one changes the contract and the pull request shows it.
+
+The contract ends with the wire types: the JSON shape of every request body, response body and message type
+reachable from the module's handlers, listeners and Jackson-annotated classes, as Jackson will encode it (record
+components, public getters and fields, `@JsonProperty` names, a naming strategy, `@JsonInclude`, enum constants,
+`@JsonTypeInfo` placement and each subtype's id). The bytes are what the other side depends on, and a renamed
+component, a dropped `@JsonSubTypes` entry or a new enum constant changes no signature and passes every test that
+encodes and decodes with the same classes: in the contract it is a changed line, and the Jackson pitfalls that no
+test with the same classes can see (a permitted subtype that `@JsonSubTypes` does not list, a type id that is a
+class name, a polymorphic type without `@JsonTypeInfo`, a bean with no visible properties, a persistence type on
+the wire) are `!` lines, established against Jackson 3 as Spring Boot configures it. The three Box Office modules
+with Spring annotations and the `contracts` module, whose wire types are the messages between the services, carry
+their contracts in `src/contract/boundaries.contract`, checked by `./gradlew check` when `jvmcontract` is on the
+`PATH`.
 
 What this is not: a static analyser's rule set. The contract is complete over the module's annotations by
 construction, the checks are closed-world facts about the bytecode (the receiver is `this`, the method is private,

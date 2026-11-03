@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T02:56:09.683Z",
-  "duration_seconds": 210374,
+  "ended": "2026-11-03T03:32:26.344Z",
+  "duration_seconds": 212551,
   "stats": {
-    "turns": 162,
-    "api_calls": 1668,
-    "tool_calls": 2184,
+    "turns": 168,
+    "api_calls": 1730,
+    "tool_calls": 2244,
     "tool_errors": 50,
-    "compactions": 26,
+    "compactions": 27,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 49702,
-      "output_tokens": 3603266,
-      "cache_read_input_tokens": 322206279,
-      "cache_creation_input_tokens": 8010236
+      "input_tokens": 51568,
+      "output_tokens": 3724634,
+      "cache_read_input_tokens": 332322285,
+      "cache_creation_input_tokens": 8235545
     }
   },
   "tools": {
-    "Bash": 1692,
+    "Bash": 1751,
     "Edit": 199,
     "Write": 180,
     "Read": 62,
-    "ToolSearch": 20,
+    "ToolSearch": 21,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 6
@@ -592,24 +592,38 @@
     {
       "index": 26,
       "started": "2026-11-03T02:03:01.286Z",
-      "ended": "2026-11-03T02:56:09.683Z",
-      "turns": 4,
-      "api_calls": 60,
+      "ended": "2026-11-03T03:04:50.954Z",
+      "turns": 6,
+      "api_calls": 67,
       "usage": {
-        "input_tokens": 1860,
-        "output_tokens": 104790,
-        "cache_read_input_tokens": 8415039,
-        "cache_creation_input_tokens": 219416
+        "input_tokens": 2056,
+        "output_tokens": 107462,
+        "cache_read_input_tokens": 10054794,
+        "cache_creation_input_tokens": 225600
       },
-      "peak_context_tokens": 230714
+      "peak_context_tokens": 236898
+    },
+    {
+      "index": 27,
+      "started": "2026-11-03T03:06:23.667Z",
+      "ended": "2026-11-03T03:32:26.344Z",
+      "turns": 4,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 1670,
+        "output_tokens": 118696,
+        "cache_read_input_tokens": 8476251,
+        "cache_creation_input_tokens": 219125
+      },
+      "peak_context_tokens": 234070
     }
   ],
   "log": {
-    "sha256": "bfb2ba767893e7a1a5ad0ac3a6f822cacba13fe2ad87c2647ea64470e8631218",
-    "bytes": 64258649,
-    "lines": 23401,
-    "gzip_bytes": 10832958,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/bfb2ba767893e7a1a5ad0ac3a6f822cacba13fe2ad87c2647ea64470e8631218.jsonl.gz"
+    "sha256": "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207",
+    "bytes": 66238644,
+    "lines": 24262,
+    "gzip_bytes": 11165922,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -900,6 +914,14 @@
       "summary": "Add boundary contracts (B12): a Spring Boot module's routes, listeners, schedules, bean definitions and configuration keys, the advice on each bean, and the places where an annotation does not do what it says, read from the class files (verification pending)",
       "body": "What changed: the class-file reader now parses RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations, the Exceptions attribute and generic Signature attributes (lib/src/classfile/annotations.rs, signature.rs). A new contract kind, boundaries.contract (lib/src/boundaries.rs), lists every bean with framework annotations (Spring, Jakarta Validation and Transactions, Resilience4j, Micrometer), one line per entry point with its route composed from the class and method mappings, the handler's signature with its parameter annotations and generic types, @ConfigurationProperties keys in Boot's relaxed form, and the advice on each member as indented lines. It then checks what the framework will do with each annotation and records the places where it does nothing as '!' lines: a @Transactional or @PreAuthorize method called on 'this' from the same bean (the receiver is found by a backwards walk over the bytecode's stack effects, lambdas included), advice on a private, static or final method or a final class, a @Transactional method whose declared checked exception commits because rollbackFor does not name it, an @Async method whose non-Future result is lost, a @Cacheable void method, a @Scheduled method with parameters, and constraints on a method that is neither a request handler nor on a @Validated bean. 'jvmcontract boundaries CLASSES' prints it, 'verify'/'update --add boundaries' check and write it like the capability and API contracts, with a boundaries-changed SARIF rule anchored to the first added member. Why: a Spring Boot service is mostly boundaries, none of which is in the code's control flow, so no unit test shows a dropped guard, a widened route, a changed rollback rule or a proxy that is bypassed; the contract makes them a one-line diff a reviewer approves, and the '!' lines are the Spring bugs experts know by name and still ship. Also: the three Box Office modules with Spring annotations carry their boundary contracts in src/contract, checked by a new boxoffice.boundaries Gradle convention (Exec, skipped when jvmcontract is not on the PATH); approach B12 in examples/approaches.md and the router; a B12 runner in build.py (Gradle compileJava of the patched copy, then jvmcontract verify); a spring-boot domain tag; example 110 (an Idempotency-Key header added to POST /orders loses the body's @Valid, expected violation). How verified: new Spring fixtures under lib/tests/fixtures/spring (stand-in annotation types under the real package names) exercise every entry kind and every problem once, and the integration test checks the rendered contract line by line, the round trip through parse, the update/verify flow and that a dropped @PreAuthorize is reported as a violation anchored to the handler; 69 unit and 29 integration tests pass. Running the tool over the real ticketing-service, payment-service and messaging classes gives 19, 6 and 4 beans with 13, 3 and 9 entry points and no problems, as expected of a codebase with programmatic transactions. Verification pending: job 20261103-025524-example-110-an-idempotency-key-header-on runs example 110 through build.py, which needs Gradle.",
       "log_sha256": "bfb2ba767893e7a1a5ad0ac3a6f822cacba13fe2ad87c2647ea64470e8631218"
+    },
+    {
+      "change_id": "vxyvqoykypsowlskrqzwwomnnsppqvko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add wire types to boundary contracts: the JSON shape of each request, response and message as Jackson encodes it, with checks for a subtype missing from @JsonSubTypes, a type id that is a class name and a persistence type on the wire (verification pending)",
+      "body": "A Spring Boot module's boundary contract now ends with its wire types (lib/src/wire.rs): one block per type reachable from the handlers' @RequestBody parameters and results, the message listeners' payloads and every Jackson-annotated class, followed through property types into the module and its sibling modules (the class path entries under --base) and stopped at library types. A block lists the properties as Jackson 3 finds them (record components; public fields, getters, setters and @JsonProperty members, superclasses included) under their wire names (@JsonProperty, @JsonNaming), with Bean Validation constraints before the type and a ? for a property that may be null or absent (Optional, @JsonInclude), enum constants with their @JsonProperty names or @JsonValue method, and for a polymorphic family the @JsonTypeInfo placement and each subtype's id. A renamed component, a dropped @JsonSubTypes entry or a new enum constant changes no signature and passes every test that uses the same classes on both sides; in the contract it is a changed line. The ! checks were established with a scratch program against the Jackson 3.1 jars Box Office uses: a permitted subtype of a sealed base that @JsonSubTypes does not list is written under its class name (Outer$Inner) and rejected when read back; a listed subtype without a name, or a permitted subtype of a base without @JsonSubTypes, gets the class name as its id; @JsonTypeInfo(use = CLASS) puts Java class names on the wire; an interface or abstract class without @JsonTypeInfo is written as the runtime class's properties with no id to read it back by; a bean with no visible properties is written as {}; two properties with one wire name; and a persistence type (@Document, @Entity, @Table) on the wire. The class-file reader gained a raw method_parts for signatures. A request type whose only framework annotations are its constraints is shown once, as a wire type.\n\nTwo bugs from the first boundary-contract commit are fixed on the way: update --add KIND with the contract file already present fell through to the method-target parser (the Gradle updateBoundaries tasks had never run), and the boxoffice.boundaries Gradle convention referenced the project at execution time, which Gradle's configuration cache refuses; it now captures plain values. update also leaves a module contract alone when nothing in it changed, so the Java tool's capabilities.contract in the contracts module keeps its header. The four Box Office contracts (ticketing-service, payment-service, messaging, and now contracts, whose wire types are the message families) were regenerated through ./gradlew updateBoundaries. The payment service's contract has a real ! line: GET /payments/{orderId} returns the Mongo PaymentDocument itself, gateway reference included; it is left as found and noted in the Box Office README.\n\nExample 111 (B12, Box Office contracts module): a PaymentVoided record added to the sealed PaymentEvent family, published by the payment service and handled in ticketing where the compiler demands the new switch case, without its @JsonSubTypes entry. The change is intended, so the runner (build.py run_boundaries) regenerates the contract, records the diff, and reports a ! line the old contract did not have as the violation: a new rule for intended changes. Verified inline: 71 unit and 29 integration tests pass (the Spring fixtures gained Jackson stand-ins and types exercising every wire feature and problem once, asserted line by line, with a renamed component failing verify); the patched PaymentEvent compiled against the Jackson jars renders the expected ! line. Job 20261103-032834-example-111-a-paymentvoided-event-added runs the example through Gradle on the pipeline.",
+      "log_sha256": "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207"
     }
   ],
   "logs": {
@@ -1058,6 +1080,12 @@
       "lines": 8741,
       "gzip_bytes": 4678169,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/cf3e42d2c5722971245ce51ffc45ca216a0636ffb52f8994c0fb00de5782fce4.jsonl.gz"
+    },
+    "da42869fa0172bab41c3a141f907173b8b567d22f381bc4e8d6c72f0739a1207": {
+      "bytes": 66238644,
+      "lines": 24262,
+      "gzip_bytes": 11165922,
+      "url": null
     },
     "dc606bccc33d40e4bca77ace0bb4f9b3bf165f3d771f1fcf9e03544a58fc061c": {
       "bytes": 14970730,

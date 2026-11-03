@@ -11,6 +11,11 @@
 //! method whose declared checked exceptions commit (Spring rolls back on unchecked exceptions only), an `@Async`
 //! method whose result is lost, a `@Cacheable` method returning nothing, and constraint annotations on a method the
 //! framework never validates. Each is a `!` line in the contract, so introducing one changes the contract.
+//!
+//! The contract ends with the wire types: the JSON shape of every request body, response body and message type
+//! reachable from the module's handlers, listeners and Jackson-annotated classes, from [`crate::wire`]. A renamed
+//! record component or a subtype missing from `@JsonSubTypes` changes no signature and passes every test that
+//! encodes and decodes with the same classes; here it is a changed line.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -19,6 +24,7 @@ use serde::Serialize;
 
 use crate::classfile::{flags, signature, Annotation, ClassFile, Insn, Kind, Method, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
+use crate::wire;
 use crate::Error;
 
 pub const FILE_NAME: &str = "boundaries.contract";
@@ -46,6 +52,9 @@ const MAPPINGS: &[(&str, &str)] = &[
     ("org/springframework/web/bind/annotation/DeleteMapping", "DELETE"),
     ("org/springframework/web/bind/annotation/PatchMapping", "PATCH"),
 ];
+
+/// Listeners whose parameters arrive over the wire: their application types are wire types.
+const WIRE_LISTENERS: &[&str] = &["KafkaListener", "KafkaHandler", "RabbitListener", "RabbitHandler", "JmsListener", "SqsListener", "MessageMapping", "SubscribeMapping"];
 
 /// Annotations by which the framework calls into the module: a method with one is an entry point.
 const ENTRIES: &[&str] = &[
@@ -125,13 +134,16 @@ pub struct Bean {
 pub struct Boundaries {
     /// By binary name with dots.
     pub beans: BTreeMap<String, Bean>,
+    /// The wire types, by binary name with dots: the header is the kind of type and how it is encoded, the members
+    /// are its properties (`name: Type`), subtypes, enum constants and `!` problems.
+    pub types: BTreeMap<String, Bean>,
 }
 
 fn is_framework(annotation: &Annotation) -> bool {
     FRAMEWORK_PACKAGES.iter().any(|p| annotation.type_name.starts_with(p))
 }
 
-fn is_validation(annotation: &Annotation) -> bool {
+pub(crate) fn is_validation(annotation: &Annotation) -> bool {
     VALIDATION_PACKAGES.iter().any(|p| annotation.type_name.starts_with(p))
 }
 
@@ -147,7 +159,7 @@ fn is_proxied(annotation: &Annotation) -> bool {
     PROXIED.contains(&annotation.simple_name().as_str())
 }
 
-fn render_all(annotations: &[Annotation]) -> String {
+pub(crate) fn render_all(annotations: &[Annotation]) -> String {
     annotations.iter().map(Annotation::render).collect::<Vec<_>>().join(" ")
 }
 
@@ -363,14 +375,18 @@ fn is_checked(cp: &ClassPath, exception: &str) -> bool {
 
 /// The boundaries of every application class on the class path.
 pub fn analyse(cp: &ClassPath) -> Result<Boundaries, Error> {
-    analyse_in(cp, None)
+    analyse_in(cp, None, None)
 }
 
 /// The boundaries of the named application classes (internal names), or of all of them; the whole class path
-/// resolves the types the checks ask about (which exceptions are checked, what an `@Async` method returns).
-pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Boundaries, Error> {
+/// resolves the types the checks ask about (which exceptions are checked, what an `@Async` method returns). The
+/// wire types are followed into `local` classes (the module and its sibling modules), or into every application
+/// class when `local` is `None`.
+pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>, local: Option<&BTreeSet<String>>) -> Result<Boundaries, Error> {
     let mut boundaries = Boundaries::default();
     let classes = cp.application_classes()?;
+    let mut roots: Vec<String> = Vec::new();
+    let mut field_only: BTreeSet<String> = BTreeSet::new();
     for (name, class) in &classes {
         if class.access & flags::ANNOTATION != 0 || class.access & flags::SYNTHETIC != 0 {
             continue;
@@ -378,13 +394,16 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Bou
         if only.is_some_and(|set| !set.contains(name)) {
             continue;
         }
-        let class_annotations: Vec<Annotation> = class.annotations().map_err(|e| Error::new(format!("{name}: {e}")))?.into_iter().filter(is_framework).collect();
+        let all_class_annotations = class.annotations().map_err(|e| Error::new(format!("{name}: {e}")))?;
+        let mut jackson = all_class_annotations.iter().any(wire::is_jackson);
+        let class_annotations: Vec<Annotation> = all_class_annotations.into_iter().filter(is_framework).collect();
         let class_mappings: Vec<&Annotation> = class_annotations.iter().filter(|a| mapping_verb(a).is_some()).collect();
         let class_advice: Vec<&Annotation> = class_annotations.iter().filter(|a| is_proxied(a)).collect();
         let class_validated = class_annotations.iter().any(|a| a.simple_name() == "Validated");
         let class_final = class.is_final() && !class.is_record() && !class.is_enum();
         let calls = self_calls(class);
         let mut members = Vec::new();
+        let mut method_members = false;
 
         // Configuration properties: the keys the class binds, with Boot's relaxed names.
         if let Some(props) = class_annotations.iter().find(|a| a.simple_name() == "ConfigurationProperties") {
@@ -405,11 +424,13 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Bou
             if field.access & flags::SYNTHETIC != 0 {
                 continue;
             }
-            let annotations: Vec<Annotation> = field.annotations(&class.pool).map_err(|e| Error::new(format!("{name}: {e}")))?.into_iter().filter(is_framework).collect();
+            let all = field.annotations(&class.pool).map_err(|e| Error::new(format!("{name}: {e}")))?;
+            jackson |= all.iter().any(wire::is_jackson);
+            let annotations: Vec<Annotation> = all.into_iter().filter(is_framework).collect();
             if annotations.is_empty() {
                 continue;
             }
-            let t = field.generic_signature(&class.pool).and_then(|s| signature::field_type(&s)).or_else(|| Type::parse(&field.descriptor).ok().map(|t| t.simple_name())).unwrap_or_else(|| field.descriptor.clone());
+            let t = wire::field_type_name(class, field);
             members.push(Member { line: format!("{} {t} {}", render_all(&annotations), field.name), details: Vec::new(), entry: false, advised: false, problems: 0, source_line: None });
         }
 
@@ -417,7 +438,9 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Bou
             if method.is_synthetic() || method.is_bridge() || method.is_class_initializer() || method.is_constructor() {
                 continue;
             }
-            let annotations: Vec<Annotation> = method.annotations(&class.pool).map_err(|e| Error::new(format!("{name}: {e}")))?.into_iter().filter(is_framework).collect();
+            let all = method.annotations(&class.pool).map_err(|e| Error::new(format!("{name}: {e}")))?;
+            jackson |= all.iter().any(wire::is_jackson);
+            let annotations: Vec<Annotation> = all.into_iter().filter(is_framework).collect();
             // A record component's constraints are copied by the compiler onto the accessor: the field line has them.
             if class.is_record() && d_params_empty(&method.descriptor) && class.fields.iter().any(|f| f.name == method.name) && !annotations.is_empty() && annotations.iter().all(|a| is_validation(a) || a.type_name.starts_with("org/springframework/data/")) {
                 continue;
@@ -530,6 +553,22 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Bou
                 .map(|(i, _)| names.get(i).cloned().unwrap_or_else(|| format!("arg{i}")))
                 .collect();
             let handler = annotations.iter().any(|a| mapping_verb(a).is_some());
+            // The wire types: request bodies and responses of handlers, payloads of listeners.
+            let (param_refs, ret_refs) = wire::method_refs(class, method);
+            if handler || annotations.iter().any(|a| a.simple_name() == "ExceptionHandler") {
+                for (i, list) in parameter_annotations.iter().enumerate() {
+                    if list.iter().any(|a| matches!(a.simple_name().as_str(), "RequestBody" | "RequestPart")) {
+                        roots.extend(param_refs[i].iter().cloned());
+                    }
+                }
+                roots.extend(ret_refs);
+            } else if annotations.iter().any(|a| WIRE_LISTENERS.contains(&a.simple_name().as_str())) {
+                for (i, list) in parameter_annotations.iter().enumerate() {
+                    if !list.iter().any(|a| matches!(a.simple_name().as_str(), "Header" | "Headers")) {
+                        roots.extend(param_refs[i].iter().cloned());
+                    }
+                }
+            }
             let validated = class_validated || annotations.iter().any(|a| a.simple_name() == "Validated");
             if !constrained.is_empty() && !handler && !validated {
                 problems.push(format!("! constraints on {} are not enforced: the method is not a request handler and the class is not @Validated", constrained.join(", ")));
@@ -539,12 +578,28 @@ pub fn analyse_in(cp: &ClassPath, only: Option<&BTreeSet<String>>) -> Result<Bou
             let problem_count = problems.len();
             details.extend(problems);
             members.push(Member { line, details, entry: !entries.is_empty(), advised: !applied.is_empty(), problems: problem_count, source_line: method.first_line() });
+            method_members = true;
         }
 
+        if jackson {
+            roots.push(name.clone());
+        }
         if class_annotations.is_empty() && members.is_empty() {
             continue;
         }
-        boundaries.beans.insert(name.replace('/', "."), Bean { annotations: render_all(&class_annotations), members });
+        let dotted = name.replace('/', ".");
+        if class_annotations.is_empty() && !method_members {
+            field_only.insert(dotted.clone());
+        }
+        boundaries.beans.insert(dotted, Bean { annotations: render_all(&class_annotations), members });
+    }
+    boundaries.types = wire::analyse(cp, local, &roots)?;
+    // A request type whose only framework annotations are its constraints is shown once, as a wire type with the
+    // constraints on its properties.
+    for name in field_only {
+        if boundaries.types.contains_key(&name) {
+            boundaries.beans.remove(&name);
+        }
     }
     Ok(boundaries)
 }
@@ -559,17 +614,22 @@ impl Boundaries {
     }
 
     pub fn problems(&self) -> usize {
-        self.beans.values().flat_map(|b| &b.members).map(|m| m.problems).sum()
+        self.beans.values().chain(self.types.values()).flat_map(|b| &b.members).map(|m| m.problems).sum()
     }
 
     pub fn stats(&self) -> String {
-        format!("{} beans, {} entry points, {} advised methods, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.problems())
+        format!("{} beans, {} entry points, {} advised methods, {} wire types, {} problems", self.beans.len(), self.entry_points(), self.advised(), self.types.len(), self.problems())
+    }
+
+    /// The beans, then the wire types under their `wire ` prefix, as the contract lists them.
+    fn blocks(&self) -> impl Iterator<Item = (String, &Bean)> {
+        self.beans.iter().map(|(n, b)| (n.clone(), b)).chain(self.types.iter().map(|(n, b)| (format!("wire {n}"), b)))
     }
 
     /// Comparable entries: `type: annotations`, `type: member` and `type: member: detail` lines.
     pub fn entries(&self) -> BTreeSet<String> {
         let mut out = BTreeSet::new();
-        for (name, bean) in &self.beans {
+        for (name, bean) in self.blocks() {
             out.insert(format!("{name}: {}", bean.annotations));
             for m in &bean.members {
                 out.insert(format!("{name}: {}", m.line));
@@ -581,14 +641,15 @@ impl Boundaries {
         out
     }
 
-    /// The first member whose line or details are among the added entries of a diff, for anchoring a finding.
+    /// The first member whose line or details are among the added entries of a diff, with its class, for anchoring
+    /// a finding.
     pub fn first_added(&self, diff: &[String]) -> Option<(String, &Member)> {
         for line in diff {
             let Some(entry) = line.strip_prefix("  added ") else { continue };
-            for (name, bean) in &self.beans {
+            for (name, bean) in self.blocks() {
                 for m in &bean.members {
                     if entry == format!("{name}: {}", m.line) || entry.starts_with(&format!("{name}: {}: ", m.line)) {
-                        return Some((name.clone(), m));
+                        return Some((name.strip_prefix("wire ").unwrap_or(&name).to_string(), m));
                     }
                 }
             }
@@ -601,12 +662,13 @@ impl Boundaries {
             "# Boundary contract, generated by jvmcontract. Do not edit: regenerate it with `jvmcontract update`.".to_string(),
             "# It lists where the framework enters this module (routes, listeners, schedules, bean definitions) and the".to_string(),
             "# advice on each bean (transactions, security, validation, caching, retries), from the annotations in the".to_string(),
-            "# compiled classes. A `!` line is a place where an annotation does not do what it says.".to_string(),
+            "# compiled classes, then the wire types: the JSON shape of each request, response and message type.".to_string(),
+            "# A `!` line is a place where an annotation does not do what it says.".to_string(),
             "kind: boundaries".to_string(),
             format!("module: {module}, {}", self.stats()),
             String::new(),
         ];
-        for (name, bean) in &self.beans {
+        for (name, bean) in self.blocks() {
             lines.push(if bean.annotations.is_empty() { format!("{name}:") } else { format!("{name}: {}", bean.annotations) });
             for m in &bean.members {
                 lines.push(format!("  {}", m.line));

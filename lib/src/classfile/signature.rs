@@ -134,6 +134,28 @@ pub fn method_types(signature: &str) -> Option<(Vec<String>, String)> {
     Some((params, ret))
 }
 
+/// The raw parameter and return parts of a method signature or descriptor, unrendered, for a caller that wants
+/// the class names in each: `(Ljava/util/List<Lnet/x/Order;>;I)V` is `["Ljava/util/List<Lnet/x/Order;>;", "I"]`
+/// and `V`.
+pub fn method_parts(signature: &str) -> Option<(Vec<String>, String)> {
+    let mut p = Parser { s: signature.as_bytes(), pos: 0 };
+    p.skip_type_parameters()?;
+    if !p.eat(b'(') {
+        return None;
+    }
+    let mut params = Vec::new();
+    while !p.eat(b')') {
+        let start = p.pos;
+        p.java_type()?;
+        params.push(signature[start..p.pos].to_string());
+    }
+    let start = p.pos;
+    if !p.eat(b'V') {
+        p.java_type()?;
+    }
+    Some((params, signature[start..p.pos].to_string()))
+}
+
 /// A field's type from its signature, rendered with simple names.
 pub fn field_type(signature: &str) -> Option<String> {
     let mut p = Parser { s: signature.as_bytes(), pos: 0 };
@@ -153,5 +175,7 @@ mod tests {
         assert_eq!(method_types("()Lnet/example/Outer<TT;>.Inner;").unwrap().1, "Outer<T>.Inner");
         assert_eq!(field_type("Ljava/util/Optional<Ljava/time/Duration;>;").unwrap(), "Optional<Duration>");
         assert!(method_types("garbage").is_none());
+        assert_eq!(method_parts("(Ljava/util/List<Lnet/x/Order;>;I)V").unwrap(), (vec!["Ljava/util/List<Lnet/x/Order;>;".to_string(), "I".to_string()], "V".to_string()));
+        assert_eq!(method_parts("<T:Ljava/lang/Object;>([TT;)Lnet/x/Result;").unwrap(), (vec!["[TT;".to_string()], "Lnet/x/Result;".to_string()));
     }
 }

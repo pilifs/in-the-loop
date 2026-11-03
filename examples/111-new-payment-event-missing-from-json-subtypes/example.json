@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "111",
+  "title": "A PaymentVoided event joins the sealed PaymentEvent family without its @JsonSubTypes entry",
+  "summary": "The payment service voids an order whose refund arrives before any charge, and until now told nobody. A developer adds a `PaymentVoided` record to the sealed `PaymentEvent` interface, publishes it on the void path, and handles it in ticketing, where the compiler insists on the new case of the sealed switch. The `@JsonSubTypes` list on the interface, which names the type id of each event on the wire, is not touched. Every test passes: the compiler checked the Java side, the codec test round-trips the three events it knew about. Jackson writes the new event with the type id `PaymentEvent$PaymentVoided` and the consumer rejects it. The regenerated boundary contract of the `contracts` module shows the new type with a `!` line saying exactly that.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "spring-boot",
+    "messaging",
+    "payments",
+    "dropped-case"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Box Office",
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java",
+    "symbol": "net.terminalvalue.boxoffice.contracts.PaymentEvent"
+  },
+  "approach": {
+    "id": "B12",
+    "name": "Boundary contracts",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Report a voided payment to ticketing. A refund that overtakes its charge leaves the payment service with a `VOIDED` record and ticketing with an order in `REFUND_PENDING` that waits for a refund of money that was never taken. The payment service now publishes a `PaymentVoided` event on that path, and ticketing settles the order on it as it does on a refund. The new record is added to the sealed `PaymentEvent` interface, so the compiler finds the switch in `PaymentEventHandler` that needs a new case.",
+    "patch": "change.patch"
+  },
+  "risk": "The type id of a `PaymentEvent` on the wire comes from `@JsonSubTypes` on the interface, not from the record. For a permitted subtype that the list does not name, Jackson 3 falls back to the class name, `PaymentEvent$PaymentVoided`, writes the event under it, and the consumer, whose resolver knows only the listed ids, throws `InvalidTypeIdException` on the first void. The ticketing listener does not commit the offset for a message it could not handle, so the same record is redelivered on every poll and the partition stops: every later payment outcome waits behind one void. Both services compile, the sealed switch is exhaustive, and the codec's round-trip test covers the three events written when it was written. A round-trip test of the new event would catch it, and the developer who added a case to a switch because the compiler asked has no reason to think a second list needs the same.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The boundary contract of the `contracts` module is its wire types: the three message families with the type id of each subtype, read from `@JsonTypeInfo`, `@JsonSubTypes` and the `PermittedSubclasses` attribute of the sealed interface. The change is intended, so the contract is regenerated and the diff is what the reviewer approves. The regenerated `PaymentEvent` block gains the new subtype and a `!` line: `PaymentVoided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$PaymentVoided\", which a reader of PaymentEvent rejects`. The runner reports a `!` line that the old contract did not have as the violation. The fact behind the line was established against Jackson 3 (`lib/src/wire.rs`): an unlisted permitted subtype serializes under its class name and fails to deserialize, while a sealed interface with no `@JsonSubTypes` at all would accept its permitted subtypes under their class names.",
+  "resolution": "Add `@JsonSubTypes.Type(value = PaymentEvent.PaymentVoided.class, name = \"PaymentVoided\")` to the list on the interface and regenerate the contract: the `!` line goes, the block reads `subtype \"PaymentVoided\" = PaymentEvent$PaymentVoided`, and the diff a reviewer approves is one new event with its id. Deploy the consumers before the producer, since a ticketing service still running the old jar rejects the new id just the same; the contract diff is also the list of what the old consumer does not know.",
+  "notes": [
+    "The first example of the wire types in a boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): the JSON shape of each request, response and message type as Jackson encodes it, with `!` lines for the Jackson pitfalls that no test with the same classes on both sides can see. The `contracts` module of Box Office has no Spring annotations; its boundary contract is wire types only, and it is checked by `./gradlew check` like the others when `jvmcontract` is on the `PATH`.",
+    "The runner (`build.py`, `run_boundaries`) treats an intended change as a regeneration: it runs `jvmcontract update`, records the contract diff, and reports as the violation any `!` line the regenerated contract has that the old one did not. An unintended change is a plain `verify`, as in example 110.",
+    "Jackson 3.1 behaviour, checked with a scratch program against the jars Box Office uses: a permitted subtype missing from an explicit `@JsonSubTypes` is written as `Outer$Inner` and rejected on reading; a sealed interface with `@JsonTypeInfo` and no `@JsonSubTypes` accepts all permitted subtypes under their class names, which the contract reports as a type id that is a class name; a listed subtype without `name` gets the class name too. Jackson 2 does not read permitted subclasses at all, so there the unlisted event fails on reading in every case.",
+    "The patch touches three modules (the record, the publisher, the consumer's switch); the runner compiles and checks the `contracts` module, where the subject is. The payment-service tests that exercise the void path are not in this patch, as they were not in the developer's change."
+  ],
+  "provenance": "Constructed from the most common way a polymorphic message family breaks in a Spring Boot system that shares its message classes between services: a new subtype added where the compiler checks (the sealed interface, the switch) and not where Jackson reads (the `@JsonSubTypes` list), with every test passing because both sides of every test use the same classes."
+}

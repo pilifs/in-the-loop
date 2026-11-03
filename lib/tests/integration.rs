@@ -1053,7 +1053,24 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     has("  int refill(int tenant)\n\n");
     assert!(!text.contains("constraints on tenant"), "@Validated enforces the constraints");
     assert!(!text.contains("helper"), "a static method is not under the class's advice");
-    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.problems()), (5, 6, 13, 15), "{text}");
+    // The wire types: request and response bodies, listener payloads, Jackson-annotated types, and what they reach.
+    has("wire fixtures.spring.Order: record\n  id: @NotBlank String\n  seats: @Min(1) int\n");
+    assert!(!text.contains("\nfixtures.spring.Order:"), "a request type with only constraints is one block, the wire one");
+    has("wire fixtures.spring.Note: class, snake_case names, ignores unknown properties\n  id: String?\n  count: int\n  extra: String?\n  author: @NotBlank String?\n  token: String?\n  url: String?\n  customer_name: String?\n  paid: boolean\n  open: Boolean?\n  note: String?\n  shapes: List<Shape>?\n  kind: Kind?\n  status: Status?\n  empty: Empty?\n  due: LocalDate?\n    @JsonFormat(pattern = \"yyyy-MM-dd\")\n");
+    let wire = &text[text.find("\nwire ").expect("a wire section")..];
+    assert!(!wire.contains("secret") && !wire.contains("internal") && !wire.contains("private"), "ignored and invisible members are not on the wire:\n{wire}");
+    has("wire fixtures.spring.Kind: enum\n  SMALL as \"small\"\n  LARGE\n");
+    has("wire fixtures.spring.Status: enum, written as int by code()\n  OK\n  FAILED\n");
+    has("wire fixtures.spring.PaymentEvent: interface, \"type\" names the subtype\n  ! Voided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$Voided\", which a reader of PaymentEvent rejects\n  subtype \"PaymentCaptured\" = PaymentEvent$Captured\n  subtype \"PaymentEvent$Declined\" = PaymentEvent$Declined\n  subtype \"PaymentEvent$Voided\" = PaymentEvent$Voided\n");
+    has("wire fixtures.spring.PaymentEvent$Captured: record\n  type = \"PaymentCaptured\"\n  orderId: String\n  amountCents: long\n");
+    has("wire fixtures.spring.PaymentEvent$Declined: record\n  ! the type id \"PaymentEvent$Declined\" is the class name: renaming or moving the class changes the wire format\n  type = \"PaymentEvent$Declined\"\n");
+    has("wire fixtures.spring.PaymentEvent$Voided: record\n  type = \"PaymentEvent$Voided\"\n  orderId: String\n");
+    has("wire fixtures.spring.Audit: interface, \"@class\" names the subtype's Java class\n  ! Java class names are the type ids");
+    has("wire fixtures.spring.Shape: interface\n  ! no @JsonTypeInfo: a Shape is written as the properties of its runtime class, with no type id to read it back by\n");
+    has("wire fixtures.spring.Empty: class\n  ! no properties: it is written as {}\n");
+    has("wire fixtures.spring.NoteDocument: record\n  ! a persistence type (@Document) is on the wire");
+    has("wire fixtures.spring.Base: class\n  id: String\n");
+    assert_eq!((found.beans.len(), found.entry_points(), found.advised(), found.types.len(), found.problems()), (7, 9, 13, 13, 21), "{text}");
 
     // The file reads back as exactly the entries it was written from.
     assert_eq!(boundaries::parse(&text).unwrap(), found.entries());
@@ -1077,14 +1094,15 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     run.add.clear();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 0, "{}", outcome.output);
-    assert!(outcome.output.contains("matches its boundary contract (5 beans, 6 entry points, 13 advised methods, 15 problems)"), "{}", outcome.output);
+    assert!(outcome.output.contains("matches its boundary contract (7 beans, 9 entry points, 13 advised methods, 13 wire types, 21 problems)"), "{}", outcome.output);
 
-    let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "");
+    let edited = text.replace("    @PreAuthorize(\"hasRole('ADMIN')\")\n", "").replace("    ! @Cacheable on a void method caches nothing\n", "").replace("  amountCents: long\n", "  amount: long\n");
     std::fs::write(&file, edited).unwrap();
     let outcome = verifier::run(&run).unwrap();
     assert_eq!(outcome.exit_code, 1, "{}", outcome.output);
     assert!(outcome.output.contains("  added fixtures.spring.OrderService: void warm(): ! @Cacheable on a void method caches nothing"), "{}", outcome.output);
     assert!(outcome.output.contains("  added fixtures.spring.OrdersController: DELETE /orders/{id} => void purge(@PathVariable String id): @PreAuthorize(\"hasRole('ADMIN')\")"), "{}", outcome.output);
+    assert!(outcome.output.contains("  added wire fixtures.spring.PaymentEvent$Captured: amountCents: long\n") && outcome.output.contains("  removed wire fixtures.spring.PaymentEvent$Captured: amount: long\n"), "{}", outcome.output);
     let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
     assert_eq!(finding.uri.as_deref(), Some("tests/fixtures/spring/fixtures/spring/OrderService.java"));
     assert!(finding.line > 1, "anchored to the member's line, found {}", finding.line);

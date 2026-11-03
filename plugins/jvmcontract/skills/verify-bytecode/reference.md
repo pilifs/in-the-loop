@@ -28,8 +28,10 @@ jvmcontract capabilities CLASSES [--module NAME] [--json]
 jvmcontract capabilities --each lib/*.jar          # one contract per jar, for a dependency change
 jvmcontract api CLASSES [--module NAME]
 # A Spring Boot module's boundaries: routes, listeners, schedules, bean definitions, configuration keys, the advice on
-# each bean, and `!` lines where an annotation does not do what it says (self-invocation, advice the proxy cannot
-# intercept, a checked exception that commits, a lost @Async result, constraints never enforced). No JBMC.
+# each bean, `!` lines where an annotation does not do what it says (self-invocation, advice the proxy cannot
+# intercept, a checked exception that commits, a lost @Async result, constraints never enforced), and the wire types:
+# the JSON shape of each request, response and message as Jackson encodes it, with `!` lines for a subtype missing
+# from @JsonSubTypes, a type id that is a class name, a polymorphic type without @JsonTypeInfo. No JBMC.
 jvmcontract boundaries CLASSES [--module NAME] [--json]
 
 # A class file's structure and bytecode, when you need to see what a method does at the bytecode level.

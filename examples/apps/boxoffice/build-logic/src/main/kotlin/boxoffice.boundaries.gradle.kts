@@ -1,6 +1,6 @@
 // The module's boundary contract (src/contract/boundaries.contract): where Spring enters the module (routes,
-// listeners, schedules, bean definitions, configuration keys), the advice on each bean, and the places where an
-// annotation does not do what it says. `check` fails when the compiled classes no longer match it, and
+// listeners, schedules, bean definitions, configuration keys), the advice on each bean, the places where an
+// annotation does not do what it says, and the wire types (the JSON shape of each request, response and message). `check` fails when the compiled classes no longer match it, and
 // `updateBoundaries` rewrites it from the code. The verifier is jvmcontract, the Rust tool in lib/, which reads the
 // class files directly; the tasks are skipped when it is not on the PATH, so the build still works without it.
 plugins {
@@ -13,19 +13,27 @@ val reportDir = layout.buildDirectory.dir("reports/contracts")
 fun onPath(program: String): Boolean =
     System.getenv("PATH").orEmpty().split(File.pathSeparator).any { File(it, program).canExecute() }
 
+// Everything the task needs is captured here as plain values and providers, so that the task serializes into
+// Gradle's configuration cache; the command line itself is assembled at execution time.
 fun Exec.configureBoundaries(mode: String) {
     group = "verification"
     dependsOn("classes")
-    onlyIf("jvmcontract is on the PATH") { onPath("jvmcontract") }
-    val classes = sourceSets.main.get().output.classesDirs
-    val classpath = configurations.runtimeClasspath.get()
+    val available = onPath("jvmcontract")
+    onlyIf("jvmcontract is on the PATH") { available }
+    val classes: FileCollection = sourceSets.main.get().output.classesDirs
+    val classpath: Provider<String> = configurations.runtimeClasspath.map { it.asPath }
+    val sources: List<String> = sourceSets.main.get().java.srcDirs.map { it.path }
+    val moduleName = project.name
+    val root = rootDir.path
+    val contracts = contractsDir.asFile.path
+    val report = reportDir.get().asFile.path
     inputs.files(classes)
     doFirst {
-        val args = mutableListOf("jvmcontract", mode, "--contracts", contractsDir.asFile.path, "--module", project.name)
+        val args = mutableListOf("jvmcontract", mode, "--contracts", contracts, "--module", moduleName)
         classes.forEach { args += listOf("--classes", it.path) }
-        args += listOf("--classpath", classpath.asPath)
-        sourceSets.main.get().java.srcDirs.forEach { args += listOf("--sources", it.path) }
-        args += listOf("--base", rootDir.path, "--report", reportDir.get().asFile.path)
+        args += listOf("--classpath", classpath.get())
+        sources.forEach { args += listOf("--sources", it) }
+        args += listOf("--base", root, "--report", report)
         if (mode == "update") args += listOf("--add", "boundaries")
         commandLine(args)
     }

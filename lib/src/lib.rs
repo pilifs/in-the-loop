@@ -45,6 +45,7 @@ pub mod statemachine;
 pub mod tla;
 pub mod trusted;
 pub mod verifier;
+pub mod wire;
 pub mod witness;
 pub mod zip;
 

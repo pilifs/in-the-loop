@@ -19,7 +19,7 @@ Approaches (the ids are those of examples/approaches.md):
   B9   regression verification: old and new bytecode compared symbolically  (equivalence; JBMC)
   B10  capability contracts: what a module's bytecode can reach             (verify)
   B11  property proofs: a stated property of one method, on every input     (prove; JBMC)
-  B12  boundary contracts: a Spring Boot module's routes, listeners, schedules, advice and the places advice does not apply (verify)
+  B12  boundary contracts: a Spring Boot module's routes, listeners, schedules, advice, wire types and the places advice does not apply (verify)
   D1   protocol model checking: the system in TLA+, driven by a contract    (spec; TLC)
 
 Four subject applications. Box Office (examples/apps/boxoffice, examples 001 to 012) is a Gradle build verified
@@ -282,7 +282,9 @@ def run_contracts(folder, example, tmp, module, result):
 
 def run_boundaries(folder, example, tmp, module, result):
     """B12 on a Box Office module: the patched copy compiled by Gradle, then `jvmcontract verify` over the module's
-    contracts directory, where the boundary contract lives. The verifier is the Rust tool, not the Gradle build's."""
+    contracts directory, where the boundary contract lives. The verifier is the Rust tool, not the Gradle build's.
+    When the change was intended, the contract is regenerated first and the diff recorded; a `!` line that the
+    regenerated contract has and the old one did not is then the violation, since the reviewer approves the diff."""
     build = tmp / BUILD_ROOT
     gradle(build, f":{module}:compileJava")
     classes = build / module / "build/classes/java/main"
@@ -300,25 +302,56 @@ def run_boundaries(folder, example, tmp, module, result):
                 old.get(f.name, "").splitlines(True), f.read_text().splitlines(True),
                 f"a/{BUILD_ROOT}/{module}/src/contract/{f.name}", f"b/{BUILD_ROOT}/{module}/src/contract/{f.name}"))
             for f in sorted(contracts.glob("*.contract")))
+        before = problem_lines(old.get("boundaries.contract", ""))
+        new_problems = [p for p in problem_lines((contracts / "boundaries.contract").read_text()) if p not in before]
+    else:
+        new_problems = []
     proc = subprocess.run([jvmcontract(), "verify", "--contracts", str(contracts), "--classes", str(classes),
                            "--module", module, *anchor], text=True, capture_output=True)
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
     if proc.returncode == 2:
         sys.exit(f"jvmcontract failed:\n{output}")
+    if new_problems:
+        output += "New `!` lines in the regenerated contract:\n" + "".join(f"  added {p}\n" for p in new_problems)
     write_evidence(folder, output, report / "contracts.sarif")
     verdict = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+    if new_problems and verdict == "verified":
+        verdict = "violation"
     changes = boundary_changes(output)
-    m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) problems\)", output)
+    m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) wire types, (\d+) problems\)", output)
     result.update({
         "verdict": verdict,
         "counterexamples": changes,
-        "domain": f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, {m.group(4)} problems" if m else None,
+        "newProblems": new_problems,
+        "domain": (f"{m.group(1)} beans, {m.group(2)} entry points, {m.group(3)} advised methods, {m.group(4)} wire types, "
+                   f"{m.group(5)} problems") if m else None,
         "verdictLabel": {
-            "violation": f"{VERDICT_LABEL[verdict]}: {len(changes)} boundary change{'s' if len(changes) != 1 else ''}",
+            "violation": (f"{VERDICT_LABEL[verdict]}: {len(new_problems)} new problem{'s' if len(new_problems) != 1 else ''}"
+                          if new_problems else
+                          f"{VERDICT_LABEL[verdict]}: {len(changes)} boundary change{'s' if len(changes) != 1 else ''}"),
             "verified": f"{VERDICT_LABEL[verdict]}: boundaries unchanged",
             "unverifiable": VERDICT_LABEL[verdict],
         }[verdict],
     })
+
+
+def problem_lines(contract):
+    """The `!` lines of a boundary contract, each with its block: `wire a.B: ! ...` or `a.B: member: ! ...`."""
+    found = []
+    block = member = None
+    for line in contract.splitlines():
+        if not line.strip() or line.startswith("#") or line.startswith(("kind:", "module:")):
+            continue
+        if line.startswith("    "):
+            if line.strip().startswith("! "):
+                found.append(f"{block}: {member}: {line.strip()}")
+        elif line.startswith("  "):
+            member = line.strip()
+            if member.startswith("! "):
+                found.append(f"{block}: {member}")
+        else:
+            block = line.split(":", 1)[0]
+    return found
 
 
 def run_equivalence(folder, example, tmp, module, result):
@@ -1723,8 +1756,13 @@ def findings_boundaries(ex, res):
             out.append(f"| {code(c['input'])} | {code(c['contract']) if c['contract'] else '*(nothing)*'} "
                        f"| {code(c['actual']) if c['actual'] else '*(removed)*'} |")
         out += ["", "A line is a route, listener, schedule, bean definition or configuration key, the advice on a "
-                    "member, or a `!` line where an annotation does not do what it says; a member's line changes "
-                    "with its signature and parameter annotations."]
+                    "member, a property of a wire type, or a `!` line where an annotation does not do what it says; "
+                    "a member's line changes with its signature and parameter annotations."]
+        if res.get("newProblems"):
+            out += ["", "The change was intended, so the developer regenerated the contract, and the `!` lines above "
+                        "are new in it: the regenerated contract records a problem the old one did not have. The "
+                        "regeneration is the diff a reviewer approves:", "", "```diff", res["contractDiff"].rstrip("\n"),
+                    "```"]
         return out
     if res["verdict"] == "unverifiable":
         return ["The verifier refused to produce a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]

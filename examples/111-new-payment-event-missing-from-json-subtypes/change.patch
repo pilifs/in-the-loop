@@ -1,0 +1,46 @@
+diff --git a/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java b/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java
+index 44b6a8d..33d2ae2 100644
+--- a/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java
++++ b/examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java
+@@ -24,4 +24,10 @@ public sealed interface PaymentEvent extends Message {
+     /** A captured payment was returned to the customer. */
+     record PaymentRefunded(UUID eventId, String orderId, Instant occurredAt, String paymentId, long amountCents)
+             implements PaymentEvent {}
++
++    /**
++     * A refund arrived before any charge, so the order was voided: nothing was captured, and a charge that arrives
++     * later is refused. Reported so that the order does not wait for a refund that will never happen.
++     */
++    record PaymentVoided(UUID eventId, String orderId, Instant occurredAt, String reason) implements PaymentEvent {}
+ }
+diff --git a/examples/apps/boxoffice/payment-service/src/main/java/net/terminalvalue/boxoffice/payments/app/PaymentCommandHandler.java b/examples/apps/boxoffice/payment-service/src/main/java/net/terminalvalue/boxoffice/payments/app/PaymentCommandHandler.java
+index c9bf1cb..52b6160 100644
+--- a/examples/apps/boxoffice/payment-service/src/main/java/net/terminalvalue/boxoffice/payments/app/PaymentCommandHandler.java
++++ b/examples/apps/boxoffice/payment-service/src/main/java/net/terminalvalue/boxoffice/payments/app/PaymentCommandHandler.java
+@@ -103,10 +103,12 @@ public class PaymentCommandHandler {
+     private void refund(RefundPayment command, PaymentDocument payment) {
+         Instant now = clock.instant();
+         if (payment == null) {
+-            // The refund overtook its charge. Record the void so that the charge, when it arrives, is refused.
++            // The refund overtook its charge. Record the void so that the charge, when it arrives, is refused, and
++            // tell ticketing: nothing was captured, so the order is settled.
+             mongo.insert(new PaymentDocument(
+                     command.orderId(), null, 0, PaymentStatus.VOIDED, null, "refunded before charge", now, now));
+             log.warn("Order {} refunded before it was charged; voided", command.orderId());
++            publish(new PaymentEvent.PaymentVoided(UUID.randomUUID(), command.orderId(), now, "refunded before charge"));
+             return;
+         }
+         switch (payment.status()) {
+diff --git a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java
+index ba574e8..901828b 100644
+--- a/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java
++++ b/examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/PaymentEventHandler.java
+@@ -46,6 +46,8 @@ public class PaymentEventHandler {
+                     new OrderInput.PaymentCaptured(store.heldBy(order.holdId()) == order.seatLabels().size());
+                 case PaymentEvent.PaymentDeclined _ -> new OrderInput.PaymentDeclined();
+                 case PaymentEvent.PaymentRefunded _ -> new OrderInput.PaymentRefunded();
++                // Nothing was captured, so there is nothing to wait for: the order is settled as refunded.
++                case PaymentEvent.PaymentVoided _ -> new OrderInput.PaymentRefunded();
+             };
+             transitions.apply(order, input);
+         });

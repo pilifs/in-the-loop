@@ -4315,6 +4315,46 @@
         "The runner (`build.py`, `run_boundaries`) compiles the patched module with Gradle and runs `jvmcontract verify` over its `src/contract` directory; it does not use the Gradle build's own `verifyBoundaries` task, so it works without the tool on the PATH of the Gradle daemon. The existing tests are the module's Spring Boot tests, which need Docker for Testcontainers; without it they fail before the change is tested, which the page records as the tests' result, not the verifier's."
       ],
       "source": null
+    },
+    {
+      "id": "111",
+      "path": "examples/111-new-payment-event-missing-from-json-subtypes",
+      "title": "A PaymentVoided event joins the sealed PaymentEvent family without its @JsonSubTypes entry",
+      "summary": "The payment service voids an order whose refund arrives before any charge, and until now told nobody. A developer adds a `PaymentVoided` record to the sealed `PaymentEvent` interface, publishes it on the void path, and handles it in ticketing, where the compiler insists on the new case of the sealed switch. The `@JsonSubTypes` list on the interface, which names the type id of each event on the wire, is not touched. Every test passes: the compiler checked the Java side, the codec test round-trips the three events it knew about. Jackson writes the new event with the type id `PaymentEvent$PaymentVoided` and the consumer rejects it. The regenerated boundary contract of the `contracts` module shows the new type with a `!` line saying exactly that.",
+      "origin": "constructed",
+      "system": "Box Office",
+      "symbol": "net.terminalvalue.boxoffice.contracts.PaymentEvent",
+      "approach": "B12",
+      "approaches": [
+        "B12"
+      ],
+      "tags": {
+        "domain": [
+          "spring-boot",
+          "messaging",
+          "payments"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": []
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The first example of the wire types in a boundary contract (`jvmcontract boundaries`, `verify --add boundaries`): the JSON shape of each request, response and message type as Jackson encodes it, with `!` lines for the Jackson pitfalls that no test with the same classes on both sides can see. The `contracts` module of Box Office has no Spring annotations; its boundary contract is wire types only, and it is checked by `./gradlew check` like the others when `jvmcontract` is on the `PATH`.",
+        "The runner (`build.py`, `run_boundaries`) treats an intended change as a regeneration: it runs `jvmcontract update`, records the contract diff, and reports as the violation any `!` line the regenerated contract has that the old one did not. An unintended change is a plain `verify`, as in example 110.",
+        "Jackson 3.1 behaviour, checked with a scratch program against the jars Box Office uses: a permitted subtype missing from an explicit `@JsonSubTypes` is written as `Outer$Inner` and rejected on reading; a sealed interface with `@JsonTypeInfo` and no `@JsonSubTypes` accepts all permitted subtypes under their class names, which the contract reports as a type id that is a class name; a listed subtype without `name` gets the class name too. Jackson 2 does not read permitted subclasses at all, so there the unlisted event fails on reading in every case.",
+        "The patch touches three modules (the record, the publisher, the consumer's switch); the runner compiles and checks the `contracts` module, where the subject is. The payment-service tests that exercise the void path are not in this patch, as they were not in the developer's change."
+      ],
+      "source": null
     }
   ]
 }

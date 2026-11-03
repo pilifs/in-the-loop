@@ -2,6 +2,7 @@
 plugins {
     id("boxoffice.java-conventions")
     id("boxoffice.contracts")
+    id("boxoffice.boundaries")
 }
 
 dependencies {

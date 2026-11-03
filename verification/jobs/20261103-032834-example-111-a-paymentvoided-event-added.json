@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261103-032834-example-111-a-paymentvoided-event-added",
+  "title": "Example 111: a PaymentVoided event added to the sealed PaymentEvent family without its @JsonSubTypes entry, caught by the wire types of the boundary contract (B12)",
+  "description": "The first example of the wire types in a boundary contract: jvmcontract reads the Jackson annotations and the PermittedSubclasses attribute of the Box Office contracts module and writes the JSON shape of each message family into src/contract/boundaries.contract. The patch adds a PaymentVoided record to the sealed PaymentEvent interface, publishes it in payment-service and handles it in ticketing-service, without adding it to @JsonSubTypes. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: PaymentVoided is a permitted subtype that @JsonSubTypes does not list, written under the type id PaymentEvent$PaymentVoided which a reader rejects (checked against Jackson 3.1). The runner compiles the patched contracts module with Gradle offline and runs jvmcontract update then verify; the module's own tests (MessageCodecTest) run first and pass, since they round-trip only the events they name.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/wire.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "111"
+    ]
+  },
+  "expected": "build.py 111 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-03T03:28:34+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 111 (B12)",
+      "run": "python3 examples/tools/build.py 111",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/111-new-payment-event-missing-from-json-subtypes"
+  ]
+}

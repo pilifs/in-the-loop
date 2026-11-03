@@ -324,11 +324,14 @@ pub fn run(run: &ContractsRun) -> Result<Outcome, Error> {
     let mut targets: BTreeMap<String, PathBuf> = BTreeMap::new();
     let mut added = run.add.clone();
     let capabilities_file = run.contracts.join(capabilities::FILE_NAME);
-    let check_capabilities = capabilities_file.exists() || take(&mut added, "capabilities");
+    let add_capabilities = take(&mut added, "capabilities");
+    let check_capabilities = capabilities_file.exists() || add_capabilities;
     let api_file = run.contracts.join(crate::api::FILE_NAME);
-    let check_api = api_file.exists() || take(&mut added, "api");
+    let add_api = take(&mut added, "api");
+    let check_api = api_file.exists() || add_api;
     let boundaries_file = run.contracts.join(crate::boundaries::FILE_NAME);
-    let check_boundaries = boundaries_file.exists() || take(&mut added, "boundaries");
+    let add_boundaries = take(&mut added, "boundaries");
+    let check_boundaries = boundaries_file.exists() || add_boundaries;
     if run.contracts.is_dir() {
         let mut files: Vec<PathBuf> = std::fs::read_dir(&run.contracts)?
             .filter_map(|e| e.ok().map(|e| e.path()))
@@ -447,8 +450,12 @@ fn check_capability_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, ou
     let report = capabilities::analyse_classpath(&module_cp)?;
     let stats = report.stats();
     if run.update {
-        report.write(file, &run.module)?;
-        let _ = writeln!(out, "✓ wrote {} ({stats})", file.display());
+        if file.exists() && capabilities::read(file).is_ok_and(|old| capabilities::diff(&old, &report.entries()).is_empty()) {
+            let _ = writeln!(out, "✓ {} is up to date ({stats})", file.display());
+        } else {
+            report.write(file, &run.module)?;
+            let _ = writeln!(out, "✓ wrote {} ({stats})", file.display());
+        }
         return Ok(());
     }
     let diff = capabilities::diff(&capabilities::read(file)?, &report.entries());
@@ -484,11 +491,25 @@ fn check_boundary_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, out:
         }
     }
     let module: BTreeSet<String> = module_cp.application_class_names()?.into_iter().collect();
-    let boundaries = crate::boundaries::analyse_in(cp, Some(&module))?;
+    // The wire types are followed into the module and the sibling modules of the same build: the class path
+    // entries under the base directory. Library classes stay leaves.
+    let mut local = module.clone();
+    for path in &run.classpath {
+        if path.exists() && path.starts_with(&run.base) {
+            let mut sibling = ClassPath::new();
+            sibling.add(path)?;
+            local.extend(sibling.application_class_names()?);
+        }
+    }
+    let boundaries = crate::boundaries::analyse_in(cp, Some(&module), Some(&local))?;
     let stats = boundaries.stats();
     if run.update {
-        boundaries.write(file, &run.module)?;
-        let _ = writeln!(out, "✓ wrote {} ({stats})", file.display());
+        if file.exists() && crate::boundaries::read(file).is_ok_and(|old| crate::boundaries::diff(&old, &boundaries.entries()).is_empty()) {
+            let _ = writeln!(out, "✓ {} is up to date ({stats})", file.display());
+        } else {
+            boundaries.write(file, &run.module)?;
+            let _ = writeln!(out, "✓ wrote {} ({stats})", file.display());
+        }
         return Ok(());
     }
     let diff = crate::boundaries::diff(&crate::boundaries::read(file)?, &boundaries.entries());
@@ -521,8 +542,12 @@ fn check_api_contract(run: &ContractsRun, cp: &ClassPath, file: &Path, out: &mut
     let _ = cp;
     let surface = crate::api::analyse(&module_cp)?;
     if run.update {
-        surface.write(file, &run.module)?;
-        let _ = writeln!(out, "✓ wrote {} ({} public types, {} members)", file.display(), surface.types.len(), surface.member_count());
+        if file.exists() && crate::api::read(file).is_ok_and(|old| crate::api::diff(&old, &surface.entries()).is_empty()) {
+            let _ = writeln!(out, "✓ {} is up to date ({} public types, {} members)", file.display(), surface.types.len(), surface.member_count());
+        } else {
+            surface.write(file, &run.module)?;
+            let _ = writeln!(out, "✓ wrote {} ({} public types, {} members)", file.display(), surface.types.len(), surface.member_count());
+        }
         return Ok(());
     }
     let expected = crate::api::read(file)?;
