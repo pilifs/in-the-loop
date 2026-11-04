@@ -12,6 +12,7 @@
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
+#   relational  make relational verification more efficient and accurate, with examples
 #   FILE.md   work through the brief in a markdown file (see llm-dlc/loops/)
 #   CYCLES    how many cycles to run at most; without it there is no limit
 #   UNTIL     instructions the session weighs after each commit to decide whether
@@ -58,7 +59,7 @@ MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
 SCOPE=feature-loop
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -119,6 +120,9 @@ case "$PROMPT" in
     ;;
   spring)
     INSTRUCTION="Enhance the jvmcontract library to be more useful to expert Spring Boot developers. Think outside the box for this -- consider adding more base models, solvers, examples, or other features you feel may be very impactful that we haven't yet considered. Bias towards making enhancements a first-class citizen of the library itself, though feel free to look elsewhere for inspiration."
+    ;;
+  relational)
+    INSTRUCTION="Enhance relational verification capabilities to be more efficient and accurate, adding examples where appropriate"
     ;;
   *) usage ;;
 esac
