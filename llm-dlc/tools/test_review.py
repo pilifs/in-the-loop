@@ -74,7 +74,8 @@ class Authorization(unittest.TestCase):
 
     def test_a_person_is_asked_and_can_decline(self):
         fid = sync.finding_id("other-home-dir", HOME_A)
-        open_now = {fid: {"level": "warn", "kind": "other-home-dir", "value": HOME_A, "count": 1, "where": {"s"}}}
+        open_now = {fid: {"level": "warn", "kind": "other-home-dir", "masked": sync._mask(HOME_A), "value": HOME_A,
+                          "count": 1, "where": {"s"}}}
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "reviewed.json"
             with mock.patch.object(sync, "REVIEWED", path), mock.patch.object(sync, "REPO", Path(tmp)), \

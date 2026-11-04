@@ -268,7 +268,8 @@ class Stamp(unittest.TestCase):
         self.tmp.cleanup()
 
     def finding(self, level, kind, value):
-        return {sync.finding_id(kind, value): {"level": level, "kind": kind, "value": value, "count": 1, "where": {"s"}}}
+        return {sync.finding_id(kind, value): {"level": level, "kind": kind, "masked": sync._mask(value), "value": value,
+                                               "count": 1, "where": {"s"}}}
 
     def test_an_open_warning_is_proposed_and_the_stamp_goes_ahead(self):
         with mock.patch.object(sync, "open_findings", return_value=self.finding("warn", "public-ip", self.IP)):
@@ -458,6 +459,127 @@ class Caches(unittest.TestCase):
         self.assertIn(f"s1: log {shas[2][:12]} content does not match its name", third[0])
         self.assertEqual([w for w in third[1] if shas[2][:12] in w], 
                          [f"s1: log {shas[2][:12]}: public-ip ×1: " + sync._mask("198.51." + "100.4")])
+
+
+class Previews(unittest.TestCase):
+    """scan, review and stamp read the caches sync and check fill, and say what reading nothing says."""
+    IPS = ["203.0." + "113.%d" % n for n in range(1, 6)]
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.src = root / "project"
+        (self.src / "s1" / "subagents").mkdir(parents=True)
+        self.patches = [mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "traces"),
+                        mock.patch.object(sync, "claude_project_dir", return_value=self.src),
+                        mock.patch.object(sync, "FINDINGS_CACHE", root / "values.json"),
+                        mock.patch.object(sync, "older_than_stamp", return_value=False)]
+        for p in self.patches:
+            p.start()
+        for f in (sync.TRANSCRIPT_CACHE, sync.SCAN_CACHE, sync.CHECK_CACHE):
+            f.unlink(missing_ok=True)
+        self.r = MadeUpRedactor()
+        # a session synced once, then grown; a subagent; a log not uploaded; one that is; a summary
+        line = lambda n, text: json.dumps({"type": "user", "n": n, "text": text}) + "\n"
+        self.transcript = self.src / "s1.jsonl"
+        self.transcript.write_text(line(1, "at " + self.IPS[0]) + line(2, "mail " + USER + "@corp" + ".test"))
+        cache = sync.transcript_cache(self.r)
+        stored = sync.redacted_now(self.transcript, "s1", "s1", self.r, cache)[1]
+        cache.save()
+        with self.transcript.open("a") as f:
+            f.write(line(3, "then " + self.IPS[1]) + line(4, "and " + self.IPS[0]))
+        (self.src / "s1" / "subagents" / "agent-a.jsonl").write_text(line(1, "sub " + self.IPS[2]))
+        pending = sync.store_log("s1", line(1, "pending " + self.IPS[3]).encode())["sha256"]
+        public = sync.store_log("s1", line(1, "public " + self.IPS[4]).encode())["sha256"]
+        sync.save_manifest("s1", {"logs": {sync.sha256(stored): {}, pending: {}, public: {"url": "u"}}})
+        sync.summary_path("s1").write_text("written by zed" + "@corp" + ".test\n")
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    @staticmethod
+    def rows(found):
+        return {fid: (f["level"], f["kind"], f["masked"], f["count"], sorted(f["where"])) for fid, f in found.items()}
+
+    def test_findings_from_the_caches_are_those_of_reading_everything(self):
+        expected = sync.scanned_findings(MadeUpRedactor())
+        self.assertEqual({f["kind"] for f in expected.values()}, {"public-ip", "email"})
+        self.assertNotIn(sync.finding_id("public-ip", self.IPS[4]), expected)  # published: check's business
+        self.assertEqual(self.rows(sync.open_findings(self.r, full=True)), self.rows(expected))
+        transcripts = sync.TRANSCRIPT_CACHE.read_bytes()
+        first = sync.open_findings(self.r)
+        self.assertEqual(self.rows(first), self.rows(expected))
+        self.assertEqual(sync.TRANSCRIPT_CACHE.read_bytes(), transcripts)  # names no stored log: not saved
+        r = MadeUpRedactor()
+        with mock.patch.object(r, "raw_hits", side_effect=AssertionError("scanned again")):
+            self.assertEqual(self.rows(sync.open_findings(r)), self.rows(expected))
+        # a finding a person reviewed is left out and counted, as reading everything does
+        fid = sync.finding_id("public-ip", self.IPS[0])
+        reviewed, plain = MadeUpRedactor({fid: {}}), MadeUpRedactor({fid: {}})
+        self.assertEqual(self.rows(sync.open_findings(reviewed)), self.rows(sync.scanned_findings(plain)))
+        self.assertNotIn(fid, sync.open_findings(MadeUpRedactor({fid: {}})))
+        self.assertEqual(reviewed.skipped, plain.skipped)
+
+    def test_a_full_preview_adds_to_the_caches_and_drops_nothing(self):
+        other = MadeUpRedactor()
+        stored = sync.ScanCache(other)
+        stored.hits("s9", sync.sha256(b"x\n"), b"x\n")  # an entry of check's that no preview reads
+        stored.save()
+        sync.open_findings(self.r, full=True)
+        kept = sync.ScanCache(MadeUpRedactor()).entries
+        self.assertIn(sync.sha256(b"x\n"), kept)
+        r = MadeUpRedactor()
+        with mock.patch.object(r, "raw_hits", side_effect=AssertionError("scanned again")):
+            sync.open_findings(r)
+
+    def test_values_come_from_a_scan_or_reading_everything_again(self):
+        found = sync.open_findings(self.r, values=True)  # scanned now: every value known
+        self.assertTrue(all(f["value"] for f in found.values()))
+        sync.FINDINGS_CACHE.unlink()
+        rescan = mock.Mock(wraps=sync.scanned_findings)
+        with mock.patch.object(sync, "scanned_findings", rescan):
+            listed = sync.open_findings(MadeUpRedactor())  # listing needs no value
+            rescan.assert_not_called()
+            self.assertTrue(all("value" not in f for f in listed.values()))
+            again = sync.open_findings(MadeUpRedactor(), values=True)
+            rescan.assert_called_once()
+        self.assertEqual({fid: f["value"] for fid, f in again.items()}, {fid: f["value"] for fid, f in found.items()})
+        r = MadeUpRedactor()
+        with mock.patch.object(r, "raw_hits", side_effect=AssertionError("scanned again")):
+            self.assertEqual(sync.open_findings(r, values=True).keys(), found.keys())
+        # a remembered value is used only when the id names it
+        values = json.loads(sync.FINDINGS_CACHE.read_text())
+        fid = next(iter(values))
+        values[fid]["value"] += "x"
+        sync.FINDINGS_CACHE.write_text(json.dumps(values))
+        self.assertNotIn("value", sync.open_findings(MadeUpRedactor())[fid])
+
+    def test_scan_prints_what_reading_everything_prints(self):
+        def scan(*args):
+            with mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stdout", io.StringIO()) as out:
+                code = sync.cmd_scan(list(args))
+            return code, out.getvalue()
+
+        full = scan("--full")
+        self.assertIn("public-ip ×3: " + sync._mask(self.IPS[0]) + ", " + sync._mask(self.IPS[1]), full[1])
+        self.assertIn("s1 agent agent-a: ", full[1])
+        self.assertEqual(scan(), full)
+        with mock.patch.object(MadeUpRedactor, "raw_hits", side_effect=AssertionError("scanned again")):
+            self.assertEqual(scan(), full)
+        self.assertEqual(scan("s1"), full)
+
+    def test_stamp_proposes_from_the_caches(self):
+        with mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch.object(sync, "ALLOWLIST", Path(self.tmp.name) / "a.json"), \
+                mock.patch.object(redaction_rules, "write_stamp") as write, mock.patch("sys.stdout", io.StringIO()), \
+                mock.patch("sys.stderr", io.StringIO()):
+            sync.summary_path("s1").unlink()  # its email is an error, which refuses a stamp
+            self.assertEqual(sync.cmd_stamp([]), 0)
+            write.assert_called_once_with()
+            proposed = sync.load_allowlist()
+        self.assertEqual({e["masked"] for e in proposed.values()}, {sync._mask(ip) for ip in self.IPS[:4]})
+        self.assertFalse(any(ip in json.dumps(proposed) for ip in self.IPS))
 
 
 class Checks(unittest.TestCase):

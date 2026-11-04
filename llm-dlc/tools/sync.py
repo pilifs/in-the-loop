@@ -42,12 +42,15 @@ Commands:
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
                                 scans every one (LLM_TRACES_FULL=1 does that for sync, check and push)
-  sync.py scan [--all | ID...]  preview a publish: what the redactor changed and what it left to judge;
-                                a session named by ID is scanned whatever its age
+  sync.py scan [--all | ID...] [--full]
+                                preview a publish: what the redactor changed and what it left to judge;
+                                a session named by ID is scanned whatever its age. Like review and
+                                stamp, it redacts only what a transcript gained since its last sync and
+                                does not rescan what check scanned; --full does all of it again
   sync.py unpublish SID SHA [--reason TEXT]
                                 delete one log from R2 and purge it from the CDN cache (for leaks);
                                 with a reason, record the log as withdrawn in the manifest
-  sync.py review                list what `check` would flag, masked, with an id for each finding
+  sync.py review [--full]       list what `check` would flag, masked, with an id for each finding
   sync.py review show ID        where one finding occurs, masked
   sync.py review accept ID... --reason TEXT
                                 record findings as false positives; a person at a terminal only
@@ -58,7 +61,7 @@ Commands:
   sync.py allow add VALUE --kind KIND --reason TEXT
                                 allow a value before it is found; a person at a terminal only
   sync.py allow drop ID...      remove entries, proposed or approved
-  sync.py stamp                 after a change to redaction_rules.py: rescan everything, then
+  sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
                                 record the rules as applied, so older files aren't scanned again;
                                 open warnings become allow-list proposals, open errors refuse it
   sync.py stamp --equivalent    keep the last stamp's date for rules that give the same results as
@@ -733,6 +736,7 @@ class ScanCache(LocalCache):
     def __init__(self, redact: Redactor, path: Path | None = SCAN_CACHE, trusted: bool = True) -> None:
         super().__init__(path, redact.fingerprint(), trusted)
         self.redact, self.used = redact, set()
+        self.values: dict[str, tuple[str, str]] = {}  # finding id -> (kind, value), of what this run scanned
 
     def hits(self, sid: str | None, sha: str, data, size: int | None = None) -> dict:
         """{"leaks": ..., "review": ...} for data, whose SHA-256 the caller has computed as sha.
@@ -757,6 +761,8 @@ class ScanCache(LocalCache):
                 _add_counted(entry[part], self.entries[earlier[start]][part])
             perf.count("scan bytes not scanned again (cached prefix)", start)
         leaks, review = self.redact.raw_hits(data[start:].decode(errors="replace"))
+        for hits in (leaks, review):  # in memory only; remember_findings keeps them, never this cache
+            self.values |= {finding_id(kind, value): (kind, value) for kind, values in hits.items() for value in values}
         _add_counted(entry["leaks"], _counted(leaks))
         _add_counted(entry["review"], _counted(review))
         self.entries[sha] = entry
@@ -1899,32 +1905,66 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     return redact
 
 
+def transcripts_of(p: Path) -> list[tuple[str, Path]]:
+    """A session's transcript and its subagents', each with its key in the transcript cache."""
+    subdir = p.parent / p.stem / "subagents"
+    return [(p.stem, p)] + ([(f"{p.stem}/{s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))] if subdir.is_dir() else [])
+
+
+def redacted_now(path: Path, sid: str, key: str, redact: Redactor, cache: LocalCache | None) -> tuple[bytes, bytes]:
+    """(raw bytes, log) of a transcript as it is now, redacted only from where the log `sync` last
+    stored for it ends (redacted_incrementally). For commands that store no log: the cache entry
+    this makes names a log that is never stored, so their caller must not save the cache."""
+    raw = path.read_bytes()
+    return raw, redacted_incrementally(raw, sid, key, redact, cache)
+
+
+def preview_caches(redact: Redactor, full: bool) -> tuple[ScanCache, CheckCache, LocalCache]:
+    """The caches `scan`, `review` and `stamp` read: what `check` scanned and verified, and what
+    `sync` redacted. --full (or LLM_TRACES_FULL=1) trusts none of them."""
+    full = full or full_audit([])
+    return ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full), transcript_cache(redact, full)
+
+
+def save_previewed(scans: ScanCache, checks: CheckCache) -> None:
+    """Add what this preview scanned and verified to what the cache files hold now, read again
+    (a --full preview read none of it, and a `check` may have saved since): `check` drops the
+    entries it no longer needs, a preview reads too little to judge that. An entry is the result
+    of its content under the fingerprint, so a fresh one and a stored one are the same. The
+    transcript cache is not saved (redacted_now)."""
+    for cache in (scans, checks):
+        cache.entries = LocalCache(cache.path, cache.fingerprint).entries | cache.entries
+        cache.save(keep=set(cache.entries))
+
+
 def cmd_scan(args: list[str]) -> int:
     """Preview a publish without writing anything: redact each transcript in memory, then report
     what the redactor changed, what it would still change (an error: a rule that is not
     idempotent) and what it leaves for a person to judge. Output is masked, because it lands in
-    the transcript of the session that runs it."""
-    src = claude_project_dir()
+    the transcript of the session that runs it. Only what a transcript gained since its last
+    `sync` is redacted, and a log `check` scanned is not scanned again; --full does it all."""
+    src, full = claude_project_dir(), full_audit(args)
+    args = [a for a in args if a != "--full"]
     named = args not in ([], ["--all"])
     paths = [src / f"{a}.jsonl" for a in args] if named else sorted(src.glob("*.jsonl"))
     redact, errors = Redactor(), 0
+    scans, checks, transcripts = preview_caches(redact, full)
     for p in paths:
-        subdir = p.parent / p.stem / "subagents"
-        transcripts = [(p.stem, p)] + ([(f"{p.stem} agent {s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))]
-                                       if subdir.is_dir() else [])
-        for name, path in transcripts:
+        for key, path in transcripts_of(p):
             if not named and older_than_stamp(path):
                 continue
-            raw = path.read_text(errors="replace")
-            data = redact(raw).decode()
-            kinds = Counter(re.findall(r"\[REDACTED:([a-z.\-]+)\]", data))
+            name = p.stem if path == p else f"{p.stem} agent {path.stem}"
+            raw, data = redacted_now(path, p.stem, key, redact, transcripts)
+            found = scans.hits(p.stem, sha256(data), data)
+            kinds = Counter(k.decode() for k in re.findall(rb"\[REDACTED:([a-z.\-]+)\]", data))
             print(f"{name}: {len(raw):,} B raw, {len(data):,} B redacted; "
                   + (", ".join(f"{k} {n}" for k, n in kinds.most_common()) if kinds else "no redaction markers"))
-            for kind in redact.leaks(data):
+            for kind in redact.cached_leaks(found):
                 print(f"  ERROR still unredacted after redaction: {kind}")
                 errors += 1
-            for warning in redact.review(data):
+            for warning in redact.cached_review(found):
                 print(f"  warn  {warning}")
+    save_previewed(scans, checks)
     if redact.skipped:
         print(f"left out as reviewed false positives: {_skipped(redact)}")
     return 1 if errors else 0
@@ -1934,41 +1974,94 @@ def _skipped(redact: Redactor) -> str:
     return ", ".join(f"{kind} ×{n}" for kind, n in sorted(redact.skipped.items()))
 
 
-def texts_to_check(redact: Redactor, everything: bool = False):
+def texts_to_check(redact: Redactor, everything: bool = False, transcripts: LocalCache | None = None):
     """(session, text) for what a push would publish, plus the tracked files published with it.
     A transcript or log older than the rules' stamp has been checked by them and is left out,
-    with whatever it was found to hold, unless `everything` asks for it."""
+    with whatever it was found to hold, unless `everything` asks for it. With `transcripts`, a
+    transcript is redacted only from where its last stored log ends (redacted_now)."""
+    for where, _, _, content, _ in scan_targets(redact, everything, transcripts):
+        yield where[:8], (content if isinstance(content, bytes) else content()).decode(errors="replace")
+
+
+def scan_targets(redact: Redactor, everything: bool, transcripts: LocalCache | None,
+                 checks: CheckCache | None = None):
+    """(session, session or None, SHA-256, content, length) for each text texts_to_check gives, as
+    `check` scans it: the second session, for ScanCache.hits, is None for a file that is not a log;
+    content is bytes, or for a stored log a function giving them, called only if needed.
+    With `checks`, a stored log's .gz bytes verified before are not decompressed to name it."""
     def due(path: Path) -> bool:
         return everything or not older_than_stamp(path)
 
-    src = claude_project_dir()
-    for p in sorted(src.glob("*.jsonl")):
-        subdir = p.parent / p.stem / "subagents"
-        for path in [p] + (sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []):
+    for p in sorted(claude_project_dir().glob("*.jsonl")):
+        for key, path in transcripts_of(p):
             if due(path):
-                yield p.stem[:8], redact(path.read_text(errors="replace")).decode()
+                data = redacted_now(path, p.stem, key, redact, transcripts)[1] if transcripts is not None \
+                    else redact(path.read_text(errors="replace"))
+                yield p.stem, p.stem, sha256(data), data, len(data)
     for sid, m in all_manifests().items():
         for sha, info in m.get("logs", {}).items():
             path = log_path(sid, sha)
-            if not info.get("url") and path.exists() and due(path):
-                yield sid[:8], load_log(sid, sha).decode(errors="replace")
+            if info.get("url") or not path.exists() or not due(path):
+                continue
+            if checks is None:
+                data = load_log(sid, sha)
+                yield sid, sid, sha256(data), data, len(data)
+            elif (stored := checks.snapshot(path)) is not None:
+                actual, size, data, gz = stored
+                yield sid, sid, actual, data if data is not None else (lambda gz=gz: decompress(gz)), size
         for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):
             if path.exists():
-                yield sid[:8], path.read_text()
+                yield sid, None, sha256(content := path.read_bytes()), content, len(content)
 
 
-def open_findings(redact: Redactor, everything: bool = False) -> dict[str, dict]:
-    """Everything `check` or `scan` would raise now, by id. Holds real values: never print one
-    unmasked to an agent."""
+def open_findings(redact: Redactor, everything: bool = False, values: bool = False,
+                  full: bool = False) -> dict[str, dict]:
+    """Everything `check` or `scan` would raise now, by id: level, kind, masked value, count and
+    where. A text already scanned under these rules (by `check`, `scan` or an earlier call) is
+    not scanned again, and a transcript is redacted only from where its last stored log ends;
+    --full trusts neither. Each row also has its "value" when it is known, from this scan or the
+    last ones (remember_findings); with `values`, every row has it, scanning everything again
+    if one is not known. A value is real: never print one unmasked to an agent."""
+    scans, checks, transcripts = preview_caches(redact, full)
+    skipped = Counter(redact.skipped)
     found: dict[str, dict] = {}
-    for where, text in texts_to_check(redact, everything):
+    for where, sid, sha, content, size in scan_targets(redact, everything, transcripts, checks):
+        entry, where = scans.hits(sid, sha, content, size), where[:8]
+        for level, part in (("ERROR", "leaks"), ("warn", "review")):
+            for kind, rows in entry[part].items():
+                for fid, (masked, n) in rows.items():
+                    if kind not in NEVER_REVIEWED and fid in redact.reviewed:
+                        redact.skipped[kind] += n
+                        continue
+                    row = found.setdefault(fid, {"level": level, "kind": kind, "masked": masked, "count": 0,
+                                                 "where": set()})
+                    row["count"] += n
+                    row["where"].add(where)
+    save_previewed(scans, checks)
+    known = {fid: (f["kind"], f["value"]) for fid, f in load_findings_cache().items()} | scans.values
+    for fid, row in found.items():
+        if fid in known and finding_id(*known[fid]) == fid:  # the id names the kind and the value
+            row["value"] = known[fid][1]
+    if values and any("value" not in row for row in found.values()):
+        perf.count("findings scanned again for their values")
+        redact.skipped = skipped
+        return scanned_findings(redact, everything)
+    remember_findings({fid: row for fid, row in found.items() if "value" in row})
+    return found
+
+
+def scanned_findings(redact: Redactor, everything: bool = False) -> dict[str, dict]:
+    """open_findings worked out from the texts alone, with every value: no cache is read."""
+    found: dict[str, dict] = {}
+    for where, _, _, content, _ in scan_targets(redact, everything, None):
+        text = content.decode(errors="replace")
         for level, hits in (("ERROR", redact.leak_hits(text)), ("warn", redact.review_hits(text))):
             for kind, values in hits.items():
                 for value, n in values.items():
-                    row = found.setdefault(finding_id(kind, value), {"level": level, "kind": kind, "value": value,
-                                                                     "count": 0, "where": set()})
+                    row = found.setdefault(finding_id(kind, value), {"level": level, "kind": kind, "masked": _mask(value),
+                                                                     "value": value, "count": 0, "where": set()})
                     row["count"] += n
-                    row["where"].add(where)
+                    row["where"].add(where[:8])
     remember_findings(found)
     return found
 
@@ -2029,15 +2122,15 @@ def masked_excerpt(redact: Redactor, line: str, at: int, length: int, reach: int
 def show_finding(prefix: str, limit: int = 4) -> int:
     """Where a finding occurs, masked, so that an agent can help judge it."""
     redact = Redactor()
-    found = open_findings(redact)
+    found = open_findings(redact, values=True)
     matches = [fid for fid in found if fid.startswith(prefix)]
     if len(matches) != 1:
         print(f"{prefix} matches {len(matches)} open finding(s)", file=sys.stderr)
         return 1
     f = found[matches[0]]
-    print(f"{matches[0][:8]}  {f['level']}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+    print(f"{matches[0][:8]}  {f['level']}  {f['kind']}  ×{f['count']}  {f['masked']}  in {', '.join(sorted(f['where']))}")
     excerpts: Counter = Counter()
-    for _, text in texts_to_check(redact):
+    for _, text in texts_to_check(redact, transcripts=preview_caches(redact, False)[2]):
         for line in text.splitlines():
             if (at := line.find(f["value"])) >= 0:
                 excerpts[masked_excerpt(redact, line, at, len(f["value"]))] += 1
@@ -2057,12 +2150,12 @@ def cmd_stamp(args: list[str]) -> int:
     date of their last stamp instead, if they give the same results as the stamped ones."""
     if args == ["--equivalent"]:
         return stamp_equivalent()
-    if args:
-        print("usage: sync.py stamp [--equivalent]", file=sys.stderr)
+    if args not in ([], ["--full"]):
+        print("usage: sync.py stamp [--equivalent | --full]", file=sys.stderr)
         return 2
-    found = open_findings(Redactor(), everything=True)
+    found = open_findings(Redactor(), everything=True, full=args == ["--full"])
     for fid, f in sorted(found.items()):
-        print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}")
+        print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {f['masked']}  in {', '.join(sorted(f['where']))}")
     blocking = {fid for fid, f in found.items() if f["level"] == "ERROR" or f["kind"] not in ALLOWABLE_KINDS}
     if blocking:
         print(f"refused: {len(blocking)} open error(s) would stop being reported; fix or settle them first", file=sys.stderr)
@@ -2080,7 +2173,7 @@ def carry_as_proposals(found: dict[str, dict]) -> int:
     entries, added = load_allowlist(), 0
     for fid, f in sorted(found.items()):
         if fid not in entries:
-            entries[fid] = {"kind": f["kind"], "masked": _mask(f["value"]), "status": "proposed",
+            entries[fid] = {"kind": f["kind"], "masked": f["masked"], "status": "proposed",
                             "reason": f"open when the rules were stamped on {time.strftime('%Y-%m-%d')}; not judged yet",
                             "proposed_by": _who(), "proposed_on": time.strftime("%Y-%m-%d")}
             added += 1
@@ -2170,11 +2263,11 @@ def cmd_review(args: list[str]) -> int:
     """List open findings, masked, or record some as false positives. Listing is open to anyone.
     Accepting is a person's decision, so it shows the real value and asks for it to be confirmed
     at a terminal; an agent is sent back to ask."""
-    if not args:
-        found = open_findings(Redactor())
+    if args in ([], ["--full"]):
+        found = open_findings(Redactor(), full=bool(args))
         proposed = load_allowlist()
         for fid, f in sorted(found.items(), key=lambda kv: (kv[1]["level"], kv[1]["kind"])):
-            print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {_mask(f['value'])}  in {', '.join(sorted(f['where']))}"
+            print(f"{fid[:8]}  {f['level']:5}  {f['kind']}  ×{f['count']}  {f['masked']}  in {', '.join(sorted(f['where']))}"
                   + ("  (proposed for the allow list)" if fid in proposed else ""))
         print(f"{len(found)} open finding(s)")
         return 0
@@ -2189,7 +2282,7 @@ def cmd_review(args: list[str]) -> int:
         print("refused: a person must accept findings, from their own terminal. Ask them to run this command.",
               file=sys.stderr)
         return 1
-    found = open_findings(Redactor())
+    found = open_findings(Redactor(), values=True)
     chosen = {}
     for prefix in ids:
         matches = [fid for fid in found if fid.startswith(prefix)]
@@ -2296,7 +2389,7 @@ def cmd_allow(args: list[str]) -> int:
         cache = load_findings_cache()
         done, missing = _resolve(ids, cache)
         if missing:  # not seen by the last scan: scan once
-            cache = {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(Redactor()).items()}
+            cache = {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(Redactor(), values=True).items()}
             done, missing = _resolve(ids, cache)
         if missing:
             print(f"cannot propose {', '.join(missing)}: no single finding has that id", file=sys.stderr)
@@ -2359,7 +2452,7 @@ def cmd_allow(args: list[str]) -> int:
         cache = load_findings_cache()
         if any(fid not in cache for fid in done.values()):
             print("some values are not known from the last scan; scanning…")
-            cache |= {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(redact).items()}
+            cache |= {fid: {**f, "where": sorted(f["where"])} for fid, f in open_findings(redact, values=True).items()}
         chosen = {}
         for fid in done.values():
             e = proposed[fid]
