@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "140",
+  "title": "A half-open bisection that answers the empty table first throws for a key above the last match",
+  "summary": "The interpreter searches the sorted match-offset pairs of a `lookupswitch` by bisection, written the classic way: a closed range, two comparisons per step, three exits. A developer rewrites it in the half-open form, one comparison per step and one equality test after the loop, and, since an empty table has no midpoint, answers the empty table first and drops the guard on the final test. For a key above the last match the loop leaves `low` at the table's length, and the final test reads past the end: the instruction throws `ArrayIndexOutOfBoundsException` instead of taking the default branch. The tests pass, because their table ends in `Integer.MAX_VALUE`, which no key is above. The regression proof, run by the tool's own checker over the symbolic table, finds `find(matches=[0], key=1)` in a fraction of a second: -1 before, the exception after.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "compilers",
+    "array-utilities",
+    "buffer-bounds",
+    "own-checker"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Keep the half-open range `[low, high)` instead of the closed `[low, high]`: `high` starts at `matches.length`, the loop runs while `low < high`, each step compares once and moves `low` past the midpoint or `high` onto it, and the key is tested for equality once, after the loop. An empty table has no midpoint, so it is answered first, and the final test reads `matches[low]` without a bound. The tests for the bisection pass: every key of the eight-match table is found, two absent keys and the empty table take the default.",
+    "patch": "change.patch",
+    "intendedInputs": "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])"
+  },
+  "risk": "A `lookupswitch` whose key is above every match is the common case of a `switch` over an enum or a status code that falls to `default`; after this change the interpreter throws on it. Binary search is the textbook example of code that is short, obvious and wrong, and the places where a rewritten one breaks are the boundaries: the empty table, a key below the first match or above the last, a table of one pair. The tests cover the table somebody thought of, which ends in `Integer.MAX_VALUE` and so has no key above it.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The regression proof asks whether the rewritten `find` returns what the previous one returned, or throws what it threw, on every table of up to eight matches and every key, within the scope a `lookupswitch` promises: `--unchanged-unless` names the tables that are not strictly sorted as the ones the change may treat differently, with a quantifier over the array, `(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])` negated. The tool's own checker runs the harness: the table is an object with a symbolic length up to eight and a cell per index, each read of `matches[mid]` a choice among the cells by the index and a branch to `ArrayIndexOutOfBoundsException` where the index is at or beyond the length, and the harness's loops that copy the table and compare the copy afterwards run through it like the search's own. On the path where the loop ends with `low` equal to the length, the final read's out-of-bounds side is feasible, the previous version returned -1 there, and the solver names a table and a key: `find(matches=[16], key=20)` in the first stage, shrunk in the interpreter to `find(matches=[0], key=1)`. The search took 0.16 s and 4 paths; JBMC, given the same harness, finds the same input in 23 s and 2 GB.",
+  "resolution": "Keep the guard: `return low < matches.length && matches[low] == key ? low : -1`, as example 141 does, which the same proof then shows equal to the closed form on every sorted table. The empty-table answer up front is harmless and redundant once the guard is back.",
+  "notes": [
+    "The scope is a quantifier over the array in `--unchanged-unless`: `!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])`, the tables that are not strictly sorted, which a `lookupswitch` never has (JVMS §6.5 requires the match values sorted). The harness compiles the quantifier to a loop before the calls and returns early on a table outside the scope; without it the two searches also differ on unsorted tables, where they probe different midpoints (example 141's note).",
+    "The tool's own checker took arrays of primitives into its fragment for this example: an array parameter has every length up to `--max-array-length` (eight) and symbolic cells, a read at a symbolic index is a choice among the cells, a write a conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a division by zero is. The violating path is the one where the loop's last step leaves `low` at the length and the final read's out-of-bounds side is feasible: 4 paths, 28 solver calls, 0.16 s.",
+    "The tests pass: the test table is `{-1000, -7, 0, 3, 4, 100, 65535, Integer.MAX_VALUE}`, every key of it is found, the absent keys tried are 5 and `Integer.MIN_VALUE`, and the empty table is answered by the new first line. No key is above `Integer.MAX_VALUE`, so the unguarded read is never reached by a test.",
+    "JBMC, given the same harness, finds the same violation in 23 s using 2 GB, the symbolic array and its copying and comparing loops in one formula; the checker's path-by-path search over the cells takes a fraction of a second. The witness is shrunk in the interpreter as JBMC's would be, to a one-match table and the key above it."
+  ],
+  "provenance": "Constructed as the half-open rewrite of example 046 with the guard on the final test dropped in favour of an empty-table answer up front, on the `lookupswitch` of JVMS §6.5, to show the tool's own checker finding an out-of-bounds read over a symbolic array.",
+  "references": [
+    {
+      "title": "JVMS §6.5, lookupswitch: the match-offset pairs are sorted so that an implementation may search them by bisection",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.lookupswitch"
+    },
+    {
+      "title": "Joshua Bloch, Extra, Extra: Nearly All Binary Searches and Mergesorts are Broken",
+      "url": "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/"
+    },
+    {
+      "title": "JML reference manual: quantified expressions (\\forall, \\exists)",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html#SEC147"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

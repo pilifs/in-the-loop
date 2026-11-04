@@ -200,6 +200,13 @@ A multiplication is left to the solver the same way, and a quotient times its di
 computed as the window's index times its length equal to the remainder form in a tenth of a second, the division identity neither engine
 proved in a minute before, and [139](139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/README.md) finds
 the same index held in an `int` wrapping two billion windows in, where the record's constructor refuses the negative start.
+Arrays of primitives are in its fragment too, a cell per index up to the bound, read by a choice among the cells and written by a
+conditional update of each: on Mica's `lookupswitch` bisection,
+[140](140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/README.md) finds a half-open
+rewrite that answers the empty table first and then reads past the end of a one-match table for a key above its match, and
+[141](141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md) proves the
+half-open form equal to the closed one on every strictly sorted table of up to eight matches in two seconds, where JBMC's formula over
+the symbolic array takes a hundred.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

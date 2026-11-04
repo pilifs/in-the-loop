@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-101436-example-140-half-open-bisection-that-ans",
+  "title": "Example 140: half-open bisection that answers the empty table first reads past the end, found by the own checker",
+  "description": "Regression proof of Mica's LookupSwitch#find rewritten half-open with the empty table answered first and the final equality test unguarded, against the closed form, within the scope of strictly sorted tables (a \\forall over the array in --unchanged-unless), by the tool's own checker (approach.engine native): expected violation, find(matches=[0], key=1), -1 before and ArrayIndexOutOfBoundsException after. The checker took arrays of primitives into its fragment for this example (a cell per index up to --max-array-length); the library's run took 0.16 s. JBMC found the same input in 23 s and 2 GB.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "arrays",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "140"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T10:14:36+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 140 (B9)",
+      "run": "python3 examples/tools/build.py 140",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match"
+  ]
+}

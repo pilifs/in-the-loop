@@ -274,7 +274,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut stages: &[Option<&str>] = STAGES;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, Duration::from_secs(options.timeout_seconds), &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work)?;
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native {
             stages = &[];
             last = Some(result);

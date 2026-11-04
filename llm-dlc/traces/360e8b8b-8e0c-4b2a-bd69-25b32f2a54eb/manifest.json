@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T09:51:54.699Z",
-  "duration_seconds": 321719,
+  "ended": "2026-11-04T10:16:36.412Z",
+  "duration_seconds": 323201,
   "stats": {
-    "turns": 251,
-    "api_calls": 2773,
-    "tool_calls": 3294,
+    "turns": 255,
+    "api_calls": 2831,
+    "tool_calls": 3351,
     "tool_errors": 62,
-    "compactions": 46,
+    "compactions": 47,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 82706,
-      "output_tokens": 5391739,
-      "cache_read_input_tokens": 469364887,
-      "cache_creation_input_tokens": 11768865
+      "input_tokens": 84532,
+      "output_tokens": 5479776,
+      "cache_read_input_tokens": 477357714,
+      "cache_creation_input_tokens": 11976468
     }
   },
   "tools": {
-    "Bash": 2790,
+    "Bash": 2847,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -874,24 +874,38 @@
     {
       "index": 46,
       "started": "2026-11-04T09:23:52.954Z",
-      "ended": "2026-11-04T09:51:54.699Z",
+      "ended": "2026-11-04T09:52:19.733Z",
       "turns": 4,
-      "api_calls": 55,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 1700,
-        "output_tokens": 62872,
-        "cache_read_input_tokens": 5621480,
-        "cache_creation_input_tokens": 145040
+        "input_tokens": 1732,
+        "output_tokens": 63871,
+        "cache_read_input_tokens": 5781433,
+        "cache_creation_input_tokens": 146514
       },
-      "peak_context_tokens": 159985
+      "peak_context_tokens": 161459
+    },
+    {
+      "index": 47,
+      "started": "2026-11-04T09:53:46.124Z",
+      "ended": "2026-11-04T10:16:36.412Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 1794,
+        "output_tokens": 87038,
+        "cache_read_input_tokens": 7832874,
+        "cache_creation_input_tokens": 206129
+      },
+      "peak_context_tokens": 221074
     }
   ],
   "log": {
-    "sha256": "b9213a4e279db78273de8e730d7aeecadb74ffeee4f06c2b9e4a246952a63daf",
-    "bytes": 98876229,
-    "lines": 38552,
-    "gzip_bytes": 16824516,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/b9213a4e279db78273de8e730d7aeecadb74ffeee4f06c2b9e4a246952a63daf.jsonl.gz"
+    "sha256": "6f9d05f3677ba484952159b12e99c78943f383f6df0a2bc31acd90924a5a976e",
+    "bytes": 100733470,
+    "lines": 39359,
+    "gzip_bytes": 17136314,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/6f9d05f3677ba484952159b12e99c78943f383f6df0a2bc31acd90924a5a976e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1390,6 +1404,14 @@
       "summary": "The tool's own checker leaves a multiplication to the solver under cheap facts and rewrites a quotient times its divisor as the dividend less the remainder; examples 138 and 139 on the window start as the window's index times its length (verification pending)",
       "body": "The own bounded model checker (lib/src/bmc) extends last cycle's lazy division to multiplication: a product of two non-constant values is fresh bits under what holds of every product modulo the width (a factor of zero gives zero, of one the other factor, of minus one its negation, a power of two shifts by its exponent, the low eight bits are exact), a model that gets a product wrong has the multiplier built and tied to the bits, and products of the same operands in either order are the same bits. A quotient times its divisor is rewritten exactly as the dividend less the remainder, (a / b) * b as a - a % b, which holds in two's complement for every pair including a division by zero and MIN_VALUE / -1, so the identity between a 64-bit division and multiplication that neither engine proved within a minute is the same bits on both sides. The log line now counts divisions and multiplications separately.\n\nExample 131's loop of delay *= multiplier, proved in 22 s with its 27 multipliers built, takes 4 s with none built (release build, 1.19M clauses down to 385k); 130 goes from 1.5 s to 1.1 s; the other own-checker examples (120, 124, 125, 128, 129, 132, 134 to 137) are unchanged. The divide-and-multiply form of the window alignment, out of reach of both engines last cycle, is proved in 0.1 s, and the credited-time rewrite that example 133's last note recorded as out of reach in 0.3 s; the notes of 120, 131, 133 and 137 say so.\n\nExample 138 is the window counter's start computed as the window's index times its length, long index = nowNanos / windowNanos; long start = index * windowNanos, proved equal to the remainder form on every input by the own checker in 0.1 s where JBMC does not finish within 60 s. Example 139 holds the index in an int: at a reading of 2^31 windows the cast wraps, the start is negative, and the record's constructor refuses it, so every request from then on throws; found in 3 s as counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1), JBMC >60 s. Pipeline jobs 20261104-094056-example-138-window-start-as-the-window-s and 20261104-094056-example-139-window-index-held-in-an-int.\n\nVerified with three new unit tests (the facts prove a product by zero, one and a power of two with no circuit, a wrong product of the same low bits is refined once, the quotient-times-divisor rewrite gives the same bits and holds at MIN_VALUE / -1, an engine run that is verified with 0 of 1 products built and one refuted with the real product), 112 unit and 50 integration tests passing, the Crosscut app's 48 tests on both patched trees, both patches applying, and the release binary installed.",
       "log_sha256": "b9213a4e279db78273de8e730d7aeecadb74ffeee4f06c2b9e4a246952a63daf"
+    },
+    {
+      "change_id": "vqtotrwurwuukqytwzqukqqoytpmtkzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The tool's own checker takes arrays of primitives into its fragment: a cell per index up to the bound, reads as a choice among the cells, writes as conditional updates, bounds and sizes as exception branches; examples 140 and 141 on the lookupswitch bisection rewritten half-open (verification pending)",
+      "body": "lib/src/bmc: an array of int, long, short, byte, char or boolean is an object with a symbolic length and a cell per index it may have (Array in Obj.array, cell widths by element type). An array parameter has every length up to --max-array-length (8 by default, now passed to the engine from the equivalence and property drivers) with symbolic cells, and its elements are part of the witness (Outcome.raw_arrays) and of the staged search for small inputs. arraylength, the loads and stores and newarray are modelled: a load at a symbolic index is a chain of choices among the cells, a store a conditional update of each cell, an index at or beyond the length (compared unsigned, so a negative index too) a branch to ArrayIndexOutOfBoundsException and a negative size to NegativeArraySizeException, through the same split as a division by zero (branch_throw generalised to branch_throw_or). A new array needs a constant size or one the solver proves within the bound, as a copy of a parameter has; arrays of references, floating-point arrays, System.arraycopy and java.util.Arrays stay outside the fragment and are refused with a reason. The harness's copying and comparing loops over an array parameter, and the quantifiers' loops of a scope or a property, run through the engine like the method's own.\n\nExamples 140 and 141 are on Mica's LookupSwitch#find, the lookupswitch bisection, with the scope of strictly sorted tables stated as a \\\\forall over the array in --unchanged-unless (change.intendedInputs). 140: the half-open rewrite that answers the empty table first and drops the guard on the final equality test reads past the end for a key above the last match; Mica's tests pass since their table ends in Integer.MAX_VALUE; the own checker finds find(matches=[0], key=1), -1 before and ArrayIndexOutOfBoundsException after, in 0.16 s where JBMC takes 23 s and 2 GB. 141: example 046's correct half-open form proved equal to the closed form on every strictly sorted table of up to eight matches in 2.3 s (88 paths, 1044 solver calls) where JBMC takes 101 s and 2 GB; without the scope both engines find the unsorted table [1, 0] on which the two searches probe different midpoints. Pipeline jobs 20261104-101436-example-140-half-open-bisection-that-ans and 20261104-101436-example-141-lookupswitch-bisection-rewri.\n\nVerified by three new engine unit tests (array lengths and elements as inputs from the first stage; out of bounds exactly when the index is, a store read back and another index untouched; a copy of a parameter proved equal, a computed size refused, byte and char cells as wide as their elements), the integration test on fixtures.Search#find updated to expect the own checker's proof under auto and its unsorted witness natively (115 unit and 50 integration tests pass), the release binary on the examples 120 to 137 of the earlier cycles with unchanged verdicts and timings, and Mica's 71 tests on both patched trees. Shared pages updated: lib/README.md, the skill reference, the own-checker tag, Mica's README and approaches.md.",
+      "log_sha256": "6f9d05f3677ba484952159b12e99c78943f383f6df0a2bc31acd90924a5a976e"
     }
   ],
   "logs": {
@@ -1530,6 +1552,12 @@
       "lines": 11328,
       "gzip_bytes": 5845952,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/6e3f0fab61a037f37d828d78cfb0c41bc6aca56ec514024a5f3f0f8acf86a49d.jsonl.gz"
+    },
+    "6f9d05f3677ba484952159b12e99c78943f383f6df0a2bc31acd90924a5a976e": {
+      "bytes": 100733470,
+      "lines": 39359,
+      "gzip_bytes": 17136314,
+      "url": null
     },
     "700cc427ddcc81b7b4c8be36c81af43baf3b6e6158b07ccbd68ae07e9f9bed41": {
       "bytes": 30749080,

@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "141",
+  "title": "A lookupswitch bisection rewritten half-open proved equal to the closed form on every sorted table",
+  "summary": "The same rewrite of the interpreter's `lookupswitch` bisection as example 140 done right: the half-open range `[low, high)`, one comparison per step, and the final equality test guarded by `low < matches.length`. The regression proof relates the new search to the old one on every strictly sorted table of up to eight matches and every key, the sortedness stated as the scope with a quantifier over the array, and the tool's own checker proves it in two seconds where JBMC's one formula over the symbolic table takes a hundred. Without the scope the two searches differ, on an unsorted table where they probe different midpoints, which the checker shows in a tenth of a second.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "jvm-internals",
+    "compilers",
+    "array-utilities",
+    "confined-change",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Keep the half-open range `[low, high)` instead of the closed `[low, high]`: `high` starts at `matches.length`, the loop runs while `low < high`, each step compares once and moves `low` past the midpoint or `high` onto it, and the key is tested for equality once, after the loop, where `low` is below the length. The tests for the bisection pass.",
+    "patch": "change.patch",
+    "intendedInputs": "!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])"
+  },
+  "risk": "None on sorted tables: the proof covers every strictly sorted table of up to eight matches and every `int` key, the same index or -1 in both versions. What is at stake is the review of a rewrite of binary search, the code Bentley's programmers got wrong and the JDK carried an overflow in for nine years, settled on the whole input space the instruction promises rather than on the table the tests thought of.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The regression proof asks whether the rewritten `find` returns what the previous one returned on every table and key within the scope: `--unchanged-unless` names the tables that are not strictly sorted, `!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])`, as the inputs the change may treat differently, and the harness compiles the quantifier to a loop that returns early on them. The tool's own checker runs the harness with the table as an object of a symbolic length up to eight and a cell per index, every `matches[mid]` a choice among the cells and a branch to the out-of-bounds exception, which the solver refutes at each read under the loop's bounds. The two searches take different steps, two comparisons against one, but on a strictly sorted table both end at the key's index or at -1, and every path through the two of them, 88 in all, is proved to agree or refuted as infeasible in 2.3 s with 1044 solver calls. JBMC, given the same harness, proves it in 101 s and 2 GB.",
+  "resolution": "Merge. The proof is the review: the rewrite is accepted because it agrees with the search it replaces on every sorted table up to the bound, and the bound is on the page, `--max-array-length`, for a reader who wants it larger.",
+  "notes": [
+    "The scope is necessary and is the instruction's contract: without it the checker finds `find(matches=[1, 0], key=1)` in 0.1 s, 0 before and -1 after, since on an unsorted table the closed search tests `matches[0]` first and finds the key while the half-open one moves past it. JVMS §6.5 requires the match values sorted, so the scope states what every `lookupswitch` satisfies, with a quantifier over the array in `--unchanged-unless`; the previous form with the closed range is not equal to the new one in general, only on the tables the instruction has.",
+    "The tool's own checker proves it in 2.3 s: 88 paths, 1044 solver calls, 59 MB. The paths are the lengths of the table (nine, the harness's copying loop) times the steps of the two searches; the out-of-bounds side of each read is refuted by the solver under the loop's bounds, so no exception path is explored. Arrays of primitives entered its fragment with this example and 140: a cell per index up to `--max-array-length`, a read a choice among the cells and a write a conditional update of each.",
+    "JBMC, given the same harness, proves the same statement in 101 s and 2 GB with its default solver, the symbolic table, the quantifier's loop and the two searches in one formula; without the scope it finds the unsorted-table witness in 14 s where the checker takes 0.1 s.",
+    "Example 046 proves the same rewrite against the search's specification with quantifiers, that every key of a sorted table is found and an absent one gives -1; this proof relates it to the previous code instead, with no specification but the previous version, which is the review question when the rewrite is meant to change nothing."
+  ],
+  "provenance": "Constructed from the two standard forms of binary search (Bentley, Programming Pearls, column 4; the half-open form of the JDK's `Arrays.binarySearch`), on the `lookupswitch` of JVMS §6.5, as the correct form of example 140's rewrite and the regression-proof counterpart of example 046.",
+  "references": [
+    {
+      "title": "JVMS §6.5, lookupswitch: the match-offset pairs are sorted so that an implementation may search them by bisection",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.lookupswitch"
+    },
+    {
+      "title": "Joshua Bloch, Extra, Extra: Nearly All Binary Searches and Mergesorts are Broken",
+      "url": "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/"
+    },
+    {
+      "title": "JML reference manual: quantified expressions (\\forall, \\exists)",
+      "url": "https://www.cs.ucf.edu/~leavens/JML/jmlrefman/jmlrefman_11.html#SEC147"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

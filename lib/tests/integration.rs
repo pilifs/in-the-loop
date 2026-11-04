@@ -1319,15 +1319,22 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
             }
         }
     }
-    // Arrays are outside the engine's fragment: under `auto` it says so and JBMC takes over.
+    // Arrays of primitives are in the engine's fragment: under `auto` it proves the search over the symbolic
+    // array itself, with the quantifiers' loops, and without the sortedness assumption it finds an unsorted
+    // table the search misses a key in, replayed and shrunk like JBMC's witness.
     let correct = "(result == -1 && (\\forall int i; 0 <= i && i < sorted.length; sorted[i] != key)) || (result >= 0 && result < sorted.length && sorted[result] == key)";
     let auto = prove_engine("fixtures.Search#find", Some("(\\forall int i; 0 < i && i < sorted.length; sorted[i - 1] < sorted[i])"), Some(correct), &[], Engine::Auto, "agree-arrays");
     assert_eq!(auto.verdict, Verdict::Verified, "{}", auto.output);
-    assert!(auto.output.contains("note: the tool's own checker gave no verdict (outside the fragment: a int[] parameter); JBMC"), "{}", auto.output);
-    assert!(auto.output.contains("JBMC 6"), "{}", auto.output);
+    assert!(auto.output.contains("jvmcontract's own checker (CaDiCaL)"), "{}", auto.output);
+    assert!(!auto.output.contains("note: the tool's own checker gave no verdict"), "{}", auto.output);
+    let jbmc = prove_engine("fixtures.Search#find", Some("(\\forall int i; 0 < i && i < sorted.length; sorted[i - 1] < sorted[i])"), Some(correct), &[], Engine::Jbmc, "agree-arrays");
+    assert_eq!(jbmc.verdict, Verdict::Verified, "{}", jbmc.output);
     let native_only = prove_engine("fixtures.Search#find", None, Some(correct), &[], Engine::Native, "agree-arrays");
-    assert_eq!(native_only.verdict, Verdict::Unverifiable);
-    assert!(native_only.problem.unwrap().contains("outside the fragment"));
+    assert_eq!(native_only.verdict, Verdict::Violation, "{}", native_only.output);
+    let unsorted = native_only.counterexample.unwrap();
+    assert!(unsorted.input.contains("sorted=["), "{}", unsorted.input);
+    let jbmc_only = prove_engine("fixtures.Search#find", None, Some(correct), &[], Engine::Jbmc, "agree-arrays");
+    assert_eq!(jbmc_only.verdict, Verdict::Violation, "{}", jbmc_only.output);
 
     // A regression proof, both ways: the rounding refactor is refuted and the scoped tier change proved.
     let after_source = PRICING_BEFORE

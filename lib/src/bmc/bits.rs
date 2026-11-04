@@ -229,6 +229,24 @@ impl Blaster {
         (0..width).map(|i| if (value >> i.min(63)) & 1 == 1 { TRUE } else { FALSE }).collect()
     }
 
+    /// The value of bits that are all constant, sign-extended; `None` when any bit is a variable.
+    pub fn constant_value(&self, bits: &Bits) -> Option<i64> {
+        if bits.iter().any(|&l| !is_const(l)) {
+            return None;
+        }
+        let mut v: u64 = 0;
+        for (i, &l) in bits.iter().enumerate() {
+            if l == TRUE {
+                v |= 1 << i;
+            }
+        }
+        let width = bits.len();
+        if width < 64 && v & (1 << (width - 1)) != 0 {
+            v |= u64::MAX << width;
+        }
+        Some(v as i64)
+    }
+
     // Gates, with constant folding.
 
     pub fn not(&self, a: Lit) -> Lit {

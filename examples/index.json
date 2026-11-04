@@ -5510,6 +5510,90 @@
         "JBMC, with its default solver, did not finish the same harness within 60 s: the violation needs a reading past 2^31 windows, which its small stages do not hold, and the formula for the whole range has a 64-bit divider and a 64-bit multiplier in it. The own checker's 3.0 s is mostly the two small stages proved empty with the circuits built, since the facts alone let the solver guess a product the real one is not."
       ],
       "source": null
+    },
+    {
+      "id": "140",
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match",
+      "title": "A half-open bisection that answers the empty table first throws for a key above the last match",
+      "summary": "The interpreter searches the sorted match-offset pairs of a `lookupswitch` by bisection, written the classic way: a closed range, two comparisons per step, three exits. A developer rewrites it in the half-open form, one comparison per step and one equality test after the loop, and, since an empty table has no midpoint, answers the empty table first and drops the guard on the final test. For a key above the last match the loop leaves `low` at the table's length, and the final test reads past the end: the instruction throws `ArrayIndexOutOfBoundsException` instead of taking the default branch. The tests pass, because their table ends in `Integer.MAX_VALUE`, which no key is above. The regression proof, run by the tool's own checker over the symbolic table, finds `find(matches=[0], key=1)` in a fraction of a second: -1 before, the exception after.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "compilers",
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The scope is a quantifier over the array in `--unchanged-unless`: `!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])`, the tables that are not strictly sorted, which a `lookupswitch` never has (JVMS §6.5 requires the match values sorted). The harness compiles the quantifier to a loop before the calls and returns early on a table outside the scope; without it the two searches also differ on unsorted tables, where they probe different midpoints (example 141's note).",
+        "The tool's own checker took arrays of primitives into its fragment for this example: an array parameter has every length up to `--max-array-length` (eight) and symbolic cells, a read at a symbolic index is a choice among the cells, a write a conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a division by zero is. The violating path is the one where the loop's last step leaves `low` at the length and the final read's out-of-bounds side is feasible: 4 paths, 28 solver calls, 0.16 s.",
+        "The tests pass: the test table is `{-1000, -7, 0, 3, 4, 100, 65535, Integer.MAX_VALUE}`, every key of it is found, the absent keys tried are 5 and `Integer.MIN_VALUE`, and the empty table is answered by the new first line. No key is above `Integer.MAX_VALUE`, so the unguarded read is never reached by a test.",
+        "JBMC, given the same harness, finds the same violation in 23 s using 2 GB, the symbolic array and its copying and comparing loops in one formula; the checker's path-by-path search over the cells takes a fraction of a second. The witness is shrunk in the interpreter as JBMC's would be, to a one-match table and the key above it."
+      ],
+      "source": null
+    },
+    {
+      "id": "141",
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table",
+      "title": "A lookupswitch bisection rewritten half-open proved equal to the closed form on every sorted table",
+      "summary": "The same rewrite of the interpreter's `lookupswitch` bisection as example 140 done right: the half-open range `[low, high)`, one comparison per step, and the final equality test guarded by `low < matches.length`. The regression proof relates the new search to the old one on every strictly sorted table of up to eight matches and every key, the sortedness stated as the scope with a quantifier over the array, and the tool's own checker proves it in two seconds where JBMC's one formula over the symbolic table takes a hundred. Without the scope the two searches differ, on an unsorted table where they probe different midpoints, which the checker shows in a tenth of a second.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "compilers",
+          "array-utilities"
+        ],
+        "defect": [],
+        "technique": [
+          "confined-change",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The scope is necessary and is the instruction's contract: without it the checker finds `find(matches=[1, 0], key=1)` in 0.1 s, 0 before and -1 after, since on an unsorted table the closed search tests `matches[0]` first and finds the key while the half-open one moves past it. JVMS §6.5 requires the match values sorted, so the scope states what every `lookupswitch` satisfies, with a quantifier over the array in `--unchanged-unless`; the previous form with the closed range is not equal to the new one in general, only on the tables the instruction has.",
+        "The tool's own checker proves it in 2.3 s: 88 paths, 1044 solver calls, 59 MB. The paths are the lengths of the table (nine, the harness's copying loop) times the steps of the two searches; the out-of-bounds side of each read is refuted by the solver under the loop's bounds, so no exception path is explored. Arrays of primitives entered its fragment with this example and 140: a cell per index up to `--max-array-length`, a read a choice among the cells and a write a conditional update of each.",
+        "JBMC, given the same harness, proves the same statement in 101 s and 2 GB with its default solver, the symbolic table, the quantifier's loop and the two searches in one formula; without the scope it finds the unsorted-table witness in 14 s where the checker takes 0.1 s.",
+        "Example 046 proves the same rewrite against the search's specification with quantifiers, that every key of a sorted table is found and an absent one gives -1; this proof relates it to the previous code instead, with no specification but the previous version, which is the review question when the rewrite is meant to change nothing."
+      ],
+      "source": null
     }
   ]
 }

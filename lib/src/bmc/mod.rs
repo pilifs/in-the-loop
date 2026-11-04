@@ -15,7 +15,11 @@
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
 //! static methods (inlined), the `Math`/`StrictMath` exact and floor operations with their overflow exceptions,
 //! `Integer`/`Long` comparisons, exceptions thrown and caught by class, and strings only as opaque objects (a
-//! message built for an exception). Floating point, arrays, fields with state and the rest of the JDK are refused
+//! message built for an exception). An array of those primitives is an object with a symbolic length and a cell
+//! per index it may have ([`Array`]): an array parameter has every length up to [`Options::max_array_length`],
+//! as JBMC's nondeterministic arrays do, a read is a choice among the cells by the index and a write a
+//! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
+//! division by zero is. Floating point, arrays of references, fields with state and the rest of the JDK are refused
 //! with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 
@@ -25,7 +29,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
-use crate::classfile::{ArithOp, BootstrapArg, ClassFile, Cond, ExceptionHandler, Insn, Kind, MethodDescriptor, Narrow, Type};
+use crate::classfile::{ArithOp, ArrayKind, BootstrapArg, ClassFile, Cond, ExceptionHandler, Insn, Kind, MethodDescriptor, Narrow, Type};
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
 use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
@@ -38,11 +42,13 @@ pub struct Options {
     pub timeout: Duration,
     /// How many paths may be explored before the engine gives up.
     pub max_paths: u64,
+    /// The longest an array parameter may be, as JBMC's `--max-nondet-array-length`.
+    pub max_array_length: u32,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000 }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8 }
     }
 }
 
@@ -58,6 +64,9 @@ pub struct Outcome {
     pub verdict: Verdict,
     /// The violating input by parameter slot, as decimal numbers (a boolean as 0 or 1, a char by its code).
     pub raw_inputs: BTreeMap<u32, String>,
+    /// The violating input's array parameters by slot, their elements as `raw_inputs` spells values (never
+    /// `None`: an array parameter is not null).
+    pub raw_arrays: BTreeMap<u32, Option<Vec<String>>>,
     /// The stage the violating input was found in, as JBMC's `--java-assume-inputs-interval` would spell it;
     /// `None` when only the whole range has one.
     pub stage: Option<String>,
@@ -90,7 +99,7 @@ impl Outcome {
             version: format!("jvmcontract's own checker ({})", self.solver),
             properties: 1,
             raw_inputs: self.raw_inputs,
-            raw_arrays: BTreeMap::new(),
+            raw_arrays: self.raw_arrays,
             stage: self.stage,
             problem: self.problem,
             log,
@@ -108,7 +117,20 @@ impl Outcome {
 pub fn unsupported_parameter(t: &Type) -> Option<String> {
     match t {
         Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => None,
+        Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
         other => Some(format!("a {} parameter", other.java_name())),
+    }
+}
+
+/// The width of a cell of an array of `element`s: what a store keeps of the value, which a load extends to an
+/// int (a boolean and a char without sign, a byte and a short with it) or leaves a long.
+fn cell_width(element: &Type) -> usize {
+    match element {
+        Type::Boolean => 1,
+        Type::Byte => 8,
+        Type::Char | Type::Short => 16,
+        Type::Long => 64,
+        _ => 32,
     }
 }
 
@@ -130,11 +152,31 @@ impl Val {
     }
 }
 
-/// An object made during the run: its class, and the fields written so far (an application exception's, say).
+/// An object made during the run: its class, and the fields written so far (an application exception's, say), or
+/// the array it is.
 #[derive(Debug, Clone)]
 struct Obj {
     class: String,
     fields: BTreeMap<String, Val>,
+    array: Option<Array>,
+}
+
+/// An array of primitives: its length, and a cell for every index it may have (as many as its length can be),
+/// each as wide as [`cell_width`] says. A read at a symbolic index is a choice among the cells, and a write
+/// updates each cell under the condition that the index is its own; an index at or beyond the length is out of
+/// bounds whatever its cell holds.
+#[derive(Debug, Clone)]
+struct Array {
+    element: Type,
+    length: Bits,
+    cells: Vec<Bits>,
+}
+
+/// A violating input: the scalar parameters' values and the array parameters' elements, by slot.
+#[derive(Debug, Clone, Default)]
+struct Input {
+    scalars: BTreeMap<u32, String>,
+    arrays: BTreeMap<u32, Option<Vec<String>>>,
 }
 
 /// A method's decoded code, shared by every frame that runs it.
@@ -221,8 +263,12 @@ struct Engine<'a> {
     deadline: Instant,
     max_paths: u64,
     paths: u64,
-    /// The harness's parameters: slot, type and bits, for reading the input off a model.
+    /// The harness's scalar parameters: slot, type and bits, for reading the input off a model.
     params: Vec<(u32, Type, Bits)>,
+    /// The harness's array parameters: slot, element type, length and cells, for reading the input off a model
+    /// (the cells as made; a path writes into its own copy of the object).
+    arrays: Vec<(u32, Type, Bits, Vec<Bits>)>,
+    max_array_length: u32,
     /// One literal per entry of [`STAGES`], true when every parameter is in the range; built at the first
     /// violation, so that a proof pays nothing for them.
     stage_lits: Vec<Option<Lit>>,
@@ -230,6 +276,24 @@ struct Engine<'a> {
 
 fn unsupported<T>(what: impl Into<String>) -> Result<T, Stop> {
     Err(Stop::Unsupported(what.into()))
+}
+
+/// Whether a load or store instruction of `kind` fits an array of `element`s, as the verifier requires.
+fn check_kind(kind: ArrayKind, element: &Type) -> Result<(), Stop> {
+    let fits = match kind {
+        ArrayKind::Int => *element == Type::Int,
+        ArrayKind::Long => *element == Type::Long,
+        ArrayKind::Byte => matches!(element, Type::Byte | Type::Boolean),
+        ArrayKind::Char => *element == Type::Char,
+        ArrayKind::Short => *element == Type::Short,
+        ArrayKind::Float | ArrayKind::Double => return unsupported("floating point"),
+        ArrayKind::Ref => return unsupported("arrays of references"),
+    };
+    if fits {
+        Ok(())
+    } else {
+        unsupported(format!("a {kind:?} array instruction on a {}[]", element.java_name()))
+    }
 }
 
 /// Checks `class.method` of the harness: every path either returns or is infeasible (verified), or one throws the
@@ -252,12 +316,15 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         max_paths: options.max_paths,
         paths: 0,
         params: Vec::new(),
+        arrays: Vec::new(),
+        max_array_length: options.max_array_length,
         stage_lits: vec![None; STAGES.len()],
     };
     let solver = engine.b.signature();
-    let outcome = |engine: &Engine, verdict: Verdict, raw_inputs: BTreeMap<u32, String>, stage: Option<String>, problem: Option<String>| Outcome {
+    let outcome = |engine: &Engine, verdict: Verdict, input: Input, stage: Option<String>, problem: Option<String>| Outcome {
         verdict,
-        raw_inputs,
+        raw_inputs: input.scalars,
+        raw_arrays: input.arrays,
         stage,
         problem,
         paths: engine.paths,
@@ -275,12 +342,28 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         solver: solver.clone(),
     };
 
-    // The inputs: fresh bits per parameter, in its range.
+    // The inputs: fresh bits per parameter, in its range; an array parameter is an object of a fresh length up to
+    // the bound (the first path's condition) with fresh cells.
     let mut locals: Vec<Option<Val>> = Vec::new();
+    let mut objects: Vec<Obj> = Vec::new();
+    let mut cond: Vec<Lit> = Vec::new();
     let mut slot = 0u32;
     for t in &descriptor.params {
         if let Some(why) = unsupported_parameter(t) {
-            return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("outside the fragment: {why}"))));
+            return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
+        }
+        if let Type::Array(element) = t {
+            let length = engine.b.fresh(32);
+            let zero = engine.b.constant(0, 32);
+            let most = engine.b.constant(i64::from(options.max_array_length), 32);
+            cond.push(engine.b.sle(&zero, &length));
+            cond.push(engine.b.sle(&length, &most));
+            let cells: Vec<Bits> = (0..options.max_array_length).map(|_| engine.b.fresh(cell_width(element))).collect();
+            engine.arrays.push((slot, (**element).clone(), length.clone(), cells.clone()));
+            objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element: (**element).clone(), length, cells }) });
+            locals.push(Some(Val::R(Some(objects.len() - 1))));
+            slot += 1;
+            continue;
         }
         let bits = match t {
             Type::Boolean => {
@@ -313,69 +396,69 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), model: Model::default(), undecided: false, objects: Vec::new(), back_edges: HashMap::new() };
+    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, model: Model::default(), undecided: false, objects, back_edges: HashMap::new() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
     // search, since another path may have one in the first stage, as it does when the first path to fail is an
     // overflow and the second a rounding. The search for a better one is given as long again as the first took,
     // within the deadline; the violation stands whatever the remaining paths do.
-    let mut best: Option<(usize, BTreeMap<u32, String>)> = None;
-    let violation = |engine: &Engine, best: Option<(usize, BTreeMap<u32, String>)>| {
-        let (stage, raw_inputs) = best.expect("a violation");
+    let mut best: Option<(usize, Input)> = None;
+    let violation = |engine: &Engine, best: Option<(usize, Input)>| {
+        let (stage, input) = best.expect("a violation");
         let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
-        outcome(engine, Verdict::Violation, raw_inputs, stage, None)
+        outcome(engine, Verdict::Violation, input, stage, None)
     };
     loop {
         let path = match engine.next_path() {
             Ok(Some(path)) => path,
             Ok(None) => break,
-            Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(stop_text(&stop))) }),
+            Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
         };
         engine.paths += 1;
         if engine.paths > engine.max_paths {
-            return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
+            return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
         }
         match engine.run(path) {
             Ok(End::Returned) | Ok(End::Infeasible) => {}
             Ok(End::Violation(cond)) => {
-                let (stage, raw_inputs) = match engine.staged_input(&cond) {
+                let (stage, input) = match engine.staged_input(&cond) {
                     Ok(found) => found,
                     Err(stop) if best.is_some() => {
                         let _ = stop;
                         return Ok(violation(&engine, best));
                     }
-                    Err(stop) => return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(stop_text(&stop)))),
+                    Err(stop) => return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop)))),
                 };
                 if best.as_ref().is_none_or(|(s, _)| stage < *s) {
                     if best.is_none() {
                         let elapsed = started.elapsed();
                         engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
                     }
-                    best = Some((stage, raw_inputs));
+                    best = Some((stage, input));
                 }
                 if stage == 0 {
                     return Ok(violation(&engine, best));
                 }
             }
             Ok(End::Unwound(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
+                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
             }
             Err(Stop::Unsupported(what)) => {
-                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("outside the fragment: {what}"))) })
+                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {what}"))) })
             }
-            Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(what)) }),
+            Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(what)) }),
         }
     }
-    Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Verified, BTreeMap::new(), None, None) })
+    Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Verified, Input::default(), None, None) })
 }
 
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.
-pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, timeout: Duration, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -496,7 +579,11 @@ impl<'a> Engine<'a> {
         }
         let (lo, hi) = STAGES[i];
         let mut lits = Vec::new();
-        for (_, t, bits) in self.params.clone() {
+        let mut values: Vec<(Type, Bits)> = self.params.iter().map(|(_, t, bits)| (t.clone(), bits.clone())).collect();
+        for (_, element, _, cells) in &self.arrays {
+            values.extend(cells.iter().map(|c| (element.clone(), self.b.extend_cell(element, c))));
+        }
+        for (t, bits) in values {
             if t == Type::Boolean {
                 continue;
             }
@@ -514,7 +601,7 @@ impl<'a> Engine<'a> {
 
     /// An input that takes the violating path of condition `cond`, from the first stage of [`STAGES`] that has
     /// one, or from the whole range (stage `STAGES.len()`) when none does.
-    fn staged_input(&mut self, cond: &[Lit]) -> Result<(usize, BTreeMap<u32, String>), Stop> {
+    fn staged_input(&mut self, cond: &[Lit]) -> Result<(usize, Input), Stop> {
         let mut assumptions = cond.to_vec();
         for i in 0..STAGES.len() {
             let l = self.stage_literal(i);
@@ -530,18 +617,22 @@ impl<'a> Engine<'a> {
         Ok((STAGES.len(), self.input()))
     }
 
-    /// The parameters' values in the solver's last model.
-    fn input(&self) -> BTreeMap<u32, String> {
-        let mut raw_inputs = BTreeMap::new();
+    /// The parameters' values in the solver's last model: an array's elements are its cells up to its length.
+    fn input(&self) -> Input {
+        let unsigned = |t: &Type, v: i64| match t {
+            Type::Char => v & 0xFFFF,
+            Type::Boolean => v & 1,
+            _ => v,
+        };
+        let mut input = Input::default();
         for (slot, t, bits) in &self.params {
-            let v = self.b.eval(bits);
-            let v = match t {
-                Type::Char => v & 0xFFFF,
-                _ => v,
-            };
-            raw_inputs.insert(*slot, v.to_string());
+            input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
         }
-        raw_inputs
+        for (slot, element, length, cells) in &self.arrays {
+            let n = usize::try_from(self.b.eval(length)).unwrap_or(0).min(cells.len());
+            input.arrays.insert(*slot, Some(cells[..n].iter().map(|c| unsigned(element, self.b.eval(c)).to_string()).collect()));
+        }
+        input
     }
 
     /// Asks the solver, which is given the time left until the deadline (the search for a smaller witness after
@@ -640,11 +731,19 @@ impl<'a> Engine<'a> {
     /// Splits the path on `c` where the then side throws `exception` and the else side pushes `value` and goes
     /// on: a division by zero, an overflow.
     fn branch_throw(&mut self, path: &mut Path, c: Lit, exception: &str, value: Val) -> Step {
+        self.branch_throw_or(path, c, exception, move |engine, path| {
+            engine.push(path, value);
+            engine.advance(path);
+        })
+    }
+
+    /// Splits the path on `c` where the then side throws `exception` and the else side does `go_on` (which moves
+    /// past the instruction): an index out of bounds, a negative array size.
+    fn branch_throw_or(&mut self, path: &mut Path, c: Lit, exception: &str, go_on: impl FnOnce(&mut Self, &mut Path)) -> Step {
         match self.sides(path, c)? {
             Sides::Both { model_takes_then, other } => {
                 let mut twin = self.split(path, c, model_takes_then, other, false);
-                self.push(&mut twin, value);
-                self.advance(&mut twin);
+                go_on(self, &mut twin);
                 self.pending.push(twin);
                 self.raise(path, exception)
             }
@@ -654,14 +753,12 @@ impl<'a> Engine<'a> {
             }
             Sides::Else => {
                 path.cond.push(-c);
-                self.push(path, value);
-                self.advance(path);
+                go_on(self, path);
                 Ok(None)
             }
             Sides::Undecided { model_takes_then: true } => {
                 let mut twin = self.split_undecided(path, c, true);
-                self.push(&mut twin, value);
-                self.advance(&mut twin);
+                go_on(self, &mut twin);
                 self.pending.push(twin);
                 self.raise(path, exception)
             }
@@ -673,10 +770,115 @@ impl<'a> Engine<'a> {
                     self.raise(&mut twin, exception)?;
                     self.pending.push(twin);
                 }
-                self.push(path, value);
+                go_on(self, path);
+                Ok(None)
+            }
+        }
+    }
+
+    /// `arraylength`, `newarray`, and a load or store at an index: the index must be below the length (an int
+    /// compared unsigned, so that a negative one is out of bounds too), else `ArrayIndexOutOfBoundsException`;
+    /// a new array's size must not be negative, and must be known to be within the bound, since a cell is made
+    /// per index.
+    fn array_insn(&mut self, path: &mut Path, insn: &Insn) -> Step {
+        match insn {
+            Insn::ArrayLength => {
+                let o = match self.pop_array(path) {
+                    Ok(o) => o,
+                    Err(step) => return step,
+                };
+                let length = path.objects[o].array.as_ref().expect("an array").length.clone();
+                self.push(path, Val::I(length));
                 self.advance(path);
                 Ok(None)
             }
+            Insn::ArrayLoad(kind) => {
+                let index = self.pop_int(path)?;
+                let o = match self.pop_array(path) {
+                    Ok(o) => o,
+                    Err(step) => return step,
+                };
+                let array = path.objects[o].array.clone().expect("an array");
+                check_kind(*kind, &array.element)?;
+                let width = cell_width(&array.element);
+                let mut value = array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width));
+                for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
+                    let here = self.b.constant(i as i64, 32);
+                    let is = self.b.eq(&index, &here);
+                    value = self.b.ite_bits(is, cell, &value);
+                }
+                let value = self.b.extend_cell(&array.element, &value);
+                let value = if array.element == Type::Long { Val::J(value) } else { Val::I(value) };
+                let in_bounds = self.b.ult(&index, &array.length);
+                self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
+            }
+            Insn::ArrayStore(kind) => {
+                let value = match self.pop(path)? {
+                    Val::I(b) | Val::J(b) => b,
+                    Val::R(_) => return unsupported("arrays of references"),
+                };
+                let index = self.pop_int(path)?;
+                let o = match self.pop_array(path) {
+                    Ok(o) => o,
+                    Err(step) => return step,
+                };
+                let array = path.objects[o].array.as_ref().expect("an array");
+                check_kind(*kind, &array.element)?;
+                let width = cell_width(&array.element);
+                if value.len() < width {
+                    return unsupported("a store of a narrower value into an array");
+                }
+                let stored = self.b.trunc(&value, width);
+                let length = array.length.clone();
+                let in_bounds = self.b.ult(&index, &length);
+                self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
+                    let cells = &mut path.objects[o].array.as_mut().expect("an array").cells;
+                    for (i, cell) in cells.iter_mut().enumerate() {
+                        let here = engine.b.constant(i as i64, 32);
+                        let is = engine.b.eq(&index, &here);
+                        *cell = engine.b.ite_bits(is, &stored, cell);
+                    }
+                    engine.advance(path);
+                })
+            }
+            Insn::NewArray(kind) => {
+                let element = match kind {
+                    ArrayKind::Int => Type::Int,
+                    ArrayKind::Long => Type::Long,
+                    ArrayKind::Byte => Type::Byte,
+                    ArrayKind::Char => Type::Char,
+                    ArrayKind::Short => Type::Short,
+                    ArrayKind::Float | ArrayKind::Double => return unsupported("floating point"),
+                    ArrayKind::Ref => return unsupported("arrays of references"),
+                };
+                let count = self.pop_int(path)?;
+                let cells = match self.b.constant_value(&count) {
+                    Some(n) if n < 0 => 0,
+                    Some(n) if n <= 1 << 16 => n as usize,
+                    Some(n) => return unsupported(format!("an array of {n} elements")),
+                    None => {
+                        // A computed size: within the bound, as a copy of a parameter is, or beyond the engine.
+                        let most = self.b.constant(i64::from(self.max_array_length), 32);
+                        let beyond = self.b.slt(&most, &count);
+                        let mut assumptions = path.cond.clone();
+                        assumptions.push(beyond);
+                        if self.solve(&assumptions)? {
+                            return unsupported(format!("an array of computed size, not known to be within {} elements", self.max_array_length));
+                        }
+                        self.max_array_length as usize
+                    }
+                };
+                let negative = self.b.negative(&count);
+                let width = cell_width(&element);
+                self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
+                    let zero = engine.b.constant(0, width);
+                    path.objects.push(Obj { class: format!("{}[]", element.java_name()), fields: BTreeMap::new(), array: Some(Array { element, length: count, cells: vec![zero; cells] }) });
+                    let o = path.objects.len() - 1;
+                    engine.push(path, Val::R(Some(o)));
+                    engine.advance(path);
+                })
+            }
+            _ => unsupported("arrays of references"),
         }
     }
 
@@ -731,8 +933,18 @@ impl<'a> Engine<'a> {
     }
 
     fn alloc(&self, path: &mut Path, class: &str) -> usize {
-        path.objects.push(Obj { class: class.to_string(), fields: BTreeMap::new() });
+        path.objects.push(Obj { class: class.to_string(), fields: BTreeMap::new(), array: None });
         path.objects.len() - 1
+    }
+
+    /// The array the reference on the stack is, after the null check.
+    fn pop_array(&mut self, path: &mut Path) -> Result<usize, Step> {
+        let r = self.pop_ref(path).map_err(Err)?;
+        let o = self.null_check(path, r)?.expect("checked");
+        if path.objects[o].array.is_none() {
+            return Err(unsupported("an array operation on an object that is not an array"));
+        }
+        Ok(o)
     }
 
     /// Throws a new exception of the class from the current instruction.
@@ -825,7 +1037,7 @@ impl<'a> Engine<'a> {
                 }
                 frame.locals[slot] = Some(v);
             }
-            Insn::ArrayLoad(_) | Insn::ArrayStore(_) | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayLength | Insn::MultiANewArray(..) => return unsupported("arrays"),
+            Insn::ArrayLoad(_) | Insn::ArrayStore(_) | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayLength | Insn::MultiANewArray(..) => return self.array_insn(path, &insn),
             Insn::Pop => {
                 self.pop(path)?;
             }
@@ -1519,6 +1731,16 @@ impl Blaster {
     fn signature(&self) -> String {
         "CaDiCaL".to_string()
     }
+
+    /// A cell of an array of `element`s as the value a load pushes: extended to an int, without sign for a
+    /// boolean or a char and with it for a byte or a short, or left a long.
+    fn extend_cell(&self, element: &Type, cell: &Bits) -> Bits {
+        match element {
+            Type::Boolean | Type::Char => self.zext(cell, 32),
+            Type::Byte | Type::Short => self.sext(cell, 32),
+            _ => cell.clone(),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -1898,6 +2120,242 @@ mod tests {
         let (x, y): (i32, i32) = (out.raw_inputs[&0].parse().unwrap(), out.raw_inputs[&1].parse().unwrap());
         assert_eq!(x.wrapping_mul(y), 150_000, "{x} * {y}");
         assert!(out.refined_multiplications <= 1, "{}", out.summary());
+    }
+
+    #[test]
+    fn an_array_parameter_has_every_length_up_to_the_bound_and_its_elements_are_inputs() {
+        // a.length <= 8 (the default bound) holds; a.length < 8 does not, and the array named is 8 long.
+        let cp = harness("([I)V", |code, _, fail| {
+            code.load(Kind::Ref, 0);
+            code.op(0xbe); // arraylength
+            code.iconst(8);
+            code.if_icmp(Cond::Gt, fail);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        let cp = harness("([I)V", |code, _, fail| {
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.iconst(8);
+            code.if_icmp(Cond::Ge, fail);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!(out.raw_arrays[&0].as_ref().unwrap().len(), 8);
+
+        // a.length == 2 && a[0] + a[1] == 10 is claimed impossible: refuted, with the two elements named, from
+        // the first stage.
+        let cp = harness("([I)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.iconst(2);
+            code.if_icmp(Cond::Ne, ok);
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.op(0x2e); // iaload
+            code.load(Kind::Ref, 0);
+            code.iconst(1);
+            code.op(0x2e);
+            code.op(0x60); // iadd
+            code.iconst(10);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        let a: Vec<i32> = out.raw_arrays[&0].as_ref().unwrap().iter().map(|v| v.parse().unwrap()).collect();
+        assert_eq!(a.len(), 2, "{a:?}");
+        assert_eq!(a[0] + a[1], 10, "{a:?}");
+        assert!(a.iter().all(|v| (0..=20).contains(v)), "{a:?}");
+        assert_eq!(out.stage.as_deref(), Some("[0:20]"));
+        assert!(out.raw_inputs.is_empty());
+    }
+
+    #[test]
+    fn an_index_out_of_bounds_is_an_exception_path_and_a_store_is_read_back() {
+        // a[i] throws ArrayIndexOutOfBoundsException exactly when i < 0 || i >= a.length.
+        let cp = harness("([II)V", |code, writer, fail| {
+            let try_start = code.label();
+            let try_end = code.label();
+            let handler = code.label();
+            let ok = code.label();
+            let out_of_bounds = code.label();
+            code.bind(try_start);
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x2e); // iaload
+            code.op(0x57); // pop
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Lt, fail); // read although i < 0: impossible
+            code.load(Kind::Int, 1);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, fail); // read although i >= a.length: impossible
+            code.bind(try_end);
+            code.goto(ok);
+            code.bind(handler);
+            code.op(0x57);
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Lt, out_of_bounds);
+            code.load(Kind::Int, 1);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, out_of_bounds);
+            code.goto(fail); // thrown although 0 <= i < a.length: impossible
+            code.bind(out_of_bounds);
+            code.bind(ok);
+            let exception = writer.pool.class("java/lang/ArrayIndexOutOfBoundsException");
+            code.handler(try_start, try_end, handler, Some(exception));
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+
+        // With 0 <= i, j < a.length and i != j: after a[i] = v, a[i] == v and a[j] is what it was.
+        let cp = harness("([IIII)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 2);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 1);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, ok);
+            code.load(Kind::Int, 2);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, ok);
+            code.load(Kind::Int, 1);
+            code.load(Kind::Int, 2);
+            code.if_icmp(Cond::Eq, ok);
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 2);
+            code.op(0x2e);
+            code.store(Kind::Int, 4); // b = a[j]
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 1);
+            code.load(Kind::Int, 3);
+            code.op(0x4f); // a[i] = v
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x2e);
+            code.load(Kind::Int, 3);
+            code.if_icmp(Cond::Ne, fail); // a[i] != v: impossible
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 2);
+            code.op(0x2e);
+            code.load(Kind::Int, 4);
+            code.if_icmp(Cond::Ne, fail); // a[j] != b: impossible
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+    }
+
+    #[test]
+    fn a_new_array_is_within_the_bound_or_beyond_the_engine_and_cells_are_as_wide_as_their_elements() {
+        // A copy as long as the parameter, filled by the harness's loop, reads back the same: the size is the
+        // parameter's length, which the first path's condition bounds.
+        let cp = harness("([I)V", |code, _, fail| {
+            let loop_ = code.label();
+            let done = code.label();
+            let check = code.label();
+            let checked = code.label();
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.op_u8(0xbc, 10); // newarray int
+            code.store(Kind::Ref, 1);
+            code.iconst(0);
+            code.store(Kind::Int, 2);
+            code.bind(loop_);
+            code.load(Kind::Int, 2);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, done);
+            code.load(Kind::Ref, 1);
+            code.load(Kind::Int, 2);
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 2);
+            code.op(0x2e);
+            code.op(0x4f);
+            code.iinc(2, 1);
+            code.goto(loop_);
+            code.bind(done);
+            code.iconst(0);
+            code.store(Kind::Int, 2);
+            code.bind(check);
+            code.load(Kind::Int, 2);
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_icmp(Cond::Ge, checked);
+            code.load(Kind::Ref, 1);
+            code.load(Kind::Int, 2);
+            code.op(0x2e);
+            code.load(Kind::Ref, 0);
+            code.load(Kind::Int, 2);
+            code.op(0x2e);
+            code.if_icmp(Cond::Ne, fail);
+            code.iinc(2, 1);
+            code.goto(check);
+            code.bind(checked);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?} {:?} {}", out.problem, out.raw_arrays, out.paths);
+
+        // An array of a size the engine cannot bound is beyond it.
+        let cp = harness("(I)V", |code, _, _| {
+            code.load(Kind::Int, 0);
+            code.op_u8(0xbc, 10);
+            code.op(0x57);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
+        assert!(out.problem.as_deref().unwrap_or("").contains("computed size"), "{:?}", out.problem);
+
+        // A byte array's cell keeps eight bits: 200 stored reads back as -56; a char's sixteen, without sign.
+        let cp = harness("([B[C)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Ref, 0);
+            code.op(0xbe);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Ref, 1);
+            code.op(0xbe);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.iconst(20);
+            code.iconst(10);
+            code.op(0x68); // imul: 200 folded, since iconst takes a byte
+            code.op(0x54); // bastore
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.op(0x33); // baload
+            code.iconst(-56);
+            code.if_icmp(Cond::Ne, fail);
+            code.load(Kind::Ref, 1);
+            code.iconst(0);
+            code.op(0x34); // caload
+            code.if_zero(Cond::Lt, fail);
+            code.load(Kind::Ref, 1);
+            code.iconst(0);
+            code.iconst(-1);
+            code.op(0x55); // castore
+            code.load(Kind::Ref, 1);
+            code.iconst(0);
+            code.op(0x34);
+            code.iconst(16);
+            code.iconst(16);
+            code.op(0x68);
+            code.op(0x59); // dup
+            code.op(0x68); // imul: 65536 folded
+            code.iconst(1);
+            code.op(0x64); // isub
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
     }
 
     #[test]
