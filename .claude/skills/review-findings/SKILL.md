@@ -31,6 +31,6 @@ Output lands in a published transcript, so use only the masked commands below. D
    ```
 
    A proposal records the id, kind and masked value, not the value, and hides nothing until it is approved. The allow list refuses kinds the redactor removes (`ERROR` findings such as an email); for those, give the user `python3 llm-dlc/tools/sync.py review accept ID --reason "why"` to run instead.
-   Then ask the user to run `python3 llm-dlc/tools/sync.py allow approve` in their own terminal, not in this session. It prints every proposal's real value and asks once for `false positive`, with no rescan. Remind them to read those values before confirming, since you have seen only masked ones.
+   Then ask the user to run `python3 llm-dlc/tools/sync.py allow approve` in their own terminal, not in this session. It prints every proposal's real value and asks once for `false positive`, with no rescan, and commits the decision itself, so nothing is left for you to commit. Remind them to read those values before confirming, since you have seen only masked ones.
 
 5. When they say they're done, run `python3 llm-dlc/tools/sync.py allow` and `python3 llm-dlc/tools/sync.py review` and report what is still open. Then commit the updated lists, following `CLAUDE.md`. List anything that was skipped or marked real, with the fix it still needs.

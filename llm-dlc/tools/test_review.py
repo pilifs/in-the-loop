@@ -153,6 +153,41 @@ class Allowlist(unittest.TestCase):
         self.assertEqual(r.skipped["public-ip"], 1)
         self.assertEqual(sync.allowlist_problems(r), ([], []))
 
+    def approve_in(self, at, args=("approve",)):
+        """Approve the proposal with @ as given ({"description", "changed"}); what was committed, how."""
+        sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version"])
+        jj_calls, commits = [], []
+        rel = str(sync.ALLOWLIST.relative_to(sync.REPO))
+        terminal, answer = self.as_person()
+        with terminal, answer, mock.patch.object(sync, "has_jj", return_value=True), \
+                mock.patch.object(sync, "jj_commits", return_value=[{"description": at["description"]}]), \
+                mock.patch.object(sync, "uncommitted_work", return_value=[rel] + at["changed"]), \
+                mock.patch.object(sync, "jj", side_effect=lambda *a: jj_calls.append(a) or mock.Mock(returncode=0)), \
+                mock.patch.object(sync, "cmd_commit", side_effect=lambda a: commits.append(a) or 0):
+            self.assertEqual(sync.cmd_allow(list(args)), 0)
+        self.assertEqual(sync.load_allowlist()[self.fid]["status"], "approved")
+        return jj_calls, commits
+
+    def test_an_approval_commits_itself_so_push_is_not_held_up(self):
+        jj_calls, commits = self.approve_in({"description": "", "changed": []})
+        self.assertEqual(jj_calls, [])
+        self.assertEqual(len(commits), 1)
+        self.assertTrue(commits[0][1].startswith("Allow list: ") and self.fid[:8] in commits[0][1])
+        self.assertNotIn(self.IP, "\n".join(commits[0]))  # the message names the value masked
+
+    def test_an_approval_with_other_work_in_at_commits_the_allow_list_alone(self):
+        jj_calls, commits = self.approve_in({"description": "", "changed": ["src/Other.java"]})
+        self.assertEqual(commits, [])
+        self.assertEqual(len(jj_calls), 1)
+        self.assertEqual(jj_calls[0][:2], ("commit", str(sync.ALLOWLIST.relative_to(sync.REPO))))
+
+    def test_an_approval_leaves_a_described_at_or_no_commit_alone(self):
+        for at, args in (({"description": "someone's message", "changed": []}, ("approve",)),
+                         ({"description": "", "changed": []}, ("approve", "--no-commit"))):
+            self.tearDown()
+            self.setUp()
+            self.assertEqual(self.approve_in(at, args), ([], []), args)
+
     def test_a_person_can_add_a_value_before_it_is_found(self):
         terminal, answer = self.as_person()
         with terminal, answer:

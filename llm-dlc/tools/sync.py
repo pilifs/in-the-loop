@@ -57,8 +57,9 @@ Commands:
   sync.py allow                 the allow list: false positives by value, approved or proposed
   sync.py allow propose ID... --reason TEXT
                                 propose open warn findings for the allow list (an agent may)
-  sync.py allow approve [ID...] approve proposals, all or those named; a person at a terminal only
-  sync.py allow add VALUE --kind KIND --reason TEXT
+  sync.py allow approve [ID...] approve proposals, all or those named; a person at a terminal only;
+                               commits the decision (--no-commit leaves it in @)
+  sync.py allow add VALUE --kind KIND --reason TEXT [--no-commit]
                                 allow a value before it is found; a person at a terminal only
   sync.py allow drop ID...      remove entries, proposed or approved
   sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
@@ -2774,6 +2775,8 @@ def cmd_allow(args: list[str]) -> int:
     if cmd not in ("approve", "add"):
         print(__doc__)
         return 2
+    no_commit = "--no-commit" in rest
+    rest = [a for a in rest if a != "--no-commit"]
     if not person_at_terminal():
         print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command.",
               file=sys.stderr)
@@ -2829,8 +2832,36 @@ def cmd_allow(args: list[str]) -> int:
     for fid, e in chosen.items():
         entries[fid] = {**e, "status": "approved", "authorized_by": who, "approved_on": today}
     save_allowlist(entries)
-    print(f"allowed {len(chosen)} value(s) in {ALLOWLIST.relative_to(REPO)}; commit it to publish the decision. "
+    print(f"allowed {len(chosen)} value(s) in {ALLOWLIST.relative_to(REPO)}. "
           f"Nothing needs rescanning: the next check leaves these values out.")
+    if no_commit or not has_jj():
+        print("commit it to publish the decision")
+        return 0
+    return commit_allowlist(chosen, who)
+
+
+def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
+    """Commit a decision just recorded in the allow list, so that it never waits in @ for someone to
+    commit it (push refuses uncommitted work). With nothing else changed in @, as `sync.py commit`
+    commits, with trace lines and the check after it. With other work in @, the allow list alone,
+    by `jj commit PATH`, leaving that work where it was; the next `sync.py commit` adds the trace
+    lines. A described @ is left alone: its message belongs to whoever wrote it."""
+    path = str(ALLOWLIST.relative_to(REPO))
+    lines = [f"{fid[:8]}  {e['kind']}  {e.get('masked') or _mask(e['value'])}: {e['reason']}" for fid, e in chosen.items()]
+    summary = f"Allow list: {who} approved {', '.join(fid[:8] for fid in chosen)}"
+    body = (f"{who} approved {len(chosen)} value(s) at their terminal with sync.py allow; the command committed "
+            "the decision itself.\n\n" + "\n".join(lines))
+    others = [p for p in uncommitted_work() if p != path]
+    if jj_commits("@")[0]["description"].strip():
+        print("@ has a description of its own, so the decision is left there: commit it with `sync.py commit`")
+        return 0
+    if not others:
+        return cmd_commit(["-m", summary, "-m", body])
+    r = jj("commit", path, "-m", f"{summary}\n\n{body}")
+    if r.returncode:
+        print(f"jj commit failed; the decision stays in @:\n{r.stderr}", file=sys.stderr)
+        return 1
+    print(f"committed {path} alone; {len(others)} other changed path(s) stay in @")
     return 0
 
 

@@ -61,7 +61,7 @@
     {
       "change_id": "wpltksnpzwwtpwpxnxtmznmzrlpquyvp",
       "commit_id": "a28b1f4686a3f75e300180bf22b3598e7d6877e7",
-      "immutable": false,
+      "immutable": true,
       "summary": "langfuse-loop.sh: send unsent turns to Langfuse as they appear",
       "body": "sync.py langfuse gains --pending (sessions whose latest stored log has turns not yet sent; a state-file mark by log sha keeps the check cheap) and --all (send them). llm-dlc/tools/langfuse-loop.sh polls that list, runs --all, retries while Langfuse is down, and takes stop/now/? commands like verification-loop.sh, with no Claude session. Verified against the local Langfuse: 19 pending sessions sent, then the loop idles on 'nothing to send'.",
       "log_sha256": "19cb40dd4776995b65d1cc3132e1dbb36aebfbc32ffc2448f2def7583203deb9"
@@ -69,7 +69,7 @@
     {
       "change_id": "ztqumoplxlkkouornlkovlztwwxwsrqr",
       "commit_id": "4160a94c9b183658cba359e08ddc2746daf19465",
-      "immutable": false,
+      "immutable": true,
       "summary": "sync speed brief: progress through step 3f, decisions on Go and chunked storage, and loops may update a brief's Progress section",
       "body": "llm-dlc/loops/sync-performance.md now names its fixed session (5dfbc1bc-4bd7-4b48-a637-44ff84065b6b) at the top, so further work in this area resumes that session. Its Progress section lists every step of the three changesets with its commit and numbers (commit 35-118 s to about 2-3 s, check --full 112 s to 18 s, scan --full 160 s to 11.6 s), what is waiting on the user (parallel wrangler puts or an R2 token; which session a commit treats as current), and what is left. A new Decisions section records the user's decisions of 2026-11-03: no Go port, and no chunked storage. performance.md marks its Go recommendation as decided.\n\nfeature-loop.sh used to stop a run on any edit to its brief, so the loop could not record progress and the brief went stale (step 3f's commit message said so). It now hashes the brief without its '## Progress' section, and each cycle's instruction asks the session to update that section in the commit that does the work. Edits anywhere else still stop the loop. Verified with bash -n, and by hashing three test briefs: an edit to Progress kept the hash, and an edit to another section changed it. The brief's Loop settings and Loop until still parse to the same session, model and text.",
       "log_sha256": "0588beeedff7fba1a96a22fe24434e06281c23b5d1112e6c761ff2bb32b3a024"
