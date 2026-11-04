@@ -27,8 +27,10 @@ Commands:
   sync.py hook                  Claude Code Stop/SessionEnd hook: Langfuse only, leaves the repo alone
   sync.py hook-commit           Claude Code PostToolUse hook: traces a plain `jj commit` or `git commit`
   sync.py sync [--all | ID...] [--full]
-                                snapshot sessions of this repo from ~/.claude/projects; only what a
-                                transcript gained since the last sync is redacted, --full redacts it all
+                                snapshot sessions of this repo from ~/.claude/projects: those named, or
+                                else those whose transcript, commits, note or files changed since they
+                                were last synced (--all: every one); only what a transcript gained since
+                                the last sync is redacted, --full redacts it all and trusts no cache
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
@@ -631,6 +633,7 @@ CACHE_VERSION = 1              # bump when what an entry means changes
 TRANSCRIPT_CACHE = STATE / "transcript-cache.json"
 SCAN_CACHE = STATE / "scan-cache.json"
 CHECK_CACHE = STATE / "check-cache.json"
+SYNC_CACHE = STATE / "sync-cache.json"
 
 
 def full_audit(args: list[str]) -> bool:
@@ -859,6 +862,84 @@ def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor, ke
 
 def transcript_cache(redact: Redactor, full: bool = False) -> LocalCache:
     return LocalCache(TRANSCRIPT_CACHE, redact.fingerprint(), trusted=not (full or full_audit([])))
+
+
+def sync_cache(redact: Redactor, trusted: bool = True) -> LocalCache:
+    """Each session's state (session_state) as it was right after it was last synced. The
+    fingerprint covers what process() reads besides the session's own files and commits: both
+    tools and the rules (in redact's), the templates, prices and reviewed findings, and the repo."""
+    h = hashlib.sha256(f"{redact.fingerprint()}\0{REPO}\0{repo_web_url()}\0{has_jj()}\0".encode())
+    for source in (Path(metrics.__file__), SUMMARY_TEMPLATE, PRICING, REVIEWED, ALLOWLIST):
+        h.update((source.read_bytes() if source.exists() else b"-") + b"\0")
+    return LocalCache(SYNC_CACHE, h.hexdigest(), trusted=trusted and not full_audit([]))
+
+
+INDEX_TEMPLATE = ('change_id ++ "\\t" ++ commit_id ++ "\\t" ++ immutable ++ "\\t" ++ empty ++ "\\t" ++ '
+                  'current_working_copy ++ "\\t" ++ author.timestamp().utc().format("%s") ++ "\\t" ++ '
+                  'json(description) ++ "\\n"')
+
+
+def commit_index() -> list[dict] | None:
+    """In one jj call, every change link_commits could stamp or list for any session: those that
+    carry a session trailer and the mutable ancestors of @. None without jj, or if the call fails."""
+    if not has_jj():
+        return None
+    r = jj("log", "--no-graph", "-r", f'description(substring:"{TRAILER}: ") | (mutable() & ::@)', "-T", INDEX_TEMPLATE)
+    if r.returncode:
+        return None
+    out = []
+    for line in r.stdout.splitlines():
+        cid, commit, immutable, empty, at, when, desc = line.split("\t", 6)
+        out.append({"change_id": cid, "commit_id": commit, "immutable": immutable == "true", "empty": empty == "true",
+                    "at": at == "true", "author": int(when), "description": json.loads(desc)})
+    return out
+
+
+MADE_MARGIN = 120  # seconds around a session's span in which a change may count as made by it
+
+
+def session_state(transcript: Path, status: str, current: bool, index: list[dict] | None) -> dict:
+    """Everything process() reads or writes for one session, read cheaply: the size, time and inode
+    of its transcripts (taken before they are read, so a later write shows), the commits that
+    link_commits stamps or lists (with a margin around the session's span for the ones it may have
+    made), its note, and the bytes of the files it wrote. A session whose state is the one recorded
+    right after it was last processed would be processed into the same files and descriptions."""
+    sid = transcript.stem
+
+    def stat(p: Path):
+        try:
+            st = p.stat()
+            return [st.st_size, st.st_mtime_ns, st.st_ino]
+        except OSError:
+            return None
+
+    def digest(p: Path):
+        try:
+            return sha256(p.read_bytes())
+        except OSError:
+            return None
+
+    subdir = transcript.parent / sid / "subagents"
+    sources = [[p.name, stat(p)] for p in [transcript, *(sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else [])]]
+    files = [[p.name, digest(p)] for p in (manifest_path(sid), summary_path(sid), metrics_path(sid), notes_path(sid))]
+    logs = sorted(p.name for p in (session_dir(sid) / "logs").glob("*.jsonl.gz"))
+    commits = None
+    if index is not None:
+        m, span = load_manifest(sid), None
+        if m.get("started") and m.get("ended"):
+            span = [datetime.fromisoformat(m[k].replace("Z", "+00:00")).timestamp() for k in ("started", "ended")]
+        trailer = f"{TRAILER}: {sid}"
+        commits = sorted(([c["change_id"], c["immutable"], c["commit_id"] if c["immutable"] else None, c["empty"],
+                           c["at"], c["description"]] for c in index
+                          if trailer in c["description"] or (current and c["at"])
+                          or (span and not c["immutable"] and span[0] - MADE_MARGIN <= c["author"] <= span[1] + MADE_MARGIN)),
+                         key=json.dumps)
+    return {"status": status, "current": current, "sources": sources, "files": files, "logs": logs, "commits": commits}
+
+
+def running_session() -> str | None:
+    """The session that runs this command, as Claude Code tells its tools."""
+    return os.environ.get("CLAUDE_CODE_SESSION_ID") or None
 
 
 def sync_session(transcript: Path, redact: Redactor, status: str,
@@ -1778,19 +1859,39 @@ def cmd_hook_commit() -> None:
 
 
 def cmd_sync(args: list[str], publishing: bool = False) -> None:
+    """Sync the sessions named, or else every session whose state (session_state) differs from the
+    one recorded after it was last synced: one whose transcript grew, whose commits were described,
+    rewritten or became immutable, whose note or generated files changed, or that went from open to
+    ended. --all and --full sync every session, and so does a publish."""
     src, full = claude_project_dir(), full_audit(args)
-    args = [a for a in args if a != "--full"]
-    paths = sorted(src.glob("*.jsonl")) if args in ([], ["--all"]) else [src / f"{a}.jsonl" for a in args]
+    named = [a for a in args if a not in ("--full", "--all")]
+    every = full or publishing or "--all" in args
+    paths = [src / f"{a}.jsonl" for a in named] if named else sorted(src.glob("*.jsonl"))
     redact = Redactor()
-    cache = transcript_cache(redact, full)
+    cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
+    me, index, unchanged = running_session(), commit_index(), 0
     for p in paths:
         live = time.time() - p.stat().st_mtime < LIVE_SECONDS
+        status, current = "open" if live else "ended", live or p.stem == me
+        if not named and not every and states.entries.get(p.stem) == session_state(p, status, current, index):
+            unchanged += 1
+            perf.count("sessions unchanged, not synced")
+            continue
+        state = session_state(p, status, current, None)  # its sources, before they are read
         with perf.phase("process"):
-            m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing, cache=cache)
+            m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
+        index = commit_index()  # process may have described changes
+        if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
+            states.entries.pop(p.stem, None)
+        else:
+            states.entries[p.stem] = {**session_state(p, status, current, index), "sources": state["sources"]}
         s = m["stats"]
         print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
+    if unchanged:
+        print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
     cache.save()
+    states.save()
     with perf.phase("index"):
         write_index()  # once, after every session: it reads all their manifests
 

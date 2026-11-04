@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 19, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-04 00:41 UTC |
-| Prompts | 429 |
-| Model calls | 3,537 |
-| Tool calls | 4,417 (133 failed) |
-| Compactions | 49 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-04 00:52 UTC |
+| Prompts | 434 |
+| Model calls | 3,570 |
+| Tool calls | 4,449 (133 failed) |
+| Compactions | 50 |
 | Subagents | 3 |
-| Tokens written | 6,729,860 |
-| Tokens read | 643,789,924 (97.6% from cache) |
-| Commits with a trace | 117 |
-| Log snapshots | 161 (458.2 MB gzipped, 152 uploaded) |
+| Tokens written | 6,769,803 |
+| Tokens read | 646,716,195 (97.6% from cache) |
+| Commits with a trace | 118 |
+| Log snapshots | 162 (459.4 MB gzipped, 152 uploaded) |
 
 ## Sessions
 
@@ -44,7 +44,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-03 13:40 UTC | [Verification pipeline job queue](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | ended | 37 min | `claude-sonnet-5-5` | 1 | 3 | 2 | 1 | 0 | 49,729 | 1 |
 | 2026-11-03 13:48 UTC | [sync.py redaction allow list](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | ended | 27 min | `claude-opus-5-5` | 6 | 40 | 40 | 4 | 0 | 130,007 | 2 |
 | 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | ended | 1 h 0 min | `claude-opus-5-5` | 7 | 65 | 59 | 2 | 0 | 168,562 | 5 |
-| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | open | 9 h 49 min | `claude-opus-5-5` | 14 | 187 | 193 | 3 | 2 | 315,353 | 5 |
+| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | open | 10 h 0 min | `claude-opus-5-5` | 19 | 220 | 225 | 3 | 3 | 315,353 | 6 |
 | 2026-11-03 23:49 UTC | [Langfuse sync background script](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 5 | 13 | 13 | 3 | 0 | 71,852 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -72,15 +72,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`bb39c22a`](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 453 | 6 | 20,191 | 126,090 | 86.2% | 323 |
 | [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 34,095 | 88 | 102,329 | 4,020,426 | 97.5% | 121 |
 | [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 56,701 | 142 | 135,090 | 7,767,223 | 98.3% | 139 |
-| [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 235,355 | 382 | 792,302 | 30,211,444 | 97.4% | 132 |
+| [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 275,298 | 448 | 910,269 | 33,019,682 | 97.3% | 123 |
 | [`4f570b0b`](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 10,055 | 26 | 44,209 | 756,270 | 94.5% | 80 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 3,565 | 80.7% | 19 |
-| `Edit` | 326 | 7.4% | 9 |
+| `Bash` | 3,596 | 80.8% | 19 |
+| `Edit` | 327 | 7.3% | 9 |
 | `Write` | 261 | 5.9% | 9 |
 | `Read` | 158 | 3.6% | 13 |
 | `ToolSearch` | 36 | 0.8% | 10 |
@@ -217,6 +217,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 115 | change `tqptslqv` | Sync-performance brief: instructions that keep the loop running, and the progress of earlier runs | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) ([log](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/cc86917bc5c2c9f309fd97753e03584e8965b00ddb6f101f275e3222b8036eac.jsonl.gz)) |
 | 116 | change `zwzolxqo` | sync.py speed, step 2a: commit redacts only what a transcript gained, check scans only logs it has not scanned | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) ([log](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/df5073cbfda36d362c4ffb83a0d519aa7ff49b924fb06bd50f6c0d9d12a55ae4.jsonl.gz)) |
 | 117 | change `qpqnrsym` | sync.py speed, step 2b: check verifies a snapshot once by its .gz bytes, and reads every trailer's manifest in one git call | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) ([log](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/788d72bf81eaf5ed07d7bd2e6171c1e24f3931ed0a1f10fcc602b810bf5f6a69.jsonl.gz)) |
+| 118 | change `sqkxtqkv` | sync.py speed, step 2c: commit syncs only the sessions whose inputs or outputs changed | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) ([log](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/55e3054cf390d10aee2733a35631eb827fa9551a564b3affa6fa48dec974ecbd.jsonl.gz)) |
 
 ## Logs
 
@@ -241,7 +242,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`bb39c22a`](bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 1 | 1 | 0.1 MB | [`ca92bc66a8c7`](https://terminalvalue.net/raw-traces/bb39c22a-5d6e-48b2-af0a-45d8b973d822/ca92bc66a8c77d43720e0cc46814fa3d6e585e58c2d92ace81fa356be1ada00e.jsonl.gz) |
 | [`0d3dce51`](0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 1 | 1 | 0.2 MB | [`d3cacab877c8`](https://terminalvalue.net/raw-traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/d3cacab877c8d59f6d6e274c8d062f70ca3ebbcb5fe88d86c50ebd715f1672f2.jsonl.gz) |
 | [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 5 | 3 | 25.2 MB | `7651620c8fd1`, not uploaded |
-| [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 5 | 0 | 3.1 MB | `788d72bf81ea`, not uploaded |
+| [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 6 | 0 | 4.2 MB | `55e3054cf390`, not uploaded |
 | [`4f570b0b`](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 2 | 0 | 0.3 MB | `0e4f3237f991`, not uploaded |
 
 ## Session notes

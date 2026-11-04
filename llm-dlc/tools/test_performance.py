@@ -33,6 +33,7 @@ def setUpModule():
                        ("SCAN_CACHE", state / "scan-cache.json"), ("PERF_LOG", state / "perf.jsonl")):
         mock.patch.object(sync, name, path).start()
     mock.patch.object(sync, "CHECK_CACHE", state / "check-cache.json").start()
+    mock.patch.object(sync, "SYNC_CACHE", state / "sync-cache.json").start()
 
 
 def tearDownModule():
@@ -220,6 +221,8 @@ class Sync(unittest.TestCase):
             with mock.patch.object(sync, "claude_project_dir", return_value=Path(d)), \
                     mock.patch.object(sync, "process", side_effect=fake), \
                     mock.patch.object(sync, "write_index") as index, \
+                    mock.patch.object(sync, "commit_index", return_value=None), \
+                    mock.patch.object(sync, "repo_web_url", return_value=None), \
                     mock.patch.object(sync, "Redactor", return_value=mock.Mock(fingerprint=lambda: "f")), \
                     mock.patch.object(sync.subprocess, "Popen", side_effect=AssertionError("started a process")), \
                     mock.patch.object(sync.urllib.request, "urlopen", side_effect=AssertionError("network")), \
@@ -573,6 +576,116 @@ class Checks(unittest.TestCase):
                 r = sync.jj("file", "show", "-r", c, p)
                 expected = r.stdout.encode() if r.returncode == 0 and p != "llm-dlc" else None
                 self.assertEqual(found[c, p], expected, (c, p))
+
+
+class Incremental(unittest.TestCase):
+    """sync (and so commit) skips a session whose state is the one recorded after its last sync, and
+    a skipped session is one that syncing again would leave as it is."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.src = root / "projects"
+        self.src.mkdir()
+        self.patches = [mock.patch.object(sync, "REPO", root / "repo"),
+                        mock.patch.object(sync, "TRACES", root / "repo" / "traces"),
+                        mock.patch.object(sync, "SESSION_NOTES", root / "notes"),
+                        mock.patch.object(sync, "claude_project_dir", return_value=self.src),
+                        mock.patch.object(sync, "Redactor", MadeUpRedactor),
+                        mock.patch.object(sync, "write_index"),
+                        mock.patch.dict(sync.os.environ, {"CLAUDE_CODE_SESSION_ID": ""}),
+                        mock.patch("sys.stdout", io.StringIO())]
+        for p in self.patches:
+            p.start()
+        sync.SYNC_CACHE.unlink(missing_ok=True)
+        for sid in ("s1", "s2"):
+            self.grow(sid, 3)
+            old = time.time() - 2 * sync.LIVE_SECONDS
+            sync.os.utime(self.src / f"{sid}.jsonl", (old, old))
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def grow(self, sid, n):
+        with open(self.src / f"{sid}.jsonl", "a") as f:
+            for i in range(n):
+                f.write(json.dumps({"type": "user", "timestamp": f"2026-11-0{1 + i % 3}T10:00:0{i % 10}Z",
+                                    "message": {"role": "user", "content": f"made-up prompt {i}"}}) + "\n")
+
+    def synced(self, *args):
+        """The sessions a sync processes, and every file it leaves under the traces directory."""
+        with mock.patch.object(sync, "process", wraps=sync.process) as process:
+            sync.cmd_sync(list(args))
+        files = {p.relative_to(sync.TRACES): p.read_bytes() for p in sorted(sync.TRACES.rglob("*")) if p.is_file()}
+        return sorted(c.args[0].stem for c in process.call_args_list), files
+
+    def test_only_a_session_whose_inputs_or_outputs_changed_is_synced(self):
+        self.assertEqual(self.synced()[0], ["s1", "s2"])
+        names, files = self.synced()
+        self.assertEqual(names, [])
+        self.assertEqual(self.synced("--all"), (["s1", "s2"], files))  # skipping changed nothing
+        self.grow("s1", 2)
+        self.assertEqual(self.synced()[0], ["s1"])
+        sync.summary_path("s2").write_text("edited by hand\n")
+        self.assertEqual(self.synced()[0], ["s2"])
+        sync.SESSION_NOTES.mkdir()
+        sync.notes_path("s1").write_text("A made-up note.\n")
+        names, files = self.synced()
+        self.assertEqual(names, ["s1"])
+        self.assertIn(b"A made-up note.", files[Path("s1/summary.md")])
+        sync.os.utime(self.src / "s2.jsonl")  # touched: now open, so its status changes
+        self.assertEqual(self.synced()[0], ["s2"])
+        self.assertEqual(self.synced("s2")[0], ["s2"])  # a session named is synced whatever its state
+        with mock.patch.dict(sync.os.environ, {"LLM_TRACES_FULL": "1"}):
+            self.assertEqual(self.synced()[0], ["s1", "s2"])
+        self.assertEqual(self.synced()[0], [])
+
+    def test_a_changed_tool_or_publish_means_syncing_again(self):
+        self.synced()
+        with mock.patch.object(sync, "repo_web_url", return_value="https://example.com/x/y"):
+            self.assertEqual(self.synced()[0], ["s1", "s2"])
+        with mock.patch.object(sync, "process", wraps=sync.process) as process:
+            sync.cmd_sync([], publishing=True)
+        self.assertEqual(process.call_count, 2)
+        self.assertEqual(self.synced()[0], ["s1", "s2"])  # what a publish wrote is not taken as a sync's
+
+    def test_the_commits_that_count_are_those_a_sync_would_stamp_or_list(self):
+        self.synced()
+        t, path = sync.datetime.fromisoformat("2026-11-02T10:00:00+00:00").timestamp(), self.src / "s1.jsonl"
+        c = lambda cid, desc, author=t, immutable=False, commit="a" * 40, at=False: {
+            "change_id": cid, "commit_id": commit, "immutable": immutable, "empty": False, "at": at,
+            "author": author, "description": desc}
+        index = [c("k1", "Done\n\nLLM-Trace: s1 sha256:" + "0" * 64, author=0), c("k2", "In the span"),
+                 c("k3", "Long after", author=t + 3 * 86400), c("k4", "Old, pushed", immutable=True, commit="b" * 40),
+                 c("k5", "@", author=t + 3 * 86400, at=True)]
+        state = lambda index, current=False: sync.session_state(path, "ended", current, index)
+        base = state(index)
+        self.assertEqual([x[0] for x in base["commits"]], ["k1", "k2"])
+        self.assertEqual([x[0] for x in state(index, current=True)["commits"]], ["k1", "k2", "k5"])
+        for i, change in ((0, {"description": "Done"}), (0, {"immutable": True}), (1, {"description": "Edited"}),
+                          (1, {"empty": True}), (1, {"author": t + 3 * 86400})):
+            self.assertNotEqual(state([{**x, **change} if j == i else x for j, x in enumerate(index)]), base, (i, change))
+        for i, change in ((0, {"commit_id": "c" * 40}), (2, {"description": "Edited"}), (3, {"description": "x"}),
+                          (4, {"description": "y"})):
+            self.assertEqual(state([{**x, **change} if j == i else x for j, x in enumerate(index)]), base, (i, change))
+
+    def test_the_span_covers_what_jj_counts_as_made(self):
+        with mock.patch.object(sync, "REPO", Path(sync.__file__).resolve().parents[2]), \
+                mock.patch.object(sync, "TRACES", Path(sync.__file__).resolve().parents[1] / "traces"):
+            if not sync.has_jj():
+                self.skipTest("no jj")
+            index = sync.commit_index()
+            for sid, m in sync.all_manifests().items():
+                if not (m.get("started") and m.get("ended")):
+                    continue
+                made = (f'mutable() & ::@ & author_date(after:"{m["started"]}") & author_date(before:"{m["ended"]}")'
+                        f' & ~(empty() & description(exact:""))')
+                wanted = {x["change_id"] for x in sync.jj_commits(made)}
+                wanted |= {x["change_id"] for x in sync.jj_commits(f'description(substring:"LLM-Trace: {sid}")')}
+                state = sync.session_state(self.src / f"{sid}.jsonl", "ended", False, index)
+                self.assertLessEqual(wanted, {x[0] for x in state["commits"]}, sid)
 
 
 class Perf(unittest.TestCase):
