@@ -32,6 +32,12 @@ llm-dlc/loops/sync-performance.md now names its fixed session (5dfbc1bc-4bd7-4b4
 
 feature-loop.sh used to stop a run on any edit to its brief, so the loop could not record progress and the brief went stale (step 3f's commit message said so). It now hashes the brief without its '## Progress' section, and each cycle's instruction asks the session to update that section in the commit that does the work. Edits anywhere else still stop the loop. Verified with bash -n, and by hashing three test briefs: an edit to Progress kept the hash, and an edit to another section changed it. The brief's Loop settings and Loop until still parse to the same session, model and text.
 
+### Record session traces
+
+change `mzpzpssrtwkr` · [log `9609038f6c74`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/9609038f6c74b8f7935c73369bf6b9a3aa3ceb1c2a9ca4f10980fad4f7d0f6a2.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/9609038f6c74b8f7935c73369bf6b9a3aa3ceb1c2a9ca4f10980fad4f7d0f6a2.jsonl.gz) has every step in between: reasoning, tool calls and their results.

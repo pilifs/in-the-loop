@@ -1345,7 +1345,7 @@
     },
     {
       "change_id": "kuyulwnwzxxummswyunzuqzvuokqtmnp",
-      "commit_id": null,
+      "commit_id": "f60799c123244c7912d4b86da077ae43c83b82c5",
       "immutable": false,
       "summary": "feature-loop.sh: lower the default memory cap from 4G to 3.5G",
       "body": "Proofs and model checks now run in the verification pipeline, so the loop's scope only holds the Claude session and inline builds. Measured in capped systemd scopes with swap off: cargo build --release peaks at 1.1G, cargo test at 1.7G (finishes under a 1.5G cap), sync.py check --full at 0.85G, and the full Box Office Gradle build at 1.9G (killed at 1.5G, finishes at 2G). With the Claude process on top, 3.5G leaves about 1 GB of headroom for the heaviest case. README updated to match; FEATURE_LOOP_MEMORY_MAX still overrides it.",
@@ -1353,7 +1353,7 @@
     },
     {
       "change_id": "mvmrltpoqlnluyrslwpyttzlspooyvxy",
-      "commit_id": null,
+      "commit_id": "cf74bb4c496a0eaa76fb9a39b1fbf1219ee9d371",
       "immutable": false,
       "summary": "Regression proofs share the callees both versions call unchanged, and skip a target whose bytecode is identical (verification pending)",
       "body": "jvmcontract equivalence now compares the two versions' bytecode before any solver runs (lib/src/shared.rs). A target identical in both versions, together with everything it reaches (instructions compared with their constant pool references resolved, exception tables, the static initializers and constant values of the classes whose statics it reads), is verified with nothing to prove and no JBMC run. A callee both versions call unchanged, that is a pure function of its primitive arguments (no fields, no arrays, nothing of the JDK beyond Math/StrictMath/Integer/Long/Short/Byte, string building and the exceptions it constructs), is taken as one function in both versions, the uninterpreted-function abstraction of regression verification: a generated stub class (SharedCallees, the class writer now writes static fields) keeps a memo table per callee, giving arguments seen before the outcome they got and new arguments an arbitrary result or one of the exceptions the callee can throw (its new'ed Throwables, plus ArithmeticException where it divides), and the invokestatic call sites of both versions are redirected to it by appending constant pool entries and rewriting the operands in place. The solver then relates how the versions use the callee and never its arithmetic. The abstraction is sound for a proof; a counterexample found with it is replayed through the real bytecode and, when it does not reproduce, the proof is run again with the callees as written, with a note. --no-shared-callees turns both off. The proof line names the callees taken as one function; Outcome gains a shared field.\n\nWhy: a 64-bit division in a helper both versions call was what turned a regression proof of a caller into a time-out, since each version carried its own copy for the solver to relate. Measured: a refactor of a caller around a division helper went from not finishing in 60 s to a proof in 0.2 s, and HoldPolicy-style pricing with Math.multiplyExact shared from 3.4 s to 0.4 s.\n\nExample 120 on Crosscut: a new kernel, ratelimit.RetryAfter#nanosUntilToken (the Retry-After of a refused request, from TokenBucket's refill helpers), with a test, a property proved in 1.7 s, and the API contract regenerated; the example's patch rewrites the wait as the period less the time since the credit, around the unchanged helpers. By hand: proved in 1.3 s with the helpers shared; without sharing the [-100000:100000] search stage had not finished after 60 s. New technique tag shared-callees. Job 20261104-054836-example-120-a-retry-after-rewrite-proved queued (build.py on the example). Docs: lib README (proof steps and limits), approaches.md B9, the Crosscut README, the plugin reference; build.py reads the 'nothing to prove' proof line.",
@@ -1361,7 +1361,7 @@
     },
     {
       "change_id": "ykkmkpqpnwkvzsrrowvpnwqpxnryolum",
-      "commit_id": null,
+      "commit_id": "198d431752ea80bbc89f4ba03c5c55d01063c34e",
       "immutable": false,
       "summary": "Regression proofs across a signature change: the previous version named and called with expressions over the new parameters (verification pending)",
       "body": "jvmcontract equivalence proved a method only against a previous version of the same name and parameters; a method renamed, moved, or whose parameters were reordered, added, removed or retyped could not be proved at all. Now --before-target names the previous method (pkg.Class#method) and --before-arguments gives its arguments as expressions over the new parameters (tsA, nodeA, tsB, nodeB; start, (int) (end - start), failed; an array by name), and the statement proved is new(x) agrees with old(f(x)). The harness (lib/src/harness/mod.rs, BeforeMethod) type-checks each expression against the parameter it is passed as with the expression language's call syntax, narrows for byte/short/char and widens for long, computes the arguments into locals inside a handler that skips an input the mapping throws on, and calls the relocated previous method; the Java rendering shows the mapping. equivalence.rs resolves the previous method in the old classes and refuses clearly when the class or method is missing, is not static, returns another type, or when the parameters differ with no mapping given; the proof line reads 'behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input', a counterexample is shown as both versions received it ('winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)'), the replay maps the arguments through the interpreter, and the JSON outcome carries the previous call. shared::plan takes both targets and uses the identical-bytecode shortcut only for the plain statement, since f(a, b) against f(b, a) on identical bytecode proves nothing. The tool's own checker handles the mapped harness unchanged.\n\nExample 121 (B9, Quorum): LastWriterWins#winner regrouped as (tsA, tsB, nodeA, nodeB) and written as a Long.compare/Integer.compare chain, with the test and the law in properties.contract updated in the patch; example.json carries change.previousArguments, which build.py passes to the tool (change.previousSymbol maps to --before-target; schema and page rendering extended); new technique tag signature-change. Job 20261104-061118-example-121-a-tie-break-s-parameters-reg is queued. Verified: 97 unit tests (one new, the harness with a mapping) and 37 integration tests (four new on a Writers fixture: a reordering proved, a moved and renamed method proved, a tie rewrite found with the mapped counterexample, a refusal without a mapping), clippy clean on the changed files, the patched Quorum tree compiles and its 58 tests pass, the mapped proof and counterexample reproduced under --engine native, release binary installed. Documented in lib/README.md, the plugin reference, examples/approaches.md, examples/README.md and Quorum's README.",
@@ -1369,7 +1369,7 @@
     },
     {
       "change_id": "koppnxzrsuzzwtlsuwuqvxnlonrzwurr",
-      "commit_id": null,
+      "commit_id": "4c8301a5388983a26a735b63cccd52592689ad33",
       "immutable": false,
       "summary": "Regression proofs under a stated relation between the results: a result that changed its type or meaning is related to the previous one with --results-agree-when (verification pending)",
       "body": "A regression proof compared what the two versions return, so a method whose return type changed, or whose result changed its meaning (a boolean that became the time left, nanoseconds that became milliseconds), could not be proved against its previous version. jvmcontract equivalence now takes --results-agree-when EXPR, a boolean expression over the new parameters, previous (the previous version's result) and result (the new one's), which takes the place of equality whenever both versions return; the versions must still throw alike, array parameters are still compared, and a relation that throws on a pair of results does not hold. The expression is type-checked against both return types, compiled into the generated harness (lib/src/harness/mod.rs, BeforeMethod::parse_relation, Harness.relation) and rendered in the Java statement written for readers. Differing return types are refused without a relation, with a message that names the flag. The identical-bytecode shortcut and the shared-callee plan are off under a relation, since identical code proves nothing about it. A counterexample is replayed in the interpreter and the relation evaluated on the replayed results (lib/src/equivalence.rs, Replays), so that a JBMC counterexample a missing model produced is still recognised as not reproducing; the report adds the line 'the results are not related by ...' under the two outcomes, and the JSON outcome carries the relation.\n\nExamples 122 and 123 on Crosscut's cache expiry: Expiry#isExpired, a boolean, turned into the time an entry has left, related by previousSymbol and resultsAgreeWhen 'previous == (result <= 0)' with the module's own precondition as the scope (outside it the new subtraction overflows). 123 (remainingNanos) is expected verified; 122 (remainingMillis) is expected to show an entry with a fraction of a millisecond to go reported expired, since the integer division rounds it to no millisecond. The example runner passes change.resultsAgreeWhen to the tool (examples/tools/build.py, examples/schema/example.schema.json), and the pages, lib/README.md, examples/approaches.md, the Crosscut README and the verify-bytecode skill reference describe the flag. Jobs 20261104-063213-example-122-a-cache-expiry-in-millisecon and 20261104-063213-example-123-a-cache-expiry-turned-from-a.",
@@ -1377,7 +1377,7 @@
     },
     {
       "change_id": "klvxzxmuvvukpxuulntzknxykvpztqqq",
-      "commit_id": null,
+      "commit_id": "87abe86e7e41137d32fdafed3ab6fd057d0a59f9",
       "immutable": false,
       "summary": "The tool's own checker looks for a violating input in JBMC's stages, so its witnesses read as JBMC's; examples 124 and 125 run regression proofs through it (verification pending)",
       "body": "The native bounded model checker (lib/src/bmc) returned the first model the SAT solver gave for a violating path, which for three 64-bit values the interpreter's shrinker did not bring down (example 122's second note). It now asks, on each violating path, for an input in the ranges JBMC is run through, [0:20], then [-100000:100000], then everything, and reports the stage in the proof line as JBMC does (searching inputs in [0:20]). A path that fails only on large values does not end the search: the remaining paths are explored for as long again as the first violation took, within the deadline, in case one of them fails in a smaller stage, and any stop after a violation is found (budget, a loop beyond the bound, something outside the fragment) returns the violation. A proof pays nothing: the range literals are built at the first violation. Unit tests cover the stage chosen per shape (an overflow in the second stage, a single large value in none, a small-value path found after a large-value one, a long and a boolean), and that the stages spell JBMC's; the millisecond Expiry integration test now also runs the tool's own checker and expects the same shrunk witness and the stage in its output.\n\nExamples 124 and 125 (Crosscut, B9) are run by the tool's own checker: approach.engine (schema enum jbmc/native/auto) becomes build.py's --engine on B9 and B11 of the javac apps, the proof-line regexes accept the checker's line, and the findings text names the checker that proved it. 124 rewrites kafka.Partitioner#partitionFor with Math.floorMod: the property of example 023 still holds and the tests pass, but every negative hash moves partition; the library's run found the difference in the second stage in 0.4 s and shrank it to partitionFor(hash=-1, numPartitions=3), 1 before and 2 after. 125 moves JwtTimestamps#valid's skew from the window's ends to the clock under the module's precondition as the scope, proved in 0.3 s over eleven paths; without the scope the versions differ on an overflow, with a witness no stage contains. New tags: routing-change (defect) and own-checker (technique). Both patches apply, both patched trees compile and pass the 42 Crosscut tests. Jobs 20261104-064900-example-124-a-partitioner-rewritten-with and 20261104-064900-example-125-a-jwt-skew-moved-from-the-wi are queued.",
@@ -1385,7 +1385,7 @@
     },
     {
       "change_id": "uloxsqtzxywkvunrtxusxuzknsrrlsuv",
-      "commit_id": null,
+      "commit_id": "80dceb8ff9b73c4d821c9b1b8b050081bf0332d3",
       "immutable": false,
       "summary": "Record verification results for 10 jobs: two Quorum reruns pass, eight B12 examples fail on a result.json schema mismatch",
       "body": "Runner released a stale claim (pid 2748715 gone) and ran the 10 queued jobs. Both Quorum reruns (58 steps each) passed; the first applied 160 outputs, the second applied 35 and left 128 as conflicts (already applied by the first, changed since its commit). Examples 112-119 each failed their single B12 step in under 2 minutes with 'result.json: Additional properties are not allowed (newProblems was unexpected)': build.py at the job commit writes newProblems but examples/schema/example.schema.json there does not allow it. This is a submitter-side mismatch, not a verdict; resubmit once the schema change is committed.",
@@ -1393,7 +1393,7 @@
     },
     {
       "change_id": "wpvlrvvsuqyxtryqwpyzqrytxwynspxs",
-      "commit_id": null,
+      "commit_id": "8148240991700df262420782bd50b3d8767114b8",
       "immutable": false,
       "summary": "Regression proofs on a record's components: a method of a record, or one taking or returning a record of primitives, is proved with the record built from symbolic components in both versions; examples 126 and 127 on a new backoff kernel (verification pending)",
       "body": "Until now a regression proof took static methods over primitives and arrays, and an instance method or a record parameter was refused. The harness now lays the target out over flat parameters (harness::Layout): a record whose components are all primitive, as the receiver, a parameter or the result, becomes its components, named this.component or parameter.component, which JBMC chooses symbolically. The harness builds the record from them in each version through its canonical constructor, inside handlers for every exception class it tells apart (JBMC matches a handler by the exception's own class, so a catch of Throwable alone does not take a stub IllegalArgumentException), so that an input a constructor of either version rejects is outside the statement and the proof is over the record's invariant; it calls an instance method with invokevirtual on each version's receiver, and compares a record result component by component from the fields of each version's record. The previous version's descriptor is relocated under before/ for the call and the replay, the witness is written as Java prints a record (delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1)), the interpreter replay constructs the records and dispatches on the receiver, and the domain reads this: Backoff(baseMillis: long, capMillis: long) × attempt: int. A scope or relation may name a component as the method does (baseMillis) or as this.baseMillis. A target identical in both versions is verified without a proof only when the records' constructors are identical too. Refused with a reason: a record with a non-primitive component, components that changed between the versions, a static method that became a record's method or the reverse, and a record parameter passed to the previous version by an expression. The tool's own checker has no objects and hands such a harness to JBMC under auto. build.py passes approach.unwind as --unwind, for a loop that needs more than the default sixteen turns.\n\nExamples 126 and 127 are on a new Crosscut kernel, retry.Backoff, a record of a base and a cap whose delayMillis(attempt) doubles the base up to the cap by a loop, with a compact constructor that keeps the base positive and the cap between the base and a day. 126 replaces the loop by Math.min(capMillis, baseMillis << attempt), which the tests pass and the proof refutes: the inline run found delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1), the loop returning 1 and the shift Long.MIN_VALUE, in 1.9 s, and scoped to attempts 0 to 62 the overflow at a base of 32 and 58 attempts. 127 replaces the loop by the shift kept below the base's leading zeros, which the inline run proved equal in 6.2 s with the loop unwound 32 times. Jobs 20261104-071749-example-126-a-backoff-s-doubling-loop-re and 20261104-071749-example-127-a-backoff-s-doubling-loop-re are queued. Verified with 102 unit tests (two new: the layout and harness over a record receiver, argument and result; dotted component names in expressions) and 44 integration tests (four new, through JBMC: a record's method proved on its components, the overflowing shift refuted and proved under a scope naming a component, a record result compared component by component, and a changed constructor keeping an identical method from the no-proof shortcut), clippy with nothing new, the release binary installed, both patches applied and the three Crosscut trees compiled and passing their 45 tests. Docs: lib/README.md (the proof's steps, what is new, limits), examples/approaches.md, examples/README.md, the verify-bytecode reference, the Crosscut README, tags.json (technique record-components), the example schema (approach.unwind).",
@@ -1401,7 +1401,7 @@
     },
     {
       "change_id": "uzxtpqklwprlxtyyomotuvkpyyuvznop",
-      "commit_id": null,
+      "commit_id": "9bd0c2e62b997cb0dc5f04871b67899412bd2066",
       "immutable": false,
       "summary": "Regression proofs relate a static method to the record's method it became, and leave trivial callees as written; examples 128 and 129 on the batch commit kernel (verification pending)",
       "body": "A static method whose parameters were gathered into a record (Fowler's introduce parameter object) is now related to the record's method, or to a static method taking the record, with --before-arguments over the record's components: the harness builds the record from symbolic components in the new version only and calls the previous version with the components (harness::Slot::Record keeps an optional previous record, Layout::before_receiver chooses invokevirtual or invokestatic per side, the generated source says so), the counterexample is replayed on each side as it received the input, and a target refused for the mismatch now says which arguments to give. The reverse direction, a record's method made static, stays refused with a reason. Shared callees skip a closure of at most sixteen instructions without a loop, multiplication, division or remainder (Math.min, Math.abs): as one function in both versions such a callee only gives counterexamples that do not reproduce and a second solver run, which examples 126 and 127 paid (126 now 1.1 s instead of 1.9 s, 127 5.9 s instead of 6.2 s; their notes updated). Example 120 still shares its two refill helpers.\n\nExamples 128 and 129 on Crosscut's batch commit kernel: the static offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor. In 128 the part of the guard about the failed index, which is no component, is lost with the move and the tests pass; the proof finds offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method committing one past the batch, in 0.5 s. In 129 the check stays in the method and the two are proved equal in 0.5 s. Jobs 20261104-073659-example-128-a-batch-commit-made-the-batc and 20261104-073700-example-129-a-batch-commit-made-the-batc are queued.\n\nVerified with 103 unit tests and 47 integration tests (one unit and three integration tests new, one fallback test's helper made non-trivial so that it is still shared), clippy clean in the changed files, the release binary rebuilt and installed, both patches applied with git apply --check, and the three Crosscut trees compiled with their 45 or 46 tests passing. Documentation: lib/README.md, examples/approaches.md, examples/README.md, the verify-bytecode skill reference and the Crosscut README.",
@@ -1409,7 +1409,7 @@
     },
     {
       "change_id": "nkurkxxusslpkwqstyrmoznvkxuxvzmp",
-      "commit_id": null,
+      "commit_id": "68508d209913da1a2c5c067c301c12672f86fcd9",
       "immutable": false,
       "summary": "Regression proofs build the previous version's record from the new parameters: a record whose components changed, or a record's method made static, is related by a constructor call among --before-arguments; examples 130 and 131 on the backoff record gaining a multiplier (verification pending)",
       "body": "A regression proof now relates a method of a record whose components changed (one added, removed or retyped), and a record's method that became static, to its previous version. The previous version's record is built from the new parameters by a constructor call given first among the expressions of --before-arguments, such as 'new Backoff(this.baseMillis, this.capMillis), attempt' or 'new Window(lo, hi), x', and a record among the previous version's parameters the same way. The harness builds it under before/ in the block that computes the previous version's arguments, which now has the typed handlers JBMC needs (it matches a handler by the exception's exact class), so an input the previous constructor rejects is outside the statement as before. The report reads 'behaves as the previous delayMillis(attempt) on new Backoff(this.baseMillis, this.capMillis)', a witness shows both versions as they received the input (the previous record as built), and the refusals for a record of other components or a receiver the new version lacks print the constructor call to give, with the previous version's parameter names. A record result of other components is still refused. In the library: harness::CallArg::Record, BeforeMethod.receiver and .records with expected(), argument_types() and relocated_descriptor(), parse_arguments split at top-level commas with each piece type-checked, expr::emit_record, and in equivalence.rs a layout of the previous version used to replay it and render the witness.\n\nExamples 130 and 131 are on Crosscut's retry.Backoff record, which gains an int multiplier component (Spring Retry's ExponentialBackOffPolicy has one). In 130 the doubling loop is rewritten to count the attempt down to zero, and a negative attempt, which the old loop answered with the base, now counts down to the cap: the proof finds attempt=-1 on Backoff[baseMillis=1, capMillis=2, multiplier=2] (before 1, after 2) in 9.0 s, in the second search stage, with this.multiplier != 2 as the scope of the intended change. In 131 the loop keeps counting up and applies the cap once after it; proved equal for the multiplier of two in 16.7 s with the loops unwound 32 times. Both patches apply, the three Crosscut trees compile and pass their 46 tests, and the two pipeline jobs are queued. The examples' router, approaches page, lib README, skill reference and the Crosscut README are updated; build.py renders a previousArguments that starts with a constructor call as the receiver and the call. Verified with 104 unit tests and 49 integration tests (one unit test and two integration tests new: a record that gained a component, a record's method made static with a bound that moved, and the refusals' hints), clippy with nothing new, the release binary built and installed.",
@@ -1417,7 +1417,7 @@
     },
     {
       "change_id": "zllokwnmppvtozvwssonnmvrqysppkmw",
-      "commit_id": null,
+      "commit_id": "7db073bd5ff6c573aef81cae2f148574766207e6",
       "immutable": false,
       "summary": "The tool's own checker asks the solver once per branch: each path carries a model of its condition, a condition taken before costs nothing, and records are in its fragment; examples 132 and 133 on the token bucket's refill (verification pending)",
       "body": "The bounded model checker in lib/src/bmc explored the harness path by path and asked the SAT solver about both sides of every branch. Now each path carries a model of its condition (bits.rs: the solver's answer for the inputs when the path was split off, with the gates made since evaluated on demand from the definitions the Blaster records per variable), so the side the model takes is known feasible without a call and the solver is asked once, about the other side, whose model goes with the twin; a branch whose literal, or its negation, is already in the path condition (the same comparison of the same bits, hashed to one literal, as a loop bound both versions test) costs no call at all. Each solver call is also given the time left to the deadline, so the search for a smaller witness after a violation can no longer overrun its budget by one long call. The engine's log line reports the solver time and the gates evaluated. On example 131's proof the solver calls fall from 3432 to 846 and the time from 49.7 s to 22 s; the plain proof of example 120, which JBMC did not finish in 60 s without the shared-callee stubs, takes the checker 1.1 s because both versions' divisions are one circuit. The engine was found to handle records of primitive components already (objects with fields, constructors inlined), which the README, the skill reference and the limits now say.\n\nExamples 132 and 133 are regression proofs of Crosscut's TokenBucket#tokensAfter by the checker, with the module's precondition (the property contract's assume) as the scope, as example 125 does: 132 counts the periods earned as nowNanos / periodNanos - lastNanos / periodNanos, which the tests, polling from time zero, and the property both pass, and the proof finds crediting a token for a nanosecond (tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1), 0 before and 1 after, found in the first search stage in 3.0 s); 133 caps the tokens earned by the room left instead of capping the sum, proved equal within the precondition in 0.5 s over nine paths and ten solver calls, with the overflow outside it shown in its notes. Example 120's notes record the checker's 1.1 s run. Verified by the unit test a_branch_costs_one_solver_call_and_a_condition_taken_before_none (two paths and one call; four paths and three calls), the full suite (105 unit, 49 integration tests, the integration tests cross-checking the checker against JBMC on the fixture proofs), clippy with nothing new, both patches applying and their trees passing the app's 45 tests, and the two proofs run inline through the release binary, which is installed. Jobs 20261104-083123-example-132-a-refill-counting-periods-fr and 20261104-083123-example-133-a-refill-capped-by-the-room are queued for the pipeline.",
@@ -1425,7 +1425,7 @@
     },
     {
       "change_id": "umsorzvyqlqskoywnzpuxpooksuyxmuy",
-      "commit_id": null,
+      "commit_id": "9f583661a0c3e1a75ba34fb47dba5949420e9562",
       "immutable": false,
       "summary": "Regression proofs relate a record result whose components changed, or a result that became a record, by a relation over the components; examples 134 and 135 on a new window-counter kernel of Crosscut (verification pending)",
       "body": "A record result of other components than before, or a result that is a record in one version and a primitive in the other, had no way into a regression proof: there was no expression for the previous result. Now --results-agree-when takes the components of a record result by name, previous.c and result.c (harness::Layout.result is the pair of the two versions' result records, BeforeMethod::parse_relation names each record's components in slots of their own, and the generated harness reads them from the two results by getfield before the relation; two null records agree, one null alone does not; the statement as Java prints them as accessor calls). Without a relation the tool refuses and proposes one over the components the records share by name and type. A replayed counterexample reads the components back from the interpreter's object (witness::Replayed.result_fields) to check the relation and to show both records.\n\nExamples 134 and 135 are regression proofs on a new kernel of Crosscut, ratelimit.Window, a fixed-window request counter whose counter is a record the method returns, across the record gaining a previousCount component for the sliding-window estimate: 134 advances the start by exactly one window instead of aligning it to the clock, found by JBMC in a fraction of a second within aligned starts as the scope (the witness a request two windows ahead of an empty counter); 135 keeps the alignment and is proved equal on the start and the count on every input by the tool's own checker in 12 s, where JBMC did not finish within a minute. Jobs 20261104-085102-example-134-a-window-counter-that-advanc and 20261104-085102-example-135-a-window-counter-with-the-pr are queued.\n\nVerified by a new unit test on the harness (the components' slots, the getfield reads, the Java statement), a new integration test cross-checking the verified, violated, became-a-record and refused cases with JBMC (4 s), the full suite (106 unit, 50 integration tests), the Crosscut app's 49 tests on the base tree and on both patched trees, both patches applying, and the four proof runs inline with both engines.",
@@ -1433,7 +1433,7 @@
     },
     {
       "change_id": "zlynzkyxmmtlyppoyvpptuluzqxplpun",
-      "commit_id": null,
+      "commit_id": "0cc075d55660d6372936e68dc4c58cd01d8baf13",
       "immutable": false,
       "summary": "The tool's own checker leaves a division to the solver under cheap facts and builds its circuit only where a model got it wrong, and does not wait for an undecided branch side; examples 136 and 137 on the window counter's start aligned by a mask (verification pending)",
       "body": "A division or remainder in the own bounded model checker (lib/src/bmc) is no longer bit-blasted at once: its quotient and remainder are fresh bits under what holds of every division (the remainder is smaller than the divisor and takes the dividend's sign, a division by one or by the dividend itself is exact, the quotient is zero exactly when the dividend is smaller, a power of two divides a non-negative dividend by masking), each a few hundred gates where a 64-bit divider is some ten thousand. A proof under the facts alone holds; a model the solver gives is checked against the real division of the values it chose, and where it is wrong the circuit is built and tied to the bits and the solver asked again, so every model the engine uses is a real execution (a path's model evaluates such a division for real from its operands). The solver is also asked about the other side of a branch only for as long as all its calls so far took together, at least a second: a side it has not decided by then waits until every decided path is done and is then decided with all the time left, so a violation is not held up by an infeasible side that is as hard to refute as the whole proof. The log line counts the divisions built in full.\n\nMeasured on the examples' harnesses (debug build, same verdicts and witnesses): 135's proof 12 s to 0.3 s, 134 under its scope from not finishing in two minutes to a witness in 2.4 s (one probe was the whole wait), 120 1.1 s to 0.3 s with no division built, 132 3 s to 0.4 s, 130 9 s to 1.1 s; 131, which has no division, is unchanged at 22 s in the release build. JBMC's own arithmetic refinement (--refine-arithmetic) does not finish 135 within 90 s, which the notes record. Examples 136 and 137 are on the same Window kernel of Crosscut: the start aligned by nowNanos & -windowNanos, which is the alignment only for a power-of-two window, is refuted on a window of three by both engines in 0.2 s and proved unchanged on power-of-two windows when that is the scope (136); the mask kept for powers of two with the remainder elsewhere is proved equal on every input by the checker in 0.5 s, where JBMC does not finish in a minute (137). Verified by 109 unit tests (three new, on the facts, the refinement and the model's evaluation) and 50 integration tests, the Crosscut app's 48 tests on both patched trees, both patches applying with git apply --check; pipeline jobs 20261104-092044-example-136 and 20261104-092044-example-137 queued; the release binary installed; notes of 120, 134 and 135 updated with the new timings.",
@@ -1441,7 +1441,7 @@
     },
     {
       "change_id": "xnxwvttrwrqktnmqxukmuqqmqqvmuxpq",
-      "commit_id": null,
+      "commit_id": "2219301d72ab40e60ed2fbda78555b97960067c8",
       "immutable": false,
       "summary": "The tool's own checker leaves a multiplication to the solver under cheap facts and rewrites a quotient times its divisor as the dividend less the remainder; examples 138 and 139 on the window start as the window's index times its length (verification pending)",
       "body": "The own bounded model checker (lib/src/bmc) extends last cycle's lazy division to multiplication: a product of two non-constant values is fresh bits under what holds of every product modulo the width (a factor of zero gives zero, of one the other factor, of minus one its negation, a power of two shifts by its exponent, the low eight bits are exact), a model that gets a product wrong has the multiplier built and tied to the bits, and products of the same operands in either order are the same bits. A quotient times its divisor is rewritten exactly as the dividend less the remainder, (a / b) * b as a - a % b, which holds in two's complement for every pair including a division by zero and MIN_VALUE / -1, so the identity between a 64-bit division and multiplication that neither engine proved within a minute is the same bits on both sides. The log line now counts divisions and multiplications separately.\n\nExample 131's loop of delay *= multiplier, proved in 22 s with its 27 multipliers built, takes 4 s with none built (release build, 1.19M clauses down to 385k); 130 goes from 1.5 s to 1.1 s; the other own-checker examples (120, 124, 125, 128, 129, 132, 134 to 137) are unchanged. The divide-and-multiply form of the window alignment, out of reach of both engines last cycle, is proved in 0.1 s, and the credited-time rewrite that example 133's last note recorded as out of reach in 0.3 s; the notes of 120, 131, 133 and 137 say so.\n\nExample 138 is the window counter's start computed as the window's index times its length, long index = nowNanos / windowNanos; long start = index * windowNanos, proved equal to the remainder form on every input by the own checker in 0.1 s where JBMC does not finish within 60 s. Example 139 holds the index in an int: at a reading of 2^31 windows the cast wraps, the start is negative, and the record's constructor refuses it, so every request from then on throws; found in 3 s as counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1), JBMC >60 s. Pipeline jobs 20261104-094056-example-138-window-start-as-the-window-s and 20261104-094056-example-139-window-index-held-in-an-int.\n\nVerified with three new unit tests (the facts prove a product by zero, one and a power of two with no circuit, a wrong product of the same low bits is refined once, the quotient-times-divisor rewrite gives the same bits and holds at MIN_VALUE / -1, an engine run that is verified with 0 of 1 products built and one refuted with the real product), 112 unit and 50 integration tests passing, the Crosscut app's 48 tests on both patched trees, both patches applying, and the release binary installed.",
@@ -1449,7 +1449,7 @@
     },
     {
       "change_id": "vqtotrwurwuukqytwzqukqqoytpmtkzs",
-      "commit_id": null,
+      "commit_id": "110cf961f52f85f38d814e4151010cb40f786d08",
       "immutable": false,
       "summary": "The tool's own checker takes arrays of primitives into its fragment: a cell per index up to the bound, reads as a choice among the cells, writes as conditional updates, bounds and sizes as exception branches; examples 140 and 141 on the lookupswitch bisection rewritten half-open (verification pending)",
       "body": "lib/src/bmc: an array of int, long, short, byte, char or boolean is an object with a symbolic length and a cell per index it may have (Array in Obj.array, cell widths by element type). An array parameter has every length up to --max-array-length (8 by default, now passed to the engine from the equivalence and property drivers) with symbolic cells, and its elements are part of the witness (Outcome.raw_arrays) and of the staged search for small inputs. arraylength, the loads and stores and newarray are modelled: a load at a symbolic index is a chain of choices among the cells, a store a conditional update of each cell, an index at or beyond the length (compared unsigned, so a negative index too) a branch to ArrayIndexOutOfBoundsException and a negative size to NegativeArraySizeException, through the same split as a division by zero (branch_throw generalised to branch_throw_or). A new array needs a constant size or one the solver proves within the bound, as a copy of a parameter has; arrays of references, floating-point arrays, System.arraycopy and java.util.Arrays stay outside the fragment and are refused with a reason. The harness's copying and comparing loops over an array parameter, and the quantifiers' loops of a scope or a property, run through the engine like the method's own.\n\nExamples 140 and 141 are on Mica's LookupSwitch#find, the lookupswitch bisection, with the scope of strictly sorted tables stated as a \\\\forall over the array in --unchanged-unless (change.intendedInputs). 140: the half-open rewrite that answers the empty table first and drops the guard on the final equality test reads past the end for a key above the last match; Mica's tests pass since their table ends in Integer.MAX_VALUE; the own checker finds find(matches=[0], key=1), -1 before and ArrayIndexOutOfBoundsException after, in 0.16 s where JBMC takes 23 s and 2 GB. 141: example 046's correct half-open form proved equal to the closed form on every strictly sorted table of up to eight matches in 2.3 s (88 paths, 1044 solver calls) where JBMC takes 101 s and 2 GB; without the scope both engines find the unsorted table [1, 0] on which the two searches probe different midpoints. Pipeline jobs 20261104-101436-example-140-half-open-bisection-that-ans and 20261104-101436-example-141-lookupswitch-bisection-rewri.\n\nVerified by three new engine unit tests (array lengths and elements as inputs from the first stage; out of bounds exactly when the index is, a store read back and another index untouched; a copy of a parameter proved equal, a computed size refused, byte and char cells as wide as their elements), the integration test on fixtures.Search#find updated to expect the own checker's proof under auto and its unsorted witness natively (115 unit and 50 integration tests pass), the release binary on the examples 120 to 137 of the earlier cycles with unchanged verdicts and timings, and Mica's 71 tests on both patched trees. Shared pages updated: lib/README.md, the skill reference, the own-checker tag, Mica's README and approaches.md.",
@@ -1457,7 +1457,7 @@
     },
     {
       "change_id": "zqwquzqoktlxsllpvqlzokqzpknozxmx",
-      "commit_id": null,
+      "commit_id": "37dde1ffd907c1a531ad502c0e7a8abfe98b897a",
       "immutable": false,
       "summary": "The tool's own checker merges paths where they meet once a search has grown past a few hundred, keeping the models of every path merged; examples 142 and 143 on the constant-pool encoder's ASCII fast path, the proof that waited for a larger machine (verification pending)",
       "body": "Path merging in lib/src/bmc: an instruction with more than one way in (after an if, a loop header, a handler) is a join point; a path that reaches one waits there, and when nothing else can run the paths waiting at the earliest join are merged into one, every value they differ in a choice by the condition of each, the condition the disjunction of theirs, the models of all of them kept, so that a branch each of whose sides some model takes costs no solver call. A method of n independent branches is then n paths rather than 2^n. The first 512 paths (Options.merge_after) are explored unmerged, since a solver call about one concrete path is much cheaper than one about a disjunction: merged from the start, the 64-bit arithmetic of examples 131, 134 and 139 took two to three times as long and an integration fixture timed out, while with the budget examples 120 to 141 keep their verdicts and timings. A merged path counts a loop's back edges as the fewer of the two, since the larger count reported a loop as beyond the bound where no path was.\n\nExamples 142 and 143 are the regression proofs of Mica's ModifiedUtf8#encodeInto with an ASCII fast path that waited since 1 November in examples/apps/mica/pending for a machine with more memory, JBMC running out of it at 2.8 GB at the default bound; the directory is removed and the pages that pointed at it updated. 142: the fast path with the test (char) (c - 1) < 0x7f is proved equal to the previous version on every string and buffer of up to eight elements in 7 s and 76 MB (733 paths, 219 merged; unmerged the search takes 11643 paths), and at twelve elements in 83 s and 155 MB where the unmerged search spends its budget of 200000 paths without a verdict; at sixteen there is no verdict in four minutes. 143: the same fast path with <= 0x7f admits U+0080 and writes it as one byte, which the encoder's committed properties allow and only the comparison with the previous version catches: refuted in 1.1 s on encodeInto(chars=['\\u0080'], out=[32]), the previous version throwing on the second byte and the new one returning 1. Mica's 71 tests pass on both patched trees. Verified by 116 unit tests (three on merging: a violation through a merged state is found with a real input, eight independent branches are nine paths merged and 256 not) and 50 integration tests, and by re-running examples 120 to 141 on the release build. Jobs 20261104-104407-example-142-ascii-fast-path-of-modifiedu and 20261104-104407-example-143-ascii-fast-path-off-by-one-a are queued.",
@@ -1465,7 +1465,7 @@
     },
     {
       "change_id": "mxklxumpxvlrzporxmwyksoqxpmnroxo",
-      "commit_id": null,
+      "commit_id": "7af36aa8f08457ab038f3d26add88238e2beb323",
       "immutable": false,
       "summary": "A regression or property proof that covers no input says so: the statement is probed with its calls replaced by the assertion's failure, and a scope or assumption every input satisfies, or an array bound below what the scope asks, is reported as vacuous; examples 144 and 145 on a short-table scan of the lookupswitch search (verification pending)",
       "body": "A verified statement that skips inputs before the calls (an --unchanged-unless scope, a record whose constructor may reject an input, --before-arguments that may throw, or a prove --assume) can skip every input in the domain: a scope that is a tautology, or one over an array's length the bound on arrays never reaches, such as 'matches.length <= 8' at the default --max-array-length of 8. Before this change such a proof was printed as a plain tick. Now the harness generator also emits a probe, the same class with the two calls replaced by throw new AssertionError(), and after a verified verdict, whichever engine gave it, the tool's own checker proves or refutes the probe over the statement's own domain: a refutation is an input that reaches the calls, and a proof means no input does, which is reported on a line of its own, 'vacuously: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing'. The verdict stays verified and the exit code 0, as a TLC coverage verdict does; the Outcome gains a vacuous field and build.py reads the line into the result's coverage, so an example that is verified vacuously must say so in expected.vacuous, and gets a paragraph on its page. approach.maxArrayLength is a new example field passed as --max-array-length.\n\nExamples 144 and 145 construct the case on Mica's LookupSwitch#find, which gains a linear scan for tables of at most eight pairs: the developer declares the short tables as the intended change. At the default bound every table in the domain is among them and the proof is verified vacuously in 0.1 s (144, expected vacuous); with the bound raised to twelve the bisection is proved unchanged on every table of nine to twelve pairs and every key in 4 s, 89 paths (145). Their notes carry the proof of the scan itself under the sortedness scope of example 141 (1.1 s at eight, 3.1 s at twelve) and the unscoped witness find(matches=[20, 16], key=16). Mica's 71 tests pass with the patch.\n\nAlso tried this cycle and reverted before committing: putting the harness's failing branches off to one disjunctive solver call at the end of each path. It was sound and the tests passed, but example 142 at bound eight went from 7.6 s to 11.9 s, since the two merged final paths carried 171 and 135 deferred checks and the single proof over their disjunction cost more than the incremental per-element calls it replaced; small searches gained nothing.\n\nVerified by 116 unit tests (a harness test checks the probe throws before its call), the 50 integration tests (a tautological scope and an unsatisfiable assumption get the line, the real scope and assumption do not; one 64-bit fixture timed out under load and passed alone in 22 s), the measured outputs of examples 120 to 141 on the release build, which are unchanged and gain no vacuity line, and the proofs of 144 and 145 above. Jobs 20261104-124827-example-144 and 20261104-124833-example-145 are queued for the pipeline.",
@@ -1473,7 +1473,7 @@
     },
     {
       "change_id": "yvvxkxxkrruunqsrqlzllmysmzrlurnm",
-      "commit_id": null,
+      "commit_id": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
       "immutable": false,
       "summary": "The result schema takes what build.py writes for a boundary contract's new problems and a vacuous symbolic proof; examples 111-119 and 144 resubmitted (verification pending)",
       "body": "The last verification run failed examples 111 to 119 on result.json validation: build.py writes newProblems (the `!` lines a regenerated B12 contract gains) and the schema did not list it. The schema also allowed coverage only in its TLC form, while build.py writes {vacuous, reason} for a regression or property proof the tool reports as vacuous, so example 144's pending job would have failed the same way. The schema now lists newProblems as an array of strings, and coverage as null, the TLC object, or {vacuous: true, reason}. Checked by validating all 105 committed result.json files against it (all valid) and synthetic B12 and vacuous B9 results (valid), with a missing reason and a non-array newProblems rejected.\n\nJobs resubmitted at this commit: 20261104-131020-example-111..117, 20261104-131021-example-118, -119 and -144 (the never-run 20261104-124827-example-144 job, pinned to the old schema, removed). The other failures in the run (example 036's patch no longer applying to Mica, example 109's replay of a static field) are not about the schema and are left.",
@@ -1481,7 +1481,7 @@
     },
     {
       "change_id": "pmqyrtsswpkukqztvlrywysolrwwvwrw",
-      "commit_id": null,
+      "commit_id": "72bdc20470cdeba151c1ad151e0a73161b5a5562",
       "immutable": false,
       "summary": "The Java contract verifier leaves another tool's contract alone, so Box Office's build passes again",
       "body": "Box Office's contracts module applies both contract plugins: the behavioural/capability one (examples/tools/contracts) and the boundaries one (jvmcontract). Since that module gained a boundaries.contract for the wire types, the Java verifier read it as a behavioural contract, and :contracts:verifyContracts, and with it the app's check, failed with 'boundaries.contract: not a case: kind: boundaries'. An Opus 5.5 session noticed it on Nov 3 while measuring memory caps and left it open. The verifier now skips any .contract file whose first line is a kind: header (Contract.kind), a behavioural contract having none.",
@@ -1517,13 +1517,13 @@
       "bytes": 87714673,
       "lines": 33457,
       "gzip_bytes": 14945281,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/1bd92c9ecaefbe8c3d91fbed3e609a7897bb6e82716b21d3ce0e082f2616c136.jsonl.gz"
     },
     "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188": {
       "bytes": 90192981,
       "lines": 34555,
       "gzip_bytes": 15353424,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188.jsonl.gz"
     },
     "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2": {
       "bytes": 52776707,
@@ -1541,7 +1541,7 @@
       "bytes": 105195059,
       "lines": 41232,
       "gzip_bytes": 17937077,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e.jsonl.gz"
     },
     "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618": {
       "bytes": 74669387,
@@ -1559,19 +1559,19 @@
       "bytes": 83286217,
       "lines": 31602,
       "gzip_bytes": 14179822,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141.jsonl.gz"
     },
     "3e30d7a015a515dd29f519c05b096943f15b57380f55c25438d9c75b7392fb43": {
       "bytes": 97415829,
       "lines": 37910,
       "gzip_bytes": 16570974,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/3e30d7a015a515dd29f519c05b096943f15b57380f55c25438d9c75b7392fb43.jsonl.gz"
     },
     "3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715": {
       "bytes": 95609299,
       "lines": 37033,
       "gzip_bytes": 16269645,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715.jsonl.gz"
     },
     "40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2": {
       "bytes": 22203837,
@@ -1595,7 +1595,7 @@
       "bytes": 93696024,
       "lines": 36180,
       "gzip_bytes": 15948264,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c.jsonl.gz"
     },
     "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f": {
       "bytes": 40201175,
@@ -1607,7 +1607,7 @@
       "bytes": 91883353,
       "lines": 35252,
       "gzip_bytes": 15646047,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243.jsonl.gz"
     },
     "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc": {
       "bytes": 8425676,
@@ -1637,7 +1637,7 @@
       "bytes": 100733470,
       "lines": 39359,
       "gzip_bytes": 17136314,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/6f9d05f3677ba484952159b12e99c78943f383f6df0a2bc31acd90924a5a976e.jsonl.gz"
     },
     "700cc427ddcc81b7b4c8be36c81af43baf3b6e6158b07ccbd68ae07e9f9bed41": {
       "bytes": 30749080,
@@ -1685,7 +1685,7 @@
       "bytes": 86192297,
       "lines": 32811,
       "gzip_bytes": 14692606,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9692170ca0dce5beb944e3e21745bee90db34305cc767d8f54704f34cdd29b4e.jsonl.gz"
     },
     "99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3": {
       "bytes": 32696099,
@@ -1697,13 +1697,13 @@
       "bytes": 84650095,
       "lines": 32163,
       "gzip_bytes": 14415767,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7.jsonl.gz"
     },
     "9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c": {
       "bytes": 105409637,
       "lines": 41275,
       "gzip_bytes": 17992611,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz"
     },
     "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07": {
       "bytes": 46480955,
@@ -1751,7 +1751,7 @@
       "bytes": 98876229,
       "lines": 38552,
       "gzip_bytes": 16824516,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/b9213a4e279db78273de8e730d7aeecadb74ffeee4f06c2b9e4a246952a63daf.jsonl.gz"
     },
     "bfb2ba767893e7a1a5ad0ac3a6f822cacba13fe2ad87c2647ea64470e8631218": {
       "bytes": 64258649,
@@ -1811,13 +1811,13 @@
       "bytes": 88425127,
       "lines": 33832,
       "gzip_bytes": 15049516,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e6c53ef3fda9be536516ddba6e97d2b94cf405ced19112b2bcb71d6c646f6dff.jsonl.gz"
     },
     "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0": {
       "bytes": 81367388,
       "lines": 30658,
       "gzip_bytes": 13864072,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0.jsonl.gz"
     },
     "f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b": {
       "bytes": 36086895,
@@ -1841,7 +1841,7 @@
       "bytes": 102894518,
       "lines": 40278,
       "gzip_bytes": 17506596,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/f806187d5a57daab6205900eb52003a031cba53d454703503bb7de9f037066b6.jsonl.gz"
     },
     "faa3b0b6fc7a484c40c6757c8fa59598ee790c09e5f06aaaf9f6bc13ec99929f": {
       "bytes": 62393500,

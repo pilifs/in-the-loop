@@ -59,11 +59,19 @@
   "commits": [
     {
       "change_id": "kuyulwnwzxxummswyunzuqzvuokqtmnp",
-      "commit_id": null,
+      "commit_id": "f60799c123244c7912d4b86da077ae43c83b82c5",
       "immutable": false,
       "summary": "feature-loop.sh: lower the default memory cap from 4G to 3.5G",
       "body": "Proofs and model checks now run in the verification pipeline, so the loop's scope only holds the Claude session and inline builds. Measured in capped systemd scopes with swap off: cargo build --release peaks at 1.1G, cargo test at 1.7G (finishes under a 1.5G cap), sync.py check --full at 0.85G, and the full Box Office Gradle build at 1.9G (killed at 1.5G, finishes at 2G). With the Claude process on top, 3.5G leaves about 1 GB of headroom for the heaviest case. README updated to match; FEATURE_LOOP_MEMORY_MAX still overrides it.",
       "log_sha256": "2e15450dbbf2bcc0838a091dae54ec42c4f50d0d4964157673a3e399495a0cbf"
+    },
+    {
+      "change_id": "mzpzpssrtwkrqloqtrtssxtvxnsnmkqn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0"
     }
   ],
   "logs": {
@@ -71,13 +79,13 @@
       "bytes": 568505,
       "lines": 148,
       "gzip_bytes": 128886,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz"
     },
     "2e15450dbbf2bcc0838a091dae54ec42c4f50d0d4964157673a3e399495a0cbf": {
       "bytes": 543925,
       "lines": 139,
       "gzip_bytes": 124136,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/2e15450dbbf2bcc0838a091dae54ec42c4f50d0d4964157673a3e399495a0cbf.jsonl.gz"
     }
   },
   "redaction_policy": 4,
