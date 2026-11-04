@@ -14,9 +14,13 @@ import hashlib
 import io
 import json
 import os
+import multiprocessing
 import sys
 import threading
+import time
+import weakref
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Callable
 
@@ -86,6 +90,75 @@ def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
     return out
 
 
+# A cold scan or redaction (after a rules edit, `stamp`, a new machine or a new session) is split
+# across processes: lines are independent, so each worker builds the same rules from the same
+# inputs and gives exactly what this process would. They are started for text of at least
+# POOL_MIN_CHARS not yet scanned or redacted: below that, starting them costs more than they save,
+# and a commit's new lines stay well below it. Once started, they also take text of POOL_MORE_CHARS
+# or more, such as a snapshot scanned past the end of an earlier one. LLM_TRACES_PROCESSES=1 does
+# everything in this process.
+POOL_MIN_CHARS = 4_000_000
+POOL_MORE_CHARS = 250_000
+
+
+def pool_processes() -> int:
+    """How many processes a cold scan or redaction uses: LLM_TRACES_PROCESSES, or the CPUs this
+    process may run on."""
+    try:
+        n = int(os.environ.get("LLM_TRACES_PROCESSES") or 0)
+    except ValueError:
+        n = 0
+    return n if n > 0 else len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else os.cpu_count() or 1
+
+
+def _chunks(lines: list[str], processes: int) -> list[list[str]]:
+    """lines in order, in about four chunks per process of similar length, for balance."""
+    size = max(sum(map(len, lines)) // (4 * processes), 1 << 18)
+    chunks, chunk, n = [], [], 0
+    for line in lines:
+        chunk.append(line)
+        n += len(line)
+        if n >= size:
+            chunks.append(chunk)
+            chunk, n = [], 0
+    return chunks + [chunk] if chunk else chunks
+
+
+_worker: redaction_rules.Rules | None = None  # in a pool's worker: the rules it applies
+
+
+def _worker_init(inputs: tuple, fingerprint: str) -> None:
+    """Build the rules the parent uses, unless they are not those: the rules or this file edited
+    after the parent read them. Then every task fails, and the parent does the work itself."""
+    global _worker
+    _worker = redaction_rules.Rules(*inputs) if Redactor(inputs, {}).fingerprint() == fingerprint else None
+
+
+def _rules() -> redaction_rules.Rules:
+    if _worker is None:
+        raise RuntimeError("this worker read other rules than the parent process")
+    return _worker
+
+
+def _worker_scan(lines: list[str]) -> tuple[list, float]:
+    """hits_of_line of each line, and the CPU time it took."""
+    start, rules = time.process_time(), _rules()
+    return [rules.hits_of_line(line) for line in lines], time.process_time() - start
+
+
+def _worker_redact(lines: list[str]) -> tuple[bytes, float]:
+    """Rules.__call__ of the lines joined: line by line, each followed by a newline. A line without
+    line breaks is redacted to one line; an empty one gives an empty line, which Rules.__call__
+    of it alone would drop."""
+    start, rules = time.process_time(), _rules()
+    return b"".join(rules(line) if line else b"\n" for line in lines), time.process_time() - start
+
+
+def _line_key(line: str) -> bytes:
+    """The key Rules.hits_of_text keeps a scanned line under in Rules._seen."""
+    return hashlib.blake2b(line.encode(errors="replace"), digest_size=16).digest()
+
+
 class Redactor(redaction_rules.Rules):
     """The rules with this machine's literals, less the false positives a person has reviewed."""
 
@@ -97,6 +170,67 @@ class Redactor(redaction_rules.Rules):
         self.reviewed = reviewed
         self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
         self._latest: tuple[str, tuple] | None = None  # callers ask about one text twice
+        self._pool: ProcessPoolExecutor | None = None  # started on the first cold text (POOL_MIN_CHARS)
+        self._pool_usable, self._processes = True, 1
+        self._loaded = self.fingerprint()  # of the rules as read when this was made: what a worker must apply
+        self._pool_lock = threading.Lock()
+
+    def _start_pool(self) -> ProcessPoolExecutor | None:
+        with self._pool_lock:
+            if not self._pool_usable:
+                return None
+            if self._pool is None:
+                self._processes = processes = pool_processes()
+                if processes < 2:
+                    self._pool_usable = False
+                    return None
+                # spawn, not fork: push scans from threads, and a forked child can inherit a lock
+                # another thread held. Shut down when this redactor goes, or at exit.
+                self._pool = ProcessPoolExecutor(processes, mp_context=multiprocessing.get_context("spawn"),
+                                                 initializer=_worker_init, initargs=(self.inputs, self._loaded))
+                weakref.finalize(self, self._pool.shutdown, cancel_futures=True)
+                perf.count("pool processes started", processes)
+            return self._pool
+
+    def _pooled(self, chars: int) -> bool:
+        """Whether this much text not yet done goes to the pool."""
+        return chars >= (POOL_MORE_CHARS if self._pool is not None and self._pool_usable else POOL_MIN_CHARS)
+
+    def _in_pool(self, work, lines: list[str]) -> list | None:
+        """work over chunks of lines in the pool, results in order; None when the pool cannot
+        (no second CPU, a worker gone or refusing): the caller then does the work itself, with
+        the same result."""
+        pool = self._start_pool()
+        if pool is None:
+            return None
+        try:
+            with perf.phase("pool"):
+                done = list(pool.map(work, _chunks(lines, self._processes)))
+        except Exception:  # BrokenProcessPool, a worker's error: nothing is taken from it
+            perf.count("pool failures")
+            with self._pool_lock:
+                self._pool_usable = False
+                pool.shutdown(wait=False, cancel_futures=True)
+            return None
+        perf.count("pool chunks", len(done))
+        perf.count("pool worker cpu seconds", round(sum(cpu for _, cpu in done), 3))
+        return [result for result, _ in done]
+
+    def _prescan(self, text: str) -> None:
+        """Scan in the pool the lines of text not scanned before, when there are enough of them,
+        into _seen, where hits_of_text then finds them: as if it had scanned them itself, the
+        first line under each key standing for the others, as there."""
+        if not self._pooled(len(text)):
+            return
+        todo: dict[bytes, str] = {}
+        for line in text.splitlines():
+            if (key := _line_key(line)) not in self._seen and key not in todo:
+                todo[key] = line
+        if not self._pooled(sum(map(len, todo.values()))):
+            return
+        done = self._in_pool(_worker_scan, list(todo.values()))
+        if done is not None:
+            self._seen.update(zip(todo, (hits for chunk in done for hits in chunk)))
 
     def _unreviewed(self, kind: str, value: str) -> bool:
         return kind in NEVER_REVIEWED or finding_id(kind, value) not in self.reviewed
@@ -124,6 +258,7 @@ class Redactor(redaction_rules.Rules):
         """hits_of_text, measured; no judgement applied."""
         before = len(self._seen)
         with perf.phase("scan"):
+            self._prescan(text)
             hits = self.hits_of_text(text)
         perf.count("scan texts")
         perf.count("scan chars", len(text))
@@ -157,6 +292,8 @@ class Redactor(redaction_rules.Rules):
     def __call__(self, jsonl: str) -> bytes:
         with perf.phase("redact"):
             perf.count("redact chars", len(jsonl))
+            if self._pooled(len(jsonl)) and (done := self._in_pool(_worker_redact, jsonl.splitlines())) is not None:
+                return b"".join(done)
             return super().__call__(jsonl)
 
     def leak_hits(self, text: str) -> dict[str, Counter]:

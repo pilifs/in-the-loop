@@ -330,9 +330,7 @@ class MadeUpRedactor(sync.Redactor):
     """sync's Redactor with the made-up literals of these tests instead of this machine's."""
 
     def __init__(self, reviewed=None):
-        self.inputs = (PAIRS, USER)
-        redaction_rules.Rules.__init__(self, PAIRS, USER)
-        self.reviewed, self.skipped, self._latest = reviewed or {}, sync.Counter(), None
+        redactor.Redactor.__init__(self, (PAIRS, USER), reviewed or {})
 
 
 def made_up_transcript(rng: random.Random, lines: int) -> bytes:
@@ -1686,6 +1684,79 @@ class Coordinator(unittest.TestCase):
         self.assertEqual(r.returncode, 143, r.stderr[-2000:])
         self.assertEqual(run("log", "--no-graph", "-r", "@-", "-T", "change_id"), committed)
         self.assertFalse(sync.Operation("x").journal_path.exists())
+
+
+class Pool(unittest.TestCase):
+    """A cold scan or redaction split across processes gives exactly what one process gives."""
+
+    def setUp(self):
+        rng = random.Random(23)
+        # empty lines, a lone \r, a trailing blank line, and lines long enough to be chunked
+        self.text = ("\n\n" + redactor.decoded(made_up_transcript(rng, 3000)) + "\r\n\n"
+                     + json.dumps({"text": random_text(rng) * 300}) + "\n\n")
+        for patch in (mock.patch.object(redactor, "POOL_MIN_CHARS", 1000),
+                      mock.patch.dict(os.environ, {"LLM_TRACES_PROCESSES": "2"})):
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    def counted(self, key):
+        return measure.perf.counters[key]
+
+    def test_redaction_is_the_same_bytes(self):
+        expected = redaction_rules.Rules(PAIRS, USER)(self.text)
+        r, chunks = MadeUpRedactor(), self.counted("pool chunks")
+        self.assertEqual(r(self.text), expected)
+        self.assertGreater(self.counted("pool chunks"), chunks)  # it did go to the pool
+        for text in ("", "\n", "\n\n", "x", "x\n\n", "\r\n" * 600, "a\rb\x0bc\u2028d\n" * 200):
+            self.assertEqual(r(text * 3) if len(text * 3) >= 1000 else r(text), redaction_rules.Rules(PAIRS, USER)(
+                text * 3 if len(text * 3) >= 1000 else text), repr(text[:12]))
+
+    def test_findings_are_the_same_and_each_line_is_scanned_once(self):
+        plain = redaction_rules.Rules(PAIRS, USER)
+        expected = plain.hits_of_text(self.text)
+        r, chunks = MadeUpRedactor(), self.counted("pool chunks")
+        self.assertEqual(r.raw_hits(self.text), expected)
+        self.assertGreater(self.counted("pool chunks"), chunks)
+        self.assertEqual(r._seen, plain._seen)  # the same keys, as redactor._line_key gives them
+        self.assertEqual(redactor._line_key(self.text.splitlines()[-1]) in r._seen, True)
+        chunks = self.counted("pool chunks")
+        self.assertEqual(r.raw_hits(self.text + "x\n"), plain.hits_of_text(self.text + "x\n"))
+        self.assertEqual(self.counted("pool chunks"), chunks)  # one new line: done here
+
+    def test_a_started_pool_takes_smaller_texts(self):
+        mid = "".join(json.dumps({"text": f"line {i} " + "y" * 40}) + "\n" for i in range(12))  # 600-999 chars
+        self.assertTrue(500 <= len(mid) < 1000)
+        with mock.patch.object(redactor, "POOL_MORE_CHARS", 500):
+            r = MadeUpRedactor()
+            self.assertEqual(r(mid), redaction_rules.Rules(PAIRS, USER)(mid))
+            self.assertIsNone(r._pool)  # too short to start it
+            r(self.text)
+            chunks = self.counted("pool chunks")
+            self.assertEqual(r(mid), redaction_rules.Rules(PAIRS, USER)(mid))
+            self.assertEqual(r.raw_hits(mid), redaction_rules.Rules(PAIRS, USER).hits_of_text(mid))
+            self.assertEqual(self.counted("pool chunks"), chunks + 2)
+
+    def test_a_worker_with_other_rules_is_not_used(self):
+        r = MadeUpRedactor()
+        r._loaded = "rules read before an edit"  # the workers read other ones: they refuse
+        failures = self.counted("pool failures")
+        self.assertEqual(r.raw_hits(self.text), redaction_rules.Rules(PAIRS, USER).hits_of_text(self.text))
+        self.assertEqual(self.counted("pool failures"), failures + 1)
+        self.assertEqual(r(self.text), redaction_rules.Rules(PAIRS, USER)(self.text))
+        self.assertEqual(self.counted("pool failures"), failures + 1)  # not tried again
+
+    def test_one_process_uses_no_pool(self):
+        with mock.patch.dict(os.environ, {"LLM_TRACES_PROCESSES": "1"}):
+            r = MadeUpRedactor()
+            self.assertEqual(r(self.text), redaction_rules.Rules(PAIRS, USER)(self.text))
+            self.assertIsNone(r._pool)
+
+    def test_chunks_keep_every_line_in_order(self):
+        lines = ["a" * n for n in range(0, 3000, 7)] + [""] * 5
+        chunks = redactor._chunks(lines, 3)
+        self.assertEqual([line for chunk in chunks for line in chunk], lines)
+        self.assertTrue(all(chunks))
+        self.assertEqual(redactor._chunks([], 4), [])
 
 
 class ProfileRules(unittest.TestCase):

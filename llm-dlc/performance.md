@@ -130,6 +130,21 @@ With both changes, the gate and a process pool, a cold scan of everything should
 150 s to roughly 10–20 s. This is an estimate: the gain from the gate and the gain from the pool
 were each measured, but not together.
 
+**The pool is in** (step 3e, `redactor.py`). Cold redaction and scanning go to one process per
+CPU, which apply the same rules line by line. Measured on 2026-11-03 against the same state with
+`LLM_TRACES_PROCESSES=1` (the code path from before), every cache bypassed with `--full`:
+
+| Command | One process | 8 processes | Output |
+|---|---|---|---|
+| `check --full` | 112.1 s | 32.5 s (scan 20.0 s, of which the pool 15.0 s for 78.7 s of worker CPU; decompression 6.3 s) | identical |
+| `scan --full` | 160.0 s | 32.0 s (redaction 11.9 s, scan 19.2 s) | identical |
+| `sync --full` | 71.0 s | 17.9 s (redaction 11.7 s) | identical, 95–104 generated files unchanged |
+
+The first `check --full` with the pool, which started it only for texts of 4 M characters or
+more, took 43.8 s: most snapshots are scanned only past the end of an earlier one, and those
+pieces stayed in one process. A started pool now takes any text of 250 k characters or more.
+The gate is the next half.
+
 Go would remove the dispatch overhead, and goroutines would give the same parallelism. Its
 standard `regexp` package, however, guarantees linear time with an NFA, a one-pass matcher and a
 bounded backtracker. It has no DFA matcher like RE2's C++ one. So it is not expected to scan these
