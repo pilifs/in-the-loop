@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140707-example-122-a-cache-expiry-in-millisecon",
+  "title": "Example 122: a cache expiry in milliseconds left expires entries in their last millisecond, found under the stated relation",
+  "description": "Regression proof (B9) of Crosscut's cache expiry between the committed version, Expiry#isExpired returning a boolean, and the patched one, Expiry#remainingMillis returning the milliseconds an entry has left, with the relation between the results stated as previousArguments-style metadata: resultsAgreeWhen 'previous == (result <= 0)' (the new --results-agree-when of jvmcontract equivalence, lib/src/harness/mod.rs and lib/src/equivalence.rs), the previous method named by previousSymbol, and the scope the module's own precondition. Expected: a counterexample with a fraction of a millisecond to go, such as remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0), before false and after 0, with the line 'the results are not related by previous == (result <= 0)'. The library's test of the same shape finds it in about a second. The job runs build.py on the example, which compiles both Crosscut trees with javac and runs jvmcontract equivalence with the relation.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java"
+    ],
+    "examples": [
+      "122"
+    ]
+  },
+  "expected": "Verdict violation; a counterexample inside the precondition, before false and after 0, and the example's result.json records it",
+  "submitted": {
+    "at": "2026-11-04T14:07:07+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 122 (B9)",
+      "run": "python3 examples/tools/build.py 122",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond"
+  ],
+  "supersedes": "20261104-063213-example-122-a-cache-expiry-in-millisecon"
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-139-window-index-held-in-an-int",
+  "title": "Example 139: window index held in an int refuses every request after two billion windows",
+  "description": "Regression proof of Crosscut's Window#counted with the window's index narrowed to an int before the start is computed as index * windowNanos, by the tool's own checker (approach.engine native): expected violation, the witness counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1), where the old version answers Window[2147483648, 1] and the new one throws IllegalArgumentException from the record's constructor. The library's run took 3 s, the violation found in the stage over the whole range after the two small stages were proved empty. JBMC did not finish within 60 s.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "record-components",
+    "lazy-multiplication",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "139"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 139 (B9)",
+      "run": "python3 examples/tools/build.py 139",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows"
+  ],
+  "supersedes": "20261104-094056-example-139-window-index-held-in-an-int"
+}

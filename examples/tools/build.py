@@ -180,7 +180,7 @@ def run(folder, example):
     """Applies the patch to a copy of the repo, runs the module's tests and the approach's verifier, and collects
     everything into the result dictionary. The approach-specific part is the runner; the rest is shared."""
     patch = (folder / example["change"]["patch"]).read_text()
-    before, after = excerpts(patch, example["subject"]["file"])
+    before, after = excerpts(patch, example["subject"]["file"], example["subject"].get("symbol"))
     app = app_of(example)
     module = module_of(example["subject"]["file"]) if app == "boxoffice" else app
     with tempfile.TemporaryDirectory() as tmp:
@@ -1539,34 +1539,52 @@ def counterexamples(output):
     return found
 
 
-def excerpts(patch, subject_file):
-    """The before and after sides of the patch's hunks in the subject file, with their context lines."""
-    file = None
+def excerpts(patch, subject_file, symbol=None):
+    """The before and after sides of the patch's hunks in the subject file, with their context lines. When the patch
+    deletes the subject file (a method moved into a new class, such as a parameter object), the after side is the
+    file of the symbol's class instead."""
+    after_file = subject_file
+    if re.search(rf"^--- a/{re.escape(subject_file)}\n\+\+\+ /dev/null$", patch, re.M) and symbol and "/src/main/java/" in subject_file:
+        root = subject_file[:subject_file.index("/src/main/java/") + len("/src/main/java/")]
+        after_file = root + symbol.split("#")[0].split("$")[0].replace(".", "/") + ".java"
+    wanted = {"before": subject_file, "after": after_file}
+    paths = {"before": None, "after": None}
     sides = {"before": [], "after": []}
     starts = {}
-    for line in patch.splitlines():
-        if line.startswith("+++ b/"):
-            file = line[len("+++ b/"):]
-        elif file != subject_file:
+    lines = patch.splitlines()
+    for i, line in enumerate(lines):
+        # A file's header is a `--- ` line followed by a `+++ ` one, whether or not `diff --git` lines are there.
+        if line.startswith("--- ") and i + 1 < len(lines) and lines[i + 1].startswith("+++ "):
+            paths["before"] = line[len("--- a/"):] if line.startswith("--- a/") else None
+        elif line.startswith("+++ ") and i > 0 and lines[i - 1].startswith("--- "):
+            paths["after"] = line[len("+++ b/"):] if line.startswith("+++ b/") else None
+        elif line.startswith("diff --git "):
             continue
-        elif line.startswith("@@"):
-            m = re.match(r"@@ -(\d+)(?:,\d+)? \+(\d+)", line)
-            starts.setdefault("before", int(m.group(1)))
-            starts.setdefault("after", int(m.group(2)))
-            if sides["before"]:
-                sides["before"].append("    // ...")
-                sides["after"].append("    // ...")
-        elif line.startswith("-") and not line.startswith("---"):
-            sides["before"].append(line[1:])
-        elif line.startswith("+") and not line.startswith("+++"):
-            sides["after"].append(line[1:])
-        elif line.startswith(" "):
-            sides["before"].append(line[1:])
-            sides["after"].append(line[1:])
-    if not starts:
-        sys.exit(f"the patch does not change the subject file {subject_file}")
+        else:
+            taken = [side for side in sides if paths[side] == wanted[side]]
+            if not taken:
+                continue
+            if line.startswith("@@"):
+                m = re.match(r"@@ -(\d+)(?:,\d+)? \+(\d+)", line)
+                for side, number in (("before", m.group(1)), ("after", m.group(2))):
+                    if side in taken:
+                        starts.setdefault(side, max(int(number), 1))
+                        if sides[side]:
+                            sides[side].append("    // ...")
+            elif line.startswith("-"):
+                if "before" in taken:
+                    sides["before"].append(line[1:])
+            elif line.startswith("+"):
+                if "after" in taken:
+                    sides["after"].append(line[1:])
+            elif line.startswith(" "):
+                for side in taken:
+                    sides[side].append(line[1:])
+    if "before" not in starts or "after" not in starts:
+        sys.exit(f"the patch does not change the subject file {subject_file}"
+                 + (f" and {after_file}" if after_file != subject_file else ""))
     return tuple(
-        {"file": subject_file, "startLine": starts[side], "code": dedent(sides[side])} for side in ("before", "after"))
+        {"file": wanted[side], "startLine": starts[side], "code": dedent(sides[side])} for side in ("before", "after"))
 
 
 def dedent(lines):

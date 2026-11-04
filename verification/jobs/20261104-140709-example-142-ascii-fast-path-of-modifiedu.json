@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-142-ascii-fast-path-of-modifiedu",
+  "title": "Example 142: ASCII fast path of ModifiedUtf8#encodeInto proved equal by the own checker with path merging",
+  "description": "Runs build.py on example 142 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path against the previous version, at the default bounds (8 elements, unwind 16), by the tool's own checker with paths merged at join points. Expected: verified, in about 6 s and under 100 MB (237 paths). This is the proof that waited in examples/apps/mica/pending for a larger machine, since JBMC ran out of memory at 2.8 GB on it.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "arrays",
+    "path-merging",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "142"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 142 (B9)",
+      "run": "python3 examples/tools/build.py 142",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight"
+  ],
+  "supersedes": "20261104-104407-example-142-ascii-fast-path-of-modifiedu"
+}

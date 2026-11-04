@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-136-a-window-start-aligned-by-ma",
+  "title": "Example 136: a window start aligned by masking opens a window per request unless the window is a power of two",
+  "description": "Regression proof (B9) by the tool's own checker (--engine native) of Crosscut's Window#counted rewritten to align the window's start by nowNanos & -windowNanos instead of nowNanos - nowNanos % windowNanos. Expected: violation, witness counted(this=Window[startNanos=0, count=0], nowNanos=1, windowNanos=3), before Window[0, 1], after Window[1, 1], found in 0.2 s searching inputs in [0:20]. JBMC finds the same witness in 0.2 s.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "record-components",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "136"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 136 (B9)",
+      "run": "python3 examples/tools/build.py 136",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two"
+  ],
+  "supersedes": "20261104-092044-example-136-a-window-start-aligned-by-ma"
+}

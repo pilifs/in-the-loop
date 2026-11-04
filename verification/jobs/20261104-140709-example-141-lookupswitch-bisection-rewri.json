@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-141-lookupswitch-bisection-rewri",
+  "title": "Example 141: lookupswitch bisection rewritten half-open proved equal to the closed form on sorted tables by the own checker",
+  "description": "Regression proof of Mica's LookupSwitch#find rewritten half-open (example 046's form) against the closed form, within the scope of strictly sorted tables stated with a \\forall over the array in --unchanged-unless, by the tool's own checker (approach.engine native): expected verified. Arrays of primitives are in the checker's fragment since this example, a cell per index up to --max-array-length (8); the library's run took 2.3 s over 88 paths and 1044 solver calls. JBMC proved the same harness in 101 s and 2 GB.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "arrays",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "141"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 141 (B9)",
+      "run": "python3 examples/tools/build.py 141",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table"
+  ],
+  "supersedes": "20261104-101436-example-141-lookupswitch-bisection-rewri"
+}

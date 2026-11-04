@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140708-example-133-a-refill-capped-by-the-room",
+  "title": "Example 133: a refill capped by the room left, proved equal to the capped sum by the tool's own checker within the precondition",
+  "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter by the tool's own bounded model checker (--engine native) within the module's precondition as scope: Math.min(capacity, tokens + earned) rewritten as tokens + Math.min(earned, capacity - tokens). Expected verified, nine paths and ten solver calls in about half a second inline; without the scope the versions differ where the sum overflows a long.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/bits.rs"
+    ],
+    "examples": [
+      "133"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T14:07:08+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+  ],
+  "supersedes": "20261104-083123-example-133-a-refill-capped-by-the-room"
+}

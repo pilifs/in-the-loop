@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140707-example-124-a-partitioner-rewritten-with",
+  "title": "Example 124: a partitioner rewritten with floorMod, refuted by the tool's own checker in the second stage of its search",
+  "description": "Runs build.py on example 124, a B9 regression proof on Crosscut's kafka.Partitioner#partitionFor with approach.engine native: the masked remainder (hash & 0x7fffffff) % n rewritten as Math.floorMod(hash, n). The tool's own bounded model checker (lib/src/bmc, CaDiCaL) explores the harness path by path and, on the violating path, asks for an input in the stages JBMC is run through ([0:20], then [-100000:100000], then everything), reporting the stage. Non-negative hashes agree, so the witness comes from the second stage and the interpreter shrinks it. The library's run of this shape took 0.4 s and shrank the witness to partitionFor(hash=-1, numPartitions=3), 1 before and 2 after.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs"
+    ],
+    "examples": [
+      "124"
+    ]
+  },
+  "expected": "verdict violation; a counterexample with a negative hash, before and after partitions differing; the proof line says found by jvmcontract's own checker ... searching inputs in [-100000:100000]",
+  "submitted": {
+    "at": "2026-11-04T14:07:07+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 124 (B9)",
+      "run": "python3 examples/tools/build.py 124",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key"
+  ],
+  "supersedes": "20261104-064900-example-124-a-partitioner-rewritten-with"
+}

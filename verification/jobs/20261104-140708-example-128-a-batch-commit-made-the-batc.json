@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140708-example-128-a-batch-commit-made-the-batc",
+  "title": "Example 128: a batch commit made the batch record's method, the failed-index check lost, refuted on the components",
+  "description": "Runs examples/tools/build.py 128: the Crosscut batch commit kernel's static function offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor and the part about the failed index dropped. The regression proof relates the record's method to the static function with --before-target and --before-arguments 'this.start, this.size, failedIndex' over the record's components, a relation new this cycle. Expected: a violation, offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method returning 1; the library's inline run took 0.5 s.",
+  "kind": "example",
+  "capabilities": [
+    "regression proof of a static method that became a record's method",
+    "previous version called with expressions over record components",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs"
+    ],
+    "examples": [
+      "128"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:08+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check"
+  ],
+  "supersedes": "20261104-073659-example-128-a-batch-commit-made-the-batc"
+}

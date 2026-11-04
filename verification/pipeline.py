@@ -812,6 +812,13 @@ class Runner:
             if exe.exists():
                 result["jvmcontract"] = {"libTree": tree, "path": str(exe), "built": False}
                 return
+            # The target directory is shared between jobs, and cargo rebuilds a crate only when a source is newer than
+            # its last build. `git archive` dates every file at its commit, which is older than a binary built since
+            # from any other commit, so without this every job ran whichever jvmcontract was built last (Nov 4 2026:
+            # 13 lib/ trees, one binary). Dating lib/ now makes cargo rebuild it; the dependencies are not affected.
+            started = time.time()
+            for path in (work / "lib").rglob("*"):
+                os.utime(path, (started, started), follow_symlinks=False)
             cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo")
             run = f"{cargo} build --release --manifest-path lib/Cargo.toml"
             env = dict(os.environ, CARGO_TARGET_DIR=str(self.state / "cargo-target"))
@@ -827,6 +834,11 @@ class Runner:
             if outcome["exitCode"] != 0 or not built.exists():
                 result["status"] = "error"
                 result["attention"].append("jvmcontract did not build at this commit; see the build step's log")
+                return
+            if built.stat().st_mtime < started:
+                result["status"] = "error"
+                result["attention"].append("cargo reused a jvmcontract built before this job instead of building lib/ "
+                                           "at this commit; nothing ran on it")
                 return
             exe.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(built, exe)

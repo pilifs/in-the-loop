@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140707-example-125-a-jwt-skew-moved-from-the-wi",
+  "title": "Example 125: a JWT skew moved from the window's ends to the clock, proved equal under the module's precondition by the tool's own checker",
+  "description": "Runs build.py on example 125, a B9 regression proof on Crosscut's security.JwtTimestamps#valid with approach.engine native: now >= nbf - skew && now < exp + skew rewritten as now + skew >= nbf && now - skew < exp, with the module's precondition (from properties.contract) negated as intendedInputs. Inside the precondition no sum overflows and the versions agree; the tool's own checker (lib/src/bmc, CaDiCaL) proves it path by path. The library's run of this shape took 0.3 s over eleven paths. Without the scope the versions differ on an overflow near the range of a long, which the example's notes record.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs"
+    ],
+    "examples": [
+      "125"
+    ]
+  },
+  "expected": "verdict verified; the proof line names jvmcontract's own checker (CaDiCaL) and the scope",
+  "submitted": {
+    "at": "2026-11-04T14:07:07+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 125 (B9)",
+      "run": "python3 examples/tools/build.py 125",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/125-jwt-skew-moved-to-the-clock-proved-equal-by-the-tools-own-checker"
+  ],
+  "supersedes": "20261104-064900-example-125-a-jwt-skew-moved-from-the-wi"
+}

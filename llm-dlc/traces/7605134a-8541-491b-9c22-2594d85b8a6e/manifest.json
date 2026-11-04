@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "7605134a-8541-491b-9c22-2594d85b8a6e",
-  "status": "ended",
+  "status": "open",
   "title": "build.py newProblems schema mismatch",
   "first_prompt": "Let's address issues with build.py from last verification run. Summary: `newProblems` schema mismatch between `build.py` and the schema. Next, the submitter should reconcile those two files and resubm",
   "client": {
@@ -12,54 +12,56 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-04T13:08:42.021Z",
-  "ended": "2026-11-04T13:20:56.404Z",
-  "duration_seconds": 734,
+  "ended": "2026-11-04T14:07:27.212Z",
+  "duration_seconds": 3525,
   "stats": {
-    "turns": 3,
-    "api_calls": 51,
-    "tool_calls": 51,
-    "tool_errors": 0,
+    "turns": 4,
+    "api_calls": 78,
+    "tool_calls": 79,
+    "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 125823,
+    "peak_context_tokens": 164436,
     "usage": {
-      "input_tokens": 106,
-      "output_tokens": 21794,
-      "cache_read_input_tokens": 4644013,
-      "cache_creation_input_tokens": 98296
+      "input_tokens": 164,
+      "output_tokens": 38503,
+      "cache_read_input_tokens": 8522943,
+      "cache_creation_input_tokens": 136665
     }
   },
   "tools": {
-    "Bash": 46,
-    "Edit": 5
+    "Bash": 71,
+    "Edit": 7,
+    "ToolSearch": 1
   },
   "files_touched": [
     "examples/schema/result.schema.json",
     "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Contract.java",
     "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Main.java",
-    "examples/tools/contracts/src/test/java/net/terminalvalue/contracts/VerifierTest.java"
+    "examples/tools/contracts/src/test/java/net/terminalvalue/contracts/VerifierTest.java",
+    "verification/pipeline.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-04T13:08:42.021Z",
-      "ended": "2026-11-04T13:20:56.404Z",
-      "turns": 3,
-      "api_calls": 51,
+      "ended": "2026-11-04T14:07:27.212Z",
+      "turns": 4,
+      "api_calls": 78,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 21794,
-        "cache_read_input_tokens": 4644013,
-        "cache_creation_input_tokens": 98296
+        "input_tokens": 164,
+        "output_tokens": 38503,
+        "cache_read_input_tokens": 8522943,
+        "cache_creation_input_tokens": 136665
       },
-      "peak_context_tokens": 125823
+      "peak_context_tokens": 164436
     }
   ],
   "log": {
-    "sha256": "5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d",
-    "bytes": 1429117,
-    "lines": 490,
-    "gzip_bytes": 268485,
-    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d.jsonl.gz"
+    "sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d",
+    "bytes": 1960225,
+    "lines": 756,
+    "gzip_bytes": 354341,
+    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -86,6 +88,22 @@
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "4448850e71a5b381fd93938e6e062c4a2e49a4cebae796f6d3d070d30912564f"
+    },
+    {
+      "change_id": "tvqntmzozvukqopwovnzqkqtsotymlro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 35 jobs: examples 111-120, 124, 125, 132, 133 pass; 21 B9 jobs fail on tool or patch mismatches, not verdicts",
+      "body": "The runner ran all 35 queued jobs (2 workers, 5 GiB). Passes: 120, 124, 125, 132, 133 (B9, own checker, seconds) and 111-119 (B12, about 1m40s each, resubmitted after the result schema fix; every verdict as expected). Their outputs were applied. 21 B9 jobs failed in 0.2-5 s with no proof attempted, so these are findings about the submitted commits, not about the changes under test: 121, 122, 130, 134 and 135 (and per their logs 123, 131) fail in the CLI: the jvmcontract built from lib/ at the job's commit rejects an argument build.py passes (e.g. --before-arguments, or a missing required --unchanged-unless). 128 and 129: the example's patch does not change BatchCommit.java. 126, 127, 136-145: the checker reports 'cannot be verified' (instance method on a record, char[]/int[] parameter outside the fragment), so the expected verdict is not reached. Each of those needs a resubmit at a commit where examples/tools/build.py and lib/ agree.",
+      "log_sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d"
+    },
+    {
+      "change_id": "lvtummxzmvuxpmyyturzxlnzlzvrulmo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending)",
+      "body": "Of the last run's 35 jobs, 21 B9 jobs failed with what looked like mismatches between build.py and lib/ (rejected flags, instance methods and arrays outside the fragment). The real cause: the pipeline builds jvmcontract in one CARGO_TARGET_DIR shared by all jobs, from a git archive extraction whose files are dated at their commit, older than the binary any earlier job left there, so cargo rebuilt nothing. Thirteen lib/ trees got one identical binary, built at 08:27, which did not know --before-arguments. The five B9 jobs that passed (120, 124, 125, 132, 133) ran on that stale binary as well, so their results, applied in the previous commit, are replaced when these jobs run. build_jvmcontract now dates lib/ at the build's start, so cargo rebuilds the crate, and refuses a binary older than the build. The poisoned cache under verification/.state/tools/jvmcontract was cleared. Reproduced in the scratchpad: lib/ at cf74bb4c then at 198d4317 in one target directory, the second build took 0.03 s and lacked --before-arguments; with the dating it rebuilt in 49 s and had it. verification/test_pipeline.py passes (15 tests).\n\nExamples 128 and 129 failed separately: their patch deletes the subject file BatchCommit.java and moves the method into the new record Batch.java, and excerpts() in examples/tools/build.py read only '+++ b/' paths, so it found no hunk. It now reads the before side from the '--- a/' path and the after side from the '+++ b/' path, and when the patch deletes the subject file it takes the after side from the file of the symbol's class. Checked against the previous version on every example with a patch: 138 give identical excerpts, and 128 and 129 now give BatchCommit.java before and Batch.java after.\n\nJobs resubmitted at this commit with estimates of 2m and 1G (4m for 142): 20261104-140707-example-120 through -127, 20261104-140708-example-128 through -135, 20261104-140709-example-136 through -143 and -145, and 20261104-140717-example-144.",
+      "log_sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d"
     }
   ],
   "logs": {
@@ -101,10 +119,10 @@
       "gzip_bytes": 215229,
       "url": "https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/5f04967a23b2e590c2303107fd83d200e8b378103dc8d10fa8b19e5e26ac0818.jsonl.gz"
     },
-    "5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d": {
-      "bytes": 1429117,
-      "lines": 490,
-      "gzip_bytes": 268485,
+    "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d": {
+      "bytes": 1960225,
+      "lines": 756,
+      "gzip_bytes": 354341,
       "url": null
     },
     "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f": {

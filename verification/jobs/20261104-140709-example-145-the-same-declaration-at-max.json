@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-145-the-same-declaration-at-max",
+  "title": "Example 145: the same declaration at --max-array-length 12, the bisection proved unchanged on tables of nine to twelve pairs (own checker)",
+  "description": "Regression proof of Mica's LookupSwitch#find with a linear scan for tables of at most eight pairs, scoped with --unchanged-unless 'matches.length <= 8' and approach.maxArrayLength 12 (the new field, passed as --max-array-length): the domain holds tables of nine to twelve pairs, which the scope admits, and the tool's own checker proves the bisection unchanged on every such table and every key. Expected: verified, not vacuous (the probe is refuted on a nine-pair table). Measured 4.1 s, 85 MB, 89 paths, 548 solver calls.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "arrays",
+    "vacuity-check",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "145"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+  ],
+  "supersedes": "20261104-124833-example-145-the-same-declaration-at-max"
+}

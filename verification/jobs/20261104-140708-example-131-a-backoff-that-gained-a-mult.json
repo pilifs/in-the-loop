@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140708-example-131-a-backoff-that-gained-a-mult",
+  "title": "Example 131: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+  "description": "Regression proof of net.terminalvalue.crosscut.retry.Backoff#delayMillis across a component added to the record: the previous two-component Backoff is built from the new one's base and cap by a constructor call among --before-arguments (new Backoff(this.baseMillis, this.capMillis), attempt), with this.multiplier != 2 as the scope. The loop kept counting up with the cap applied after it: expected verified, about 17 s inline with JBMC at unwind 32.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "record-components",
+    "signature-change",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs"
+    ],
+    "examples": [
+      "131"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T14:07:08+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 131 (B9)",
+      "run": "python3 examples/tools/build.py 131",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two"
+  ],
+  "supersedes": "20261104-075809-example-131-a-backoff-that-gained-a-mult"
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140707-example-121-a-tie-break-s-parameters-reg",
+  "title": "Example 121: a tie-break's parameters regrouped, proved equal under the stated reordering",
+  "description": "Regression proof (B9) of Quorum's LastWriterWins#winner between the committed version and the patched one, which groups the parameters by kind, (tsA, tsB, nodeA, nodeB) in place of (tsA, nodeA, tsB, nodeB), and rewrites the body as a comparison chain over Long.compare and Integer.compare. The signatures differ, so the example states how the previous version is called from the new parameters, previousArguments 'tsA, nodeA, tsB, nodeB' (the new --before-arguments of jvmcontract equivalence, lib/src/harness/mod.rs and lib/src/equivalence.rs), and the statement proved is new(x) == old(f(x)) on every input. The library's test of the same shape proves in about a second. The job runs build.py on the example, which compiles both Quorum trees with javac and runs jvmcontract equivalence with the mapping.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java"
+    ],
+    "examples": [
+      "121"
+    ]
+  },
+  "expected": "Verdict verified; the proof line reads 'behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input' and the example's result.json records it",
+  "submitted": {
+    "at": "2026-11-04T14:07:07+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 121 (B9)",
+      "run": "python3 examples/tools/build.py 121",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering"
+  ],
+  "supersedes": "20261104-061118-example-121-a-tie-break-s-parameters-reg"
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140709-example-143-ascii-fast-path-off-by-one-a",
+  "title": "Example 143: ASCII fast path off by one at U+0080 refuted by the own checker with path merging",
+  "description": "Runs build.py on example 143 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path whose test admits U+0080, against the previous version, by the tool's own checker with paths merged at join points. Expected: violation on encodeInto(chars=['\\u0080'], out=[32]) after shrinking (the previous version throws ArrayIndexOutOfBoundsException writing the second byte, the new one returns 1 having written 0x80), in about 5 s and under 100 MB.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "arrays",
+    "path-merging",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "143"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:09+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 143 (B9)",
+      "run": "python3 examples/tools/build.py 143",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+  ],
+  "supersedes": "20261104-104407-example-143-ascii-fast-path-off-by-one-a"
+}

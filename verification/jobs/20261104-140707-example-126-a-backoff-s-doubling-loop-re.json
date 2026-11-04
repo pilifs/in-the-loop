@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140707-example-126-a-backoff-s-doubling-loop-re",
+  "title": "Example 126: a backoff's doubling loop replaced by a shift, refuted on the record's components",
+  "description": "Regression proof (B9, Crosscut, JBMC) of net.terminalvalue.crosscut.retry.Backoff#delayMillis, a method of a record whose two components are the symbolic receiver, unwound 32 times. Expected: a violation, the shift leaving the range of a long; the library's inline run found delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1) in 1.9 s.",
+  "kind": "example",
+  "capabilities": [
+    "regression proof of a record's method",
+    "record receiver from symbolic components",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs"
+    ],
+    "examples": [
+      "126"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:07+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 126 (B9)",
+      "run": "python3 examples/tools/build.py 126",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components"
+  ],
+  "supersedes": "20261104-071749-example-126-a-backoff-s-doubling-loop-re"
+}

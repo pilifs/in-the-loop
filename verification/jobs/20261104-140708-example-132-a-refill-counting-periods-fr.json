@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-140708-example-132-a-refill-counting-periods-fr",
+  "title": "Example 132: a refill counting periods from the epoch, found crediting a token for a nanosecond by the tool's own checker",
+  "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter by the tool's own bounded model checker (--engine native) within the module's precondition as scope: the whole periods earned computed as nowNanos / periodNanos - lastNanos / periodNanos instead of (nowNanos - lastNanos) / periodNanos. Expected a violation at tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1), 0 before and 1 after, found in the first search stage in about 3 s inline.",
+  "kind": "example",
+  "capabilities": [
+    "regression-proof",
+    "own-checker",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/bmc/bits.rs"
+    ],
+    "examples": [
+      "132"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T14:07:08+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "steps": [
+    {
+      "name": "example 132 (B9)",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond"
+  ],
+  "supersedes": "20261104-083123-example-132-a-refill-counting-periods-fr"
+}
