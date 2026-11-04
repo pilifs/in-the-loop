@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### sync.py speed, step 1: per-command timings, each snapshot read once by check, global files rebuilt once per sync, no Langfuse in commit, linear email matching; equivalent rules keep their stamp
 
-change `rxowqurqmuzn` · [log `1d3add78ad22`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/1d3add78ad22ed2561bd768e2e9c9dfb8debe11ebd5d84d077805e6020e5f75d.jsonl.gz)
+[`653740959299`](https://github.com/pilifs/in-the-loop/commit/653740959299ec622c7684871fdd3f1032071c37) · [log `1d3add78ad22`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/1d3add78ad22ed2561bd768e2e9c9dfb8debe11ebd5d84d077805e6020e5f75d.jsonl.gz)
 
 First changeset of llm-dlc/loops/sync-performance.md. Every sync.py command appends its timings to ~/.local/state/llm-traces/perf.jsonl: wall and CPU time per phase, bytes, cache misses, subprocesses and network requests. 'sync.py perf' shows them. check decompresses each stored snapshot once and shows an older log is a prefix of the current one by hashing the current log's first bytes, instead of decompressing every older log again. write_index runs once per sync instead of once per session. Generated files are written only when they change. store_log takes sizes from the bytes in hand and compresses at level 6 (on a 79 MB log, 1.25 s against 1.66 s at level 9, for 0.6% more bytes; identifiers hash the uncompressed bytes, so none change). Commit and sync no longer contact Langfuse: the Stop hook already sends finished turns at the end of every turn, and now reads nothing when Langfuse is not configured. 'sync.py langfuse SID' sends a session's turns by hand. In redaction_rules.py, email_spans finds exactly what EMAIL_RE found, in linear time; EMAIL_RE was quadratic on long runs of address characters and was the costliest rule on real logs. env-secret, the second costliest, gets a cheap exact pre-test.
 
@@ -30,19 +30,19 @@ Stamp: the speed-ups give the same results as the stamped rules, so the stamp ke
 
 ### Sync-performance brief: instructions that keep the loop running, and the progress of earlier runs
 
-change `tqptslqvpxlz` · [log `cc86917bc5c2`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/cc86917bc5c2c9f309fd97753e03584e8965b00ddb6f101f275e3222b8036eac.jsonl.gz)
+[`67084962000f`](https://github.com/pilifs/in-the-loop/commit/67084962000f9459f3426f64c49cb21740650d1d) · [log `cc86917bc5c2`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/cc86917bc5c2c9f309fd97753e03584e8965b00ddb6f101f275e3222b8036eac.jsonl.gz)
 
 The feature loop stops when a cycle ends without a commit, when the decision turn lacks a clear LOOP line, or when the brief changes. Last cycle nearly stopped for minor reasons: a denied commit, a stamp refused over warning-level findings from made-up test values, and a question about a policy the brief could have settled. A new section, Keep the loop running, says to end every cycle with a commit (the largest unblocked part, the rest deferred), to take the conservative choice and record it rather than pause for minor questions, to adapt after a denied command, to keep network side effects out of commit, sync and check, to keep the stamp for equivalent rules edits (stamp --equivalent), to treat findings in one's own log as allow-list proposals, to run long jobs in the background, and to continue when in doubt. Each run counts only its own commits, so a Progress section records that the first changeset is done (rxowqurq, with its measurements) and that the next run starts on the second. Without it, a new run would have redone the first. The Langfuse section notes the user's decision, the stamp note in section 3 points to stamp --equivalent, and test_performance.py joins the test list. No code changed.
 
 ### langfuse-loop.sh: send unsent turns to Langfuse as they appear
 
-change `wpltksnpzwwt` · [log `5e60bce02d81`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/5e60bce02d812f42f604f4e85f1094bb05d2c45259d32e51c299c1a22deb69db.jsonl.gz)
+[`a28b1f4686a3`](https://github.com/pilifs/in-the-loop/commit/a28b1f4686a3f75e300180bf22b3598e7d6877e7) · [log `5e60bce02d81`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/5e60bce02d812f42f604f4e85f1094bb05d2c45259d32e51c299c1a22deb69db.jsonl.gz)
 
 sync.py langfuse gains --pending (sessions whose latest stored log has turns not yet sent; a state-file mark by log sha keeps the check cheap) and --all (send them). llm-dlc/tools/langfuse-loop.sh polls that list, runs --all, retries while Langfuse is down, and takes stop/now/? commands like verification-loop.sh, with no Claude session. Verified against the local Langfuse: 19 pending sessions sent, then the loop idles on 'nothing to send'.
 
 ### sync.py speed, step 2a: commit redacts only what a transcript gained, check scans only logs it has not scanned
 
-change `zwzolxqotrrk` · [log `df5073cbfda3`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/df5073cbfda36d362c4ffb83a0d519aa7ff49b924fb06bd50f6c0d9d12a55ae4.jsonl.gz)
+[`7a2d9ceea501`](https://github.com/pilifs/in-the-loop/commit/7a2d9ceea5017739528edbb021951cd08a655f62) · [log `df5073cbfda3`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/df5073cbfda36d362c4ffb83a0d519aa7ff49b924fb06bd50f6c0d9d12a55ae4.jsonl.gz)
 
 Two local caches in ~/.local/state/llm-traces/ keep commit and check from redoing work, without changing what either produces or reports (llm-dlc/specification.md, new section Local caches). transcript-cache.json records, per transcript, how many bytes were redacted into which stored log. The redactor works line by line, so the log of a longer transcript is that log's first part plus the redaction of what was appended. The part is reused only if the transcript's first bytes still hash to the recorded SHA-256 and the stored log still holds its name's content; an unfinished last line is redacted on its own. scan-cache.json records what scanning each stored log found, keyed by the SHA-256 check computes from its content (not its name), as finding ids, masked values and counts, never values. A new snapshot is scanned only past the longest earlier log of its session that is a prefix of it. The session's summary, manifest, metrics and notes files go through the same cache by content. Reviewed findings and the allow list are applied afterwards, as before. Every entry is under a fingerprint of redaction_rules.py, sync.py, the Python version and a hash of this machine's literals; any change empties the cache. --full on sync and check, or LLM_TRACES_FULL=1, trusts nothing cached: the full audit.
 
@@ -54,7 +54,7 @@ Still open in the second changeset: verifying snapshots by content on every chec
 
 ### sync.py speed, step 2b: check verifies a snapshot once by its .gz bytes, and reads every trailer's manifest in one git call
 
-change `qpqnrsymqxzr` · [log `788d72bf81ea`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/788d72bf81eaf5ed07d7bd2e6171c1e24f3931ed0a1f10fcc602b810bf5f6a69.jsonl.gz)
+[`f0542d36de7c`](https://github.com/pilifs/in-the-loop/commit/f0542d36de7c9354b31331780a59d9848b6ba034) · [log `788d72bf81ea`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/788d72bf81eaf5ed07d7bd2e6171c1e24f3931ed0a1f10fcc602b810bf5f6a69.jsonl.gz)
 
 A warm check took 14.7 s, nearly all of it repeated work on unchanged content: 6.6 s decompressing all 161 stored snapshots (2.48 GB) and 1.4 s hashing them to show they match their names, 1.7 s rendering every session's metrics again to compare with metrics.json, and 4.6 s on 206 separate `jj file show` calls for the manifest committed with each trailer. The same check now takes 0.9 s (14.7 s before, measured with `sync.py perf` on the same state). It decompresses 32 MB instead of 2.48 GB, and makes one `git cat-file --batch` call instead of 206 jj calls. A cold run, after any edit to sync.py, takes 97 s, against 101 s before.
 
@@ -66,7 +66,7 @@ Correction to the brief: it proposes caching historical manifest validation by g
 
 ### sync.py speed, step 2c: commit syncs only the sessions whose inputs or outputs changed
 
-change `sqkxtqkvqxkw` · [log `55e3054cf390`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/55e3054cf390d10aee2733a35631eb827fa9551a564b3affa6fa48dec974ecbd.jsonl.gz)
+[`56babe56937d`](https://github.com/pilifs/in-the-loop/commit/56babe56937dd0d0c0b69b20952c084f58d72286) · [log `55e3054cf390`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/55e3054cf390d10aee2733a35631eb827fa9551a564b3affa6fa48dec974ecbd.jsonl.gz)
 
 A commit used to sync all 20 sessions in the project directory: each one's transcript checked against the transcript cache (decompressing its stored log to verify it), three jj log calls each, its summary and metrics rendered again. Now sync without session names (and so commit) skips a session whose state equals the one recorded right after its last sync, in a new local file, ~/.local/state/llm-traces/sync-cache.json. The state is everything process() reads or writes for that session, read cheaply: size, mtime and inode of its transcript and subagent transcripts (taken before reading, so a later write shows), the SHA-256 of its manifest, summary, metrics and note, its stored log names, its status, and every change that link_commits stamps or lists for it (those with its LLM-Trace line, and mutable ones authored within 120 s of its span, with description, emptiness, whether it is @, and the git SHA once immutable). One jj log call reads that for all sessions. The cache's fingerprint covers both tools, the rules and local literals, metrics.py, the summary template, pricing, reviewed findings, the allow list and the remote URL. Skipping is conservative: a publish always syncs everything and records no state (it writes git SHAs a normal sync leaves out), and sync --all or --full syncs every session. The session running the command is now always current, by CLAUDE_CODE_SESSION_ID, as well as any transcript written in the last 10 minutes as before.
 
@@ -78,7 +78,7 @@ Deferred for the user: whether a commit should make only the committing session 
 
 ### sync.py speed, step 2d: commit checks what it committed, so agents run no separate check
 
-change `myxozvtmqsls` · [log `b585dd878539`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/b585dd8785398ab78fd9055cd6169ea2a647ef650781fb6d196798f8263b296a.jsonl.gz)
+[`bdc5d6bfcc21`](https://github.com/pilifs/in-the-loop/commit/bdc5d6bfcc21ea2bbbbc1d78b445c630af05983a) · [log `b585dd878539`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/b585dd8785398ab78fd9055cd6169ea2a647ef650781fb6d196798f8263b296a.jsonl.gz)
 
 sync.py commit now ends by running the same check as sync.py check on what it just committed. It reuses the redactor from its own sync and the local caches, so the check only rescans what the commit added. Errors and warnings are printed as before. Notes are only counted, since they need no action. The command fails if the check finds an error, but the commit stands, as it did when the check was a separate step: the fix goes in a later commit. LLM_TRACES_FULL=1 makes the check trust no cache, as it does for the other commands. A plain jj commit traced by the hook is still not checked. CLAUDE.md, the procedure in llm-dlc/README.md, the specification's 'On a commit' paragraph, the usage text and the run-verification skill now describe this. A separate check is only needed to list the notes or after a plain jj commit.
 
@@ -90,7 +90,7 @@ Brief correction: its Progress section still lists only the first changeset. Ste
 
 ### sync.py speed, step 2e: push verifies the exact revision it publishes before jj git push
 
-change `qylspmovnvrw` · [log `6dd1b06ae7bf`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/6dd1b06ae7bf603783fa60ddc96e35b5e26491737a9144f20de6fcac30f64356.jsonl.gz)
+[`290375b0b83c`](https://github.com/pilifs/in-the-loop/commit/290375b0b83c7b10da4b660105f8944af53e981f) · [log `6dd1b06ae7bf`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/6dd1b06ae7bf603783fa60ddc96e35b5e26491737a9144f20de6fcac30f64356.jsonl.gz)
 
 The brief's second changeset asks for a final publication gate that validates the exact resulting revision. Until now push's second check read the trace files on disk, while jj git push publishes whatever the bookmark points at; nothing compared the two, and the specification's promise that no pushed commit points at a log nobody can fetch rested on upload having run, not on a check. publication_gate() closes both: it resolves the revisions the push would move bookmarks to (push_revisions(): those named by --bookmark/-b, including glob: patterns, -r, -c or --all, otherwise every bookmark not among the remote ones' ancestors, more than jj pushes by default and never less), lists each one's tree with one git ls-tree, and requires every tracked file where trace files live (llm-dlc/traces, llm-dlc/session-notes, the index and the two review lists) to be one that check read, with the same git blob id as the file on disk, and every file check read to be in the revision. It then reads the commits the push makes public (::targets ~ ::remote_bookmarks()) and requires each LLM-Trace line with a sha256 to name a log whose manifest records its CDN URL, or that was withdrawn. Any error prints and stops the push before git runs. It adds no network request.
 
@@ -100,7 +100,7 @@ Brief out of date: its Progress section still lists only the first changeset; st
 
 ### sync.py speed, step 2f: scan, review and stamp read the transcript, scan and check caches
 
-change `xysnulzxxmnv` · [log `70e5c2e9d90b`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/70e5c2e9d90ba5ababbb3dce2b452808105e70bf3e6ca69857b045f0216e8eab.jsonl.gz)
+[`c6ed83086089`](https://github.com/pilifs/in-the-loop/commit/c6ed83086089268e047c660b6ed20ecceed31640) · [log `70e5c2e9d90b`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/70e5c2e9d90ba5ababbb3dce2b452808105e70bf3e6ca69857b045f0216e8eab.jsonl.gz)
 
 scan, review (with review show, review accept and allow propose/approve) and stamp redacted every transcript newer than the rules' stamp from scratch and scanned everything they publish, without reading the caches commit and check fill: review took 150 s and scan 147 s on this machine's 12 sessions, mostly redacting and scanning the 11 MB transcript of the session asking. Now a transcript is redacted only from where the log sync last stored for it ends (the transcript cache, read but never saved by these commands, since the log they make is not stored), and the redacted transcript, each stored log not yet uploaded and each session file is looked up in the scan cache by the SHA-256 of what it holds, scanned only if it is not there, or only past an earlier log of its session that is a prefix of it. A stored log is named through the check cache by its .gz bytes, as check does. What a preview scans is merged into the cache files, never replacing check's entries. Reviewed and allowed findings are applied afterwards, as for a fresh scan. --full on each command (or LLM_TRACES_FULL=1) trusts no cache; the old code path stays as scanned_findings.
 
@@ -112,7 +112,7 @@ Tests: test_performance.Previews (5 new): findings from the caches equal reading
 
 ### sync.py speed, step 2g: the Stop hook reads a transcript from a cursor at the first turn not yet sent
 
-change `xxspoytuokkr` · [log `353199f37572`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/353199f375726ba74aabe8d2bc4a714d57e48a45a4cd77c3f180349db007cd8d.jsonl.gz)
+[`d66846678841`](https://github.com/pilifs/in-the-loop/commit/d6684667884146aa06093c6ab46065c66d6e61ce) · [log `353199f37572`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/353199f375726ba74aabe8d2bc4a714d57e48a45a4cd77c3f180349db007cd8d.jsonl.gz)
 
 When Langfuse is configured, the end-of-turn hook (sync.py hook) redacted and parsed the whole transcript on every turn to find the turns not yet sent. Measured against a stubbed network on frozen copies (the transcript cut before its last prompt, then whole, then again): this 12 MB session took 5.88 s for one new turn and 5.71 s for none; the 94 MB transcript 41.75 s and 40.44 s, at 1.2 GB peak memory. Now 0.34 s and 0.02 s, and 0.24 s and 0.09 s. The hook keeps a cursor with the session's Langfuse state in ~/.local/state/llm-traces/: the byte offset of the first turn not yet sent (or of the unfinished last line), the SHA-256 of the bytes before it, the redactor's fingerprint, the number of turns before it and the last title there. It is used only when that prefix still hashes the same under the same rules and tools; a replaced or truncated transcript, or LLM_TRACES_FULL=1, reads the whole transcript, reusing the log sync last made where the transcript cache still applies (not saved). The cursor moves only after a send succeeds, and only over whole transcript lines: lines_in counts how many lines the redactor reads from each raw line (a carriage return or a raw U+2028 makes two), so the log is split at the same places. export_langfuse takes the number of the first turn, and it and langfuse send now keep the other keys of the state file (before, a hook export dropped the 'complete' mark langfuse --pending relies on), written atomically.
 
@@ -122,7 +122,7 @@ This finishes the second changeset. The brief's Progress section still says 'Nex
 
 ### sync.py speed, step 3a: push uploads several logs at once, reuses check's scans, and keeps a durable upload record
 
-change `pnstmxpxnlpn` · [log `a446d25cb9bf`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/a446d25cb9bfc0bfbec960260ccaeaad27e37a39952b66234824683ff5b0147a.jsonl.gz)
+[`145b650c4623`](https://github.com/pilifs/in-the-loop/commit/145b650c4623d4a46c18c36b82efe4ecc9039cf4) · [log `a446d25cb9bf`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/a446d25cb9bfc0bfbec960260ccaeaad27e37a39952b66234824683ff5b0147a.jsonl.gz)
 
 First piece of the third changeset (persistent preparation and publication workers), on the upload path the review's section 6 describes. cmd_upload now hands each log to an Uploader in a thread pool: four logs at a time (LLM_TRACES_UPLOAD_JOBS), so their CDN reads overlap each other and the puts, with wrangler puts one at a time (LLM_TRACES_PUT_JOBS, default 1). Before a put, the stored .gz file is verified against the log's name through check's cache, and the log is scanned through check's scan cache. A log check has just scanned under the same rules is therefore not scanned again, and LLM_TRACES_FULL=1 reads and scans everything. Verifying first is new: the old loop would have put a file whose content did not match its name and only failed at the CDN read-back, after the wrong bytes were public. The read-back through the CDN after each put is unchanged, and each URL goes into its manifest as soon as it is verified. That includes uploads that finish while Ctrl-C is on its way out, so an interrupted push keeps what it verified.
 
@@ -138,7 +138,7 @@ Deferred for the user: concurrent wrangler puts (LLM_TRACES_PUT_JOBS above 1) ar
 
 ### sync.py speed, step 3b: one lock per repository serializes the commands that write, and a journal recovers an interrupted one
 
-change `onlpmumxuxok` · [log `962e1576fee7`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/962e1576fee741eea2b03b5420222b37b7fdf3eb9c94c14e7eac0bf9cd8f913a.jsonl.gz)
+[`85c390dd0e87`](https://github.com/pilifs/in-the-loop/commit/85c390dd0e8720f7931a1bbb13d20a9170cd7237) · [log `962e1576fee7`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/962e1576fee741eea2b03b5420222b37b7fdf3eb9c94c14e7eac0bf9cd8f913a.jsonl.gz)
 
 The review's architecture asks for one coordinator for jj mutations, manifest finalization, global outputs and garbage collection, with a repository lock, an operation context and a small durable journal, so that later steps can prepare work in the background and interrupted operations are recoverable. Until now nothing stopped two sessions (or a session and the person at a terminal) from running sync, commit or push at once on one repository: both rewrite manifests, describe changes, delete unreferenced snapshots and rebuild the global files. And the commit hook switches the working copy to the commit it records (jj edit) while it syncs; its hook times out at 60 s, and a cold sync takes about 70 s, so a timeout could leave @ on a finished commit, where the next edits would land.
 
@@ -152,7 +152,7 @@ Deferred for the user (unchanged from step 3a): concurrent wrangler puts share o
 
 ### sync.py speed, step 3c: an edit to sync.py keeps the redaction, scan and snapshot caches
 
-change `rsnlowwpzysu` · [log `62333022425e`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/62333022425e50f4c3cb005adb3f0e252fa0c9b798a027ba6c90e75421244a86.jsonl.gz)
+[`be3055ef9548`](https://github.com/pilifs/in-the-loop/commit/be3055ef95480416eaada61f5b20f1a73741ef4a) · [log `62333022425e`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/62333022425e50f4c3cb005adb3f0e252fa0c9b798a027ba6c90e75421244a86.jsonl.gz)
 
 The local caches were fingerprinted on the whole source of sync.py, so every edit to it, which this loop makes in every cycle, made the next sync redact every live transcript again and the next check scan and decompress every log again. Measured on this machine just before this change, a sync after an edit took 69-71 s (65 s redacting) and a check 104-106 s (92 s scanning, 6 s decompressing), against about 1 s each warm.
 
@@ -166,7 +166,7 @@ Deferred for the user: unchanged from step 3b (concurrent wrangler puts or an R2
 
 ### sync.py speed, step 3d: a measured recommendation on Go: don't port; fix the cold scan in Python
 
-change `zumuuyqrzwkl` · [log `afaa56824afc`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/afaa56824afc66ed6eea62aa75efa583552656a2053565cc8d74d8e9d15521ac.jsonl.gz)
+[`3503485d416a`](https://github.com/pilifs/in-the-loop/commit/3503485d416a84ddcff2e5827817b82e53ed1b18) · [log `afaa56824afc`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/afaa56824afc66ed6eea62aa75efa583552656a2053565cc8d74d8e9d15521ac.jsonl.gz)
 
 Ends the third changeset with the recommendation on Go the brief asks for. It is in llm-dlc/performance.md, measured on 2026-11-03 on this machine (8 ARM64 cores, Python 3.12.3, 20 sessions, 171 snapshots). The numbers can be taken again with a new harness, llm-dlc/tools/profile_rules.py. It prints rule names and numbers only and changes nothing; it is not imported by sync.py, so no cache fingerprint covers it.
 
@@ -184,7 +184,7 @@ Brief correction: its Progress section is still out of date (changesets 2 and 3a
 
 ### sync.py speed, step 3e: a cold scan or redaction runs in one process per CPU
 
-change `urolzzuymtxl` · [log `9cd6d2e82c5b`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/9cd6d2e82c5b7f301eacfa845b887172f9f73663a2aff8b17cc556df2ce1833f.jsonl.gz)
+[`6cf8d09516c9`](https://github.com/pilifs/in-the-loop/commit/6cf8d09516c931cb680ea843eef49df6294bc313) · [log `9cd6d2e82c5b`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/9cd6d2e82c5b7f301eacfa845b887172f9f73663a2aff8b17cc556df2ce1833f.jsonl.gz)
 
 After an edit to the rules or redactor.py, on --full, on a new machine or for a new session's first transcript, every line is redacted and scanned again, in one process: check --full took 112 s, scan --full 160 s and sync --full 71 s here (20 sessions, 172 snapshots). Redaction and scanning are line by line, so redactor.Redactor now hands such text to a pool of spawned processes, one per CPU (LLM_TRACES_PROCESSES; 1 keeps the old path). Each worker builds redaction_rules.Rules from the same literals and returns the redacted bytes of its lines, or hits_of_line of each line, which go into the redactor's per-line memo (_seen) under the key hits_of_text uses, the first line under a key standing for the others as before. A worker checks that the fingerprint of the rules and redactor.py it loaded equals what the parent read when its redactor was made; one that differs (an edit in between) fails its tasks and the parent does the work itself, as it does when the pool breaks. The pool starts only for 4 M characters not yet done, so a commit's new lines never start it; once started it also takes texts of 250 k characters or more, since most snapshots are scanned only past an earlier one (with 4 M alone, check --full took 43.8 s). Spawn, not fork, since push scans from threads.
 
@@ -192,7 +192,7 @@ Measured on the same state, LLM_TRACES_PROCESSES=1 against the default (8 CPUs),
 
 ### sync.py speed, step 3f: each rule is skipped on lines that cannot hold its match, and stamp --equivalent runs in one process per CPU
 
-change `pvuopzzvswty` · [log `73bb6c9b8ddc`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3.jsonl.gz)
+[`b284deb68643`](https://github.com/pilifs/in-the-loop/commit/b284deb68643c93a877090ff6fd95da2fabd08f9) · [log `73bb6c9b8ddc`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3.jsonl.gz)
 
 Every redaction, leak and review rule now has a gate (GATES in redaction_rules.py): words that every match of the rule holds, an assertion-free pattern that matches inside every match, or both. The gate is tested once per line, on the line's JSON strings joined by \0, and a rule whose gate fails is skipped on all of that line's strings. Each rule also skips strings shorter than its shortest match (from the regex parser's width). Case-insensitive words are compared as re.I compares: by str.lower only when the joined text is all ASCII, where the two agree; otherwise by the regex engine, so ſ, the Kelvin sign and İ fold as before. Redaction applies the rules in sequence, so a gate holds for a string only until a rule changes it; from then on every later rule runs. A pattern replaced after construction runs ungated.
 
@@ -206,7 +206,7 @@ Correction to the brief: its Progress section still says 'Next: the second chang
 
 ### sync speed brief: progress through step 3f, decisions on Go and chunked storage, and loops may update a brief's Progress section
 
-change `ztqumoplxlkk` · [log `c828346730db`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/c828346730db5326967c807e53e31d604d711d61ab1f6ddfbb740ce5be138bb7.jsonl.gz)
+[`4160a94c9b18`](https://github.com/pilifs/in-the-loop/commit/4160a94c9b183658cba359e08ddc2746daf19465) · [log `c828346730db`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/c828346730db5326967c807e53e31d604d711d61ab1f6ddfbb740ce5be138bb7.jsonl.gz)
 
 llm-dlc/loops/sync-performance.md now names its fixed session (5dfbc1bc-4bd7-4b48-a637-44ff84065b6b) at the top, so further work in this area resumes that session. Its Progress section lists every step of the three changesets with its commit and numbers (commit 35-118 s to about 2-3 s, check --full 112 s to 18 s, scan --full 160 s to 11.6 s), what is waiting on the user (parallel wrangler puts or an R2 token; which session a commit treats as current), and what is left. A new Decisions section records the user's decisions of 2026-11-03: no Go port, and no chunked storage. performance.md marks its Go recommendation as decided.
 
@@ -214,7 +214,7 @@ feature-loop.sh used to stop a run on any edit to its brief, so the loop could n
 
 ### Langfuse: a session with no stored log yet is sent, and a hook that did not finish a send stays marked until one does
 
-change `lmknsqvyllon` · [log `d1bd6ddf0a1e`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/d1bd6ddf0a1ee4a40616bcf3ebf953185fe8039aade53d5cb46bee159c5c3b5f.jsonl.gz)
+[`140f3bceff37`](https://github.com/pilifs/in-the-loop/commit/140f3bceff377f8778d907259b1222ee2e49f500) · [log `d1bd6ddf0a1e`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/d1bd6ddf0a1ee4a40616bcf3ebf953185fe8039aade53d5cb46bee159c5c3b5f.jsonl.gz)
 
 Asked to verify that no trace can be lost to a restart or similar since the Stop hook reads from a cursor (step 2g). Found: the cursor and the record of sent turns move only after Langfuse accepts a send, and a resend uses the same trace and span ids, so outages and kills cost a resend, never a turn. A replay of this session's 38 real Stop hooks (22.9 MB) against a stub sent exactly what one export of the whole transcript sends (1,430 spans, none missing or different), also with Langfuse down on 30% of sends (16 hooks failed) and with the hook killed after its POST but before saving its state (16 kills). Every prompt in every session's transcript here is recorded as sent, except the turn running now.
 
@@ -222,7 +222,7 @@ Fixed three gaps. (1) turn_spans read m['log']['sha256'], so a session no sync h
 
 ### push puts logs in R2 through its S3 API with a bucket-scoped R2 token, several at once
 
-change `qouupkpkplsk` · [log `0dec64d63c93`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/0dec64d63c93809004c62229cc659b20b3a90a6dce72f3b537aa81812d75fec1.jsonl.gz)
+[`429fbb3f7db3`](https://github.com/pilifs/in-the-loop/commit/429fbb3f7db30b90c4d4f522cced566ceb25a09d) · [log `0dec64d63c93`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/0dec64d63c93809004c62229cc659b20b3a90a6dce72f3b537aa81812d75fec1.jsonl.gz)
 
 With an R2 API token in ~/.config/llm-traces/r2-credentials (account_id, access_key_id, secret_access_key; Object Read & Write on the llm-traces bucket only), the Uploader's puts and unpublish's delete go to https://ACCOUNT.r2.cloudflarestorage.com/llm-traces/raw-traces/... through R2Client in sync.py: AWS Signature Version 4, region auto, standard library only, every header signed, the payload's SHA-256 sent and signed. No Node process per log and no shared OAuth login, so puts run as many at once as logs are handled (4; LLM_TRACES_PUT_JOBS lowers it). Without the file, wrangler is used as before, one put at a time. Everything around the put is unchanged: the verify and scan before it, the attempted/verified upload record, and the read-back through the CDN that must give the log's SHA-256 before its URL is recorded.
 
@@ -232,7 +232,7 @@ Verified offline only: no request reached R2. The signer reproduces the signatur
 
 ### Allow list: approve 37f924ec, the made-up TEST-NET-3 address
 
-change `xxslrmxykqur` · [log `792988020e47`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/792988020e477fae2e3d87c38d06f480099e20fecf58ba9f8a7eb9f7a7db574b.jsonl.gz)
+[`10f54824a87a`](https://github.com/pilifs/in-the-loop/commit/10f54824a87a80be6bdac61b7aaec54eaf93f1e3) · [log `792988020e47`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/792988020e477fae2e3d87c38d06f480099e20fecf58ba9f8a7eb9f7a7db574b.jsonl.gz)
 
 Approved by the maintainer with sync.py allow approve.
 

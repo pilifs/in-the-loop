@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### langfuse-loop.sh: send unsent turns to Langfuse as they appear
 
-change `wpltksnpzwwt` · [log `19cb40dd4776`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/19cb40dd4776995b65d1cc3132e1dbb36aebfbc32ffc2448f2def7583203deb9.jsonl.gz)
+[`a28b1f4686a3`](https://github.com/pilifs/in-the-loop/commit/a28b1f4686a3f75e300180bf22b3598e7d6877e7) · [log `19cb40dd4776`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/19cb40dd4776995b65d1cc3132e1dbb36aebfbc32ffc2448f2def7583203deb9.jsonl.gz)
 
 sync.py langfuse gains --pending (sessions whose latest stored log has turns not yet sent; a state-file mark by log sha keeps the check cheap) and --all (send them). llm-dlc/tools/langfuse-loop.sh polls that list, runs --all, retries while Langfuse is down, and takes stop/now/? commands like verification-loop.sh, with no Claude session. Verified against the local Langfuse: 19 pending sessions sent, then the loop idles on 'nothing to send'.
 
 ### sync speed brief: progress through step 3f, decisions on Go and chunked storage, and loops may update a brief's Progress section
 
-change `ztqumoplxlkk` · [log `0588beeedff7`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/0588beeedff7fba1a96a22fe24434e06281c23b5d1112e6c761ff2bb32b3a024.jsonl.gz)
+[`4160a94c9b18`](https://github.com/pilifs/in-the-loop/commit/4160a94c9b183658cba359e08ddc2746daf19465) · [log `0588beeedff7`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/0588beeedff7fba1a96a22fe24434e06281c23b5d1112e6c761ff2bb32b3a024.jsonl.gz)
 
 llm-dlc/loops/sync-performance.md now names its fixed session (5dfbc1bc-4bd7-4b48-a637-44ff84065b6b) at the top, so further work in this area resumes that session. Its Progress section lists every step of the three changesets with its commit and numbers (commit 35-118 s to about 2-3 s, check --full 112 s to 18 s, scan --full 160 s to 11.6 s), what is waiting on the user (parallel wrangler puts or an R2 token; which session a commit treats as current), and what is left. A new Decisions section records the user's decisions of 2026-11-03: no Go port, and no chunked storage. performance.md marks its Go recommendation as decided.
 

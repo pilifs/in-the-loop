@@ -44,13 +44,13 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Feature loop: a brief names its session, model and effort under Loop settings; the sync-performance brief runs on Opus 5.5 in its own session
 
-change `molzsotwnzrn` · [log `db0d1dd6ede1`](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/db0d1dd6ede164eea81483bd7a96ab0d2c80ca50d17ac4a1294d0b28106bf183.jsonl.gz)
+[`ca9749592cc5`](https://github.com/pilifs/in-the-loop/commit/ca9749592cc53984f6ff0ebd83620712b1291753) · [log `db0d1dd6ede1`](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/db0d1dd6ede164eea81483bd7a96ab0d2c80ca50d17ac4a1294d0b28106bf183.jsonl.gz)
 
 feature-loop.sh reads '- session: ID', '- model: ID' and '- effort: LEVEL' from a brief's '## Loop settings' section; FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL and FEATURE_LOOP_EFFORT override the brief and the defaults (the usual session, Fable, high effort), the session id is validated, and the run record names the model and effort. A session id with no transcript in this project yet, such as a session opened but never sent a message, is created by the first turn with --session-id instead of failing on --resume. llm-dlc/loops/sync-performance.md now sets session 5dfbc1bc-4bd7-4b48-a637-44ff84065b6b, created by the user for it, and model claude-opus-5-5. Verified with stubbed claude and jj: the brief's settings applied, the first turn creating the missing session and later turns resuming it, an existing transcript resumed from the start, environment overrides, a named prompt keeping its defaults, and an invalid id rejected.
 
 ### langfuse-loop.sh: send unsent turns to Langfuse as they appear
 
-change `wpltksnpzwwt` · [log `7651620c8fd1`](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2.jsonl.gz)
+[`a28b1f4686a3`](https://github.com/pilifs/in-the-loop/commit/a28b1f4686a3f75e300180bf22b3598e7d6877e7) · [log `7651620c8fd1`](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2.jsonl.gz)
 
 sync.py langfuse gains --pending (sessions whose latest stored log has turns not yet sent; a state-file mark by log sha keeps the check cheap) and --all (send them). llm-dlc/tools/langfuse-loop.sh polls that list, runs --all, retries while Langfuse is down, and takes stop/now/? commands like verification-loop.sh, with no Claude session. Verified against the local Langfuse: 19 pending sessions sent, then the loop idles on 'nothing to send'.
 
