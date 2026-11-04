@@ -244,6 +244,10 @@ struct EquivalenceArgs {
     /// The longest array an array parameter is given; the copying and comparing loops must fit the unwinding bound.
     #[arg(long, default_value_t = 8)]
     max_array_length: u32,
+    /// Prove each callee as written, instead of taking a callee unchanged in both versions as one function in both,
+    /// and prove a target whose bytecode is identical in both versions instead of taking it as unchanged.
+    #[arg(long = "no-shared-callees")]
+    no_shared_callees: bool,
     /// Report the counterexample as JBMC found it, without shrinking it in the interpreter.
     #[arg(long)]
     no_shrink: bool,
@@ -416,6 +420,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.refine_strings = args.refine_strings;
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             options.engine = args.engine.parse()?;
+            options.shared_callees = !args.no_shared_callees;
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));

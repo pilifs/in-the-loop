@@ -144,7 +144,9 @@ proved confined to its declared inputs, and a declared scope shown to be wrong; 
 rewrite of a retry policy that drops the 5xx statuses it did not name. On Mica, [035](035-nan-compared-with-equals-turns-fcmpl-into-fcmpg/README.md) refutes a NaN check
 written as `== Float.NaN` with a NaN witness (floats are bit-vectors to the solver), [036](036-switch-lowering-costs-in-int-overflow-on-wide-labels/README.md) refutes javac's
 switch-lowering heuristic computed in `int`, and [037](037-table-size-rewritten-with-leading-zeros-proved-equal/README.md) proves the JDK 11 rewrite of `tableSizeFor` equal to the
-JDK 8 one on all 2^32 inputs, with the JDK's own bytecode of `Integer.numberOfLeadingZeros` in the proof.
+JDK 8 one on all 2^32 inputs, with the JDK's own bytecode of `Integer.numberOfLeadingZeros` in the proof. On Crosscut, [120](120-retry-after-rewritten-around-unchanged-refill-helpers/README.md) proves a
+rewrite of a `Retry-After` kernel around two unchanged refill helpers in a second where the proof had not finished in a minute: a callee both
+versions call unchanged is taken as one function in both, so the solver relates how the versions use it and never sees its 64-bit division.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

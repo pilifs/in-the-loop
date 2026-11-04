@@ -363,6 +363,112 @@ fn a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_de
     assert_eq!(refuted.verdict, Verdict::Violation, "{}", refuted.output);
 }
 
+const SHARES_BEFORE: &str = r#"package fixtures;
+public final class Shares {
+    static long perSeat(long total, int seats) {
+        if (seats <= 0) throw new IllegalArgumentException("seats");
+        return total / seats;
+    }
+    public static long split(long total, int seats, int fee) {
+        return perSeat(total, seats) + fee;
+    }
+}
+"#;
+
+fn compile_shares(name: &str, source: &str) -> Option<PathBuf> {
+    let dir = target_tmp().join(format!("shares-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join("Shares.java");
+    std::fs::write(&file, source).unwrap();
+    compile(&format!("shares-{name}"), &[file])
+}
+
+fn shares_run(before: &Path, after: &Path, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, "fixtures.Shares#split");
+    let work = target_tmp().join(format!("equivalence-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    options.timeout_seconds = 120;
+    equivalence::run(&options).unwrap()
+}
+
+/// Two copies of a 64-bit division, one per version, are more than the solver settles in minutes; as one function
+/// in both versions, the helper costs nothing, and the proof is about how the two versions use it.
+#[test]
+fn a_callee_unchanged_in_both_versions_is_one_function_in_the_proof() {
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    let after = SHARES_BEFORE.replace("return perSeat(total, seats) + fee;", "long share = perSeat(total, seats);\n        return fee + share;");
+    let (Some(before), Some(after)) = (compile_shares("before-a", SHARES_BEFORE), compile_shares("reordered", &after)) else { return };
+    let outcome = shares_run(&before, &after, "shares-shared");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.shared, vec!["Shares.perSeat".to_string()]);
+    assert!(outcome.proof.as_deref().unwrap().ends_with("; Shares.perSeat unchanged in both versions and taken as one function in both"), "{}", outcome.output);
+    assert!(outcome.work.join("shared-classes").join("SharedCallees.class").exists());
+    assert!(outcome.work.join("jbmc-shared.log").exists(), "the proof over all inputs ran with the stub");
+}
+
+/// The stub throws what the callee can throw, so a catch around the call in one version only is still a difference.
+#[test]
+fn a_catch_around_a_shared_callee_is_still_a_difference() {
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    let caught = SHARES_BEFORE.replace("return perSeat(total, seats) + fee;", "try { return perSeat(total, seats) + fee; } catch (IllegalArgumentException e) { return -1; }");
+    let (Some(before), Some(after)) = (compile_shares("caught", &caught), compile_shares("uncaught", SHARES_BEFORE)) else { return };
+    let outcome = shares_run(&before, &after, "shares-caught");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert_eq!(witness.before, "-1", "{}", outcome.output);
+    assert!(witness.after.starts_with("throws IllegalArgumentException"), "{}", outcome.output);
+}
+
+/// A counterexample that rests on the stub giving two calls unrelated results is no counterexample: the proof is
+/// run again with the callee as written.
+#[test]
+fn a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecode() {
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    let before = "package fixtures;\npublic final class Shares {\n    static int twice(int x) { return x + x; }\n    public static long split(long total, int seats, int fee) { return twice(fee); }\n}\n";
+    let after = before.replace("return twice(fee);", "return twice(fee - 1) + 2;");
+    let (Some(before), Some(after)) = (compile_shares("twice", before), compile_shares("twice-shifted", &after)) else { return };
+    let outcome = shares_run(&before, &after, "shares-fallback");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert!(outcome.shared.is_empty(), "{}", outcome.output);
+    assert!(outcome.output.contains("note: the counterexample found with Shares.twice taken as one function in both versions does not reproduce once computed as written; proving with the callees' bytecode"), "{}", outcome.output);
+    assert!(outcome.work.join("jbmc.log").exists(), "the proof over all inputs ran again as written");
+}
+
+/// Needs no JBMC: the two versions' bytecode is compared, and nothing differs.
+#[test]
+fn a_target_identical_in_both_versions_needs_no_proof() {
+    let (Some(before), Some(after)) = (compile_shares("same-a", SHARES_BEFORE), compile_shares("same-b", SHARES_BEFORE)) else { return };
+    let outcome = shares_run(&before, &after, "shares-identical");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.proof.as_deref(), Some("its bytecode and that of the method it reaches are identical in both versions; nothing to prove"));
+    assert!(outcome.output.starts_with("✓ fixtures.Shares#split behaves as before on every input (its bytecode"), "{}", outcome.output);
+    assert!(!outcome.work.join("jbmc.log").exists());
+    // The comparison itself: the target and the helper it calls, two methods, the same in both.
+    let classpath = |dir: &Path| {
+        let mut cp = ClassPath::new();
+        cp.add(dir).unwrap();
+        cp.with_default_jdk()
+    };
+    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&after), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"));
+    assert_eq!(plan.identical, Some(2));
+    let changed = compile_shares("same-c", &SHARES_BEFORE.replace("+ fee;", "+ fee + 1;")).unwrap();
+    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&changed), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"));
+    assert_eq!(plan.identical, None);
+    assert_eq!(plan.callees.iter().map(|c| c.display()).collect::<Vec<_>>(), vec!["Shares.perSeat".to_string()]);
+    assert_eq!(plan.callees[0].throws, vec!["java/lang/ArithmeticException".to_string(), "java/lang/IllegalArgumentException".to_string()]);
+}
+
 const BUFFERS_BEFORE: &str = r#"package fixtures;
 public final class Buffers {
     /** Writes v into the first n elements of a, or all of them, and returns how many it wrote. */

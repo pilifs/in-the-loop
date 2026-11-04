@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (ended) |
+| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (open) |
 | When | 2026-11-04 04:45 UTC to 2026-11-04 05:06 UTC (21 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.318 |
@@ -29,6 +29,16 @@ Brings the published traces up to this point: conversation that came after a ses
 [`994fe3cbe3e5`](https://github.com/pilifs/in-the-loop/commit/994fe3cbe3e5290e6e8b62fde847131477a7b63c) · [log `9e7bb127e4e4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/9e7bb127e4e46638ee245e83e14574c45a64042fdab1f40b1d1a8c5f2c62adfc.jsonl.gz)
 
 llm-dlc/tools/feature-loop.sh relational [CYCLES] [UNTIL] repeats the user's instruction 'Enhance relational verification capabilities to be more efficient and accurate, adding examples where appropriate', like the features, tla and spring loops: the default session and model (360e8b8b, claude-fable-5-1 at high effort) unless FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL or FEATURE_LOOP_EFFORT say otherwise. The usage line, the header and llm-dlc/README.md list it. Verified with bash -n and the usage message; the loop was not started.
+
+### Regression proofs share the callees both versions call unchanged, and skip a target whose bytecode is identical (verification pending)
+
+change `mvmrltpoqlnl` · [log `6b0ccfe57f71`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/6b0ccfe57f7124b42a7237e8610f7e9d482c34bfca4a6e1f94f24e5c821329b1.jsonl.gz)
+
+jvmcontract equivalence now compares the two versions' bytecode before any solver runs (lib/src/shared.rs). A target identical in both versions, together with everything it reaches (instructions compared with their constant pool references resolved, exception tables, the static initializers and constant values of the classes whose statics it reads), is verified with nothing to prove and no JBMC run. A callee both versions call unchanged, that is a pure function of its primitive arguments (no fields, no arrays, nothing of the JDK beyond Math/StrictMath/Integer/Long/Short/Byte, string building and the exceptions it constructs), is taken as one function in both versions, the uninterpreted-function abstraction of regression verification: a generated stub class (SharedCallees, the class writer now writes static fields) keeps a memo table per callee, giving arguments seen before the outcome they got and new arguments an arbitrary result or one of the exceptions the callee can throw (its new'ed Throwables, plus ArithmeticException where it divides), and the invokestatic call sites of both versions are redirected to it by appending constant pool entries and rewriting the operands in place. The solver then relates how the versions use the callee and never its arithmetic. The abstraction is sound for a proof; a counterexample found with it is replayed through the real bytecode and, when it does not reproduce, the proof is run again with the callees as written, with a note. --no-shared-callees turns both off. The proof line names the callees taken as one function; Outcome gains a shared field.
+
+Why: a 64-bit division in a helper both versions call was what turned a regression proof of a caller into a time-out, since each version carried its own copy for the solver to relate. Measured: a refactor of a caller around a division helper went from not finishing in 60 s to a proof in 0.2 s, and HoldPolicy-style pricing with Math.multiplyExact shared from 3.4 s to 0.4 s.
+
+Example 120 on Crosscut: a new kernel, ratelimit.RetryAfter#nanosUntilToken (the Retry-After of a refused request, from TokenBucket's refill helpers), with a test, a property proved in 1.7 s, and the API contract regenerated; the example's patch rewrites the wait as the period less the time since the credit, around the unchanged helpers. By hand: proved in 1.3 s with the helpers shared; without sharing the [-100000:100000] search stage had not finished after 60 s. New technique tag shared-callees. Job 20261104-054836-example-120-a-retry-after-rewrite-proved queued (build.py on the example). Docs: lib README (proof steps and limits), approaches.md B9, the Crosscut README, the plugin reference; build.py reads the 'nothing to prove' proof line.
 
 ## Conversation
 

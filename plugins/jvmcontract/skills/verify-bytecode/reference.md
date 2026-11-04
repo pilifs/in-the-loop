@@ -55,6 +55,8 @@ jvmcontract inspect path/to/Class.class [--code]
 
 `--report DIR` writes SARIF (`equivalence.sarif`, `property.sarif`) if the user wants it for code scanning. `--work DIR` keeps the harness, the relocated classes, the statement as Java source and JBMC's logs; use one directory per proof under the pull request's working directory, so everything is reproducible.
 
+`equivalence` compares the two versions' bytecode before it runs JBMC: a target identical in both, with everything it reaches, is reported verified with "nothing to prove" and no solver, and a callee both versions call unchanged (a pure function of primitives: a helper with a division, `Math.multiplyExact`) is taken as one function in both versions, which the proof line says (`taken as one function in both`); a counterexample found that way is replayed as written and the proof rerun with the callees' bytecode when it does not reproduce (a `note:` line says so). `--no-shared-callees` turns both off, for a proof of the callees as written.
+
 Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`, 0 for no limit) and dies as *unverifiable* beyond it. A run counts as proved only if JBMC itself ends with `VERIFICATION SUCCESSFUL`: a solver that gives up prints `** 0 of N failed` too, and that is no proof.
 
 ## What each proof needs

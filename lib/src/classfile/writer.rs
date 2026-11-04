@@ -328,12 +328,20 @@ pub struct MethodWriter {
     pub code: Option<CodeBuilder>,
 }
 
-/// Writes a class with methods and no fields.
+/// A field being written: no initial value, so a static one starts at zero, `false` or `null`.
+pub struct FieldWriter {
+    pub access: u16,
+    pub name: String,
+    pub descriptor: String,
+}
+
+/// Writes a class with methods and fields.
 pub struct ClassWriter {
     pub pool: PoolBuilder,
     pub access: u16,
     pub name: String,
     pub super_class: String,
+    pub fields: Vec<FieldWriter>,
     pub methods: Vec<MethodWriter>,
     pub source_file: Option<String>,
 }
@@ -345,6 +353,7 @@ impl ClassWriter {
             access: flags::PUBLIC | flags::FINAL | flags::SUPER,
             name: name.to_string(),
             super_class: "java/lang/Object".to_string(),
+            fields: Vec::new(),
             methods: Vec::new(),
             source_file: None,
         }
@@ -366,6 +375,10 @@ impl ClassWriter {
         let superclass = self.pool.class(&self.super_class.clone());
         let code_name = self.pool.utf8("Code");
         let source = self.source_file.clone().map(|s| (self.pool.utf8("SourceFile"), self.pool.utf8(&s)));
+        let mut field_names = Vec::new();
+        for f in &self.fields {
+            field_names.push((self.pool.utf8(&f.name), self.pool.utf8(&f.descriptor)));
+        }
         let mut method_names = Vec::new();
         for m in &self.methods {
             method_names.push((self.pool.utf8(&m.name), self.pool.utf8(&m.descriptor)));
@@ -379,7 +392,13 @@ impl ClassWriter {
         out.extend(this.to_be_bytes());
         out.extend(superclass.to_be_bytes());
         out.extend(0u16.to_be_bytes()); // interfaces
-        out.extend(0u16.to_be_bytes()); // fields
+        out.extend((self.fields.len() as u16).to_be_bytes());
+        for (f, (name, descriptor)) in self.fields.iter().zip(field_names) {
+            out.extend(f.access.to_be_bytes());
+            out.extend(name.to_be_bytes());
+            out.extend(descriptor.to_be_bytes());
+            out.extend(0u16.to_be_bytes()); // attributes
+        }
         out.extend((self.methods.len() as u16).to_be_bytes());
         for (m, (name, descriptor)) in self.methods.into_iter().zip(method_names) {
             out.extend(m.access.to_be_bytes());

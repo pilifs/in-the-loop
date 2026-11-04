@@ -33,6 +33,12 @@ net.terminalvalue.crosscut.ratelimit.TokenBucket#lastAfter
   assume: periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity
   assert: result >= lastNanos && result <= nowNanos && nowNanos - result < periodNanos && (result == lastNanos || result - lastNanos >= periodNanos)
 
+# A refused request waits for the rest of the period under way and never longer: nothing when the refill leaves
+# a token, else more than nothing and at most a period.
+net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken
+  assume: periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity
+  assert: result >= 0 && result <= periodNanos
+
 # The committed offset is the next record to read: one past the batch when every record is done, the failed
 # record itself when one is not, so that nothing done is read again and nothing not done is skipped.
 net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit

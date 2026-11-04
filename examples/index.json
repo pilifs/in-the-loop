@@ -4677,6 +4677,46 @@
         "The runner compiles the module with Gradle, reads the runtime class path through the build's `printRuntimeClasspath` task, and runs `jvmcontract update` then `verify` with `--resources` and `--classpath`; the module's Spring Boot tests need Docker for Testcontainers, and are recorded as the tests' result. By hand, `./gradlew :ticketing-service:verifyBoundaries --rerun` with the patch applied reports the `POST /orders` route changed, its throws line now ending in `HoldExpiredException (500)` with the `!` line under it, and `1 problems` in the module's statistics."
       ],
       "source": null
+    },
+    {
+      "id": "120",
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers",
+      "title": "A Retry-After rewritten around two unchanged refill helpers, proved equal in a second",
+      "summary": "The wait a refused request is told to make is rewritten from `credited + period - now` to `period - (now - credited)`, around the two refill helpers it calls and leaves alone. Each helper holds a 64-bit division, and relating two copies of each across the versions is more than the solver settles in a minute. The proof takes the unchanged helpers as one function in both versions, never sees their arithmetic, and is done in a second.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [],
+        "technique": [
+          "shared-callees"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "On the machine the examples are measured on (JBMC 6.11.0, CaDiCaL), the proof with the helpers shared took 1.3 s over all 2^320 inputs. With `--no-shared-callees`, the search over inputs in [0:20] passed in a second and the search over [-100000:100000] had not finished after 60 s: two 64-bit divisions and two remainders, one of each per version, compared across the versions.",
+        "The helpers are shared because both versions call them, their bytecode is identical in both (constant pool references resolved, so a renumbered pool does not count), and they are pure functions of primitives. A helper that reads a field, takes an array, or calls into the JDK beyond its arithmetic is proved as written, as before.",
+        "The stub throws what the helper can throw, here `ArithmeticException` from the division, chosen arbitrarily per new arguments: a version that catches it where the other does not is still found to differ (the library's tests cover that case).",
+        "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids."
+      ],
+      "source": null
     }
   ]
 }

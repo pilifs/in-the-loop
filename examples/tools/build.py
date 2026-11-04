@@ -396,7 +396,8 @@ def run_equivalence(folder, example, tmp, module, result):
     verdict = "verified" if proc.returncode == 0 else (
         "unverifiable" if "cannot be verified" in output else "violation")
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+             or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({
         "verdict": verdict,
         "domain": m.group(1) if m else None,
@@ -696,7 +697,8 @@ def finish_symbolic(folder, example, result, output, work, harness, verdict_labe
         shutil.copy(statement, folder / "statement.java")
         result["statement"] = "statement.java"
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+             or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output)})
     result["verdictLabel"] = verdict_labels[result["verdict"]]
 

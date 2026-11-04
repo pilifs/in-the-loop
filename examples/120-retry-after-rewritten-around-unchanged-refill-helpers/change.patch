@@ -1,0 +1,20 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java
+@@ -4,7 +4,7 @@
+  * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the
+  * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in
+  * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way
+- * ends, which is the credited time plus a period, less now.
++ * ends, which is the period less the time since the credit.
+  */
+ public final class RetryAfter {
+ 
+@@ -15,6 +15,7 @@
+         if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {
+             return 0;
+         }
+-        return TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) + periodNanos - nowNanos;
++        long credited = TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity);
++        return periodNanos - (nowNanos - credited);
+     }
+ }

@@ -45,6 +45,7 @@ pub mod property;
 pub mod purity;
 pub mod relocate;
 pub mod sarif;
+pub mod shared;
 pub mod shrink;
 pub mod statemachine;
 pub mod reach;

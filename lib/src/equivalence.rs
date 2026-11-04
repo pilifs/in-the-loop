@@ -14,6 +14,12 @@
 //! `null`; the version before is called on a copy of it, and what the two versions leave in the array is compared
 //! with their results, so a method that writes into its argument is held to the writes as well. An array result is
 //! compared element by element.
+//!
+//! Before the solver is asked, the two versions' bytecode is compared ([`crate::shared`]): a target that is
+//! identical in both, together with everything it reaches, is verified without a proof, and a callee that both
+//! versions call unchanged is taken as one function in both, so that the solver relates how the versions use it
+//! and never its arithmetic. A counterexample found that way is replayed through the bytecode as written, and the
+//! proof is run again with the callees as written when it does not reproduce.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -21,13 +27,13 @@ use std::time::Duration;
 
 use serde::Serialize;
 
-use crate::classfile::Type;
+use crate::classfile::{MemberRef, Type};
 use crate::classpath::ClassPath;
 use crate::harness;
 use crate::interp::Value;
-use crate::jbmc::{self, Argument, JbmcRun};
+use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
 use crate::sarif::{self, Finding};
-use crate::{witness, Error, Verdict};
+use crate::{shared, witness, Error, Verdict};
 
 /// JDK classes whose real bytecode JBMC analyses, instead of the small models it ships.
 pub const JDK_CLASSES: &[&str] = &["java/lang/Math", "java/lang/StrictMath", "java/lang/Integer", "java/lang/Long", "java/lang/Short", "java/lang/Byte"];
@@ -67,6 +73,9 @@ pub struct Options {
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
     pub engine: crate::Engine,
+    /// Whether callees unchanged in both versions are taken as one function in both ([`crate::shared`]), and a
+    /// target identical in both versions is verified without a proof. On by default.
+    pub shared_callees: bool,
 }
 
 impl Options {
@@ -91,6 +100,7 @@ impl Options {
             refine_strings: false,
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
+            shared_callees: true,
         }
     }
 }
@@ -125,6 +135,9 @@ pub struct Outcome {
     pub findings: Vec<Finding>,
     pub output: String,
     pub work: PathBuf,
+    /// The callees taken as one function in both versions, as `Class.method`.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub shared: Vec<String>,
 }
 
 /// Runs the regression proof.
@@ -144,7 +157,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone() })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new() })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -198,8 +211,41 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     std::fs::write(harness_dir.join(format!("{}.class", harness::CLASS)), &harness.bytes)?;
     let statement = harness_dir.join(format!("{}.java", harness::CLASS));
     std::fs::write(&statement, &harness.source)?;
+    let restriction = options.unchanged_unless.as_deref().map(|s| format!(" where !({s})")).unwrap_or_default();
 
-    // 4. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
+    // 4. What the two versions share: a target identical in both, with everything it reaches, needs no proof; a
+    // callee unchanged in both is one function in both.
+    let with_jdk = |dir: &Path| -> Result<ClassPath, Error> {
+        let mut cp = ClassPath::new();
+        cp.add(dir)?;
+        for entry in &options.classpath {
+            if entry.exists() {
+                cp.add(entry)?;
+            }
+        }
+        Ok(cp.with_default_jdk())
+    };
+    let shared_after_cp = with_jdk(&options.after)?;
+    let plan = if options.shared_callees {
+        shared::plan(&with_jdk(&options.before)?, &shared_after_cp, &MemberRef::new(&class_internal, &method_name, &method.descriptor))
+    } else {
+        shared::Plan::default()
+    };
+    if let Some(compared) = plan.identical {
+        let how = match compared - 1 {
+            0 => "its bytecode is identical in both versions and it reaches no other method; nothing to prove".to_string(),
+            1 => "its bytecode and that of the method it reaches are identical in both versions; nothing to prove".to_string(),
+            n => format!("its bytecode and that of the {n} methods it reaches are identical in both versions; nothing to prove"),
+        };
+        let _ = writeln!(out, "✓ {} behaves as before on every input{restriction} ({how})", options.target);
+        if let Some(report) = &options.report {
+            sarif::write(&report.join("equivalence.sarif"), &[])?;
+        }
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new() });
+    }
+    let shared_names = shared::names(&plan.callees);
+
+    // 5. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
     let jdk_dir = work.join("jdk");
     if let Err(e) = extract_jdk_classes(&jdk_dir, options.java_home.as_deref()) {
         let _ = writeln!(out, "note: {e}; JBMC will use its own models of java.lang.Math");
@@ -209,12 +255,28 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         crate::models::write_to(&models_dir)?;
     }
 
-    // 5. Prove, or search for a counterexample: small inputs first, then all of them. The models come last on the
-    // class path, so that a class the application or its class path has takes precedence.
+    // 6. Prove, or search for a counterexample: small inputs first, then all of them. The models come last on the
+    // class path, so that a class the application or its class path has takes precedence. With callees to share,
+    // the stub and the classes whose calls are redirected to it come first, ahead of the versions as written.
     let mut classpath = vec![harness_dir.clone(), options.after.clone(), before_dir.clone(), jdk_dir.clone()];
     classpath.extend(options.classpath.iter().cloned());
     if options.models {
         classpath.push(models_dir.clone());
+    }
+    let mut shared_classpath = None;
+    if !plan.callees.is_empty() {
+        let dir = work.join("shared-classes");
+        std::fs::create_dir_all(&dir)?;
+        std::fs::write(dir.join(format!("{}.class", shared::CLASS)), shared::stub(&shared_after_cp, &plan.callees)?)?;
+        let lookup = |m: &MemberRef| -> Option<String> {
+            let owner = shared::original_owner(&m.owner, "before");
+            plan.callees.iter().position(|c| c.owner == owner && c.name == m.name && c.descriptor == m.descriptor).map(|i| plan.callees[i].stub_method(i))
+        };
+        shared::redirect_directory(&options.after, &dir, &lookup)?;
+        shared::redirect_directory(&before_dir, &dir, &lookup)?;
+        let mut cp = classpath.clone();
+        cp.insert(1, dir);
+        shared_classpath = Some(cp);
     }
     let started = std::time::Instant::now();
     let mut last = None;
@@ -238,30 +300,71 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     } else {
         Vec::new()
     };
-    for stage in stages {
-        let run = JbmcRun {
-            executable: options.jbmc.clone(),
-            class: harness::CLASS.into(),
-            function: harness::METHOD.into(),
-            classpath: classpath.clone(),
-            unwind: options.unwind,
-            timeout: Duration::from_secs(options.timeout_seconds),
-            stage: stage.map(str::to_string),
-            refine_strings: options.refine_strings,
-            sat_solver: options.sat_solver.clone(),
-            log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
-            extra_args: extra_args.clone(),
-        };
-        let result = jbmc::run(&run)?;
-        let stop = result.verdict != Verdict::Verified;
-        last = Some(result);
-        if stop {
-            break;
+    let run_stages = |classpath: &[PathBuf], tag: &str| -> Result<Option<JbmcResult>, Error> {
+        let mut last = None;
+        for stage in stages {
+            let run = JbmcRun {
+                executable: options.jbmc.clone(),
+                class: harness::CLASS.into(),
+                function: harness::METHOD.into(),
+                classpath: classpath.to_vec(),
+                unwind: options.unwind,
+                timeout: Duration::from_secs(options.timeout_seconds),
+                stage: stage.map(str::to_string),
+                refine_strings: options.refine_strings,
+                sat_solver: options.sat_solver.clone(),
+                log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
+                extra_args: extra_args.clone(),
+            };
+            let result = jbmc::run(&run)?;
+            let stop = result.verdict != Verdict::Verified;
+            last = Some(result);
+            if stop {
+                break;
+            }
+        }
+        Ok(last)
+    };
+    let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+    let before_owner = format!("before/{class_internal}");
+    let replay_both = |arguments: &[Argument]| -> (String, String) {
+        let before = witness::replay(&replay_cp, &before_owner, &method_name, &method.descriptor, &descriptor, arguments);
+        let after = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
+        (before.with_leftovers(&params, arguments), after.with_leftovers(&params, arguments))
+    };
+    // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
+    // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
+    // proved as written.
+    let mut shared_used = Vec::new();
+    if last.is_none() {
+        if let Some(cp) = &shared_classpath {
+            if let Some(result) = run_stages(cp, "-shared")? {
+                let keep = match result.verdict {
+                    Verdict::Violation => {
+                        let (before_outcome, after_outcome) = replay_both(&result.arguments(&descriptor.params)?);
+                        before_outcome != after_outcome || before_outcome.starts_with("<could not replay")
+                    }
+                    _ => true,
+                };
+                if keep {
+                    shared_used = shared_names.clone();
+                    last = Some(result);
+                } else {
+                    let _ = writeln!(out, "note: the counterexample found with {} taken as one function in both versions does not reproduce once computed as written; proving with the callees' bytecode", shared_names.join(", "));
+                }
+            }
+        }
+        if last.is_none() {
+            last = run_stages(&classpath, "")?;
         }
     }
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
-    let restriction = options.unchanged_unless.as_deref().map(|s| format!(" where !({s})")).unwrap_or_default();
+    let sharing = match shared_used.len() {
+        0 => String::new(),
+        1 => format!("; {} unchanged in both versions and taken as one function in both", shared_used[0]),
+        n => format!("; {n} callees unchanged in both versions and taken as one function in both: {}", shared_used.join(", ")),
+    };
 
     let mut findings = Vec::new();
     let mut counterexample = None;
@@ -270,19 +373,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut verdict = last.verdict;
     match last.verdict {
         Verdict::Verified => {
-            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
+            let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
             let _ = writeln!(out, "✓ {} behaves as before on every input{restriction} ({how})", options.target);
             proof = Some(how);
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
-            let before_owner = format!("before/{class_internal}");
-            let replay_both = |arguments: &[Argument]| -> (String, String) {
-                let before = witness::replay(&replay_cp, &before_owner, &method_name, &method.descriptor, &descriptor, arguments);
-                let after = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-                (before.with_leftovers(&params, arguments), after.with_leftovers(&params, arguments))
-            };
             let (before_outcome, after_outcome) = replay_both(&found);
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
@@ -297,7 +393,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -320,7 +416,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let _ = writeln!(out, "✗ {message}");
             let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
             let shrinking = if shrunk { format!(" as {rendered_found}, shrunk to the input above in {shrink_runs} interpreter runs") } else { String::new() };
-            let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}", last.version);
+            let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}{sharing}", last.version);
             let _ = writeln!(out, "  ({how})");
             if let Some(scope) = &harness.scope {
                 let mut locals = Vec::new();
@@ -362,7 +458,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used })
 }
 
 /// Copies the JDK classes in [`JDK_CLASSES`] out of the JDK image, for JBMC's class path.

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb",
-  "status": "ended",
+  "status": "open",
   "title": "Rust Java formal verification library",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-03T08:02:51.567Z",
-  "duration_seconds": 228776,
+  "ended": "2026-11-04T05:50:50.446Z",
+  "duration_seconds": 307255,
   "stats": {
-    "turns": 209,
-    "api_calls": 2126,
-    "tool_calls": 2657,
+    "turns": 210,
+    "api_calls": 2194,
+    "tool_calls": 2725,
     "tool_errors": 54,
     "compactions": 36,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 63380,
-      "output_tokens": 4427286,
-      "cache_read_input_tokens": 383495719,
-      "cache_creation_input_tokens": 9703893
+      "input_tokens": 65376,
+      "output_tokens": 4558353,
+      "cache_read_input_tokens": 395791156,
+      "cache_creation_input_tokens": 9965519
     }
   },
   "tools": {
-    "Bash": 2157,
+    "Bash": 2225,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -734,24 +734,24 @@
     {
       "index": 36,
       "started": "2026-11-03T08:02:51.555Z",
-      "ended": "2026-11-03T08:02:51.567Z",
-      "turns": 3,
-      "api_calls": 0,
+      "ended": "2026-11-04T05:50:50.446Z",
+      "turns": 4,
+      "api_calls": 68,
       "usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 0
+        "input_tokens": 1996,
+        "output_tokens": 131067,
+        "cache_read_input_tokens": 12295437,
+        "cache_creation_input_tokens": 261626
       },
-      "peak_context_tokens": 0
+      "peak_context_tokens": 272894
     }
   ],
   "log": {
-    "sha256": "992210ff0af947da6d5c9d4dbd96bff6fc3d0afe26effb56fc321b1820a8cf58",
-    "bytes": 79414091,
-    "lines": 29749,
-    "gzip_bytes": 13539156,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/992210ff0af947da6d5c9d4dbd96bff6fc3d0afe26effb56fc321b1820a8cf58.jsonl.gz"
+    "sha256": "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0",
+    "bytes": 81367388,
+    "lines": 30658,
+    "gzip_bytes": 13864072,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1146,6 +1146,22 @@
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "0e6ce4dd69910af5efd8c7ba30a4a9905815d93e9bbc1a0799ba0a507b184638"
+    },
+    {
+      "change_id": "kuyulwnwzxxummswyunzuqzvuokqtmnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "feature-loop.sh: lower the default memory cap from 4G to 3.5G",
+      "body": "Proofs and model checks now run in the verification pipeline, so the loop's scope only holds the Claude session and inline builds. Measured in capped systemd scopes with swap off: cargo build --release peaks at 1.1G, cargo test at 1.7G (finishes under a 1.5G cap), sync.py check --full at 0.85G, and the full Box Office Gradle build at 1.9G (killed at 1.5G, finishes at 2G). With the Claude process on top, 3.5G leaves about 1 GB of headroom for the heaviest case. README updated to match; FEATURE_LOOP_MEMORY_MAX still overrides it.",
+      "log_sha256": "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0"
+    },
+    {
+      "change_id": "mvmrltpoqlnluyrslwpyttzlspooyvxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs share the callees both versions call unchanged, and skip a target whose bytecode is identical (verification pending)",
+      "body": "jvmcontract equivalence now compares the two versions' bytecode before any solver runs (lib/src/shared.rs). A target identical in both versions, together with everything it reaches (instructions compared with their constant pool references resolved, exception tables, the static initializers and constant values of the classes whose statics it reads), is verified with nothing to prove and no JBMC run. A callee both versions call unchanged, that is a pure function of its primitive arguments (no fields, no arrays, nothing of the JDK beyond Math/StrictMath/Integer/Long/Short/Byte, string building and the exceptions it constructs), is taken as one function in both versions, the uninterpreted-function abstraction of regression verification: a generated stub class (SharedCallees, the class writer now writes static fields) keeps a memo table per callee, giving arguments seen before the outcome they got and new arguments an arbitrary result or one of the exceptions the callee can throw (its new'ed Throwables, plus ArithmeticException where it divides), and the invokestatic call sites of both versions are redirected to it by appending constant pool entries and rewriting the operands in place. The solver then relates how the versions use the callee and never its arithmetic. The abstraction is sound for a proof; a counterexample found with it is replayed through the real bytecode and, when it does not reproduce, the proof is run again with the callees as written, with a note. --no-shared-callees turns both off. The proof line names the callees taken as one function; Outcome gains a shared field.\n\nWhy: a 64-bit division in a helper both versions call was what turned a regression proof of a caller into a time-out, since each version carried its own copy for the solver to relate. Measured: a refactor of a caller around a division helper went from not finishing in 60 s to a proof in 0.2 s, and HoldPolicy-style pricing with Math.multiplyExact shared from 3.4 s to 0.4 s.\n\nExample 120 on Crosscut: a new kernel, ratelimit.RetryAfter#nanosUntilToken (the Retry-After of a refused request, from TokenBucket's refill helpers), with a test, a property proved in 1.7 s, and the API contract regenerated; the example's patch rewrites the wait as the period less the time since the credit, around the unchanged helpers. By hand: proved in 1.3 s with the helpers shared; without sharing the [-100000:100000] search stage had not finished after 60 s. New technique tag shared-callees. Job 20261104-054836-example-120-a-retry-after-rewrite-proved queued (build.py on the example). Docs: lib README (proof steps and limits), approaches.md B9, the Crosscut README, the plugin reference; build.py reads the 'nothing to prove' proof line.",
+      "log_sha256": "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0"
     }
   ],
   "logs": {
@@ -1287,12 +1303,6 @@
       "gzip_bytes": 4112339,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9282ed25a83ab4efe045a2ab1e83991102abb2bc96554fecad2dc8f0f2f9b47c.jsonl.gz"
     },
-    "992210ff0af947da6d5c9d4dbd96bff6fc3d0afe26effb56fc321b1820a8cf58": {
-      "bytes": 79414091,
-      "lines": 29749,
-      "gzip_bytes": 13539156,
-      "url": null
-    },
     "99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3": {
       "bytes": 32696099,
       "lines": 10661,
@@ -1394,6 +1404,12 @@
       "lines": 29668,
       "gzip_bytes": 13407327,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/e518eace3592e15fed111e0751c297ef78b6256455482f7d6a5c4e0747d10344.jsonl.gz"
+    },
+    "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0": {
+      "bytes": 81367388,
+      "lines": 30658,
+      "gzip_bytes": 13864072,
+      "url": null
     },
     "f42df4f817b931c8c2146aa9666f441eea582622a5e510d86c87155e0baf276b": {
       "bytes": 36086895,
