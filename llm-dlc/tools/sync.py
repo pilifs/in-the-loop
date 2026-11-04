@@ -26,13 +26,18 @@ Identifiers:
 Commands:
   sync.py hook                  Claude Code Stop/SessionEnd hook: Langfuse only, leaves the repo alone
   sync.py hook-commit           Claude Code PostToolUse hook: traces a plain `jj commit` or `git commit`
-  sync.py sync [--all | ID...]  snapshot sessions of this repo from ~/.claude/projects
+  sync.py sync [--all | ID...] [--full]
+                                snapshot sessions of this repo from ~/.claude/projects; only what a
+                                transcript gained since the last sync is redacted, --full redacts it all
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
                                 each -m is one paragraph, as in git
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
-  sync.py check [--remote]      verify hashes, trailers and redaction (--remote: re-download uploads)
+  sync.py check [--remote] [--full]
+                                verify hashes, trailers and redaction (--remote: re-download uploads);
+                                a log already scanned under these rules is not scanned again, --full
+                                scans every one (LLM_TRACES_FULL=1 does that for sync, check and push)
   sync.py scan [--all | ID...]  preview a publish: what the redactor changed and what it left to judge;
                                 a session named by ID is scanned whatever its age
   sync.py unpublish SID SHA [--reason TEXT]
@@ -71,6 +76,7 @@ import base64
 import contextlib
 import gzip
 import hashlib
+import io
 import json
 import os
 import re
@@ -349,7 +355,8 @@ class Redactor(redaction_rules.Rules):
     """The rules with this machine's literals, less the false positives a person has reviewed."""
 
     def __init__(self) -> None:
-        super().__init__(*personal_literals())
+        self.inputs = personal_literals()
+        super().__init__(*self.inputs)
         self.reviewed = load_reviewed() | allowed_ids()
         self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
         self._latest: tuple[str, tuple] | None = None  # callers ask about one text twice
@@ -367,15 +374,48 @@ class Redactor(redaction_rules.Rules):
                     self.skipped[kind] += n
         return kept
 
+    def fingerprint(self) -> str:
+        """Everything besides the content that decides what redacting or scanning gives: the
+        rules, this tool, the Python version and this machine's literals. Holds no literal."""
+        h = hashlib.sha256(f"{CACHE_VERSION}\0{sys.version}\0".encode())
+        for source in (Path(redaction_rules.__file__), Path(__file__)):
+            h.update(source.read_bytes() + b"\0")
+        h.update(json.dumps(self.inputs, ensure_ascii=False).encode())
+        return h.hexdigest()
+
+    def raw_hits(self, text: str) -> tuple:
+        """hits_of_text, measured; no judgement applied."""
+        before = len(self._seen)
+        with perf.phase("scan"):
+            hits = self.hits_of_text(text)
+        perf.count("scan texts")
+        perf.count("scan chars", len(text))
+        perf.count("scan lines scanned (not cached)", len(self._seen) - before)
+        return hits
+
     def _hits(self, text: str) -> tuple:
         if self._latest is None or self._latest[0] is not text:
-            before = len(self._seen)
-            with perf.phase("scan"):
-                self._latest = (text, self.hits_of_text(text))
-            perf.count("scan texts")
-            perf.count("scan chars", len(text))
-            perf.count("scan lines scanned (not cached)", len(self._seen) - before)
+            self._latest = (text, self.raw_hits(text))
         return self._latest[1]
+
+    def _counted_without_reviewed(self, found: dict[str, dict[str, list]]) -> dict[str, list]:
+        """_without_reviewed for findings kept by finding id (ScanCache): kind -> [[masked, count]]."""
+        kept: dict[str, list] = {}
+        for kind, rows in found.items():
+            for fid, (masked, n) in rows.items():
+                if kind in NEVER_REVIEWED or fid not in self.reviewed:
+                    kept.setdefault(kind, []).append([masked, n])
+                else:
+                    self.skipped[kind] += n
+        return kept
+
+    def cached_leaks(self, entry: dict) -> list[str]:
+        """leaks() of the text a ScanCache entry was made from."""
+        return sorted(self._counted_without_reviewed(entry["leaks"]))
+
+    def cached_review(self, entry: dict) -> list[str]:
+        """review() of the text a ScanCache entry was made from."""
+        return [_review_line(kind, rows) for kind, rows in sorted(self._counted_without_reviewed(entry["review"]).items())]
 
     def __call__(self, jsonl: str) -> bytes:
         with perf.phase("redact"):
@@ -398,8 +438,15 @@ class Redactor(redaction_rules.Rules):
 
     def review(self, text: str) -> list[str]:
         """The same, as masked warning lines with counts."""
-        return [f"{kind} ×{sum(c.values())}: " + ", ".join(_mask(v) for v, _ in c.most_common(3))
-                + (f", +{len(c) - 3} more" if len(c) > 3 else "") for kind, c in sorted(self.review_hits(text).items())]
+        return [_review_line(kind, [[_mask(v), n] for v, n in c.items()]) for kind, c in sorted(self.review_hits(text).items())]
+
+
+def _review_line(kind: str, rows: list[list]) -> str:
+    """One kind of finding as a warning: [masked value, count] rows in the order they were found,
+    the three most frequent shown (Counter.most_common: by count, ties in that order)."""
+    top = sorted(rows, key=lambda r: r[1], reverse=True)[:3]
+    return (f"{kind} ×{sum(n for _, n in rows)}: " + ", ".join(masked for masked, _ in top)
+            + (f", +{len(rows) - 3} more" if len(rows) > 3 else ""))
 
 
 # --------------------------------------------------------------------------- transcripts
@@ -570,6 +617,145 @@ def write_if_changed(path: Path, text: str) -> bool:
     return True
 
 
+# --------------------------------------------------------------------------- local caches
+#
+# Results kept between commands, on this machine only, so that bytes already redacted or scanned
+# are not processed again. An entry is used only when its exact inputs are shown to be the same:
+# the content, by its SHA-256, and everything else that decides the result, by a fingerprint of
+# both tools' source, the Python version and this machine's redaction literals. Anything else,
+# a missing or damaged file included, means the work is done again. `--full` (or LLM_TRACES_FULL=1)
+# trusts no cached result and records fresh ones. The files hold digests, lengths, kinds, finding
+# ids, masked values and counts, never a finding's value or any log content.
+
+CACHE_VERSION = 1              # bump when what an entry means changes
+TRANSCRIPT_CACHE = STATE / "transcript-cache.json"
+SCAN_CACHE = STATE / "scan-cache.json"
+
+
+def full_audit(args: list[str]) -> bool:
+    return "--full" in args or bool(os.environ.get("LLM_TRACES_FULL"))
+
+
+def sha256(data) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+class LocalCache:
+    """A JSON object of entries under a fingerprint of their inputs; one with another fingerprint
+    is empty. Saved whole and atomically; when two commands save at once, the later one wins,
+    and what the other found is worked out again next time."""
+
+    def __init__(self, path: Path | None, fingerprint: str, trusted: bool = True) -> None:
+        self.path, self.fingerprint, self.entries = path, fingerprint, {}
+        if path and trusted:
+            try:
+                stored = json.loads(path.read_text())
+                if stored.get("fingerprint") == fingerprint:
+                    self.entries = stored["entries"]
+            except (OSError, ValueError, KeyError, AttributeError):
+                pass
+
+    def save(self, keep: set[str] | None = None) -> None:
+        if self.path is None:
+            return
+        entries = self.entries if keep is None else {k: v for k, v in self.entries.items() if k in keep}
+        text = json.dumps({"fingerprint": self.fingerprint, "entries": entries})
+        tmp = self.path.with_name(f".{self.path.name}.{os.getpid()}.tmp")
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            tmp.touch(mode=0o600)
+            tmp.write_text(text)
+            tmp.replace(self.path)
+        except OSError:
+            tmp.unlink(missing_ok=True)  # a cache: the work is done again next time
+
+
+def decoded(raw: bytes) -> str:
+    """raw as Path.read_text(errors="replace") reads it: the default encoding, universal newlines."""
+    return io.TextIOWrapper(io.BytesIO(raw), encoding=io.text_encoding(None), errors="replace").read()
+
+
+def redacted_incrementally(raw: bytes, sid: str, key: str, redact: Redactor, cache: LocalCache | None) -> bytes:
+    """redact(decoded(raw)), reusing the log of an earlier, shorter version of the same transcript.
+    The redactor works line by line, and a cut right after a newline byte splits the decoded text,
+    its lines and so the log at the same place: the log of raw is the log of its first n bytes
+    followed by the log of the rest. Reused only when those n bytes have the recorded SHA-256 and
+    the stored log the cache names holds the content of its name. An unfinished last line is
+    redacted on its own, so that the recorded cut always follows a newline."""
+    start, head = 0, b""
+    entry = cache.entries.get(key) if cache else None
+    if entry and len(raw) >= entry["source_bytes"]:
+        n = entry["source_bytes"]
+        with perf.phase("verify cached"):
+            same = sha256(memoryview(raw)[:n]) == entry["source_sha256"]
+            log = load_log(sid, entry["log_sha256"]) if same else None
+            same = log is not None and len(log) >= entry["log_bytes"] and sha256(log) == entry["log_sha256"]
+        if same:
+            start, head = n, log[:entry["log_bytes"]]
+            perf.count("transcript bytes not redacted again (cached)", n)
+        del log
+    end = max(start, raw.rfind(b"\n") + 1)
+    body = redact(decoded(raw[start:end]))
+    data = head + body + redact(decoded(raw[end:]))
+    if cache is not None:
+        cache.entries[key] = {"source_bytes": end, "source_sha256": sha256(memoryview(raw)[:end]),
+                              "log_sha256": sha256(data), "log_bytes": len(head) + len(body)}
+    return data
+
+
+def _counted(hits: dict[str, Counter]) -> dict[str, dict[str, list]]:
+    """Findings without their values: kind -> finding id -> [masked value, count], in the order
+    they were first found."""
+    return {kind: {finding_id(kind, value): [_mask(value), n] for value, n in values.items()}
+            for kind, values in hits.items()}
+
+
+def _add_counted(into: dict, more: dict) -> None:
+    for kind, found in more.items():
+        rows = into.setdefault(kind, {})
+        for fid, (masked, n) in found.items():
+            rows.setdefault(fid, [masked, 0])[1] += n
+
+
+class ScanCache(LocalCache):
+    """What scanning a stored log found, by the log's SHA-256: Redactor.hits_of_text, without the
+    values. A log not scanned before is scanned from where the longest log scanned before ends,
+    when that log is a prefix of it (same SHA-256 over its length, ending in a newline): logs are
+    append-only, and the scan is line by line, so the findings of the whole are those of the
+    prefix plus those of the rest."""
+
+    def __init__(self, redact: Redactor, path: Path | None = SCAN_CACHE, trusted: bool = True) -> None:
+        super().__init__(path, redact.fingerprint(), trusted)
+        self.redact, self.used = redact, set()
+
+    def hits(self, sid: str | None, sha: str, data: bytes) -> dict:
+        """{"leaks": ..., "review": ...} for data, whose SHA-256 the caller has computed as sha.
+        sid None: not a log, so not scanned from the end of an earlier one."""
+        self.used.add(sha)
+        if (entry := self.entries.get(sha)) and entry["bytes"] == len(data):
+            perf.count("scan cache hits")
+            return entry
+        earlier = {e["bytes"]: s for s, e in self.entries.items()
+                   if sid is not None and e.get("session") == sid and 0 < e["bytes"] < len(data)}
+        with perf.phase("prefixes"):
+            digests = prefix_digests(data, set(earlier))
+        start = max((n for n, s in earlier.items() if digests.get(n) == s and data[n - 1] == 10), default=0)
+        entry = {"session": sid, "bytes": len(data), "leaks": {}, "review": {}}
+        if start:
+            self.used.add(earlier[start])
+            for part in ("leaks", "review"):
+                _add_counted(entry[part], self.entries[earlier[start]][part])
+            perf.count("scan bytes not scanned again (cached prefix)", start)
+        leaks, review = self.redact.raw_hits(data[start:].decode(errors="replace"))
+        _add_counted(entry["leaks"], _counted(leaks))
+        _add_counted(entry["review"], _counted(review))
+        self.entries[sha] = entry
+        return entry
+
+    def save(self, keep: set[str] | None = None) -> None:
+        super().save(self.used if keep is None else keep)
+
+
 # --------------------------------------------------------------------------- manifest
 
 def manifest_path(sid: str) -> Path:
@@ -589,28 +775,34 @@ def all_manifests() -> dict[str, dict]:
     return {p.parent.name: json.loads(p.read_text()) for p in sorted(TRACES.glob("*/manifest.json"))}
 
 
-def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor) -> bytes:
+def redacted(transcript: Path, sid: str, known: str | None, redact: Redactor, key: str,
+             cache: LocalCache | None = None) -> bytes:
     """A transcript's log. One older than the rules' stamp was redacted by them when `known`, its
-    last log, was stored."""
+    last log, was stored. Otherwise only what was appended since the cache's entry under `key`."""
     if known and older_than_stamp(transcript) and (data := load_log(sid, known)) is not None:
         perf.count("transcripts not redacted again (older than the stamp)")
         return data
-    return redact(transcript.read_text(errors="replace"))
+    return redacted_incrementally(transcript.read_bytes(), sid, key, redact, cache)
 
 
-def sync_session(transcript: Path, redact: Redactor, status: str) -> tuple[str, dict, list[dict], list[tuple]]:
+def transcript_cache(redact: Redactor, full: bool = False) -> LocalCache:
+    return LocalCache(TRANSCRIPT_CACHE, redact.fingerprint(), trusted=not (full or full_audit([])))
+
+
+def sync_session(transcript: Path, redact: Redactor, status: str,
+                 cache: LocalCache | None = None) -> tuple[str, dict, list[dict], list[tuple]]:
     """Snapshot one session's log (and subagent logs) and rewrite its manifest. Returns the session
     id, the manifest, the log's entries, and (agent, entries) of each subagent log."""
     sid = transcript.stem
     old = load_manifest(sid)
-    data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact)
+    data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact, sid, cache)
     entries = read_jsonl(data)
     log = store_log(sid, data)
     known_subagents = {s["agent"]: s["log"]["sha256"] for s in old.get("subagents", [])}
     subagents, subagent_entries = [], []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
-        sub_data = redacted(sub, sid, known_subagents.get(sub.stem), redact)
+        sub_data = redacted(sub, sid, known_subagents.get(sub.stem), redact, f"{sid}/{sub.stem}", cache)
         sub_entries = read_jsonl(sub_data)
         s = summarize(sub_entries, redact.string(str(REPO)))
         subagents.append({"agent": sub.stem, "models": s["models"], "stats": s["stats"],
@@ -1355,14 +1547,14 @@ def cmd_unpublish(args: list[str]) -> int:
 # --------------------------------------------------------------------------- commands
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool,
-            publishing: bool = False) -> dict:
+            publishing: bool = False, cache: LocalCache | None = None) -> dict:
     """Bring a session's own tracked files up to date; the caller rebuilds the global ones once,
     with write_index. Langfuse is not contacted: the Stop hook sends turns. live: the last turn may be
     unfinished. current: the session is the one running now, so @ is its working copy.
     publishing: @ is a trace record, which carries every session with log no commit points at yet."""
     known = {c.get("log_sha256") for c in load_manifest(transcript.stem).get("commits", [])}
     with perf.phase("snapshot"):
-        sid, m, entries, subagents = sync_session(transcript, redact, status)
+        sid, m, entries, subagents = sync_session(transcript, redact, status, cache)
     if publishing:
         current = bool(m["stats"]["turns"]) and m["log"]["sha256"] not in known
     if has_jj():
@@ -1485,7 +1677,10 @@ def cmd_hook_commit() -> None:
             return  # rewriting the commit below would conflict; the next sync stamps it instead
         jj("edit", parents[0]["change_id"])  # abandons @ if it is empty and has no message
         try:
-            process(transcript, Redactor(), "open", live=False, current=True)
+            redact = Redactor()
+            cache = transcript_cache(redact)
+            process(transcript, redact, "open", live=False, current=True, cache=cache)
+            cache.save()
             write_index()
         finally:
             jj("edit", at["change_id"]) if changed or at["description"] else jj("new")
@@ -1494,16 +1689,19 @@ def cmd_hook_commit() -> None:
 
 
 def cmd_sync(args: list[str], publishing: bool = False) -> None:
-    src = claude_project_dir()
+    src, full = claude_project_dir(), full_audit(args)
+    args = [a for a in args if a != "--full"]
     paths = sorted(src.glob("*.jsonl")) if args in ([], ["--all"]) else [src / f"{a}.jsonl" for a in args]
     redact = Redactor()
+    cache = transcript_cache(redact, full)
     for p in paths:
         live = time.time() - p.stat().st_mtime < LIVE_SECONDS
         with perf.phase("process"):
-            m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing)
+            m = process(p, redact, "open" if live else "ended", live, current=live, publishing=publishing, cache=cache)
         s = m["stats"]
         print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
               f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
+    cache.save()
     with perf.phase("index"):
         write_index()  # once, after every session: it reads all their manifests
 
@@ -2109,10 +2307,13 @@ def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
     return out
 
 
-def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool) -> tuple[list, list, list, int]:
+def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
+                   scans: ScanCache | None = None) -> tuple[list, list, list, int]:
     """(errors, warnings, notes, logs left out as older than the stamp) for each session's logs,
-    files and metrics."""
+    files and metrics. A log is scanned by `scans`, which holds only what its content gave before:
+    without one, every log is scanned in full."""
     errors, warnings, notes, left_out = [], [], [], 0
+    scans = scans or ScanCache(redact, path=None)
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             errors.append(f"{sid}: unknown schema {m.get('schema')}")
@@ -2141,16 +2342,16 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool) -
             if sha == current_sha:
                 current = data
             with perf.phase("hash"):
-                matches = hashlib.sha256(data).hexdigest() == sha
-            if matches:
+                actual = sha256(data)
+            if matches := actual == sha:
                 verified[sha] = len(data)
             else:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             if older_than_stamp(log_path(sid, sha)):
                 left_out += 1
                 continue
-            text = data.decode(errors="replace")
-            if leaks := redact.leaks(text):
+            found = scans.hits(sid, actual, data)  # by what it holds, not by its name
+            if leaks := redact.cached_leaks(found):
                 # A log that is not public yet is an error. One that is cannot be fixed, only
                 # withdrawn, and whether that is worth it is a person's call: a warning until
                 # they have made it, then a note.
@@ -2162,12 +2363,12 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool) -
                     warnings.append(f"{sid}: published log {sha[:12]} has unredacted {leaks} and is not reviewed: "
                                     f"withdraw it with unpublish --reason, or add it to ACCEPTED_LOGS in sync.py")
             if not url:  # not public yet: what a person should look at before pushing
-                warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.review(text)]
-            del data, text  # one log in memory at a time, besides the current one
+                warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.cached_review(found)]
+            del data  # one log in memory at a time, besides the current one
         if not summary_path(sid).exists():
             errors.append(f"{sid}: summary.md is missing (run: python3 llm-dlc/tools/sync.py sync {sid})")
         for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):  # committed, so published
-            if path.exists() and (leaks := redact.leaks(path.read_text())):
+            if path.exists() and (leaks := redact.cached_leaks(scans.hits(None, sha256(content := path.read_bytes()), content))):
                 errors.append(f"{sid}: unredacted {leaks} in {path.relative_to(REPO)}")
         if current is None and current_sha not in logs:
             current = load_log(sid, current_sha)
@@ -2234,15 +2435,20 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
     return errors
 
 
-def cmd_check(remote: bool = False) -> int:
+def cmd_check(args: list[str] = ()) -> int:
+    """Everything published or about to be, checked. Logs already scanned with these rules and
+    tools are not scanned again (ScanCache); --full scans them all, trusting no earlier result."""
+    remote, full = "--remote" in args, full_audit(args)
     redact, errors, notes, warnings = Redactor(), [], [], []
+    scans = ScanCache(redact, trusted=not full)
     errors += reviewed_problems()
     found_errors, found_warnings = allowlist_problems(redact)
     errors += found_errors
     warnings += found_warnings
     manifests = all_manifests()
     with perf.phase("sessions"):
-        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote)
+        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote, scans)
+    scans.save()
     errors += found_errors
     warnings += found_warnings
     notes += found_notes
@@ -2318,7 +2524,10 @@ def run(cmd: str, args: list[str]) -> int:
     elif cmd == "unpublish":
         return cmd_unpublish(args)
     elif cmd == "check":
-        return cmd_check(remote=args == ["--remote"])
+        if set(args) - {"--remote", "--full"}:
+            print("usage: sync.py check [--remote] [--full]", file=sys.stderr)
+            return 2
+        return cmd_check(args)
     elif cmd == "scan":
         return cmd_scan(args)
     elif cmd == "review":

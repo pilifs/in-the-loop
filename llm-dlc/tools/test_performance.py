@@ -24,6 +24,21 @@ PAIRS = [("/ho" + "me/" + USER, "~", 0, "home"), ("zorbhost", "host", re.I, "hos
          (USER + "@corp" + ".test", "user@example.com", re.I, "email"), (SECRET, "[REDACTED:local-secret]", 0, "local-secret")]
 
 
+STATE = tempfile.TemporaryDirectory()  # the caches and measurements of these tests, not this machine's
+
+
+def setUpModule():
+    state = Path(STATE.name)
+    for name, path in (("STATE", state), ("TRANSCRIPT_CACHE", state / "transcript-cache.json"),
+                       ("SCAN_CACHE", state / "scan-cache.json"), ("PERF_LOG", state / "perf.jsonl")):
+        mock.patch.object(sync, name, path).start()
+
+
+def tearDownModule():
+    mock.patch.stopall()
+    STATE.cleanup()
+
+
 class Reference(redaction_rules.Rules):
     """The rules as they ran before the speed-ups: every pattern over every string, EMAIL_RE itself."""
 
@@ -202,7 +217,7 @@ class Sync(unittest.TestCase):
             with mock.patch.object(sync, "claude_project_dir", return_value=Path(d)), \
                     mock.patch.object(sync, "process", side_effect=fake), \
                     mock.patch.object(sync, "write_index") as index, \
-                    mock.patch.object(sync, "Redactor"), \
+                    mock.patch.object(sync, "Redactor", return_value=mock.Mock(fingerprint=lambda: "f")), \
                     mock.patch.object(sync.subprocess, "Popen", side_effect=AssertionError("started a process")), \
                     mock.patch.object(sync.urllib.request, "urlopen", side_effect=AssertionError("network")), \
                     mock.patch.object(sync, "export_langfuse", side_effect=AssertionError("waited on Langfuse")), \
@@ -283,6 +298,160 @@ class Stamp(unittest.TestCase):
                 finally:
                     self.patches[2].start()
             self.assertIn('RULES_GENERATED = "2026-01-02T03:04:05+00:00"', copy.read_text())
+
+
+class MadeUpRedactor(sync.Redactor):
+    """sync's Redactor with the made-up literals of these tests instead of this machine's."""
+
+    def __init__(self, reviewed=None):
+        self.inputs = (PAIRS, USER)
+        redaction_rules.Rules.__init__(self, PAIRS, USER)
+        self.reviewed, self.skipped, self._latest = reviewed or {}, sync.Counter(), None
+
+
+def made_up_transcript(rng: random.Random, lines: int) -> bytes:
+    """JSON lines and broken ones, with every line break the decoder or splitlines knows, invalid
+    UTF-8, and line separators both raw and escaped."""
+    out = []
+    for _ in range(lines):
+        text = random_text(rng) + rng.choice(["", " x", "\\u2028", "é", "\x85", "\x0b"])
+        line = (json.dumps({"type": "user", "text": text}, ensure_ascii=rng.random() < 0.5) if rng.random() < 0.7
+                else text).encode()
+        out.append(line + rng.choice([b"\n", b"\n", b"\r\n", b"\r", b"\xe2\x80\xa8", b"\xff\n", b"\xe2\x82\n"]))
+    return b"".join(out)
+
+
+class Caches(unittest.TestCase):
+    """The transcript and scan caches give what redacting and scanning everything gives."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.patches = [mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "traces")]
+        for p in self.patches:
+            p.start()
+        self.r = MadeUpRedactor()
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def test_decoding_is_that_of_read_text(self):
+        rng = random.Random(5)
+        path = Path(self.tmp.name) / "t.jsonl"
+        for _ in range(300):
+            raw = bytes(rng.choice(b"ab\n\r\xe2\x82\xac\xff\xc3\xa9 ") for _ in range(rng.randint(0, 40)))
+            path.write_bytes(raw)
+            self.assertEqual(sync.decoded(raw), path.read_text(errors="replace"), raw)
+
+    def grow(self, full: bytes, rng: random.Random, cache: sync.LocalCache, steps: int = 25) -> int:
+        """Sync ever longer prefixes of full, cut anywhere; each log must be the full redaction."""
+        reused = 0
+        for cut in sorted(rng.sample(range(1, len(full) + 1), steps)) + [len(full)]:
+            raw = full[:cut]
+            before = cache.entries.get("s1", {}).get("source_bytes", 0)
+            data = sync.redacted_incrementally(raw, "s1", "s1", self.r, cache)
+            self.assertEqual(data, self.r(sync.decoded(raw)), cut)
+            reused += before > 0 and len(raw) >= before
+            sync.store_log("s1", data)
+        return reused
+
+    def test_a_growing_transcript_is_redacted_as_a_whole(self):
+        for seed in range(12):
+            rng = random.Random(seed)
+            cache = sync.LocalCache(None, "f")
+            self.assertGreater(self.grow(made_up_transcript(rng, 60), rng, cache), 0)
+
+    def test_nothing_is_reused_from_a_rewritten_transcript_or_a_damaged_log(self):
+        rng = random.Random(21)
+        cache = sync.LocalCache(None, "f")
+        full = made_up_transcript(rng, 40)
+        first = sync.redacted_incrementally(full, "s1", "s1", self.r, cache)
+        sync.store_log("s1", first)
+        rewritten = (USER + "@corp" + ".test").encode() + full[len(USER) + 10:] + made_up_transcript(rng, 3)
+        self.assertEqual(sync.redacted_incrementally(rewritten, "s1", "s1", self.r, cache), self.r(sync.decoded(rewritten)))
+        sync.store_log("s1", self.r(sync.decoded(rewritten)))
+        entry = cache.entries["s1"]
+        sync.log_path("s1", entry["log_sha256"]).write_bytes(gzip.compress(b'{"other":1}\n' * 9999))
+        longer = rewritten + made_up_transcript(rng, 3)
+        loads = mock.Mock(wraps=sync.load_log)
+        with mock.patch.object(sync, "load_log", loads):
+            self.assertEqual(sync.redacted_incrementally(longer, "s1", "s1", self.r, cache), self.r(sync.decoded(longer)))
+        loads.assert_called_once()
+
+    def test_entries_under_another_fingerprint_or_a_full_audit_are_not_used(self):
+        path = Path(self.tmp.name) / "cache.json"
+        cache = sync.LocalCache(path, "f1")
+        cache.entries["k"] = {"x": 1}
+        cache.save()
+        self.assertEqual(sync.LocalCache(path, "f1").entries, {"k": {"x": 1}})
+        self.assertEqual(sync.LocalCache(path, "f2").entries, {})
+        self.assertEqual(sync.LocalCache(path, "f1", trusted=False).entries, {})
+        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        other = MadeUpRedactor()
+        other.inputs = (PAIRS[:-1], USER)
+        self.assertNotEqual(self.r.fingerprint(), other.fingerprint())
+
+    def test_a_growing_log_is_scanned_as_a_whole(self):
+        listed = {}
+        reviewed = MadeUpRedactor()
+        for seed in range(8):
+            rng = random.Random(100 + seed)
+            full = self.r(sync.decoded(made_up_transcript(rng, 80)))
+            scans = sync.ScanCache(self.r, path=None)
+            for cut in sorted({full.rfind(b"\n", 0, rng.randrange(len(full))) + 1 for _ in range(10)} | {len(full)}):
+                data = full[:cut]
+                found = scans.hits("s1", sync.sha256(data), data)
+                text = data.decode(errors="replace")
+                self.assertEqual(found["leaks"], sync._counted(self.r.hits_of_text(text)[0]))
+                self.assertEqual(found["review"], sync._counted(self.r.hits_of_text(text)[1]))
+                # judged the same way as the text: a reviewed false positive is left out and counted
+                for kind, rows in found["review"].items():
+                    listed.setdefault(next(iter(rows)), {})
+                reviewed.reviewed = listed
+                reviewed.skipped = sync.Counter()
+                expected = reviewed.leaks(text), reviewed.review(text)
+                skipped, reviewed.skipped = reviewed.skipped, sync.Counter()
+                self.assertEqual((reviewed.cached_leaks(found), reviewed.cached_review(found)), expected)
+                self.assertEqual(reviewed.skipped, skipped)
+            self.assertTrue(scans.entries)
+
+    def check(self, m, scans):
+        with mock.patch.object(sync, "metrics_problems", return_value=([], [])):
+            return sync.check_sessions({"s1": m}, self.r, remote=False, scans=scans)
+
+    def test_check_scans_a_log_once_by_its_content(self):
+        texts = ['{"ip":"203.0.' + '113.%d"}\n' % n for n in range(1, 4)]
+        current = "".join(texts).encode()
+        prefix, other = current[:len(texts[0])], texts[2].encode()
+        shas = [sync.store_log("s1", d)["sha256"] for d in (current, prefix, other)]
+        m = {"schema": sync.SCHEMA, "log": {"sha256": shas[0]}, "subagents": [], "stats": {"usage": {}},
+             "commits": [{"change_id": "c1", "log_sha256": shas[1]}], "logs": {sha: {} for sha in shas}}
+        path = Path(self.tmp.name) / "scan.json"
+        scans = sync.ScanCache(self.r, path)
+        first = self.check(m, scans)
+        scans.save()
+        self.assertEqual(len([w for w in first[1] if "public-ip" in w]), 3)
+        self.assertEqual(first, self.check(m, None))  # what scanning everything says
+        scans = sync.ScanCache(self.r, path)
+        self.assertEqual(set(scans.entries), set(shas))
+        with mock.patch.object(self.r, "raw_hits", side_effect=AssertionError("scanned again")):
+            self.assertEqual(self.check(m, scans), first)
+        # the session's published files go through the cache too, by their content
+        sync.summary_path("s1").write_text("written by zed" + "@corp" + ".test\n")
+        found = self.check(m, scans)
+        self.assertIn("s1: unredacted ['email'] in traces/s1/summary.md", found[0])
+        self.assertEqual(found, self.check(m, None))
+        with mock.patch.object(self.r, "raw_hits", side_effect=AssertionError("scanned again")):
+            self.assertEqual(self.check(m, scans), found)
+        sync.summary_path("s1").unlink()
+        # a stored file that no longer holds its name's content is scanned for what it holds
+        sync.log_path("s1", shas[2]).write_bytes(gzip.compress(b'{"ip":"198.51.' + b'100.4"}\n'))
+        third = self.check(m, sync.ScanCache(self.r, path))
+        self.assertIn(f"s1: log {shas[2][:12]} content does not match its name", third[0])
+        self.assertEqual([w for w in third[1] if shas[2][:12] in w], 
+                         [f"s1: log {shas[2][:12]}: public-ip ×1: " + sync._mask("198.51." + "100.4")])
 
 
 class Perf(unittest.TestCase):
