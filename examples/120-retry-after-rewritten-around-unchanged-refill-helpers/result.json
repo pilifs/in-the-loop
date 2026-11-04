@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+    "startLine": 4,
+    "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the credited time plus a period, less now.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        return TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) + periodNanos - nowNanos;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+    "startLine": 4,
+    "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the period less the time since the credit.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        long credited = TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity);\n        return periodNanos - (nowNanos - credited);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.8 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

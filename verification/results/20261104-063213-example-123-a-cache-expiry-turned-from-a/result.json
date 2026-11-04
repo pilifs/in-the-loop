@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-063213-example-123-a-cache-expiry-turned-from-a",
+  "title": "Example 123: a cache expiry turned from a boolean into the time left, proved expired exactly when none is left",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.2s, peak 94.6 MiB (estimated 5m00s, 3.0 GiB)",
+  "attention": [
+    "step 1 (example 123 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-063213-example-123-a-cache-expiry-turned-from-a.json",
+    "sha256": "16a94a675f4db527554ac7c68585dd4655e44379b6b3ce038030b1c35460f4a9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-063213-example-123-a-cache-expiry-turned-from-a",
+      "title": "Example 123: a cache expiry turned from a boolean into the time left, proved expired exactly when none is left",
+      "description": "Regression proof (B9) of Crosscut's cache expiry between the committed version, Expiry#isExpired returning a boolean, and the patched one, Expiry#remainingNanos returning the nanoseconds an entry has left. The return types differ, so the example states how the results are related, resultsAgreeWhen 'previous == (result <= 0)' (the new --results-agree-when of jvmcontract equivalence, lib/src/harness/mod.rs and lib/src/equivalence.rs), names the previous method with previousSymbol, and restricts the proof to the module's own precondition (a write at or after the clock's zero, read at or after it, positive time to live) through intendedInputs, outside which the new subtraction can overflow. The statement proved is that on every input in the precondition both versions throw alike and, when both return, the relation holds. The library's test of the same shape proves in 0.4 s. The job runs build.py on the example, which compiles both Crosscut trees with javac and runs jvmcontract equivalence with the relation.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java"
+        ],
+        "examples": [
+          "123"
+        ]
+      },
+      "expected": "Verdict verified; the proof line reads 'agrees with the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) on every input, the results related by previous == (result <= 0)' and the example's result.json records it",
+      "submitted": {
+        "at": "2026-11-04T06:32:13+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 123 (B9)",
+          "run": "python3 examples/tools/build.py 123",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/123-cache-expiry-as-the-time-left-proved-expired-exactly-when-none-is-left"
+      ]
+    }
+  },
+  "sourceCommit": "4c8301a5388983a26a735b63cccd52592689ad33",
+  "startedAt": "2026-11-04T13:27:43+00:00",
+  "finishedAt": "2026-11-04T13:27:47+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 99184640,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 123 (B9)",
+      "run": "python3 examples/tools/build.py 123",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.213,
+      "cpuSeconds": 5.729,
+      "cpuThrottledSeconds": 0.797,
+      "peakMemoryBytes": 99184640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-123-b9.log",
+        "lines": 10,
+        "bytes": 398,
+        "sha256": "3c84be493360105c8642adc0cd050fe33dc359e97c09b22e94c75d797833d22d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "123-cache-expiry-as-the-time-left-proved-expired-exactly-when-none-is-left: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-target' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT> --unchanged-unless <UNCHANGED_UNLESS>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "8b8b2eb7efcf55497cde10c1bbe0ee66c97928e9",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/8b8b2eb7efcf55497cde10c1bbe0ee66c97928e9/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-063213-example-123-a-cache-expiry-turned-from-a"
+}

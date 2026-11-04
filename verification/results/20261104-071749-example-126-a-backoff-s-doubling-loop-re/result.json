@@ -1,0 +1,251 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-071749-example-126-a-backoff-s-doubling-loop-re",
+  "title": "Example 126: a backoff's doubling loop replaced by a shift, refuted on the record's components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.2s, peak 92.2 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 126 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-071749-example-126-a-backoff-s-doubling-loop-re.json",
+    "sha256": "6f60f6517eb48cab96f5c7de437a858ef22e9bf1cf8b1741a75435ebb3d58e67",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-071749-example-126-a-backoff-s-doubling-loop-re",
+      "title": "Example 126: a backoff's doubling loop replaced by a shift, refuted on the record's components",
+      "description": "Regression proof (B9, Crosscut, JBMC) of net.terminalvalue.crosscut.retry.Backoff#delayMillis, a method of a record whose two components are the symbolic receiver, unwound 32 times. Expected: a violation, the shift leaving the range of a long; the library's inline run found delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1) in 1.9 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression proof of a record's method",
+        "record receiver from symbolic components",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs"
+        ],
+        "examples": [
+          "126"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T07:17:49+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 126 (B9)",
+          "run": "python3 examples/tools/build.py 126",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components"
+      ]
+    }
+  },
+  "sourceCommit": "8148240991700df262420782bd50b3d8767114b8",
+  "startedAt": "2026-11-04T13:27:59+00:00",
+  "finishedAt": "2026-11-04T13:28:04+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 96702464,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.071,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16064512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "92434e198f27984c035c376ec77a7cf9e6ebdde782f8ccb1336ae3329b66ddb7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.05s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 126 (B9)",
+      "run": "python3 examples/tools/build.py 126",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.213,
+      "cpuSeconds": 6.584,
+      "cpuThrottledSeconds": 0.589,
+      "peakMemoryBytes": 96702464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-126-b9.log",
+        "lines": 3,
+        "bytes": 303,
+        "sha256": "51d308c43f1c26b6d8f279a0bbc046ffd6d886f7c81ddce3f9e7b590f816da0a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: unverifiable (EXPECTED VIOLATION)",
+          "groups": [
+            "126",
+            "unverifiable",
+            "EXPECTED VIOLATION"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components",
+          "groups": [
+            "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components"
+          ]
+        }
+      ],
+      "tail": [
+        "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: running (B9)",
+        "126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components: unverifiable (EXPECTED VIOLATION)",
+        "Verdicts differ from expectations: 126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/README.md",
+      "change": "added",
+      "bytes": 12478,
+      "sha256": "fb152f4a0a7a7b53a7f42f2e0c13ddfbea857294352b6e1f47f06f5690239d82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/result.json",
+      "change": "added",
+      "bytes": 1744,
+      "sha256": "580a5cc012e0af6334f87cc01ba0fc19c5eaba3ea783cd13d221fd5b2f4fa097",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/result.sarif",
+      "change": "added",
+      "bytes": 2501,
+      "sha256": "1941c76f35cbdfdfb7170df5a810c4b7d1a567a819b2b7c19ac156937d745a95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/verifier-output.txt",
+      "change": "added",
+      "bytes": 111,
+      "sha256": "c961edbe77dd7713a363e5c678d0631a4e8974132bebcaa62df42081771caf19",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/README.md",
+      "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/result.json",
+      "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/result.sarif",
+      "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "af5b0b01054e2415a107c89bf90292674fcf22fc",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/af5b0b01054e2415a107c89bf90292674fcf22fc/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-071749-example-126-a-backoff-s-doubling-loop-re"
+}

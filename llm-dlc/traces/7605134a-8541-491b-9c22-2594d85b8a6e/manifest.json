@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "7605134a-8541-491b-9c22-2594d85b8a6e",
-  "status": "open",
+  "status": "ended",
   "title": "build.py newProblems schema mismatch",
   "first_prompt": "Let's address issues with build.py from last verification run. Summary: `newProblems` schema mismatch between `build.py` and the schema. Next, the submitter should reconcile those two files and resubm",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-04T13:08:42.021Z",
-  "ended": "2026-11-04T13:17:10.718Z",
-  "duration_seconds": 509,
+  "ended": "2026-11-04T13:20:56.404Z",
+  "duration_seconds": 734,
   "stats": {
     "turns": 3,
-    "api_calls": 49,
-    "tool_calls": 50,
+    "api_calls": 51,
+    "tool_calls": 51,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 124238,
+    "peak_context_tokens": 125823,
     "usage": {
-      "input_tokens": 102,
-      "output_tokens": 21383,
-      "cache_read_input_tokens": 4394232,
-      "cache_creation_input_tokens": 96711
+      "input_tokens": 106,
+      "output_tokens": 21794,
+      "cache_read_input_tokens": 4644013,
+      "cache_creation_input_tokens": 98296
     }
   },
   "tools": {
-    "Bash": 45,
+    "Bash": 46,
     "Edit": 5
   },
   "files_touched": [
@@ -42,31 +42,31 @@
     {
       "index": 0,
       "started": "2026-11-04T13:08:42.021Z",
-      "ended": "2026-11-04T13:17:10.718Z",
+      "ended": "2026-11-04T13:20:56.404Z",
       "turns": 3,
-      "api_calls": 49,
+      "api_calls": 51,
       "usage": {
-        "input_tokens": 102,
-        "output_tokens": 21383,
-        "cache_read_input_tokens": 4394232,
-        "cache_creation_input_tokens": 96711
+        "input_tokens": 106,
+        "output_tokens": 21794,
+        "cache_read_input_tokens": 4644013,
+        "cache_creation_input_tokens": 98296
       },
-      "peak_context_tokens": 124238
+      "peak_context_tokens": 125823
     }
   ],
   "log": {
-    "sha256": "4448850e71a5b381fd93938e6e062c4a2e49a4cebae796f6d3d070d30912564f",
-    "bytes": 1291593,
-    "lines": 470,
-    "gzip_bytes": 231239,
-    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/4448850e71a5b381fd93938e6e062c4a2e49a4cebae796f6d3d070d30912564f.jsonl.gz"
+    "sha256": "5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d",
+    "bytes": 1429117,
+    "lines": 490,
+    "gzip_bytes": 268485,
+    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
     {
       "change_id": "yvvxkxxkrruunqsrqlzllmysmzrlurnm",
       "commit_id": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
-      "immutable": false,
+      "immutable": true,
       "summary": "The result schema takes what build.py writes for a boundary contract's new problems and a vacuous symbolic proof; examples 111-119 and 144 resubmitted (verification pending)",
       "body": "The last verification run failed examples 111 to 119 on result.json validation: build.py writes newProblems (the `!` lines a regenerated B12 contract gains) and the schema did not list it. The schema also allowed coverage only in its TLC form, while build.py writes {vacuous, reason} for a regression or property proof the tool reports as vacuous, so example 144's pending job would have failed the same way. The schema now lists newProblems as an array of strings, and coverage as null, the TLC object, or {vacuous: true, reason}. Checked by validating all 105 committed result.json files against it (all valid) and synthetic B12 and vacuous B9 results (valid), with a missing reason and a non-array newProblems rejected.\n\nJobs resubmitted at this commit: 20261104-131020-example-111..117, 20261104-131021-example-118, -119 and -144 (the never-run 20261104-124827-example-144 job, pinned to the old schema, removed). The other failures in the run (example 036's patch no longer applying to Mica, example 109's replay of a static field) are not about the schema and are left.",
       "log_sha256": "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f"
@@ -74,15 +74,15 @@
     {
       "change_id": "pmqyrtsswpkukqztvlrywysolrwwvwrw",
       "commit_id": "72bdc20470cdeba151c1ad151e0a73161b5a5562",
-      "immutable": false,
+      "immutable": true,
       "summary": "The Java contract verifier leaves another tool's contract alone, so Box Office's build passes again",
       "body": "Box Office's contracts module applies both contract plugins: the behavioural/capability one (examples/tools/contracts) and the boundaries one (jvmcontract). Since that module gained a boundaries.contract for the wire types, the Java verifier read it as a behavioural contract, and :contracts:verifyContracts, and with it the app's check, failed with 'boundaries.contract: not a case: kind: boundaries'. An Opus 5.5 session noticed it on Nov 3 while measuring memory caps and left it open. The verifier now skips any .contract file whose first line is a kind: header (Contract.kind), a behavioural contract having none.",
       "log_sha256": "5f04967a23b2e590c2303107fd83d200e8b378103dc8d10fa8b19e5e26ac0818"
     },
     {
       "change_id": "mzpzpssrtwkrqloqtrtssxtvxnsnmkqn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4c279ba6f3b46ecac8cf938903059ee993a36968",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "4448850e71a5b381fd93938e6e062c4a2e49a4cebae796f6d3d070d30912564f"
@@ -100,6 +100,12 @@
       "lines": 445,
       "gzip_bytes": 215229,
       "url": "https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/5f04967a23b2e590c2303107fd83d200e8b378103dc8d10fa8b19e5e26ac0818.jsonl.gz"
+    },
+    "5f459d3a09e840c1f1c0c3b4851d49e6169c51e51fe6cfc5ab605c1a70f2207d": {
+      "bytes": 1429117,
+      "lines": 490,
+      "gzip_bytes": 268485,
+      "url": null
     },
     "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f": {
       "bytes": 762147,

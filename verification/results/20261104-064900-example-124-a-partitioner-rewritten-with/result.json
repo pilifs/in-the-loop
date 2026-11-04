@@ -1,0 +1,243 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-064900-example-124-a-partitioner-rewritten-with",
+  "title": "Example 124: a partitioner rewritten with floorMod, refuted by the tool's own checker in the second stage of its search",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 89.3 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-064900-example-124-a-partitioner-rewritten-with.json",
+    "sha256": "e7317c10d3c18c4225e423e070fd665c812ab11cd9a3492745aedbb5fcbb1eb2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-064900-example-124-a-partitioner-rewritten-with",
+      "title": "Example 124: a partitioner rewritten with floorMod, refuted by the tool's own checker in the second stage of its search",
+      "description": "Runs build.py on example 124, a B9 regression proof on Crosscut's kafka.Partitioner#partitionFor with approach.engine native: the masked remainder (hash & 0x7fffffff) % n rewritten as Math.floorMod(hash, n). The tool's own bounded model checker (lib/src/bmc, CaDiCaL) explores the harness path by path and, on the violating path, asks for an input in the stages JBMC is run through ([0:20], then [-100000:100000], then everything), reporting the stage. Non-negative hashes agree, so the witness comes from the second stage and the interpreter shrinks it. The library's run of this shape took 0.4 s and shrank the witness to partitionFor(hash=-1, numPartitions=3), 1 before and 2 after.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs"
+        ],
+        "examples": [
+          "124"
+        ]
+      },
+      "expected": "verdict violation; a counterexample with a negative hash, before and after partitions differing; the proof line says found by jvmcontract's own checker ... searching inputs in [-100000:100000]",
+      "submitted": {
+        "at": "2026-11-04T06:49:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 124 (B9)",
+          "run": "python3 examples/tools/build.py 124",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key"
+      ]
+    }
+  },
+  "sourceCommit": "87abe86e7e41137d32fdafed3ab6fd057d0a59f9",
+  "startedAt": "2026-11-04T13:27:47+00:00",
+  "finishedAt": "2026-11-04T13:27:52+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 93609984,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.063,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16338944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "9576f1f7e73fc2bb1ec2336aae60cb485c591eadc60a1b998573411c34057e08",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 124 (B9)",
+      "run": "python3 examples/tools/build.py 124",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.411,
+      "cpuSeconds": 6.67,
+      "cpuThrottledSeconds": 0.594,
+      "peakMemoryBytes": 93609984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-124-b9.log",
+        "lines": 2,
+        "bytes": 169,
+        "sha256": "dd0887e18fb910c2b27eb5bfabd93abb7b13b8c68a059cc232f88f07784cf339",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "124-partitioner-rewritten-with-floormod-moves-every-negative-key: violation (as expected)",
+          "groups": [
+            "124",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "124-partitioner-rewritten-with-floormod-moves-every-negative-key: running (B9)",
+        "124-partitioner-rewritten-with-floormod-moves-every-negative-key: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/README.md",
+      "change": "added",
+      "bytes": 15249,
+      "sha256": "50dec2c4dd6ea13d323de498eb0b88fcf42fdacc6acb7dded7e48a874f1e5cc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/result.json",
+      "change": "added",
+      "bytes": 2148,
+      "sha256": "40fe1314e766f6ae21a38eb7706f05c3dc5bf54ab9eb262f90e33ed8b9ab172a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/result.sarif",
+      "change": "added",
+      "bytes": 2555,
+      "sha256": "f6d024daeb53de5520fd001d0ab01a7477952a87bcd659175bf2b87180c6776b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/statement.java",
+      "change": "added",
+      "bytes": 2288,
+      "sha256": "15c2d474694bc2c99ebd2c13f3cc7006b9f174eb8bc8d9c040864d52247ee345",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/verifier-output.txt",
+      "change": "added",
+      "bytes": 558,
+      "sha256": "a301e7e001fee6ce38126407a13574671455df4c68c411e351391d4f4102b373",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/README.md",
+      "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/result.json",
+      "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/result.sarif",
+      "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/statement.java",
+      "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9f50f2cee5576d4fdc559f3a1ba1a4bbfbbcb3a6",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9f50f2cee5576d4fdc559f3a1ba1a4bbfbbcb3a6/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

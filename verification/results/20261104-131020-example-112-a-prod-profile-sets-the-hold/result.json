@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-131020-example-112-a-prod-profile-sets-the-hold",
+  "title": "Example 112: a prod profile sets the hold seat limit under boxoffice.hold.max-seat, a key nothing reads, caught by the configuration block of the boundary contract (B12)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m42s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-131020-example-112-a-prod-profile-sets-the-hold.json",
+    "sha256": "481883c9627c6f4315128f1850f71bf9d80fbe6308f9ed0236225445008ec490",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-131020-example-112-a-prod-profile-sets-the-hold",
+      "title": "Example 112: a prod profile sets the hold seat limit under boxoffice.hold.max-seat, a key nothing reads, caught by the configuration block of the boundary contract (B12)",
+      "description": "The first example of the configuration block of a boundary contract: jvmcontract reads the keys the classes of the Box Office ticketing service and its sibling modules read (placeholders, @ConfigurationProperties, Environment.getProperty), the keys application.yaml sets (profile documents included) and the keys the Spring Boot starters' configuration metadata declares, and writes them cross-checked into src/contract/boundaries.contract. The patch appends a prod profile document with boxoffice.hold.max-seat: 12, one letter from the key the HoldPolicy bean reads; Boot ignores it and production keeps the default of 8. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: nothing binds it, nearest known key boxoffice.hold.max-seats. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/config.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "112"
+        ]
+      },
+      "expected": "build.py 112 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-04T13:10:20+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 112 (B12)",
+          "run": "python3 examples/tools/build.py 112",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/112-prod-hold-limit-under-a-key-nothing-reads"
+      ],
+      "supersedes": "20261103-040613-example-112-a-prod-profile-sets-the-hold"
+    }
+  },
+  "sourceCommit": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
+  "startedAt": "2026-11-04T13:31:39+00:00",
+  "finishedAt": "2026-11-04T13:33:22+00:00",
+  "wallSeconds": 103.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1230028800,
+    "wallSeconds": 102.7,
+    "cpuSeconds": 134.7,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.57
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 112 (B12)",
+      "run": "python3 examples/tools/build.py 112",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 102.748,
+      "cpuSeconds": 134.682,
+      "cpuThrottledSeconds": 0.113,
+      "peakMemoryBytes": 1230028800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-112-b12.log",
+        "lines": 2,
+        "bytes": 132,
+        "sha256": "5882e2a95bebb52bdfdc45620c137dccd04b3123732519a3e7e7bf1955e68e1b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "112-prod-hold-limit-under-a-key-nothing-reads: violation (as expected)",
+          "groups": [
+            "112",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "112-prod-hold-limit-under-a-key-nothing-reads: running (B12)",
+        "112-prod-hold-limit-under-a-key-nothing-reads: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/112-prod-hold-limit-under-a-key-nothing-reads/README.md",
+      "change": "added",
+      "bytes": 33603,
+      "sha256": "6267a151787c0fb0f7a471eb6b7e0b0bc4c9b7a0c80e3cae60da6dfa37aac74a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/112-prod-hold-limit-under-a-key-nothing-reads/result.json",
+      "change": "added",
+      "bytes": 15355,
+      "sha256": "a806702b3c3a773f0cfd4f53936b6ea0d8a36d018f153e958f254219d7de2cc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/112-prod-hold-limit-under-a-key-nothing-reads/result.sarif",
+      "change": "added",
+      "bytes": 7482,
+      "sha256": "007b8d99e6b77017e7d8fff08593ecf0efbd48dfd9953aa4a4ec66b25f479c48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/112-prod-hold-limit-under-a-key-nothing-reads/verifier-output.txt",
+      "change": "added",
+      "bytes": 5917,
+      "sha256": "c88aef3aae2c38d8af0057ed7210f923678116a96d0a4aa8aa43ee6427c1da19",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/112-prod-hold-limit-under-a-key-nothing-reads/README.md",
+      "examples/112-prod-hold-limit-under-a-key-nothing-reads/result.json",
+      "examples/112-prod-hold-limit-under-a-key-nothing-reads/result.sarif",
+      "examples/112-prod-hold-limit-under-a-key-nothing-reads/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

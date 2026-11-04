@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-075809-example-130-a-backoff-that-gained-a-mult",
+  "title": "Example 130: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.0s, peak 96.6 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 130 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-075809-example-130-a-backoff-that-gained-a-mult.json",
+    "sha256": "3c30b870b3a98bca44364ea6e182fd2fada4f079ad78a954712e416e9fa8bafc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-075809-example-130-a-backoff-that-gained-a-mult",
+      "title": "Example 130: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+      "description": "Regression proof of net.terminalvalue.crosscut.retry.Backoff#delayMillis across a component added to the record: the previous two-component Backoff is built from the new one's base and cap by a constructor call among --before-arguments (new Backoff(this.baseMillis, this.capMillis), attempt), with this.multiplier != 2 as the scope. The loop rewritten to count down answers a negative attempt with the cap: expected a violation at attempt=-1, found in the second search stage in about 9 s inline.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "record-components",
+        "signature-change",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "130"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T07:58:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 130 (B9)",
+          "run": "python3 examples/tools/build.py 130",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap"
+      ]
+    }
+  },
+  "sourceCommit": "68508d209913da1a2c5c067c301c12672f86fcd9",
+  "startedAt": "2026-11-04T13:28:13+00:00",
+  "finishedAt": "2026-11-04T13:28:17+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101310464,
+    "wallSeconds": 3.0,
+    "cpuSeconds": 5.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.203,
+      "cpuSeconds": 0.13,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16523264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "3997fc6790b8063b86c119e91f87ac7395ac6cf26135da637dcb229006bc32dc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.08s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.036,
+      "cpuSeconds": 5.371,
+      "cpuThrottledSeconds": 0.566,
+      "peakMemoryBytes": 101310464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-130-b9.log",
+        "lines": 10,
+        "bytes": 398,
+        "sha256": "226721e7110476fc80be59331ed1d133d21b8968ebeca71e50b0da8c8bab4cd4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-arguments' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT> --unchanged-unless <UNCHANGED_UNLESS>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "7ce0cfcfc538ba5f679f098c2f31f6895b588d2b",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/7ce0cfcfc538ba5f679f098c2f31f6895b588d2b/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-075809-example-130-a-backoff-that-gained-a-mult"
+}

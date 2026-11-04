@@ -1,0 +1,43 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "startLine": 10,
+    "code": "\nprivate TokenBucket() {}\n\n/** The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}. */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    return Math.min(capacity, tokens + earned);\n}\n\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "startLine": 10,
+    "code": "\nprivate TokenBucket() {}\n\n/**\n * The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}:\n * the whole periods since the epoch, less those credited already. Each reading is divided on its own, so that\n * two readings far apart are never subtracted.\n */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = nowNanos / periodNanos - lastNanos / periodNanos;\n    return Math.min(capacity, tokens + earned);\n}\n\n"
+  },
+  "casesTotal": null,
+  "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+  "counterexamples": [
+    {
+      "input": "tokensAfter(tokens=0, lastNanos=1, nowNanos=2944052592310067210, periodNanos=294405259231006721, capacity=32767)",
+      "contract": "9",
+      "actual": "10"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by jvmcontract's own checker (CaDiCaL) in 2.7 s as tokensAfter(tokens=243269502, lastNanos=2556998746631045248, nowNanos=3133740992164798521, periodNanos=294405259231006721, capacity=788004863), shrunk to the input above in 4000 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

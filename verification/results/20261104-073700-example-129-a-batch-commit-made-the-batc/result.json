@@ -1,0 +1,162 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-073700-example-129-a-batch-commit-made-the-batc",
+  "title": "Example 129: a batch commit made the batch record's method with the check kept, proved equal on the components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 20.5 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 129 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-073700-example-129-a-batch-commit-made-the-batc.json",
+    "sha256": "6f46652c72b65c770e83daae57f13a27f317fbd54d9a8445973cd06982e1c860",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-073700-example-129-a-batch-commit-made-the-batc",
+      "title": "Example 129: a batch commit made the batch record's method with the check kept, proved equal on the components",
+      "description": "Runs examples/tools/build.py 129: the same refactor as example 128, the Crosscut batch commit's static function made the method of a record Batch(start, size), with the check on the failed index kept in the method. The regression proof relates the record's method to the static function with --before-arguments 'this.start, this.size, failedIndex' over the record's components. Expected: verified, two properties; the library's inline run took 0.5 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression proof of a static method that became a record's method",
+        "previous version called with expressions over record components",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "129"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T07:37:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 129 (B9)",
+          "run": "python3 examples/tools/build.py 129",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components"
+      ]
+    }
+  },
+  "sourceCommit": "9bd0c2e62b997cb0dc5f04871b67899412bd2066",
+  "startedAt": "2026-11-04T13:28:12+00:00",
+  "finishedAt": "2026-11-04T13:28:13+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 21544960,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.1,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.145,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 21544960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-129-b9.log",
+        "lines": 2,
+        "bytes": 221,
+        "sha256": "fd855248e3e52682c1da4588ec3b1612c2d6962df7e2c7e9fec429d11f9993c9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: running (B9)",
+        "the patch does not change the subject file examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "1a921f9b063139a9842dabad21bedc3a69ef05f8",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/1a921f9b063139a9842dabad21bedc3a69ef05f8/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-073700-example-129-a-batch-commit-made-the-batc"
+}

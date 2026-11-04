@@ -1,0 +1,37 @@
+{
+  "verdict": "unverifiable",
+  "verdictLabel": "⚠ Unverifiable",
+  "matchesExpected": false,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift.\n     */\n    public long delayMillis(int attempt) {\n        return Math.min(capMillis, baseMillis << attempt);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": null,
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": "only static methods are supported",
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,54 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 3 boundary changes",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java",
+    "startLine": 49,
+    "code": "var hold = store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\nInstant now = clock.instant();\nif (store.heldUnexpiredBy(holdId, now) != hold.seatLabels().size()) {\n    throw new ConflictException(\"hold \" + holdId + \" has expired\");\n}\nvar order = new OrderDocument(\n        UUID.randomUUID().toString(),\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/OrderService.java",
+    "startLine": 49,
+    "code": "var hold = store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\nInstant now = clock.instant();\nif (store.heldUnexpiredBy(holdId, now) != hold.seatLabels().size()) {\n    throw new HoldExpiredException(holdId);\n}\nvar order = new OrderDocument(\n        UUID.randomUUID().toString(),\n"
+  },
+  "casesTotal": null,
+  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
+  "counterexamples": [
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): ! throws HoldExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws HoldExpiredException (500), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)",
+      "actual": null
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": []
+}

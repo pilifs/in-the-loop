@@ -1,0 +1,207 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 2 new problems",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml",
+    "startLine": 32,
+    "code": "  sweep-interval: 1s\noutbox:\n  poll-interval: 100ms\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/resources/application.yaml",
+    "startLine": 32,
+    "code": "    sweep-interval: 1s\n  outbox:\n    poll-interval: 100ms\n\n---\n# Production: a hold may take a whole row.\nspring:\n  config:\n    activate:\n      on-profile: prod\nboxoffice:\n  hold:\n    max-seat: 12\n"
+  },
+  "casesTotal": null,
+  "domain": "16 beans, 13 entry points, 0 advised methods, 15 configuration keys, 9 wire types, 4 stored types, 1 problems",
+  "counterexamples": [
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.batch-size: int, default 100"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.TicketingApplication",
+      "contract": null,
+      "actual": "@Bean => HoldPolicy holdPolicy(@Value(\"${boxoffice.hold.max-seats:8}\") int maxSeats, @Value(\"${boxoffice.hold.ttl:2m}\") Duration ttl): throws IllegalArgumentException"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.ConcertController",
+      "contract": null,
+      "actual": "POST /concerts => ResponseEntity<Concert> create(@Valid @RequestBody CreateConcert request): throws IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.ConcertController",
+      "contract": null,
+      "actual": "POST /concerts/{id}/holds => ResponseEntity<Hold> hold(@PathVariable String id, @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @Valid @RequestBody HoldSeats request): throws ConflictException (409 by ApiErrors.conflict), IllegalArgumentException (500), IllegalStateException (500), InvalidRequestException (400 by ApiErrors.invalid), NotFoundException (404 by ApiErrors.notFound)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, Outbox.Entry, SeatDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": null,
+      "actual": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): reads Inbox.Entry, OrderDocument, SeatDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": null,
+      "actual": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "CONFIRMED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "DECLINED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "PENDING_PAYMENT"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "REFUNDED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "REFUND_PENDING"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "enum"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "AVAILABLE"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "HELD"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "SOLD"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "enum"
+    },
+    {
+      "input": "configuration",
+      "contract": "boxoffice.outbox.poll-interval = 100ms",
+      "actual": null
+    },
+    {
+      "input": "configuration",
+      "contract": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.ConcertController",
+      "contract": "POST /concerts => ResponseEntity<Concert> create(@Valid @RequestBody CreateConcert request): throws NotFoundException (404 by ApiErrors.notFound)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.ConcertController",
+      "contract": "POST /concerts/{id}/holds => ResponseEntity<Hold> hold(@PathVariable String id, @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @Valid @RequestBody HoldSeats request): throws ConflictException (409 by ApiErrors.conflict), InvalidRequestException (400 by ApiErrors.invalid), NotFoundException (404 by ApiErrors.notFound)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), NotFoundException (404 by ApiErrors.notFound)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): reads OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): writes OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.hold.max-seat = 12 (prod): ! nothing binds it: no class on the class path reads it and no configuration metadata declares it; nearest known key: boxoffice.hold.max-seats"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n+++ b/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n@@ -10,11 +10,10 @@\n # each becomes (the handler that takes it, or a 500). A `!` line is a place where something does not do\n # what it says.\n kind: boundaries\n-module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 0 problems\n+module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 7 wire types, 4 stored types, 2 problems\n \n net.terminalvalue.boxoffice.ticketing.TicketingApplication: @SpringBootApplication @Import(net.terminalvalue.boxoffice.messaging.MessagingConfiguration.class)\n   @Bean => HoldPolicy holdPolicy(@Value(\"${boxoffice.hold.max-seats:8}\") int maxSeats, @Value(\"${boxoffice.hold.ttl:2m}\") Duration ttl)\n-    throws IllegalArgumentException\n \n net.terminalvalue.boxoffice.ticketing.api.ApiErrors: @RestControllerAdvice\n   @ExceptionHandler => ProblemDetail notFound(NotFoundException e)\n@@ -25,14 +24,14 @@\n   POST /concerts => ResponseEntity<Concert> create(@Valid @RequestBody CreateConcert request)\n     reads ConcertDocument, SeatDocument\n     writes ConcertDocument, SeatDocument\n-    throws IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n+    throws NotFoundException (404 by ApiErrors.notFound)\n   GET /concerts/{id} => Concert get(@PathVariable String id)\n     reads ConcertDocument, SeatDocument\n     throws NotFoundException (404 by ApiErrors.notFound)\n   POST /concerts/{id}/holds => ResponseEntity<Hold> hold(@PathVariable String id, @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @Valid @RequestBody HoldSeats request)\n     reads ConcertDocument, HoldDocument\n     writes HoldDocument, SeatDocument\n-    throws ConflictException (409 by ApiErrors.conflict), IllegalArgumentException (500), IllegalStateException (500), InvalidRequestException (400 by ApiErrors.invalid), NotFoundException (404 by ApiErrors.notFound)\n+    throws ConflictException (409 by ApiErrors.conflict), InvalidRequestException (400 by ApiErrors.invalid), NotFoundException (404 by ApiErrors.notFound)\n \n net.terminalvalue.boxoffice.ticketing.api.HoldController: @RestController\n   GET /holds/{id} => Hold get(@PathVariable String id)\n@@ -42,14 +41,14 @@\n net.terminalvalue.boxoffice.ticketing.api.OrderController: @RestController @RequestMapping(\"/orders\")\n   POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)\n     reads HoldDocument, OrderDocument, SeatDocument\n-    writes OrderDocument, Outbox.Entry\n-    throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n+    writes OrderDocument\n+    throws ConflictException (409 by ApiErrors.conflict), NotFoundException (404 by ApiErrors.notFound)\n   GET /orders/{id} => Order get(@PathVariable String id)\n     reads OrderDocument\n     throws NotFoundException (404 by ApiErrors.notFound)\n   POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id)\n     reads OrderDocument\n-    writes OrderDocument, Outbox.Entry, SeatDocument\n+    writes OrderDocument, SeatDocument\n     throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n \n net.terminalvalue.boxoffice.ticketing.app.ConcertService: @Service\n@@ -66,8 +65,8 @@\n \n net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @Component\n   @KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record)\n-    reads Inbox.Entry, OrderDocument, SeatDocument\n-    writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument\n+    reads OrderDocument, SeatDocument\n+    writes OrderDocument, SeatDocument\n     throws IllegalStateException\n \n net.terminalvalue.boxoffice.ticketing.store.ConcertDocument: @Document(\"concerts\")\n@@ -90,16 +89,16 @@\n   @Valid: Bean Validation provider org.hibernate.validator.HibernateValidator in hibernate-validator-9.1.3.Final.jar\n \n configuration: application.yaml\n+  boxoffice.hold.max-seat = 12 (prod)\n+    ! nothing binds it: no class on the class path reads it and no configuration metadata declares it; nearest known key: boxoffice.hold.max-seats\n   boxoffice.hold.max-seats: int = 8\n     @Value in TicketingApplication.holdPolicy(int, Duration), maxSeats, default 8\n   boxoffice.hold.sweep-interval: Duration = 1s\n     @Scheduled in HoldService.releaseExpiredHolds(), default 1s\n   boxoffice.hold.ttl: Duration = 2m\n     @Value in TicketingApplication.holdPolicy(int, Duration), ttl, default 2m\n-  boxoffice.outbox.batch-size: int, default 100\n-    @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100\n-  boxoffice.outbox.poll-interval: Duration = 100ms\n-    @Scheduled in OutboxRelay.publishPending(), default 100ms\n+  boxoffice.outbox.poll-interval = 100ms\n+    ! nothing binds it: no class on the class path reads it and no configuration metadata declares it\n   management.endpoints.web.exposure.include: Set<String> = health,info\n     declared by WebEndpointProperties$Exposure\n   server.port: Integer = 8081\n@@ -166,18 +165,6 @@\n   holdId: @NotBlank String\n   paymentToken: @NotBlank String\n \n-wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum\n-  PENDING_PAYMENT\n-  CONFIRMED\n-  DECLINED\n-  REFUND_PENDING\n-  REFUNDED\n-\n-wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum\n-  AVAILABLE\n-  HELD\n-  SOLD\n-\n stored net.terminalvalue.boxoffice.ticketing.store.ConcertDocument: record, collection \"concerts\"\n   _id: String (id)\n   name: String\n",
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": [
+    "configuration: boxoffice.hold.max-seat = 12 (prod): ! nothing binds it: no class on the class path reads it and no configuration metadata declares it; nearest known key: boxoffice.hold.max-seats",
+    "configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
+  ]
+}

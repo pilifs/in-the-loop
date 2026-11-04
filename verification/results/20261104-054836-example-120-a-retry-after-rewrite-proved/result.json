@@ -1,0 +1,246 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-054836-example-120-a-retry-after-rewrite-proved",
+  "title": "Example 120: a Retry-After rewrite proved equal with the unchanged refill helpers taken as one function",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 96.9 MiB (estimated 5m00s, 3.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-054836-example-120-a-retry-after-rewrite-proved.json",
+    "sha256": "d1055541533d652977b9ff37db413d33cb205684e7eb91acb3fb428c56e2f2a6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-054836-example-120-a-retry-after-rewrite-proved",
+      "title": "Example 120: a Retry-After rewrite proved equal with the unchanged refill helpers taken as one function",
+      "description": "Regression proof (B9) of RetryAfter#nanosUntilToken in Crosscut between the committed version and the patched one, which rewrites credited + period - now as period - (now - credited) around two unchanged calls into TokenBucket. The two helpers each divide a 64-bit difference by the period; the new shared-callees step of jvmcontract equivalence (lib/src/shared.rs) takes a callee both versions call unchanged as one function in both, through a generated memo stub, so the solver never bit-blasts the divisions. By hand the proof took 1.3 s; without sharing the [-100000:100000] search stage had not finished after 60 s. The job runs build.py on the example, which compiles both versions with javac and runs jvmcontract equivalence.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/shared.rs",
+          "lib/src/equivalence.rs",
+          "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java"
+        ],
+        "examples": [
+          "120"
+        ]
+      },
+      "expected": "Verdict verified; the proof line ends with '2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter' and the example's result.json records it",
+      "submitted": {
+        "at": "2026-11-04T05:48:36+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 120 (B9)",
+          "run": "python3 examples/tools/build.py 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/120-retry-after-rewritten-around-unchanged-refill-helpers"
+      ]
+    }
+  },
+  "sourceCommit": "cf74bb4c496a0eaa76fb9a39b1fbf1219ee9d371",
+  "startedAt": "2026-11-04T13:26:28+00:00",
+  "finishedAt": "2026-11-04T13:27:31+00:00",
+  "wallSeconds": 63.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101560320,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 8.6,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 54.983,
+      "cpuSeconds": 53.841,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1116442624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 225,
+        "sha256": "f7e3b570d1763daedf6c738d024cb287dd9ebbfc7f51ead4b2cc163bb72bbd98",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/java-formal-verification/verification/.state/work/20261104-054836-example-120-a-retry-after-rewrite-proved/lib)",
+        "    Finished `release` profile [optimized] target(s) in 54.87s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 120 (B9)",
+      "run": "python3 examples/tools/build.py 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.222,
+      "cpuSeconds": 8.646,
+      "cpuThrottledSeconds": 1.157,
+      "peakMemoryBytes": 101560320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-120-b9.log",
+        "lines": 2,
+        "bytes": 154,
+        "sha256": "5b66ba83bf2c1418bc8ec57841fef4022f171ad2a6270716b9dc1fd7b9e6d082",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)",
+          "groups": [
+            "120",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: running (B9)",
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md",
+      "change": "added",
+      "bytes": 14625,
+      "sha256": "1174e199a2952b8b06702420da2794febddb960ea204298acf8867070555c8ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "change": "added",
+      "bytes": 2819,
+      "sha256": "f781ed23bdd061d0880ed1598f9a2288f684fdba9e219e176259d783a79aa9fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/statement.java",
+      "change": "added",
+      "bytes": 2412,
+      "sha256": "41d1581a97025ba5032c39e3509c89cc568f20900165c81d288cfc54533bfcc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt",
+      "change": "added",
+      "bytes": 409,
+      "sha256": "73dfd25b410d8686d8bd565434d5a7f9dda9f0aa7a1f1a4ea08dc04d50dc6b3f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.sarif",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/statement.java",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "0ba6abccf4b120df3116d1052f5434f27f93e96e",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/0ba6abccf4b120df3116d1052f5434f27f93e96e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

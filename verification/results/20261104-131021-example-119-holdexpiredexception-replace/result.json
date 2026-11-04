@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-131021-example-119-holdexpiredexception-replace",
+  "title": "Example 119: HoldExpiredException replaces the ConflictException of POST /orders with no handler mapping it, a 500 instead of a 409, caught by the throws lines of the boundary contract (B12)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m37s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-131021-example-119-holdexpiredexception-replace.json",
+    "sha256": "d1218d6380325d82bbc89261690a16c746bed93bf3c360312ffe4d4505bedbd0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-131021-example-119-holdexpiredexception-replace",
+      "title": "Example 119: HoldExpiredException replaces the ConflictException of POST /orders with no handler mapping it, a 500 instead of a 409, caught by the throws lines of the boundary contract (B12)",
+      "description": "The first example of the throws lines and the exception outcomes of a boundary contract (Graph::throws in lib/src/reach.rs, lib/src/failures.rs): under each route jvmcontract now lists the exceptions the handler can throw (throw statements, orElseThrow suppliers and Spring Assert calls in everything it reaches, less what a catch on the path takes without rethrowing) and what each becomes (the @ExceptionHandler that takes it, the controller's own first and then the advices in @Order, with the status it answers; the @ResponseStatus on the exception; the status a ResponseStatusException carries; or a 500), with a ! line for an exception type of the module's own that nothing maps and for two handlers of one type in one advice. The patch adds HoldExpiredException, a RuntimeException carrying the hold id, and throws it from OrderService.place where ConflictException was thrown; ApiErrors is not touched, so Spring answers a 500 from the container's error page instead of the 409 problem detail. The code compiles, the context starts, the unit tests go through the service. The change is a refactoring in the developer's eyes, so the runner regenerates the contract and reports as the violation the new ! line under POST /orders (throws HoldExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500). The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/failures.rs",
+          "lib/src/reach.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "119"
+        ]
+      },
+      "expected": "build.py 119 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-04T13:10:21+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 119 (B12)",
+          "run": "python3 examples/tools/build.py 119",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/119-hold-expired-exception-with-no-handler"
+      ],
+      "supersedes": "20261103-075520-example-119-holdexpiredexception-replace"
+    }
+  },
+  "sourceCommit": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
+  "startedAt": "2026-11-04T13:43:24+00:00",
+  "finishedAt": "2026-11-04T13:45:02+00:00",
+  "wallSeconds": 98.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1234649088,
+    "wallSeconds": 98.0,
+    "cpuSeconds": 129.6,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.54
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 119 (B12)",
+      "run": "python3 examples/tools/build.py 119",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 97.954,
+      "cpuSeconds": 129.645,
+      "cpuThrottledSeconds": 0.203,
+      "peakMemoryBytes": 1234649088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-119-b12.log",
+        "lines": 2,
+        "bytes": 126,
+        "sha256": "f0bf401e8559d09bc0c027f226bf9fa5c5c061b80bb9d89f798da599a541a250",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "119-hold-expired-exception-with-no-handler: violation (as expected)",
+          "groups": [
+            "119",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "119-hold-expired-exception-with-no-handler: running (B12)",
+        "119-hold-expired-exception-with-no-handler: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/119-hold-expired-exception-with-no-handler/README.md",
+      "change": "added",
+      "bytes": 18450,
+      "sha256": "03eed1cab065dcf047b552ac5fd5f9a0b6d03b96b7d928b958305a2734c1ebbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/119-hold-expired-exception-with-no-handler/result.json",
+      "change": "added",
+      "bytes": 2772,
+      "sha256": "17086d12eec91c2c8aa3056e8aa5e2ff7b9510e740a54244e3dd385a4ba5f279",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/119-hold-expired-exception-with-no-handler/result.sarif",
+      "change": "added",
+      "bytes": 3324,
+      "sha256": "1b0153f36367ffec5f96a968b50ecde2fba34b2743b1b616ee12b42d20c9f68b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/119-hold-expired-exception-with-no-handler/verifier-output.txt",
+      "change": "added",
+      "bytes": 1003,
+      "sha256": "0b3fbe648f299c694e57ee80796e17e4b3ee395fd6b91b0cc51bbf17afc2b24b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/119-hold-expired-exception-with-no-handler/README.md",
+      "examples/119-hold-expired-exception-with-no-handler/result.json",
+      "examples/119-hold-expired-exception-with-no-handler/result.sarif",
+      "examples/119-hold-expired-exception-with-no-handler/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-061118-example-121-a-tie-break-s-parameters-reg",
+  "title": "Example 121: a tie-break's parameters regrouped, proved equal under the stated reordering",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.4s, peak 123.0 MiB (estimated 5m00s, 3.0 GiB)",
+  "attention": [
+    "step 1 (example 121 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-061118-example-121-a-tie-break-s-parameters-reg.json",
+    "sha256": "fc99601c23f6dd1ccc86976bad64f6fa7daef87c9f0044fefeac07796c8e2d4f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-061118-example-121-a-tie-break-s-parameters-reg",
+      "title": "Example 121: a tie-break's parameters regrouped, proved equal under the stated reordering",
+      "description": "Regression proof (B9) of Quorum's LastWriterWins#winner between the committed version and the patched one, which groups the parameters by kind, (tsA, tsB, nodeA, nodeB) in place of (tsA, nodeA, tsB, nodeB), and rewrites the body as a comparison chain over Long.compare and Integer.compare. The signatures differ, so the example states how the previous version is called from the new parameters, previousArguments 'tsA, nodeA, tsB, nodeB' (the new --before-arguments of jvmcontract equivalence, lib/src/harness/mod.rs and lib/src/equivalence.rs), and the statement proved is new(x) == old(f(x)) on every input. The library's test of the same shape proves in about a second. The job runs build.py on the example, which compiles both Quorum trees with javac and runs jvmcontract equivalence with the mapping.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java"
+        ],
+        "examples": [
+          "121"
+        ]
+      },
+      "expected": "Verdict verified; the proof line reads 'behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input' and the example's result.json records it",
+      "submitted": {
+        "at": "2026-11-04T06:11:18+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 121 (B9)",
+          "run": "python3 examples/tools/build.py 121",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering"
+      ]
+    }
+  },
+  "sourceCommit": "198d431752ea80bbc89f4ba03c5c55d01063c34e",
+  "startedAt": "2026-11-04T13:27:32+00:00",
+  "finishedAt": "2026-11-04T13:27:37+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 128962560,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 8.0,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.109,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16601088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "0b5fe2277fd2b29cc111b76604c482f8ec516047dbc0954657203c5614f4e4db",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.10s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 121 (B9)",
+      "run": "python3 examples/tools/build.py 121",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.413,
+      "cpuSeconds": 7.963,
+      "cpuThrottledSeconds": 1.454,
+      "peakMemoryBytes": 128962560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-121-b9.log",
+        "lines": 10,
+        "bytes": 357,
+        "sha256": "58f5a3a59ef31efa37a8ac372407c266ea7f40c4b55185e5f5f206db6fa6520b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-arguments' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "24ddecbab155126038a6dae4acc174ffa18beb5c",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/24ddecbab155126038a6dae4acc174ffa18beb5c/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-061118-example-121-a-tie-break-s-parameters-reg"
+}

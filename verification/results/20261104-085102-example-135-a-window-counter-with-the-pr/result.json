@@ -1,0 +1,172 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-085102-example-135-a-window-counter-with-the-pr",
+  "title": "Example 135: a window counter with the previous count proved equal on the start and the count by the tool's own checker, the record results related on their shared components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.4s, peak 102.2 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 135 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-085102-example-135-a-window-counter-with-the-pr.json",
+    "sha256": "91eda4c7369c36c4a9f9f607969811b5b2002014fc0136b9aaa686986e5517f0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-085102-example-135-a-window-counter-with-the-pr",
+      "title": "Example 135: a window counter with the previous count proved equal on the start and the count by the tool's own checker, the record results related on their shared components",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted by the tool's own bounded model checker (--engine native) across the counter record gaining a previousCount component: the old counter is built from the new components and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), with no scope. Expected verified in seconds; JBMC did not finish the same harness within a minute inline (two 64-bit remainders), which is why the example names the checker.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "regression-proof",
+        "record-components",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/bmc/mod.rs"
+        ],
+        "examples": [
+          "135"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T08:51:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 135 (B9)",
+          "run": "python3 examples/tools/build.py 135",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count"
+      ]
+    }
+  },
+  "sourceCommit": "9f583661a0c3e1a75ba34fb47dba5949420e9562",
+  "startedAt": "2026-11-04T13:28:42+00:00",
+  "finishedAt": "2026-11-04T13:28:46+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 107192320,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 135 (B9)",
+      "run": "python3 examples/tools/build.py 135",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.408,
+      "cpuSeconds": 5.912,
+      "cpuThrottledSeconds": 0.886,
+      "peakMemoryBytes": 107192320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-135-b9.log",
+        "lines": 10,
+        "bytes": 373,
+        "sha256": "781d9ec96caa4f7df73313efa4cb8fcb511c28d577602096dc952a56cb5b6d08",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-arguments' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6b67128274df071c9dc9f31455e04ec015274c8a",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/6b67128274df071c9dc9f31455e04ec015274c8a/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-085102-example-135-a-window-counter-with-the-pr"
+}

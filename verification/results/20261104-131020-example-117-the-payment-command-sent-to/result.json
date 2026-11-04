@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-131020-example-117-the-payment-command-sent-to",
+  "title": "Example 117: the payment command sent to Kafka from inside the order transaction, a dual write, caught by the transaction placement of the reach lines (B12)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m36s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-131020-example-117-the-payment-command-sent-to.json",
+    "sha256": "7c25bab2645b7aab662bc180ee79fada4d6ac1c0c69b8a9bd780a62f085080be",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-131020-example-117-the-payment-command-sent-to",
+      "title": "Example 117: the payment command sent to Kafka from inside the order transaction, a dual write, caught by the transaction placement of the reach lines (B12)",
+      "description": "The first example of the transaction placement of a boundary contract's reach lines: jvmcontract now carries a scope along the walk from each entry point (outside any transaction, inside one the method opens through its own @Transactional or a lambda handed to TransactionTemplate or to a helper that reaches it, or inside a @Transactional method of another class, which accounts for its own effects), with a ! line for a send or an HTTP call inside a transaction (a dual write), for an event published with no transaction while a @TransactionalEventListener waits for it, and for an after-commit listener that writes. The patch replaces the outbox in OrderService.place with a direct KafkaTemplate send of the ChargePayment command, inside the Transactions.run block that inserts the order: a retried transaction sends twice under fresh command ids, a rollback after the send has asked the payment service to charge for an order that does not exist, a crash between the commit and the send leaves the order waiting for ever. The change is a refactoring with the behaviour change intended, so the runner regenerates the contract and reports as the violation the new ! line under POST /orders (a transaction that sends to payments.commands: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced), next to the new sends payments.commands line and the writes line that loses Outbox.Entry. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/reach.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "117"
+        ]
+      },
+      "expected": "build.py 117 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-04T13:10:20+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 117 (B12)",
+          "run": "python3 examples/tools/build.py 117",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/117-payment-command-sent-from-inside-the-order-transaction"
+      ],
+      "supersedes": "20261103-070348-example-117-the-payment-command-sent-to"
+    }
+  },
+  "sourceCommit": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
+  "startedAt": "2026-11-04T13:40:06+00:00",
+  "finishedAt": "2026-11-04T13:41:44+00:00",
+  "wallSeconds": 98.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1226080256,
+    "wallSeconds": 96.7,
+    "cpuSeconds": 127.7,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.54
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 117 (B12)",
+      "run": "python3 examples/tools/build.py 117",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 96.719,
+      "cpuSeconds": 127.667,
+      "cpuThrottledSeconds": 0.082,
+      "peakMemoryBytes": 1226080256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-117-b12.log",
+        "lines": 2,
+        "bytes": 158,
+        "sha256": "e4a43613a064160d04a4583e0b9e3c8b73c9ce32c2b9ddfa102094ef90893f76",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "117-payment-command-sent-from-inside-the-order-transaction: violation (as expected)",
+          "groups": [
+            "117",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "117-payment-command-sent-from-inside-the-order-transaction: running (B12)",
+        "117-payment-command-sent-from-inside-the-order-transaction: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/117-payment-command-sent-from-inside-the-order-transaction/README.md",
+      "change": "added",
+      "bytes": 43180,
+      "sha256": "a4a99f2f4bc4879d632e1e695a7cd029c6fbe54710df52d15771a5d66458bac1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/117-payment-command-sent-from-inside-the-order-transaction/result.json",
+      "change": "added",
+      "bytes": 18285,
+      "sha256": "2957eb7e74d9b73d60019c85ff8c6446ff90122f55111197d84c4796620e6daf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/117-payment-command-sent-from-inside-the-order-transaction/result.sarif",
+      "change": "added",
+      "bytes": 7457,
+      "sha256": "6f9182ff1949f6c79f9681ef1405dfd6ec76797d9ea7a1aeef193c552ed72653",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/117-payment-command-sent-from-inside-the-order-transaction/verifier-output.txt",
+      "change": "added",
+      "bytes": 5690,
+      "sha256": "078c7c71adfbdd6d20915840384487da5d839edcafee502d4cc396e39fef98fd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/117-payment-command-sent-from-inside-the-order-transaction/README.md",
+      "examples/117-payment-command-sent-from-inside-the-order-transaction/result.json",
+      "examples/117-payment-command-sent-from-inside-the-order-transaction/result.sarif",
+      "examples/117-payment-command-sent-from-inside-the-order-transaction/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-131021-example-118-the-hold-route-s-path-variab",
+  "title": "Example 118: the hold route's path variable renamed in the template but not in the parameter, a 500 on every request, caught by the request binding checks (B12)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m38s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-131021-example-118-the-hold-route-s-path-variab.json",
+    "sha256": "9f32930279049663362c2bf188101053bb123951881f892bac5c70328575fd73",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-131021-example-118-the-hold-route-s-path-variab",
+      "title": "Example 118: the hold route's path variable renamed in the template but not in the parameter, a 500 on every request, caught by the request binding checks (B12)",
+      "description": "The first example of the request binding checks of a boundary contract (lib/src/binding.rs): jvmcontract now reads each handler's parameter annotations against its routes and its bytecode, with a ! line for a @PathVariable whose name (the annotation's, else the parameter's as the MethodParameters attribute records it) is a variable of no template of the route, for a named binder on a parameter whose name the compiler did not record (no -parameters; Spring 6.1 reads nothing else), for a required = false binder with no defaultValue on a primitive, for two @RequestBody parameters, and for two handlers of the module whose routes match the same requests (the same route twice fails the context at startup, the same pattern under different variable names is an ambiguity every matching request hits). The patch renames the variable of HoldController's GET /holds/{id} template to {holdId} and leaves the parameter @PathVariable String id: Spring raises MissingPathVariableException, a 500, on every request of the route; the code compiles, the context starts, and the unit tests go through the service. The change is a rename in the developer's eyes, so the runner regenerates the contract and reports as the violation the new ! line under the renamed route (@PathVariable id matches no variable in /holds/{holdId}: MissingPathVariableException, a 500 on every request). The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/binding.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "118"
+        ]
+      },
+      "expected": "build.py 118 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-04T13:10:21+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 118 (B12)",
+          "run": "python3 examples/tools/build.py 118",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/118-hold-route-variable-renamed-in-template-not-parameter"
+      ],
+      "supersedes": "20261103-072635-example-118-the-hold-route-s-path-variab"
+    }
+  },
+  "sourceCommit": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
+  "startedAt": "2026-11-04T13:41:45+00:00",
+  "finishedAt": "2026-11-04T13:43:23+00:00",
+  "wallSeconds": 98.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1230966784,
+    "wallSeconds": 98.1,
+    "cpuSeconds": 129.7,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.55
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 118 (B12)",
+      "run": "python3 examples/tools/build.py 118",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 98.141,
+      "cpuSeconds": 129.74,
+      "cpuThrottledSeconds": 0.072,
+      "peakMemoryBytes": 1230966784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-118-b12.log",
+        "lines": 2,
+        "bytes": 156,
+        "sha256": "1ef56b6b931540cd1ea6c97a5138854c64cb77239069b5c8b413269251802bf6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "118-hold-route-variable-renamed-in-template-not-parameter: violation (as expected)",
+          "groups": [
+            "118",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "118-hold-route-variable-renamed-in-template-not-parameter: running (B12)",
+        "118-hold-route-variable-renamed-in-template-not-parameter: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/118-hold-route-variable-renamed-in-template-not-parameter/README.md",
+      "change": "added",
+      "bytes": 16960,
+      "sha256": "d43e36704213f789cf479400a4cb87666c127da203b56898cd9f6afaf32f52e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/118-hold-route-variable-renamed-in-template-not-parameter/result.json",
+      "change": "added",
+      "bytes": 3124,
+      "sha256": "423136e4bdd4e69817df551e50919815a75d538a91762b4427dabedf148819f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/118-hold-route-variable-renamed-in-template-not-parameter/result.sarif",
+      "change": "added",
+      "bytes": 3625,
+      "sha256": "1e6468227741e427a69fe3f811814d4db372e7aaa05300a4c35c6bd78823ce64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/118-hold-route-variable-renamed-in-template-not-parameter/verifier-output.txt",
+      "change": "added",
+      "bytes": 1301,
+      "sha256": "ccf7f3cd2d4df75ae5a8837e65188e43d52a668d78af4dedc1134f8b90eb1abc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/118-hold-route-variable-renamed-in-template-not-parameter/README.md",
+      "examples/118-hold-route-variable-renamed-in-template-not-parameter/result.json",
+      "examples/118-hold-route-variable-renamed-in-template-not-parameter/result.sarif",
+      "examples/118-hold-route-variable-renamed-in-template-not-parameter/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

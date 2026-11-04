@@ -264,7 +264,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Record session traces
 
-change `mzpzpssrtwkr` · [log `1e8b9b5441e1`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/1e8b9b5441e16a4d88fcf67eff2c0c2b96b463d95a3122c99affabaabec41da8.jsonl.gz)
+[`4c279ba6f3b4`](https://github.com/pilifs/in-the-loop/commit/4c279ba6f3b46ecac8cf938903059ee993a36968) · [log `1e8b9b5441e1`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/1e8b9b5441e16a4d88fcf67eff2c0c2b96b463d95a3122c99affabaabec41da8.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

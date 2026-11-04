@@ -1,0 +1,37 @@
+{
+  "verdict": "unverifiable",
+  "verdictLabel": "⚠ Unverifiable",
+  "matchesExpected": false,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "startLine": 46,
+    "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    for (char c : chars) {\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+    "startLine": 46,
+    "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    int i = 0;\n    // Most constants are ASCII: copy the leading run of one-byte characters without the general test.\n    while (i < chars.length && (char) (chars[i] - 1) < 0x7f) {\n        out[k++] = (byte) chars[i++];\n    }\n    for (; i < chars.length; i++) {\n        char c = chars[i];\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
+  },
+  "casesTotal": null,
+  "domain": null,
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": "outside the fragment: a char[] parameter",
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

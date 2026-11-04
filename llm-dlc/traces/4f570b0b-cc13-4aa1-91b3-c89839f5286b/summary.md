@@ -34,7 +34,7 @@ feature-loop.sh used to stop a run on any edit to its brief, so the loop could n
 
 ### Record session traces
 
-change `mzpzpssrtwkr` · [log `9609038f6c74`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/9609038f6c74b8f7935c73369bf6b9a3aa3ceb1c2a9ca4f10980fad4f7d0f6a2.jsonl.gz)
+[`4c279ba6f3b4`](https://github.com/pilifs/in-the-loop/commit/4c279ba6f3b46ecac8cf938903059ee993a36968) · [log `9609038f6c74`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/9609038f6c74b8f7935c73369bf6b9a3aa3ceb1c2a9ca4f10980fad4f7d0f6a2.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "startLine": 10,
+    "code": "\n    private JwtTimestamps() {}\n\n    /** Whether a token with the given {@code nbf} and {@code exp} is valid at {@code nowSeconds}, with the skew. */\n    public static boolean valid(long nowSeconds, long notBefore, long expiresAt, long skewSeconds) {\n        if (skewSeconds < 0) {\n            throw new IllegalArgumentException(\"the clock skew tolerance is not negative\");\n        }\n        return nowSeconds >= notBefore - skewSeconds && nowSeconds < expiresAt + skewSeconds;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "startLine": 10,
+    "code": "\n    private JwtTimestamps() {}\n\n    /**\n     * Whether a token with the given {@code nbf} and {@code exp} is valid at {@code nowSeconds}, with the skew: the\n     * clock is moved by the skew in the token's favour, forward against {@code nbf} and back against {@code exp}.\n     */\n    public static boolean valid(long nowSeconds, long notBefore, long expiresAt, long skewSeconds) {\n        if (skewSeconds < 0) {\n            throw new IllegalArgumentException(\"the clock skew tolerance is not negative\");\n        }\n        return nowSeconds + skewSeconds >= notBefore && nowSeconds - skewSeconds < expiresAt;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long in 0.2 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,228 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-104407-example-143-ascii-fast-path-off-by-one-a",
+  "title": "Example 143: ASCII fast path off by one at U+0080 refuted by the own checker with path merging",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.8s, peak 101.1 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 143 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-104407-example-143-ascii-fast-path-off-by-one-a.json",
+    "sha256": "e1b74c241ce84a8a7cfc88f46af64daefdef55b1f170d9fec0e8e1f0713a77e2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-104407-example-143-ascii-fast-path-off-by-one-a",
+      "title": "Example 143: ASCII fast path off by one at U+0080 refuted by the own checker with path merging",
+      "description": "Runs build.py on example 143 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path whose test admits U+0080, against the previous version, by the tool's own checker with paths merged at join points. Expected: violation on encodeInto(chars=['\\u0080'], out=[32]) after shrinking (the previous version throws ArrayIndexOutOfBoundsException writing the second byte, the new one returns 1 having written 0x80), in about 5 s and under 100 MB.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "path-merging",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "143"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T10:44:07+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 143 (B9)",
+          "run": "python3 examples/tools/build.py 143",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+      ]
+    }
+  },
+  "sourceCommit": "37dde1ffd907c1a531ad502c0e7a8abfe98b897a",
+  "startedAt": "2026-11-04T13:29:30+00:00",
+  "finishedAt": "2026-11-04T13:29:35+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 105988096,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 7.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 143 (B9)",
+      "run": "python3 examples/tools/build.py 143",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.819,
+      "cpuSeconds": 7.62,
+      "cpuThrottledSeconds": 0.754,
+      "peakMemoryBytes": 105988096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-143-b9.log",
+        "lines": 3,
+        "bytes": 354,
+        "sha256": "1acdf292474c4c820d8ce7b6c42fecb3426bf1137b026d9b6b37c9e6419e33a7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: unverifiable (EXPECTED VIOLATION)",
+          "groups": [
+            "143",
+            "unverifiable",
+            "EXPECTED VIOLATION"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow",
+          "groups": [
+            "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+          ]
+        }
+      ],
+      "tail": [
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: running (B9)",
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: unverifiable (EXPECTED VIOLATION)",
+        "Verdicts differ from expectations: 143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md",
+      "change": "added",
+      "bytes": 14602,
+      "sha256": "60a4e801534f1ada6910f51ebfc8c74ade826aa3efc5877a6cc53901b7f32422",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json",
+      "change": "added",
+      "bytes": 1663,
+      "sha256": "f12f66f2d56e32288ea5bc93d2c4fe9af76336dc78721f536c41c46f9d579a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.sarif",
+      "change": "added",
+      "bytes": 2513,
+      "sha256": "1d28c9bf60002c72b62aca884652a118f75a28c6f15ce3bf822501137b94c011",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/statement.java",
+      "change": "added",
+      "bytes": 2611,
+      "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt",
+      "change": "added",
+      "bytes": 122,
+      "sha256": "de9233d8791266fb9a42b7390f7b043e934bb9a691e6f4a6aac3573049bd77a0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.sarif",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/statement.java",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "b9dd09591c450f202b76427ce929187adfb0d7c3",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/b9dd09591c450f202b76427ce929187adfb0d7c3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-104407-example-143-ascii-fast-path-off-by-one-a"
+}

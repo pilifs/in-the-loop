@@ -1,0 +1,192 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-073659-example-128-a-batch-commit-made-the-batc",
+  "title": "Example 128: a batch commit made the batch record's method, the failed-index check lost, refuted on the components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.4s, peak 20.6 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 128 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-073659-example-128-a-batch-commit-made-the-batc.json",
+    "sha256": "8f8aac219d0507dadab27a8f51c3fd3946b3b1102f1a1d60613f974502a4dcf1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-073659-example-128-a-batch-commit-made-the-batc",
+      "title": "Example 128: a batch commit made the batch record's method, the failed-index check lost, refuted on the components",
+      "description": "Runs examples/tools/build.py 128: the Crosscut batch commit kernel's static function offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor and the part about the failed index dropped. The regression proof relates the record's method to the static function with --before-target and --before-arguments 'this.start, this.size, failedIndex' over the record's components, a relation new this cycle. Expected: a violation, offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method returning 1; the library's inline run took 0.5 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression proof of a static method that became a record's method",
+        "previous version called with expressions over record components",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "128"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T07:36:59+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 128 (B9)",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check"
+      ]
+    }
+  },
+  "sourceCommit": "9bd0c2e62b997cb0dc5f04871b67899412bd2066",
+  "startedAt": "2026-11-04T13:28:10+00:00",
+  "finishedAt": "2026-11-04T13:28:11+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 21598208,
+    "wallSeconds": 0.4,
+    "cpuSeconds": 0.2,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.097,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16039936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "92434e198f27984c035c376ec77a7cf9e6ebdde782f8ccb1336ae3329b66ddb7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.05s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.404,
+      "cpuSeconds": 0.219,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 21598208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-128-b9.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7836547b9c95e08e6f4faf2894db150c8be3064156b196e1b859986a52220590",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "the patch does not change the subject file examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "1a921f9b063139a9842dabad21bedc3a69ef05f8",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/1a921f9b063139a9842dabad21bedc3a69ef05f8/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-073659-example-128-a-batch-commit-made-the-batc"
+}

@@ -26,7 +26,7 @@ Proofs and model checks now run in the verification pipeline, so the loop's scop
 
 ### Record session traces
 
-change `mzpzpssrtwkr` · [log `1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz)
+[`4c279ba6f3b4`](https://github.com/pilifs/in-the-loop/commit/4c279ba6f3b46ecac8cf938903059ee993a36968) · [log `1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

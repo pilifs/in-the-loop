@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "startLine": 10,
+    "code": "\nprivate TokenBucket() {}\n\n/** The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}. */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    return Math.min(capacity, tokens + earned);\n}\n\n/**\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "startLine": 10,
+    "code": "\nprivate TokenBucket() {}\n\n/**\n * The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}:\n * the tokens held plus those earned, but no more of them than the bucket has room for.\n */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    long room = capacity - tokens;\n    return tokens + Math.min(earned, room);\n}\n\n/**\n"
+  },
+  "casesTotal": null,
+  "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.6 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

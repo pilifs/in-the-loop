@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-083123-example-133-a-refill-capped-by-the-room",
+  "title": "Example 133: a refill capped by the room left, proved equal to the capped sum by the tool's own checker within the precondition",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 98.7 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-083123-example-133-a-refill-capped-by-the-room.json",
+    "sha256": "fbabc21e28d6dfdf6e64984c535c0b2be1ad48a76671052a49b8636ba8c2610a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-083123-example-133-a-refill-capped-by-the-room",
+      "title": "Example 133: a refill capped by the room left, proved equal to the capped sum by the tool's own checker within the precondition",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter by the tool's own bounded model checker (--engine native) within the module's precondition as scope: Math.min(capacity, tokens + earned) rewritten as tokens + Math.min(earned, capacity - tokens). Expected verified, nine paths and ten solver calls in about half a second inline; without the scope the versions differ where the sum overflows a long.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/bits.rs"
+        ],
+        "examples": [
+          "133"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T08:31:23+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 133 (B9)",
+          "run": "python3 examples/tools/build.py 133",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+      ]
+    }
+  },
+  "sourceCommit": "7db073bd5ff6c573aef81cae2f148574766207e6",
+  "startedAt": "2026-11-04T13:28:31+00:00",
+  "finishedAt": "2026-11-04T13:28:37+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 103514112,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 7.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.216,
+      "cpuSeconds": 7.868,
+      "cpuThrottledSeconds": 0.938,
+      "peakMemoryBytes": 103514112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-133-b9.log",
+        "lines": 2,
+        "bytes": 202,
+        "sha256": "a043cbc582ceae449cdd6e3222c09a8d33a5ba444fdc0f0480b06ed18e76faf6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)",
+          "groups": [
+            "133",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: running (B9)",
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "change": "added",
+      "bytes": 15245,
+      "sha256": "2e9e9c42b0db558edcf96872ff8b02afe46bf0c7be33d91b1c764731d582852c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "change": "added",
+      "bytes": 2149,
+      "sha256": "53c8fa850d2b8a24efb76fb135724cabc0897f80198b05f3cf39620a9301c1c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/statement.java",
+      "change": "added",
+      "bytes": 2653,
+      "sha256": "61d7099ec7d9928eea38f557ca02f7b6ab13263d5f5f325aafd4308e73a6a2b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt",
+      "change": "added",
+      "bytes": 497,
+      "sha256": "8f47cc41b7257f57b954d46f5fbb705cc5365e09eef0b234688b22040729f6b1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.sarif",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/statement.java",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a10123d08dc2bf6c5fce2d180814298aee74ee43",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/a10123d08dc2bf6c5fce2d180814298aee74ee43/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

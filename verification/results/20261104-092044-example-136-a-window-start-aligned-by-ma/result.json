@@ -1,0 +1,249 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-092044-example-136-a-window-start-aligned-by-ma",
+  "title": "Example 136: a window start aligned by masking opens a window per request unless the window is a power of two",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.4s, peak 99.7 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 136 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-092044-example-136-a-window-start-aligned-by-ma.json",
+    "sha256": "0ec8787c7fedd28d91e0a37eafdee66e1e57adbac1e7ca327712ab44e1e85fe9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-092044-example-136-a-window-start-aligned-by-ma",
+      "title": "Example 136: a window start aligned by masking opens a window per request unless the window is a power of two",
+      "description": "Regression proof (B9) by the tool's own checker (--engine native) of Crosscut's Window#counted rewritten to align the window's start by nowNanos & -windowNanos instead of nowNanos - nowNanos % windowNanos. Expected: violation, witness counted(this=Window[startNanos=0, count=0], nowNanos=1, windowNanos=3), before Window[0, 1], after Window[1, 1], found in 0.2 s searching inputs in [0:20]. JBMC finds the same witness in 0.2 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "record-components",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "136"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T09:20:44+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 136 (B9)",
+          "run": "python3 examples/tools/build.py 136",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two"
+      ]
+    }
+  },
+  "sourceCommit": "0cc075d55660d6372936e68dc4c58cd01d8baf13",
+  "startedAt": "2026-11-04T13:28:47+00:00",
+  "finishedAt": "2026-11-04T13:28:53+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104521728,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 7.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.072,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16072704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "90c8a1a69c0155761cff4bfe0e61bbee007961d2b96729d2127c2e0c291489dd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 136 (B9)",
+      "run": "python3 examples/tools/build.py 136",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.418,
+      "cpuSeconds": 7.136,
+      "cpuThrottledSeconds": 1.023,
+      "peakMemoryBytes": 104521728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-136-b9.log",
+        "lines": 3,
+        "bytes": 387,
+        "sha256": "2b0a331343ad316e3c047c4c1a59a560bc6fde70d08c75ec9dc1b0836aa314c7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: unverifiable (EXPECTED VIOLATION)",
+          "groups": [
+            "136",
+            "unverifiable",
+            "EXPECTED VIOLATION"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two",
+          "groups": [
+            "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two"
+          ]
+        }
+      ],
+      "tail": [
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: running (B9)",
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: unverifiable (EXPECTED VIOLATION)",
+        "Verdicts differ from expectations: 136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/README.md",
+      "change": "added",
+      "bytes": 12738,
+      "sha256": "7b469546557eef1c2208a550dcf45b1ca61e6a5e3eca0e1ab5bb672e518711e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.json",
+      "change": "added",
+      "bytes": 1733,
+      "sha256": "b091b07890e2260d0be869c9fa3bc7f92feb2101bb7297bfe1381301a090c0e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.sarif",
+      "change": "added",
+      "bytes": 2503,
+      "sha256": "8b00fea2fca37c698e8bf8f3275e2a1561624cba681367716f726c0597f14e6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/verifier-output.txt",
+      "change": "added",
+      "bytes": 110,
+      "sha256": "eb8805e9eedac5d28f29c4e3e09b452683598bf6763f13f23c7f9d227d580cb1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/README.md",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.json",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.sarif",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "7d2b0ae1643fda1c60b1ca509aafea2c69bf4011",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/7d2b0ae1643fda1c60b1ca509aafea2c69bf4011/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-092044-example-136-a-window-start-aligned-by-ma"
+}

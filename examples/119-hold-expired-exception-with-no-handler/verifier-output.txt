@@ -1,0 +1,5 @@
+✗ Boundaries of module ticketing-service differ from their contract:
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): ! throws HoldExpiredException: no @ExceptionHandler takes it and it carries no @ResponseStatus, so the response is a 500
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws HoldExpiredException (500), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
+  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
+  (16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems)

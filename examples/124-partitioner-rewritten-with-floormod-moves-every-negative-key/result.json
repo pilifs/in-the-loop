@@ -1,0 +1,43 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java",
+    "startLine": 9,
+    "code": "\n    private Partitioner() {}\n\n    /** Kafka's {@code Utils.toPositive(hash) % numPartitions}: clear the sign bit, then take the remainder. */\n    public static int partitionFor(int hash, int numPartitions) {\n        if (numPartitions <= 0) {\n            throw new IllegalArgumentException(\"a topic has at least one partition\");\n        }\n        return (hash & 0x7fffffff) % numPartitions;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java",
+    "startLine": 9,
+    "code": "\n    private Partitioner() {}\n\n    /** The hash modulo the partition count, in the mathematical sense: never negative, whatever the sign of the hash. */\n    public static int partitionFor(int hash, int numPartitions) {\n        if (numPartitions <= 0) {\n            throw new IllegalArgumentException(\"a topic has at least one partition\");\n        }\n        return Math.floorMod(hash, numPartitions);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "hash: int × numPartitions: int",
+  "counterexamples": [
+    {
+      "input": "partitionFor(hash=-1, numPartitions=3)",
+      "contract": "1",
+      "actual": "2"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s as partitionFor(hash=-805306368, numPartitions=402653184), shrunk to the input above in 305 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

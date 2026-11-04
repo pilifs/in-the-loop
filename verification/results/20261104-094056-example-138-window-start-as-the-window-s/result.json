@@ -1,0 +1,250 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-094056-example-138-window-start-as-the-window-s",
+  "title": "Example 138: window start as the window's index times its length, proved equal by the own checker",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.8s, peak 95.4 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 138 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-094056-example-138-window-start-as-the-window-s.json",
+    "sha256": "df19decd271935437e5fd4919251e5d3ff83b609d1400ec257077aa28eeffe05",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-094056-example-138-window-start-as-the-window-s",
+      "title": "Example 138: window start as the window's index times its length, proved equal by the own checker",
+      "description": "Regression proof of Crosscut's Window#counted with the start computed as nowNanos / windowNanos * windowNanos against the remainder form, by the tool's own checker (approach.engine native): expected verified. The checker rewrites a quotient times its divisor as the dividend less the remainder, so both versions are the same bits; the library's run took 0.1 s. JBMC did not finish the same harness within 60 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "record-components",
+        "lazy-multiplication",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "138"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T09:40:56+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 138 (B9)",
+          "run": "python3 examples/tools/build.py 138",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form"
+      ]
+    }
+  },
+  "sourceCommit": "2219301d72ab40e60ed2fbda78555b97960067c8",
+  "startedAt": "2026-11-04T13:28:59+00:00",
+  "finishedAt": "2026-11-04T13:29:05+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 100057088,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 7.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.098,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16076800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "90c8a1a69c0155761cff4bfe0e61bbee007961d2b96729d2127c2e0c291489dd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 138 (B9)",
+      "run": "python3 examples/tools/build.py 138",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.813,
+      "cpuSeconds": 7.767,
+      "cpuThrottledSeconds": 1.067,
+      "peakMemoryBytes": 100057088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-138-b9.log",
+        "lines": 3,
+        "bytes": 389,
+        "sha256": "36b25fc44fffa9047ec87a4d165ee03bc2922560c0d6f635ebc1d1625d30280d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: unverifiable (EXPECTED VERIFIED)",
+          "groups": [
+            "138",
+            "unverifiable",
+            "EXPECTED VERIFIED"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form",
+          "groups": [
+            "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form"
+          ]
+        }
+      ],
+      "tail": [
+        "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: running (B9)",
+        "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: unverifiable (EXPECTED VERIFIED)",
+        "Verdicts differ from expectations: 138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/README.md",
+      "change": "added",
+      "bytes": 11257,
+      "sha256": "a37db78a187dde644fa56cc7675a11f627f969a8892178e057d8c8034c4e89d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.json",
+      "change": "added",
+      "bytes": 1743,
+      "sha256": "4ce57c4168e58bb1c39d1eb6ac7b87bcf926f893f0959ed3ce14584348b66634",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.sarif",
+      "change": "added",
+      "bytes": 2503,
+      "sha256": "8b00fea2fca37c698e8bf8f3275e2a1561624cba681367716f726c0597f14e6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/verifier-output.txt",
+      "change": "added",
+      "bytes": 110,
+      "sha256": "eb8805e9eedac5d28f29c4e3e09b452683598bf6763f13f23c7f9d227d580cb1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/README.md",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.json",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.sarif",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6cb00883cb0a1ca5198144f3da5961a34f4b689f",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/6cb00883cb0a1ca5198144f3da5961a34f4b689f/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-094056-example-138-window-start-as-the-window-s"
+}

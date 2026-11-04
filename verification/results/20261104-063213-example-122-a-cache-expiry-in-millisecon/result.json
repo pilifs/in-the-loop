@@ -1,0 +1,200 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-063213-example-122-a-cache-expiry-in-millisecon",
+  "title": "Example 122: a cache expiry in milliseconds left expires entries in their last millisecond, found under the stated relation",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.4s, peak 87.1 MiB (estimated 5m00s, 3.0 GiB)",
+  "attention": [
+    "step 1 (example 122 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-063213-example-122-a-cache-expiry-in-millisecon.json",
+    "sha256": "4de90892b105ffaf1acccd8070ef7c7a35bee34ba3362f586259a8f4833c5de7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-063213-example-122-a-cache-expiry-in-millisecon",
+      "title": "Example 122: a cache expiry in milliseconds left expires entries in their last millisecond, found under the stated relation",
+      "description": "Regression proof (B9) of Crosscut's cache expiry between the committed version, Expiry#isExpired returning a boolean, and the patched one, Expiry#remainingMillis returning the milliseconds an entry has left, with the relation between the results stated as previousArguments-style metadata: resultsAgreeWhen 'previous == (result <= 0)' (the new --results-agree-when of jvmcontract equivalence, lib/src/harness/mod.rs and lib/src/equivalence.rs), the previous method named by previousSymbol, and the scope the module's own precondition. Expected: a counterexample with a fraction of a millisecond to go, such as remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0), before false and after 0, with the line 'the results are not related by previous == (result <= 0)'. The library's test of the same shape finds it in about a second. The job runs build.py on the example, which compiles both Crosscut trees with javac and runs jvmcontract equivalence with the relation.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java"
+        ],
+        "examples": [
+          "122"
+        ]
+      },
+      "expected": "Verdict violation; a counterexample inside the precondition, before false and after 0, and the example's result.json records it",
+      "submitted": {
+        "at": "2026-11-04T06:32:13+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 122 (B9)",
+          "run": "python3 examples/tools/build.py 122",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond"
+      ]
+    }
+  },
+  "sourceCommit": "4c8301a5388983a26a735b63cccd52592689ad33",
+  "startedAt": "2026-11-04T13:27:38+00:00",
+  "finishedAt": "2026-11-04T13:27:42+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 91283456,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.045,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16437248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "222a02ed477d249a21359df8cae975864a62d848f4739cadc5b00b6190a963c6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.02s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 122 (B9)",
+      "run": "python3 examples/tools/build.py 122",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.408,
+      "cpuSeconds": 5.826,
+      "cpuThrottledSeconds": 0.68,
+      "peakMemoryBytes": 91283456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-122-b9.log",
+        "lines": 10,
+        "bytes": 403,
+        "sha256": "7295667b4bbe3c7783735af59fc2cb76897c9f0c60a6776d2f3b1094e5482c49",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-target' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT> --unchanged-unless <UNCHANGED_UNLESS>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "8b8b2eb7efcf55497cde10c1bbe0ee66c97928e9",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/8b8b2eb7efcf55497cde10c1bbe0ee66c97928e9/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-063213-example-122-a-cache-expiry-in-millisecon"
+}

@@ -1,0 +1,79 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "jvmcontract",
+          "version": "0.1.0",
+          "rules": [
+            {
+              "id": "behaviour-changed",
+              "shortDescription": {
+                "text": "The code no longer matches its behavioural contract."
+              }
+            },
+            {
+              "id": "unverifiable",
+              "shortDescription": {
+                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
+              }
+            },
+            {
+              "id": "capability-changed",
+              "shortDescription": {
+                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
+              }
+            },
+            {
+              "id": "api-changed",
+              "shortDescription": {
+                "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
+              "id": "property-violated",
+              "shortDescription": {
+                "text": "An input exists on which the method violates its stated property."
+              }
+            },
+            {
+              "id": "invariant-violated",
+              "shortDescription": {
+                "text": "The model checker found a behaviour of the model that violates an invariant."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "unverifiable",
+          "level": "error",
+          "message": {
+            "text": "net.terminalvalue.crosscut.retry.Backoff#delayMillis cannot be verified: only static methods are supported"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java"
+                },
+                "region": {
+                  "startLine": 27
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

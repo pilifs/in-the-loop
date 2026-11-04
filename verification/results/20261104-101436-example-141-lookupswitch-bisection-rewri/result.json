@@ -1,0 +1,227 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-101436-example-141-lookupswitch-bisection-rewri",
+  "title": "Example 141: lookupswitch bisection rewritten half-open proved equal to the closed form on sorted tables by the own checker",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.0s, peak 103.2 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 141 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-101436-example-141-lookupswitch-bisection-rewri.json",
+    "sha256": "0c61586bdd14376efb5af1d452b93484e0f60854a1dda007293f07787c4697d2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-101436-example-141-lookupswitch-bisection-rewri",
+      "title": "Example 141: lookupswitch bisection rewritten half-open proved equal to the closed form on sorted tables by the own checker",
+      "description": "Regression proof of Mica's LookupSwitch#find rewritten half-open (example 046's form) against the closed form, within the scope of strictly sorted tables stated with a \\forall over the array in --unchanged-unless, by the tool's own checker (approach.engine native): expected verified. Arrays of primitives are in the checker's fragment since this example, a cell per index up to --max-array-length (8); the library's run took 2.3 s over 88 paths and 1044 solver calls. JBMC proved the same harness in 101 s and 2 GB.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "141"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T10:14:36+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 141 (B9)",
+          "run": "python3 examples/tools/build.py 141",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table"
+      ]
+    }
+  },
+  "sourceCommit": "110cf961f52f85f38d814e4151010cb40f786d08",
+  "startedAt": "2026-11-04T13:29:18+00:00",
+  "finishedAt": "2026-11-04T13:29:23+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 108244992,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 8.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 141 (B9)",
+      "run": "python3 examples/tools/build.py 141",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.026,
+      "cpuSeconds": 7.976,
+      "cpuThrottledSeconds": 1.014,
+      "peakMemoryBytes": 108244992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-141-b9.log",
+        "lines": 3,
+        "bytes": 392,
+        "sha256": "454897ef3f6e6f37d4b98c5c704ef843f6b274348ecfeadc174c9c98a1e56527",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: unverifiable (EXPECTED VERIFIED)",
+          "groups": [
+            "141",
+            "unverifiable",
+            "EXPECTED VERIFIED"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table",
+          "groups": [
+            "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table"
+          ]
+        }
+      ],
+      "tail": [
+        "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: running (B9)",
+        "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: unverifiable (EXPECTED VERIFIED)",
+        "Verdicts differ from expectations: 141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md",
+      "change": "added",
+      "bytes": 15362,
+      "sha256": "ceba6247710fb724264769f869264467ac05142906ede445bf4341d22516834a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.json",
+      "change": "added",
+      "bytes": 2319,
+      "sha256": "6d06ddaed1dac1087f416c8b9c1db4629d9d1b0f7af7d7b64b0e8bd2237345bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.sarif",
+      "change": "added",
+      "bytes": 2500,
+      "sha256": "468a9d3908822a8f8f6457c966e0b216c6088f349a5183cb266adb548f37fdd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/statement.java",
+      "change": "added",
+      "bytes": 2585,
+      "sha256": "a3c75c1bb482471d999d85c0af80b1fbee2c57ca0bf1b87710f6ffcf5e3495ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/verifier-output.txt",
+      "change": "added",
+      "bytes": 112,
+      "sha256": "3b1725f692c31d91ccf171e86b88c4ac81f22baf899c0061f4d2e21b4d7999f7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.json",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.sarif",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/statement.java",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "4586e81328b8467dbf1124167a5dd784a107e654",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/4586e81328b8467dbf1124167a5dd784a107e654/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-101436-example-141-lookupswitch-bisection-rewri"
+}

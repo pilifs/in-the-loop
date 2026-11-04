@@ -1,0 +1,46 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 1 new problem",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":contracts:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java",
+    "startLine": 24,
+    "code": "    /** A captured payment was returned to the customer. */\n    record PaymentRefunded(UUID eventId, String orderId, Instant occurredAt, String paymentId, long amountCents)\n            implements PaymentEvent {}\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java",
+    "startLine": 24,
+    "code": "    /** A captured payment was returned to the customer. */\n    record PaymentRefunded(UUID eventId, String orderId, Instant occurredAt, String paymentId, long amountCents)\n            implements PaymentEvent {}\n\n    /**\n     * A refund arrived before any charge, so the order was voided: nothing was captured, and a charge that arrives\n     * later is refused. Reported so that the order does not wait for a refund that will never happen.\n     */\n    record PaymentVoided(UUID eventId, String orderId, Instant occurredAt, String reason) implements PaymentEvent {}\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "0 beans, 0 entry points, 0 advised methods, 0 configuration keys, 8 wire types, 0 stored types, 1 problems",
+  "counterexamples": [
+    {
+      "input": "wire net.terminalvalue.boxoffice.contracts.PaymentEvent",
+      "contract": null,
+      "actual": "! PaymentVoided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$PaymentVoided\", which a reader of PaymentEvent rejects"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/boxoffice/contracts/src/contract/boundaries.contract\n+++ b/examples/apps/boxoffice/contracts/src/contract/boundaries.contract\n@@ -10,7 +10,7 @@\n # each becomes (the handler that takes it, or a 500). A `!` line is a place where something does not do\n # what it says.\n kind: boundaries\n-module: contracts, 0 beans, 0 entry points, 0 advised methods, 0 configuration keys, 7 wire types, 0 stored types, 0 problems\n+module: contracts, 0 beans, 0 entry points, 0 advised methods, 0 configuration keys, 8 wire types, 0 stored types, 1 problems\n \n wire net.terminalvalue.boxoffice.contracts.PaymentCommand: interface, \"type\" names the subtype\n   subtype \"ChargePayment\" = PaymentCommand$ChargePayment\n@@ -33,9 +33,11 @@\n   reason: String\n \n wire net.terminalvalue.boxoffice.contracts.PaymentEvent: interface, \"type\" names the subtype\n+  ! PaymentVoided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$PaymentVoided\", which a reader of PaymentEvent rejects\n   subtype \"PaymentCaptured\" = PaymentEvent$PaymentCaptured\n   subtype \"PaymentDeclined\" = PaymentEvent$PaymentDeclined\n   subtype \"PaymentRefunded\" = PaymentEvent$PaymentRefunded\n+  subtype \"PaymentEvent$PaymentVoided\" = PaymentEvent$PaymentVoided\n \n wire net.terminalvalue.boxoffice.contracts.PaymentEvent$PaymentCaptured: record\n   type = \"PaymentCaptured\"\n@@ -60,3 +62,10 @@\n   paymentId: String\n   amountCents: long\n \n+wire net.terminalvalue.boxoffice.contracts.PaymentEvent$PaymentVoided: record\n+  type = \"PaymentEvent$PaymentVoided\"\n+  eventId: UUID\n+  orderId: String\n+  occurredAt: Instant\n+  reason: String\n+\n",
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": [
+    "wire net.terminalvalue.boxoffice.contracts.PaymentEvent: ! PaymentVoided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$PaymentVoided\", which a reader of PaymentEvent rejects"
+  ]
+}

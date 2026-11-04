@@ -1,0 +1,258 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-124833-example-145-the-same-declaration-at-max",
+  "title": "Example 145: the same declaration at --max-array-length 12, the bisection proved unchanged on tables of nine to twelve pairs (own checker)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.6s, peak 90.3 MiB (estimated 3m00s, 1.0 GiB); 5 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 145 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-124833-example-145-the-same-declaration-at-max.json",
+    "sha256": "1e422dd00670a1728752ce8d66eede97ff0444ab3cb162254cff92220e8ef4d0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-124833-example-145-the-same-declaration-at-max",
+      "title": "Example 145: the same declaration at --max-array-length 12, the bisection proved unchanged on tables of nine to twelve pairs (own checker)",
+      "description": "Regression proof of Mica's LookupSwitch#find with a linear scan for tables of at most eight pairs, scoped with --unchanged-unless 'matches.length <= 8' and approach.maxArrayLength 12 (the new field, passed as --max-array-length): the domain holds tables of nine to twelve pairs, which the scope admits, and the tool's own checker proves the bisection unchanged on every such table and every key. Expected: verified, not vacuous (the probe is refuted on a nine-pair table). Measured 4.1 s, 85 MB, 89 paths, 548 solver calls.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "vacuity-check",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "145"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T12:48:33+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 145 (B9)",
+          "run": "python3 examples/tools/build.py 145",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+      ]
+    }
+  },
+  "sourceCommit": "7af36aa8f08457ab038f3d26add88238e2beb323",
+  "startedAt": "2026-11-04T13:29:36+00:00",
+  "finishedAt": "2026-11-04T13:29:42+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 94715904,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 7.3,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.158,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16855040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "b65d97c967cb13bb2fd061b2f5b86011ef366acea387375a92a9808f93395384",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.15s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.617,
+      "cpuSeconds": 7.268,
+      "cpuThrottledSeconds": 0.92,
+      "peakMemoryBytes": 94715904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-145-b9.log",
+        "lines": 3,
+        "bytes": 392,
+        "sha256": "377f69a62881ee9aef33897f32ad42b8cff98c9531a263d12897abf98f7735c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: unverifiable (EXPECTED VERIFIED)",
+          "groups": [
+            "145",
+            "unverifiable",
+            "EXPECTED VERIFIED"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits",
+          "groups": [
+            "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+          ]
+        }
+      ],
+      "tail": [
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: running (B9)",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: unverifiable (EXPECTED VERIFIED)",
+        "Verdicts differ from expectations: 145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "change": "added",
+      "bytes": 12993,
+      "sha256": "1875e6696b79d278f66f2776e7ba30c61e170ddea3e43daa51a5d7eae09df3d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "change": "added",
+      "bytes": 1831,
+      "sha256": "e66954e63cc3bcb51de4d3251ac0c54ec1dd5d3bffb67c10013abcc9a973edc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.sarif",
+      "change": "added",
+      "bytes": 2500,
+      "sha256": "a71e9876f870c34dd61a1064015dd57a81d3f44d218421aa474d30862293eff4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/statement.java",
+      "change": "added",
+      "bytes": 2525,
+      "sha256": "d0717a8cc13efe3fb572eabf27a36a73e40f8657dc5677f6b0e721b058060eda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt",
+      "change": "added",
+      "bytes": 112,
+      "sha256": "3b1725f692c31d91ccf171e86b88c4ac81f22baf899c0061f4d2e21b4d7999f7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.sarif",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/statement.java",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-124833-example-145-the-same-declaration-at-max"
+}

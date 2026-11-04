@@ -1,0 +1,258 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-104407-example-142-ascii-fast-path-of-modifiedu",
+  "title": "Example 142: ASCII fast path of ModifiedUtf8#encodeInto proved equal by the own checker with path merging",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.6s, peak 106.0 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+  "attention": [
+    "step 1 (example 142 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-104407-example-142-ascii-fast-path-of-modifiedu.json",
+    "sha256": "a150b239496f9ceeadda2756b2e19205bd24f28f6fb80975cc086c25ba9808ac",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-104407-example-142-ascii-fast-path-of-modifiedu",
+      "title": "Example 142: ASCII fast path of ModifiedUtf8#encodeInto proved equal by the own checker with path merging",
+      "description": "Runs build.py on example 142 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path against the previous version, at the default bounds (8 elements, unwind 16), by the tool's own checker with paths merged at join points. Expected: verified, in about 6 s and under 100 MB (237 paths). This is the proof that waited in examples/apps/mica/pending for a larger machine, since JBMC ran out of memory at 2.8 GB on it.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "path-merging",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "142"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T10:44:07+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 142 (B9)",
+          "run": "python3 examples/tools/build.py 142",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight"
+      ]
+    }
+  },
+  "sourceCommit": "37dde1ffd907c1a531ad502c0e7a8abfe98b897a",
+  "startedAt": "2026-11-04T13:29:24+00:00",
+  "finishedAt": "2026-11-04T13:29:29+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 111104000,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 7.5,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.056,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16424960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "9576f1f7e73fc2bb1ec2336aae60cb485c591eadc60a1b998573411c34057e08",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 142 (B9)",
+      "run": "python3 examples/tools/build.py 142",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.61,
+      "cpuSeconds": 7.465,
+      "cpuThrottledSeconds": 1.148,
+      "peakMemoryBytes": 111104000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-142-b9.log",
+        "lines": 3,
+        "bytes": 398,
+        "sha256": "1e698db3978ecf4bef35d1c6456d6e27de361b41f0cf4f368dd4f62568dda944",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:unexpected": 1,
+        "example:differ": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "unexpected",
+          "line": 2,
+          "text": "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: unverifiable (EXPECTED VERIFIED)",
+          "groups": [
+            "142",
+            "unverifiable",
+            "EXPECTED VERIFIED"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "differ",
+          "line": 3,
+          "text": "Verdicts differ from expectations: 142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight",
+          "groups": [
+            "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight"
+          ]
+        }
+      ],
+      "tail": [
+        "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: running (B9)",
+        "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: unverifiable (EXPECTED VERIFIED)",
+        "Verdicts differ from expectations: 142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/README.md",
+      "change": "added",
+      "bytes": 15702,
+      "sha256": "cf465b9fc06ed96a2b3fe99b9380328b239d75993c23088d3f07b4015d0fbb44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.json",
+      "change": "added",
+      "bytes": 1662,
+      "sha256": "31a5c7f9b7cf91657e53e82dc5e73441e52521e98b7556e32e351a95a1441c0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.sarif",
+      "change": "added",
+      "bytes": 2513,
+      "sha256": "1d28c9bf60002c72b62aca884652a118f75a28c6f15ce3bf822501137b94c011",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/statement.java",
+      "change": "added",
+      "bytes": 2611,
+      "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/verifier-output.txt",
+      "change": "added",
+      "bytes": 122,
+      "sha256": "de9233d8791266fb9a42b7390f7b043e934bb9a691e6f4a6aac3573049bd77a0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/README.md",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.json",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.sarif",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/statement.java",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "b9dd09591c450f202b76427ce929187adfb0d7c3",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/b9dd09591c450f202b76427ce929187adfb0d7c3/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-104407-example-142-ascii-fast-path-of-modifiedu"
+}

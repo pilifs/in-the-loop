@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-085102-example-134-a-window-counter-that-advanc",
+  "title": "Example 134: a window counter that advances by one window leaves its start behind a quiet client, found by a regression proof over the record results' shared components",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.2s, peak 98.7 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "step 1 (example 134 (B9)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261104-085102-example-134-a-window-counter-that-advanc.json",
+    "sha256": "6548cb145b6b9cb8d248a071dd733cbe2b3cf6925bb67e3043327f572ec89bf9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-085102-example-134-a-window-counter-that-advanc",
+      "title": "Example 134: a window counter that advances by one window leaves its start behind a quiet client, found by a regression proof over the record results' shared components",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted (a new fixed-window request counter kernel of Crosscut) across the counter record gaining a previousCount component: the old counter is built from the new components (--before-arguments 'new Window(this.startNanos, this.count), nowNanos, windowNanos') and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), within aligned starts as the scope. The new version advances the start by exactly one window instead of aligning it to the clock. Expected violation: a request two windows ahead of an empty counter, the old start at the request's window and the new one a window behind, found by JBMC in under a second inline.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "regression-proof",
+        "record-components"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/witness.rs"
+        ],
+        "examples": [
+          "134"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T08:51:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 134 (B9)",
+          "run": "python3 examples/tools/build.py 134",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client"
+      ]
+    }
+  },
+  "sourceCommit": "9f583661a0c3e1a75ba34fb47dba5949420e9562",
+  "startedAt": "2026-11-04T13:28:37+00:00",
+  "finishedAt": "2026-11-04T13:28:41+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 103526400,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.098,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16084992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 0.06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 134 (B9)",
+      "run": "python3 examples/tools/build.py 134",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.21,
+      "cpuSeconds": 5.822,
+      "cpuThrottledSeconds": 0.983,
+      "peakMemoryBytes": 103526400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-134-b9.log",
+        "lines": 10,
+        "bytes": 414,
+        "sha256": "3b946fa72e8bcfa16e012757d4edbf9a3e4ac9d32f4309874510ba35e9086a67",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: running (B9)",
+        "jvmcontract failed:",
+        "error: unexpected argument '--before-arguments' found",
+        "",
+        "  tip: a similar argument exists: '--before'",
+        "",
+        "Usage: jvmcontract equivalence --before <BEFORE> --after <AFTER> --target <TARGET> --work <WORK> --report <REPORT> --unchanged-unless <UNCHANGED_UNLESS>",
+        "",
+        "For more information, try '--help'.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6b67128274df071c9dc9f31455e04ec015274c8a",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/6b67128274df071c9dc9f31455e04ec015274c8a/jvmcontract",
+    "built": true
+  },
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261104-085102-example-134-a-window-counter-that-advanc"
+}

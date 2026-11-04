@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-131020-example-115-a-hold-s-idempotency-key-ren",
+  "title": "Example 115: a hold's idempotency key renamed in the record but not in the query strings, caught by the stored types block of the boundary contract (B12)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m40s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-131020-example-115-a-hold-s-idempotency-key-ren.json",
+    "sha256": "9e9c0b001fdebebf7fc96a5faa24b981c98276f7d01fe577b1e141f4791f09c0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-131020-example-115-a-hold-s-idempotency-key-ren",
+      "title": "Example 115: a hold's idempotency key renamed in the record but not in the query strings, caught by the stored types block of the boundary contract (B12)",
+      "description": "The first example of the stored types block of a boundary contract: jvmcontract writes the shape of each Spring Data MongoDB document of the Box Office ticketing service as the mapper stores it and checks every field-name string in the module (Criteria.where and and, the Update operators, Index.on, Sort.by, projections, repository @Query documents, @CompoundIndex definitions) against the documents the method names, with a ! line for a string that names a field the document does not have. The patch renames the record component HoldDocument.idempotencyKey to requestKey; the component is set positionally and its accessor is unused, so the one-file rename compiles, while TicketingStore still runs where(\"idempotencyKey\") in holdByIdempotencyKey and keeps the unique partial index on (customerId, idempotencyKey). The lookup matches nothing and the index covers nothing, so a client retrying POST /concerts/{id}/holds with the same Idempotency-Key holds a second set of seats. The change is a refactoring, so the runner regenerates the contract and reports as the violation the three new ! lines under HoldDocument (two from the constructor's index and its partial filter, one from holdByIdempotencyKey). The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/store.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "115"
+        ]
+      },
+      "expected": "build.py 115 exits 0: verdict violation, 3 new problems, matches expected",
+      "submitted": {
+        "at": "2026-11-04T13:10:20+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 115 (B12)",
+          "run": "python3 examples/tools/build.py 115",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/115-renamed-document-field-queried-by-name"
+      ],
+      "supersedes": "20261103-060133-example-115-a-hold-s-idempotency-key-ren"
+    }
+  },
+  "sourceCommit": "2ff9bc8a17daf640bddb9af13a6757869e7d2da5",
+  "startedAt": "2026-11-04T13:36:45+00:00",
+  "finishedAt": "2026-11-04T13:38:26+00:00",
+  "wallSeconds": 101.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2605370,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1220304896,
+    "wallSeconds": 100.3,
+    "cpuSeconds": 132.5,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.56
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 115 (B12)",
+      "run": "python3 examples/tools/build.py 115",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 100.266,
+      "cpuSeconds": 132.47,
+      "cpuThrottledSeconds": 0.051,
+      "peakMemoryBytes": 1220304896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-115-b12.log",
+        "lines": 2,
+        "bytes": 126,
+        "sha256": "04c1e318486596bb618b9eaf52674f8d7e06a00df7bac65a61aef637c64cbe6b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "115-renamed-document-field-queried-by-name: violation (as expected)",
+          "groups": [
+            "115",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "115-renamed-document-field-queried-by-name: running (B12)",
+        "115-renamed-document-field-queried-by-name: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/115-renamed-document-field-queried-by-name/README.md",
+      "change": "added",
+      "bytes": 18202,
+      "sha256": "aee8adbe6265671d71c2d65024bae8e3c419d83032421de69cce66bf2b774e19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/115-renamed-document-field-queried-by-name/result.json",
+      "change": "added",
+      "bytes": 3239,
+      "sha256": "f9b96a6305a8e04aac26626ec51774b016609de513a319a1bc0664386782a9ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/115-renamed-document-field-queried-by-name/result.sarif",
+      "change": "added",
+      "bytes": 3412,
+      "sha256": "b2e649dbb61d9ccab08c878b3eb5e570a6fcfd42f3e6e860111bd63b79687181",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/115-renamed-document-field-queried-by-name/verifier-output.txt",
+      "change": "added",
+      "bytes": 1082,
+      "sha256": "d5c641c393a478475e4cd7e11074ada2fe50845dc4ac51722e6d8ee35f2e230e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T13:45:14+00:00",
+    "applied": [
+      "examples/115-renamed-document-field-queried-by-name/README.md",
+      "examples/115-renamed-document-field-queried-by-name/result.json",
+      "examples/115-renamed-document-field-queried-by-name/result.sarif",
+      "examples/115-renamed-document-field-queried-by-name/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
