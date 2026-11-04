@@ -159,7 +159,12 @@ which explores the harness path by path with a bundled SAT solver and looks for 
 [124](124-partitioner-rewritten-with-floormod-moves-every-negative-key/README.md) refutes a partitioner rewritten with `floorMod`, the
 witness found in the second stage of the search because every non-negative hash agrees, and
 [125](125-jwt-skew-moved-to-the-clock-proved-equal-by-the-tools-own-checker/README.md) proves a JWT validator's skew moved from the
-window to the clock, under the module's precondition as the scope, in a fraction of a second.
+window to the clock, under the module's precondition as the scope, in a fraction of a second. On the token bucket's refill, each path
+carrying a model of its condition so that a branch costs the checker one solver call,
+[132](132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md) finds the whole periods counted from
+the epoch crediting a token for a nanosecond, within the module's precondition, and
+[133](133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md) proves the sum capped by the room
+left equal to the capped sum there, with the overflow outside it shown when the scope is left out.
 A method of a record whose components are primitive, or one taking or returning such a record, is proved on the components: the harness
 builds the record from them in each version through its constructor, so that an input the constructor rejects is outside the statement and the
 proof is over the record's invariant. On Crosscut, [126](126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/README.md)

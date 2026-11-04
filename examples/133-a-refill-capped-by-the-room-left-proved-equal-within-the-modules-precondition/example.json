@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "133",
+  "title": "A refill capped by the room left proved equal to the capped sum within the module's precondition",
+  "summary": "A token bucket's refill, `Math.min(capacity, tokens + earned)`, is rewritten as `tokens + Math.min(earned, capacity - tokens)`, the tokens earned but no more than the bucket has room for, so that the sum can never overflow. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in half a second, with no JBMC; outside it they differ where a sum overflows a `long`, which the checker also shows when run without the scope.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "integer-overflow",
+    "confined-change",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Add the tokens earned to those held, but no more of them than the room left, `tokens + Math.min(earned, capacity - tokens)`, instead of capping the sum, `Math.min(capacity, tokens + earned)`: with the tokens within the capacity the room is a small number and the addition cannot overflow, where `tokens + earned` could for a bucket not refilled in a very long time. The tests pass unchanged. The pull request declares the module's precondition as the scope, as the property contract states it.",
+    "patch": "change.patch",
+    "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+  },
+  "risk": "None within the precondition: with `0 <= tokens <= capacity` the room is between zero and the capacity, `Math.min(earned, room)` is at most the room, and the two expressions agree whether the earned tokens fit or not. Outside it, where `tokens + earned` overflows a `long` (readings 2^63 nanoseconds apart, or tokens beyond the capacity), the old expression wraps and the new one does not, which is the rewrite's point, and which a precondition the module states but does not enforce leaves to its callers.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "Both versions compute `earned` as the same division of the same bits, which the checker's gate hashing makes one circuit; what the solver is asked is whether `min(capacity, tokens + earned)` and `tokens + min(earned, capacity - tokens)` can differ on readings within the scope, and on each of the nine paths (the scope's conjuncts, the division's exception, the two minimums) it answers no in a fraction of a second. The proof is of what the module promises its callers: a refill counts the same tokens as before on every reading the precondition admits.",
+  "resolution": "Merge. The precondition is worth enforcing in the kernel too, as the property contract's `assume` states it, so that the overflow the rewrite avoids cannot be reached by a caller either.",
+  "notes": [
+    "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`): five `long` parameters, a division, additions, comparisons, `Math.min`. The library's run of this shape took 0.5 s, nine paths and ten solver calls. Until this cycle every branch cost two solver calls, one per side; a path now carries a model of its condition, so the side the model takes needs no call and the other side one, and the same run took 22 calls before. The measurement on this kernel is the pipeline's, which runs the proof through JBMC as well.",
+    "Without the scope the checker finds the versions differing in 0.8 s, on readings no stage of its search contains: `tokensAfter(tokens=-5764607523034183938, lastNanos=-3458764513820591871, nowNanos=0, periodNanos=-1, capacity=0)`, 0 before and 9223372036854775807 after, each side overflowing somewhere. A witness with no stage named is one near the type's range, as here; the scope says the module never gets there.",
+    "The refill helper is proved on its own here, not through `RetryAfter` as in example 120. The checker proves that change too, with the helpers as written, in 1.1 s over three paths, where JBMC without the shared-callee stubs had not finished in 60 s: in the checker the two versions' calls of a helper on the same arguments are the same gates, so the solver never compares two division circuits, which is what the stubs achieve for JBMC.",
+    "A rewrite of `lastAfter` as `lastNanos + earned * periodNanos`, the credited time advanced by the periods earned, is the same function by Java's division identity (`d == (d / p) * p + d % p` for every `d` and `p`), but the checker did not prove it within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in this checker and in JBMC alike. The gate hashing shares what is computed the same way, not what is equal for a reason."
+  ],
+  "provenance": "Constructed on Crosscut's token bucket kernel (examples 031, 120 and 132) to show a confined rewrite proved by the tool's own checker within the module's precondition, with the overflow outside it shown when the scope is left out.",
+  "references": [
+    {
+      "title": "Math.min (Java SE 21)",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#min(long,long)"
+    },
+    {
+      "title": "Bucket4j: the token bucket algorithm, refill as whole periods since the last refill",
+      "url": "https://bucket4j.com/"
+    },
+    {
+      "title": "Spring Cloud Gateway: the RequestRateLimiter filter, a token bucket per key",
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

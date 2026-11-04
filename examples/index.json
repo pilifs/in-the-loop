@@ -4714,7 +4714,8 @@
         "On the machine the examples are measured on (JBMC 6.11.0, CaDiCaL), the proof with the helpers shared took 1.3 s over all 2^320 inputs. With `--no-shared-callees`, the search over inputs in [0:20] passed in a second and the search over [-100000:100000] had not finished after 60 s: two 64-bit divisions and two remainders, one of each per version, compared across the versions.",
         "The helpers are shared because both versions call them, their bytecode is identical in both (constant pool references resolved, so a renumbered pool does not count), and they are pure functions of primitives. A helper that reads a field, takes an array, or calls into the JDK beyond its arithmetic is proved as written, as before.",
         "The stub throws what the helper can throw, here `ArithmeticException` from the division, chosen arbitrarily per new arguments: a version that catches it where the other does not is still found to differ (the library's tests cover that case).",
-        "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids."
+        "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids.",
+        "Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls: in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker."
       ],
       "source": null
     },
@@ -5163,6 +5164,91 @@
         "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
         "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
         "A test for the multiplier of three is in the patch; the proof says nothing about multipliers other than two, which are outside its scope, and the test is what covers them."
+      ],
+      "source": null
+    },
+    {
+      "id": "132",
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond",
+      "title": "A refill that counts periods from the epoch credits a token for a nanosecond",
+      "summary": "A token bucket's refill, `(nowNanos - lastNanos) / periodNanos` whole periods, is rewritten as `nowNanos / periodNanos - lastNanos / periodNanos`, so that two clock readings are never subtracted. The tests pass, every refill in them starting at time zero, and the module's property holds. The regression proof, run by the tool's own checker within the module's precondition, finds a refill one nanosecond into a period that credits a whole token: a client that polls at each period boundary earns two tokens a period, and the limiter admits twice its rate.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), which has the method's arithmetic: five `long` parameters, divisions, a subtraction and `Math.min`. The library's run of this shape took 3.0 s: one path, the one the scope leaves, twelve solver calls, the witness found in the first stage of the search as `tokensAfter(tokens=8, lastNanos=10, nowNanos=18, periodNanos=3, capacity=20)` and shrunk to the input above in 46 interpreter runs. The measurement on this kernel is the pipeline's.",
+        "Until this cycle every branch cost the checker two solver calls, one per side. A path now carries a model of its condition, the solver's answer when the path was split off, so the side the model takes is known feasible without a call, the other side costs one, and a condition the path took before (the same comparison of the same bits, which the gate hashing makes the same literal) costs none; the same run took 26 calls before and takes 12 now. The time here is in the search for a witness, a solver call per stage over the division circuits, which the change does not touch.",
+        "The scope is the module's precondition, the `assume` of the property contract (`src/contract/properties.contract`): a positive period, readings in order and below 2^62, a capacity of at most a billion and tokens within it. Without it the proof finds the versions differing on readings out of order as well, where `nowNanos / periodNanos - lastNanos / periodNanos` can be negative: `tokensAfter(tokens=0, lastNanos=13, nowNanos=1, periodNanos=13, capacity=0)`, 0 before and -1 after. The witness within the precondition is the one that says what the limiter does in service.",
+        "The property proved on every build, `result >= tokens && result <= capacity`, holds of the new count: within the precondition both readings are non-negative and in order, so the difference of the floors is at least zero, and the cap keeps the result at the capacity. A property says what every refill must do; whether this one credits the periods the old one did is the regression proof's question.",
+        "The defect doubles the rate rather than overshooting it once, because `lastAfter` is unchanged: a bucket last credited a nanosecond before a boundary is credited there again after the refill, so the straddling reading recurs on every poll at a boundary. A rewrite of `lastAfter` to the same epoch count would hide the defect from the tests just as well."
+      ],
+      "source": null
+    },
+    {
+      "id": "133",
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition",
+      "title": "A refill capped by the room left proved equal to the capped sum within the module's precondition",
+      "summary": "A token bucket's refill, `Math.min(capacity, tokens + earned)`, is rewritten as `tokens + Math.min(earned, capacity - tokens)`, the tokens earned but no more than the bucket has room for, so that the sum can never overflow. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in half a second, with no JBMC; outside it they differ where a sum overflows a `long`, which the checker also shows when run without the scope.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "confined-change",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`): five `long` parameters, a division, additions, comparisons, `Math.min`. The library's run of this shape took 0.5 s, nine paths and ten solver calls. Until this cycle every branch cost two solver calls, one per side; a path now carries a model of its condition, so the side the model takes needs no call and the other side one, and the same run took 22 calls before. The measurement on this kernel is the pipeline's, which runs the proof through JBMC as well.",
+        "Without the scope the checker finds the versions differing in 0.8 s, on readings no stage of its search contains: `tokensAfter(tokens=-5764607523034183938, lastNanos=-3458764513820591871, nowNanos=0, periodNanos=-1, capacity=0)`, 0 before and 9223372036854775807 after, each side overflowing somewhere. A witness with no stage named is one near the type's range, as here; the scope says the module never gets there.",
+        "The refill helper is proved on its own here, not through `RetryAfter` as in example 120. The checker proves that change too, with the helpers as written, in 1.1 s over three paths, where JBMC without the shared-callee stubs had not finished in 60 s: in the checker the two versions' calls of a helper on the same arguments are the same gates, so the solver never compares two division circuits, which is what the stubs achieve for JBMC.",
+        "A rewrite of `lastAfter` as `lastNanos + earned * periodNanos`, the credited time advanced by the periods earned, is the same function by Java's division identity (`d == (d / p) * p + d % p` for every `d` and `p`), but the checker did not prove it within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in this checker and in JBMC alike. The gate hashing shares what is computed the same way, not what is equal for a reason."
       ],
       "source": null
     }

@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "132",
+  "title": "A refill that counts periods from the epoch credits a token for a nanosecond",
+  "summary": "A token bucket's refill, `(nowNanos - lastNanos) / periodNanos` whole periods, is rewritten as `nowNanos / periodNanos - lastNanos / periodNanos`, so that two clock readings are never subtracted. The tests pass, every refill in them starting at time zero, and the module's property holds. The regression proof, run by the tool's own checker within the module's precondition, finds a refill one nanosecond into a period that credits a whole token: a client that polls at each period boundary earns two tokens a period, and the limiter admits twice its rate.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "rounding",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Count the whole periods elapsed as `nowNanos / periodNanos - lastNanos / periodNanos`, each reading divided on its own, instead of `(nowNanos - lastNanos) / periodNanos`, so that two readings far apart are never subtracted (the javadoc of `System.nanoTime` says a reading can be any `long`). The cap stays, and so do the tests, which pass: every refill in them starts at time zero or at a credited time, where the two counts agree. The pull request declares the module's precondition as its scope, as the property contract states it, so that the proof is about the readings the limiter is used with.",
+    "patch": "change.patch",
+    "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+  },
+  "risk": "A refill with `lastNanos` a nanosecond before a period boundary and `nowNanos` on it credits a whole token for a nanosecond, where the old count credited nothing. The credited time is unchanged, `nowNanos` less the remainder of the difference, so the bucket stays a nanosecond before a boundary after the refill, and a client that polls at each boundary earns two tokens a period for as long as it keeps to it: the limiter admits twice its configured rate, and a gateway's `RequestRateLimiter` built on it protects the service behind it half as well as its configuration says. Nothing fails: the property that a refill never takes tokens away and never exceeds the capacity holds of the new count too, and the tests poll from time zero, where every reading is on a boundary.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The proof asks whether the two counts agree on every reading within the precondition, and the tool's own checker answers in a few seconds: the harness runs symbolically, the old version's division and the new version's two are circuits over the same bits, and on the one path the scope leaves, where both versions return, the solver is asked for readings on which the results differ. It looks in [0, 20] first and finds some; the interpreter shrinks them to `tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1)`: one nanosecond into a two-nanosecond period, the old count earns nothing and the new one a token, since `2 / 2 - 1 / 2` is 1 where `(2 - 1) / 2` is 0. The floor of a difference is the difference of the floors only when the two readings lie in the same place within their periods, which the tests' readings, all on a boundary, always do.",
+  "resolution": "Keep the difference: `System.nanoTime` readings are made to be subtracted, and the subtraction is exact as long as the two are within 2^63 nanoseconds (292 years) of each other, which the precondition guarantees. If a period count is wanted for storage, store the credited period number and compare counts, not readings. Example 133 is a rewrite of the same method that the proof passes within the precondition.",
+  "notes": [
+    "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), which has the method's arithmetic: five `long` parameters, divisions, a subtraction and `Math.min`. The library's run of this shape took 3.0 s: one path, the one the scope leaves, twelve solver calls, the witness found in the first stage of the search as `tokensAfter(tokens=8, lastNanos=10, nowNanos=18, periodNanos=3, capacity=20)` and shrunk to the input above in 46 interpreter runs. The measurement on this kernel is the pipeline's.",
+    "Until this cycle every branch cost the checker two solver calls, one per side. A path now carries a model of its condition, the solver's answer when the path was split off, so the side the model takes is known feasible without a call, the other side costs one, and a condition the path took before (the same comparison of the same bits, which the gate hashing makes the same literal) costs none; the same run took 26 calls before and takes 12 now. The time here is in the search for a witness, a solver call per stage over the division circuits, which the change does not touch.",
+    "The scope is the module's precondition, the `assume` of the property contract (`src/contract/properties.contract`): a positive period, readings in order and below 2^62, a capacity of at most a billion and tokens within it. Without it the proof finds the versions differing on readings out of order as well, where `nowNanos / periodNanos - lastNanos / periodNanos` can be negative: `tokensAfter(tokens=0, lastNanos=13, nowNanos=1, periodNanos=13, capacity=0)`, 0 before and -1 after. The witness within the precondition is the one that says what the limiter does in service.",
+    "The property proved on every build, `result >= tokens && result <= capacity`, holds of the new count: within the precondition both readings are non-negative and in order, so the difference of the floors is at least zero, and the cap keeps the result at the capacity. A property says what every refill must do; whether this one credits the periods the old one did is the regression proof's question.",
+    "The defect doubles the rate rather than overshooting it once, because `lastAfter` is unchanged: a bucket last credited a nanosecond before a boundary is credited there again after the refill, so the straddling reading recurs on every poll at a boundary. A rewrite of `lastAfter` to the same epoch count would hide the defect from the tests just as well."
+  ],
+  "provenance": "Constructed on Crosscut's token bucket kernel (examples 031 and 120) to show a regression proof by the tool's own checker finding, within the module's precondition, a defect that the tests and the property both miss.",
+  "references": [
+    {
+      "title": "System.nanoTime (Java SE 21): readings are to be compared by subtraction, and a reading can be any long",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#nanoTime()"
+    },
+    {
+      "title": "Bucket4j: the token bucket algorithm, refill as whole periods since the last refill",
+      "url": "https://bucket4j.com/"
+    },
+    {
+      "title": "Spring Cloud Gateway: the RequestRateLimiter filter, a token bucket per key",
+      "url": "https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

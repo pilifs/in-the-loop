@@ -16,18 +16,77 @@ pub const FALSE: Lit = -1;
 /// A machine integer of some width, as bits, least significant first.
 pub type Bits = Vec<Lit>;
 
+/// What a variable is: an input, chosen freely (a parameter's bit), or a gate over earlier literals. Every
+/// clause the solver holds defines a gate, so any choice of the inputs extends to exactly one model, and a model
+/// is kept as the inputs' values alone ([`Model`]).
+#[derive(Clone, Copy)]
+enum Def {
+    Input,
+    And(Lit, Lit),
+    Xor(Lit, Lit),
+    Ite(Lit, Lit, Lit),
+}
+
+/// A model of the circuits, kept by the path it satisfies: the inputs' values as the solver chose them, and the
+/// values of the gates evaluated so far. A gate made after the model was taken is evaluated from its inputs when
+/// it is asked for, and an input made after it is free, so the model stays a model of every clause.
+#[derive(Clone, Default)]
+pub struct Model {
+    known: Vec<u64>,
+    value: Vec<u64>,
+}
+
+impl Model {
+    fn get(&self, v: usize) -> Option<bool> {
+        let (word, bit) = (v / 64, v % 64);
+        if self.known.get(word).is_some_and(|w| w >> bit & 1 == 1) {
+            Some(self.value[word] >> bit & 1 == 1)
+        } else {
+            None
+        }
+    }
+
+    fn set(&mut self, v: usize, b: bool) {
+        let (word, bit) = (v / 64, v % 64);
+        if word >= self.known.len() {
+            self.known.resize(word + 1, 0);
+            self.value.resize(word + 1, 0);
+        }
+        self.known[word] |= 1 << bit;
+        if b {
+            self.value[word] |= 1 << bit;
+        } else {
+            self.value[word] &= !(1 << bit);
+        }
+    }
+
+    /// A literal's value, if its variable has one.
+    fn lit(&self, l: Lit) -> Option<bool> {
+        if is_const(l) {
+            return Some(l == TRUE);
+        }
+        self.get(l.unsigned_abs() as usize).map(|b| b == (l > 0))
+    }
+}
+
 /// The solver with the circuits built over it.
 pub struct Blaster {
     solver: cadical::Solver,
     next: i32,
+    /// What each variable is, by number (0 is no variable, 1 the constant true).
+    defs: Vec<Def>,
     /// Gates already built, by operation and inputs, so that the same function of the same inputs is one
     /// variable: two copies of a circuit (the method's own multiplication and the harness's check of it, say)
     /// then fold to the same literals, and their comparison to a constant.
     gates: HashMap<(u8, Lit, Lit, Lit), Lit>,
     /// How many clauses have been added, for reporting.
     pub clauses: u64,
-    /// How many times the solver was asked, for reporting.
+    /// How many times the solver was asked, for reporting, and the time it took.
     pub solves: u64,
+    pub solving: std::time::Duration,
+    /// How many gates were evaluated in a path's model, and the time it took.
+    pub evaluated: u64,
+    pub evaluating: std::time::Duration,
 }
 
 impl fmt::Debug for Blaster {
@@ -48,7 +107,7 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, gates: HashMap::new(), clauses: 0, solves: 0 };
+        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO };
         b.clause(&[TRUE]);
         b
     }
@@ -63,11 +122,19 @@ impl Blaster {
         self.clauses += 1;
     }
 
-    /// A fresh variable.
+    /// A fresh variable: an input.
     pub fn var(&mut self) -> Lit {
         let v = self.next;
         self.next += 1;
+        self.defs.push(Def::Input);
         v
+    }
+
+    /// A fresh variable that is a gate.
+    fn gate(&mut self, def: Def) -> Lit {
+        let o = self.var();
+        self.defs[o as usize] = def;
+        o
     }
 
     pub fn variables(&self) -> i32 {
@@ -104,7 +171,7 @@ impl Blaster {
         if let Some(&o) = self.gates.get(&key) {
             return o;
         }
-        let o = self.var();
+        let o = self.gate(Def::And(a, b));
         self.clause(&[-o, a]);
         self.clause(&[-o, b]);
         self.clause(&[o, -a, -b]);
@@ -143,7 +210,7 @@ impl Blaster {
             Some(&o) => o,
             None => {
                 let (x, y) = (x.abs(), y.abs());
-                let o = self.var();
+                let o = self.gate(Def::Xor(x, y));
                 self.clause(&[-o, x, y]);
                 self.clause(&[-o, -x, -y]);
                 self.clause(&[o, -x, y]);
@@ -173,7 +240,7 @@ impl Blaster {
         if let Some(&o) = self.gates.get(&key) {
             return o;
         }
-        let o = self.var();
+        let o = self.gate(Def::Ite(c, a, b));
         self.clause(&[-c, -a, o]);
         self.clause(&[-c, a, -o]);
         self.clause(&[c, -b, o]);
@@ -389,7 +456,83 @@ impl Blaster {
         if assumptions.contains(&FALSE) {
             return Some(false);
         }
-        self.solver.solve_with(assumptions.into_iter())
+        let started = std::time::Instant::now();
+        let answer = self.solver.solve_with(assumptions.into_iter());
+        self.solving += started.elapsed();
+        answer
+    }
+
+    /// The solver's last model, as the inputs' values.
+    pub fn snapshot(&self) -> Model {
+        let mut model = Model::default();
+        for (v, def) in self.defs.iter().enumerate().skip(2) {
+            if matches!(def, Def::Input) {
+                model.set(v, self.solver.value(v as Lit).unwrap_or(false));
+            }
+        }
+        model
+    }
+
+    /// Whether the literal holds in the model, evaluating the gates it depends on that the model has not been
+    /// asked about yet (an input the model does not fix is false).
+    pub fn holds(&mut self, model: &mut Model, lit: Lit) -> bool {
+        if let Some(b) = model.lit(lit) {
+            return b;
+        }
+        let started = std::time::Instant::now();
+        let mut stack = vec![lit.unsigned_abs() as usize];
+        let mut done = 0u64;
+        while let Some(&v) = stack.last() {
+            if model.get(v).is_some() {
+                stack.pop();
+                continue;
+            }
+            let need = |model: &Model, stack: &mut Vec<usize>, l: Lit| -> Option<bool> {
+                let value = model.lit(l);
+                if value.is_none() {
+                    stack.push(l.unsigned_abs() as usize);
+                }
+                value
+            };
+            match self.defs[v] {
+                Def::Input => {
+                    model.set(v, false);
+                    stack.pop();
+                    done += 1;
+                }
+                Def::And(a, b) => {
+                    let (x, y) = (model.lit(a), model.lit(b));
+                    if x == Some(false) || y == Some(false) {
+                        model.set(v, false);
+                        stack.pop();
+                        done += 1;
+                    } else if let (Some(x), Some(y)) = (need(model, &mut stack, a), need(model, &mut stack, b)) {
+                        model.set(v, x && y);
+                        stack.pop();
+                        done += 1;
+                    }
+                }
+                Def::Xor(a, b) => {
+                    if let (Some(x), Some(y)) = (need(model, &mut stack, a), need(model, &mut stack, b)) {
+                        model.set(v, x != y);
+                        stack.pop();
+                        done += 1;
+                    }
+                }
+                Def::Ite(c, a, b) => {
+                    if let Some(cv) = need(model, &mut stack, c) {
+                        if let Some(x) = need(model, &mut stack, if cv { a } else { b }) {
+                            model.set(v, x);
+                            stack.pop();
+                            done += 1;
+                        }
+                    }
+                }
+            }
+        }
+        self.evaluating += started.elapsed();
+        self.evaluated += done;
+        model.lit(lit).expect("evaluated")
     }
 
     /// A literal's value in the last model.

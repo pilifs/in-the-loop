@@ -1,7 +1,10 @@
 //! Bounded model checking of a harness in the tool itself, without JBMC: the harness bytecode is executed
 //! symbolically over bit-vectors ([`bits`]), one path at a time, and a bundled SAT solver (CaDiCaL) decides at
 //! every branch which sides are feasible and, when a path reaches the harness's `AssertionError`, what input takes
-//! it there. Loops are unwound up to a bound, as JBMC's are, and a path that needs more is no verdict.
+//! it there. Each path carries a model of its condition (the solver's answer when it was split off), so the side
+//! of a branch that model takes is known feasible and the solver is asked once per branch, about the other side,
+//! and not at all about a condition the path has taken before. Loops are unwound up to a bound, as JBMC's are,
+//! and a path that needs more is no verdict.
 //!
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
@@ -20,7 +23,7 @@ use std::time::{Duration, Instant};
 use crate::classfile::{ArithOp, BootstrapArg, ClassFile, Cond, ExceptionHandler, Insn, Kind, MethodDescriptor, Narrow, Type};
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
-use bits::{Bits, Blaster, Lit, FALSE, TRUE};
+use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
 
 /// What the engine is allowed.
 #[derive(Debug, Clone)]
@@ -57,6 +60,9 @@ pub struct Outcome {
     pub problem: Option<String>,
     pub paths: u64,
     pub solves: u64,
+    pub solving: f64,
+    pub evaluated: u64,
+    pub evaluating: f64,
     pub clauses: u64,
     pub variables: i32,
     pub seconds: f64,
@@ -82,7 +88,7 @@ impl Outcome {
 
     /// One line on what the run did, for the log.
     pub fn summary(&self) -> String {
-        format!("{:?}: {} paths, {} solver calls, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
 }
 
@@ -145,12 +151,15 @@ impl Frame {
     }
 }
 
-/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), its
-/// objects, and how often each back edge was taken.
+/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), a model
+/// of that condition, its objects, and how often each back edge was taken.
 #[derive(Clone)]
 struct Path {
     frames: Vec<Frame>,
     cond: Vec<Lit>,
+    /// An input that takes the path: the solver's answer when the path was split off, or every input zero for
+    /// the first. The side of a branch it takes is feasible without asking the solver.
+    model: Model,
     objects: Vec<Obj>,
     back_edges: HashMap<(String, String, u32), u32>,
 }
@@ -177,10 +186,10 @@ type Step = Result<Option<End>, Stop>;
 
 /// Which sides of a branch are feasible under the path condition.
 enum Sides {
-    Both,
+    /// Both, the path's own model taking the then side or the else side, and `other` a model of the other.
+    Both { model_takes_then: bool, other: Model },
     Then,
     Else,
-    Neither,
 }
 
 struct Engine<'a> {
@@ -224,7 +233,6 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         params: Vec::new(),
         stage_lits: vec![None; STAGES.len()],
     };
-    engine.b.set_timeout(options.timeout.as_secs_f32());
     let solver = engine.b.signature();
     let outcome = |engine: &Engine, verdict: Verdict, raw_inputs: BTreeMap<u32, String>, stage: Option<String>, problem: Option<String>| Outcome {
         verdict,
@@ -233,6 +241,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         problem,
         paths: engine.paths,
         solves: engine.b.solves,
+        solving: engine.b.solving.as_secs_f64(),
+        evaluated: engine.b.evaluated,
+        evaluating: engine.b.evaluating.as_secs_f64(),
         clauses: engine.b.clauses,
         variables: engine.b.variables(),
         seconds: started.elapsed().as_secs_f64(),
@@ -277,7 +288,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), objects: Vec::new(), back_edges: HashMap::new() };
+    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), model: Model::default(), objects: Vec::new(), back_edges: HashMap::new() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -392,25 +403,41 @@ impl<'a> Engine<'a> {
         }
     }
 
-    /// Which sides of a branch on `c` are feasible on the path.
-    fn sides(&mut self, path: &Path, c: Lit) -> Result<Sides, Stop> {
-        if c == TRUE {
+    /// Which sides of a branch on `c` are feasible on the path. A condition the path has already taken (the
+    /// same comparison of the same values, which the gate hashing makes the same literal: a loop bound both
+    /// versions test) is decided without the solver; otherwise the side the path's model takes is feasible, and
+    /// the solver is asked once, about the other side.
+    fn sides(&mut self, path: &mut Path, c: Lit) -> Result<Sides, Stop> {
+        if c == TRUE || path.cond.contains(&c) {
             return Ok(Sides::Then);
         }
-        if c == FALSE {
+        if c == FALSE || path.cond.contains(&-c) {
             return Ok(Sides::Else);
         }
+        let model_takes_then = self.b.holds(&mut path.model, c);
         let mut assumptions = path.cond.clone();
-        assumptions.push(c);
-        let then = self.solve(&assumptions)?;
-        *assumptions.last_mut().expect("pushed") = -c;
-        let else_ = self.solve(&assumptions)?;
-        Ok(match (then, else_) {
-            (true, true) => Sides::Both,
-            (true, false) => Sides::Then,
-            (false, true) => Sides::Else,
-            (false, false) => Sides::Neither,
-        })
+        assumptions.push(if model_takes_then { -c } else { c });
+        if self.solve(&assumptions)? {
+            Ok(Sides::Both { model_takes_then, other: self.b.snapshot() })
+        } else if model_takes_then {
+            Ok(Sides::Then)
+        } else {
+            Ok(Sides::Else)
+        }
+    }
+
+    /// Splits the path on `c` when both sides are feasible: the twin returned takes the then side when
+    /// `twin_takes_then`, else the else side, and the path the other; each keeps the model of its side.
+    fn split(&self, path: &mut Path, c: Lit, model_takes_then: bool, other: Model, twin_takes_then: bool) -> Path {
+        let mut twin = path.clone();
+        if model_takes_then == twin_takes_then {
+            path.model = other;
+        } else {
+            twin.model = other;
+        }
+        twin.cond.push(if twin_takes_then { c } else { -c });
+        path.cond.push(if twin_takes_then { -c } else { c });
+        twin
     }
 
     /// The literal of stage `i`: every parameter within its range (a boolean is in every range).
@@ -468,10 +495,14 @@ impl<'a> Engine<'a> {
         raw_inputs
     }
 
+    /// Asks the solver, which is given the time left until the deadline (the search for a smaller witness after
+    /// a violation shortens it, and one call must not run past it).
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
-        if Instant::now() > self.deadline {
+        let now = Instant::now();
+        if now > self.deadline {
             return Err(Stop::Budget("the engine did not finish within the time limit".into()));
         }
+        self.b.set_timeout((self.deadline - now).as_secs_f32());
         self.b.solve_with(assumptions).ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
     }
 
@@ -479,12 +510,10 @@ impl<'a> Engine<'a> {
     /// or both, the twin for the else side joining `pending`. `None` if neither side is feasible.
     fn branch(&mut self, path: &mut Path, c: Lit, then: usize, else_: usize) -> Result<Option<End>, Stop> {
         match self.sides(path, c)? {
-            Sides::Both => {
-                let mut twin = path.clone();
-                twin.cond.push(-c);
+            Sides::Both { model_takes_then, other } => {
+                let mut twin = self.split(path, c, model_takes_then, other, false);
                 twin.frames.last_mut().expect("a frame").at = else_;
                 self.pending.push(twin);
-                path.cond.push(c);
                 path.frames.last_mut().expect("a frame").at = then;
             }
             Sides::Then => {
@@ -495,7 +524,6 @@ impl<'a> Engine<'a> {
                 path.cond.push(-c);
                 path.frames.last_mut().expect("a frame").at = else_;
             }
-            Sides::Neither => return Ok(Some(End::Infeasible)),
         }
         Ok(None)
     }
@@ -504,13 +532,11 @@ impl<'a> Engine<'a> {
     /// on: a division by zero, an overflow.
     fn branch_throw(&mut self, path: &mut Path, c: Lit, exception: &str, value: Val) -> Step {
         match self.sides(path, c)? {
-            Sides::Both => {
-                let mut twin = path.clone();
-                twin.cond.push(-c);
+            Sides::Both { model_takes_then, other } => {
+                let mut twin = self.split(path, c, model_takes_then, other, false);
                 self.push(&mut twin, value);
                 self.advance(&mut twin);
                 self.pending.push(twin);
-                path.cond.push(c);
                 self.raise(path, exception)
             }
             Sides::Then => {
@@ -523,7 +549,6 @@ impl<'a> Engine<'a> {
                 self.advance(path);
                 Ok(None)
             }
-            Sides::Neither => Ok(Some(End::Infeasible)),
         }
     }
 
@@ -1096,12 +1121,10 @@ impl<'a> Engine<'a> {
         if backward {
             // Count the back edge on the side that takes it; `jump` does the counting once the side is chosen.
             match self.sides(path, c)? {
-                Sides::Both => {
-                    let mut twin = path.clone();
-                    twin.cond.push(-c);
+                Sides::Both { model_takes_then, other } => {
+                    let mut twin = self.split(path, c, model_takes_then, other, false);
                     twin.frames.last_mut().expect("a frame").at = fall;
                     self.pending.push(twin);
-                    path.cond.push(c);
                     return self.jump(path, target);
                 }
                 Sides::Then => {
@@ -1113,7 +1136,6 @@ impl<'a> Engine<'a> {
                     path.frames.last_mut().expect("a frame").at = fall;
                     return Ok(None);
                 }
-                Sides::Neither => return Ok(Some(End::Infeasible)),
             }
         }
         self.branch(path, c, then, fall)
@@ -1126,9 +1148,8 @@ impl<'a> Engine<'a> {
             let k = self.b.constant(i64::from(value), 32);
             let c = self.b.eq(&key, &k);
             match self.sides(path, c)? {
-                Sides::Both => {
-                    let mut twin = path.clone();
-                    twin.cond.push(c);
+                Sides::Both { model_takes_then, other } => {
+                    let mut twin = self.split(path, c, model_takes_then, other, true);
                     if let Some(end) = self.jump(&mut twin, target)? {
                         if !matches!(end, End::Infeasible) {
                             // The twin hit the unwinding bound: report it as the path's own end.
@@ -1138,14 +1159,12 @@ impl<'a> Engine<'a> {
                     } else {
                         self.pending.push(twin);
                     }
-                    path.cond.push(-c);
                 }
                 Sides::Then => {
                     path.cond.push(c);
                     return self.jump(path, target);
                 }
                 Sides::Else => path.cond.push(-c),
-                Sides::Neither => return Ok(Some(End::Infeasible)),
             }
         }
         self.jump(path, default)
@@ -1396,6 +1415,43 @@ mod tests {
         assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
         let a: i32 = out.raw_inputs[&0].parse().unwrap();
         assert!(a.wrapping_mul(a) < 0, "{a}");
+    }
+
+    #[test]
+    fn a_branch_costs_one_solver_call_and_a_condition_taken_before_none() {
+        // `if (a >= b) return; if (a >= b) fail; return`: the first branch asks the solver about the one side
+        // the path's model does not take, and the second is on the literal the path already took.
+        let cp = harness("(II)V", |code, _, fail| {
+            let done = code.label();
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.if_icmp(Cond::Ge, done);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.if_icmp(Cond::Ge, fail);
+            code.bind(done);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.paths, out.solves), (2, 1));
+
+        // Two independent branches: four paths, and three solver calls (one per branch point explored), where
+        // asking about both sides of each would take six.
+        let cp = harness("(II)V", |code, _, _| {
+            let second = code.label();
+            let done = code.label();
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.if_icmp(Cond::Lt, second);
+            code.bind(second);
+            code.load(Kind::Int, 0);
+            code.iconst(5);
+            code.if_icmp(Cond::Lt, done);
+            code.bind(done);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.paths, out.solves), (4, 3));
     }
 
     #[test]

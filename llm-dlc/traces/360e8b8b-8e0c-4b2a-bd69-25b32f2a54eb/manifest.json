@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T07:59:26.366Z",
-  "duration_seconds": 314971,
+  "ended": "2026-11-04T08:34:01.775Z",
+  "duration_seconds": 317046,
   "stats": {
-    "turns": 234,
-    "api_calls": 2522,
-    "tool_calls": 3047,
-    "tool_errors": 55,
-    "compactions": 42,
+    "turns": 238,
+    "api_calls": 2592,
+    "tool_calls": 3116,
+    "tool_errors": 58,
+    "compactions": 43,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 75392,
-      "output_tokens": 5045843,
-      "cache_read_input_tokens": 438104403,
-      "cache_creation_input_tokens": 11051560
+      "input_tokens": 77452,
+      "output_tokens": 5146454,
+      "cache_read_input_tokens": 447313307,
+      "cache_creation_input_tokens": 11250185
     }
   },
   "tools": {
-    "Bash": 2547,
+    "Bash": 2616,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -818,24 +818,38 @@
     {
       "index": 42,
       "started": "2026-11-04T07:39:55.147Z",
-      "ended": "2026-11-04T07:59:26.366Z",
+      "ended": "2026-11-04T07:59:52.532Z",
       "turns": 4,
-      "api_calls": 47,
+      "api_calls": 48,
       "usage": {
-        "input_tokens": 1444,
-        "output_tokens": 86817,
-        "cache_read_input_tokens": 5957892,
-        "cache_creation_input_tokens": 176670
+        "input_tokens": 1476,
+        "output_tokens": 87760,
+        "cache_read_input_tokens": 6149475,
+        "cache_creation_input_tokens": 178152
       },
-      "peak_context_tokens": 191615
+      "peak_context_tokens": 193097
+    },
+    {
+      "index": 43,
+      "started": "2026-11-04T08:01:20.466Z",
+      "ended": "2026-11-04T08:34:01.775Z",
+      "turns": 4,
+      "api_calls": 69,
+      "usage": {
+        "input_tokens": 2028,
+        "output_tokens": 99668,
+        "cache_read_input_tokens": 9017321,
+        "cache_creation_input_tokens": 197143
+      },
+      "peak_context_tokens": 212088
     }
   ],
   "log": {
-    "sha256": "579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243",
-    "bytes": 91883353,
-    "lines": 35252,
-    "gzip_bytes": 15646047,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243.jsonl.gz"
+    "sha256": "4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c",
+    "bytes": 93696024,
+    "lines": 36180,
+    "gzip_bytes": 15948264,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1302,6 +1316,14 @@
       "summary": "Regression proofs build the previous version's record from the new parameters: a record whose components changed, or a record's method made static, is related by a constructor call among --before-arguments; examples 130 and 131 on the backoff record gaining a multiplier (verification pending)",
       "body": "A regression proof now relates a method of a record whose components changed (one added, removed or retyped), and a record's method that became static, to its previous version. The previous version's record is built from the new parameters by a constructor call given first among the expressions of --before-arguments, such as 'new Backoff(this.baseMillis, this.capMillis), attempt' or 'new Window(lo, hi), x', and a record among the previous version's parameters the same way. The harness builds it under before/ in the block that computes the previous version's arguments, which now has the typed handlers JBMC needs (it matches a handler by the exception's exact class), so an input the previous constructor rejects is outside the statement as before. The report reads 'behaves as the previous delayMillis(attempt) on new Backoff(this.baseMillis, this.capMillis)', a witness shows both versions as they received the input (the previous record as built), and the refusals for a record of other components or a receiver the new version lacks print the constructor call to give, with the previous version's parameter names. A record result of other components is still refused. In the library: harness::CallArg::Record, BeforeMethod.receiver and .records with expected(), argument_types() and relocated_descriptor(), parse_arguments split at top-level commas with each piece type-checked, expr::emit_record, and in equivalence.rs a layout of the previous version used to replay it and render the witness.\n\nExamples 130 and 131 are on Crosscut's retry.Backoff record, which gains an int multiplier component (Spring Retry's ExponentialBackOffPolicy has one). In 130 the doubling loop is rewritten to count the attempt down to zero, and a negative attempt, which the old loop answered with the base, now counts down to the cap: the proof finds attempt=-1 on Backoff[baseMillis=1, capMillis=2, multiplier=2] (before 1, after 2) in 9.0 s, in the second search stage, with this.multiplier != 2 as the scope of the intended change. In 131 the loop keeps counting up and applies the cap once after it; proved equal for the multiplier of two in 16.7 s with the loops unwound 32 times. Both patches apply, the three Crosscut trees compile and pass their 46 tests, and the two pipeline jobs are queued. The examples' router, approaches page, lib README, skill reference and the Crosscut README are updated; build.py renders a previousArguments that starts with a constructor call as the receiver and the call. Verified with 104 unit tests and 49 integration tests (one unit test and two integration tests new: a record that gained a component, a record's method made static with a bound that moved, and the refusals' hints), clippy with nothing new, the release binary built and installed.",
       "log_sha256": "579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243"
+    },
+    {
+      "change_id": "zllokwnmppvtozvwssonnmvrqysppkmw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The tool's own checker asks the solver once per branch: each path carries a model of its condition, a condition taken before costs nothing, and records are in its fragment; examples 132 and 133 on the token bucket's refill (verification pending)",
+      "body": "The bounded model checker in lib/src/bmc explored the harness path by path and asked the SAT solver about both sides of every branch. Now each path carries a model of its condition (bits.rs: the solver's answer for the inputs when the path was split off, with the gates made since evaluated on demand from the definitions the Blaster records per variable), so the side the model takes is known feasible without a call and the solver is asked once, about the other side, whose model goes with the twin; a branch whose literal, or its negation, is already in the path condition (the same comparison of the same bits, hashed to one literal, as a loop bound both versions test) costs no call at all. Each solver call is also given the time left to the deadline, so the search for a smaller witness after a violation can no longer overrun its budget by one long call. The engine's log line reports the solver time and the gates evaluated. On example 131's proof the solver calls fall from 3432 to 846 and the time from 49.7 s to 22 s; the plain proof of example 120, which JBMC did not finish in 60 s without the shared-callee stubs, takes the checker 1.1 s because both versions' divisions are one circuit. The engine was found to handle records of primitive components already (objects with fields, constructors inlined), which the README, the skill reference and the limits now say.\n\nExamples 132 and 133 are regression proofs of Crosscut's TokenBucket#tokensAfter by the checker, with the module's precondition (the property contract's assume) as the scope, as example 125 does: 132 counts the periods earned as nowNanos / periodNanos - lastNanos / periodNanos, which the tests, polling from time zero, and the property both pass, and the proof finds crediting a token for a nanosecond (tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1), 0 before and 1 after, found in the first search stage in 3.0 s); 133 caps the tokens earned by the room left instead of capping the sum, proved equal within the precondition in 0.5 s over nine paths and ten solver calls, with the overflow outside it shown in its notes. Example 120's notes record the checker's 1.1 s run. Verified by the unit test a_branch_costs_one_solver_call_and_a_condition_taken_before_none (two paths and one call; four paths and three calls), the full suite (105 unit, 49 integration tests, the integration tests cross-checking the checker against JBMC on the fixture proofs), clippy with nothing new, both patches applying and their trees passing the app's 45 tests, and the two proofs run inline through the release binary, which is installed. Jobs 20261104-083123-example-132-a-refill-counting-periods-fr and 20261104-083123-example-133-a-refill-capped-by-the-room are queued for the pipeline.",
+      "log_sha256": "4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c"
     }
   ],
   "logs": {
@@ -1388,6 +1410,12 @@
       "lines": 12999,
       "gzip_bytes": 6518104,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/424d91f8ab425438c8854c426a1ba013b0d54f89f105c62f0ce83804e62bf5ee.jsonl.gz"
+    },
+    "4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c": {
+      "bytes": 93696024,
+      "lines": 36180,
+      "gzip_bytes": 15948264,
+      "url": null
     },
     "565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f": {
       "bytes": 40201175,
