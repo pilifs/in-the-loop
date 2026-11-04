@@ -1712,7 +1712,7 @@
       "vacuous": false,
       "existingTestsPassed": true,
       "notes": [
-        "A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).",
+        "A regression proof of `ModifiedUtf8#encodeInto` against an ASCII fast path waited from 1 to 4 November 2026 for a machine with more memory, JBMC running out of it at the default bound of 8; the tool's own checker, with its paths merged where they meet, proves it in seconds (example 142) and refutes the fast path off by one (example 143).",
         "Supplementary characters written in four bytes, as in standard UTF-8, produce a class no JVM will load."
       ],
       "source": null
@@ -1992,7 +1992,7 @@
       "vacuous": false,
       "existingTestsPassed": true,
       "notes": [
-        "A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).",
+        "A regression proof of `ModifiedUtf8#encodeInto` against an ASCII fast path waited from 1 to 4 November 2026 for a machine with more memory, JBMC running out of it at the default bound of 8; the tool's own checker, with its paths merged where they meet, proves it in seconds (example 142) and refutes the fast path off by one (example 143).",
         "Writes one byte past what it returns into the caller's buffer, refuted against a frame condition stated with JML's `\\old`."
       ],
       "source": null
@@ -5592,6 +5592,92 @@
         "The tool's own checker proves it in 2.3 s: 88 paths, 1044 solver calls, 59 MB. The paths are the lengths of the table (nine, the harness's copying loop) times the steps of the two searches; the out-of-bounds side of each read is refuted by the solver under the loop's bounds, so no exception path is explored. Arrays of primitives entered its fragment with this example and 140: a cell per index up to `--max-array-length`, a read a choice among the cells and a write a conditional update of each.",
         "JBMC, given the same harness, proves the same statement in 101 s and 2 GB with its default solver, the symbolic table, the quantifier's loop and the two searches in one formula; without the scope it finds the unsorted-table witness in 14 s where the checker takes 0.1 s.",
         "Example 046 proves the same rewrite against the search's specification with quantifiers, that every key of a sorted table is found and an absent one gives -1; this proof relates it to the previous code instead, with no specification but the previous version, which is the review question when the rewrite is meant to change nothing."
+      ],
+      "source": null
+    },
+    {
+      "id": "142",
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight",
+      "title": "An ASCII fast path for the constant-pool encoder proved equal to the previous version at bound eight",
+      "summary": "The class-file writer encodes every string constant into modified UTF-8 with `ModifiedUtf8#encodeInto`, which tests each `char` for the one-, two- or three-byte form. Most constants are ASCII, so a developer adds a fast path: a leading run of one-byte characters, recognised by `(char) (c - 1) < 0x7f`, is copied without the general test, and the general loop takes over at the first character that is not. The regression proof against the previous version, which JBMC could not finish at the default bound of eight characters in 2.8 GB, is done by the tool's own checker in 7 s and 76 MB: once the search has grown past a few hundred paths, the paths through the loops are merged at their join points, so the proof explores 733 paths where there are 11643, and at a bound of twelve characters it is done in 83 s where the unmerged search exhausted its budget of 200000 paths without a verdict.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "class-files",
+          "text-encoding",
+          "array-utilities"
+        ],
+        "defect": [],
+        "technique": [
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "This proof waited from 1 to 4 November 2026 in `examples/apps/mica/pending` for a machine with more memory: JBMC at `--max-array-length 8 --unwind 16` ran out of memory at 2.8 GB in 15 s (and at 5.7 GB before a limit was set), and at bounds 2, 3 and 4 proved the versions equal in 31, 94 and 275 s. The tool's own checker proves it at the default bound in 7 s and 76 MB, and at twelve characters in 83 s and 155 MB, so the pending proof became this example and example 143.",
+        "Path merging in the tool's own checker is what this example exercises: without it the checker explores 11643 paths with 46063 solver calls in 5.6 s at the bound of eight, and at a bound of twelve exhausts its budget of 200000 paths after 128 s with no verdict. Merged after the first 512 paths, the search is 733 paths at eight and 868 at twelve; merged from the start it is 237 and 369. The time at eight does not fall, because the solver's work moves: the comparisons of the output cells at the end of the harness, one per element of each version's copy, are each a proof over the merged formula, and the sixteen of them take most of the 7 s. At sixteen the search merged from the start had 488 paths and 678 solver calls after four minutes and no verdict, each call over a formula of 163000 variables, where the unmerged search had spent its path budget after 145 s; the bound the proof scales to on this machine is twelve. The first 512 paths are left unmerged because a small search is cheaper that way: a solver call about one concrete path is cheap, one about a disjunction of paths is not, and the 64-bit arithmetic of examples 131, 134 and 139 took two to three times as long merged from the start.",
+        "The bound applies to `chars` and `out` alike, so an input whose encoding needs more bytes than `out` holds overflows the buffer in both versions and is compared up to that exception; eight three-byte characters need 24 bytes and are never encoded to the end. A difference that only shows past the eighth byte written would not be seen. Example 143's difference shows in the first byte.",
+        "The fast path's test `(char) (chars[i] - 1) < 0x7f` is one comparison for the two the general loop makes (`c >= 0x0001 && c <= 0x007f`): the subtraction wraps U+0000 to U+FFFF, which fails the test, as it should, since U+0000 takes the two-byte form. The proof covers the wrap, since `chars` has every value in its cells.",
+        "The encoder's properties in `properties.contract` (examples 044, 048 and 055) hold of both versions; they say how many bytes are written and what the first byte of each character is, not that the new version writes what the old one wrote. The regression proof is a different statement, which the properties do not imply either way: example 143 is a fast path the properties allow and the regression proof refutes."
+      ],
+      "source": null
+    },
+    {
+      "id": "143",
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow",
+      "title": "An ASCII fast path that admits U+0080 writes it in one byte, which the properties allow",
+      "summary": "The class-file writer's `ModifiedUtf8#encodeInto` gains an ASCII fast path: a leading run of one-byte characters is copied without the general test. The test is written `(char) (c - 1) <= 0x7f`, which admits U+0080 along with U+0001 to U+007F, and writes it as the single byte `0x80`, where modified UTF-8 needs two: a class file with such a constant is rejected by the virtual machine. The encoder's committed properties, about how many bytes each character takes and what its first byte is, hold of the leading run too, since they are checked on the general loop's inputs; only the comparison with the previous version catches it. The tool's own checker refutes the proof in 1.1 s and 60 MB on `encodeInto(chars=['\\u0080'], out=[32])`, with the paths past the first few hundred merged at their join points, where JBMC ran out of memory at the default bound.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "class-files",
+          "text-encoding",
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "This is the planned example 058 of `examples/apps/mica/pending`, held from 1 to 4 November 2026 for a machine with more memory: JBMC refuted it at `--max-array-length 2 --unwind 6` in 6 s and at 4 and 8 in 38 s and 1.5 GB, and ran out of memory at 2.8 GB at the default bound of eight. The tool's own checker refutes it at the default bound in 1.1 s and 60 MB, and proves the corrected fast path (example 142) at the same bound.",
+        "The committed properties of `encodeInto` (examples 044, 048 and 055: the count of bytes written, the first byte of each character, the buffer not overrun) do not catch this. They are stated per character of the general loop's rule, and the fast path writes U+0080 as one byte where the properties' `encodedLength(c)` says two, so a property proof would catch it only if the property is written against the previous version's rule rather than the code's helpers; the regression proof needs no property at all. The pending README of 1 November predicted this: only comparing with the previous version catches it.",
+        "The witness is the smallest the interpreter's shrinking reaches: a one-character string and a one-byte buffer, on which the previous version throws for want of a second byte and the new one returns. The disagreement is in the first byte written, `0xC2` against `0x80`, so a longer buffer shows the same difference as different results, 2 against 1.",
+        "The search is 731 paths with 2055 solver calls (1.1 s): the first 512 on their own, the rest merged where they meet. Unmerged throughout, it found the same witness in 2364 paths with 8907 calls in 1.0 s; merged from the start, in 260 paths with 342 calls in 4.6 s, since each branch of a merged path is a question over every path merged into it and a violation is found only after every path that could reach the join has been merged, where a search going deep first can hit it early. That is why the checker merges only once a search has grown past a few hundred paths, where the paths would otherwise multiply (example 142's note)."
       ],
       "source": null
     }

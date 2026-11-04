@@ -9,7 +9,13 @@
 //! under what holds of every one and built as a circuit only where a model got it wrong
 //! ([`bits::Blaster::sdivrem_lazy`], [`bits::Blaster::mul_lazy`]); a quotient times its divisor is the dividend
 //! less the remainder, with no product.
-//! Loops are unwound up to a bound, as JBMC's are, and a path that needs more is no verdict.
+//! Loops are unwound up to a bound, as JBMC's are, and a path that needs more is no verdict. Once more paths have
+//! been explored than a small search has ([`Options::merge_after`]), paths are merged where they meet: one that
+//! reaches an instruction with more than one way in (after an `if`, a loop header, a handler) waits there, and the
+//! paths waiting at the earliest such point are made one path when nothing else can run, every value they differ
+//! in a choice by the condition of each and its models all of theirs ([`Engine::merge`]), so that independent
+//! branches add paths rather than multiply them and a branch each of whose sides some model takes costs no solver
+//! call. A small search stays unmerged, each solver call being about one concrete path, which is cheaper.
 //!
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
@@ -44,11 +50,15 @@ pub struct Options {
     pub max_paths: u64,
     /// The longest an array parameter may be, as JBMC's `--max-nondet-array-length`.
     pub max_array_length: u32,
+    /// How many paths are explored each on its own before the paths that meet are merged ([`Engine::merge`]): a
+    /// small search is cheaper unmerged, every solver call being about one concrete path, and merging pays once
+    /// the paths multiply. 0 merges from the start.
+    pub merge_after: u64,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8 }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512 }
     }
 }
 
@@ -73,6 +83,8 @@ pub struct Outcome {
     /// Why there is no verdict: something outside the fragment, a loop beyond the bound, or the budget.
     pub problem: Option<String>,
     pub paths: u64,
+    /// How many paths were absorbed into another at a join point ([`Engine::merge`]).
+    pub merges: u64,
     pub solves: u64,
     pub solving: f64,
     pub evaluated: u64,
@@ -109,7 +121,7 @@ impl Outcome {
 
     /// One line on what the run did, for the log.
     pub fn summary(&self) -> String {
-        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
 }
 
@@ -186,6 +198,9 @@ struct Decoded {
     index: HashMap<u32, usize>,
     handlers: Vec<ExceptionHandler>,
     max_locals: usize,
+    /// Per instruction, whether control can reach it from more than one place (the instruction after an `if`'s
+    /// scope, a loop header, a handler): where the paths that reach it are merged ([`Engine::merge`]).
+    joins: Vec<bool>,
 }
 
 #[derive(Clone)]
@@ -205,21 +220,67 @@ impl Frame {
     }
 }
 
-/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), a model
+/// One path through the harness: its frames, the condition that selects it (a conjunction of literals), models
 /// of that condition, its objects, and how often each back edge was taken.
 #[derive(Clone)]
 struct Path {
     frames: Vec<Frame>,
     cond: Vec<Lit>,
-    /// An input that takes the path: the solver's answer when the path was split off, or every input zero for
-    /// the first. The side of a branch it takes is feasible without asking the solver.
-    model: Model,
+    /// Inputs that take the path, at least one: the solver's answer when the path was split off, or every input
+    /// zero for the first, and after a merge the models of every path merged into it (up to [`MOST_MODELS`]). A
+    /// side of a branch one of them takes is feasible without asking the solver, so a branch whose two sides are
+    /// each taken by a model costs no solver call, and each side keeps the models that take it.
+    models: Vec<Model>,
     /// Whether the path is known feasible: a twin split off at a branch the solver did not decide within its
     /// probe's budget keeps its parent's model, which takes the other side, and waits in `Engine::deferred`
     /// until every decided path is done, when the solver is asked about it with all the time left.
     undecided: bool,
+    /// Whether the path was just taken from a join point, where it waited for the other paths to arrive, and is
+    /// to run the join's instruction rather than wait there again.
+    resumed: bool,
     objects: Vec<Obj>,
     back_edges: HashMap<(String, String, u32), u32>,
+}
+
+/// Where a path waits at a join point: each frame's instruction index, class and method, outermost first, so that
+/// the paths of one group are at the same instruction of the same calls, and the group earliest in the harness
+/// (the smallest key) is resumed first, since what is still running can only arrive at a later one.
+type JoinKey = Vec<(usize, String, String)>;
+
+fn join_key(path: &Path) -> JoinKey {
+    path.frames.iter().map(|f| (f.at, f.class.name.clone(), f.method.clone())).collect()
+}
+
+/// Whether two values can be one value under a condition: both ints, both longs, or the same reference.
+fn mergeable(a: &Val, b: &Val) -> bool {
+    match (a, b) {
+        (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) => true,
+        (Val::R(x), Val::R(y)) => x == y,
+        _ => false,
+    }
+}
+
+/// Whether two paths at the same join point have states of one shape, so that they can be merged: the same
+/// slots and objects, with references to the same objects (the paths only differ in bits).
+fn same_shape(a: &Path, b: &Path) -> bool {
+    let slots = |x: &Option<Val>, y: &Option<Val>| match (x, y) {
+        (None, None) => true,
+        (Some(x), Some(y)) => mergeable(x, y),
+        _ => false,
+    };
+    a.frames.len() == b.frames.len()
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
+        && a.objects.len() == b.objects.len()
+        && a.objects.iter().zip(&b.objects).all(|(o, q)| {
+            o.class == q.class
+                && o.fields.len() == q.fields.len()
+                && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
+                && match (&o.array, &q.array) {
+                    (None, None) => true,
+                    (Some(x), Some(y)) => x.element == y.element && x.cells.len() == y.cells.len(),
+                    _ => false,
+                }
+        })
 }
 
 /// How a path ended.
@@ -232,6 +293,8 @@ enum End {
     Violation(Vec<Lit>),
     /// A loop needed more iterations than the bound.
     Unwound(String),
+    /// The path reached a join point and waits there for the paths that arrive after it.
+    Parked,
 }
 
 /// Why the engine stops without a verdict.
@@ -244,13 +307,16 @@ type Step = Result<Option<End>, Stop>;
 
 /// Which sides of a branch are feasible under the path condition.
 enum Sides {
-    /// Both, the path's own model taking the then side or the else side, and `other` a model of the other.
-    Both { model_takes_then: bool, other: Model },
+    /// Both, with the path's models that take each side (the solver's answer where none of its own did).
+    Both { then_models: Vec<Model>, else_models: Vec<Model> },
     Then,
     Else,
-    /// The side the path's model takes, the other undecided: the solver did not answer within the probe's budget.
+    /// The side the path's models take, the other undecided: the solver did not answer within the probe's budget.
     Undecided { model_takes_then: bool },
 }
+
+/// How many models a path keeps after a merge: the first ones, since every path has at least one.
+const MOST_MODELS: usize = 16;
 
 struct Engine<'a> {
     cp: &'a ClassPath,
@@ -259,6 +325,11 @@ struct Engine<'a> {
     pending: Vec<Path>,
     /// The paths the solver did not decide in time, taken up when `pending` is empty.
     deferred: Vec<Path>,
+    /// The paths waiting at join points, by where they wait; a group is merged and resumed when `pending` is
+    /// empty, the earliest first.
+    waiting: BTreeMap<JoinKey, Vec<Path>>,
+    merges: u64,
+    merge_after: u64,
     unwind: u32,
     deadline: Instant,
     max_paths: u64,
@@ -311,6 +382,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         codes: HashMap::new(),
         pending: Vec::new(),
         deferred: Vec::new(),
+        waiting: BTreeMap::new(),
+        merges: 0,
+        merge_after: options.merge_after,
         unwind: options.unwind,
         deadline: started + options.timeout,
         max_paths: options.max_paths,
@@ -328,6 +402,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         stage,
         problem,
         paths: engine.paths,
+        merges: engine.merges,
         solves: engine.b.solves,
         solving: engine.b.solving.as_secs_f64(),
         evaluated: engine.b.evaluated,
@@ -396,7 +471,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, model: Model::default(), undecided: false, objects, back_edges: HashMap::new() };
+    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -415,12 +490,11 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
             Ok(None) => break,
             Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(stop_text(&stop))) }),
         };
-        engine.paths += 1;
         if engine.paths > engine.max_paths {
             return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
         }
         match engine.run(path) {
-            Ok(End::Returned) | Ok(End::Infeasible) => {}
+            Ok(End::Returned) | Ok(End::Infeasible) | Ok(End::Parked) => {}
             Ok(End::Violation(cond)) => {
                 let (stage, input) = match engine.staged_input(&cond) {
                     Ok(found) => found,
@@ -497,15 +571,45 @@ impl<'a> Engine<'a> {
             insns.push(insn);
             pcs.push(pc);
         }
-        let compiled = Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize });
+        // A join is an instruction with more than one way in: the fall-through from the one before it, a branch
+        // to it, or, for a handler, any instruction its range covers.
+        let mut ways_in = vec![0u32; insns.len()];
+        ways_in[0] += 1;
+        for (i, insn) in insns.iter().enumerate() {
+            let falls_through = !matches!(insn, Insn::Goto(_) | Insn::Jsr(_) | Insn::Ret(_) | Insn::TableSwitch { .. } | Insn::LookupSwitch { .. } | Insn::Return(_) | Insn::AThrow);
+            if falls_through && i + 1 < insns.len() {
+                ways_in[i + 1] += 1;
+            }
+            for target in insn.targets() {
+                if let Some(&j) = index.get(&target) {
+                    ways_in[j] += 1;
+                }
+            }
+        }
+        for h in &code.exception_table {
+            if let Some(&j) = index.get(&u32::from(h.handler_pc)) {
+                ways_in[j] += 2;
+            }
+        }
+        let joins = ways_in.iter().map(|&n| n >= 2).collect();
+        let compiled = Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, joins });
         self.codes.insert(key, compiled.clone());
         Ok(compiled)
     }
 
-    /// Runs one path to its end; twins of it go to `pending`.
+    /// Runs one path to its end, or, once `Options::merge_after` paths have been explored, to a join point, where
+    /// it waits (`End::Parked`) for the paths that arrive after it to be merged with it; twins of it go to `pending`.
     fn run(&mut self, mut path: Path) -> Result<End, Stop> {
         let mut steps: u64 = 0;
         loop {
+            if !path.resumed && self.paths > self.merge_after {
+                let frame = path.frames.last().expect("a frame");
+                if frame.code.joins[frame.at] {
+                    self.waiting.entry(join_key(&path)).or_default().push(path);
+                    return Ok(End::Parked);
+                }
+            }
+            path.resumed = false;
             steps += 1;
             if steps % 256 == 0 && Instant::now() > self.deadline {
                 return Err(Stop::Budget("the engine did not finish within the time limit".into()));
@@ -518,8 +622,8 @@ impl<'a> Engine<'a> {
 
     /// Which sides of a branch on `c` are feasible on the path. A condition the path has already taken (the
     /// same comparison of the same values, which the gate hashing makes the same literal: a loop bound both
-    /// versions test) is decided without the solver; otherwise the side the path's model takes is feasible, and
-    /// the solver is asked once, about the other side.
+    /// versions test) is decided without the solver; otherwise a side one of the path's models takes is feasible,
+    /// and the solver is asked once, about a side no model takes.
     fn sides(&mut self, path: &mut Path, c: Lit) -> Result<Sides, Stop> {
         if c == TRUE || path.cond.contains(&c) {
             return Ok(Sides::Then);
@@ -527,35 +631,60 @@ impl<'a> Engine<'a> {
         if c == FALSE || path.cond.contains(&-c) {
             return Ok(Sides::Else);
         }
-        let model_takes_then = self.b.holds(&mut path.model, c);
+        let (mut then_models, mut else_models): (Vec<Model>, Vec<Model>) = (Vec::new(), Vec::new());
+        for mut model in path.models.drain(..) {
+            if self.b.holds(&mut model, c) {
+                then_models.push(model);
+            } else {
+                else_models.push(model);
+            }
+        }
+        if !then_models.is_empty() && !else_models.is_empty() {
+            return Ok(Sides::Both { then_models, else_models });
+        }
+        let model_takes_then = !then_models.is_empty();
         let mut assumptions = path.cond.clone();
         assumptions.push(if model_takes_then { -c } else { c });
-        match self.probe(&assumptions)? {
-            Some(true) => Ok(Sides::Both { model_takes_then, other: self.b.snapshot() }),
+        let answer = self.probe(&assumptions);
+        if let Ok(Some(true)) = answer {
+            if model_takes_then {
+                else_models.push(self.b.snapshot());
+            } else {
+                then_models.push(self.b.snapshot());
+            }
+            return Ok(Sides::Both { then_models, else_models });
+        }
+        // The path keeps its models, which all take one side.
+        path.models = if model_takes_then { then_models } else { else_models };
+        match answer? {
             None => Ok(Sides::Undecided { model_takes_then }),
             Some(false) if model_takes_then => Ok(Sides::Then),
-            Some(false) => Ok(Sides::Else),
+            _ => Ok(Sides::Else),
         }
     }
 
     /// Splits the path on `c` when both sides are feasible: the twin returned takes the then side when
-    /// `twin_takes_then`, else the else side, and the path the other; each keeps the model of its side.
-    fn split(&self, path: &mut Path, c: Lit, model_takes_then: bool, other: Model, twin_takes_then: bool) -> Path {
+    /// `twin_takes_then`, else the else side, and the path the other; each keeps the models of its side.
+    fn split(&self, path: &mut Path, c: Lit, then_models: Vec<Model>, else_models: Vec<Model>, twin_takes_then: bool) -> Path {
         let mut twin = path.clone();
-        if model_takes_then == twin_takes_then {
-            path.model = other;
+        twin.resumed = false;
+        if twin_takes_then {
+            twin.models = then_models;
+            path.models = else_models;
         } else {
-            twin.model = other;
+            twin.models = else_models;
+            path.models = then_models;
         }
         twin.cond.push(if twin_takes_then { c } else { -c });
         path.cond.push(if twin_takes_then { -c } else { c });
         twin
     }
 
-    /// Splits the path on `c` when the side its model does not take is undecided: the path goes on with its
-    /// side, and the twin returned takes the other, undecided, with the path's model (see `Path::undecided`).
+    /// Splits the path on `c` when the side its models do not take is undecided: the path goes on with its
+    /// side, and the twin returned takes the other, undecided, with the path's models (see `Path::undecided`).
     fn split_undecided(&self, path: &mut Path, c: Lit, model_takes_then: bool) -> Path {
         let mut twin = path.clone();
+        twin.resumed = false;
         twin.undecided = true;
         twin.cond.push(if model_takes_then { -c } else { c });
         path.cond.push(if model_takes_then { c } else { -c });
@@ -567,7 +696,7 @@ impl<'a> Engine<'a> {
         if !self.solve(&twin.cond)? {
             return Ok(None);
         }
-        twin.model = self.b.snapshot();
+        twin.models = vec![self.b.snapshot()];
         twin.undecided = false;
         Ok(Some(twin))
     }
@@ -678,8 +807,9 @@ impl<'a> Engine<'a> {
         }
     }
 
-    /// The next path to run: a decided one from `pending`, or, when there is none, a deferred one the solver now
-    /// decides with all the time left (an infeasible one is dropped). `None` when every path is done.
+    /// The next path to run: a decided one from `pending`; when there is none, the group waiting at the earliest
+    /// join point, merged; when nothing waits, a deferred one the solver now decides with all the time left (an
+    /// infeasible one is dropped). `None` when every path is done.
     fn next_path(&mut self) -> Result<Option<Path>, Stop> {
         loop {
             if let Some(path) = self.pending.pop() {
@@ -687,25 +817,111 @@ impl<'a> Engine<'a> {
                     self.deferred.push(path);
                     continue;
                 }
+                if !path.resumed {
+                    self.paths += 1;
+                }
                 return Ok(Some(path));
+            }
+            if let Some(key) = self.waiting.keys().next().cloned() {
+                let group = self.waiting.remove(&key).expect("a group");
+                let mut merged = self.merge(group);
+                let first = merged.pop().expect("a path");
+                self.pending.extend(merged);
+                return Ok(Some(first));
             }
             let Some(mut path) = self.deferred.pop() else {
                 return Ok(None);
             };
             if self.solve(&path.cond)? {
-                path.model = self.b.snapshot();
+                path.models = vec![self.b.snapshot()];
                 path.undecided = false;
+                self.paths += 1;
                 return Ok(Some(path));
             }
         }
+    }
+
+    /// Merges the paths waiting at one join point into as few as have one shape ([`same_shape`]): each path
+    /// absorbed into another makes every value they differ in a choice by the absorbed path's condition, and the
+    /// condition of the merged path the disjunction of theirs. The paths through an `if` are one path after it,
+    /// and the paths through a loop body one path at the header, so that a method of `n` independent branches is
+    /// explored in `n` paths and not `2^n`. The merged path keeps the models of both, which take it; its
+    /// condition is the common prefix of the two, then the literals both took after it, then one literal for
+    /// either rest.
+    fn merge(&mut self, group: Vec<Path>) -> Vec<Path> {
+        let mut merged: Vec<Path> = Vec::new();
+        for mut path in group {
+            path.resumed = true;
+            match merged.iter_mut().find(|m| same_shape(m, &path)) {
+                Some(into) => {
+                    self.absorb(into, &path);
+                    self.merges += 1;
+                }
+                None => merged.push(path),
+            }
+        }
+        merged
+    }
+
+    fn absorb(&mut self, into: &mut Path, other: &Path) {
+        let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
+        let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
+        let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
+        let rest_other: Vec<Lit> = other.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
+        let takes_into = self.b.all(&rest_into);
+        let takes_other = self.b.all(&rest_other);
+        let either = self.b.or(takes_into, takes_other);
+        into.cond.truncate(prefix);
+        into.cond.extend(common);
+        if either != TRUE {
+            into.cond.push(either);
+        }
+        let choose = |b: &mut Blaster, x: &mut Val, y: &Val| match (x, y) {
+            (Val::I(p), Val::I(q)) | (Val::J(p), Val::J(q)) if p != q => *p = b.ite_bits(takes_into, p, q),
+            _ => {}
+        };
+        for (f, g) in into.frames.iter_mut().zip(&other.frames) {
+            for (x, y) in f.locals.iter_mut().zip(&g.locals) {
+                if let (Some(x), Some(y)) = (x, y) {
+                    choose(&mut self.b, x, y);
+                }
+            }
+            for (x, y) in f.stack.iter_mut().zip(&g.stack) {
+                choose(&mut self.b, x, y);
+            }
+        }
+        for (o, q) in into.objects.iter_mut().zip(&other.objects) {
+            for (name, x) in o.fields.iter_mut() {
+                choose(&mut self.b, x, &q.fields[name]);
+            }
+            if let (Some(x), Some(y)) = (&mut o.array, &q.array) {
+                if x.length != y.length {
+                    x.length = self.b.ite_bits(takes_into, &x.length, &y.length);
+                }
+                for (c, d) in x.cells.iter_mut().zip(&y.cells) {
+                    if c != d {
+                        *c = self.b.ite_bits(takes_into, c, d);
+                    }
+                }
+            }
+        }
+        // The paths may be at different iterations of a loop (one left an earlier loop sooner); the merged path
+        // counts the fewer, so that the iterations the other has left are not counted twice, which would report
+        // the loop as beyond the bound when no path is. A path needing more than the bound is still stopped, at
+        // most as many iterations later as the counts differed: nothing is cut short, only reported later.
+        into.back_edges.retain(|key, taken| {
+            *taken = (*taken).min(other.back_edges.get(key).copied().unwrap_or(0));
+            *taken > 0
+        });
+        into.models.extend(other.models.iter().take(MOST_MODELS.saturating_sub(into.models.len())).cloned());
     }
 
     /// Takes the branch on `c`: the path goes on with `c` and jumps to `then`, or with `¬c` and jumps to `else_`,
     /// or both, the twin for the else side joining `pending`. `None` if neither side is feasible.
     fn branch(&mut self, path: &mut Path, c: Lit, then: usize, else_: usize) -> Result<Option<End>, Stop> {
         match self.sides(path, c)? {
-            Sides::Both { model_takes_then, other } => {
-                let mut twin = self.split(path, c, model_takes_then, other, false);
+            Sides::Both { then_models, else_models } => {
+                let mut twin = self.split(path, c, then_models, else_models, false);
                 twin.frames.last_mut().expect("a frame").at = else_;
                 self.pending.push(twin);
                 path.frames.last_mut().expect("a frame").at = then;
@@ -741,8 +957,8 @@ impl<'a> Engine<'a> {
     /// past the instruction): an index out of bounds, a negative array size.
     fn branch_throw_or(&mut self, path: &mut Path, c: Lit, exception: &str, go_on: impl FnOnce(&mut Self, &mut Path)) -> Step {
         match self.sides(path, c)? {
-            Sides::Both { model_takes_then, other } => {
-                let mut twin = self.split(path, c, model_takes_then, other, false);
+            Sides::Both { then_models, else_models } => {
+                let mut twin = self.split(path, c, then_models, else_models, false);
                 go_on(self, &mut twin);
                 self.pending.push(twin);
                 self.raise(path, exception)
@@ -1461,8 +1677,8 @@ impl<'a> Engine<'a> {
         if backward {
             // Count the back edge on the side that takes it; `jump` does the counting once the side is chosen.
             match self.sides(path, c)? {
-                Sides::Both { model_takes_then, other } => {
-                    let mut twin = self.split(path, c, model_takes_then, other, false);
+                Sides::Both { then_models, else_models } => {
+                    let mut twin = self.split(path, c, then_models, else_models, false);
                     twin.frames.last_mut().expect("a frame").at = fall;
                     self.pending.push(twin);
                     return self.jump(path, target);
@@ -1510,8 +1726,8 @@ impl<'a> Engine<'a> {
             let k = self.b.constant(i64::from(value), 32);
             let c = self.b.eq(&key, &k);
             match self.sides(path, c)? {
-                Sides::Both { model_takes_then, other } => {
-                    let mut twin = self.split(path, c, model_takes_then, other, true);
+                Sides::Both { then_models, else_models } => {
+                    let mut twin = self.split(path, c, then_models, else_models, true);
                     if let Some(end) = self.jump(&mut twin, target)? {
                         if !matches!(end, End::Infeasible) {
                             // The twin hit the unwinding bound: report it as the path's own end.
@@ -1843,7 +2059,77 @@ mod tests {
         });
         let out = run(&cp);
         assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
-        assert_eq!((out.paths, out.solves), (4, 3));
+        assert_eq!((out.paths, out.merges, out.solves), (4, 0, 3));
+
+        // Merged from the start, the two paths through the first branch are one again at the join after it, so
+        // the second is explored once, on the merged path, and its two paths are one at the end: three paths, two
+        // merges and two solver calls.
+        let out = check(&cp, "Check", "check", &Options { merge_after: 0, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.paths, out.merges, out.solves), (3, 2, 2));
+    }
+
+    #[test]
+    fn paths_are_merged_at_a_join_and_a_violation_through_one_is_found_with_its_input() {
+        // `x = a < b ? a : b; if (x != a) fail`: the two assignments meet at the comparison, which runs once on the
+        // merged path; the violation on it needs the else side of the first branch, and the solver names an input
+        // that takes it. The merged path goes to the failure itself, so its twin (the return) is never run.
+        let cp = harness("(II)V", |code, _, fail| {
+            let else_ = code.label();
+            let join = code.label();
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.if_icmp(Cond::Ge, else_);
+            code.load(Kind::Int, 0);
+            code.store(Kind::Int, 2);
+            code.goto(join);
+            code.bind(else_);
+            code.load(Kind::Int, 1);
+            code.store(Kind::Int, 2);
+            code.bind(join);
+            code.load(Kind::Int, 2);
+            code.load(Kind::Int, 0);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let merged = Options { merge_after: 0, ..Options::default() };
+        let out = check(&cp, "Check", "check", &merged).unwrap();
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!((out.paths, out.merges), (2, 1), "{}", out.summary());
+        let (a, b): (i64, i64) = (out.raw_inputs[&0].parse().unwrap(), out.raw_inputs[&1].parse().unwrap());
+        assert!(a > b, "{a} {b}");
+        assert_eq!(out.stage.as_deref(), Some("[0:20]"));
+
+        // Eight independent branches in a row (`if ((a >>> i & 1) != 0) b += 1` for each bit i): nine paths
+        // merged, not 256, and the claim after them still holds.
+        let cp = harness("(II)V", |code, _, fail| {
+            for i in 0..8u8 {
+                let join = code.label();
+                code.load(Kind::Int, 0);
+                code.iconst(i as i32);
+                code.op(0x7c);
+                code.iconst(1);
+                code.op(0x7e);
+                code.if_zero(Cond::Eq, join);
+                code.load(Kind::Int, 1);
+                code.iconst(1);
+                code.op(0x60);
+                code.store(Kind::Int, 1);
+                code.bind(join);
+            }
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 0);
+            code.if_icmp(Cond::Ne, fail);
+        });
+        let out = check(&cp, "Check", "check", &merged).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.paths, out.merges), (9, 8), "{}", out.summary());
+        // Unmerged until the budget: every path on its own.
+        let out = check(&cp, "Check", "check", &Options { merge_after: 1000, ..Options::default() }).unwrap();
+        assert_eq!((out.verdict, out.paths, out.merges), (Verdict::Verified, 256, 0), "{}", out.summary());
+        // With the budget inside the search, the paths explored after it are merged: fewer than 256, more than 9.
+        let out = check(&cp, "Check", "check", &Options { merge_after: 16, ..Options::default() }).unwrap();
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert!(out.paths > 9 && out.paths < 256 && out.merges > 0, "{}", out.summary());
     }
 
     #[test]

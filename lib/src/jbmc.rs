@@ -140,7 +140,7 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
 }
 
 /// The address space, in MiB, a JBMC run may use. One proof of a small method has reached 5.7 GB, and nothing in the
-/// solver stops it short of the whole machine. That proof is pending: see `examples/apps/mica/pending/README.md`.
+/// solver stops it short of the whole machine. That proof (examples 142 and 143) is the tool's own checker's now.
 const DEFAULT_MEMORY_MB: u64 = 3072;
 
 /// The limit on a JBMC run in MiB: `JVMCONTRACT_JBMC_MEMORY_MB`, or the default. 0 turns it off.

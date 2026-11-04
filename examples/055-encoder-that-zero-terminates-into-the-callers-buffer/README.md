@@ -116,7 +116,7 @@ Revert. A terminated copy for native code is a separate method, with a buffer it
 
 ## Notes
 
-- A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).
+- A regression proof of `ModifiedUtf8#encodeInto` against an ASCII fast path waited from 1 to 4 November 2026 for a machine with more memory, JBMC running out of it at the default bound of 8; the tool's own checker, with its paths merged where they meet, proves it in seconds (example 142) and refutes the fast path off by one (example 143).
 - Writes one byte past what it returns into the caller's buffer, refuted against a frame condition stated with JML's `\old`.
 
 ## Evidence

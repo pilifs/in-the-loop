@@ -177,7 +177,7 @@ Revert, including the test. The encoder of a constant pool is not an encoder of 
 
 ## Notes
 
-- A regression proof of `ModifiedUtf8#encodeInto` is unfinished: proved up to 4 characters, it needs a machine with more memory at the default bound of 8 ([`apps/mica/pending`](../apps/mica/pending/README.md)).
+- A regression proof of `ModifiedUtf8#encodeInto` against an ASCII fast path waited from 1 to 4 November 2026 for a machine with more memory, JBMC running out of it at the default bound of 8; the tool's own checker, with its paths merged where they meet, proves it in seconds (example 142) and refutes the fast path off by one (example 143).
 - Supplementary characters written in four bytes, as in standard UTF-8, produce a class no JVM will load.
 
 ## Evidence

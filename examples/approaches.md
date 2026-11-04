@@ -206,7 +206,14 @@ conditional update of each: on Mica's `lookupswitch` bisection,
 rewrite that answers the empty table first and then reads past the end of a one-match table for a key above its match, and
 [141](141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md) proves the
 half-open form equal to the closed one on every strictly sorted table of up to eight matches in two seconds, where JBMC's formula over
-the symbolic array takes a hundred.
+the symbolic array takes a hundred. Once a search has grown past a few hundred paths, the checker merges the paths that meet after an `if` or at a loop
+header into one, keeping the models of each, so a loop whose body branches three ways is a few paths per iteration rather than
+their product: the ASCII fast path of
+Mica's constant-pool encoder, which JBMC could not finish at the default bound in 2.8 GB, is
+[142](142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/README.md), proved equal
+to the previous version in 7 s and 76 MB, and
+[143](143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md), the same fast path off by one
+at the top of ASCII, refuted on a one-character string where the encoder's properties hold of both versions.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 
