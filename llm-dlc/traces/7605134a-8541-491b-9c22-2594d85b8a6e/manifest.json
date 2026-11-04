@@ -1,0 +1,82 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "7605134a-8541-491b-9c22-2594d85b8a6e",
+  "status": "open",
+  "title": "build.py newProblems schema mismatch",
+  "first_prompt": "Let's address issues with build.py from last verification run. Summary: `newProblems` schema mismatch between `build.py` and the schema. Next, the submitter should reconcile those two files and resubm",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.318"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-04T13:08:42.021Z",
+  "ended": "2026-11-04T13:10:30.159Z",
+  "duration_seconds": 108,
+  "stats": {
+    "turns": 1,
+    "api_calls": 19,
+    "tool_calls": 20,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 84111,
+    "usage": {
+      "input_tokens": 38,
+      "output_tokens": 7844,
+      "cache_read_input_tokens": 1316295,
+      "cache_creation_input_tokens": 56584
+    }
+  },
+  "tools": {
+    "Bash": 18,
+    "Edit": 2
+  },
+  "files_touched": [
+    "examples/schema/result.schema.json"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-04T13:08:42.021Z",
+      "ended": "2026-11-04T13:10:30.159Z",
+      "turns": 1,
+      "api_calls": 19,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 7844,
+        "cache_read_input_tokens": 1316295,
+        "cache_creation_input_tokens": 56584
+      },
+      "peak_context_tokens": 84111
+    }
+  ],
+  "log": {
+    "sha256": "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f",
+    "bytes": 762147,
+    "lines": 210,
+    "gzip_bytes": 154307,
+    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "yvvxkxxkrruunqsrqlzllmysmzrlurnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The result schema takes what build.py writes for a boundary contract's new problems and a vacuous symbolic proof; examples 111-119 and 144 resubmitted (verification pending)",
+      "body": "The last verification run failed examples 111 to 119 on result.json validation: build.py writes newProblems (the `!` lines a regenerated B12 contract gains) and the schema did not list it. The schema also allowed coverage only in its TLC form, while build.py writes {vacuous, reason} for a regression or property proof the tool reports as vacuous, so example 144's pending job would have failed the same way. The schema now lists newProblems as an array of strings, and coverage as null, the TLC object, or {vacuous: true, reason}. Checked by validating all 105 committed result.json files against it (all valid) and synthetic B12 and vacuous B9 results (valid), with a missing reason and a non-array newProblems rejected.\n\nJobs resubmitted at this commit: 20261104-131020-example-111..117, 20261104-131021-example-118, -119 and -144 (the never-run 20261104-124827-example-144 job, pinned to the old schema, removed). The other failures in the run (example 036's patch no longer applying to Mica, example 109's replay of a static field) are not about the schema and are left.",
+      "log_sha256": "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f"
+    }
+  ],
+  "logs": {
+    "b50ebef4acdb54d53334e63f38cab1a358e18f63a3084e05dcc59b1b55c0ad4f": {
+      "bytes": 762147,
+      "lines": 210,
+      "gzip_bytes": 154307,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

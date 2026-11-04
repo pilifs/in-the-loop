@@ -1,7 +1,7 @@
 {
   "$schema": "../schema/job.schema.json",
   "schema": "verification-job/v1",
-  "id": "20261104-124827-example-144-short-table-scan-declared-as",
+  "id": "20261104-131021-example-144-short-table-scan-declared-as",
   "title": "Example 144: short-table scan declared as the intended change, verified vacuously at the default bound (own checker)",
   "description": "Regression proof of Mica's LookupSwitch#find with a linear scan added for tables of at most eight pairs, scoped with --unchanged-unless 'matches.length <= 8' at the default --max-array-length 8: every table in the domain is among the intended inputs, so the proof covers no input. Expected: verified, vacuous (the tool prints the 'vacuously:' line after proving the probe harness, the statement with the calls replaced by the assertion's failure). Measured 0.1 s, 29 MB, one path, no solver call.",
   "kind": "example",
@@ -19,7 +19,7 @@
   },
   "expected": "verified vacuously",
   "submitted": {
-    "at": "2026-11-04T12:48:27+00:00"
+    "at": "2026-11-04T13:10:21+00:00"
   },
   "requires": [
     "java",
@@ -30,7 +30,7 @@
   "resources": {
     "cpus": 2.0,
     "memory": "1G",
-    "duration": "2m"
+    "duration": "3m"
   },
   "steps": [
     {
@@ -41,5 +41,6 @@
   ],
   "outputs": [
     "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
-  ]
+  ],
+  "supersedes": "20261104-124827-example-144-short-table-scan-declared-as"
 }

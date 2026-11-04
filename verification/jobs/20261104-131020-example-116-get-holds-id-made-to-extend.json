@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-131020-example-116-get-holds-id-made-to-extend",
+  "title": "Example 116: GET /holds/{id} made to extend the hold it returns, a GET with side effects, caught by the reach lines of the boundary contract (B12)",
+  "description": "The first example of the reach lines of a boundary contract: under each entry point and advised method, jvmcontract now writes what the method reaches (reads and writes of documents, entities and tables; sends to topics; HTTP calls; application events published), found by following the calls in the bytecode from the method through the application's own classes to the Spring Data, JDBC, Kafka, HTTP client and event APIs, with a ! line for a GET or HEAD route that writes, sends, publishes or makes a non-GET call, and for a @Transactional(readOnly = true) method that writes. The patch adds TicketingStore.extend and makes HoldService.get push the expiry of the hold and of its seats forward on every call, so that a customer on the checkout page keeps the seats; the page polls GET /holds/{id} for its countdown, so a hold never expires while a tab is open, and prefetches, probes and retried GETs change state. The change is a feature (intended), so the runner regenerates the contract and reports as the violation the new ! line under GET /holds/{id} (a GET that writes HoldDocument and SeatDocument: a safe method with side effects), next to the new writes HoldDocument, SeatDocument line. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/reach.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "116"
+    ]
+  },
+  "expected": "build.py 116 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-04T13:10:20+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 116 (B12)",
+      "run": "python3 examples/tools/build.py 116",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/116-get-hold-extends-the-hold-it-returns"
+  ],
+  "supersedes": "20261103-063503-example-116-get-holds-id-made-to-extend"
+}

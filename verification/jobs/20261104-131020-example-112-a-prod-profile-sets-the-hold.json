@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-131020-example-112-a-prod-profile-sets-the-hold",
+  "title": "Example 112: a prod profile sets the hold seat limit under boxoffice.hold.max-seat, a key nothing reads, caught by the configuration block of the boundary contract (B12)",
+  "description": "The first example of the configuration block of a boundary contract: jvmcontract reads the keys the classes of the Box Office ticketing service and its sibling modules read (placeholders, @ConfigurationProperties, Environment.getProperty), the keys application.yaml sets (profile documents included) and the keys the Spring Boot starters' configuration metadata declares, and writes them cross-checked into src/contract/boundaries.contract. The patch appends a prod profile document with boxoffice.hold.max-seat: 12, one letter from the key the HoldPolicy bean reads; Boot ignores it and production keeps the default of 8. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: nothing binds it, nearest known key boxoffice.hold.max-seats. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/config.rs",
+      "lib/src/boundaries.rs"
+    ],
+    "examples": [
+      "112"
+    ]
+  },
+  "expected": "build.py 112 exits 0: verdict violation, 1 new problem, matches expected",
+  "submitted": {
+    "at": "2026-11-04T13:10:20+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 112 (B12)",
+      "run": "python3 examples/tools/build.py 112",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/112-prod-hold-limit-under-a-key-nothing-reads"
+  ],
+  "supersedes": "20261103-040613-example-112-a-prod-profile-sets-the-hold"
+}

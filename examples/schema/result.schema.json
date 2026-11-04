@@ -155,8 +155,22 @@
       }
     },
     "coverage": {
-      "description": "For model checking (D1) through the tool: what the verdict rests on. TLC counts how often a step of the model takes each row of the generated operators; a row no step takes is one the model says nothing about.",
-      "type": ["object", "null"],
+      "description": "What the verdict rests on. For model checking (D1) through the tool: TLC counts how often a step of the model takes each row of the generated operators; a row no step takes is one the model says nothing about. For a regression or property proof through the tool: only whether the statement is vacuous, when no input in the domain reaches the calls.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "description": "A regression or property proof through the tool that the tool reports as vacuous.",
+          "type": "object",
+          "required": ["vacuous", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "vacuous": { "const": true },
+            "reason": { "description": "The tool's `vacuously:` line: why no input reaches the calls.", "type": "string" }
+          }
+        },
+        {
+      "description": "Model checking (D1) through the tool.",
+      "type": "object",
       "required": ["configurations", "changedRows", "nullRows", "vacuous"],
       "additionalProperties": false,
       "properties": {
@@ -206,6 +220,13 @@
         "nullRows": { "description": "Rows with a null argument the change alters; the model leaves them out, since the protocol never passes null.", "type": "integer" },
         "vacuous": { "description": "Every run finished and none from an initial state takes any row the change alters that decides (rows that throw are meant never to be taken): the verdict is about the model as it was.", "type": "boolean" }
       }
+        }
+      ]
+    },
+    "newProblems": {
+      "description": "For a boundary contract (B12) of an intended change: the `!` lines of the regenerated contract that the old one did not have. Each is a problem the change introduced, and makes the verdict a violation.",
+      "type": "array",
+      "items": { "type": "string" }
     },
     "contractDiff": {
       "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves.",
