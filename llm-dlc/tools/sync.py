@@ -630,6 +630,7 @@ def write_if_changed(path: Path, text: str) -> bool:
 CACHE_VERSION = 1              # bump when what an entry means changes
 TRANSCRIPT_CACHE = STATE / "transcript-cache.json"
 SCAN_CACHE = STATE / "scan-cache.json"
+CHECK_CACHE = STATE / "check-cache.json"
 
 
 def full_audit(args: list[str]) -> bool:
@@ -728,13 +729,17 @@ class ScanCache(LocalCache):
         super().__init__(path, redact.fingerprint(), trusted)
         self.redact, self.used = redact, set()
 
-    def hits(self, sid: str | None, sha: str, data: bytes) -> dict:
+    def hits(self, sid: str | None, sha: str, data, size: int | None = None) -> dict:
         """{"leaks": ..., "review": ...} for data, whose SHA-256 the caller has computed as sha.
-        sid None: not a log, so not scanned from the end of an earlier one."""
+        data may be a function giving the bytes, called only when they are scanned; size is then
+        their length. sid None: not a log, so not scanned from the end of an earlier one."""
         self.used.add(sha)
-        if (entry := self.entries.get(sha)) and entry["bytes"] == len(data):
+        size = len(data) if size is None else size
+        if (entry := self.entries.get(sha)) and entry["bytes"] == size:
             perf.count("scan cache hits")
             return entry
+        if callable(data):
+            data = data()
         earlier = {e["bytes"]: s for s, e in self.entries.items()
                    if sid is not None and e.get("session") == sid and 0 < e["bytes"] < len(data)}
         with perf.phase("prefixes"):
@@ -751,6 +756,73 @@ class ScanCache(LocalCache):
         _add_counted(entry["review"], _counted(review))
         self.entries[sha] = entry
         return entry
+
+    def save(self, keep: set[str] | None = None) -> None:
+        super().save(self.used if keep is None else keep)
+
+
+def decompress(gz: bytes) -> bytes:
+    with perf.phase("decompress"):
+        data = gzip.decompress(gz)
+    perf.count("log loads")
+    perf.count("log bytes decompressed", len(data))
+    return data
+
+
+class CheckCache(LocalCache):
+    """What `check` worked out from content, besides scanning (ScanCache), each under the SHA-256
+    of exactly the content it came from:
+
+    - "gz:<sha of a .gz file's bytes>": the SHA-256 and length of what those bytes decompress to.
+      Decompression is deterministic, so the same .gz bytes always hold the same content, and a
+      stored snapshot is verified against its name without decompressing it again.
+    - "prefixes:<sha of a log>": {length: SHA-256 of the log's first length bytes}.
+    - "metrics:<sha of the inputs>": whether a metrics.json is what its log, subagent logs,
+      manifest and price list give. The fingerprint adds metrics.py to the redactor's."""
+
+    def __init__(self, redact: Redactor, path: Path | None = CHECK_CACHE, trusted: bool = True) -> None:
+        fingerprint = sha256(redact.fingerprint().encode() + b"\0" + Path(metrics.__file__).read_bytes())
+        super().__init__(path, fingerprint, trusted)
+        self.used: set[str] = set()
+
+    def get(self, key: str):
+        self.used.add(key)
+        return self.entries.get(key)
+
+    def put(self, key: str, value) -> None:
+        self.used.add(key)
+        self.entries[key] = value
+
+    def snapshot(self, path: Path) -> tuple[str, int, bytes | None, bytes] | None:
+        """(SHA-256, length, content or None, .gz bytes) of a stored snapshot, None if there is no
+        file. The content is decompressed only when these .gz bytes were not seen before; the
+        caller decompresses the returned .gz bytes when it needs it, never the file again."""
+        try:
+            gz = path.read_bytes()
+        except FileNotFoundError:
+            return None
+        with perf.phase("hash gz"):
+            key = "gz:" + sha256(gz)
+        if (entry := self.get(key)) is not None:
+            perf.count("snapshot cache hits")
+            return entry["sha256"], entry["bytes"], None, gz
+        data = decompress(gz)
+        with perf.phase("hash"):
+            actual = sha256(data)
+        self.put(key, {"sha256": actual, "bytes": len(data)})
+        return actual, len(data), data, gz
+
+    def prefix_digests(self, sha: str, content, lengths: set[int]) -> dict[int, str]:
+        """prefix_digests(content(), lengths) for the log whose content has SHA-256 sha."""
+        key = "prefixes:" + sha
+        known = {int(n): d for n, d in (self.get(key) or {}).items()}
+        if not lengths <= known.keys():
+            with perf.phase("prefixes"):
+                known |= prefix_digests(content(), lengths)
+            self.put(key, {str(n): d for n, d in sorted(known.items())})
+        else:
+            perf.count("prefix cache hits")
+        return {n: known[n] for n in lengths if n in known}
 
     def save(self, keep: set[str] | None = None) -> None:
         super().save(self.used if keep is None else keep)
@@ -1115,19 +1187,36 @@ def render_rollup(manifests: dict[str, dict] | None = None) -> str:
     return metrics.dumps(metrics.rollup(found, json.loads(PRICING.read_text())))
 
 
-def metrics_problems(sid: str, m: dict, data: bytes | None, redact: Redactor) -> tuple[list[str], list[str]]:
+def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCache | None = None,
+                     logs: list[str | None] | None = None) -> tuple[list[str], list[str]]:
     """(errors, warnings) for a session's metrics.json. Without the log here, as in a fresh clone,
     the file can only be read. With it, the file must be what the log gives, and its token totals
-    must equal the manifest's, which `summarize` counts separately."""
+    must equal the manifest's, which `summarize` counts separately. data may be a function giving
+    the log. With `checks`, `logs` is the SHA-256 of the content of the log and of each subagent
+    log as stored (None for one not stored): whether the file is what they give is then worked out
+    once for each set of inputs."""
     path = metrics_path(sid)
     if not path.exists():
         return [f"{sid}: metrics.json is missing (run: python3 llm-dlc/tools/sync.py sync {sid})"], []
-    doc = json.loads(path.read_text())
+    text = path.read_text()
+    doc = json.loads(text)
     errors, warnings = [], []
     if doc.get("schema") != metrics.SCHEMA:
         errors.append(f"{sid}: metrics.json has unknown schema {doc.get('schema')}")
-    if data is not None and path.read_text() != session_metrics(sid, m, read_jsonl(data), redact):
-        errors.append(f"{sid}: metrics.json does not match the log and manifest (run sync)")
+    if data is not None:
+        key = same = None
+        if checks is not None and logs is not None:
+            key = "metrics:" + sha256(json.dumps([logs, m, text, PRICING.read_text()], sort_keys=True,
+                                                 ensure_ascii=False).encode())
+            if (entry := checks.get(key)) is not None:
+                perf.count("metrics cache hits")
+                same = entry["same"]
+        if same is None:
+            same = text == session_metrics(sid, m, read_jsonl(data() if callable(data) else data), redact)
+            if key:
+                checks.put(key, {"same": same})
+        if not same:
+            errors.append(f"{sid}: metrics.json does not match the log and manifest (run sync)")
     usages = [m["stats"]["usage"]] + [s["stats"]["usage"] for s in m.get("subagents", [])]
     pairs = (("input_tokens", "input_tokens"), ("output_tokens", "output_tokens"),
              ("cache_read_tokens", "cache_read_input_tokens"), ("cache_write_tokens", "cache_creation_input_tokens"))
@@ -2308,12 +2397,14 @@ def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
 
 
 def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
-                   scans: ScanCache | None = None) -> tuple[list, list, list, int]:
+                   scans: ScanCache | None = None, checks: CheckCache | None = None) -> tuple[list, list, list, int]:
     """(errors, warnings, notes, logs left out as older than the stamp) for each session's logs,
-    files and metrics. A log is scanned by `scans`, which holds only what its content gave before:
-    without one, every log is scanned in full."""
+    files and metrics. A log is scanned by `scans`, which holds only what its content gave before,
+    and its .gz bytes, prefixes and metrics are looked up in `checks` by their content: without
+    them, every log is decompressed, hashed and scanned in full."""
     errors, warnings, notes, left_out = [], [], [], 0
     scans = scans or ScanCache(redact, path=None)
+    checks = checks or CheckCache(redact, path=None)
     for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             errors.append(f"{sid}: unknown schema {m.get('schema')}")
@@ -2323,34 +2414,37 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
         referenced |= {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
         for sha in sorted(referenced - logs.keys()):
             errors.append(f"{sid}: log {sha[:12]} is referenced but missing from logs")
-        # Each stored log is read once: the current one is kept for the metrics and the prefix
-        # check, and of the others only the length, once their content is shown to match their name.
-        current_sha, current, verified = m["log"]["sha256"], None, {}
+        # Each stored log is read once and decompressed at most once: not at all when its .gz
+        # bytes were verified before. Of the current one the .gz bytes are kept, for the metrics
+        # and the prefix check; of the others only the length, once shown to match their name.
+        current_sha, current_gz, verified, actual_of, loaded = m["log"]["sha256"], None, {}, {}, []
         for sha, info in logs.items():
             url = info.get("url")
             if url and url != log_url(sid, sha):
                 errors.append(f"{sid}: URL of log {sha[:12]} does not match its sha256: {url}")
             elif url and remote and not remote_matches(url, sha):
                 errors.append(f"{sid}: CDN does not serve log {sha[:12]} at {url}")
-            data = load_log(sid, sha)
-            if data is None:
+            stored = checks.snapshot(log_path(sid, sha))
+            if stored is None:
                 if info.get("withdrawn"):
                     notes.append(f"{sid}: log {sha[:12]} was withdrawn ({info['withdrawn']})")
                 elif not url:
                     errors.append(f"{sid}: log {sha[:12]} is neither stored locally nor uploaded")
                 continue
+            actual, size, data, gz = stored
+            actual_of[sha] = actual
             if sha == current_sha:
-                current = data
-            with perf.phase("hash"):
-                actual = sha256(data)
-            if matches := actual == sha:
-                verified[sha] = len(data)
+                current_gz = gz
+                loaded = [data] if data is not None else []  # decompressed already: kept
+            if actual == sha:
+                verified[sha] = size
             else:
                 errors.append(f"{sid}: log {sha[:12]} content does not match its name")
             if older_than_stamp(log_path(sid, sha)):
                 left_out += 1
                 continue
-            found = scans.hits(sid, actual, data)  # by what it holds, not by its name
+            # by what it holds, not by its name; decompressed only if it is scanned
+            found = scans.hits(sid, actual, data if data is not None else (lambda gz=gz: decompress(gz)), size)
             if leaks := redact.cached_leaks(found):
                 # A log that is not public yet is an error. One that is cannot be fixed, only
                 # withdrawn, and whether that is worth it is a person's call: a warning until
@@ -2364,27 +2458,40 @@ def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
                                     f"withdraw it with unpublish --reason, or add it to ACCEPTED_LOGS in sync.py")
             if not url:  # not public yet: what a person should look at before pushing
                 warnings += [f"{sid}: log {sha[:12]}: {w}" for w in redact.cached_review(found)]
-            del data  # one log in memory at a time, besides the current one
+            del data, gz  # one log in memory at a time, besides the current one's .gz bytes
         if not summary_path(sid).exists():
             errors.append(f"{sid}: summary.md is missing (run: python3 llm-dlc/tools/sync.py sync {sid})")
         for path in (summary_path(sid), manifest_path(sid), metrics_path(sid), notes_path(sid)):  # committed, so published
             if path.exists() and (leaks := redact.cached_leaks(scans.hits(None, sha256(content := path.read_bytes()), content))):
                 errors.append(f"{sid}: unredacted {leaks} in {path.relative_to(REPO)}")
-        if current is None and current_sha not in logs:
-            current = load_log(sid, current_sha)
+        def content() -> bytes:
+            """The current log, decompressed once and only if something needs it."""
+            if not loaded:
+                loaded.append((decompress(current_gz) if current_gz is not None else load_log(sid, current_sha)) or b"")
+            return loaded[0]
+
+        present = current_gz is not None or (current_sha not in logs and log_path(sid, current_sha).exists())
+        # The inputs of the metrics by content: known only when every log they read was verified here.
+        inputs = [actual_of.get(current_sha)] + [actual_of.get(s["log"]["sha256"]) if s["log"]["sha256"] in logs
+                                                 else "unverified" for s in m.get("subagents", [])]
         with perf.phase("metrics"):
-            found_errors, found_warnings = metrics_problems(sid, m, current, redact)
+            found_errors, found_warnings = metrics_problems(sid, m, content if present else None, redact, checks,
+                                                            inputs if current_gz is not None and "unverified" not in inputs else None)
         errors += found_errors
         warnings += found_warnings
         # Logs are append-only: every log a commit points at should be a prefix of the current one.
         # A verified log is one when the current log's first as many bytes have its hash.
-        current = current or b""
         pointed = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
+        lengths = {verified[sha] for sha in pointed if sha in verified}
+        if current_gz is not None:
+            digests = checks.prefix_digests(actual_of[current_sha], content, lengths)
+        else:
+            with perf.phase("prefixes"):
+                digests = prefix_digests(content(), lengths)
+        rewritten = {sha for sha in pointed if sha in verified and verified[sha] and digests.get(verified[sha]) != sha}
         with perf.phase("prefixes"):
-            digests = prefix_digests(current, {verified[sha] for sha in pointed if sha in verified})
-            rewritten = {sha for sha in pointed if sha in verified and verified[sha] and digests.get(verified[sha]) != sha}
             rewritten |= {sha for sha in pointed - verified.keys()  # unlisted or not matching its name: compare bytes
-                          if (old := load_log(sid, sha)) and not current.startswith(old)}
+                          if (old := load_log(sid, sha)) and not content().startswith(old)}
         if rewritten:
             notes.append(f"{sid}: {len(rewritten)} older log(s) are not a prefix of the current log, "
                          f"as after a redaction policy change")
@@ -2399,7 +2506,12 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     errors, notes = [], []
     if not has_jj():
         return errors, notes
-    for c in jj_commits(f'description(substring:"{TRAILER}:")'):
+    traced = jj_commits(f'description(substring:"{TRAILER}:")')
+    paths = lambda sid: (str(manifest_path(sid).relative_to(REPO)), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES))
+    with perf.phase("read trees"):
+        files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
+                            if sha and sid in manifests and sha in manifests[sid].get("logs", {}) for path in paths(sid)])
+    for c in traced:
         for sid, sha in TRAILER_RE.findall(c["description"]):
             where = f"change {c['change_id'][:12]}"
             if not sha:
@@ -2410,14 +2522,53 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
                 errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
             else:
                 # The manifest committed in the same tree should name the same log.
-                for path in (manifest_path(sid).relative_to(REPO), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES)):
-                    if (r := jj("file", "show", "-r", c["commit_id"], str(path))).returncode == 0:
-                        break
-                tree_sha = json.loads(r.stdout).get("log", {}).get("sha256") if r.returncode == 0 else None
+                found = next((f for path in paths(sid) if (f := files[c["commit_id"], path]) is not None), None)
+                tree_sha = json.loads(found).get("log", {}).get("sha256") if found is not None else None
                 if tree_sha != sha:
                     notes.append(f"{where}: trailer log {sha[:12]} != manifest-in-tree log "
                                  f"{(tree_sha or 'none')[:12]} (committed without trace-commit)")
     return errors, notes
+
+
+def tree_files(wanted: list[tuple[str, str]]) -> dict[tuple[str, str], bytes | None]:
+    """The content of each (commit SHA, path) in the repository, None where the commit has no such
+    file: what `jj file show -r COMMIT PATH` prints, read for all of them by one `git cat-file
+    --batch` from the colocated git store. A commit git does not have (or no git at all) is read
+    with jj instead."""
+    wanted = list(dict.fromkeys(wanted))
+    commits = list(dict.fromkeys(c for c, _ in wanted))
+    out: dict[tuple[str, str], bytes | None] = {}
+    names = [f"{c}^{{commit}}" for c in commits] + [f"{c}:{path}" for c, path in wanted]
+    try:
+        started = time.perf_counter()
+        r = subprocess.run(["git", "-C", str(REPO), "cat-file", "--batch"], input="".join(n + "\n" for n in names).encode(),
+                           capture_output=True, timeout=120)
+        perf.count("subprocess git cat-file")
+        perf.count("subprocess git cat-file seconds", time.perf_counter() - started)
+        replies, at = [], 0
+        if r.returncode == 0:
+            for _ in names:  # "<oid> <type> <size>\n<content>\n", or "<name> missing\n" and the like
+                eol = r.stdout.index(b"\n", at)
+                header = r.stdout[at:eol].split(b" ")
+                if len(header) == 3 and re.fullmatch(rb"[0-9a-f]{40,64}", header[0]) and header[2].isdigit():
+                    size = int(header[2])
+                    replies.append((header[1].decode(), r.stdout[eol + 1:eol + 1 + size]))
+                    at = eol + 1 + size + 1
+                else:
+                    replies.append((None, None))
+                    at = eol + 1
+    except (OSError, ValueError, subprocess.SubprocessError):
+        replies = []
+    if len(replies) == len(names):
+        present = {c for c, (kind, _) in zip(commits, replies) if kind == "commit"}
+        for (c, path), (kind, data) in zip(wanted, replies[len(commits):]):
+            if c in present:
+                out[c, path] = data if kind == "blob" else None
+    for c, path in wanted:
+        if (c, path) not in out:
+            r = jj("file", "show", "-r", c, path)
+            out[c, path] = r.stdout.encode() if r.returncode == 0 else None
+    return out
 
 
 def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str]:
@@ -2437,18 +2588,20 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
 
 def cmd_check(args: list[str] = ()) -> int:
     """Everything published or about to be, checked. Logs already scanned with these rules and
-    tools are not scanned again (ScanCache); --full scans them all, trusting no earlier result."""
+    tools are not scanned again (ScanCache), and .gz bytes already verified are not decompressed
+    again (CheckCache); --full does all of it again, trusting no earlier result."""
     remote, full = "--remote" in args, full_audit(args)
     redact, errors, notes, warnings = Redactor(), [], [], []
-    scans = ScanCache(redact, trusted=not full)
+    scans, checks = ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full)
     errors += reviewed_problems()
     found_errors, found_warnings = allowlist_problems(redact)
     errors += found_errors
     warnings += found_warnings
     manifests = all_manifests()
     with perf.phase("sessions"):
-        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote, scans)
+        found_errors, found_warnings, found_notes, left_out = check_sessions(manifests, redact, remote, scans, checks)
     scans.save()
+    checks.save()
     errors += found_errors
     warnings += found_warnings
     notes += found_notes

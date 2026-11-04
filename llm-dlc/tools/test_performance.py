@@ -32,6 +32,7 @@ def setUpModule():
     for name, path in (("STATE", state), ("TRANSCRIPT_CACHE", state / "transcript-cache.json"),
                        ("SCAN_CACHE", state / "scan-cache.json"), ("PERF_LOG", state / "perf.jsonl")):
         mock.patch.object(sync, name, path).start()
+    mock.patch.object(sync, "CHECK_CACHE", state / "check-cache.json").start()
 
 
 def tearDownModule():
@@ -188,10 +189,12 @@ class Snapshots(unittest.TestCase):
              "commits": [{"change_id": "c1", "log_sha256": shas[1]}, {"change_id": "c2", "log_sha256": shas[2]},
                          {"change_id": "c3", "log_sha256": shas[0]}],
              "logs": {sha: {} for sha in shas}}
-        loads = mock.Mock(wraps=sync.load_log)
-        with mock.patch.object(sync, "load_log", loads), mock.patch.object(sync, "metrics_problems", return_value=([], [])):
+        loads = mock.Mock(wraps=sync.decompress)
+        with mock.patch.object(sync, "decompress", loads), mock.patch.object(sync, "load_log", side_effect=AssertionError), \
+                mock.patch.object(sync, "metrics_problems", return_value=([], [])):
             errors, _, notes, _ = sync.check_sessions({"s1": m}, sync.Redactor(), remote=False)
-        self.assertEqual(sorted(c.args[1] for c in loads.call_args_list), sorted(shas))
+        self.assertEqual(sorted(sync.sha256(c.args[0]) for c in loads.call_args_list),
+                         sorted(sync.sha256(sync.log_path("s1", sha).read_bytes()) for sha in shas))
         self.assertIn("s1: 1 older log(s) are not a prefix of the current log, as after a redaction policy change", notes)
         self.assertEqual([e for e in errors if "log" in e and "summary" not in e], [])
 
@@ -452,6 +455,124 @@ class Caches(unittest.TestCase):
         self.assertIn(f"s1: log {shas[2][:12]} content does not match its name", third[0])
         self.assertEqual([w for w in third[1] if shas[2][:12] in w], 
                          [f"s1: log {shas[2][:12]}: public-ip ×1: " + sync._mask("198.51." + "100.4")])
+
+
+class Checks(unittest.TestCase):
+    """CheckCache: what check works out from content is looked up by that content, and gives what
+    working it out again gives."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.patches = [mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "traces"),
+                        mock.patch.object(sync, "PRICING", root / "pricing.json")]
+        for p in self.patches:
+            p.start()
+        (root / "pricing.json").write_text(json.dumps({"models": {}}))
+        self.r = MadeUpRedactor()
+        self.path = root / "check.json"
+        self.scans = sync.ScanCache(self.r, path=None)
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def session(self):
+        """A session of three logs, each a prefix of the next, and one that is not."""
+        lines = [json.dumps({"type": "user", "n": n, "text": "made-up line %d" % n}) + "\n" for n in range(6)]
+        logs = ["".join(lines[:2]).encode(), "".join(lines[:4]).encode(), "".join(lines).encode(), lines[5].encode()]
+        shas = [sync.store_log("s1", d)["sha256"] for d in logs]
+        m = {"schema": sync.SCHEMA, "log": {"sha256": shas[2]}, "subagents": [], "stats": {"usage": {}},
+             "commits": [{"change_id": f"c{i}", "log_sha256": sha} for i, sha in enumerate(shas)],
+             "logs": {sha: {} for sha in shas}}
+        return m, shas
+
+    def check(self, m, checks):
+        problems = mock.Mock(return_value=([], []))
+        with mock.patch.object(sync, "metrics_problems", problems):
+            found = sync.check_sessions({"s1": m}, self.r, remote=False,
+                                        scans=self.scans if checks else sync.ScanCache(self.r, path=None), checks=checks)
+        return found
+
+    def test_verified_snapshots_are_not_decompressed_again(self):
+        m, shas = self.session()
+        checks = sync.CheckCache(self.r, self.path)
+        first = self.check(m, checks)
+        checks.save()
+        self.assertEqual(first, self.check(m, None))
+        self.assertIn("s1: 1 older log(s) are not a prefix of the current log, as after a redaction policy change", first[2])
+        checks = sync.CheckCache(self.r, self.path)
+        self.assertEqual(len([k for k in checks.entries if k.startswith("gz:")]), 4)
+        with mock.patch.object(sync, "decompress", side_effect=AssertionError("decompressed again")), \
+                mock.patch.object(sync, "prefix_digests", side_effect=AssertionError("hashed again")):
+            self.assertEqual(self.check(m, checks), first)
+        self.assertEqual(sync.CheckCache(self.r, self.path, trusted=False).entries, {})
+        self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+
+    def test_changed_bytes_are_verified_by_what_they_hold(self):
+        m, shas = self.session()
+        checks = sync.CheckCache(self.r, self.path)
+        self.check(m, checks)
+        # the same content compressed differently: its name still holds
+        data = gzip.decompress(sync.log_path("s1", shas[0]).read_bytes())
+        sync.log_path("s1", shas[0]).write_bytes(gzip.compress(data, compresslevel=1, mtime=7))
+        self.assertEqual(self.check(m, checks), self.check(m, None))
+        # other content under the name: an error, and the prefix check compares its bytes
+        sync.log_path("s1", shas[1]).write_bytes(gzip.compress(b'{"other":1}\n'))
+        found = self.check(m, checks)
+        self.assertEqual(found, self.check(m, None))
+        self.assertIn(f"s1: log {shas[1][:12]} content does not match its name", found[0])
+        self.assertIn("s1: 2 older log(s) are not a prefix of the current log, as after a redaction policy change", found[2])
+        # a current log rewritten under its name: its prefixes are worked out for what it holds
+        sync.log_path("s1", shas[2]).write_bytes(gzip.compress(data + b'{"more":1}\n'))
+        found = self.check(m, checks)
+        self.assertEqual(found, self.check(m, None))
+        self.assertIn(f"s1: log {shas[2][:12]} content does not match its name", found[0])
+
+    def test_metrics_are_compared_again_when_an_input_changes(self):
+        m, shas = self.session()
+        m["stats"]["usage"] = dict.fromkeys(("input_tokens", "output_tokens", "cache_read_input_tokens",
+                                             "cache_creation_input_tokens"), 0)
+        sync.metrics_path("s1").write_text("{}")
+        checks = sync.CheckCache(self.r, self.path)
+        rendered = mock.Mock(return_value="{}")
+        content = lambda: gzip.decompress(sync.log_path("s1", shas[2]).read_bytes())
+        def problems(logs, text=None):
+            if text is not None:
+                sync.metrics_path("s1").write_text(text)
+            with mock.patch.object(sync, "session_metrics", rendered):
+                return sync.metrics_problems("s1", m, content, self.r, checks, logs)
+        self.assertEqual(problems([shas[2]]), problems([shas[2]]))
+        self.assertEqual(rendered.call_count, 1)
+        for changed in ([shas[1]], [shas[2], None]):
+            problems(changed)
+        self.assertEqual(rendered.call_count, 3)
+        found = problems([shas[2]], '{"a": 1}')
+        self.assertEqual(rendered.call_count, 4)
+        self.assertIn("s1: metrics.json does not match the log and manifest (run sync)", found[0])
+        sync.PRICING.write_text(json.dumps({"models": {"x": {}}}))
+        problems([shas[2]])
+        m["stats"]["usage"]["input_tokens"] = 1
+        problems([shas[2]])
+        self.assertEqual(rendered.call_count, 6)
+        problems([shas[2]], "{}")
+        self.assertEqual(rendered.call_count, 7)
+        problems([shas[2]])
+        self.assertEqual(rendered.call_count, 7)
+
+    def test_tree_files_are_what_jj_file_show_prints(self):
+        with mock.patch.object(sync, "REPO", Path(sync.__file__).resolve().parents[2]):
+            if not sync.has_jj():
+                self.skipTest("no jj")
+            commits = [c["commit_id"] for c in sync.jj_commits("::@- & ~root()")[:40:8]]
+            wanted = [(c, p) for c in commits for p in ("llm-dlc/README.md", "no/such/file", "llm-dlc")]
+            wanted.append(("0" * 40, "llm-dlc/README.md"))
+            found = sync.tree_files(wanted)
+            for c, p in wanted:
+                r = sync.jj("file", "show", "-r", c, p)
+                expected = r.stdout.encode() if r.returncode == 0 and p != "llm-dlc" else None
+                self.assertEqual(found[c, p], expected, (c, p))
 
 
 class Perf(unittest.TestCase):
