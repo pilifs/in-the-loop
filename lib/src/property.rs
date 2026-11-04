@@ -137,6 +137,9 @@ pub struct Outcome {
     pub findings: Vec<Finding>,
     pub output: String,
     pub work: PathBuf,
+    /// Why a verified property says nothing: the assumption admits no input in the domain.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vacuous: Option<String>,
 }
 
 /// Runs the property proof.
@@ -170,6 +173,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             findings,
             output: out.clone(),
             work: work.clone(),
+            vacuous: None,
         })
     };
 
@@ -321,12 +325,22 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut counterexample = None;
     let mut proof = None;
     let mut problem = None;
+    let mut vacuous = None;
     let mut verdict = last.verdict;
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
             let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws} ({how})", options.target);
             proof = Some(how);
+            // An assumption may admit no input in the domain: the property is then checked on none.
+            if !harness.probe.is_empty() {
+                let mut entries = options.classes.clone();
+                entries.extend(options.classpath.iter().cloned());
+                vacuous = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work, "failing the assumption (--assume)")?;
+                if let Some(reason) = &vacuous {
+                    let _ = writeln!(out, "  vacuously: {reason}");
+                }
+            }
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
@@ -411,7 +425,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), counterexample, proof, problem, statement: Some(statement), findings, output: out, work });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -483,6 +497,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         findings,
         output: out,
         work,
+        vacuous,
     })
 }
 

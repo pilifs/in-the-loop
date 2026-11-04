@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "145",
+  "title": "The bound raised past the scan limit: the bisection proved unchanged on the tables the scope admits",
+  "summary": "Example 144's declaration with the bound on array parameters raised to twelve: the domain now holds tables of nine to twelve pairs, which the scope `matches.length <= 8` admits to the proof, and the tool's own checker proves the bisection unchanged on every such table and every key in 4 s. The vacuity line is gone, since the probe finds a table that reaches the calls. The proof is of the branch the change did not touch, which is what the declaration asked; the notes carry the proof of the scan itself.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "jvm-internals",
+    "compilers",
+    "array-utilities",
+    "confined-change",
+    "own-checker",
+    "vacuous-proof"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Mica",
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native",
+    "maxArrayLength": 12
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "A table of at most `SCAN_LIMIT` (eight) pairs is scanned in order, `for (int i = 0; i < matches.length; i++) if (matches[i] == key) return i;`, and the bisection is kept for longer tables as it was. The tests for the bisection pass.",
+    "patch": "change.patch",
+    "intendedInputs": "matches.length <= 8"
+  },
+  "risk": "None: the change leaves the bisection as it was, and the proof shows it on every table of nine to twelve pairs and every key, sorted or not. What the proof does not cover is the scan, which the scope excludes by the developer's declaration; the proof of the scan is in the notes, under the sortedness scope.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "With `--max-array-length 12` (`approach.maxArrayLength` on this page) the symbolic table has every length up to twelve, and the scope's early return takes only the lengths up to eight: on the rest the harness calls the previous version's bisection and the new version's, which runs the same bisection after its length test, and compares the results. The checker explores 89 paths, the lengths nine to twelve times the steps of the two searches, with 548 solver calls in 4.0 s and 85 MB, and no path reaches the assertion. The probe, the harness with the calls replaced by the assertion's failure, is refuted at once on a table of nine pairs, so the proof is not vacuous and no line says it is.",
+  "resolution": "Merge, as far as the bisection goes: it is unchanged on every table the declaration left to the proof. For the scan, the reviewer asks for the proof in the notes, which is the one that settles the change.",
+  "notes": [
+    "The two proofs together are the review of the change: this one, that the bisection is as it was on the tables the scan does not take; and the sortedness-scoped one of example 144's notes, that the scan agrees with the bisection on every strictly sorted table of up to eight pairs (1.1 s) or twelve (3.1 s). The second is the one a reviewer should ask for first; the first is what the declaration `matches.length <= 8` asks, and at the default bound it asks nothing (example 144).",
+    "Raising the bound is the right fix for a scope over the array's length, and a scope over scalars that is a tautology has no fix but rewriting it. Each length costs paths: 89 at twelve with the scope skipping eight of them, against 88 for the sortedness scope at eight and 180 at twelve. JBMC was not run on this example: it took 101 s and 2 GB for the sortedness scope at bound eight on example 141, and the own checker is the engine named.",
+    "The `maxArrayLength` field of `approach` is new with this example: it is the tool's `--max-array-length`, as `unwind` is its `--unwind`, for an example whose statement needs a bound other than the default eight. The bounds of twelve in example 142 and 143's notes were measured by hand; this field makes a bound part of the page the pipeline runs."
+  ],
+  "provenance": "Constructed as the counterpart of example 144: the same change and declaration, with the bound that gives the proof something to cover.",
+  "references": [
+    {
+      "title": "JVMS §6.5, lookupswitch: the match-offset pairs are sorted so that an implementation may search them by bisection",
+      "url": "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-6.html#jvms-6.5.lookupswitch"
+    },
+    {
+      "title": "OpenJDK, DualPivotQuicksort: small arrays are sorted by insertion sort, the threshold a constant of the class",
+      "url": "https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/DualPivotQuicksort.java"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

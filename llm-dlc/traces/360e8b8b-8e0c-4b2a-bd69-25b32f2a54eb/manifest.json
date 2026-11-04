@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T11:04:58.164Z",
-  "duration_seconds": 326103,
+  "ended": "2026-11-04T12:58:22.821Z",
+  "duration_seconds": 332907,
   "stats": {
-    "turns": 259,
-    "api_calls": 2912,
-    "tool_calls": 3431,
-    "tool_errors": 63,
-    "compactions": 48,
+    "turns": 266,
+    "api_calls": 2992,
+    "tool_calls": 3507,
+    "tool_errors": 64,
+    "compactions": 49,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 87094,
-      "output_tokens": 5585767,
-      "cache_read_input_tokens": 489452975,
-      "cache_creation_input_tokens": 12211760
+      "input_tokens": 89506,
+      "output_tokens": 5675935,
+      "cache_read_input_tokens": 502009407,
+      "cache_creation_input_tokens": 12777901
     }
   },
   "tools": {
-    "Bash": 2927,
+    "Bash": 3002,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
-    "ToolSearch": 29,
+    "ToolSearch": 30,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 7
@@ -902,24 +902,38 @@
     {
       "index": 48,
       "started": "2026-11-04T10:18:25.422Z",
-      "ended": "2026-11-04T11:04:58.164Z",
+      "ended": "2026-11-04T11:05:25.658Z",
       "turns": 4,
-      "api_calls": 80,
+      "api_calls": 81,
       "usage": {
-        "input_tokens": 2530,
-        "output_tokens": 104920,
-        "cache_read_input_tokens": 11874219,
-        "cache_creation_input_tokens": 232870
+        "input_tokens": 2562,
+        "output_tokens": 106096,
+        "cache_read_input_tokens": 12122002,
+        "cache_creation_input_tokens": 234585
       },
-      "peak_context_tokens": 247815
+      "peak_context_tokens": 249530
+    },
+    {
+      "index": 49,
+      "started": "2026-11-04T11:06:50.335Z",
+      "ended": "2026-11-04T12:58:22.821Z",
+      "turns": 7,
+      "api_calls": 79,
+      "usage": {
+        "input_tokens": 2380,
+        "output_tokens": 88992,
+        "cache_read_input_tokens": 12308649,
+        "cache_creation_input_tokens": 564426
+      },
+      "peak_context_tokens": 262814
     }
   ],
   "log": {
-    "sha256": "f806187d5a57daab6205900eb52003a031cba53d454703503bb7de9f037066b6",
-    "bytes": 102894518,
-    "lines": 40278,
-    "gzip_bytes": 17506596,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/f806187d5a57daab6205900eb52003a031cba53d454703503bb7de9f037066b6.jsonl.gz"
+    "sha256": "2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e",
+    "bytes": 105195059,
+    "lines": 41232,
+    "gzip_bytes": 17937077,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1434,6 +1448,14 @@
       "summary": "The tool's own checker merges paths where they meet once a search has grown past a few hundred, keeping the models of every path merged; examples 142 and 143 on the constant-pool encoder's ASCII fast path, the proof that waited for a larger machine (verification pending)",
       "body": "Path merging in lib/src/bmc: an instruction with more than one way in (after an if, a loop header, a handler) is a join point; a path that reaches one waits there, and when nothing else can run the paths waiting at the earliest join are merged into one, every value they differ in a choice by the condition of each, the condition the disjunction of theirs, the models of all of them kept, so that a branch each of whose sides some model takes costs no solver call. A method of n independent branches is then n paths rather than 2^n. The first 512 paths (Options.merge_after) are explored unmerged, since a solver call about one concrete path is much cheaper than one about a disjunction: merged from the start, the 64-bit arithmetic of examples 131, 134 and 139 took two to three times as long and an integration fixture timed out, while with the budget examples 120 to 141 keep their verdicts and timings. A merged path counts a loop's back edges as the fewer of the two, since the larger count reported a loop as beyond the bound where no path was.\n\nExamples 142 and 143 are the regression proofs of Mica's ModifiedUtf8#encodeInto with an ASCII fast path that waited since 1 November in examples/apps/mica/pending for a machine with more memory, JBMC running out of it at 2.8 GB at the default bound; the directory is removed and the pages that pointed at it updated. 142: the fast path with the test (char) (c - 1) < 0x7f is proved equal to the previous version on every string and buffer of up to eight elements in 7 s and 76 MB (733 paths, 219 merged; unmerged the search takes 11643 paths), and at twelve elements in 83 s and 155 MB where the unmerged search spends its budget of 200000 paths without a verdict; at sixteen there is no verdict in four minutes. 143: the same fast path with <= 0x7f admits U+0080 and writes it as one byte, which the encoder's committed properties allow and only the comparison with the previous version catches: refuted in 1.1 s on encodeInto(chars=['\\u0080'], out=[32]), the previous version throwing on the second byte and the new one returning 1. Mica's 71 tests pass on both patched trees. Verified by 116 unit tests (three on merging: a violation through a merged state is found with a real input, eight independent branches are nine paths merged and 256 not) and 50 integration tests, and by re-running examples 120 to 141 on the release build. Jobs 20261104-104407-example-142-ascii-fast-path-of-modifiedu and 20261104-104407-example-143-ascii-fast-path-off-by-one-a are queued.",
       "log_sha256": "f806187d5a57daab6205900eb52003a031cba53d454703503bb7de9f037066b6"
+    },
+    {
+      "change_id": "mxklxumpxvlrzporxmwyksoqxpmnroxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A regression or property proof that covers no input says so: the statement is probed with its calls replaced by the assertion's failure, and a scope or assumption every input satisfies, or an array bound below what the scope asks, is reported as vacuous; examples 144 and 145 on a short-table scan of the lookupswitch search (verification pending)",
+      "body": "A verified statement that skips inputs before the calls (an --unchanged-unless scope, a record whose constructor may reject an input, --before-arguments that may throw, or a prove --assume) can skip every input in the domain: a scope that is a tautology, or one over an array's length the bound on arrays never reaches, such as 'matches.length <= 8' at the default --max-array-length of 8. Before this change such a proof was printed as a plain tick. Now the harness generator also emits a probe, the same class with the two calls replaced by throw new AssertionError(), and after a verified verdict, whichever engine gave it, the tool's own checker proves or refutes the probe over the statement's own domain: a refutation is an input that reaches the calls, and a proof means no input does, which is reported on a line of its own, 'vacuously: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing'. The verdict stays verified and the exit code 0, as a TLC coverage verdict does; the Outcome gains a vacuous field and build.py reads the line into the result's coverage, so an example that is verified vacuously must say so in expected.vacuous, and gets a paragraph on its page. approach.maxArrayLength is a new example field passed as --max-array-length.\n\nExamples 144 and 145 construct the case on Mica's LookupSwitch#find, which gains a linear scan for tables of at most eight pairs: the developer declares the short tables as the intended change. At the default bound every table in the domain is among them and the proof is verified vacuously in 0.1 s (144, expected vacuous); with the bound raised to twelve the bisection is proved unchanged on every table of nine to twelve pairs and every key in 4 s, 89 paths (145). Their notes carry the proof of the scan itself under the sortedness scope of example 141 (1.1 s at eight, 3.1 s at twelve) and the unscoped witness find(matches=[20, 16], key=16). Mica's 71 tests pass with the patch.\n\nAlso tried this cycle and reverted before committing: putting the harness's failing branches off to one disjunctive solver call at the end of each path. It was sound and the tests passed, but example 142 at bound eight went from 7.6 s to 11.9 s, since the two merged final paths carried 171 and 135 deferred checks and the single proof over their disjunction cost more than the incremental per-element calls it replaced; small searches gained nothing.\n\nVerified by 116 unit tests (a harness test checks the probe throws before its call), the 50 integration tests (a tautological scope and an unsatisfiable assumption get the line, the real scope and assumption do not; one 64-bit fixture timed out under load and passed alone in 22 s), the measured outputs of examples 120 to 141 on the release build, which are unchanged and gain no vacuity line, and the proofs of 144 and 145 above. Jobs 20261104-124827-example-144 and 20261104-124833-example-145 are queued for the pipeline.",
+      "log_sha256": "2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e"
     }
   ],
   "logs": {
@@ -1484,6 +1506,12 @@
       "lines": 22199,
       "gzip_bytes": 10325437,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/26ed005d7fc6a774f2f163d1600ccfe972692663f6a360af256ec61df8f94d6e.jsonl.gz"
+    },
+    "2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e": {
+      "bytes": 105195059,
+      "lines": 41232,
+      "gzip_bytes": 17937077,
+      "url": null
     },
     "2ea02119f7548804d1d05d3a777bdeab2fcd56320e4de956d737ed6342c6d618": {
       "bytes": 74669387,

@@ -1,0 +1,22 @@
+--- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
++++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java
+@@ -14,8 +14,19 @@
+         return (low + high) >>> 1;
+     }
+ 
++    /** Tables of at most this many pairs are scanned in order rather than bisected. */
++    public static final int SCAN_LIMIT = 8;
++
+     /** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */
+     public static int find(int[] matches, int key) {
++        if (matches.length <= SCAN_LIMIT) {
++            for (int i = 0; i < matches.length; i++) {
++                if (matches[i] == key) {
++                    return i;
++                }
++            }
++            return -1;
++        }
+         int low = 0;
+         int high = matches.length - 1;
+         while (low <= high) {

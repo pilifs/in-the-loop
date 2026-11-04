@@ -172,6 +172,32 @@ pub struct Outcome {
     /// The relation between the results the proof is of, when it is not equality.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub relation: Option<String>,
+    /// Why a verified statement says nothing: no input in the domain reaches the calls, every one being skipped
+    /// before them (among the intended inputs, rejected by a constructor, or without previous-version arguments).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vacuous: Option<String>,
+}
+
+/// Whether a verified statement is vacuous: the probe (the harness with the calls replaced by the assertion's
+/// failure, `Harness::probe`) is run by the tool's own checker, over the harness's own domain. An input that
+/// reaches the calls violates it, and a proof of it says no input in the domain does, whichever engine proved
+/// the statement: the statement's proof covers no input. `skipped_by` says how an input is skipped, for the
+/// reason returned. `None` when an input reaches the calls, or when the probe gave no verdict (a note says why).
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, work: &Path, skipped_by: &str) -> Result<Option<String>, Error> {
+    let probe_dir = work.join("probe");
+    std::fs::create_dir_all(&probe_dir)?;
+    std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
+    let mut probe_entries = vec![probe_dir.clone()];
+    probe_entries.extend(entries.iter().cloned());
+    let result = crate::bmc::run_for_proof(&probe_entries, models, class, harness::METHOD, unwind, max_array_length, timeout, &probe_dir)?;
+    Ok(match result.verdict {
+        Verdict::Verified => Some(format!("no input in the domain reaches the calls, every one {skipped_by}; the proof covers no input and says nothing")),
+        Verdict::Violation => None,
+        Verdict::Unverifiable => {
+            let _ = writeln!(out, "note: whether any input in the domain reaches the calls could not be checked ({})", result.problem.as_deref().unwrap_or("no reason"));
+            None
+        }
+    })
 }
 
 /// The parameter values as the harness's locals, with the arrays' elements by slot, for evaluating an expression
@@ -244,7 +270,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -489,7 +515,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -700,12 +726,33 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let mut counterexample = None;
     let mut proof = None;
     let mut problem = None;
+    let mut vacuous = None;
     let mut verdict = last.verdict;
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
             let _ = writeln!(out, "✓ {} {relation}{restriction} ({how})", options.target);
             proof = Some(how);
+            // A statement that skips inputs before the calls may skip every one in the domain: a scope every input
+            // satisfies, a bound on the arrays below what the scope asks, a constructor that rejects every input.
+            if harness::skips_inputs(&layout, options.unchanged_unless.as_deref(), previous.as_ref()) {
+                let mut ways = Vec::new();
+                if options.unchanged_unless.is_some() {
+                    ways.push("being among the intended inputs (--unchanged-unless)");
+                }
+                if !layout.records().is_empty() {
+                    ways.push("rejected by a record's constructor");
+                }
+                if previous.as_ref().is_some_and(|b| b.arguments.is_some()) {
+                    ways.push("without arguments for the previous version (--before-arguments throws on it)");
+                }
+                let mut entries = vec![options.after.clone(), before_dir.clone()];
+                entries.extend(options.classpath.iter().cloned());
+                vacuous = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work, &ways.join(" or "))?;
+                if let Some(reason) = &vacuous {
+                    let _ = writeln!(out, "  vacuously: {reason}");
+                }
+            }
         }
         Verdict::Violation => {
             let found = last.arguments(&flat_types)?;
@@ -724,7 +771,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone() });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -783,7 +830,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone() })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous })
 }
 
 /// Both versions replayed on one input.

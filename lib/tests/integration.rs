@@ -1358,7 +1358,22 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
     assert_ne!(witness.before, witness.after);
     let proved = run(&tier, Some("seats >= 6"), Engine::Native, "tier");
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+    assert!(proved.vacuous.is_none() && !proved.output.contains("vacuously"), "{}", proved.output);
     assert_eq!(run(&tier, None, Engine::Native, "tier-unscoped").verdict, Verdict::Violation);
+
+    // A scope every input satisfies leaves the proof nothing to cover, which the tool says: the verdict is still
+    // verified, so that the statement is not a false alarm, and the line is for the reviewer.
+    let vacuous = run(&tier, Some("seats >= 6 || seats < 6"), Engine::Native, "tier-vacuous");
+    assert_eq!(vacuous.verdict, Verdict::Verified, "{}", vacuous.output);
+    assert!(vacuous.output.contains("\n  vacuously: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless)"), "{}", vacuous.output);
+    assert!(vacuous.vacuous.is_some());
+    // The same for an assumption no input satisfies.
+    let empty = prove_engine("fixtures.Laws#majority", Some("n > 0 && n <= 0"), Some("2L * result > n"), &[], Engine::Native, "majority-vacuous");
+    assert_eq!(empty.verdict, Verdict::Verified, "{}", empty.output);
+    assert!(empty.output.contains("\n  vacuously: no input in the domain reaches the calls, every one failing the assumption (--assume)"), "{}", empty.output);
+    let plain = prove_engine("fixtures.Laws#majority", Some("n > 0"), Some("2L * result > n && result <= n"), &[], Engine::Native, "majority-native");
+    assert_eq!(plain.verdict, Verdict::Verified, "{}", plain.output);
+    assert!(plain.vacuous.is_none() && !plain.output.contains("vacuously"), "{}", plain.output);
 }
 
 #[test]

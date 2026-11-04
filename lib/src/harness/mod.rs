@@ -57,6 +57,11 @@ pub const EXCEPTIONS: &[&str] = &[
 pub struct Harness {
     /// The class file bytes of `EquivalenceHarness`.
     pub bytes: Vec<u8>,
+    /// The same class with the calls replaced by the assertion's failure: an input that reaches the calls (one
+    /// outside the scope, that every constructor accepts and the previous version's arguments are computed for)
+    /// violates it. A proof of it is a proof that no input in the domain reaches the calls, and the statement's
+    /// proof vacuous.
+    pub probe: Vec<u8>,
     /// The same statement as Java source, for readers; it is not compiled.
     pub source: String,
     /// The parsed scope expression, if any, for checking replayed counterexamples.
@@ -552,6 +557,28 @@ fn kind_of(t: &Type) -> Kind {
 /// among the receiver and the arguments (`layout`) is built from its components in both versions before the calls,
 /// and the input is skipped when a constructor throws; a record result is compared component by component.
 pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32, before: Option<&BeforeMethod>) -> Result<Harness, Error> {
+    let mut harness = generate_in(class_internal, method, layout, ret, unchanged_unless, max_array_length, before, false)?;
+    harness.probe = generate_in(class_internal, method, layout, ret, unchanged_unless, max_array_length, before, true)?.bytes;
+    Ok(harness)
+}
+
+/// Whether a harness skips some inputs before the calls: the probe is only worth running when it does.
+pub fn skips_inputs(layout: &Layout, unchanged_unless: Option<&str>, before: Option<&BeforeMethod>) -> bool {
+    unchanged_unless.is_some() || !layout.records().is_empty() || before.is_some_and(|b| b.arguments.is_some())
+}
+
+/// Emits the harness's failure: `throw new AssertionError()`.
+fn emit_failure(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::PoolBuilder) {
+    let assertion_error = pool.class("java/lang/AssertionError");
+    let init = pool.method_ref("java/lang/AssertionError", "<init>", "()V");
+    code.op_u16(0xbb, assertion_error); // new
+    code.op(0x59); // dup
+    code.op_u16(0xb7, init); // invokespecial
+    code.op(0xbf); // athrow
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generate_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32, before: Option<&BeforeMethod>, probe: bool) -> Result<Harness, Error> {
     let params = &layout.params;
     let descriptor = format!("({}){}", layout.target_types().iter().map(Type::descriptor).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
@@ -754,6 +781,10 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
         None => (class_internal, method, layout.before_descriptor(&layout.target_types(), ret)),
     };
     let before_owner = format!("before/{before_class}");
+    // The probe: every input that gets this far fails it, and the calls below are never reached.
+    if probe {
+        emit_failure(&mut code, &mut writer.pool);
+    }
     for (owner, value_slot, flag_slot, on_copies) in [(before_owner.as_str(), a, ea, true), (class_internal, b, eb, false)] {
         let value_kind = if on_copies { before_ret_kind } else { ret_kind };
         if !is_void {
@@ -943,19 +974,14 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
     }
     code.goto(ok);
     code.bind(fail);
-    let assertion_error = writer.pool.class("java/lang/AssertionError");
-    let init = writer.pool.method_ref("java/lang/AssertionError", "<init>", "()V");
-    code.op_u16(0xbb, assertion_error); // new
-    code.op(0x59); // dup
-    code.op_u16(0xb7, init); // invokespecial
-    code.op(0xbf); // athrow
+    emit_failure(&mut code, &mut writer.pool);
     code.bind(ok);
     code.return_(None);
     code.max_locals = code.max_locals.max(index + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = source(class_internal, method, layout, ret, unchanged_unless, before);
-    Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec(), before_args, relation })
+    Ok(Harness { bytes: writer.to_bytes(), probe: Vec::new(), source, scope, params: params.to_vec(), before_args, relation })
 }
 
 /// Emits a jump to `fail` unless the two values `push` loads (`push(code, 0)` the first, `push(code, 1)` the
@@ -1222,6 +1248,9 @@ impl Signal {
 pub struct PropertyHarness {
     /// The class file bytes of `PropertyHarness`.
     pub bytes: Vec<u8>,
+    /// The same class with the call replaced by the assertion's failure: an input the assumption admits violates
+    /// it, and a proof of it is a proof that the assumption admits no input in the domain (see `Harness::probe`).
+    pub probe: Vec<u8>,
     /// The same statement as Java source, for readers; it is not compiled.
     pub source: String,
     pub assume: Option<Expr>,
@@ -1245,6 +1274,15 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
+    let mut harness = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, false)?;
+    if assume.is_some() {
+        harness.probe = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, true)?.bytes;
+    }
+    Ok(harness)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generate_property_in(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32, probe: bool) -> Result<PropertyHarness, Error> {
     let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
@@ -1378,6 +1416,10 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
     let try_start = code.label();
     let try_end = code.label();
     let join = code.label();
+    // The probe: every input the assumption admits fails it, and the call below is never reached.
+    if probe {
+        emit_failure(&mut code, &mut writer.pool);
+    }
     code.bind(try_start);
     for p in params {
         code.load(kind_of(&p.ty), p.slot);
@@ -1457,7 +1499,7 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = property_source(class_internal, method, params, ret, assume, &assertion_text, signals);
-    Ok(PropertyHarness { bytes: writer.to_bytes(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec(), old })
+    Ok(PropertyHarness { bytes: writer.to_bytes(), probe: Vec::new(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: params.to_vec(), old })
 }
 
 /// The `newarray` type code of a primitive element type.
@@ -1831,6 +1873,13 @@ mod tests {
         assert!(insns.iter().any(|(_, i)| matches!(i, crate::classfile::Insn::InvokeStatic(_))));
         assert!(insns.iter().any(|(_, i)| matches!(i, crate::classfile::Insn::AThrow)));
         assert!(harness.source.contains("if (seats >= 8) { return; }"), "{}", harness.source);
+        // The probe is the same class up to the calls, which it never reaches: it throws first.
+        let probe = ClassFile::parse(&harness.probe).unwrap();
+        let probe_insns = probe.method(METHOD, "(JI)V").unwrap().code.as_ref().unwrap().instructions().unwrap();
+        let first_throw = probe_insns.iter().position(|(_, i)| matches!(i, crate::classfile::Insn::AThrow)).unwrap();
+        let first_call = probe_insns.iter().position(|(_, i)| matches!(i, crate::classfile::Insn::InvokeStatic(_))).unwrap();
+        assert!(first_throw < first_call, "the probe throws at {first_throw}, before the call at {first_call}");
+        assert!(skips_inputs(&flat(&params), Some("seats >= 8"), None) && !skips_inputs(&flat(&params), None, None));
         assert!(harness.source.contains("a = before.net.example.Pricing.total(priceCents, seats);"));
         assert!(harness.source.contains("assert ea == eb && (ea != 0 || a == b);"));
         // Every branch target is an instruction boundary.

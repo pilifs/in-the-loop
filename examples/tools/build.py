@@ -701,6 +701,13 @@ def finish_symbolic(folder, example, result, output, work, harness, verdict_labe
              or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output)})
     result["verdictLabel"] = verdict_labels[result["verdict"]]
+    # A verified statement that skips every input in the domain before the calls (a scope every input satisfies, a
+    # bound on the arrays below what the scope asks, a constructor that rejects every input) is vacuous: the tool
+    # says so on a line of its own, and the example must expect it.
+    vacuous = re.search(r"^  vacuously: (.*)$", output, re.M)
+    if vacuous:
+        result["coverage"] = {"vacuous": True, "reason": vacuous.group(1)}
+        result["verdictLabel"] = f"{VERDICT_LABEL[result['verdict']]}, vacuously: no input in the domain reaches the calls"
 
 
 def run_tool_equivalence(folder, example, root, module, result):
@@ -722,6 +729,8 @@ def run_tool_equivalence(folder, example, root, module, result):
     command += engine_flag(example)
     if example["approach"].get("unwind"):
         command += ["--unwind", str(example["approach"]["unwind"])]
+    if example["approach"].get("maxArrayLength"):
+        command += ["--max-array-length", str(example["approach"]["maxArrayLength"])]
     proc, output = tool(app, root, *command)
     write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
@@ -1697,6 +1706,9 @@ def render_example(folder, ex, res):
         ]
     if res.get("proof"):
         lines += [f"How the verdict was reached: {res['proof']}.", ""]
+    if (res.get("coverage") or {}).get("reason"):
+        lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
+                  "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())
     if res.get("statement"):
         lines += details("The statement the prover checked (generated harness)", "java",

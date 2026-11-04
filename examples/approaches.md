@@ -214,6 +214,12 @@ Mica's constant-pool encoder, which JBMC could not finish at the default bound i
 to the previous version in 7 s and 76 MB, and
 [143](143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md), the same fast path off by one
 at the top of ASCII, refuted on a one-character string where the encoder's properties hold of both versions.
+A scope can leave a proof nothing to cover, and the tool says so: a statement that skips inputs before the calls is
+probed with its calls replaced by the assertion's failure, and when that too is proved no input in the domain reaches
+the calls. [144](144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md)
+declares a short-table scan as the intended change, `matches.length <= 8`, and at the default bound of eight on the
+arrays is verified vacuously, with the line that says it; [145](145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md)
+raises the bound to twelve (`approach.maxArrayLength`) and proves the bisection unchanged on the tables the scope admits.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

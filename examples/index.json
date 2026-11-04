@@ -5680,6 +5680,90 @@
         "The search is 731 paths with 2055 solver calls (1.1 s): the first 512 on their own, the rest merged where they meet. Unmerged throughout, it found the same witness in 2364 paths with 8907 calls in 1.0 s; merged from the start, in 260 paths with 342 calls in 4.6 s, since each branch of a merged path is a question over every path merged into it and a violation is found only after every path that could reach the join has been merged, where a search going deep first can hit it early. That is why the checker merges only once a search has grown past a few hundred paths, where the paths would otherwise multiply (example 142's note)."
       ],
       "source": null
+    },
+    {
+      "id": "144",
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound",
+      "title": "A short-table scan declared as the intended change, whose proof covers no table at the default bound",
+      "summary": "The interpreter's `lookupswitch` search gains a linear scan for tables of at most eight pairs, and the regression proof is asked to show the bisection unchanged on the rest: `--unchanged-unless 'matches.length <= 8'`. The default bound on array parameters is eight, so every table in the domain is among the intended inputs, the harness returns before calling either version, and the proof covers no input. The verdict is verified, vacuously, and the tool says so on a line of its own, found by running the statement with the calls replaced by the assertion's failure.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "compilers",
+          "array-utilities"
+        ],
+        "defect": [],
+        "technique": [
+          "confined-change",
+          "own-checker",
+          "vacuous-proof"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The vacuity check is the tool's, whichever engine proved the statement: the probe is run by the tool's own checker over the statement's own domain, and the line appears under a JBMC proof as it does here. It is run only when the harness skips inputs before the calls, that is with `--unchanged-unless`, a record parameter or receiver whose constructor may reject an input, or `--before-arguments` that may throw; a harness that calls the versions on every input has nothing to probe. A `prove` with `--assume` is probed the same way. The probe took 0.0 s here, one path and no solver call, since `matches.length <= 8` is a constant under the bound. Here `python3 examples/tools/build.py` compares the expected verdict with the vacuity too: an example that is verified vacuously must say so in `expected.vacuous`, as the TLC examples of [tag tla-coverage](../README.md#tag-tla-coverage) do.",
+        "Why the bound defeats the scope: the scope is over the symbolic array's length, and the domain of a regression proof over arrays is every length up to `--max-array-length`, eight by default, the same number as the scan limit. The proof line prints both, `where !(matches.length <= 8)` and `matches: int[] of length ≤ 8`, and a reader who holds them side by side sees the proof is empty; the tool now holds them side by side for the reader. A scope over the elements can be emptied the same way, by a quantifier that no array up to the bound satisfies, and a scope over scalars by an expression that is a tautology, `skewSeconds >= 0 || skewSeconds < 0`, which is what the check first caught, on example 125's method.",
+        "The scan is correct, and the proof that shows it is the one with the sortedness scope, `--unchanged-unless '!(\\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])'`: at bound eight the tool's own checker proves the new `find` equal to the old on every strictly sorted table of up to eight pairs and every key in 1.1 s, 88 paths, 660 solver calls, 46 MB, where the scan runs for every table and the bisection in the previous version; at bound twelve in 3.1 s, 180 paths, 67 MB. Without a scope the checker finds `find(matches=[20, 16], key=16)` in 0.08 s, -1 before (the bisection tests `matches[0] = 20 > 16` and moves `high` below the start) and 1 after (the scan reaches the second pair): on an unsorted table the two searches differ, as example 141 found for the half-open rewrite, and the scope states what every `lookupswitch` table satisfies.",
+        "The change is the shape of the JDK's own `DualPivotQuicksort`, which sorts small arrays by insertion sort below a constant threshold, and of many searches that scan short tables rather than bisect them: it is a performance change meant to preserve behaviour, and `behaviourChangeIntended` is false. Declaring the short tables as intended inputs is the mistake this example is about: it is the natural declaration for a reviewer who wants the bisection checked and takes the scan on trust, and it leaves the proof nothing when the bound is the threshold. The domain line of every proof names the bound for this reason."
+      ],
+      "source": null
+    },
+    {
+      "id": "145",
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits",
+      "title": "The bound raised past the scan limit: the bisection proved unchanged on the tables the scope admits",
+      "summary": "Example 144's declaration with the bound on array parameters raised to twelve: the domain now holds tables of nine to twelve pairs, which the scope `matches.length <= 8` admits to the proof, and the tool's own checker proves the bisection unchanged on every such table and every key in 4 s. The vacuity line is gone, since the probe finds a table that reaches the calls. The proof is of the branch the change did not touch, which is what the declaration asked; the notes carry the proof of the scan itself.",
+      "origin": "constructed",
+      "system": "Mica",
+      "symbol": "net.terminalvalue.mica.interp.LookupSwitch#find",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals",
+          "compilers",
+          "array-utilities"
+        ],
+        "defect": [],
+        "technique": [
+          "confined-change",
+          "own-checker",
+          "vacuous-proof"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The two proofs together are the review of the change: this one, that the bisection is as it was on the tables the scan does not take; and the sortedness-scoped one of example 144's notes, that the scan agrees with the bisection on every strictly sorted table of up to eight pairs (1.1 s) or twelve (3.1 s). The second is the one a reviewer should ask for first; the first is what the declaration `matches.length <= 8` asks, and at the default bound it asks nothing (example 144).",
+        "Raising the bound is the right fix for a scope over the array's length, and a scope over scalars that is a tautology has no fix but rewriting it. Each length costs paths: 89 at twelve with the scope skipping eight of them, against 88 for the sortedness scope at eight and 180 at twelve. JBMC was not run on this example: it took 101 s and 2 GB for the sortedness scope at bound eight on example 141, and the own checker is the engine named.",
+        "The `maxArrayLength` field of `approach` is new with this example: it is the tool's `--max-array-length`, as `unwind` is its `--unwind`, for an example whose statement needs a bound other than the default eight. The bounds of twelve in example 142 and 143's notes were measured by hand; this field makes a bound part of the page the pipeline runs."
+      ],
+      "source": null
     }
   ]
 }

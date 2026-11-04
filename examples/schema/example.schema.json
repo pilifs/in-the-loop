@@ -45,7 +45,8 @@
         "tool": { "description": "Repo-relative path of the verifier.", "type": "string" },
         "also": { "description": "Other approaches the example uses, for a real-world example that runs several.", "type": "array", "items": { "type": "string" } },
         "engine": { "description": "For a constructed B9 or B11 example on a javac app: the checker the tool is asked for (the tool's --engine): jbmc (the default), native (the tool's own bounded model checker, for a method over integers) or auto.", "type": "string", "enum": ["jbmc", "native", "auto"] },
-        "unwind": { "description": "For a constructed B9 example on a javac app: the loop unwinding bound the tool is asked for (its --unwind), when the default of 16 does not cover a loop of the method.", "type": "integer", "minimum": 1 }
+        "unwind": { "description": "For a constructed B9 example on a javac app: the loop unwinding bound the tool is asked for (its --unwind), when the default of 16 does not cover a loop of the method.", "type": "integer", "minimum": 1 },
+        "maxArrayLength": { "description": "For a constructed B9 example on a javac app: the bound on the length of the array parameters the tool is asked for (its --max-array-length), when the default of 8 is not what the statement needs.", "type": "integer", "minimum": 1 }
       }
     },
     "source": {
