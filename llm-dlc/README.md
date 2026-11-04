@@ -84,7 +84,7 @@ Claude Code runs this procedure in this repo. `CLAUDE.md` points here, and the h
 **Push only when the user asks.** Pushing publishes the log, and a person should read it first; see *Redaction* in [`specification.md`](specification.md#redaction).
 ```bash
 python3 llm-dlc/tools/sync.py scan                   # preview: what was redacted, what a person should look at
-python3 llm-dlc/tools/sync.py push --bookmark main   # record outstanding traces, check, upload, check, push
+python3 llm-dlc/tools/sync.py push --bookmark main   # record outstanding traces, check, upload, check, verify the revision, push
 ```
 `push` refuses to upload a log in which the redaction rules would still change something, and prints a `warn` line for anything they leave to judgment.
 Before pushing, this records everything no commit points at yet in one last *Record session traces* commit: conversation after a session's last commit, and sessions with no commit of their own. It moves the bookmark there and leaves `@` empty. It refuses to run while `@` holds uncommitted work.
@@ -146,7 +146,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
 | 2026-11-03 23:49 UTC | [Langfuse sync background script](traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 5 | 1 | ended |
-| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 25 | 7 | open |
+| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 30 | 8 | open |
 | 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](traces/20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 7 | 5 | ended |
 | 2026-11-03 13:48 UTC | [sync.py redaction allow list](traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 6 | 2 | ended |
 | 2026-11-03 13:40 UTC | [Verification pipeline job queue](traces/bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 1 | 1 | ended |

@@ -724,6 +724,138 @@ class CommitChecks(unittest.TestCase):
         self.assertIn("2 note(s) needing no action (sync.py check lists them)", counted)
 
 
+class PublicationGate(unittest.TestCase):
+    """push's last step before `jj git push`: the revision it publishes holds, byte for byte, the
+    trace files that `check` read on disk, and every log its new commits point at is uploaded."""
+
+    SID = "made-up-session"
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = root = Path(self.tmp.name)
+        llm = root / "llm-dlc"
+        self.patches = [mock.patch.object(sync, name, value) for name, value in (
+            ("REPO", root), ("TRACES", llm / "traces"), ("SESSION_NOTES", llm / "session-notes"),
+            ("INDEX", llm / "index.json"), ("TRACES_README", llm / "traces" / "README.md"),
+            ("METRICS_ROLLUP", llm / "traces" / "metrics.json"), ("REVIEWED", llm / "reviewed.json"),
+            ("ALLOWLIST", llm / "allowlist.json"))]
+        for p in self.patches:
+            p.start()
+        self.git("init", "-q")
+        self.sha = "ab" * 32
+        self.write_session(url=True)
+        for path, text in ((sync.INDEX, "{}\n"), (sync.TRACES_README, "# made-up\n"), (sync.METRICS_ROLLUP, "{}\n"),
+                           (llm / "unrelated.md", "not a trace file\n")):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def git(self, *args: str) -> str:
+        env = {**sync.os.environ, "GIT_AUTHOR_NAME": "Made Up", "GIT_AUTHOR_EMAIL": "made-up@example.com",
+               "GIT_COMMITTER_NAME": "Made Up", "GIT_COMMITTER_EMAIL": "made-up@example.com"}
+        return sync.subprocess.run(["git", "-C", str(self.root), *args], check=True, capture_output=True,
+                                   text=True, env=env).stdout.strip()
+
+    def write_session(self, url: bool, withdrawn: bool = False):
+        info = {"url": sync.log_url(self.SID, self.sha)} if url else {}
+        if withdrawn:
+            info = {"withdrawn": "made-up reason"}
+        d = sync.session_dir(self.SID)
+        d.mkdir(parents=True, exist_ok=True)
+        sync.manifest_path(self.SID).write_text(json.dumps({"schema": sync.SCHEMA, "log": {"sha256": self.sha},
+                                                            "logs": {self.sha: info}}) + "\n")
+        sync.summary_path(self.SID).write_text("# made-up summary\n")
+        sync.metrics_path(self.SID).write_text("{}\n")
+
+    def snapshot(self) -> str:
+        """A commit of the working files, made with plumbing (no `git commit` in this repo)."""
+        self.git("add", "-A")
+        return self.git("commit-tree", "-m", "made-up", self.git("write-tree"))
+
+    def gate(self, commit: str, pushed_desc: str | None = None) -> list[str]:
+        desc = pushed_desc if pushed_desc is not None else f"Made-up change\n\n{sync.TRAILER}: {self.SID} sha256:{self.sha}\n"
+        listed = sync.subprocess.CompletedProcess([], 0, commit + "\n", "")
+        with mock.patch.object(sync, "jj", return_value=listed) as jj, \
+             mock.patch.object(sync, "jj_commits", return_value=[{"change_id": "k" * 32, "description": desc}]) as pushed:
+            errors = sync.publication_gate("bookmarks(exact:\"main\")")
+        self.assertEqual(jj.call_args.args[:4], ("log", "--no-graph", "-r", "bookmarks(exact:\"main\")"))
+        self.assertEqual(pushed.call_args.args, ("::(bookmarks(exact:\"main\")) ~ ::remote_bookmarks()",))
+        return errors
+
+    def test_the_checked_revision_passes(self):
+        self.assertEqual(self.gate(self.snapshot()), [])
+
+    def test_a_file_changed_since_the_commit_is_caught(self):
+        commit = self.snapshot()
+        sync.summary_path(self.SID).write_text("# made-up summary, edited after the commit\n")
+        errors = self.gate(commit)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("summary.md differs from the copy that was checked", errors[0])
+
+    def test_files_check_did_not_read_are_caught(self):
+        log = sync.log_path(self.SID, self.sha)  # gitignored in the real repo; committed here by mistake
+        log.parent.mkdir(parents=True)
+        log.write_bytes(gzip.compress(b"made-up\n"))
+        stray = sync.SESSION_NOTES / "no-such-session.md"
+        stray.parent.mkdir(parents=True)
+        stray.write_text("made-up note\n")
+        errors = self.gate(self.snapshot())
+        self.assertEqual(len(errors), 2)
+        self.assertTrue(all("is in the revision but was not checked" in e for e in errors))
+
+    def test_a_checked_file_missing_from_the_revision_is_caught(self):
+        commit = self.snapshot()
+        sync.notes_path(self.SID).parent.mkdir(parents=True)
+        sync.notes_path(self.SID).write_text("made-up note\n")
+        errors = self.gate(commit)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("was checked but is not in the revision", errors[0])
+
+    def test_a_pushed_commit_must_point_at_an_uploaded_log(self):
+        self.write_session(url=False)
+        errors = self.gate(self.snapshot())
+        self.assertEqual(len(errors), 1)
+        self.assertIn("which is not uploaded", errors[0])
+        self.write_session(url=False, withdrawn=True)
+        self.assertEqual(self.gate(self.snapshot()), [])
+        legacy = f"Made-up change\n\n{sync.TRAILER}: {self.SID}\n"  # no sha256: nothing to fetch
+        self.assertEqual(self.gate(self.snapshot(), legacy), [])
+
+    def test_a_revset_jj_cannot_resolve_fails(self):
+        failed = sync.subprocess.CompletedProcess([], 1, "", "made-up revset error")
+        with mock.patch.object(sync, "jj", return_value=failed):
+            errors = sync.publication_gate("nope(")
+        self.assertEqual(len(errors), 1)
+        self.assertIn("made-up revset error", errors[0])
+
+    def test_what_a_push_publishes(self):
+        self.assertEqual(sync.push_revisions(["--bookmark", "main"]), 'bookmarks(exact:"main")')
+        self.assertEqual(sync.push_revisions(["-b=glob:feat*", "--remote", "origin"]), 'bookmarks(glob:"feat*")')
+        self.assertEqual(sync.push_revisions(["-b", "main", "-r", "@-", "--change=xyz"]),
+                         'bookmarks(exact:"main") | (@-) | (xyz)')
+        self.assertEqual(sync.push_revisions(["--all"]), "bookmarks()")
+        self.assertEqual(sync.push_revisions([]), "bookmarks() ~ ::remote_bookmarks()")
+
+    def test_push_stops_before_git_when_the_gate_fails(self):
+        for problems, pushed in ((["made-up problem"], False), ([], True)):
+            ok = sync.subprocess.CompletedProcess([], 0, "", "")
+            with mock.patch.object(sync, "uncommitted_work", return_value=[]), \
+                 mock.patch.object(sync, "jj_commits", return_value=[{"change_id": "k" * 32, "description": "Made-up\n"}]), \
+                 mock.patch.object(sync, "jj", return_value=ok), mock.patch.object(sync, "cmd_sync"), \
+                 mock.patch.object(sync, "cmd_check", return_value=0), mock.patch.object(sync, "cmd_upload", return_value=0), \
+                 mock.patch.object(sync, "write_index"), mock.patch.object(sync, "all_manifests", return_value={}), \
+                 mock.patch.object(sync, "publication_gate", return_value=problems) as gate, \
+                 mock.patch.object(sync.subprocess, "run", return_value=ok) as run, \
+                 mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO()):
+                self.assertEqual(sync.cmd_push(["--bookmark", "main"]), 0 if pushed else 1)
+            gate.assert_called_once_with('bookmarks(exact:"main")')
+            self.assertEqual(run.called, pushed)
+
+
 class Perf(unittest.TestCase):
     def test_phases_nest_and_records_are_kept(self):
         perf = sync.Perf()

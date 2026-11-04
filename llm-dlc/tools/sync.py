@@ -36,7 +36,8 @@ Commands:
                                 counting its notes, and fails if it finds an error
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
-                                moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
+                                moving any --bookmark to it, once the revision to push is shown to hold
+                                exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push)
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -2491,7 +2492,93 @@ def cmd_push(args: list[str]) -> int:
     if cmd_check() != 0:
         print("trace check failed; not pushing", file=sys.stderr)
         return 1
+    # The check read the files on disk; what goes out is the revision the bookmarks point at.
+    with perf.phase("publication gate"):
+        problems = publication_gate(push_revisions(args))
+    for p in problems:
+        print("ERROR", p)
+    if problems:
+        print("the revision to push is not the one checked; not pushing", file=sys.stderr)
+        return 1
     return subprocess.run([JJ, "--config", "snapshot.max-new-file-size=100MiB", "git", "push", *args], cwd=REPO).returncode
+
+
+def push_revisions(args: list[str]) -> str:
+    """A revset of the commits `jj git push ARGS` would move bookmarks to: the bookmarks, revisions
+    and changes it names, all bookmarks for --all, and otherwise every bookmark not already among
+    the remote ones' ancestors (more than jj pushes by default, never less)."""
+    picked, rest = [], iter(args)
+    for a in rest:
+        flag, eq, value = a.partition("=")
+        if flag in ("--bookmark", "-b", "--revisions", "-r", "--change", "-c") and not eq:
+            value = next(rest, "")
+        if flag in ("--bookmark", "-b"):
+            kind, colon, name = value.partition(":")
+            picked.append(f"bookmarks({kind}:{json.dumps(name)})" if colon and kind.isalpha()
+                          else f"bookmarks(exact:{json.dumps(value)})")
+        elif flag in ("--revisions", "-r", "--change", "-c"):
+            picked.append(f"({value})")
+        elif a == "--all":
+            picked.append("bookmarks()")
+    return " | ".join(picked) if picked else "bookmarks() ~ ::remote_bookmarks()"
+
+
+def git_blob_id(data: bytes, length: int) -> str:
+    """The id git gives a file with this content: SHA-1, or SHA-256 in a repository whose object
+    ids have 64 digits."""
+    return hashlib.new("sha1" if length == 40 else "sha256", b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def checked_files(manifests: dict[str, dict]) -> dict[str, Path]:
+    """The tracked files that `check` reads and scans, by repo path: what a push may publish."""
+    paths = [INDEX, TRACES_README, METRICS_ROLLUP, REVIEWED, ALLOWLIST]
+    for sid in manifests:
+        paths += [manifest_path(sid), summary_path(sid), metrics_path(sid), notes_path(sid)]
+    return {str(p.relative_to(REPO)): p for p in paths if p.exists()}
+
+
+def publication_gate(revset: str) -> list[str]:
+    """Errors that make the revisions in `revset` other than what `check` passed: read from git,
+    each must hold exactly the trace files on disk, byte for byte, and no other file where trace
+    files live; and every log a commit among them or their new ancestors points at must have the
+    URL it is published at (or be withdrawn), so a pushed commit never points at a log nobody can
+    fetch. Run after `check`, on the revision that is about to be pushed."""
+    errors, manifests = [], all_manifests()
+    listed = jj("log", "--no-graph", "-r", revset, "-T", 'commit_id ++ "\\n"')
+    if listed.returncode:
+        return [f"cannot tell what the push would publish from revset {revset}: {listed.stderr.strip()}"]
+    targets = listed.stdout.split()
+    checked = checked_files(manifests)
+    scope = [str(TRACES.relative_to(REPO)), str(SESSION_NOTES.relative_to(REPO)),
+             *(str(p.relative_to(REPO)) for p in (INDEX, REVIEWED, ALLOWLIST))]
+    for commit in targets:
+        r = subprocess.run(["git", "-C", str(REPO), "ls-tree", "-r", "-z", commit, "--", *scope],
+                           capture_output=True, timeout=60)
+        perf.count("subprocess git ls-tree")
+        if r.returncode:
+            errors.append(f"commit {commit[:12]}: git cannot list its tree: {r.stderr.decode(errors='replace').strip()}")
+            continue
+        tree = {}
+        for row in filter(None, r.stdout.split(b"\0")):
+            meta, path = row.split(b"\t", 1)
+            mode, kind, oid = meta.decode().split()
+            tree[path.decode()] = (mode, kind, oid)
+        for path in sorted(tree.keys() | checked.keys()):
+            mode, kind, oid = tree.get(path, (None, None, None))
+            if path not in checked:
+                errors.append(f"commit {commit[:12]}: {path} is in the revision but was not checked")
+            elif oid is None:
+                errors.append(f"commit {commit[:12]}: {path} was checked but is not in the revision")
+            elif kind != "blob" or mode not in ("100644", "100755") or oid != git_blob_id(checked[path].read_bytes(), len(oid)):
+                errors.append(f"commit {commit[:12]}: {path} differs from the copy that was checked")
+    if targets:
+        for c in jj_commits(f"::({revset}) ~ ::remote_bookmarks()"):
+            for sid, sha in TRAILER_RE.findall(c["description"]):
+                info = manifests.get(sid, {}).get("logs", {}).get(sha) if sha else None
+                if sha and not (info and (info.get("url") == log_url(sid, sha) or info.get("withdrawn"))):
+                    errors.append(f"change {c['change_id'][:12]}: points at log {sha[:12]} of {sid}, "
+                                  f"which is not uploaded")
+    return errors
 
 
 def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
