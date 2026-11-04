@@ -166,6 +166,11 @@ proof is over the record's invariant. On Crosscut, [126](126-backoff-loop-replac
 refutes a backoff's doubling loop replaced by a shift, on the receiver `Backoff[baseMillis=1, capMillis=1]`, and
 [127](127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md) proves the same rewrite with the shift
 kept short of overflow equal to the loop (`approach.unwind` raises the unwinding bound for the loop's turns).
+A static method that became a method of a record, or took one as a parameter (an "introduce parameter object" refactor), is related to its previous
+version by `previousArguments` over the components, `this.start, this.size, failedIndex`: the record is built in the new version only and the
+previous version gets the components. On Crosscut, [128](128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md) finds a batch
+commit's guard moved into the record's constructor without the part about the failed index, which was never a component, and
+[129](129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md) proves the same refactor with the check kept.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

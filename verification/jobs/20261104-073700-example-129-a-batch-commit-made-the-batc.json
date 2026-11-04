@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-073700-example-129-a-batch-commit-made-the-batc",
+  "title": "Example 129: a batch commit made the batch record's method with the check kept, proved equal on the components",
+  "description": "Runs examples/tools/build.py 129: the same refactor as example 128, the Crosscut batch commit's static function made the method of a record Batch(start, size), with the check on the failed index kept in the method. The regression proof relates the record's method to the static function with --before-arguments 'this.start, this.size, failedIndex' over the record's components. Expected: verified, two properties; the library's inline run took 0.5 s.",
+  "kind": "example",
+  "capabilities": [
+    "regression proof of a static method that became a record's method",
+    "previous version called with expressions over record components",
+    "B9"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs"
+    ],
+    "examples": [
+      "129"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T07:37:00+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components"
+  ]
+}

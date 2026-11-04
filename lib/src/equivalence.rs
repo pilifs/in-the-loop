@@ -32,7 +32,9 @@
 //! A method of a record whose components are primitive is a target too, as is a method taking or returning such a
 //! record: the components are the symbolic inputs, the record is built from them in both versions through its
 //! canonical constructor (an input a constructor rejects is outside the statement), and a record result is
-//! compared component by component ([`harness::Layout`]).
+//! compared component by component ([`harness::Layout`]). A static method that became a method of a record, or
+//! took one as a parameter (the components it took gathered into a record), is related to its previous version
+//! by [`Options::before_arguments`] over the components, `this.component` or `parameter.component`.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -307,24 +309,32 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Err(problem) => return refuse(&mut out, line, format!("in the previous version, {problem}; name the method as it was with --before-target")),
     };
     let before_descriptor = before_method.parsed_descriptor()?;
-    // The previous version's records: the same components, under the previous version's names.
+    // The previous version's records: the same components, under the previous version's names. A static previous
+    // version that took the components themselves (the record introduced since) is called with them by the
+    // expressions of --before-arguments, which name them `this.component` or `parameter.component`.
+    let components_passed = options.before_arguments.is_some();
     let before_receiver = match (&receiver, before_method.is_static()) {
         (None, true) => None,
+        (Some(r), true) if components_passed => Some((r.clone(), None)),
         (Some(r), false) => match record_of(&before_cp, &Type::Object(before_class_internal.clone()))? {
-            Some(b) if b.same_shape(r) => Some((r.clone(), b)),
+            Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
             Some(b) => return refuse(&mut out, line, format!("the receiver's components changed: {} before, {} now; a regression proof of a record's method relates the same components in both versions", b.describe(), r.describe())),
             None => return refuse(&mut out, line, format!("the previous version's class {} is not a record whose components are primitive", before_class_internal.replace('/', "."))),
         },
-        (Some(_), true) => return refuse(&mut out, line, "the previous version is a static method and the new one a method of the record; a regression proof relates two static methods or two methods of a record".into()),
-        (None, false) => return refuse(&mut out, line, "the previous version is a method of the record and the new one a static method; a regression proof relates two static methods or two methods of a record".into()),
+        (Some(r), true) => {
+            let example = r.components.iter().map(|(c, _)| format!("this.{c}")).chain(names.iter().cloned()).collect::<Vec<_>>().join(", ");
+            return refuse(&mut out, line, format!("the previous version is a static method and the new one a method of the record {}; give the previous version's arguments as expressions over the record's components and the parameters with --before-arguments, such as \"{example}\"", r.simple_name()));
+        }
+        (None, false) => return refuse(&mut out, line, "the previous version is a method of the record and the new one a static method; a regression proof relates two static methods, two methods of a record, or a static method that became a method of a record".into()),
     };
     let mut both_records = Vec::new();
     for ((name, t), record) in names.iter().zip(&descriptor.params).zip(&records) {
         both_records.push(match record {
+            Some(r) if components_passed => Some((r.clone(), None)),
             Some(r) => match record_of(&before_cp, t)? {
-                Some(b) if b.same_shape(r) => Some((r.clone(), b)),
+                Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
                 Some(b) => return refuse(&mut out, line, format!("the components of parameter {name} changed: {} before, {} now; a regression proof relates the same components in both versions", b.describe(), r.describe())),
-                None => return refuse(&mut out, line, format!("in the previous version, {} is not a record whose components are primitive", t.java_name())),
+                None => return refuse(&mut out, line, format!("in the previous version, {} is not a record whose components are primitive; give its arguments as expressions over the record's components with --before-arguments", t.java_name())),
             },
             None => None,
         });

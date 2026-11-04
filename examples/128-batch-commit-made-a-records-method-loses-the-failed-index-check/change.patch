@@ -1,0 +1,131 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java
+new file mode 100644
+index 0000000000..ad88a28292
+--- /dev/null
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java
+@@ -0,0 +1,25 @@ public record Batch(long start, int size) {
++package net.terminalvalue.crosscut.kafka;
++
++/**
++ * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,
++ * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a
++ * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and
++ * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last
++ * record that is done.
++ */
++public record Batch(long start, int size) {
++
++    /** No record of the batch failed. */
++    public static final int NONE_FAILED = -1;
++
++    public Batch {
++        if (start < 0 || size <= 0) {
++            throw new IllegalArgumentException("start >= 0 and size > 0 are required");
++        }
++    }
++
++    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */
++    public long offsetToCommit(int failedIndex) {
++        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;
++    }
++}
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java
+deleted file mode 100644
+index 73ff74508c..0000000000
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java
++++ /dev/null
+@@ -1,26 +0,0 @@ public final class BatchCommit {
+-package net.terminalvalue.crosscut.kafka;
+-
+-/**
+- * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}
+- * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and
+- * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last
+- * record that is done.
+- */
+-public final class BatchCommit {
+-
+-    private BatchCommit() {}
+-
+-    /** No record of the batch failed. */
+-    public static final int NONE_FAILED = -1;
+-
+-    /**
+-     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index
+-     * within the batch of the record that failed, or {@link #NONE_FAILED}.
+-     */
+-    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {
+-        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {
+-            throw new IllegalArgumentException("batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required");
+-        }
+-        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;
+-    }
+-}
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
+index b9b10f6ccb..222a40cdca 100644
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/Tests.java
+@@ -23,7 +23,7 @@ public final class Tests {
+             net.terminalvalue.crosscut.ratelimit.RetryAfterTest.class,
+             net.terminalvalue.crosscut.idempotency.IdempotentReceiverTest.class,
+             net.terminalvalue.crosscut.kafka.PartitionerTest.class,
+-            net.terminalvalue.crosscut.kafka.BatchCommitTest.class,
++            net.terminalvalue.crosscut.kafka.BatchTest.class,
+             net.terminalvalue.crosscut.security.JwtTimestampsTest.class,
+             net.terminalvalue.crosscut.cache.ExpiryTest.class);
+ 
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchCommitTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchCommitTest.java
+deleted file mode 100644
+index e133974fd0..0000000000
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchCommitTest.java
++++ /dev/null
+@@ -1,22 +0,0 @@ public final class BatchCommitTest {
+-package net.terminalvalue.crosscut.kafka;
+-
+-import static net.terminalvalue.crosscut.Tests.equal;
+-import static net.terminalvalue.crosscut.Tests.throwsIllegalArgument;
+-
+-public final class BatchCommitTest {
+-
+-    private BatchCommitTest() {}
+-
+-    public static void commitsPastTheWholeBatchWhenEveryRecordIsDone() {
+-        equal(1_010L, BatchCommit.offsetToCommit(1_000, 10, BatchCommit.NONE_FAILED));
+-    }
+-
+-    public static void commitsUpToTheFailedRecord() {
+-        equal(1_003L, BatchCommit.offsetToCommit(1_000, 10, 3));
+-    }
+-
+-    public static void refusesBadArguments() {
+-        throwsIllegalArgument(() -> BatchCommit.offsetToCommit(1_000, 0, BatchCommit.NONE_FAILED));
+-        throwsIllegalArgument(() -> BatchCommit.offsetToCommit(1_000, 10, 10));
+-    }
+-}
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchTest.java
+new file mode 100644
+index 0000000000..0558d17bb7
+--- /dev/null
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/kafka/BatchTest.java
+@@ -0,0 +1,21 @@ public final class BatchTest {
++package net.terminalvalue.crosscut.kafka;
++
++import static net.terminalvalue.crosscut.Tests.equal;
++import static net.terminalvalue.crosscut.Tests.throwsIllegalArgument;
++
++public final class BatchTest {
++
++    private BatchTest() {}
++
++    public static void commitsPastTheWholeBatchWhenEveryRecordIsDone() {
++        equal(1_010L, new Batch(1_000, 10).offsetToCommit(Batch.NONE_FAILED));
++    }
++
++    public static void commitsUpToTheFailedRecord() {
++        equal(1_003L, new Batch(1_000, 10).offsetToCommit(3));
++    }
++
++    public static void refusesAnEmptyBatch() {
++        throwsIllegalArgument(() -> new Batch(1_000, 0));
++    }
++}

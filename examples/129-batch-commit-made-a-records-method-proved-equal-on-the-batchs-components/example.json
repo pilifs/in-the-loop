@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "129",
+  "title": "A batch commit made the batch record's method, proved equal on the batch's components",
+  "summary": "The same refactor as example 128, the batch's start and size gathered into a record `Batch(start, size)` with the commit arithmetic as its method and the guard on the batch in its compact constructor, with the check on the failed index kept in the method, since the index is no component. The regression proof relates the record's method to the static function called with the components and proves them equal on every batch the constructor accepts and every index, in half a second.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "record-components",
+    "signature-change"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+    "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Introduce a parameter object: the batch's start and size become the record `Batch(long start, int size)`, `offsetToCommit(int failedIndex)` its method, and `NONE_FAILED` its constant. The compact constructor refuses a negative start and an empty batch; the method keeps the check that the failed index is `NONE_FAILED` or within the batch, and the arithmetic. The test class is renamed with the kernel, and its four tests pass: the whole batch committed when nothing failed, the commit up to the failed record, an empty batch refused, and an index past the batch refused.",
+    "patch": "change.patch",
+    "previousSymbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+    "previousArguments": "this.start, this.size, failedIndex"
+  },
+  "risk": "None: the record's method agrees with the static function on every batch the constructor accepts and every index. A start or size the constructor rejects was refused by the function too, with the same exception, so a listener that built a `Batch` from what it received sees what it saw.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The regression proof relates the record's method to the static function it replaced with `previousArguments` over the record's components and the method's parameter, `this.start, this.size, failedIndex`: the harness takes the three as symbolic inputs, builds the `Batch` in the new version only, calls the function on the components and the method on the record, and JBMC proves the two outcomes equal over every input the constructor accepts, two properties in 0.5 s. The split of the guard, batch in the constructor and index in the method, is what the proof confirms: on an index outside the batch both versions throw `IllegalArgumentException`, on one inside both commit the same offset.",
+  "resolution": "Nothing to fix. The example is the control for 128: the same refactor with the guard split as the components dictate, which the proof accepts.",
+  "notes": [
+    "The library's run of this shape took 0.5 s with JBMC: three stages, two properties (the assertion and the unwinding assertion of the harness's loops), proved over `this: Batch(start: long, size: int) × failedIndex: int`. The measurement on this kernel is the pipeline's.",
+    "The relation between the versions is the new one of this cycle: a static method that became a method of a record is related to its previous version by `previousArguments` (the tool's `--before-arguments`) over the record's components, `this.start, this.size, failedIndex`, with `previousSymbol` (`--before-target`) naming the function as it was. The harness takes the components and the index as its symbolic inputs, builds a `Batch` from the components in the new version only (there is no record in the previous one), skips an input the constructor rejects, calls the function on the components and the method on the record, and asserts that the two outcomes agree. The generated statement reads `net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components` and `a = before.net.terminalvalue.crosscut.kafka.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_)`. The other direction, a record's method made static, is refused: the previous version's record would have to be built from expressions.",
+    "The patch changes the kernel and its test, with the test class renamed and the test of an index past the batch kept or dropped with the check. The module's property on the static function (example 032, `src/contract/properties.contract`) and its API contract are not in the patch: the property proof (`prove`) takes static methods only, so the property would have to be restated on a static entry point, a limit of the tool noted in `lib/README.md`, and the regression proof is the check this example is about."
+  ],
+  "provenance": "Constructed with example 128 on Crosscut's batch commit kernel (example 032), as the version of the refactor the regression proof accepts.",
+  "references": [
+    {
+      "title": "Spring Kafka: batch listeners and the DefaultErrorHandler, BatchListenerFailedException",
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html"
+    },
+    {
+      "title": "Fowler, Refactoring: Introduce Parameter Object",
+      "url": "https://refactoring.com/catalog/introduceParameterObject.html"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

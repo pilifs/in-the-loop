@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "128",
+  "title": "A batch commit made the batch record's method loses the check on the failed index",
+  "summary": "The offset a batch listener commits after a batch was a static function of the batch's start, its size and the index of the record that failed. The start and the size become a record, `Batch(start, size)`, with the function as its method and the guard on the batch in the record's compact constructor; the part of the guard about the failed index, which is no component, goes with it, and the tests pass. The regression proof, which relates the record's method to the static function called with the components, finds an index past the batch committing past it: records the listener never processed are never read again.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "messaging",
+    "dropped-case",
+    "record-components",
+    "signature-change"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+    "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Introduce a parameter object: the batch's start and size become the record `Batch(long start, int size)`, `offsetToCommit(int failedIndex)` its method, and `NONE_FAILED` its constant, so that a listener holds the batch it received as one value. The guard moves into the record's compact constructor, which refuses a negative start and an empty batch, so that no `Batch` is ever invalid; the method keeps the arithmetic. The test class is renamed with the kernel: the whole batch committed when nothing failed, the commit up to the failed record, and an empty batch refused, all pass.",
+    "patch": "change.patch",
+    "previousSymbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+    "previousArguments": "this.start, this.size, failedIndex"
+  },
+  "risk": "A batch listener with Spring Kafka's `DefaultErrorHandler` commits the offset the kernel returns once a `BatchListenerFailedException` names the record that failed. The index comes from the exception the listener's own code threw, and an index past the batch is a bug there, which the static function refused with an `IllegalArgumentException` that stopped the commit and had the batch redelivered. The record's method commits `start + failedIndex` instead: an offset past the end of the batch, so the records of the batch from the failed one on, and every record between the batch's end and that offset, are never read by this consumer group again, while a negative index below `NONE_FAILED` commits before the batch and has records that are done redelivered. The loss is silent: the consumer's lag drops, nothing is logged, and the tests pass, since the test of an index past the batch went with the check.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "Until this cycle a static method that became a method of a record was refused: the regression proof related two static methods, or two methods of a record of the same components. Now the previous version may be static and called with expressions over the record's components, `this.start, this.size, failedIndex`, so that the statement proved is \"`new Batch(s, n).offsetToCommit(i)` agrees with `offsetToCommit(s, n, i)` on every input the record's constructor accepts\". JBMC finds `Batch[start=15, size=15]` with index 15 in the first stage of the search, shrunk in 19 interpreter runs to `Batch[start=0, size=1]` with index 1: the function throws, the method returns 1, one past the batch's single record. Declaring the intended inputs as `failedIndex >= this.size` finds the other half of the lost guard, an index of -2 committing before the batch. A start the constructor rejects, or a size of zero, is outside the statement, so the proof is over the record's invariant, which is exactly where the moved guard holds and the lost one does not.",
+  "resolution": "Keep the check on the index in the method (example 129), since the index is no component and no constructor can validate it, and keep its test. A guard moved into a constructor covers the components and nothing else; what it said about the other arguments stays where the arguments are.",
+  "notes": [
+    "The library's run of this shape took 0.5 s with JBMC, the witness found in the stage `[0:20]` as `offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)` and shrunk in 19 interpreter runs; with the scope `failedIndex >= this.size`, 0.3 s and 80 runs to `offsetToCommit(this=Batch[start=0, size=1], failedIndex=-2)`. The measurement on this kernel is the pipeline's. The witness is shown as both versions received it, `offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)`, the receiver written as Java prints a record.",
+    "The relation between the versions is the new one of this cycle: a static method that became a method of a record is related to its previous version by `previousArguments` (the tool's `--before-arguments`) over the record's components, `this.start, this.size, failedIndex`, with `previousSymbol` (`--before-target`) naming the function as it was. The harness takes the components and the index as its symbolic inputs, builds a `Batch` from the components in the new version only (there is no record in the previous one), skips an input the constructor rejects, calls the function on the components and the method on the record, and asserts that the two outcomes agree. The generated statement reads `net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components` and `a = before.net.terminalvalue.crosscut.kafka.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_)`. The other direction, a record's method made static, is refused: the previous version's record would have to be built from expressions.",
+    "The patch changes the kernel and its test, with the test class renamed and the test of an index past the batch kept or dropped with the check. The module's property on the static function (example 032, `src/contract/properties.contract`) and its API contract are not in the patch: the property proof (`prove`) takes static methods only, so the property would have to be restated on a static entry point, a limit of the tool noted in `lib/README.md`, and the regression proof is the check this example is about.",
+    "The subject file is the kernel as it is before the change, `BatchCommit.java`, which the patch replaces by `Batch.java`; the subject symbol is the method as the change leaves it, which is what the tool is pointed at, and `change.previousSymbol` the function it was."
+  ],
+  "provenance": "Constructed on Crosscut's batch commit kernel (example 032) to exercise the regression proof's new relation between a static method and the record's method it became. The refactor is Fowler's \"introduce parameter object\", and the slip is the one that comes with moving a guard into a constructor: the part of it about an argument that is no component has nowhere to go, and goes.",
+  "references": [
+    {
+      "title": "Spring Kafka: batch listeners and the DefaultErrorHandler, BatchListenerFailedException",
+      "url": "https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html"
+    },
+    {
+      "title": "Fowler, Refactoring: Introduce Parameter Object",
+      "url": "https://refactoring.com/catalog/introduceParameterObject.html"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

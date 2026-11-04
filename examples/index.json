@@ -4956,9 +4956,9 @@
       "vacuous": false,
       "existingTestsPassed": null,
       "notes": [
-        "The library's run of this shape took 1.9 s with JBMC, the witness found in the stage `[-100000:100000]` as `delayMillis(this=Backoff[baseMillis=62513, capMillis=65792], attempt=-65528)` and shrunk in 120 interpreter runs; with the scope on the attempt count, 1.9 s and 164 runs. The measurement on this kernel is the pipeline's. The unwinding bound is 32 (`approach.unwind`, the tool's `--unwind`): the loop doubles from a base of at least one up to a cap of at most a day, 2^26.4 milliseconds, so at most 27 turns, and the default of 16 would leave an unwinding assertion unproved.",
+        "The library's run of this shape took 1.1 s with JBMC, the witness found in the stage `[-100000:100000]` as `delayMillis(this=Backoff[baseMillis=62513, capMillis=65792], attempt=-65528)` and shrunk in 120 interpreter runs; with the scope on the attempt count, 1.3 s and 164 runs. The measurement on this kernel is the pipeline's. The unwinding bound is 32 (`approach.unwind`, the tool's `--unwind`): the loop doubles from a base of at least one up to a cap of at most a day, 2^26.4 milliseconds, so at most 27 turns, and the default of 16 would leave an unwinding assertion unproved.",
         "The receiver is written as `this=Backoff[baseMillis=1, capMillis=1]`, as Java prints a record, and the domain as `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`. In a scope or relation the components are `baseMillis` or `this.baseMillis`, and a record parameter's are `other.component`. An input that a constructor of either version rejects is skipped, as an input outside the scope is: a base of zero or a cap beyond a day is no `Backoff`, so the proof is over the record's invariant, which is where the loop cannot overflow and the shift can. A method identical in both versions is still proved when the record's constructor changed, since the harness builds the receiver through it.",
-        "`Math.min` is called by both versions, and the proof first takes it as one function in both (example 120); that counterexample does not reproduce once `min` is computed as written, since the two versions call it on different arguments and an uninterpreted function may answer each as it likes, so the tool says so in a `note:` line and proves again with the callee's bytecode. The second run is the one reported.",
+        "`Math.min` is called by both versions, and a callee both versions call unchanged is usually taken as one function in both (example 120); `min` is a comparison of a few instructions, which the tool leaves as written since the first version of this example showed why: as one function its result on the different arguments the two versions pass is unconstrained, the counterexample found that way did not reproduce, and the proof had to be run again with the callee's bytecode, 1.9 s for the two runs against 1.1 s for the one.",
         "The tool's own checker (`--engine native`) does not take this harness: it builds objects, which the checker's integer fragment has no circuits for, and `--engine auto` hands it to JBMC with a note."
       ],
       "source": null
@@ -4996,9 +4996,91 @@
       "vacuous": false,
       "existingTestsPassed": null,
       "notes": [
-        "The library's run of this shape took 6.2 s with JBMC: three stages, three properties (the assertion and the two unwinding assertions), the loop unwound 32 times. The measurement on this kernel is the pipeline's.",
-        "As in example 126, `Math.min` is first taken as one function in both versions, which here gives a counterexample that does not reproduce (the two versions call `min` on different arguments), so the proof is run again with the callee's bytecode; the time above includes both runs.",
+        "The library's run of this shape took 5.9 s with JBMC: three stages, three properties (the assertion and the two unwinding assertions), the loop unwound 32 times. The measurement on this kernel is the pipeline's.",
+        "`Math.min` is called by both versions but is too small to be worth taking as one function in both (see example 126): the proof is one run with the callee's bytecode, where the first version of this example ran twice, 6.2 s, after a counterexample through the shared `min` that did not reproduce.",
         "The constructor's bounds are what make the loop and the closed form equal: without the cap's bound of a day, a cap above 2^62 would let the loop's `delay * 2` overflow where the guarded shift does not, and the proof would find it. The harness skips an input the constructor rejects, so the proof is over the record's invariant and nothing weaker; a change that loosened the constructor would widen the statement, and the harness builds the receiver through the constructor of each version."
+      ],
+      "source": null
+    },
+    {
+      "id": "128",
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check",
+      "title": "A batch commit made the batch record's method loses the check on the failed index",
+      "summary": "The offset a batch listener commits after a batch was a static function of the batch's start, its size and the index of the record that failed. The start and the size become a record, `Batch(start, size)`, with the function as its method and the guard on the batch in the record's compact constructor; the part of the guard about the failed index, which is no component, goes with it, and the tests pass. The regression proof, which relates the record's method to the static function called with the components, finds an index past the batch committing past it: records the listener never processed are never read again.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "record-components",
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's run of this shape took 0.5 s with JBMC, the witness found in the stage `[0:20]` as `offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)` and shrunk in 19 interpreter runs; with the scope `failedIndex >= this.size`, 0.3 s and 80 runs to `offsetToCommit(this=Batch[start=0, size=1], failedIndex=-2)`. The measurement on this kernel is the pipeline's. The witness is shown as both versions received it, `offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)`, the receiver written as Java prints a record.",
+        "The relation between the versions is the new one of this cycle: a static method that became a method of a record is related to its previous version by `previousArguments` (the tool's `--before-arguments`) over the record's components, `this.start, this.size, failedIndex`, with `previousSymbol` (`--before-target`) naming the function as it was. The harness takes the components and the index as its symbolic inputs, builds a `Batch` from the components in the new version only (there is no record in the previous one), skips an input the constructor rejects, calls the function on the components and the method on the record, and asserts that the two outcomes agree. The generated statement reads `net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components` and `a = before.net.terminalvalue.crosscut.kafka.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_)`. The other direction, a record's method made static, is refused: the previous version's record would have to be built from expressions.",
+        "The patch changes the kernel and its test, with the test class renamed and the test of an index past the batch kept or dropped with the check. The module's property on the static function (example 032, `src/contract/properties.contract`) and its API contract are not in the patch: the property proof (`prove`) takes static methods only, so the property would have to be restated on a static entry point, a limit of the tool noted in `lib/README.md`, and the regression proof is the check this example is about.",
+        "The subject file is the kernel as it is before the change, `BatchCommit.java`, which the patch replaces by `Batch.java`; the subject symbol is the method as the change leaves it, which is what the tool is pointed at, and `change.previousSymbol` the function it was."
+      ],
+      "source": null
+    },
+    {
+      "id": "129",
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components",
+      "title": "A batch commit made the batch record's method, proved equal on the batch's components",
+      "summary": "The same refactor as example 128, the batch's start and size gathered into a record `Batch(start, size)` with the commit arithmetic as its method and the guard on the batch in its compact constructor, with the check on the failed index kept in the method, since the index is no component. The regression proof relates the record's method to the static function called with the components and proves them equal on every batch the constructor accepts and every index, in half a second.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "record-components",
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's run of this shape took 0.5 s with JBMC: three stages, two properties (the assertion and the unwinding assertion of the harness's loops), proved over `this: Batch(start: long, size: int) × failedIndex: int`. The measurement on this kernel is the pipeline's.",
+        "The relation between the versions is the new one of this cycle: a static method that became a method of a record is related to its previous version by `previousArguments` (the tool's `--before-arguments`) over the record's components, `this.start, this.size, failedIndex`, with `previousSymbol` (`--before-target`) naming the function as it was. The harness takes the components and the index as its symbolic inputs, builds a `Batch` from the components in the new version only (there is no record in the previous one), skips an input the constructor rejects, calls the function on the components and the method on the record, and asserts that the two outcomes agree. The generated statement reads `net.terminalvalue.crosscut.kafka.Batch this_after; // the previous version takes the components` and `a = before.net.terminalvalue.crosscut.kafka.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_)`. The other direction, a record's method made static, is refused: the previous version's record would have to be built from expressions.",
+        "The patch changes the kernel and its test, with the test class renamed and the test of an index past the batch kept or dropped with the check. The module's property on the static function (example 032, `src/contract/properties.contract`) and its API contract are not in the patch: the property proof (`prove`) takes static methods only, so the property would have to be restated on a static entry point, a limit of the tool noted in `lib/README.md`, and the regression proof is the check this example is about."
       ],
       "source": null
     }

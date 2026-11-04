@@ -435,7 +435,7 @@ fn a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecod
         eprintln!("jbmc not found; skipping");
         return;
     }
-    let before = "package fixtures;\npublic final class Shares {\n    static int twice(int x) { return x + x; }\n    public static long split(long total, int seats, int fee) { return twice(fee); }\n}\n";
+    let before = "package fixtures;\npublic final class Shares {\n    static int twice(int x) { return x * 2; }\n    public static long split(long total, int seats, int fee) { return twice(fee); }\n}\n";
     let after = before.replace("return twice(fee);", "return twice(fee - 1) + 2;");
     let (Some(before), Some(after)) = (compile_shares("twice", before), compile_shares("twice-shifted", &after)) else { return };
     let outcome = shares_run(&before, &after, "shares-fallback");
@@ -443,6 +443,25 @@ fn a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecod
     assert!(outcome.shared.is_empty(), "{}", outcome.output);
     assert!(outcome.output.contains("note: the counterexample found with Shares.twice taken as one function in both versions does not reproduce once computed as written; proving with the callees' bytecode"), "{}", outcome.output);
     assert!(outcome.work.join("jbmc.log").exists(), "the proof over all inputs ran again as written");
+}
+
+/// A callee of a few instructions without a loop, a multiplication, a division or a remainder is computed as
+/// written in both versions: as one function it would give the two versions' calls on different arguments
+/// unrelated results, a counterexample that never reproduces, and a second run.
+#[test]
+fn a_small_callee_is_computed_as_written_rather_than_shared() {
+    if !has("jbmc") {
+        eprintln!("jbmc not found; skipping");
+        return;
+    }
+    let before = "package fixtures;\npublic final class Shares {\n    static int twice(int x) { return x + x; }\n    public static long split(long total, int seats, int fee) { return twice(fee); }\n}\n";
+    let after = before.replace("return twice(fee);", "return twice(fee - 1) + 2;");
+    let (Some(before), Some(after)) = (compile_shares("sum", before), compile_shares("sum-shifted", &after)) else { return };
+    let outcome = shares_run(&before, &after, "shares-small");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert!(outcome.shared.is_empty(), "{}", outcome.output);
+    assert!(!outcome.output.contains("note:"), "{}", outcome.output);
+    assert!(!outcome.work.join("jbmc-shared.log").exists(), "no run with a stub");
 }
 
 /// Needs no JBMC: the two versions' bytecode is compared, and nothing differs.
@@ -1599,6 +1618,103 @@ fn record_run(before: &Path, after: &Path, target: &str, scope: Option<&str>, na
     options.unwind = 32;
     options.unchanged_unless = scope.map(str::to_string);
     equivalence::run(&options).unwrap()
+}
+
+/// A batch commit as a static method over the batch's start and size, before the two were gathered into a record.
+const BATCH_STATIC: &str = r#"package fixtures;
+public final class BatchCommit {
+    private BatchCommit() {}
+    public static final int NONE_FAILED = -1;
+    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {
+        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {
+            throw new IllegalArgumentException("bad batch");
+        }
+        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;
+    }
+}
+"#;
+
+/// The same as the record's method, the guard on the batch moved into the constructor and the one on the index kept.
+const BATCH_RECORD: &str = r#"package fixtures;
+public record Batch(long start, int size) {
+    public static final int NONE_FAILED = -1;
+    public Batch {
+        if (start < 0 || size <= 0) {
+            throw new IllegalArgumentException("bad batch");
+        }
+    }
+    public long offsetToCommit(int failedIndex) {
+        if (failedIndex < NONE_FAILED || failedIndex >= size) {
+            throw new IllegalArgumentException("bad index");
+        }
+        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;
+    }
+}
+"#;
+
+/// The record as a parameter of the static method instead.
+const BATCH_PARAMETER: &str = r#"package fixtures;
+public final class BatchCommit {
+    private BatchCommit() {}
+    public static final int NONE_FAILED = -1;
+    public record Batch(long start, int size) {
+        public Batch {
+            if (start < 0 || size <= 0) {
+                throw new IllegalArgumentException("bad batch");
+            }
+        }
+    }
+    public static long offsetToCommit(Batch batch, int failedIndex) {
+        if (failedIndex < NONE_FAILED || failedIndex >= batch.size()) {
+            throw new IllegalArgumentException("bad index");
+        }
+        return failedIndex == NONE_FAILED ? batch.start() + batch.size() : batch.start() + failedIndex;
+    }
+}
+"#;
+
+/// A static method that became the record's method is related to its previous version by expressions over the
+/// components: the record is built in the new version only, and the previous version gets the components.
+#[test]
+fn a_static_method_that_became_a_records_method_is_related_by_the_components() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_record("batch-static", "BatchCommit", BATCH_STATIC), compile_record("batch-record", "Batch", BATCH_RECORD)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Batch#offsetToCommit", Some("fixtures.BatchCommit#offsetToCommit"), Some("this.start, this.size, failedIndex"), None, None, "batch-related");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("this: Batch(start: long, size: int) × failedIndex: int"));
+    assert!(outcome.output.starts_with("✓ fixtures.Batch#offsetToCommit behaves as the previous fixtures.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input ("), "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("fixtures.Batch this_after; // the previous version takes the components"), "{statement}");
+    assert!(statement.contains("try { a = before.fixtures.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_); }"), "{statement}");
+    // Without the expressions, the tool says what to give.
+    let refused = related_run(&before, &after, "fixtures.Batch#offsetToCommit", Some("fixtures.BatchCommit#offsetToCommit"), None, None, None, "batch-unrelated");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("give the previous version's arguments as expressions over the record's components and the parameters with --before-arguments, such as \"this.start, this.size, failedIndex\""), "{}", refused.output);
+    // The record as a parameter of a static method, the same way.
+    let parameter = compile_record("batch-parameter", "BatchCommit", BATCH_PARAMETER).unwrap();
+    let outcome = related_run(&before, &parameter, "fixtures.BatchCommit#offsetToCommit", None, Some("batch.start, batch.size, failedIndex"), None, None, "batch-parameter");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("batch: Batch(start: long, size: int) × failedIndex: int"));
+}
+
+/// The guard moved into the record's constructor without the part about the failed index, which is no component:
+/// the previous version throws where the new one commits past the batch.
+#[test]
+fn a_check_lost_in_the_move_to_a_record_is_found_on_the_components() {
+    if !has("jbmc") {
+        return;
+    }
+    let unchecked = BATCH_RECORD.replace("        if (failedIndex < NONE_FAILED || failedIndex >= size) {\n            throw new IllegalArgumentException(\"bad index\");\n        }\n", "");
+    assert_ne!(unchecked, BATCH_RECORD);
+    let (Some(before), Some(after)) = (compile_record("batch-static-b", "BatchCommit", BATCH_STATIC), compile_record("batch-unchecked", "Batch", &unchecked)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Batch#offsetToCommit", Some("fixtures.BatchCommit#offsetToCommit"), Some("this.start, this.size, failedIndex"), None, None, "batch-unchecked");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert_eq!(witness.input, "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)", "{}", outcome.output);
+    assert!(witness.before.starts_with("throws IllegalArgumentException"), "{}", outcome.output);
+    assert_eq!(witness.after, "1", "{}", outcome.output);
 }
 
 /// A method of a record whose components are primitive is proved on the components: the harness builds the

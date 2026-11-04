@@ -113,8 +113,9 @@ pub enum Slot {
     /// A primitive or array parameter: its index among the flat parameters.
     Plain(usize),
     /// A record built from the flat parameters from `first` on, one per component: `record` in the new version
-    /// and `before` in the previous one (the same components, under `before/`).
-    Record { name: String, record: RecordType, before: RecordType, first: usize },
+    /// and `before` in the previous one (the same components, under `before/`), or none when the previous version
+    /// takes the components themselves (a static method the components are passed to by expressions).
+    Record { name: String, record: RecordType, before: Option<RecordType>, first: usize },
 }
 
 /// How the target's receiver and arguments are made from the harness's flat parameters, which are the symbolic
@@ -136,9 +137,10 @@ impl Layout {
         Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: None }
     }
 
-    /// Lays out the receiver (new and previous record) and the parameters, of which `records[i]` says which are
-    /// records (new and previous), flattening each record into its components.
-    pub fn new(receiver: Option<(RecordType, RecordType)>, names: &[String], types: &[Type], records: &[Option<(RecordType, RecordType)>], result: Option<(RecordType, RecordType)>) -> Layout {
+    /// Lays out the receiver (new record, and the previous one when the previous version has it) and the
+    /// parameters, of which `records[i]` says which are records (new, and previous when it has one), flattening
+    /// each record into its components.
+    pub fn new(receiver: Option<(RecordType, Option<RecordType>)>, names: &[String], types: &[Type], records: &[Option<(RecordType, Option<RecordType>)>], result: Option<(RecordType, RecordType)>) -> Layout {
         let mut flat: Vec<(String, Type)> = Vec::new();
         let flatten = |flat: &mut Vec<(String, Type)>, name: &str, record: &RecordType| {
             for (c, t) in &record.components {
@@ -188,7 +190,7 @@ impl Layout {
     pub fn before_descriptor(&self, params: &[Type], ret: &Type) -> String {
         let relocated = |t: &Type| match t {
             Type::Object(name) => {
-                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before, .. } if before.class == *name)) || self.result.as_ref().is_some_and(|(_, previous)| previous.class == *name);
+                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name)) || self.result.as_ref().is_some_and(|(_, previous)| previous.class == *name);
                 if known {
                     format!("Lbefore/{name};")
                 } else {
@@ -198,6 +200,11 @@ impl Layout {
             _ => t.descriptor(),
         };
         format!("({}){}", params.iter().map(relocated).collect::<String>(), relocated(ret))
+    }
+
+    /// Whether the previous version is called on a receiver: the new version's receiver has a previous record.
+    pub fn before_receiver(&self) -> bool {
+        matches!(&self.receiver, Some(Slot::Record { before: Some(_), .. }))
     }
 
     /// The receiver and the arguments that are records, the receiver first.
@@ -393,8 +400,9 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
     let records = layout.records();
-    if before.is_some_and(|b| b.arguments.is_some()) && layout.args.iter().any(|s| matches!(s, Slot::Record { .. })) {
-        return Err(Error::new("a record parameter cannot be passed to the previous version by an expression; --before-arguments is for primitive and array parameters"));
+    // A record the previous version has no counterpart of is passed to it as its components, by expressions.
+    if before.is_none_or(|b| b.arguments.is_none()) && records.iter().any(|s| matches!(s, Slot::Record { before: None, .. })) {
+        return Err(Error::new("the previous version takes the record's components; give its arguments as expressions over them with --before-arguments"));
     }
 
     // Locals after the parameters: a copy of each array parameter, then a, ea, b, eb, then the index of the
@@ -500,7 +508,8 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
         for (i, slot) in records.iter().enumerate() {
             let Slot::Record { record, before: previous, first, .. } = slot else { unreachable!("records() returns records") };
             let (new_local, old_local) = object_slots(i);
-            for (owner, local) in [(record.class.clone(), new_local), (format!("before/{}", previous.class), old_local)] {
+            let in_previous = previous.as_ref().map(|p| (format!("before/{}", p.class), old_local));
+            for (owner, local) in std::iter::once((record.class.clone(), new_local)).chain(in_previous) {
                 let class = writer.pool.class(&owner);
                 code.op_u16(0xbb, class); // new
                 code.op(0x59); // dup
@@ -606,7 +615,9 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             let (new_local, old_local) = object_slots(i);
             Some(if on_copies { old_local } else { new_local })
         };
-        if let Some(receiver) = &layout.receiver {
+        // The previous version is called on a receiver only when it has one; a static one gets the components.
+        let on_receiver = if on_copies { layout.before_receiver() } else { layout.receiver.is_some() };
+        if let (Some(receiver), true) = (&layout.receiver, on_receiver) {
             code.load(Kind::Ref, object_of(receiver).expect("the receiver is a record"));
         }
         if on_copies && before_args.is_some() {
@@ -630,7 +641,7 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             }
         }
         let target = if on_copies { writer.pool.method_ref(owner, before_method, &before_descriptor) } else { writer.pool.method_ref(owner, method, &descriptor) };
-        code.op_u16(if layout.receiver.is_some() { 0xb6 } else { 0xb8 }, target); // invokevirtual, invokestatic
+        code.op_u16(if on_receiver { 0xb6 } else { 0xb8 }, target); // invokevirtual, invokestatic
         if !is_void {
             code.store(value_kind, value_slot);
         }
@@ -829,10 +840,16 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     // The previous version's arguments: computed into locals named after its parameters, from the expressions
     // given, with an array parameter's copy where it is passed by name.
     let mut mapping = Vec::new();
+    let records = layout.records();
     let args_before = match before.and_then(|b| b.arguments.as_deref().map(|a| (b, a))) {
         Some((b, text)) => {
             let names: Vec<String> = b.names.iter().map(|n| format!("{n}_")).collect();
             for ((name, t), given) in names.iter().zip(&b.params).zip(split_arguments(text)) {
+                // A record's components are named as the parameters are, `this_component` for `this.component`.
+                let given = records.iter().fold(given, |e, slot| match slot {
+                    Slot::Record { name, .. } => e.replace(&format!("{name}."), &format!("{name}_")),
+                    Slot::Plain(_) => e,
+                });
                 let value = match params.iter().find(|p| p.name == given && is_array(p)) {
                     Some(p) => format!("{}_before", p.name),
                     None => given,
@@ -866,15 +883,22 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     for p in params.iter().filter(|p| is_array(p)) {
         s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
     }
-    let records = layout.records();
     if !records.is_empty() {
         s.push_str("        // The records, from their components, in both versions; an input a constructor rejects is outside the statement.\n");
         for slot in &records {
             let Slot::Record { name, record, before: previous, first } = slot else { continue };
             let components = params[*first..*first + record.components.len()].iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
-            let old = format!("before.{}", previous.java_name());
-            s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
-            s.push_str(&format!("        try {{ {name}_before = new {old}({components}); {name}_after = new {}({components}); }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+            match previous {
+                Some(previous) => {
+                    let old = format!("before.{}", previous.java_name());
+                    s.push_str(&format!("        {old} {name}_before; {} {name}_after;\n", record.java_name()));
+                    s.push_str(&format!("        try {{ {name}_before = new {old}({components}); {name}_after = new {}({components}); }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+                }
+                None => {
+                    s.push_str(&format!("        {} {name}_after; // the previous version takes the components\n", record.java_name()));
+                    s.push_str(&format!("        try {{ {name}_after = new {}({components}); }} catch (Throwable t) {{ return; }}\n", record.java_name()));
+                }
+            }
         }
     }
     if !mapping.is_empty() {
@@ -883,7 +907,8 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     }
     for (side, owner, callee, args) in [("before", format!("before.{before_class}"), before_method, &args_before), ("after", class.clone(), method, &args)] {
         let (var, t) = if side == "before" { ("a", before_ret) } else { ("b", ret) };
-        let owner = if layout.receiver.is_some() { format!("this_{side}") } else { owner };
+        let on_receiver = if side == "before" { layout.before_receiver() } else { layout.receiver.is_some() };
+        let owner = if on_receiver { format!("this_{side}") } else { owner };
         let type_name = |t: &Type| match (&layout.result, t) {
             (Some((record, previous)), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, if side == "before" { previous.java_name() } else { record.java_name() }),
             _ => type_name(t),
@@ -1322,7 +1347,7 @@ mod tests {
         let window = RecordType { class: "net/example/Window".into(), components: vec![("from".into(), Type::Int), ("open".into(), Type::Boolean)] };
         let names = ["attempt".to_string(), "window".to_string()];
         let types = [Type::Int, Type::Object("net/example/Window".into())];
-        let layout = Layout::new(Some((backoff.clone(), backoff.clone())), &names, &types, &[None, Some((window.clone(), window.clone()))], Some((window.clone(), window.clone())));
+        let layout = Layout::new(Some((backoff.clone(), Some(backoff.clone()))), &names, &types, &[None, Some((window.clone(), Some(window.clone())))], Some((window.clone(), window.clone())));
         assert_eq!(layout.params.iter().map(|p| (p.name.as_str(), p.slot)).collect::<Vec<_>>(), vec![("this.baseMillis", 0), ("this.capMillis", 2), ("attempt", 4), ("window.from", 5), ("window.open", 6)]);
         assert_eq!(layout.types(), vec![Type::Long, Type::Long, Type::Int, Type::Int, Type::Boolean]);
         assert_eq!(layout.target_types(), vec![Type::Int, Type::Object("net/example/Window".into())]);
@@ -1357,6 +1382,42 @@ mod tests {
         let plain = Layout::plain(&["a".into(), "b".into()], &[Type::Long, Type::Int]);
         assert_eq!(plain.args, vec![Slot::Plain(0), Slot::Plain(1)]);
         assert!(!plain.has_records());
+    }
+
+    /// A static method that became the record's method: the receiver has no previous record, the previous version
+    /// is called statically with the components, by the expressions given.
+    #[test]
+    fn calls_a_static_previous_version_with_the_records_components() {
+        let batch = RecordType { class: "net/example/Batch".into(), components: vec![("start".into(), Type::Long), ("size".into(), Type::Int)] };
+        let names = ["failedIndex".to_string()];
+        let layout = Layout::new(Some((batch.clone(), None)), &names, &[Type::Int], &[None], None);
+        assert!(!layout.before_receiver());
+        assert_eq!(layout.before_descriptor(&[Type::Long, Type::Int, Type::Int], &Type::Long), "(JII)J");
+        let previous = BeforeMethod {
+            owner: "net/example/BatchCommit".into(),
+            method: "offsetToCommit".into(),
+            descriptor: "(JII)J".into(),
+            params: vec![Type::Long, Type::Int, Type::Int],
+            names: vec!["batchStart".into(), "batchSize".into(), "failedIndex".into()],
+            arguments: Some("this.start, this.size, failedIndex".into()),
+            ret: Type::Long,
+            relation: None,
+        };
+        let harness = generate("net/example/Batch", "offsetToCommit", &layout, &Type::Long, None, 8, Some(&previous)).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(JII)V").expect("check method over the components");
+        let insns = check.code.as_ref().unwrap().instructions().unwrap();
+        use crate::classfile::Insn;
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 2, "the record in the new version, and the AssertionError");
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeVirtual(_))).count(), 1, "the new version on its receiver");
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeStatic(_))).count(), 1, "the previous version with the components");
+        assert!(harness.source.contains("net.example.Batch this_after; // the previous version takes the components"), "{}", harness.source);
+        assert!(harness.source.contains("long batchStart_ = this_start; int batchSize_ = this_size; int failedIndex_ = failedIndex;"), "{}", harness.source);
+        assert!(harness.source.contains("try { a = before.net.example.BatchCommit.offsetToCommit(batchStart_, batchSize_, failedIndex_); }"), "{}", harness.source);
+        assert!(harness.source.contains("try { b = this_after.offsetToCommit(failedIndex); }"), "{}", harness.source);
+        // Without the expressions there is no way to pass the record to a previous version that has none.
+        let same = BeforeMethod { arguments: None, ..previous };
+        assert!(generate("net/example/Batch", "offsetToCommit", &layout, &Type::Long, None, 8, Some(&same)).unwrap_err().to_string().contains("takes the record's components"));
     }
 
     #[test]

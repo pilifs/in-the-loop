@@ -123,9 +123,9 @@ pub fn replay_in(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_in
         match slot {
             Slot::Plain(i) => Ok(flat[*i]),
             Slot::Record { record, before, first, .. } => {
-                let owner = match prefix {
-                    Some(p) => format!("{p}/{}", before.class),
-                    None => record.class.clone(),
+                let owner = match (prefix, before) {
+                    (Some(p), Some(before)) => format!("{p}/{}", before.class),
+                    _ => record.class.clone(),
                 };
                 m.construct(&owner, &record.constructor(), flat[*first..*first + record.components.len()].to_vec())
             }

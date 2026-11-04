@@ -11,7 +11,9 @@
 //! The abstraction is sound for a proof: the stub behaves as every function the callee could be, the callee
 //! itself included, so what holds of the two versions with the stub holds of them as written. It can be too
 //! coarse for a counterexample, which is why one found with it is replayed through the bytecode as written and,
-//! when it does not reproduce, the proof is run again with the callees as written.
+//! when it does not reproduce, the proof is run again with the callees as written. A callee of a few instructions
+//! without a loop, a multiplication, a division or a remainder (`Math.min`, `Math.abs`) is left as written: it costs
+//! the solver less than the rerun a counterexample through its stub usually brings ([`trivial`]).
 //!
 //! The same comparison of the two versions' bytecode settles a prior question: when the target and everything it
 //! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]).
@@ -98,6 +100,9 @@ pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, ta
             continue;
         }
         let Some(closure) = pure_closure(after, callee) else { continue };
+        if trivial(after, &closure) {
+            continue;
+        }
         if !closure.methods.iter().all(|m| !after.is_application(&m.owner) || same_method(before, after, m)) {
             continue;
         }
@@ -340,6 +345,31 @@ fn constant_values(class: &ClassFile) -> Vec<(String, String)> {
 struct Closure {
     methods: Vec<MemberRef>,
     throws: BTreeSet<String>,
+}
+
+/// A closure of at most this many instructions, without a loop, a multiplication, a division or a remainder, is
+/// not worth a stub.
+const TRIVIAL_INSNS: usize = 16;
+
+/// Whether a callee costs the solver less as written than as one function in both versions: `Math.min`,
+/// `Math.abs`, a small comparison or a sum. As one function its result on different arguments in the two versions
+/// is unconstrained, so a counterexample through it rarely reproduces and the proof is run again as written; as
+/// written it is a few constraints.
+fn trivial(cp: &ClassPath, closure: &Closure) -> bool {
+    let mut total = 0;
+    for m in &closure.methods {
+        let Some((_, method)) = cp.find_method(&m.owner, &m.name, &m.descriptor) else { return false };
+        let Some(code) = &method.code else { return false };
+        let Ok(insns) = code.instructions() else { return false };
+        total += insns.len();
+        for (offset, insn) in &insns {
+            let costly = matches!(insn, Insn::Arith(ArithOp::Mul | ArithOp::Div | ArithOp::Rem, _) | Insn::TableSwitch { .. } | Insn::LookupSwitch { .. }) || insn.targets().iter().any(|t| t <= offset);
+            if costly {
+                return false;
+            }
+        }
+    }
+    total <= TRIVIAL_INSNS
 }
 
 /// The closure of `root` when every method in it is a static method over primitives that touches no field, no

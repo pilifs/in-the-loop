@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T07:19:44.489Z",
-  "duration_seconds": 312589,
+  "ended": "2026-11-04T07:37:42.105Z",
+  "duration_seconds": 313667,
   "stats": {
-    "turns": 226,
-    "api_calls": 2422,
-    "tool_calls": 2949,
+    "turns": 230,
+    "api_calls": 2474,
+    "tool_calls": 3000,
     "tool_errors": 55,
-    "compactions": 40,
+    "compactions": 41,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 72342,
-      "output_tokens": 4887665,
-      "cache_read_input_tokens": 425905814,
-      "cache_creation_input_tokens": 10708301
+      "input_tokens": 73916,
+      "output_tokens": 4958073,
+      "cache_read_input_tokens": 431968378,
+      "cache_creation_input_tokens": 10873554
     }
   },
   "tools": {
-    "Bash": 2449,
+    "Bash": 2500,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -790,24 +790,38 @@
     {
       "index": 40,
       "started": "2026-11-04T06:54:12.956Z",
-      "ended": "2026-11-04T07:19:44.489Z",
+      "ended": "2026-11-04T07:20:10.004Z",
       "turns": 4,
-      "api_calls": 76,
+      "api_calls": 77,
       "usage": {
-        "input_tokens": 2282,
-        "output_tokens": 103344,
-        "cache_read_input_tokens": 11799766,
-        "cache_creation_input_tokens": 230961
+        "input_tokens": 2314,
+        "output_tokens": 104268,
+        "cache_read_input_tokens": 12045640,
+        "cache_creation_input_tokens": 232994
       },
-      "peak_context_tokens": 245906
+      "peak_context_tokens": 247939
+    },
+    {
+      "index": 41,
+      "started": "2026-11-04T07:21:41.690Z",
+      "ended": "2026-11-04T07:37:42.105Z",
+      "turns": 4,
+      "api_calls": 51,
+      "usage": {
+        "input_tokens": 1542,
+        "output_tokens": 69484,
+        "cache_read_input_tokens": 5816690,
+        "cache_creation_input_tokens": 163220
+      },
+      "peak_context_tokens": 178165
     }
   ],
   "log": {
-    "sha256": "e6c53ef3fda9be536516ddba6e97d2b94cf405ced19112b2bcb71d6c646f6dff",
-    "bytes": 88425127,
-    "lines": 33832,
-    "gzip_bytes": 15049516,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/e6c53ef3fda9be536516ddba6e97d2b94cf405ced19112b2bcb71d6c646f6dff.jsonl.gz"
+    "sha256": "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188",
+    "bytes": 90192981,
+    "lines": 34555,
+    "gzip_bytes": 15353424,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1258,6 +1272,14 @@
       "summary": "Regression proofs on a record's components: a method of a record, or one taking or returning a record of primitives, is proved with the record built from symbolic components in both versions; examples 126 and 127 on a new backoff kernel (verification pending)",
       "body": "Until now a regression proof took static methods over primitives and arrays, and an instance method or a record parameter was refused. The harness now lays the target out over flat parameters (harness::Layout): a record whose components are all primitive, as the receiver, a parameter or the result, becomes its components, named this.component or parameter.component, which JBMC chooses symbolically. The harness builds the record from them in each version through its canonical constructor, inside handlers for every exception class it tells apart (JBMC matches a handler by the exception's own class, so a catch of Throwable alone does not take a stub IllegalArgumentException), so that an input a constructor of either version rejects is outside the statement and the proof is over the record's invariant; it calls an instance method with invokevirtual on each version's receiver, and compares a record result component by component from the fields of each version's record. The previous version's descriptor is relocated under before/ for the call and the replay, the witness is written as Java prints a record (delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1)), the interpreter replay constructs the records and dispatches on the receiver, and the domain reads this: Backoff(baseMillis: long, capMillis: long) × attempt: int. A scope or relation may name a component as the method does (baseMillis) or as this.baseMillis. A target identical in both versions is verified without a proof only when the records' constructors are identical too. Refused with a reason: a record with a non-primitive component, components that changed between the versions, a static method that became a record's method or the reverse, and a record parameter passed to the previous version by an expression. The tool's own checker has no objects and hands such a harness to JBMC under auto. build.py passes approach.unwind as --unwind, for a loop that needs more than the default sixteen turns.\n\nExamples 126 and 127 are on a new Crosscut kernel, retry.Backoff, a record of a base and a cap whose delayMillis(attempt) doubles the base up to the cap by a loop, with a compact constructor that keeps the base positive and the cap between the base and a day. 126 replaces the loop by Math.min(capMillis, baseMillis << attempt), which the tests pass and the proof refutes: the inline run found delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1), the loop returning 1 and the shift Long.MIN_VALUE, in 1.9 s, and scoped to attempts 0 to 62 the overflow at a base of 32 and 58 attempts. 127 replaces the loop by the shift kept below the base's leading zeros, which the inline run proved equal in 6.2 s with the loop unwound 32 times. Jobs 20261104-071749-example-126-a-backoff-s-doubling-loop-re and 20261104-071749-example-127-a-backoff-s-doubling-loop-re are queued. Verified with 102 unit tests (two new: the layout and harness over a record receiver, argument and result; dotted component names in expressions) and 44 integration tests (four new, through JBMC: a record's method proved on its components, the overflowing shift refuted and proved under a scope naming a component, a record result compared component by component, and a changed constructor keeping an identical method from the no-proof shortcut), clippy with nothing new, the release binary installed, both patches applied and the three Crosscut trees compiled and passing their 45 tests. Docs: lib/README.md (the proof's steps, what is new, limits), examples/approaches.md, examples/README.md, the verify-bytecode reference, the Crosscut README, tags.json (technique record-components), the example schema (approach.unwind).",
       "log_sha256": "e6c53ef3fda9be536516ddba6e97d2b94cf405ced19112b2bcb71d6c646f6dff"
+    },
+    {
+      "change_id": "uzxtpqklwprlxtyyomotuvkpyyuvznop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs relate a static method to the record's method it became, and leave trivial callees as written; examples 128 and 129 on the batch commit kernel (verification pending)",
+      "body": "A static method whose parameters were gathered into a record (Fowler's introduce parameter object) is now related to the record's method, or to a static method taking the record, with --before-arguments over the record's components: the harness builds the record from symbolic components in the new version only and calls the previous version with the components (harness::Slot::Record keeps an optional previous record, Layout::before_receiver chooses invokevirtual or invokestatic per side, the generated source says so), the counterexample is replayed on each side as it received the input, and a target refused for the mismatch now says which arguments to give. The reverse direction, a record's method made static, stays refused with a reason. Shared callees skip a closure of at most sixteen instructions without a loop, multiplication, division or remainder (Math.min, Math.abs): as one function in both versions such a callee only gives counterexamples that do not reproduce and a second solver run, which examples 126 and 127 paid (126 now 1.1 s instead of 1.9 s, 127 5.9 s instead of 6.2 s; their notes updated). Example 120 still shares its two refill helpers.\n\nExamples 128 and 129 on Crosscut's batch commit kernel: the static offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor. In 128 the part of the guard about the failed index, which is no component, is lost with the move and the tests pass; the proof finds offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method committing one past the batch, in 0.5 s. In 129 the check stays in the method and the two are proved equal in 0.5 s. Jobs 20261104-073659-example-128-a-batch-commit-made-the-batc and 20261104-073700-example-129-a-batch-commit-made-the-batc are queued.\n\nVerified with 103 unit tests and 47 integration tests (one unit and three integration tests new, one fallback test's helper made non-trivial so that it is still shared), clippy clean in the changed files, the release binary rebuilt and installed, both patches applied with git apply --check, and the three Crosscut trees compiled with their 45 or 46 tests passing. Documentation: lib/README.md, examples/approaches.md, examples/README.md, the verify-bytecode skill reference and the Crosscut README.",
+      "log_sha256": "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188"
     }
   ],
   "logs": {
@@ -1289,6 +1311,12 @@
       "bytes": 87714673,
       "lines": 33457,
       "gzip_bytes": 14945281,
+      "url": null
+    },
+    "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188": {
+      "bytes": 90192981,
+      "lines": 34555,
+      "gzip_bytes": 15353424,
       "url": null
     },
     "263a67111f522d15004146cb2698d0088cea3a90a3ff891729f43a50a67497d2": {
