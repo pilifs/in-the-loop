@@ -6,12 +6,16 @@ this file's own transcript raises no finding."""
 import gzip
 import io
 import json
+import os
 import random
 import re
 import shutil
+import sys
 import tempfile
+import threading
 import time
 import unittest
+from collections import Counter
 from pathlib import Path
 from unittest import mock
 
@@ -35,6 +39,7 @@ def setUpModule():
         mock.patch.object(sync, name, path).start()
     mock.patch.object(sync, "CHECK_CACHE", state / "check-cache.json").start()
     mock.patch.object(sync, "SYNC_CACHE", state / "sync-cache.json").start()
+    mock.patch.object(sync, "UPLOADS", state / "uploads.json").start()
 
 
 def tearDownModule():
@@ -1139,6 +1144,257 @@ class HookCursor(unittest.TestCase):
                     self.assertEqual(sync.lines_in(line), self.r(sync.decoded(line)).count(b"\n"), line)
 
 
+class Uploads(unittest.TestCase):
+    """cmd_upload, several logs at once against a made-up CDN and wrangler: it uploads and refuses
+    what the serial loop it replaced did, reads check's caches, and keeps a durable record."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        (root / "wrangler.js").write_text("")
+        self.cdn, self.lock = {}, threading.Lock()
+        self.active, self.peak, self.put_log, self.latency = Counter(), Counter(), [], (0.0, 0.0)
+        self.serve_garbage, self.interrupt_at = set(), None
+        self.patches = [mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "traces"),
+                        mock.patch.object(sync, "WRANGLER", root / "wrangler.js"),
+                        mock.patch.object(sync, "Redactor", MadeUpRedactor),
+                        mock.patch.object(sync, "has_jj", return_value=False),
+                        mock.patch.object(sync, "fetch_log", self.fetch),
+                        mock.patch.object(sync, "wrangler_put", self.put)]
+        for p in self.patches:
+            p.start()
+        for f in (sync.SCAN_CACHE, sync.CHECK_CACHE, sync.UPLOADS):
+            f.unlink(missing_ok=True)
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def busy(self, what, seconds):
+        with self.lock:
+            self.active[what] += 1
+            self.peak[what] = max(self.peak[what], self.active[what])
+        time.sleep(seconds)
+        with self.lock:
+            self.active[what] -= 1
+
+    def fetch(self, url):
+        self.busy("read", self.latency[0])
+        if url not in self.cdn:
+            raise OSError("made-up 404")
+        return gzip.decompress(self.cdn[url])
+
+    def put(self, key, path):
+        url = sync.CDN_BASE + key[len(sync.CDN_BUCKET):]
+        if url == self.interrupt_at:
+            raise KeyboardInterrupt
+        self.busy("put", self.latency[1])
+        with self.lock:
+            self.put_log.append(url)
+            self.cdn[url] = gzip.compress(b"garbage\n") if url in self.serve_garbage else path.read_bytes()
+        return sync.subprocess.CompletedProcess([], 0, "", "")
+
+    def fixture(self, logs=4):
+        """Two sessions: clean logs, one with a made-up public IP (a warning), one with a made-up
+        secret (refused), one only on the CDN, one nowhere, one already uploaded, a subagent's."""
+        line = lambda n, text: json.dumps({"type": "user", "n": n, "text": text}) + "\n"
+        body = [line(n, "made-up line %d" % n) for n in range(logs)]
+        clean = [sync.store_log("s1", "".join(body[:n + 1]).encode())["sha256"] for n in range(logs)]
+        warned = sync.store_log("s1", ("".join(body) + line(9, "at " + "203.0." + "113.7")).encode())["sha256"]
+        leaked = sync.store_log("s1", line(10, "key " + SECRET).encode())["sha256"]
+        remote = sync.sha256(line(11, "on the CDN only").encode())
+        self.cdn[sync.log_url("s1", remote)] = gzip.compress(line(11, "on the CDN only").encode())
+        nowhere = sync.sha256(b"never stored\n")
+        done = sync.store_log("s1", line(12, "uploaded before").encode())["sha256"]
+        sub = sync.store_log("s2", line(1, "subagent").encode())["sha256"]
+        commits = [{"change_id": f"c{i}", "log_sha256": sha} for i, sha in enumerate(clean + [warned, leaked, remote, nowhere, done])]
+        sync.save_manifest("s1", {"schema": sync.SCHEMA, "commits": commits, "subagents": [],
+                                  "logs": {c["log_sha256"]: ({"url": "made-up"} if c["log_sha256"] == done else {}) for c in commits}})
+        sync.save_manifest("s2", {"schema": sync.SCHEMA, "commits": [], "subagents": [{"log": {"sha256": sub}}], "logs": {sub: {}}})
+        return {"clean": clean, "warned": warned, "leaked": leaked, "remote": remote, "nowhere": nowhere, "sub": sub, "done": done}
+
+    def reference(self):
+        """The serial loop cmd_upload replaced, with upload_log as it was (d668466)."""
+        failed, redact = 0, MadeUpRedactor()
+        for sid, m in sync.all_manifests().items():
+            wanted = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256")}
+            wanted |= {s["log"]["sha256"] for s in m.get("subagents", [])}
+            logs = m.setdefault("logs", {})
+            for sha in sorted(wanted):
+                if logs.get(sha, {}).get("url"):
+                    continue
+                url = sync.log_url(sid, sha)
+                try:
+                    if not sync.remote_matches(url, sha):
+                        path = sync.log_path(sid, sha)
+                        if not path.exists():
+                            raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
+                        data = gzip.decompress(path.read_bytes()).decode(errors="replace")
+                        if leaks := redact.leaks(data):
+                            raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: unredacted {leaks}")
+                        for warning in redact.review(data):
+                            print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
+                        self.put(f"{sync.CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", path)
+                        if not sync.remote_matches(url, sha):
+                            raise RuntimeError(f"uploaded {url} but the CDN does not serve content with sha256 {sha}")
+                    logs.setdefault(sha, {})["url"] = url
+                    print(f"uploaded {url}")
+                except (OSError, RuntimeError) as e:
+                    print(f"ERROR {e}", file=sys.stderr)
+                    failed += 1
+            sync.save_manifest(sid, m)
+        return 1 if failed else 0
+
+    def run_upload(self, upload, **env):
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.dict("os.environ", env), mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
+            code = upload()
+        return code, sorted(out.getvalue().splitlines()), sorted(err.getvalue().splitlines())
+
+    def outcome(self, upload, **env):
+        code, out, err = self.run_upload(upload, **env)
+        return code, out, err, sync.all_manifests(), dict(self.cdn)
+
+    def test_it_uploads_and_refuses_what_the_serial_loop_did(self):
+        logs = self.fixture()
+        saved, cdn = Path(self.tmp.name) / "saved", dict(self.cdn)
+        shutil.copytree(sync.TRACES, saved)
+        expected = self.outcome(self.reference)
+        self.assertEqual(expected[0], 1)
+        self.assertTrue(any("unredacted ['local-secret']" in e for e in expected[2]))
+        self.assertTrue(any("neither stored locally nor on the CDN" in e for e in expected[2]))
+        self.assertTrue(any(line.startswith("warn  s1/" + logs["warned"][:12]) for line in expected[1]))
+        for jobs, puts in (("1", "1"), ("4", "1"), ("4", "3"), ("16", "16")):
+            shutil.rmtree(sync.TRACES)
+            shutil.copytree(saved, sync.TRACES)
+            self.cdn = dict(cdn)
+            for f in (sync.SCAN_CACHE, sync.CHECK_CACHE, sync.UPLOADS):
+                f.unlink(missing_ok=True)
+            self.assertEqual(self.outcome(sync.cmd_upload, LLM_TRACES_UPLOAD_JOBS=jobs, LLM_TRACES_PUT_JOBS=puts),
+                             expected, (jobs, puts))
+
+    def test_reads_overlap_and_puts_stay_within_their_limit(self):
+        self.fixture(logs=8)
+        self.latency = (0.02, 0.05)
+        self.run_upload(sync.cmd_upload, LLM_TRACES_UPLOAD_JOBS="4", LLM_TRACES_PUT_JOBS="2")
+        self.assertEqual(self.peak["put"], 2)
+        self.assertGreater(self.peak["read"], 1)
+        self.assertLessEqual(self.peak["read"] + self.peak["put"], 4 + 2)
+
+    def test_a_log_check_scanned_is_not_scanned_again(self):
+        logs = self.fixture()
+        r, scans, checks = MadeUpRedactor(), None, None
+        scans, checks = sync.ScanCache(r), sync.CheckCache(r)
+        for sid, sha in [("s1", sha) for sha in logs["clean"] + [logs["warned"], logs["leaked"]]] + [("s2", logs["sub"])]:
+            actual, size, data, gz = checks.snapshot(sync.log_path(sid, sha))  # what check reads and scans
+            scans.hits(sid, actual, data, size)
+        scans.save()
+        checks.save()
+        scanned = mock.Mock(side_effect=AssertionError("scanned again"))
+        with mock.patch.object(MadeUpRedactor, "raw_hits", scanned), \
+                mock.patch.object(sync, "decompress", side_effect=AssertionError("decompressed again")):
+            code, out, err = self.run_upload(lambda: sync.cmd_upload())
+        self.assertEqual(code, 1)  # the secret and the missing log, from the caches
+        self.assertTrue(any("unredacted ['local-secret']" in e for e in err))
+        self.assertTrue(any(line.startswith("warn  s1/" + logs["warned"][:12]) for line in out))
+        self.assertEqual(sync.load_manifest("s2")["logs"][logs["sub"]]["url"], sync.log_url("s2", logs["sub"]))
+        self.assertNotIn("url", sync.load_manifest("s1")["logs"][logs["leaked"]])
+        for full, scans_expected in (("", 0), ("1", 7)):  # the same uploads again, from the caches, then without
+            self.cdn.clear()
+            for sid in ("s1", "s2"):
+                m = sync.load_manifest(sid)
+                sync.save_manifest(sid, {**m, "logs": {sha: i if sha == logs["done"] else {} for sha, i in m["logs"].items()}})
+            scanned = mock.Mock(wraps=MadeUpRedactor().raw_hits)
+            with mock.patch.object(MadeUpRedactor, "raw_hits", lambda self, text: scanned(text)):
+                self.run_upload(sync.cmd_upload, LLM_TRACES_FULL=full)
+            self.assertEqual(scanned.call_count, scans_expected, full)
+
+    def test_a_log_whose_bytes_do_not_match_its_name_is_not_put(self):
+        logs = self.fixture()
+        sha = logs["clean"][0]
+        gz = sync.log_path("s1", sha)
+        gz.write_bytes(gzip.compress(b'{"type": "user", "text": "something else"}\n'))
+        code, out, err = self.run_upload(sync.cmd_upload)
+        self.assertTrue(any(f"log {sha[:12]} of s1: its content does not match its name" in e for e in err))
+        self.assertNotIn(sync.log_url("s1", sha), self.put_log)
+        self.assertNotIn("url", sync.load_manifest("s1")["logs"][sha])
+
+    def test_the_record_tells_attempted_from_verified(self):
+        logs = self.fixture()
+        record = sync.UploadRecord()
+        bad = sync.log_url("s1", logs["clean"][1])
+        self.serve_garbage.add(bad)
+        self.run_upload(sync.cmd_upload)
+        record = sync.UploadRecord()
+        self.assertEqual(record.state("s1", logs["clean"][1]), "attempted")  # put, never served
+        self.assertEqual(record.state("s1", logs["clean"][0]), "verified")
+        self.assertEqual(record.state("s1", logs["remote"]), "verified")  # found there
+        self.assertIsNone(record.state("s1", logs["leaked"]))  # never attempted
+        self.assertNotIn("url", sync.load_manifest("s1")["logs"][logs["clean"][1]])
+        self.assertEqual(sync.UPLOADS.stat().st_mode & 0o777, 0o600)
+        self.serve_garbage.clear()
+        code, out, err = self.run_upload(sync.cmd_upload)
+        self.assertIn(f"1 log(s) an earlier push started to upload are looked for on the CDN first: s1/{logs['clean'][1][:12]}", out)
+        self.assertEqual(sync.UploadRecord().state("s1", logs["clean"][1]), "verified")
+        self.assertEqual(sync.load_manifest("s1")["logs"][logs["clean"][1]]["url"], bad)
+        record = sync.UploadRecord()
+        record.mark("s1", logs["clean"][1], None)
+        self.assertIsNone(sync.UploadRecord().state("s1", logs["clean"][1]))
+
+    def test_an_interrupted_push_keeps_the_urls_it_verified(self):
+        logs = self.fixture()
+        order = sorted(logs["clean"] + [logs["warned"]])  # one at a time, in this order
+        before, stopped = order[:-2], order[-2]
+        self.interrupt_at = sync.log_url("s1", stopped)
+        with self.assertRaises(KeyboardInterrupt):
+            self.run_upload(sync.cmd_upload, LLM_TRACES_UPLOAD_JOBS="1")
+        m = sync.load_manifest("s1")
+        for sha in before:
+            self.assertEqual(m["logs"][sha]["url"], sync.log_url("s1", sha))
+        self.assertNotIn("url", m["logs"][stopped])
+        self.assertEqual(sync.UploadRecord().state("s1", stopped), "attempted")
+        for state in sync.UploadRecord().entries.values():
+            self.assertIn(state["state"], ("attempted", "verified"))
+        verified = [k for k, v in sync.UploadRecord().entries.items() if v["state"] == "verified"]
+        for key in verified:
+            sid, sha = key.split("/")
+            self.assertEqual(sync.load_manifest(sid)["logs"][sha].get("url"), sync.log_url(sid, sha))
+        self.assertLessEqual(len(self.put_log), len(before) + 1)  # at most the one running when it stopped
+
+
+class AtomicWrites(unittest.TestCase):
+    def test_a_write_replaces_whole_and_leaves_nothing_behind(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "sub" / "file.json"
+            sync.atomic_write(path, "made-up é\n")
+            self.assertEqual(path.read_bytes(), "made-up é\n".encode())
+            reference = Path(d) / "reference.json"
+            reference.write_text("made-up é\n")
+            self.assertEqual(path.stat().st_mode, reference.stat().st_mode)
+            sync.atomic_write(path, b"\x00\xff", private=True)
+            self.assertEqual(path.read_bytes(), b"\x00\xff")
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+            with mock.patch("builtins.open", side_effect=OSError("made-up full disk")):
+                with self.assertRaises(OSError):
+                    sync.atomic_write(path, "lost")
+            self.assertEqual(path.read_bytes(), b"\x00\xff")
+            self.assertEqual(sorted(p.name for p in path.parent.iterdir()), ["file.json"])
+
+    def test_writers_in_threads_never_share_a_temporary_file(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "shared.json"
+            texts = [json.dumps({"writer": n, "pad": "x" * 50000}) for n in range(16)]
+            threads = [threading.Thread(target=lambda t=t: [sync.atomic_write(path, t) for _ in range(20)]) for t in texts]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+            self.assertIn(path.read_text(), texts)
+            self.assertEqual(os.listdir(d), ["shared.json"])
+
+
 class Perf(unittest.TestCase):
     def test_phases_nest_and_records_are_kept(self):
         perf = sync.Perf()
@@ -1157,6 +1413,27 @@ class Perf(unittest.TestCase):
             with mock.patch("sys.stdout", out):
                 sync.cmd_perf(["1", "demo"])
         self.assertIn("outer/inner", out.getvalue())
+
+    def test_threads_count_and_nest_on_their_own(self):
+        perf = sync.Perf()
+
+        def work(n):
+            with perf.phase("worker"):
+                for _ in range(1000):
+                    perf.count("things")
+                with perf.phase("step %d" % (n % 2)):
+                    time.sleep(0.01)
+
+        with perf.phase("main"):
+            threads = [threading.Thread(target=work, args=(n,)) for n in range(8)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+        record = perf.record("demo")
+        self.assertEqual(record["counters"], {"things": 8000})
+        self.assertEqual(set(record["phases"]), {"main", "worker", "worker/step 0", "worker/step 1"})
+        self.assertEqual(record["phases"]["worker"]["calls"], 8)
 
 
 if __name__ == "__main__":

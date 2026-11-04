@@ -93,12 +93,14 @@ import socket
 import string
 import subprocess
 import sys
+import threading
 import time
 import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -166,6 +168,9 @@ CDN_BUCKET = "llm-traces"
 CDN_DIR = CHANGES / "infra" / "cdn"
 NODE = shutil.which("node") or str(Path.home() / ".local" / "bin" / "node")
 WRANGLER = CDN_DIR / "node_modules" / "wrangler" / "bin" / "wrangler.js"  # pinned in llm-dlc/infra/cdn/package.json
+UPLOADS = STATE / "uploads.json"  # the upload record (UploadRecord)
+UPLOAD_JOBS = 4                # logs a push handles at once (LLM_TRACES_UPLOAD_JOBS)
+PUT_JOBS = 1                   # of them, wrangler puts at once (LLM_TRACES_PUT_JOBS); see upload_jobs
 PERF_LOG = STATE / "perf.jsonl"  # one record per command: where its time went (`sync.py perf`)
 PERF_LOG_LINES = 2000          # kept when the file is trimmed
 # Snapshots are named by their uncompressed content, so the level changes only the .gz bytes of
@@ -184,31 +189,37 @@ class Perf:
     """Where one command's time goes: wall time, its own CPU time and its subprocesses', per phase
     (nested phases are named by path, a/b), and counters of bytes, cache hits, subprocesses and
     network requests. Every command appends one record to PERF_LOG; LLM_TRACES_PERF=1 prints it
-    too. Holds names and numbers only, no paths or content."""
+    too. Holds names and numbers only, no paths or content. Threads may count and time phases:
+    each has its own nesting, and CPU time is the process's, so phases that overlap in time
+    share it."""
 
     def __init__(self) -> None:
         self.wall, self.cpu, self.child = time.perf_counter(), time.process_time(), _child_cpu()
         self.phases: dict[str, list[float]] = {}  # path -> [calls, wall, cpu, child cpu]
         self.counters: Counter = Counter()
-        self._stack: list[str] = []
+        self._local = threading.local()  # .stack: the phases this thread is in
+        self._lock = threading.Lock()
 
     @contextlib.contextmanager
     def phase(self, name: str):
-        self._stack.append(name)
-        path = "/".join(self._stack)
+        stack = self._local.__dict__.setdefault("stack", [])
+        stack.append(name)
+        path = "/".join(stack)
         wall, cpu, child = time.perf_counter(), time.process_time(), _child_cpu()
         try:
             yield
         finally:
-            self._stack.pop()
-            row = self.phases.setdefault(path, [0, 0.0, 0.0, 0.0])
-            row[0] += 1
-            row[1] += time.perf_counter() - wall
-            row[2] += time.process_time() - cpu
-            row[3] += _child_cpu() - child
+            stack.pop()
+            with self._lock:
+                row = self.phases.setdefault(path, [0, 0.0, 0.0, 0.0])
+                row[0] += 1
+                row[1] += time.perf_counter() - wall
+                row[2] += time.process_time() - cpu
+                row[3] += _child_cpu() - child
 
     def count(self, key: str, n: float = 1) -> None:
-        self.counters[key] += n
+        with self._lock:
+            self.counters[key] += n
 
     def record(self, command: str) -> dict:
         r3 = lambda x: round(x, 3)
@@ -242,9 +253,7 @@ def save_perf(command: str) -> dict:
             f.write(json.dumps(record) + "\n")
         if PERF_LOG.stat().st_size > 4 * 1024 * 1024:
             kept = PERF_LOG.read_text().splitlines()[-PERF_LOG_LINES:]
-            tmp = PERF_LOG.with_suffix(f".{os.getpid()}.tmp")
-            tmp.write_text("\n".join(kept) + "\n")
-            tmp.replace(PERF_LOG)
+            atomic_write(PERF_LOG, "\n".join(kept) + "\n")
     except OSError:
         pass  # measurements only
     if os.environ.get("LLM_TRACES_PERF"):
@@ -580,11 +589,9 @@ def store_log(sid: str, data: bytes) -> dict:
         sha = hashlib.sha256(data).hexdigest()
         path = log_path(sid, sha)
         if not path.exists():
-            path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = path.with_suffix(f".{os.getpid()}.tmp")
             with perf.phase("compress"):
-                tmp.write_bytes(gzip.compress(data, compresslevel=GZIP_LEVEL, mtime=0))  # mtime=0: same input, same .gz bytes
-            tmp.replace(path)
+                gz = gzip.compress(data, compresslevel=GZIP_LEVEL, mtime=0)  # mtime=0: same input, same .gz bytes
+            atomic_write(path, gz)
             perf.count("log snapshots written")
             perf.count("log bytes compressed", len(data))
         return {"sha256": sha, "bytes": len(data), "lines": data.count(b"\n"), "gzip_bytes": path.stat().st_size,
@@ -608,6 +615,23 @@ def load_log(sid: str, sha: str) -> bytes | None:
     return data
 
 
+def atomic_write(path: Path, data: str | bytes, private: bool = False) -> None:
+    """Replace path with data in one step, as write_text or write_bytes would write it: into a
+    temporary file of its own beside path, created exclusively under a name with this process,
+    thread and a random part (two writers never share one, and none is left by a failed write),
+    then renamed over path. private: readable by its owner only, from the first byte."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.{threading.get_ident()}.{os.urandom(4).hex()}.tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600 if private else 0o666)
+    try:
+        with open(fd, "w" if isinstance(data, str) else "wb") as f:
+            f.write(data)
+        os.replace(tmp, path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+
+
 def write_if_changed(path: Path, text: str) -> bool:
     """Write a generated file only when its content differs, atomically. Whether it was written."""
     try:
@@ -616,10 +640,7 @@ def write_if_changed(path: Path, text: str) -> bool:
             return False
     except OSError:
         pass
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    tmp.write_text(text)
-    tmp.replace(path)
+    atomic_write(path, text)
     perf.count("generated files written")
     return True
 
@@ -669,14 +690,10 @@ class LocalCache:
             return
         entries = self.entries if keep is None else {k: v for k, v in self.entries.items() if k in keep}
         text = json.dumps({"fingerprint": self.fingerprint, "entries": entries})
-        tmp = self.path.with_name(f".{self.path.name}.{os.getpid()}.tmp")
         try:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            tmp.touch(mode=0o600)
-            tmp.write_text(text)
-            tmp.replace(self.path)
+            atomic_write(self.path, text, private=True)
         except OSError:
-            tmp.unlink(missing_ok=True)  # a cache: the work is done again next time
+            pass  # a cache: the work is done again next time
 
 
 def decoded(raw: bytes) -> str:
@@ -733,7 +750,8 @@ class ScanCache(LocalCache):
     append-only, and the scan is line by line, so the findings of the whole are those of the
     prefix plus those of the rest."""
 
-    def __init__(self, redact: Redactor, path: Path | None = SCAN_CACHE, trusted: bool = True) -> None:
+    def __init__(self, redact: Redactor, path: Path | None = ..., trusted: bool = True) -> None:
+        path = SCAN_CACHE if path is ... else path  # read now, not at import: tests point it elsewhere
         super().__init__(path, redact.fingerprint(), trusted)
         self.redact, self.used = redact, set()
         self.values: dict[str, tuple[str, str]] = {}  # finding id -> (kind, value), of what this run scanned
@@ -791,7 +809,8 @@ class CheckCache(LocalCache):
     - "metrics:<sha of the inputs>": whether a metrics.json is what its log, subagent logs,
       manifest and price list give. The fingerprint adds metrics.py to the redactor's."""
 
-    def __init__(self, redact: Redactor, path: Path | None = CHECK_CACHE, trusted: bool = True) -> None:
+    def __init__(self, redact: Redactor, path: Path | None = ..., trusted: bool = True) -> None:
+        path = CHECK_CACHE if path is ... else path  # read now, not at import: tests point it elsewhere
         fingerprint = sha256(redact.fingerprint().encode() + b"\0" + Path(metrics.__file__).read_bytes())
         super().__init__(path, fingerprint, trusted)
         self.used: set[str] = set()
@@ -1569,11 +1588,7 @@ def langfuse_state(sid: str) -> dict:
 
 
 def save_langfuse_state(sid: str, state: dict) -> None:
-    STATE.mkdir(parents=True, exist_ok=True)
-    path = STATE / f"{sid}.json"
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    tmp.write_text(json.dumps(state))
-    tmp.replace(path)
+    atomic_write(STATE / f"{sid}.json", json.dumps(state))
 
 
 def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool, first_turn: int = 1) -> int:
@@ -1625,56 +1640,164 @@ def remote_matches(url: str, sha: str) -> bool:
         return False
 
 
-def upload_log(sid: str, sha: str, redact: Redactor) -> str:
-    """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns those bytes.
-    The log is scanned first: nothing the current redactor would change may go public."""
-    url = log_url(sid, sha)
-    if remote_matches(url, sha):
-        return url
-    path = log_path(sid, sha)
-    if not path.exists():
-        raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
-    data = gzip.decompress(path.read_bytes()).decode(errors="replace")
-    if leaks := redact.leaks(data):
-        raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: unredacted {leaks}")
-    for warning in redact.review(data):
-        print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
-    key = f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz"
-    if not WRANGLER.exists():
-        raise FileNotFoundError("wrangler is not installed; run: python3 llm-dlc/tools/sync.py init")
+class UploadRecord:
+    """The durable upload record, on this machine only: for each log ("SESSION/SHA256") a push
+    started to upload, "attempted" (written before wrangler starts: the object may be in R2) or
+    "verified" (the CDN served the log's content afterwards), with the time. A log not in it was
+    never attempted from here. Written through on every change, atomically, so an interrupted push
+    leaves it accurate. It tells the cases apart for a person and for the next push, which says
+    which logs an interrupted one may have uploaded; what is uploaded is still decided by the
+    manifests and the CDN, which also cover uploads from other machines."""
+
+    def __init__(self, path: Path | None = None) -> None:
+        self.path, self.lock = path or UPLOADS, threading.Lock()
+        try:
+            entries = json.loads(self.path.read_text())
+            self.entries = entries if isinstance(entries, dict) else {}
+        except (OSError, ValueError):
+            self.entries = {}
+
+    def state(self, sid: str, sha: str) -> str | None:
+        return (self.entries.get(f"{sid}/{sha}") or {}).get("state")
+
+    def mark(self, sid: str, sha: str, state: str | None) -> None:
+        """Record a log's new state (None: forget it, as after `unpublish`), durably, before returning."""
+        with self.lock:
+            key = f"{sid}/{sha}"
+            if state is None and key not in self.entries:
+                return
+            if state is None:
+                del self.entries[key]
+            else:
+                self.entries[key] = {"state": state, "at": datetime.now().isoformat(timespec="seconds")}
+            atomic_write(self.path, json.dumps(self.entries, indent=1, sort_keys=True) + "\n", private=True)
+
+
+def upload_jobs() -> tuple[int, int]:
+    """(logs handled at once, wrangler puts at once). Logs overlap their CDN reads with each other
+    and with the puts. Puts run one at a time unless LLM_TRACES_PUT_JOBS says otherwise: every
+    wrangler process uses the one OAuth login, and whether several that refresh it at once keep it
+    valid is untested. An R2 API token for an S3 client would remove the question."""
+    def number(name: str, default: int) -> int:
+        try:
+            return max(1, int(os.environ.get(name, default)))
+        except ValueError:
+            return default
+    return number("LLM_TRACES_UPLOAD_JOBS", UPLOAD_JOBS), number("LLM_TRACES_PUT_JOBS", PUT_JOBS)
+
+
+def wrangler_put(key: str, path: Path) -> subprocess.CompletedProcess:
     perf.count("subprocess wrangler r2 put")
-    r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "put", key, "--remote",
-                        "--file", str(path), "--content-type", "application/gzip"],
-                       cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
-                       env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
-    if r.returncode != 0:
-        raise RuntimeError(f"wrangler r2 object put failed:\n{r.stdout}{r.stderr}")
-    if not remote_matches(url, sha):
-        raise RuntimeError(f"uploaded {url} but the CDN does not serve content with sha256 {sha}")
-    return url
+    return subprocess.run([NODE, str(WRANGLER), "r2", "object", "put", key, "--remote",
+                           "--file", str(path), "--content-type", "application/gzip"],
+                          cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
+                          env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
 
 
-def cmd_upload(include_at: bool = False) -> int:
-    """Upload every log a commit points at (and subagent logs), then record the URLs."""
+class Uploader:
+    """Puts logs in R2, several at once (upload_jobs). Each log is first looked for on the CDN; one
+    not served there is verified against its name and scanned, then put, then read back through the
+    CDN. Verifying and scanning take turns (the redactor and caches are not shared between
+    threads) and read the caches `check` keeps: by the stored .gz bytes, then by content, so a
+    log is scanned again only if check has not scanned exactly that content under these rules.
+    With LLM_TRACES_FULL=1 nothing is taken from them."""
+
+    def __init__(self, redact: Redactor, scans: ScanCache | None = None, checks: CheckCache | None = None,
+                 record: UploadRecord | None = None, puts: int = 1) -> None:
+        self.redact = redact
+        self.scans = scans or ScanCache(redact, path=None)
+        self.checks = checks or CheckCache(redact, path=None)
+        self.record = record or UploadRecord()
+        self.cpu, self.puts = threading.Lock(), threading.Semaphore(puts)
+
+    def __call__(self, sid: str, sha: str) -> str:
+        """Put one log in R2 (unless the CDN already serves it) and prove the CDN returns its bytes.
+        Nothing the current redactor would change may go public."""
+        url = log_url(sid, sha)
+        if remote_matches(url, sha):
+            self.record.mark(sid, sha, "verified")
+            return url
+        path = log_path(sid, sha)
+        with self.cpu:
+            stored = self.checks.snapshot(path)
+            if stored is None:
+                raise FileNotFoundError(f"log {sha[:12]} of {sid} is neither stored locally nor on the CDN")
+            actual, size, data, gz = stored
+            if actual != sha:
+                raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: its content does not match its name")
+            found = self.scans.hits(sid, actual, data if data is not None else (lambda gz=gz: decompress(gz)), size)
+            del data, gz
+            if leaks := self.redact.cached_leaks(found):
+                raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: unredacted {leaks}")
+            for warning in self.redact.cached_review(found):
+                print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
+        if not WRANGLER.exists():
+            raise FileNotFoundError("wrangler is not installed; run: python3 llm-dlc/tools/sync.py init")
+        with self.puts:
+            self.record.mark(sid, sha, "attempted")
+            r = wrangler_put(f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", path)
+        if r.returncode != 0:
+            raise RuntimeError(f"wrangler r2 object put failed:\n{r.stdout}{r.stderr}")
+        if not remote_matches(url, sha):
+            raise RuntimeError(f"uploaded {url} but the CDN does not serve content with sha256 {sha}")
+        self.record.mark(sid, sha, "verified")
+        return url
+
+
+def upload_log(sid: str, sha: str, redact: Redactor) -> str:
+    """One log, as cmd_upload would put it, without its caches."""
+    return Uploader(redact)(sid, sha)
+
+
+def cmd_upload(include_at: bool = False, full: bool = False) -> int:
+    """Upload every log a commit points at (and subagent logs), then record the URLs: each in its
+    manifest as soon as the CDN serves it, so an interrupted push keeps what it verified."""
     failed, redact = 0, Redactor()
+    full = full or full_audit([])
     # @'s log can still be replaced; upload it only when @ is about to be frozen (include_at).
     at = jj_commits("@")[0]["change_id"] if has_jj() and not include_at else None
-    for sid, m in all_manifests().items():
+    manifests, todo = all_manifests(), []
+    for sid, m in manifests.items():
         if m.get("schema") != SCHEMA:
             continue
         wanted = {c["log_sha256"] for c in m.get("commits", []) if c.get("log_sha256") and c["change_id"] != at}
         wanted |= {s["log"]["sha256"] for s in m.get("subagents", [])}
         logs = m.setdefault("logs", {})
-        for sha in sorted(wanted):
-            if logs.get(sha, {}).get("url"):
-                continue
-            try:
-                logs.setdefault(sha, {})["url"] = upload_log(sid, sha, redact)
-                print(f"uploaded {logs[sha]['url']}")
-            except (OSError, RuntimeError) as e:
-                print(f"ERROR {e}", file=sys.stderr)
-                failed += 1
-        save_manifest(sid, m)
+        todo += [(sid, sha) for sha in sorted(wanted) if not logs.get(sha, {}).get("url")]
+    record = UploadRecord()
+    if interrupted := [f"{sid[:8]}/{sha[:12]}" for sid, sha in todo if record.state(sid, sha)]:
+        print(f"{len(interrupted)} log(s) an earlier push started to upload are looked for on the CDN first: "
+              + ", ".join(interrupted))
+    jobs, puts = upload_jobs()
+    uploader = Uploader(redact, ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full), record, puts)
+    def served(sid: str, sha: str, url: str) -> None:
+        manifests[sid]["logs"].setdefault(sha, {})["url"] = url
+        save_manifest(sid, manifests[sid])
+        perf.count("logs uploaded or found on the CDN")
+        print(f"uploaded {url}")
+
+    with perf.phase("upload"):
+        pool = ThreadPoolExecutor(max_workers=jobs)
+        running = {pool.submit(uploader, sid, sha): (sid, sha) for sid, sha in todo}
+        try:
+            for done in as_completed(running):
+                sid, sha = running.pop(done)
+                try:
+                    url = done.result()
+                except (OSError, RuntimeError) as e:
+                    print(f"ERROR {e}", file=sys.stderr)
+                    failed += 1
+                    continue
+                served(sid, sha, url)
+        finally:  # left early by an exception (Ctrl-C): start nothing new, keep what the CDN serves
+            pool.shutdown(wait=True, cancel_futures=True)
+            for done, (sid, sha) in running.items():
+                if not done.cancelled() and done.exception() is None:
+                    served(sid, sha, done.result())
+    save_previewed(uploader.scans, uploader.checks)  # adds to what check keeps; drops nothing
+    for sid, m in manifests.items():
+        if m.get("schema") == SCHEMA:
+            save_manifest(sid, m)
     return 1 if failed else 0
 
 
@@ -1729,6 +1852,7 @@ def cmd_unpublish(args: list[str]) -> int:
     except (OSError, RuntimeError) as e:
         print(f"ERROR deleted from R2 but not purged: {e}", file=sys.stderr)
         return 1
+    UploadRecord().mark(sid, sha, None)
     m = load_manifest(sid)
     entry = m.setdefault("logs", {}).setdefault(sha, {})
     entry.pop("url", None)
@@ -2167,11 +2291,7 @@ def remember_findings(found: dict[str, dict]) -> None:
         cache[fid] = {"level": f["level"], "kind": f["kind"], "value": f["value"], "count": f["count"],
                       "where": sorted(f["where"])}
     try:
-        STATE.mkdir(parents=True, exist_ok=True)
-        tmp = FINDINGS_CACHE.with_suffix(".tmp")
-        tmp.touch(mode=0o600)
-        tmp.write_text(json.dumps(cache, ensure_ascii=False))
-        tmp.replace(FINDINGS_CACHE)
+        atomic_write(FINDINGS_CACHE, json.dumps(cache, ensure_ascii=False), private=True)
     except OSError:
         pass  # a cache: the next propose or approve scans instead
 
