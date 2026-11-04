@@ -105,7 +105,7 @@ Keep the mask, with a comment saying why it is not `floorMod` either: a partitio
 
 ## Evidence
 
-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1 s as partitionFor(hash=-805306368, numPartitions=402653184), shrunk to the input above in 305 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int.
+How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as partitionFor(hash=-100000, numPartitions=100000), shrunk to the input above in 85 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int.
 
 <details><summary>Verifier output</summary>
 
@@ -114,7 +114,7 @@ How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1
   partitionFor(hash=-1, numPartitions=3)
     before: 1
     after:  2
-  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s as partitionFor(hash=-805306368, numPartitions=402653184), shrunk to the input above in 305 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int)
+  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as partitionFor(hash=-100000, numPartitions=100000), shrunk to the input above in 85 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-138-window-start-as-the-window-s",
+  "title": "Example 138: window start as the window's index times its length, proved equal by the own checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 88.2 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-138-window-start-as-the-window-s.json",
+    "sha256": "0aab69ba6a3835e9839d2b43949742bd70c77d7c5a629114fa9f3b10160b54ff",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-138-window-start-as-the-window-s",
+      "title": "Example 138: window start as the window's index times its length, proved equal by the own checker",
+      "description": "Regression proof of Crosscut's Window#counted with the start computed as nowNanos / windowNanos * windowNanos against the remainder form, by the tool's own checker (approach.engine native): expected verified. The checker rewrites a quotient times its divisor as the dividend less the remainder, so both versions are the same bits; the library's run took 0.1 s. JBMC did not finish the same harness within 60 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "record-components",
+        "lazy-multiplication",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "138"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 138 (B9)",
+          "run": "python3 examples/tools/build.py 138",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form"
+      ],
+      "supersedes": "20261104-094056-example-138-window-start-as-the-window-s"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:01+00:00",
+  "finishedAt": "2026-11-04T14:10:06+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 92487680,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 138 (B9)",
+      "run": "python3 examples/tools/build.py 138",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.811,
+      "cpuSeconds": 5.747,
+      "cpuThrottledSeconds": 0.433,
+      "peakMemoryBytes": 92487680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-138-b9.log",
+        "lines": 2,
+        "bytes": 242,
+        "sha256": "11ff93ded0494c596919696be7d4873c48f4b9ad687d31515af849f4c89bf3ae",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: verified (as expected)",
+          "groups": [
+            "138",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: running (B9)",
+        "138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/README.md",
+      "change": "added",
+      "bytes": 14485,
+      "sha256": "35dd51453d3d624abf5a4dcacad25d6d00fc1774918e0646e1d1dbb93f13109c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.json",
+      "change": "added",
+      "bytes": 2023,
+      "sha256": "0d71614d374973bffbd51fa64a1766622fcf5f39ab07e922d46486dc1899f0cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/statement.java",
+      "change": "added",
+      "bytes": 2915,
+      "sha256": "029ba05c1c2e621e64b881d991a01f7bb458e333d6b512a7d3c94aae7ce7fe2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/verifier-output.txt",
+      "change": "added",
+      "bytes": 295,
+      "sha256": "c9fd15df6954195d51832231a5d97a901796b6cd4f94f4c3156628dcf660f37e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/README.md",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.json",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/result.sarif",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/statement.java",
+      "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

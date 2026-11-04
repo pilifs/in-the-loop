@@ -1,0 +1,43 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.cache;\n\n/**\n * The expire-after-write test of a cache entry, with {@code Long.MAX_VALUE} as the time to live meaning \"never\", as\n * Caffeine and Spring's cache abstraction treat it. The clock reading is passed in, so that the cache can be\n * driven by a {@code Clock} in tests and by {@code System.nanoTime()} in production.\n */\n    // ...\n\n    public static final long FOREVER = Long.MAX_VALUE;\n\n    /** Whether an entry written at {@code writtenAtNanos} with the given time to live has expired at {@code nowNanos}. */\n    public static boolean isExpired(long writtenAtNanos, long ttlNanos, long nowNanos) {\n        if (ttlNanos == FOREVER) {\n            return false;\n        }\n        return nowNanos - writtenAtNanos >= ttlNanos;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.cache;\n\n/**\n * The expire-after-write time left to a cache entry, with {@code Long.MAX_VALUE} as the time to live meaning \"never\", as\n * Caffeine and Spring's cache abstraction treat it. The clock reading is passed in, so that the cache can be\n * driven by a {@code Clock} in tests and by {@code System.nanoTime()} in production.\n */\n    // ...\n\n    public static final long FOREVER = Long.MAX_VALUE;\n\n    /**\n     * How long an entry written at {@code writtenAtNanos} with the given time to live has left at {@code nowNanos},\n     * in milliseconds as the cache's metrics report it: zero or\n     * negative once it has expired, {@link #FOREVER} for an entry that never does, so that an eviction can be scheduled for\n     * when the entry expires and the cache's metrics can report the time left.\n     */\n    public static long remainingMillis(long writtenAtNanos, long ttlNanos, long nowNanos) {\n        if (ttlNanos == FOREVER) {\n            return FOREVER;\n        }\n        return (ttlNanos - (nowNanos - writtenAtNanos)) / 1_000_000L;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "writtenAtNanos: long × ttlNanos: long × nowNanos: long",
+  "counterexamples": [
+    {
+      "input": "remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)",
+      "contract": "false",
+      "actual": "0"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as remainingMillis(writtenAtNanos=0, ttlNanos=16, nowNanos=0), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain writtenAtNanos: long × ttlNanos: long × nowNanos: long",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

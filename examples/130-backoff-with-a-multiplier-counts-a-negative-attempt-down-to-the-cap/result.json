@@ -1,0 +1,43 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.retry;\n\n/**\n * How long a retry waits: an exponential backoff from {@code baseMillis}, doubled on each attempt, never longer\n * than {@code capMillis}. The policy is a value, held by the retry filter (Spring Retry's\n * {@code ExponentialBackOffPolicy}, Resilience4j's {@code IntervalFunction.ofExponentialBackoff}), and the delay\n * is a pure function of it and the attempt count; the scheduler does the waiting.\n *\n * <p>The base is positive, the cap at least the base and at most a day: a wait longer than that is a configuration\n * error, and within these bounds the doubling never leaves the range of a {@code long}.\n */\npublic record Backoff(long baseMillis, long capMillis) {\n\n    public static final long MAX_CAP_MILLIS = 86_400_000L;\n\n    public Backoff {\n        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > MAX_CAP_MILLIS) {\n            throw new IllegalArgumentException(\"base must be positive and the cap between the base and a day\");\n        }\n    }\n\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.retry;\n\n/**\n * How long a retry waits: an exponential backoff from {@code baseMillis}, multiplied by {@code multiplier} on\n * each attempt, never longer than {@code capMillis}. The policy is a value, held by the retry filter (Spring\n * Retry's {@code ExponentialBackOffPolicy}, whose multiplier is 2 by default, Resilience4j's\n * {@code IntervalFunction.ofExponentialBackoff}), and the delay is a pure function of it and the attempt count;\n * the scheduler does the waiting.\n *\n * <p>The base is positive, the cap at least the base and at most a day, the multiplier at least two: a wait\n * longer than a day is a configuration error, a multiplier below two no backoff, and within these bounds the\n * growth never leaves the range of a {@code long}.\n */\npublic record Backoff(long baseMillis, long capMillis, int multiplier) {\n\n    public static final long MAX_CAP_MILLIS = 86_400_000L;\n\n    public Backoff {\n        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > MAX_CAP_MILLIS || multiplier < 2) {\n            throw new IllegalArgumentException(\"base must be positive, the cap between the base and a day, the multiplier at least two\");\n        }\n    }\n\n    /**\n     * The delay before the given attempt: the base multiplied {@code attempt} times, stopping at the cap. The\n     * first attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int left = attempt; left != 0 && delay < capMillis; left--) {\n            delay = Math.min(capMillis, delay * multiplier);\n        }\n        return delay;\n    }\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
+  "counterexamples": [
+    {
+      "input": "delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)",
+      "contract": "1",
+      "actual": "2"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

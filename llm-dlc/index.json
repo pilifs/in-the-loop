@@ -1478,14 +1478,14 @@
     {
       "session_id": "8fc64b88-3223-4fe7-a67d-3a75c5768bbf",
       "title": "Verification pipeline queue",
-      "status": "ended",
+      "status": "open",
       "started": "2026-11-04T04:45:04.770Z",
-      "ended": "2026-11-04T13:49:18.914Z",
+      "ended": "2026-11-04T14:10:43.543Z",
       "models": [
         "claude-sonnet-5-5"
       ],
-      "turns": 7,
-      "log_sha256": "0e0e632d2384724cc95cbe62e83823d5fda00193fc921a1c1740fabb8d77bfd1",
+      "turns": 9,
+      "log_sha256": "c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e",
       "manifest": "traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/manifest.json",
       "summary": "traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md",
       "commits": [
@@ -1548,6 +1548,16 @@
           "change_id": "tvqntmzozvukqopwovnzqkqtsotymlro",
           "commit_id": null,
           "summary": "Record verification results for 35 jobs: examples 111-120, 124, 125, 132, 133 pass; 21 B9 jobs fail on tool or patch mismatches, not verdicts"
+        },
+        {
+          "change_id": "lvtummxzmvuxpmyyturzxlnzlzvrulmo",
+          "commit_id": null,
+          "summary": "The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending)"
+        },
+        {
+          "change_id": "trvoxwwqkvqkvtokulnpylrqunttknsp",
+          "commit_id": null,
+          "summary": "Record verification results for 26 resubmitted B9 jobs: 24 pass, 128 and 129 fail on a patch that changes nothing"
         }
       ]
     },
@@ -1582,12 +1592,12 @@
       "title": "build.py newProblems schema mismatch",
       "status": "open",
       "started": "2026-11-04T13:08:42.021Z",
-      "ended": "2026-11-04T14:07:27.212Z",
+      "ended": "2026-11-04T14:07:49.497Z",
       "models": [
         "claude-opus-5-5"
       ],
       "turns": 4,
-      "log_sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d",
+      "log_sha256": "12c73adf94c72ccd5c43c8fecd0e5335e65a2f9a9c5f42e8f24d257f9a1d6a51",
       "manifest": "traces/7605134a-8541-491b-9c22-2594d85b8a6e/manifest.json",
       "summary": "traces/7605134a-8541-491b-9c22-2594d85b8a6e/summary.md",
       "commits": [
@@ -1615,6 +1625,11 @@
           "change_id": "lvtummxzmvuxpmyyturzxlnzlzvrulmo",
           "commit_id": null,
           "summary": "The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending)"
+        },
+        {
+          "change_id": "trvoxwwqkvqkvtokulnpylrqunttknsp",
+          "commit_id": null,
+          "summary": "Record verification results for 26 resubmitted B9 jobs: 24 pass, 128 and 129 fail on a patch that changes nothing"
         }
       ]
     }

@@ -1,0 +1,218 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140708-example-134-a-window-counter-that-advanc",
+  "title": "Example 134: a window counter that advances by one window leaves its start behind a quiet client, found by a regression proof over the record results' shared components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.2s, peak 86.0 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140708-example-134-a-window-counter-that-advanc.json",
+    "sha256": "53e2eca034dd6ce8f3dd82ba66f908ae263b07b812157d5786bf2384202b3367",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140708-example-134-a-window-counter-that-advanc",
+      "title": "Example 134: a window counter that advances by one window leaves its start behind a quiet client, found by a regression proof over the record results' shared components",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted (a new fixed-window request counter kernel of Crosscut) across the counter record gaining a previousCount component: the old counter is built from the new components (--before-arguments 'new Window(this.startNanos, this.count), nowNanos, windowNanos') and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), within aligned starts as the scope. The new version advances the start by exactly one window instead of aligning it to the clock. Expected violation: a request two windows ahead of an empty counter, the old start at the request's window and the new one a window behind, found by JBMC in under a second inline.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "regression-proof",
+        "record-components"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/witness.rs"
+        ],
+        "examples": [
+          "134"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:08+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 134 (B9)",
+          "run": "python3 examples/tools/build.py 134",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client"
+      ],
+      "supersedes": "20261104-085102-example-134-a-window-counter-that-advanc"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:51+00:00",
+  "finishedAt": "2026-11-04T14:09:56+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 90226688,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 134 (B9)",
+      "run": "python3 examples/tools/build.py 134",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.215,
+      "cpuSeconds": 6.293,
+      "cpuThrottledSeconds": 0.911,
+      "peakMemoryBytes": 90226688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-134-b9.log",
+        "lines": 2,
+        "bytes": 215,
+        "sha256": "ae81be62cd161f813431d2091bd4209426f64e792a0f688532fe65f6050ff017",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)",
+          "groups": [
+            "134",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: running (B9)",
+        "134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/README.md",
+      "change": "added",
+      "bytes": 30544,
+      "sha256": "7014f201562d6f26a5cc5e662f590d618faf74de223ddae262d08dfc5a399e5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/result.json",
+      "change": "added",
+      "bytes": 5870,
+      "sha256": "c33c2b5f55f07cb1ce79366daf4cbf5d809c307533ca8b24448b85eab7af592f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/result.sarif",
+      "change": "added",
+      "bytes": 3027,
+      "sha256": "aaa0e39c5287bdce2bda9afc13ae9e0b4dc64531bf656960fb446f1158493e44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/statement.java",
+      "change": "added",
+      "bytes": 3621,
+      "sha256": "edb856ded1b692bfb73ce2237a7e5c40b44138d37c5063957abfff21a7d01217",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/verifier-output.txt",
+      "change": "added",
+      "bytes": 1138,
+      "sha256": "26e07719dd97a8e20e47f2e1a11769ee44d4bb8cd0b392325967f115ef07d9a1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/README.md",
+      "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/result.json",
+      "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/result.sarif",
+      "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/statement.java",
+      "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

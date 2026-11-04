@@ -1,0 +1,43 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift.\n     */\n    public long delayMillis(int attempt) {\n        return Math.min(capMillis, baseMillis << attempt);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Backoff(baseMillis: long, capMillis: long) × attempt: int",
+  "counterexamples": [
+    {
+      "input": "delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1)",
+      "contract": "1",
+      "actual": "-9223372036854775808"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 1.0 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=62513, capMillis=65792], attempt=-65528), shrunk to the input above in 120 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long) × attempt: int",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,8 @@
+✗ net.terminalvalue.crosscut.cache.Expiry#remainingMillis differs from the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) outside the intended inputs (!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)):
+  remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)
+    before: false
+    after:  0
+    the results are not related by previous == (result <= 0)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as remainingMillis(writtenAtNanos=0, ttlNanos=16, nowNanos=0), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain writtenAtNanos: long × ttlNanos: long × nowNanos: long)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

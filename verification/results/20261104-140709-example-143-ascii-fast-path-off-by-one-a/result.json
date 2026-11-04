@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-143-ascii-fast-path-off-by-one-a",
+  "title": "Example 143: ASCII fast path off by one at U+0080 refuted by the own checker with path merging",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 88.8 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-143-ascii-fast-path-off-by-one-a.json",
+    "sha256": "4c3f54b231ebd5202feec66af6eaa7fc62778ff550e0e86265b197791b07e9f8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-143-ascii-fast-path-off-by-one-a",
+      "title": "Example 143: ASCII fast path off by one at U+0080 refuted by the own checker with path merging",
+      "description": "Runs build.py on example 143 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path whose test admits U+0080, against the previous version, by the tool's own checker with paths merged at join points. Expected: violation on encodeInto(chars=['\\u0080'], out=[32]) after shrinking (the previous version throws ArrayIndexOutOfBoundsException writing the second byte, the new one returns 1 having written 0x80), in about 5 s and under 100 MB.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "path-merging",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "143"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 143 (B9)",
+          "run": "python3 examples/tools/build.py 143",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+      ],
+      "supersedes": "20261104-104407-example-143-ascii-fast-path-off-by-one-a"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:18+00:00",
+  "finishedAt": "2026-11-04T14:10:24+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 93085696,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 6.9,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 143 (B9)",
+      "run": "python3 examples/tools/build.py 143",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.811,
+      "cpuSeconds": 6.915,
+      "cpuThrottledSeconds": 0.37,
+      "peakMemoryBytes": 93085696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-143-b9.log",
+        "lines": 2,
+        "bytes": 219,
+        "sha256": "8fabd713f834abe1573a3da6d38160e971ad3f370961ac76a1385f9c3023151b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: violation (as expected)",
+          "groups": [
+            "143",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: running (B9)",
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md",
+      "change": "added",
+      "bytes": 16157,
+      "sha256": "d0a8fb88a684c35eb1e71b3d8fe5ea7338618ce4283f4750eca8aa05970e5c48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json",
+      "change": "added",
+      "bytes": 2207,
+      "sha256": "9324f4489777ed14d7ea8a909860480694da23f277923e058d31d3a44d0664d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.sarif",
+      "change": "added",
+      "bytes": 2666,
+      "sha256": "8ef047bdc8a6497a257d10133e52c441012d25efd72974ac4d33ffefe94a99d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/statement.java",
+      "change": "added",
+      "bytes": 2611,
+      "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt",
+      "change": "added",
+      "bytes": 718,
+      "sha256": "730f24013dd7abe24e07c5b440f58624c31718430809c5d50bd0c3ca44b67e34",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.sarif",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/statement.java",
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

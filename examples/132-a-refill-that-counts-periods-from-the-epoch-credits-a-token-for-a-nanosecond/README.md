@@ -80,7 +80,7 @@ The two versions disagree. The prover found this input outside the declared chan
 
 | Input | Before | After |
 |---|---|---|
-| `tokensAfter(tokens=0, lastNanos=1, nowNanos=2944052592310067210, periodNanos=294405259231006721, capacity=32767)` | `9` | `10` |
+| `tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)` | `0` | `1` |
 
 One disagreeing input is enough to fail the build. The domain is `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -110,16 +110,16 @@ Keep the difference: `System.nanoTime` readings are made to be subtracted, and t
 
 ## Evidence
 
-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 2.7 s as tokensAfter(tokens=243269502, lastNanos=2556998746631045248, nowNanos=3133740992164798521, periodNanos=294405259231006721, capacity=788004863), shrunk to the input above in 4000 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Behaviour of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):
-  tokensAfter(tokens=0, lastNanos=1, nowNanos=2944052592310067210, periodNanos=294405259231006721, capacity=32767)
-    before: 9
-    after:  10
-  (found by jvmcontract's own checker (CaDiCaL) in 2.7 s as tokensAfter(tokens=243269502, lastNanos=2556998746631045248, nowNanos=3133740992164798521, periodNanos=294405259231006721, capacity=788004863), shrunk to the input above in 4000 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+  tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)
+    before: 0
+    after:  1
+  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -209,7 +209,7 @@ public final class EquivalenceHarness {
           "ruleId": "behaviour-changed",
           "level": "error",
           "message": {
-            "text": "Behaviour of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):\n  tokensAfter(tokens=0, lastNanos=1, nowNanos=2944052592310067210, periodNanos=294405259231006721, capacity=32767)\n    before: 9\n    after:  10"
+            "text": "Behaviour of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter changed outside the intended inputs (!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)):\n  tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)\n    before: 0\n    after:  1"
           },
           "locations": [
             {

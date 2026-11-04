@@ -1,0 +1,218 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140708-example-130-a-backoff-that-gained-a-mult",
+  "title": "Example 130: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12.0s, peak 436.4 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140708-example-130-a-backoff-that-gained-a-mult.json",
+    "sha256": "1da41be0102c567184e7983bc4c686046340d282a4719a40ee9e0c6a74853f7a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140708-example-130-a-backoff-that-gained-a-mult",
+      "title": "Example 130: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+      "description": "Regression proof of net.terminalvalue.crosscut.retry.Backoff#delayMillis across a component added to the record: the previous two-component Backoff is built from the new one's base and cap by a constructor call among --before-arguments (new Backoff(this.baseMillis, this.capMillis), attempt), with this.multiplier != 2 as the scope. The loop rewritten to count down answers a negative attempt with the cap: expected a violation at attempt=-1, found in the second search stage in about 9 s inline.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "record-components",
+        "signature-change",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "130"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:08+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 130 (B9)",
+          "run": "python3 examples/tools/build.py 130",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap"
+      ],
+      "supersedes": "20261104-075809-example-130-a-backoff-that-gained-a-mult"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:28+00:00",
+  "finishedAt": "2026-11-04T14:09:41+00:00",
+  "wallSeconds": 13.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 457547776,
+    "wallSeconds": 12.0,
+    "cpuSeconds": 13.9,
+    "memoryOfEstimate": 0.43,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 12.028,
+      "cpuSeconds": 13.919,
+      "cpuThrottledSeconds": 0.496,
+      "peakMemoryBytes": 457547776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-130-b9.log",
+        "lines": 2,
+        "bytes": 183,
+        "sha256": "dfeb42aa43acf43639483e6ada7e0a1f0fdd809f60e24bdee3d6c64331a70141",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)",
+          "groups": [
+            "130",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: running (B9)",
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "change": "added",
+      "bytes": 24231,
+      "sha256": "5725c9b57c814c2660750d3e42ce71b87855bdf8ab44eeb493dfdb36bb9f64be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "change": "added",
+      "bytes": 4736,
+      "sha256": "fa2d67d65173e33fbba26efd2d7895709713ca33f4ac234a9f9688d5b0679103",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.sarif",
+      "change": "added",
+      "bytes": 2788,
+      "sha256": "0b2e08f49763555142824638a6d5bb2060612c6e97feecfe9a2348e12eebe86a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java",
+      "change": "added",
+      "bytes": 3042,
+      "sha256": "15be4d0029c4a439aad5ffc7a278add8306f121f1a9da63064606a6724a42036",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt",
+      "change": "added",
+      "bytes": 891,
+      "sha256": "6a241add88e5a9f17cb115d48dd2b476969c349250f1b25b95dfc82516ba8091",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.sarif",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/statement.java",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

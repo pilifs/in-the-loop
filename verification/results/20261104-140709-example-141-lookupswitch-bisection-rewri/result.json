@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-141-lookupswitch-bisection-rewri",
+  "title": "Example 141: lookupswitch bisection rewritten half-open proved equal to the closed form on sorted tables by the own checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.8s, peak 87.5 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-141-lookupswitch-bisection-rewri.json",
+    "sha256": "84f6ba36c046d564781d25e32931be622d5eb1dd80d4f57a7c40a8d6a0fa42ee",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-141-lookupswitch-bisection-rewri",
+      "title": "Example 141: lookupswitch bisection rewritten half-open proved equal to the closed form on sorted tables by the own checker",
+      "description": "Regression proof of Mica's LookupSwitch#find rewritten half-open (example 046's form) against the closed form, within the scope of strictly sorted tables stated with a \\forall over the array in --unchanged-unless, by the tool's own checker (approach.engine native): expected verified. Arrays of primitives are in the checker's fragment since this example, a cell per index up to --max-array-length (8); the library's run took 2.3 s over 88 paths and 1044 solver calls. JBMC proved the same harness in 101 s and 2 GB.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "141"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 141 (B9)",
+          "run": "python3 examples/tools/build.py 141",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table"
+      ],
+      "supersedes": "20261104-101436-example-141-lookupswitch-bisection-rewri"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:11+00:00",
+  "finishedAt": "2026-11-04T14:10:18+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 91787264,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 7.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 141 (B9)",
+      "run": "python3 examples/tools/build.py 141",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.826,
+      "cpuSeconds": 7.823,
+      "cpuThrottledSeconds": 0.395,
+      "peakMemoryBytes": 91787264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-141-b9.log",
+        "lines": 2,
+        "bytes": 244,
+        "sha256": "5eb825463164488e4f4b2b7da6c6c8892e411db743e423201715f7a093d86632",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: verified (as expected)",
+          "groups": [
+            "141",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: running (B9)",
+        "141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md",
+      "change": "added",
+      "bytes": 15653,
+      "sha256": "3c684a84f62ca69d7617d3b2b23ebd15e2b4f421cf889bbd509fc0037617156b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.json",
+      "change": "added",
+      "bytes": 2529,
+      "sha256": "a301db3227554dd5a1a4030d01a348180bed6b722191c8ad06509e7466fa6f2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/statement.java",
+      "change": "added",
+      "bytes": 2585,
+      "sha256": "a3c75c1bb482471d999d85c0af80b1fbee2c57ca0bf1b87710f6ffcf5e3495ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/verifier-output.txt",
+      "change": "added",
+      "bytes": 340,
+      "sha256": "7c0c08dd9c9418dd68944936bb5dbdc1907474b71e48b8eba5e00596603bfda7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/README.md",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.json",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/result.sarif",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/statement.java",
+      "examples/141-a-lookupswitch-bisection-rewritten-half-open-proved-equal-to-the-closed-form-on-every-sorted-table/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-140-half-open-bisection-that-ans",
+  "title": "Example 140: half-open bisection that answers the empty table first reads past the end, found by the own checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 89.7 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-140-half-open-bisection-that-ans.json",
+    "sha256": "fc273520ea9594e8e228f654872924994349b7f980f68a5cbe18d171c8fd0aba",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-140-half-open-bisection-that-ans",
+      "title": "Example 140: half-open bisection that answers the empty table first reads past the end, found by the own checker",
+      "description": "Regression proof of Mica's LookupSwitch#find rewritten half-open with the empty table answered first and the final equality test unguarded, against the closed form, within the scope of strictly sorted tables (a \\forall over the array in --unchanged-unless), by the tool's own checker (approach.engine native): expected violation, find(matches=[0], key=1), -1 before and ArrayIndexOutOfBoundsException after. The checker took arrays of primitives into its fragment for this example (a cell per index up to --max-array-length); the library's run took 0.16 s. JBMC found the same input in 23 s and 2 GB.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "140"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 140 (B9)",
+          "run": "python3 examples/tools/build.py 140",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match"
+      ],
+      "supersedes": "20261104-101436-example-140-half-open-bisection-that-ans"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:06+00:00",
+  "finishedAt": "2026-11-04T14:10:11+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 94048256,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.0,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 140 (B9)",
+      "run": "python3 examples/tools/build.py 140",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.819,
+      "cpuSeconds": 6.021,
+      "cpuThrottledSeconds": 0.578,
+      "peakMemoryBytes": 94048256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-140-b9.log",
+        "lines": 2,
+        "bytes": 237,
+        "sha256": "ec2e83f4329d6cb113e6879e81ee7ff7ac829985843f3c256fce994f9d91d6ae",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match: violation (as expected)",
+          "groups": [
+            "140",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match: running (B9)",
+        "140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/README.md",
+      "change": "added",
+      "bytes": 17829,
+      "sha256": "5d6d8bde8343a3de7e168420c6722921d74333c56674fcf400ca17d9c38043d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/result.json",
+      "change": "added",
+      "bytes": 2854,
+      "sha256": "d3130ac9e8a8ce96c3746231a6c4253bb781f733c25a59eb28fcde2325561761",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/result.sarif",
+      "change": "added",
+      "bytes": 2713,
+      "sha256": "60ec265c9f52838d5237417a91b9fdf880cc3f85951fa5e075bffca7a04f0316",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/statement.java",
+      "change": "added",
+      "bytes": 2585,
+      "sha256": "a3c75c1bb482471d999d85c0af80b1fbee2c57ca0bf1b87710f6ffcf5e3495ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/verifier-output.txt",
+      "change": "added",
+      "bytes": 728,
+      "sha256": "3f278816d7fc2443b3f169dcbbca0f369e7cc33cbbfe2cba32892ea5388c6955",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/README.md",
+      "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/result.json",
+      "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/result.sarif",
+      "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/statement.java",
+      "examples/140-a-half-open-bisection-that-answers-the-empty-table-first-throws-for-a-key-above-the-last-match/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

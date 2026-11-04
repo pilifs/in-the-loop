@@ -1,0 +1,7 @@
+✗ Behaviour of net.terminalvalue.mica.interp.LookupSwitch#find changed outside the intended inputs (!(\forall int i; 0 <= i && i < matches.length - 1; matches[i] < matches[i + 1])):
+  find(matches=[0], key=1)
+    before: -1
+    after:  throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1")
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as find(matches=[16], key=20), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain matches: int[] of length ≤ 8 × key: int)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

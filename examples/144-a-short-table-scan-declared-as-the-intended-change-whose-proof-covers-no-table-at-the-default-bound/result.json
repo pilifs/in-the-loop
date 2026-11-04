@@ -1,0 +1,40 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified, vacuously: no input in the domain reaches the calls",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.mica.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 14,
+    "code": "    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+  },
+  "after": {
+    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+    "startLine": 14,
+    "code": "    return (low + high) >>> 1;\n}\n\n/** Tables of at most this many pairs are scanned in order rather than bisected. */\npublic static final int SCAN_LIMIT = 8;\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    if (matches.length <= SCAN_LIMIT) {\n        for (int i = 0; i < matches.length; i++) {\n            if (matches[i] == key) {\n                return i;\n            }\n        }\n        return -1;\n    }\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+  },
+  "casesTotal": null,
+  "domain": "matches: int[] of length ≤ 8 × key: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 8 × key: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": {
+    "vacuous": true,
+    "reason": "no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing"
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

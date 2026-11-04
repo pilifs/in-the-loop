@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-139-window-index-held-in-an-int",
+  "title": "Example 139: window index held in an int refuses every request after two billion windows",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.8s, peak 117.4 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-139-window-index-held-in-an-int.json",
+    "sha256": "f4f15a8118facb3450b2778785f7c517dccd71f5f91e6afab5a7fd669b74fe2c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-139-window-index-held-in-an-int",
+      "title": "Example 139: window index held in an int refuses every request after two billion windows",
+      "description": "Regression proof of Crosscut's Window#counted with the window's index narrowed to an int before the start is computed as index * windowNanos, by the tool's own checker (approach.engine native): expected violation, the witness counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1), where the old version answers Window[2147483648, 1] and the new one throws IllegalArgumentException from the record's constructor. The library's run took 3 s, the violation found in the stage over the whole range after the two small stages were proved empty. JBMC did not finish within 60 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "record-components",
+        "lazy-multiplication",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "139"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 139 (B9)",
+          "run": "python3 examples/tools/build.py 139",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows"
+      ],
+      "supersedes": "20261104-094056-example-139-window-index-held-in-an-int"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:04+00:00",
+  "finishedAt": "2026-11-04T14:10:12+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 123072512,
+    "wallSeconds": 6.8,
+    "cpuSeconds": 8.9,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 139 (B9)",
+      "run": "python3 examples/tools/build.py 139",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.813,
+      "cpuSeconds": 8.854,
+      "cpuThrottledSeconds": 0.49,
+      "peakMemoryBytes": 123072512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-139-b9.log",
+        "lines": 2,
+        "bytes": 203,
+        "sha256": "9da0d0b731bc1c46b3a03c4d7027b882aa9787ba678187324902a55a7e7b857a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows: violation (as expected)",
+          "groups": [
+            "139",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows: running (B9)",
+        "139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/README.md",
+      "change": "added",
+      "bytes": 16328,
+      "sha256": "fe2431c75df56d1b008cea3df235cf748ede935201283ea36f008888ece65183",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/result.json",
+      "change": "added",
+      "bytes": 2433,
+      "sha256": "ee250f615ee2aa0ffcfdf48a6bb44f7c3f058e8a69c4d86cee72cd7317782f68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/result.sarif",
+      "change": "added",
+      "bytes": 2706,
+      "sha256": "ef8f8e0ade3f0203f3f69fb234d6da2f282092e1cddbbf434bdb66bcd4895a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/statement.java",
+      "change": "added",
+      "bytes": 2915,
+      "sha256": "029ba05c1c2e621e64b881d991a01f7bb458e333d6b512a7d3c94aae7ce7fe2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/verifier-output.txt",
+      "change": "added",
+      "bytes": 813,
+      "sha256": "09b1e923145fe7312fe9179202352f4249c4d39d8e04fcf13def36b1b687e696",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/README.md",
+      "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/result.json",
+      "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/result.sarif",
+      "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/statement.java",
+      "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

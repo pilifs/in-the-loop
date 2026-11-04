@@ -1,0 +1,8 @@
+✗ net.terminalvalue.crosscut.ratelimit.Window#counted differs from the previous counted(nowNanos, windowNanos) on new Window(this.startNanos, this.count) outside the intended inputs (windowNanos > 0 && this.startNanos % windowNanos != 0):
+  counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=2, windowNanos=1), previously counted(this=Window[startNanos=0, count=0], nowNanos=2, windowNanos=1)
+    before: Window[startNanos=2, count=1]
+    after:  Window[startNanos=1, count=1, previousCount=0]
+    the results are not related by previous.startNanos == result.startNanos && previous.count == result.count
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=19, windowNanos=2), shrunk to the input above in 24 interpreter runs, replayed in the interpreter; domain this: Window(startNanos: long, count: long, previousCount: long) × nowNanos: long × windowNanos: long)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

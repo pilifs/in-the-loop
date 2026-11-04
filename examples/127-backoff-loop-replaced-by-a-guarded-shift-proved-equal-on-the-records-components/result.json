@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "startLine": 21,
+    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift, kept\n     * short of the sign bit: a shift that would leave the range of a {@code long} is already past the cap.\n     */\n    public long delayMillis(int attempt) {\n        if (attempt <= 0) {\n            return baseMillis;\n        }\n        int shift = Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1);\n        return Math.min(capMillis, baseMillis << shift);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Backoff(baseMillis: long, capMillis: long) × attempt: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-136-a-window-start-aligned-by-ma",
+  "title": "Example 136: a window start aligned by masking opens a window per request unless the window is a power of two",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 86.8 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-136-a-window-start-aligned-by-ma.json",
+    "sha256": "a8357119af9345ab4eb85fc8ba229128dc7bc998e1ffe6d32e7b11ebde75e631",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-136-a-window-start-aligned-by-ma",
+      "title": "Example 136: a window start aligned by masking opens a window per request unless the window is a power of two",
+      "description": "Regression proof (B9) by the tool's own checker (--engine native) of Crosscut's Window#counted rewritten to align the window's start by nowNanos & -windowNanos instead of nowNanos - nowNanos % windowNanos. Expected: violation, witness counted(this=Window[startNanos=0, count=0], nowNanos=1, windowNanos=3), before Window[0, 1], after Window[1, 1], found in 0.2 s searching inputs in [0:20]. JBMC finds the same witness in 0.2 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "record-components",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "136"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 136 (B9)",
+          "run": "python3 examples/tools/build.py 136",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two"
+      ],
+      "supersedes": "20261104-092044-example-136-a-window-start-aligned-by-ma"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:56+00:00",
+  "finishedAt": "2026-11-04T14:10:01+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 90963968,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 136 (B9)",
+      "run": "python3 examples/tools/build.py 136",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.811,
+      "cpuSeconds": 5.831,
+      "cpuThrottledSeconds": 0.519,
+      "peakMemoryBytes": 90963968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-136-b9.log",
+        "lines": 2,
+        "bytes": 241,
+        "sha256": "692941f41269cab52eef6082f91d762ba7fa187cc679cd32a3de509faef9ded5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: violation (as expected)",
+          "groups": [
+            "136",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: running (B9)",
+        "136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/README.md",
+      "change": "added",
+      "bytes": 17379,
+      "sha256": "4f1588ad00e76c27f2ed50bf7773358e37871c25f3d1f45569aed796b5b337a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.json",
+      "change": "added",
+      "bytes": 2338,
+      "sha256": "769341607106a3f82dd3989a9e49d6a27d0993b0723573eeb644b32702d4754f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.sarif",
+      "change": "added",
+      "bytes": 2636,
+      "sha256": "234ecc904a50819204b2d1a3818e2537769c67138b4789937950b668db674c5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/statement.java",
+      "change": "added",
+      "bytes": 2915,
+      "sha256": "029ba05c1c2e621e64b881d991a01f7bb458e333d6b512a7d3c94aae7ce7fe2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/verifier-output.txt",
+      "change": "added",
+      "bytes": 737,
+      "sha256": "87f95c68ee46213408dfaef010f76913036a7ed872c679cb829e6406f7777e71",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/README.md",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.json",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/result.sarif",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/statement.java",
+      "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

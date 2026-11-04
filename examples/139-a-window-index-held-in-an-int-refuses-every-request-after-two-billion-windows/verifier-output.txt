@@ -1,0 +1,7 @@
+✗ Behaviour of net.terminalvalue.crosscut.ratelimit.Window#counted changed:
+  counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1)
+    before: Window[startNanos=2147483648, count=1]
+    after:  throws IllegalArgumentException("the start and the count must not be negative")
+  (found by jvmcontract's own checker (CaDiCaL) in 2.8 s as counted(this=Window[startNanos=100000, count=100000], nowNanos=4853170726443779744, windowNanos=2220810999), shrunk to the input above in 1504 interpreter runs, replayed in the interpreter; domain this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

@@ -1,0 +1,209 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140708-example-132-a-refill-counting-periods-fr",
+  "title": "Example 132: a refill counting periods from the epoch, found crediting a token for a nanosecond by the tool's own checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.2s, peak 88.5 MiB (estimated 2m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140708-example-132-a-refill-counting-periods-fr.json",
+    "sha256": "a13eecde32c4b900a9771317a55f5b7492f5b0ba54d3ad569cd7fde5479fb094",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140708-example-132-a-refill-counting-periods-fr",
+      "title": "Example 132: a refill counting periods from the epoch, found crediting a token for a nanosecond by the tool's own checker",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter by the tool's own bounded model checker (--engine native) within the module's precondition as scope: the whole periods earned computed as nowNanos / periodNanos - lastNanos / periodNanos instead of (nowNanos - lastNanos) / periodNanos. Expected a violation at tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1), 0 before and 1 after, found in the first search stage in about 3 s inline.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/bmc/bits.rs"
+        ],
+        "examples": [
+          "132"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-04T14:07:08+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 132 (B9)",
+          "run": "python3 examples/tools/build.py 132",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond"
+      ],
+      "supersedes": "20261104-083123-example-132-a-refill-counting-periods-fr"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:41+00:00",
+  "finishedAt": "2026-11-04T14:09:46+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 92798976,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 132 (B9)",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.218,
+      "cpuSeconds": 6.504,
+      "cpuThrottledSeconds": 0.586,
+      "peakMemoryBytes": 92798976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-132-b9.log",
+        "lines": 2,
+        "bytes": 201,
+        "sha256": "2f44ee57c6070152d4c99e455b6a32b930a8f5a0d5412916f98a0fd50302f342",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)",
+          "groups": [
+            "132",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: running (B9)",
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "change": "modified",
+      "bytes": 18151,
+      "sha256": "ac33b708a8d4524b2fa96bd356dce81a1f36b4b42c18eb70da3a45e0f23190ca",
+      "sourceSha256": "caf62b2f46efb2a5d98c89adc412a579a02e1ba08272868f698dd222a5fffabb"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "change": "modified",
+      "bytes": 2439,
+      "sha256": "6d40b78a6994605b2567df3401656a2707c6cf07e1c4b4c0408dc3edb1700641",
+      "sourceSha256": "7d59b53d469091ad570774e148318be9102f9b59cad37ca3a733f686f8279145"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.sarif",
+      "change": "modified",
+      "bytes": 2807,
+      "sha256": "9c0d9201a8656002686c830fcbb606e83d6559ab8f25023d4a78ea567f766855",
+      "sourceSha256": "d2b3c55295fc22f37e83ad513004d1ba9567c322e96da8565d16a090e872503d"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt",
+      "change": "modified",
+      "bytes": 911,
+      "sha256": "ed5b543bd30c2934fd54d55f7c60995f1ad64a3b5762c8558d192b59c8579de6",
+      "sourceSha256": "911ee6d61ab1582df0b09358a27c6d17d103adbb78474e993c24381504f8b128"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.sarif",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

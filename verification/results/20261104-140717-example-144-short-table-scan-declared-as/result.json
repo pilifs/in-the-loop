@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140717-example-144-short-table-scan-declared-as",
+  "title": "Example 144: short-table scan declared as the intended change, verified vacuously at the default bound (own checker)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 88.0 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140717-example-144-short-table-scan-declared-as.json",
+    "sha256": "7d0915ea704aad4b05094d570a29c27442fc7a7e379d25faae1f7b6572f73990",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140717-example-144-short-table-scan-declared-as",
+      "title": "Example 144: short-table scan declared as the intended change, verified vacuously at the default bound (own checker)",
+      "description": "Regression proof of Mica's LookupSwitch#find with a linear scan added for tables of at most eight pairs, scoped with --unchanged-unless 'matches.length <= 8' at the default --max-array-length 8: every table in the domain is among the intended inputs, so the proof covers no input. Expected: verified, vacuous (the tool prints the 'vacuously:' line after proving the probe harness, the statement with the calls replaced by the assertion's failure). Measured 0.1 s, 29 MB, one path, no solver call.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "vacuity-check",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "144"
+        ]
+      },
+      "expected": "verified vacuously",
+      "submitted": {
+        "at": "2026-11-04T14:07:17+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting session at 0.1 s"
+      },
+      "steps": [
+        {
+          "name": "example 144 (B9)",
+          "run": "python3 examples/tools/build.py 144",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
+      ],
+      "supersedes": "20261104-131021-example-144-short-table-scan-declared-as"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:25+00:00",
+  "finishedAt": "2026-11-04T14:10:29+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting session at 0.1 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 92307456,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.817,
+      "cpuSeconds": 5.935,
+      "cpuThrottledSeconds": 0.708,
+      "peakMemoryBytes": 92307456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-144-b9.log",
+        "lines": 2,
+        "bytes": 246,
+        "sha256": "90564f1e1dcf644372440e60699946b828f173603abaa8241c436774055312c4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)",
+          "groups": [
+            "144",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: running (B9)",
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md",
+      "change": "added",
+      "bytes": 16512,
+      "sha256": "6b7741059c197820a6530e9a52e58ca843224f9aa5168de2950d2f45d4659902",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json",
+      "change": "added",
+      "bytes": 2226,
+      "sha256": "4684aac754c9e5a7379236af4372b972afb76f0d3ed476a65d515470b6e31297",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/statement.java",
+      "change": "added",
+      "bytes": 2525,
+      "sha256": "d0717a8cc13efe3fb572eabf27a36a73e40f8657dc5677f6b0e721b058060eda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/verifier-output.txt",
+      "change": "added",
+      "bytes": 442,
+      "sha256": "9bd4b4c435adb9373d68567dc7f77b15675931237d44866da028889935fcafca",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md",
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json",
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.sarif",
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/statement.java",
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,37 @@
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
+@@ -109,15 +109,16 @@
+ - The helpers are shared because both versions call them, their bytecode is identical in both (constant pool references resolved, so a renumbered pool does not count), and they are pure functions of primitives. A helper that reads a field, takes an array, or calls into the JDK beyond its arithmetic is proved as written, as before.
+ - The stub throws what the helper can throw, here `ArithmeticException` from the division, chosen arbitrarily per new arguments: a version that catches it where the other does not is still found to differ (the library's tests cover that case).
+ - A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids.
++- Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls (0.3 s since the checker leaves a division to the solver under cheap facts and builds its circuit only where a model got it wrong: here never, `0 of 1 divisions and 0 of 0 multiplications built in full` in its log): in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker.
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.8 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.8 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+ ```
+ 
+ </details>
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
+@@ -23,7 +23,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.8 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
++  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.8 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)

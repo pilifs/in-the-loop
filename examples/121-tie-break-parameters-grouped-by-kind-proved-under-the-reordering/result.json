@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java",
+    "startLine": 12,
+    "code": "    /**\n     * Which of two writes wins: {@code 0} for the first (timestamp {@code tsA} from node {@code nodeA}), {@code 1}\n     * for the second. Two replicas that see the writes in either order must agree, so for distinct writes\n     * {@code winner(a, b) == 1 - winner(b, a)}.\n     */\n    public static int winner(long tsA, int nodeA, long tsB, int nodeB) {\n        if (tsA != tsB) {\n            return tsA > tsB ? 0 : 1;\n        }\n        return nodeA >= nodeB ? 0 : 1;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java",
+    "startLine": 12,
+    "code": "    /**\n     * Which of two writes wins: {@code 0} for the first (timestamp {@code tsA} from node {@code nodeA}), {@code 1}\n     * for the second. Two replicas that see the writes in either order must agree, so for distinct writes\n     * {@code winner(a, b) == 1 - winner(b, a)}. The order is the timestamps, then the node ids, as the parameters\n     * are grouped: the shape of {@code comparingLong(ts).thenComparingInt(node)}.\n     */\n    public static int winner(long tsA, long tsB, int nodeA, int nodeB) {\n        int order = Long.compare(tsA, tsB);\n        if (order == 0) {\n            order = Integer.compare(nodeA, nodeB);\n        }\n        return order >= 0 ? 0 : 1;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "tsA: long × tsB: long × nodeA: int × nodeB: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over tsA: long × tsB: long × nodeA: int × nodeB: int in 0.2 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

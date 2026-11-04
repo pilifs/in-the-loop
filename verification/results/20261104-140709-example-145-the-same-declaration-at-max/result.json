@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-145-the-same-declaration-at-max",
+  "title": "Example 145: the same declaration at --max-array-length 12, the bisection proved unchanged on tables of nine to twelve pairs (own checker)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.8s, peak 104.7 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-145-the-same-declaration-at-max.json",
+    "sha256": "7f065034e5e157b718c45235ecb33efdc4401f60146db4257d0f567a77acc560",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-145-the-same-declaration-at-max",
+      "title": "Example 145: the same declaration at --max-array-length 12, the bisection proved unchanged on tables of nine to twelve pairs (own checker)",
+      "description": "Regression proof of Mica's LookupSwitch#find with a linear scan for tables of at most eight pairs, scoped with --unchanged-unless 'matches.length <= 8' and approach.maxArrayLength 12 (the new field, passed as --max-array-length): the domain holds tables of nine to twelve pairs, which the scope admits, and the tool's own checker proves the bisection unchanged on every such table and every key. Expected: verified, not vacuous (the probe is refuted on a nine-pair table). Measured 4.1 s, 85 MB, 89 paths, 548 solver calls.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "vacuity-check",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "145"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 145 (B9)",
+          "run": "python3 examples/tools/build.py 145",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+      ],
+      "supersedes": "20261104-124833-example-145-the-same-declaration-at-max"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:24+00:00",
+  "finishedAt": "2026-11-04T14:10:32+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 109735936,
+    "wallSeconds": 7.8,
+    "cpuSeconds": 9.8,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 7.823,
+      "cpuSeconds": 9.764,
+      "cpuThrottledSeconds": 0.533,
+      "peakMemoryBytes": 109735936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-145-b9.log",
+        "lines": 2,
+        "bytes": 244,
+        "sha256": "c630615fe495e4a1cbc598f23bb13b20cd8ecf68a58fd1ef02a56f07646f9f6a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)",
+          "groups": [
+            "145",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: running (B9)",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "change": "added",
+      "bytes": 13167,
+      "sha256": "b032d4d508521181cac64c641622090c14170c26349cf1da54dfebd4c8f9217d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "change": "added",
+      "bytes": 2043,
+      "sha256": "afa830c844134526ec29370d847a82e11517cc2442d543375f560b9146563c8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/statement.java",
+      "change": "added",
+      "bytes": 2525,
+      "sha256": "d0717a8cc13efe3fb572eabf27a36a73e40f8657dc5677f6b0e721b058060eda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt",
+      "change": "added",
+      "bytes": 281,
+      "sha256": "866c85ea46cefd67d35390db3fe1de278b9df2979967d52716f3de0a7f618527",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.sarif",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/statement.java",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

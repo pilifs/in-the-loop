@@ -1,0 +1,218 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140708-example-131-a-backoff-that-gained-a-mult",
+  "title": "Example 131: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 18.8s, peak 423.4 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140708-example-131-a-backoff-that-gained-a-mult.json",
+    "sha256": "446adf4a8dbdafe0734ab29e8868e9a10c9c1fbd2d8283e7c4af95c2b4cb6e8a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140708-example-131-a-backoff-that-gained-a-mult",
+      "title": "Example 131: a backoff that gained a multiplier, related to the doubling record by building it from the new components",
+      "description": "Regression proof of net.terminalvalue.crosscut.retry.Backoff#delayMillis across a component added to the record: the previous two-component Backoff is built from the new one's base and cap by a constructor call among --before-arguments (new Backoff(this.baseMillis, this.capMillis), attempt), with this.multiplier != 2 as the scope. The loop kept counting up with the cap applied after it: expected verified, about 17 s inline with JBMC at unwind 32.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "record-components",
+        "signature-change",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "131"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:08+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 131 (B9)",
+          "run": "python3 examples/tools/build.py 131",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two"
+      ],
+      "supersedes": "20261104-075809-example-131-a-backoff-that-gained-a-mult"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:34+00:00",
+  "finishedAt": "2026-11-04T14:09:54+00:00",
+  "wallSeconds": 20.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 443936768,
+    "wallSeconds": 18.8,
+    "cpuSeconds": 20.8,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 131 (B9)",
+      "run": "python3 examples/tools/build.py 131",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 18.849,
+      "cpuSeconds": 20.77,
+      "cpuThrottledSeconds": 0.44,
+      "peakMemoryBytes": 443936768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-131-b9.log",
+        "lines": 2,
+        "bytes": 218,
+        "sha256": "9e5016d776e12250d0079742d23a5638f1f2a394d20808188bbaa3fe1ddffb8f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: verified (as expected)",
+          "groups": [
+            "131",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: running (B9)",
+        "131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/README.md",
+      "change": "added",
+      "bytes": 22636,
+      "sha256": "6df2cb183faa613891fb40581192c2b6c6e41d6fa7fbba5a1caa2b743253d474",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/result.json",
+      "change": "added",
+      "bytes": 4376,
+      "sha256": "a6bdff3927b35abbad777082755a4263c7cd75bfd7118700221f043ba18664a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/statement.java",
+      "change": "added",
+      "bytes": 3042,
+      "sha256": "15be4d0029c4a439aad5ffc7a278add8306f121f1a9da63064606a6724a42036",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/verifier-output.txt",
+      "change": "added",
+      "bytes": 377,
+      "sha256": "4fc4e610547da611825801adc1e0978c22ab4e21ba05c4c1073f3c168c6f1a69",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/README.md",
+      "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/result.json",
+      "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/result.sarif",
+      "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/statement.java",
+      "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

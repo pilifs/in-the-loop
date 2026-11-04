@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.ratelimit;\n\n/**\n * A fixed-window request counter, the simplest rate limit: how many requests a client has made in the window its\n * last request fell in, with windows of one length aligned to the epoch (Spring Cloud Gateway's rate limiter keeps\n * such a count per key and window; Resilience4j's {@code RateLimiter} calls the window a cycle). The counter is a\n * value: the filter keeps one per client, replaces it on each request with what {@link #counted} returns, and\n * refuses the request when the count passes the limit. The clock reading and the window length are arguments, so\n * that the counter is a pure function.\n *\n * <p>A counter starts as {@code new Window(0, 0)}: no request yet, in the window at the epoch.\n */\npublic record Window(long startNanos, long count) {\n\n    public Window {\n        if (startNanos < 0 || count < 0) {\n            throw new IllegalArgumentException(\"the start and the count must not be negative\");\n        }\n    }\n\n    /**\n     * The counter after a request at {@code nowNanos}, with windows of {@code windowNanos}: one more in the same\n     * window, or the first request of the window the reading falls in.\n     */\n    public Window counted(long nowNanos, long windowNanos) {\n        if (windowNanos <= 0 || nowNanos < startNanos) {\n            throw new IllegalArgumentException(\"the window must be positive and time must not go back\");\n        }\n        long start = nowNanos - nowNanos % windowNanos;\n        return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.ratelimit;\n\n/**\n * A sliding-window request counter, the rate limit that does not let a client spend two limits at a window\n * boundary: how many requests a client has made in the window its last request fell in, and how many in the window\n * before it, with windows of one length aligned to the epoch (Spring Cloud Gateway's rate limiter keeps such a\n * count per key and window; Resilience4j's {@code RateLimiter} calls the window a cycle). The counter is a value:\n * the filter keeps one per client, replaces it on each request with what {@link #counted} returns, and refuses the\n * request when {@link #estimated} passes the limit. The clock reading and the window length are arguments, so that\n * the counter is a pure function.\n *\n * <p>A counter starts as {@code new Window(0, 0, 0)}: no request yet, in the window at the epoch.\n */\npublic record Window(long startNanos, long count, long previousCount) {\n\n    public Window {\n        if (startNanos < 0 || count < 0 || previousCount < 0) {\n            throw new IllegalArgumentException(\"the start and the counts must not be negative\");\n        }\n    }\n\n    /**\n     * The counter after a request at {@code nowNanos}, with windows of {@code windowNanos}: one more in the same\n     * window, or the first request of the window the reading falls in, with the count of the window just before\n     * it, if that is the one this counter was in, as the previous count.\n     */\n    public Window counted(long nowNanos, long windowNanos) {\n        if (windowNanos <= 0 || nowNanos < startNanos) {\n            throw new IllegalArgumentException(\"the window must be positive and time must not go back\");\n        }\n        long start = nowNanos - nowNanos % windowNanos;\n        if (start == startNanos) {\n            return new Window(startNanos, count + 1, previousCount);\n        }\n        return new Window(start, 1, start - startNanos == windowNanos ? count : 0);\n    }\n\n    /**\n     * The requests in the window of {@code windowNanos} ending at {@code nowNanos}, estimated as the current\n     * window's count plus the previous window's count weighted by how much of that sliding window it covers\n     * (the approximation Cloudflare's rate limiter uses).\n     */\n    public long estimated(long nowNanos, long windowNanos) {\n        if (windowNanos <= 0 || nowNanos < startNanos) {\n            throw new IllegalArgumentException(\"the window must be positive and time must not go back\");\n        }\n        long elapsed = Math.min(windowNanos, nowNanos - startNanos);\n        return count + previousCount * (windowNanos - elapsed) / windowNanos;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Window(startNanos: long, count: long, previousCount: long) × nowNanos: long × windowNanos: long",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over this: Window(startNanos: long, count: long, previousCount: long) × nowNanos: long × windowNanos: long in 0.1 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

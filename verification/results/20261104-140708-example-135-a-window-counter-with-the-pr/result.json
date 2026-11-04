@@ -1,0 +1,219 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140708-example-135-a-window-counter-with-the-pr",
+  "title": "Example 135: a window counter with the previous count proved equal on the start and the count by the tool's own checker, the record results related on their shared components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.0s, peak 90.3 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140708-example-135-a-window-counter-with-the-pr.json",
+    "sha256": "258f4d29f4c8c59ffbb4716e2ffc29921fc5c2e1440fa40d7c84781c3f3ef44d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140708-example-135-a-window-counter-with-the-pr",
+      "title": "Example 135: a window counter with the previous count proved equal on the start and the count by the tool's own checker, the record results related on their shared components",
+      "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted by the tool's own bounded model checker (--engine native) across the counter record gaining a previousCount component: the old counter is built from the new components and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), with no scope. Expected verified in seconds; JBMC did not finish the same harness within a minute inline (two 64-bit remainders), which is why the example names the checker.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "regression-proof",
+        "record-components",
+        "own-checker"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/bmc/mod.rs"
+        ],
+        "examples": [
+          "135"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:08+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 135 (B9)",
+          "run": "python3 examples/tools/build.py 135",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count"
+      ],
+      "supersedes": "20261104-085102-example-135-a-window-counter-with-the-pr"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:09:54+00:00",
+  "finishedAt": "2026-11-04T14:09:59+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 94638080,
+    "wallSeconds": 4.0,
+    "cpuSeconds": 6.1,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 135 (B9)",
+      "run": "python3 examples/tools/build.py 135",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.017,
+      "cpuSeconds": 6.146,
+      "cpuThrottledSeconds": 0.559,
+      "peakMemoryBytes": 94638080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-135-b9.log",
+        "lines": 2,
+        "bytes": 208,
+        "sha256": "053cbeaabecff30b1696d3889f6a7b0a63f29da5d6f0c66dc587200ed0bc0b2f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: verified (as expected)",
+          "groups": [
+            "135",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: running (B9)",
+        "135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/README.md",
+      "change": "added",
+      "bytes": 26367,
+      "sha256": "c11bd9ae4bfe05430f25bd83453c0b2b045ea4408d8eda7c751a29764badc701",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/result.json",
+      "change": "added",
+      "bytes": 5584,
+      "sha256": "b20d21c93b81fac8f956ec492ae064df1dd9d8599f7dee96f7c39b63e892b624",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/statement.java",
+      "change": "added",
+      "bytes": 3498,
+      "sha256": "612ec6169e3cd7aa2de5c6cee2b0fed7df2122e3a5c67406560ee6eaa25e7112",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/verifier-output.txt",
+      "change": "added",
+      "bytes": 496,
+      "sha256": "d05dc6131b1c95f32de44fe8e840d3b397dd27c9e7abc26fff981edb69a920ee",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/README.md",
+      "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/result.json",
+      "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/result.sarif",
+      "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/statement.java",
+      "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

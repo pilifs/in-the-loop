@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "startLine": 26,
+    "code": "        if (windowNanos <= 0 || nowNanos < startNanos) {\n            throw new IllegalArgumentException(\"the window must be positive and time must not go back\");\n        }\n        long start = nowNanos - nowNanos % windowNanos;\n        return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "startLine": 26,
+    "code": "        if (windowNanos <= 0 || nowNanos < startNanos) {\n            throw new IllegalArgumentException(\"the window must be positive and time must not go back\");\n        }\n        // The window the reading falls in, counted from zero, and where it starts.\n        long index = nowNanos / windowNanos;\n        long start = index * windowNanos;\n        return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long in 0.1 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}

@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261104-140709-example-142-ascii-fast-path-of-modifiedu",
+  "title": "Example 142: ASCII fast path of ModifiedUtf8#encodeInto proved equal by the own checker with path merging",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.2s, peak 94.2 MiB (estimated 4m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261104-140709-example-142-ascii-fast-path-of-modifiedu.json",
+    "sha256": "8335dc132e1e8e32d2f3bd4908e6ab569deeb6cabfe3f0e6b47e1f9684892b97",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261104-140709-example-142-ascii-fast-path-of-modifiedu",
+      "title": "Example 142: ASCII fast path of ModifiedUtf8#encodeInto proved equal by the own checker with path merging",
+      "description": "Runs build.py on example 142 (B9, approach.engine native): the regression proof of Mica's ModifiedUtf8#encodeInto with an ASCII fast path against the previous version, at the default bounds (8 elements, unwind 16), by the tool's own checker with paths merged at join points. Expected: verified, in about 6 s and under 100 MB (237 paths). This is the proof that waited in examples/apps/mica/pending for a larger machine, since JBMC ran out of memory at 2.8 GB on it.",
+      "kind": "example",
+      "capabilities": [
+        "regression-proof",
+        "own-checker",
+        "arrays",
+        "path-merging",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "142"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-04T14:07:09+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "4m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 142 (B9)",
+          "run": "python3 examples/tools/build.py 142",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight"
+      ],
+      "supersedes": "20261104-104407-example-142-ascii-fast-path-of-modifiedu"
+    }
+  },
+  "sourceCommit": "9325f7ee8117cdb621f6302e430b1a084ee94ced",
+  "startedAt": "2026-11-04T14:10:12+00:00",
+  "finishedAt": "2026-11-04T14:10:23+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2734714,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 98770944,
+    "wallSeconds": 10.2,
+    "cpuSeconds": 12.3,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 142 (B9)",
+      "run": "python3 examples/tools/build.py 142",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 10.227,
+      "cpuSeconds": 12.282,
+      "cpuThrottledSeconds": 0.346,
+      "peakMemoryBytes": 98770944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-142-b9.log",
+        "lines": 2,
+        "bytes": 248,
+        "sha256": "ab668a3166e74e7278290aa525d32dd81d2b584e96130f0b9b80b0b9f4a911e8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: verified (as expected)",
+          "groups": [
+            "142",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: running (B9)",
+        "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/README.md",
+      "change": "added",
+      "bytes": 15818,
+      "sha256": "fc6e456fc9f604ae85e8488ee162978ae59f44949c7a57c2a957b510c1bfe2e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.json",
+      "change": "added",
+      "bytes": 1879,
+      "sha256": "5765e5e091ce7e954b0ecb68503230c6aac69c508de41c9f52f95dded2005888",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/statement.java",
+      "change": "added",
+      "bytes": 2611,
+      "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/verifier-output.txt",
+      "change": "added",
+      "bytes": 278,
+      "sha256": "a8f429010332f227269c08a40977b414b15f8ba8f62648ab1752eba892a0d3da",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T14:10:36+00:00",
+    "applied": [
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/README.md",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.json",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/result.sarif",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/statement.java",
+      "examples/142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
