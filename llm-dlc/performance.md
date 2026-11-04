@@ -127,8 +127,8 @@ the 20 sessions' latest logs (38,949 lines, 159 M characters) can be split into 
 | 4 | 24.6 s | 95.4 s | 3.9× |
 
 With both changes, the gate and a process pool, a cold scan of everything should drop from about
-150 s to roughly 10–20 s. This is an estimate: the gain from the gate and the gain from the pool
-were each measured, but not together.
+150 s to roughly 10–20 s. This was an estimate when written; measured with both in, below, a full
+scan takes 11.6 s and a full check 18.0 s.
 
 **The pool is in** (step 3e, `redactor.py`). Cold redaction and scanning go to one process per
 CPU, which apply the same rules line by line. Measured on 2026-11-03 against the same state with
@@ -143,7 +143,41 @@ CPU, which apply the same rules line by line. Measured on 2026-11-03 against the
 The first `check --full` with the pool, which started it only for texts of 4 M characters or
 more, took 43.8 s: most snapshots are scanned only past the end of an earlier one, and those
 pieces stayed in one process. A started pool now takes any text of 250 k characters or more.
-The gate is the next half.
+
+**The gate is in** (`GATES` in `redaction_rules.py`). Every rule has a gate: words that
+every match holds (compared as `re.I` compares for the case-insensitive rules: by `str.lower`
+only on all-ASCII text, where the two agree, else by the engine), an assertion-free pattern, or
+both. It is tested once per line on the line's strings joined, and each rule also skips strings
+shorter than its shortest match. On the largest log (79 M characters), measured on 2026-11-03,
+CPU time in one process:
+
+| Work | Before | With the gates | Output |
+|---|---|---|---|
+| scan (`hits_of_line` of each line) | 55.7 s | 14.1 s | identical |
+| redaction (`Rules.__call__`) | 42.0 s | 14.2 s | identical |
+
+Of the 13.4 s that remain in a scan, the gates take about 7 s: env-secret's hint on the 44% of
+lines whose strings hold one of its words (2.6 s), the 28 personal literals (1.1 s), and the
+class-led patterns of public-ip, ipv6, mac-address and long-token (about 0.5 s each). The rules
+themselves take about 4.5 s, mostly env-secret (2.3 s) and long-token (1.5 s), whose gates pass
+2.3% and 38% of lines. Parsing takes 0.55 s.
+
+Whole commands, every cache bypassed with `--full`, against the step 3e numbers above (the state
+has grown a little since: 20 sessions, 86,318 distinct lines):
+
+| Command | 3e, 8 processes | Gates, 8 processes | 3e, one process | Gates, one process |
+|---|---|---|---|---|
+| `check --full` | 32.5 s | 18.0 s (20.1 s worker CPU, was 78.7 s) | 112.1 s | 37.8 s |
+| `scan --full` | 32.0 s | 11.6 s | 160.0 s | not measured |
+
+`check --full` printed the same in one process as in eight, and the same 0 errors and 13
+warnings as before the gates. `stamp --equivalent` checked the gated rules against the stamped
+ones on every distinct line of every transcript, log and published file: 86,318 lines, the same
+results. It now also runs in one process per CPU, and took 92.9 s for 635 s of worker CPU, most
+of it the old rules. In one process that would be about 10.5 minutes.
+
+So the cold path is now under the 30 s at which [the conditions below](#when-to-look-again) said
+to look again.
 
 Go would remove the dispatch overhead, and goroutines would give the same parallelism. Its
 standard `regexp` package, however, guarantees linear time with an NFA, a one-pass matcher and a

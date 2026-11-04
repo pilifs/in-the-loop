@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-03T14:52:02.194Z",
-  "ended": "2026-11-04T03:21:57.235Z",
-  "duration_seconds": 44995,
+  "ended": "2026-11-04T03:45:40.410Z",
+  "duration_seconds": 46418,
   "stats": {
-    "turns": 69,
-    "api_calls": 593,
-    "tool_calls": 591,
-    "tool_errors": 9,
-    "compactions": 12,
+    "turns": 76,
+    "api_calls": 655,
+    "tool_calls": 651,
+    "tool_errors": 10,
+    "compactions": 13,
     "peak_context_tokens": 315353,
     "usage": {
-      "input_tokens": 1224,
-      "output_tokens": 617045,
-      "cache_read_input_tokens": 68025676,
-      "cache_creation_input_tokens": 1984841
+      "input_tokens": 1354,
+      "output_tokens": 699792,
+      "cache_read_input_tokens": 76052325,
+      "cache_creation_input_tokens": 2165913
     }
   },
   "tools": {
-    "Bash": 534,
-    "Edit": 19,
-    "Read": 14,
-    "ToolSearch": 9,
-    "Monitor": 6,
+    "Bash": 589,
+    "Edit": 20,
+    "Read": 15,
+    "ToolSearch": 10,
+    "Monitor": 8,
     "Write": 6,
     "TaskStop": 3
   },
@@ -42,6 +42,7 @@
     "llm-dlc/performance.md",
     "llm-dlc/specification.md",
     "llm-dlc/tools/profile_rules.py",
+    "llm-dlc/tools/redaction_rules.py",
     "llm-dlc/tools/sync.py",
     "llm-dlc/tools/test_performance.py",
     "~/.claude/projects/-home-user-code-java-formal-verification/memory/sync-performance-loop.md"
@@ -218,24 +219,38 @@
     {
       "index": 12,
       "started": "2026-11-04T03:04:58.792Z",
-      "ended": "2026-11-04T03:21:57.235Z",
-      "turns": 4,
-      "api_calls": 41,
+      "ended": "2026-11-04T03:22:44.124Z",
+      "turns": 5,
+      "api_calls": 45,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 37190,
-        "cache_read_input_tokens": 3980167,
-        "cache_creation_input_tokens": 121068
+        "input_tokens": 90,
+        "output_tokens": 39476,
+        "cache_read_input_tokens": 4533928,
+        "cache_creation_input_tokens": 133473
       },
-      "peak_context_tokens": 134148
+      "peak_context_tokens": 146553
+    },
+    {
+      "index": 13,
+      "started": "2026-11-04T03:23:11.777Z",
+      "ended": "2026-11-04T03:45:40.410Z",
+      "turns": 6,
+      "api_calls": 58,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 80461,
+        "cache_read_input_tokens": 7472888,
+        "cache_creation_input_tokens": 168667
+      },
+      "peak_context_tokens": 181747
     }
   ],
   "log": {
-    "sha256": "9cd6d2e82c5b7f301eacfa845b887172f9f73663a2aff8b17cc556df2ce1833f",
-    "bytes": 17154037,
-    "lines": 6257,
-    "gzip_bytes": 3094161,
-    "path": "llm-dlc/traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/logs/9cd6d2e82c5b7f301eacfa845b887172f9f73663a2aff8b17cc556df2ce1833f.jsonl.gz"
+    "sha256": "73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3",
+    "bytes": 18645323,
+    "lines": 6850,
+    "gzip_bytes": 3354170,
+    "path": "llm-dlc/traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/logs/73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -358,6 +373,14 @@
       "summary": "sync.py speed, step 3e: a cold scan or redaction runs in one process per CPU",
       "body": "After an edit to the rules or redactor.py, on --full, on a new machine or for a new session's first transcript, every line is redacted and scanned again, in one process: check --full took 112 s, scan --full 160 s and sync --full 71 s here (20 sessions, 172 snapshots). Redaction and scanning are line by line, so redactor.Redactor now hands such text to a pool of spawned processes, one per CPU (LLM_TRACES_PROCESSES; 1 keeps the old path). Each worker builds redaction_rules.Rules from the same literals and returns the redacted bytes of its lines, or hits_of_line of each line, which go into the redactor's per-line memo (_seen) under the key hits_of_text uses, the first line under a key standing for the others as before. A worker checks that the fingerprint of the rules and redactor.py it loaded equals what the parent read when its redactor was made; one that differs (an edit in between) fails its tasks and the parent does the work itself, as it does when the pool breaks. The pool starts only for 4 M characters not yet done, so a commit's new lines never start it; once started it also takes texts of 250 k characters or more, since most snapshots are scanned only past an earlier one (with 4 M alone, check --full took 43.8 s). Spawn, not fork, since push scans from threads.\n\nMeasured on the same state, LLM_TRACES_PROCESSES=1 against the default (8 CPUs), caches bypassed with --full: check 112.1 s to 32.5 s (scan 100.0 s to 20.0 s, 78.7 s of worker CPU), scan 160.0 s to 32.0 s, sync 71.0 s to 17.9 s; the outputs of check, scan and sync are identical (sync left the 95-104 generated files unchanged). The warm path is unchanged: a redactor now reads its fingerprint once when made (0.3 ms). Tests: test_performance.Pool (6) compares pooled redaction and findings with one process's on made-up transcripts with empty lines, CR, CRLF, U+2028, vertical tabs and invalid UTF-8, checks the memo keys, that a worker with other rules is refused once and not retried, that one process starts no pool, that a started pool takes smaller texts, and that chunks keep every line in order. MadeUpRedactor now runs Redactor.__init__. test_performance 81, test_review 25, test_metrics 21 pass. specification.md (Local caches) and performance.md describe the pool and its numbers.",
       "log_sha256": "9cd6d2e82c5b7f301eacfa845b887172f9f73663a2aff8b17cc556df2ce1833f"
+    },
+    {
+      "change_id": "pvuopzzvswtynumooyxprwupoqnxuyzt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "sync.py speed, step 3f: each rule is skipped on lines that cannot hold its match, and stamp --equivalent runs in one process per CPU",
+      "body": "Every redaction, leak and review rule now has a gate (GATES in redaction_rules.py): words that every match of the rule holds, an assertion-free pattern that matches inside every match, or both. The gate is tested once per line, on the line's JSON strings joined by \\0, and a rule whose gate fails is skipped on all of that line's strings. Each rule also skips strings shorter than its shortest match (from the regex parser's width). Case-insensitive words are compared as re.I compares: by str.lower only when the joined text is all ASCII, where the two agree; otherwise by the regex engine, so ſ, the Kelvin sign and İ fold as before. Redaction applies the rules in sequence, so a gate holds for a string only until a rule changes it; from then on every later rule runs. A pattern replaced after construction runs ungated.\n\nOn the largest log (79 M characters), CPU time in one process: scan 55.7 s to 14.1 s, redaction 42.0 s to 14.2 s, identical results. Whole commands with every cache bypassed: check --full 32.5 s to 18.0 s with 8 processes (worker CPU 78.7 s to 20.1 s) and 112.1 s to 37.8 s in one; scan --full 32.0 s to 11.6 s. check --full printed the same in one process as in eight: 0 errors, 13 warnings, as before. The cold path is now under the 30 s at which llm-dlc/performance.md said to look at a native scanner; the new numbers and what remains (gates about 7 s of a 13.4 s scan, env-secret and long-token most of the rest) are recorded there.\n\nstamp --equivalent now loads both versions of the rules from their source text (the stamped one from @-, the current one as read from disk at the start). It compares them in a spawned pool, with lines sent in batches of about 1 M characters, and writes the stamp only if the rules file still holds the text it compared. Run on this change: all 86,318 distinct lines of every transcript, log and published file gave the same results, so the rules keep the date 2026-11-01T23:27:26. That took 92.9 s wall for 635 s of worker CPU, about 10.5 minutes in one process.\n\nTests: test_performance 91 (new: a Gates class with 9 tests, covering gate soundness on random made-up text for every rule, re.I against the ASCII fast path including ſ, K and İ, assertion-free gate patterns, minimum widths, gated against ungated redaction and findings on multi-string JSON lines, a rule running on what an earlier one wrote, colour codes, and replaced rules; plus pooled against one-process rule comparison). The Reference rules in the tests are now the full ungated implementation. test_review 25, test_metrics 21, all passing. profile_rules.py now reports each gate's pass rate and the gated scan time instead of the old credential-gate estimate. specification.md describes the gates and the pooled comparison.\n\nCorrection to the brief: its Progress section still says 'Next: the second changeset'. Changesets 2 and 3 (steps 2a–2g, 3a–3f) are done in this run.",
+      "log_sha256": "73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3"
     }
   ],
   "logs": {
@@ -401,6 +424,12 @@
       "bytes": 9782211,
       "lines": 3465,
       "gzip_bytes": 1772992,
+      "url": null
+    },
+    "73bb6c9b8ddcb06337977a3d50740b03d220cede65c84e80b5951bebeed8d7c3": {
+      "bytes": 18645323,
+      "lines": 6850,
+      "gzip_bytes": 3354170,
       "url": null
     },
     "788d72bf81eaf5ed07d7bd2e6171c1e24f3931ed0a1f10fcc602b810bf5f6a69": {

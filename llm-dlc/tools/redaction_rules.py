@@ -15,6 +15,7 @@ import string
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable, NamedTuple
 
 REDACTION_POLICY = 4           # bump when redaction changes the bytes it produces
 REDACT_KEYS = {"organizationUuid", "accountUuid", "userID"}  # account identifiers Claude Code records
@@ -76,6 +77,62 @@ SECRET_PATTERNS = [
 # right after the keyword; both compared case-insensitively by the same engine, so ſ, the Kelvin
 # sign and dotted İ fold alike. Half the cost on real logs (Nov 3 2026).
 HINTS = {"env-secret": r"(?i)(?:pass|secret|token|credential|key|auth)[A-Z0-9_]*[\"']?\s*[=:]"}
+
+
+class Gate(NamedTuple):
+    """What every match of a rule holds: one of `words`, exactly or, with `ignorecase`, compared
+    as re.I compares; and a match of `pattern`, which has no lookaround, anchor or \\b, so that it
+    matches wherever its text is, whatever surrounds it. Either may be left out; the words are
+    tested first, as they are cheaper."""
+    words: tuple[str, ...] = ()
+    ignorecase: bool = False
+    pattern: str = ""
+
+
+# Per-line gates. A line holds some 50 JSON strings and the rules are some 60, so most of a scan's
+# time went into calling rules on strings they cannot match (llm-dlc/performance.md). A string
+# holds what its rule's gate names wherever the rule matches it, and then so do the line's strings
+# joined, by \0. So the gate is tested once on that joined text, and a rule whose gate fails is
+# skipped on every string of the line, with the same result. The redactor's rules run one after
+# another on a string, so its later rules see text the earlier ones replaced: a gate there holds
+# only until a rule changes the string, and from then on every rule runs. A personal literal gates
+# on itself, the username rule on the name, email on @. A rule with no gate runs on every string.
+GATES = {
+    "anthropic-key": Gate(("sk-ant-",)),
+    "langfuse-key": Gate(("k-lf-",)),
+    "api-key": Gate(("sk-",)),
+    "github-token": Gate(("ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_")),
+    "gitlab-token": Gate(("glpat-",)),
+    "aws-key": Gate(("AKIA",)),
+    "google-key": Gate(("AIza",)),
+    "google-oauth": Gate(("ya29.",)),
+    "slack-token": Gate(("xoxa-", "xoxb-", "xoxp-", "xoxr-", "xoxs-")),
+    "slack-webhook": Gate(("https://hooks.slack.com/services/",)),
+    "discord-webhook": Gate(("/api/webhooks/",)),
+    "npm-token": Gate(("npm_",)),
+    "huggingface-token": Gate(("hf_",)),
+    "stripe-key": Gate(("k_live_", "k_test_")),
+    "sendgrid-key": Gate(("SG.",)),
+    "jwt": Gate(("eyJ",)),
+    "private-key": Gate(("-----BEGIN ",)),
+    "bearer": Gate(("bearer",), ignorecase=True),
+    "basic-auth": Gate(("basic",), ignorecase=True),
+    "url-password": Gate(("://",), pattern="@"),
+    "curl-user": Gate(("-u ", "-u=", "--user ", "--user=")),
+    "account-id": Gate(("accountUuid", "organizationUuid", "userID")),
+    # Each keyword holds one of these words, and the hint matches in the rule's match: see HINTS,
+    # which is then tested on each string of a line that passes.
+    "env-secret": Gate(("pass", "secret", "token", "credential", "key", "auth"), ignorecase=True,
+                       pattern=HINTS["env-secret"]),
+    "windows-user": Gate(("Users",)),
+    # Review rules, tested on the strings with colour codes removed; so are their gates.
+    "public-ip": Gate(pattern=r"\d\.\d{1,3}\.\d{1,3}\.\d"),  # the end of the first number to the start of the last
+    "ipv6": Gate(pattern=r"[0-9A-Fa-f]:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]"),  # three of its five colons or more
+    "mac-address": Gate(pattern=r"[0-9A-Fa-f]:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]"),
+    "other-home-dir": Gate(("/home/", "/Users/")),
+    "auth-header": Gate(("authorization", "cookie", "x-api-key"), ignorecase=True),  # and set-cookie, proxy-...
+    "long-token": Gate(pattern=r"[A-Za-z0-9+/_\-]{40}"),
+}
 
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}(?![A-Za-z0-9\-])")
 # EMAIL_RE retries its local part from every character of a run of local-part characters, which
@@ -184,6 +241,53 @@ def _strings(obj):
             yield from _strings(v)
 
 
+def _min_width(rx: re.Pattern) -> int:
+    """The fewest characters a match of rx can take: a string shorter than that holds none. 0, so
+    that the rule always runs, when the parser that knows it is not there."""
+    try:
+        return re._parser.parse(rx.pattern, rx.flags).getwidth()[0]
+    except Exception:  # noqa: BLE001 - a private module: any failure means "don't know"
+        return 0
+
+
+def _gate_test(gate: Gate | None) -> Callable[[str, str | None], bool] | None:
+    """gate as a test of (a line's strings joined, the same lowered if it is all ASCII, else None);
+    None when there is no gate. For ASCII text and ASCII words, re.I compares as str.lower does:
+    its other folds (ſ, the Kelvin sign, İ, ı) all pair an ASCII letter with a non-ASCII one."""
+    if gate is None:
+        return None
+    words_test = _words_test(gate.words, gate.ignorecase) if gate.words else None
+    if not gate.pattern:
+        return words_test
+    search = re.compile(gate.pattern).search
+    if words_test is None:
+        return lambda joined, _lowered: search(joined) is not None
+    return lambda joined, lowered: words_test(joined, lowered) and search(joined) is not None
+
+
+def _words_test(words: tuple[str, ...], ignorecase: bool) -> Callable[[str, str | None], bool]:
+    if not ignorecase:
+        if len(words) == 1:
+            word = words[0]
+            return lambda joined, _lowered: word in joined
+        return lambda joined, _lowered: any(w in joined for w in words)
+    search = re.compile("|".join(map(re.escape, words)), re.I).search
+    if not all(w.isascii() for w in words):
+        return lambda joined, _lowered: search(joined) is not None
+    lowered_words = tuple(w.lower() for w in words)
+    return lambda joined, lowered: (any(w in lowered for w in lowered_words) if lowered is not None
+                                    else search(joined) is not None)
+
+
+class _Plan(NamedTuple):
+    """The rules of a Rules, each with its gate (an index into tests, or -1 for none), the shortest
+    string it can match and what it does: finds leaks, finds reviewable text, or redacts."""
+    tests: list[Callable[[str, str | None], bool]]
+    leaks: list[tuple[int, int, Callable[[str, list], None]]]
+    review: list[tuple[int, int, Callable[[str, list], None]]]
+    steps: list[tuple[int, int, Callable[[str], str]]]
+
+
 class Rules:
     """The rules, with the literals of one machine. Hits come back with no judgement applied:
     what a person has reviewed is the caller's business."""
@@ -202,6 +306,18 @@ class Rules:
         self.hints = {kind: re.compile(hint) for kind, hint in HINTS.items()}
         self.review_res = [(kind, re.compile(pattern), keep) for kind, pattern, keep in REVIEW_PATTERNS]
         self._seen: dict[bytes, tuple[list, list]] = {}  # logs repeat each other's lines: see hits_of_text
+        # Gates by the pattern they gate, so that a pattern put in place of one of these after
+        # construction (tests do) runs ungated. A literal gates on itself, in its case or under re.I.
+        self._gates: dict[re.Pattern, Gate] = {
+            rx: Gate((lit,), ignorecase=bool(flags & re.I))
+            for (_kind, rx, _rep), (lit, _r, flags, _k) in zip(self.literals, pairs) if flags & ~re.I == 0}
+        self._gates.update({rx: GATES[kind] for kind, rx, _rep in self.secret_res if kind in GATES})
+        self._gates.update({rx: GATES[kind] for kind, rx, _keep in self.review_res if kind in GATES})
+        if self.user_re is not None:
+            self._gates[self.user_re] = Gate((user,))
+        self._gates.update({EMAIL_RE: Gate(("@",)), WIN_USER_RE: GATES["windows-user"]})
+        self._plan_key: tuple = ()
+        self._plan_value: _Plan | None = None
 
     @staticmethod
     def _public_email(address: str) -> bool:
@@ -233,17 +349,92 @@ class Rules:
             last = end
         return "".join(out) + text[last:] if out else text
 
-    def string(self, text: str) -> str:
-        for _kind, rx, rep in self.literals:
-            text = rx.sub(lambda _m, r=rep: r, text)
-        for kind, rx, rep in self.secret_res:
-            if self._may_match(kind, text):  # tested on the text this rule gets, after the ones before
-                text = rx.sub(rep, text)
-        text = self._emails_redacted(text)
-        text = WIN_USER_RE.sub(self._win_user, text)
-        if self._user_may_match(text):
-            text = self.user_re.sub("user", text)
+    def _plan(self) -> _Plan:
+        """The plan for the rules as they are now: built again when one of the lists of rules or
+        the username pattern is replaced."""
+        key = (self.literals, self.secret_res, self.user_re, self.review_res, self.hints)
+        if self._plan_value is not None and all(a is b for a, b in zip(key, self._plan_key)):
+            return self._plan_value
+        tests: list = []
+        index: dict[Gate, int] = {}
+
+        def gate(rx: re.Pattern) -> int:
+            g = self._gates.get(rx)
+            if g is None:
+                return -1
+            if g not in index:
+                index[g] = len(tests)
+                tests.append(_gate_test(g))
+            return index[g]
+
+        def found(kind, rx):
+            return lambda s, out: out.extend([(kind, m.group(0)) for m in rx.finditer(s)])
+
+        def hinted(kind, rx):
+            return lambda s, out: out.extend([(kind, m.group(0)) for m in rx.finditer(s)] if self._may_match(kind, s) else ())
+
+        def emails(s, out):
+            out += [("email", s[a:b]) for a, b in email_spans(s) if not self._public_email(s[a:b])]
+
+        def win_users(s, out):
+            out += [("windows-user", m.group(0)) for m in WIN_USER_RE.finditer(s) if self._win_user(m) != m.group(0)]
+
+        def reviewed(kind, rx, keep):
+            return lambda s, out: out.extend([(kind, m.group(0)) for m in rx.finditer(s)
+                                              if keep(m.group(0)) and not (kind == "public-ip" and _is_version(m))])
+
+        def literal(rx, rep):
+            return lambda t: rx.sub(lambda _m: rep, t)
+
+        def secret(kind, rx, rep):
+            return lambda t: rx.sub(rep, t) if self._may_match(kind, t) else t
+
+        leaks = [(gate(rx), _min_width(rx), found(kind, rx)) for kind, rx, _ in self.literals]
+        leaks += [(gate(rx), _min_width(rx), hinted(kind, rx)) for kind, rx, _ in self.secret_res]
+        leaks += [(gate(EMAIL_RE), _min_width(EMAIL_RE), emails), (gate(WIN_USER_RE), _min_width(WIN_USER_RE), win_users)]
+        steps = [(gate(rx), _min_width(rx), literal(rx, rep)) for _kind, rx, rep in self.literals]
+        steps += [(gate(rx), _min_width(rx), secret(kind, rx, rep)) for kind, rx, rep in self.secret_res]
+        steps += [(gate(EMAIL_RE), _min_width(EMAIL_RE), self._emails_redacted),
+                  (gate(WIN_USER_RE), _min_width(WIN_USER_RE), lambda t: WIN_USER_RE.sub(self._win_user, t))]
+        if (rx := self.user_re) is not None:
+            leaks.append((gate(rx), _min_width(rx), lambda s, out: out.extend(
+                [("username", m.group(0)) for m in rx.finditer(s)] if self._user_may_match(s) else ())))
+            steps.append((gate(rx), _min_width(rx), lambda t: rx.sub("user", t) if self._user_may_match(t) else t))
+        review = [(gate(rx), _min_width(rx), reviewed(kind, rx, keep)) for kind, rx, keep in self.review_res]
+        self._plan_key, self._plan_value = key, _Plan(tests, leaks, review, steps)
+        return self._plan_value
+
+    @staticmethod
+    def _passed(tests, joined: str) -> list[bool]:
+        """Which gates the strings of one line pass, all tested on the strings joined by \\0."""
+        lowered = joined.lower() if joined.isascii() else None
+        return [test(joined, lowered) for test in tests]
+
+    def _redacted(self, text: str, steps: list) -> str:
+        """The steps of the plan, in order, on one string. steps holds those whose gate the line
+        passed; once one changes the string, the gates say nothing about it, so every later step
+        of the plan runs."""
+        original = text
+        for n, (minimum, apply) in steps:
+            if len(text) >= minimum:
+                text = apply(text)
+                if text is not original:
+                    for _gate, minimum, apply in self._plan().steps[n + 1:]:
+                        if len(text) >= minimum:
+                            text = apply(text)
+                    return text
         return text
+
+    def _steps_of(self, strings: list[str] | None) -> list:
+        """(index in the plan, shortest match, step) of the steps whose gate a line's strings pass;
+        every step for strings=None."""
+        plan = self._plan()
+        passed = self._passed(plan.tests, "\x00".join(strings)) if strings is not None else None
+        return [(n, (minimum, apply)) for n, (g, minimum, apply) in enumerate(plan.steps)
+                if g < 0 or passed is None or passed[g]]
+
+    def string(self, text: str) -> str:
+        return self._redacted(text, self._steps_of(None))
 
     def __call__(self, jsonl: str) -> bytes:
         """Redact every string (keys included) of every JSON line. Working on decoded
@@ -254,27 +445,12 @@ class Rules:
             try:
                 obj = json.loads(line)
             except ValueError:
-                out.append(self.string(line))
+                out.append(self._redacted(line, self._steps_of([line])))
                 continue
-            out.append(json.dumps(_walk(_scrub(obj), self.string), ensure_ascii=False, separators=(",", ":")))
+            obj = _scrub(obj)
+            steps = self._steps_of(list(_strings(obj)))
+            out.append(json.dumps(_walk(obj, lambda s: self._redacted(s, steps)), ensure_ascii=False, separators=(",", ":")))
         return ("\n".join(out) + "\n" if out else "").encode()
-
-    def _leaks_in(self, s: str, out: list) -> None:
-        for kind, rx, _ in self.literals:
-            out += [(kind, m.group(0)) for m in rx.finditer(s)]
-        for kind, rx, _ in self.secret_res:
-            if self._may_match(kind, s):
-                out += [(kind, m.group(0)) for m in rx.finditer(s)]
-        out += [("email", s[a:b]) for a, b in email_spans(s) if not self._public_email(s[a:b])]
-        out += [("windows-user", m.group(0)) for m in WIN_USER_RE.finditer(s) if self._win_user(m) != m.group(0)]
-        if self._user_may_match(s):
-            out += [("username", m.group(0)) for m in self.user_re.finditer(s)]
-
-    def _reviewable_in(self, s: str, out: list) -> None:
-        s = ANSI_RE.sub("", s)  # colour codes glue digits onto the words they precede
-        for kind, rx, keep in self.review_res:
-            out += [(kind, m.group(0)) for m in rx.finditer(s)
-                    if keep(m.group(0)) and not (kind == "public-ip" and _is_version(m))]
 
     def hits_of_line(self, line: str) -> tuple[list, list]:
         """(what the redactor would still change, what is left for a person), as (kind, value)."""
@@ -283,13 +459,32 @@ class Rules:
         try:
             obj = json.loads(line)
         except ValueError:
-            self._leaks_in(line, leaks)
-            self._reviewable_in(line, reviewable)
-            return leaks, reviewable
-        for s in _strings(obj):
-            self._leaks_in(s, leaks)
-            self._reviewable_in(s, reviewable)
-        if _unscrubbed(obj):
+            obj, strings = None, [line]
+        else:
+            strings = list(_strings(obj))
+        plan = self._plan()
+        joined = "\x00".join(strings)
+        passed = self._passed(plan.tests, joined)
+        finders = [(minimum, find) for g, minimum, find in plan.leaks if g < 0 or passed[g]]
+        if finders:
+            for s in strings:
+                n = len(s)
+                for minimum, find in finders:
+                    if n >= minimum:
+                        find(s, leaks)
+        # Colour codes glue digits onto the words they precede: the review rules, and so their
+        # gates, see the strings without them.
+        if "\x1b" in joined:
+            strings = [ANSI_RE.sub("", s) for s in strings]
+            passed = self._passed(plan.tests, "\x00".join(strings))
+        reviewers = [(minimum, find) for g, minimum, find in plan.review if g < 0 or passed[g]]
+        if reviewers:
+            for s in strings:
+                n = len(s)
+                for minimum, find in reviewers:
+                    if n >= minimum:
+                        find(s, reviewable)
+        if obj is not None and _unscrubbed(obj):
             leaks.append(("account-id", ACCOUNT_ID_HIT))
         return leaks, reviewable
 
@@ -337,6 +532,6 @@ RULES_STAMP = f"{{RULES_HASH}}@{{RULES_GENERATED}}"
 
 _STAMP_MARK = "# --- " + "stamp"
 # --- stamp: written by `sync.py stamp`; the hash covers everything above this line.
-RULES_HASH = "e84de1eb43f93c594b06dcf8bf7e3ac050c3636a78cad483b2ebd341e1e9c04f"
+RULES_HASH = "5af6bb15e22867255de50c5382680563e36571c2a25406c207ba1f706a8a8016"
 RULES_GENERATED = "2026-11-01T23:27:26+00:00"
 RULES_STAMP = f"{RULES_HASH}@{RULES_GENERATED}"

@@ -9,7 +9,8 @@ Without a log it profiles the largest stored one. For each log it prints:
 - each rule's time as a scan applies it (once per JSON string, as Rules.hits_of_line does) and in
   one pass over all the strings joined, which tells the cost of calling a rule 1.5 million times
   from Python from the cost of the regular expression itself;
-- how many lines hold a literal that one of the credential rules needs: a cheap per-line gate;
+- what the per-line gates (redaction_rules.GATES) cost, how many lines pass each, and what a scan
+  with them, as Rules.hits_of_line runs it, takes;
 - how many lines a JSON encoder that sorts keys or escapes <, > and & would write differently.
 
 --processes N also scans the distinct lines of the given logs in N processes and in one.
@@ -28,11 +29,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import redaction_rules  # noqa: E402
 import sync  # noqa: E402
-
-# A literal that each credential rule's match contains: a measurement, not a rule. bearer,
-# basic-auth, url-password, curl-user and env-secret have none worth gating on.
-GATE = re.compile(r"sk-|gh[pousr]_|github_pat_|glpat-|AKIA|AIza|ya29\.|xox[abprs]-|npm_|hf_|k_(?:live|test)_"
-                  r"|SG\.|eyJ|-----BEGIN|hooks\.slack|discord|k-lf-|accountUuid|organizationUuid|userID")
 
 
 def _load(line: str):
@@ -89,9 +85,21 @@ def profile(path: Path, red: sync.Redactor) -> None:
             total_each, total_once = total_each + each, total_once + once
         print(f"  {name:32s} {each:9.2f}s {once:8.2f}s")
     print(f"  {'all rules':32s} {total_each:9.2f}s {total_once:8.2f}s")
-    gate_s, gated = _timed(lambda: sum(1 for line in lines if GATE.search(line)))
-    print(f"  credential gate: {gated} of {len(lines)} lines ({100 * gated / len(lines):.1f}%) hold a literal "
-          f"a credential rule needs, found in {gate_s:.2f} s")
+    plan = red._plan()
+    by_line = ["\x00".join(redaction_rules._strings(o)) if not isinstance(o, str) else o for o in objs]
+    gate_s, passed = _timed(lambda: [red._passed(plan.tests, joined) for joined in by_line])
+    personal = {g for g, _m, _f in plan.leaks[:len(red.literals)] if g >= 0}
+    named = {f"personal literals ({len(personal)})": personal}
+    for (kind, _rx, _r), (g, _m, _f) in zip(red.secret_res, plan.leaks[len(red.literals):]):
+        named.setdefault(kind, {g} - {-1})
+    for (kind, _rx, _k), (g, _m, _f) in zip(red.review_res, plan.review):
+        named.setdefault(kind, {g} - {-1})
+    print(f"  {len(plan.tests)} gates tested on each line's strings joined in {gate_s:.2f} s; lines passing:")
+    for name, gates in named.items():
+        n = sum(any(p[g] for g in gates) for p in passed)
+        print(f"    {name:28s} {n:7d} ({100 * n / len(lines):.1f}%)" if gates else f"    {name:28s}  no gate")
+    scan_s, _ = _timed(lambda: sum(1 for line in lines for _h in red.hits_of_line(line)))
+    print(f"  scan with the gates (hits_of_line of each line, no memo): {scan_s:.2f} s")
     parsed = [o for o in objs if not isinstance(o, str)]
     unsorted = sum(not _keys_sorted(o) for o in parsed)
     html = sum(any(c in line for c in "<>&") for line in lines)

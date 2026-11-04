@@ -2313,32 +2313,99 @@ def rules_differences(old: redaction_rules.Rules, new: redaction_rules.Rules, li
     return differ
 
 
+def rules_module(source: str, name: str):
+    """The rules module whose source this is, loaded under name, apart from redaction_rules."""
+    import types
+    module = types.ModuleType(name)
+    module.__file__ = f"<{name}>"
+    sys.modules[name] = module  # what typing and dataclasses look a class's module up in
+    exec(compile(source, f"{name}.py", "exec"), module.__dict__)
+    return module
+
+
+_compared: tuple | None = None  # in a worker of compare_rules: (old rules, new rules)
+
+
+def _compare_init(old_source: str, new_source: str, inputs: tuple) -> None:
+    global _compared
+    _compared = (rules_module(old_source, "stamped_rules").Rules(*inputs),
+                 rules_module(new_source, "current_rules").Rules(*inputs))
+
+
+def _compare_worker(lines: list[str]) -> tuple[int, float]:
+    start = time.process_time()
+    return rules_differences(*_compared, lines), time.process_time() - start
+
+
+def compare_rules(old_source: str, new_source: str, inputs: tuple, lines, processes: int | None = None) -> int:
+    """rules_differences of the rules of the two sources, in one process per CPU (spawned, as
+    Redactor's pool is) when there are two or more. Lines go out in batches of about a million
+    characters, a few per process at a time, so that memory holds only those in flight."""
+    from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
+    import multiprocessing
+    processes = processes or redactor.pool_processes()
+    if processes < 2:
+        _compare_init(old_source, new_source, inputs)
+        return _compare_worker(list(lines))[0]
+    differ, cpu, batches = 0, 0.0, 0
+
+    def batched():
+        batch, n = [], 0
+        for line in lines:
+            batch.append(line)
+            n += len(line)
+            if n >= 1 << 20:
+                yield batch
+                batch, n = [], 0
+        if batch:
+            yield batch
+
+    with ProcessPoolExecutor(processes, mp_context=multiprocessing.get_context("spawn"),
+                             initializer=_compare_init, initargs=(old_source, new_source, inputs)) as pool:
+        pending: set = set()
+        for batch in batched():
+            pending.add(pool.submit(_compare_worker, batch))
+            batches += 1
+            while len(pending) >= 3 * processes:
+                done, pending = wait(pending, return_when=FIRST_COMPLETED)
+                for f in done:
+                    d, c = f.result()
+                    differ, cpu = differ + d, cpu + c
+        for f in pending:
+            d, c = f.result()
+            differ, cpu = differ + d, cpu + c
+    perf.count("pool processes started", processes)
+    perf.count("pool chunks", batches)
+    perf.count("pool worker cpu seconds", round(cpu, 3))
+    return differ
+
+
+def _above_stamp(source: str) -> str:
+    """The hash redaction_rules.source_hash gives a file with this source."""
+    return hashlib.sha256(source[:source.rindex("# --- " + "stamp")].encode()).hexdigest()
+
+
 def stamp_equivalent(rev: str = "@-") -> int:
     """Keep the last stamp's date for rules whose results are unchanged: the rules committed at
     `rev`, which must carry a valid stamp, and the current ones must redact every line of every
     transcript, stored log and published file the same, and find the same in it. Then the files
-    checked under the old stamp are checked under these rules too, and nothing is rescanned."""
-    if redaction_rules.RULES_HASH == redaction_rules.source_hash():
+    checked under the old stamp are checked under these rules too, and nothing is rescanned.
+    Both are compared as source text, the current ones as read from disk now, in a pool; the
+    stamp is written only if the file still holds that text when the comparison ends."""
+    new_source = Path(redaction_rules.__file__).read_text()
+    if _above_stamp(new_source) == redaction_rules.RULES_HASH == redaction_rules.source_hash():
         print("the rules' stamp is valid; nothing to do")
         return 0
-    import importlib.util
-    import tempfile
     r = jj("file", "show", "-r", rev, RULES_FILE)
     if r.returncode:
         print(f"refused: no {RULES_FILE} at {rev}", file=sys.stderr)
         return 1
-    with tempfile.TemporaryDirectory() as d:
-        path = Path(d) / "stamped_rules.py"
-        path.write_text(r.stdout)
-        spec = importlib.util.spec_from_file_location("stamped_rules", path)
-        stamped = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(stamped)
-        if stamped.RULES_HASH != stamped.source_hash():
-            print(f"refused: the rules at {rev} are not stamped either; run: python3 llm-dlc/tools/sync.py stamp",
-                  file=sys.stderr)
-            return 1
-        pairs, user = personal_literals()
-        old, new = stamped.Rules(pairs, user), redaction_rules.Rules(pairs, user)
+    stamped = rules_module(r.stdout, "stamped_rules")
+    if stamped.RULES_HASH != _above_stamp(r.stdout):
+        print(f"refused: the rules at {rev} are not stamped either; run: python3 llm-dlc/tools/sync.py stamp",
+              file=sys.stderr)
+        return 1
+    inputs = personal_literals()
     seen: set[bytes] = set()
 
     def lines():
@@ -2364,10 +2431,13 @@ def stamp_equivalent(rev: str = "@-") -> int:
                 yield from distinct(f.read_text())
 
     with perf.phase("compare rules"):
-        differ = rules_differences(old, new, lines())
+        differ = compare_rules(r.stdout, new_source, inputs, lines())
     if differ:
         print(f"refused: the rules give different results on {differ} of {len(seen)} line(s); "
               f"run: python3 llm-dlc/tools/sync.py stamp", file=sys.stderr)
+        return 1
+    if redaction_rules.source_hash() != _above_stamp(new_source):
+        print(f"refused: {RULES_FILE} changed while it was compared; run this again", file=sys.stderr)
         return 1
     redaction_rules.write_stamp(stamped.RULES_GENERATED)
     print(f"stamped {redaction_rules.source_hash()[:12]}, keeping the date {stamped.RULES_GENERATED}: "

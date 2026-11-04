@@ -61,7 +61,41 @@ def tearDownModule():
 
 
 class Reference(redaction_rules.Rules):
-    """The rules as they ran before the speed-ups: every pattern over every string, EMAIL_RE itself."""
+    """The rules as they ran before the speed-ups: every pattern over every string, EMAIL_RE itself,
+    no hints and no gates."""
+
+    def __call__(self, jsonl):
+        out = []
+        for line in jsonl.splitlines():
+            try:
+                obj = json.loads(line)
+            except ValueError:
+                out.append(self.string(line))
+                continue
+            out.append(json.dumps(redaction_rules._walk(redaction_rules._scrub(obj), self.string),
+                                  ensure_ascii=False, separators=(",", ":")))
+        return ("\n".join(out) + "\n" if out else "").encode()
+
+    def hits_of_line(self, line):
+        leaks, reviewable = [], []
+        try:
+            obj = json.loads(line)
+        except ValueError:
+            self._leaks_in(line, leaks)
+            self._reviewable_in(line, reviewable)
+            return leaks, reviewable
+        for s in redaction_rules._strings(obj):
+            self._leaks_in(s, leaks)
+            self._reviewable_in(s, reviewable)
+        if redaction_rules._unscrubbed(obj):
+            leaks.append(("account-id", redaction_rules.ACCOUNT_ID_HIT))
+        return leaks, reviewable
+
+    def _reviewable_in(self, s, out):
+        s = redaction_rules.ANSI_RE.sub("", s)
+        for kind, rx, keep in self.review_res:
+            out += [(kind, m.group(0)) for m in rx.finditer(s)
+                    if keep(m.group(0)) and not (kind == "public-ip" and redaction_rules._is_version(m))]
 
     def string(self, text):
         for _kind, rx, rep in self.literals:
@@ -159,6 +193,137 @@ class Rules(unittest.TestCase):
     def test_a_replaced_username_pattern_is_not_hinted(self):
         self.new.user_re = re.compile("other")
         self.assertIn(("username", "other"), self.new.hits_of_line("an other one")[0])
+
+
+# What the gates name, in and out of case, glued into the random text of the gate tests.
+GATE_PIECES = ["gl" + "pat-", "xo" + "xb-", "np" + "m_", "k_" + "live_", "S" + "G.", "/api/" + "webhooks/", "cookie",
+               "COOKIE", "Set-Cookie: ", "gh" + "s_", "github" + "_pat_", "AI" + "za", "https://hooks." + "slack.com/services/",
+               "basic ", "BASIC ", "baſic ", "-----BEGIN ", "k-" + "lf-", "s" + "k-", "userID\": \"", "Users",
+               "/home/", "x-api-key=", "Key=", "tokeɴ", "ya29.", "1.2.3", ".4", "ab:cd", ":ef:", "Zz09" * 11,
+               # Whole matches of the rules no other piece completes, made up.
+               "AK" + "IA" + "ZQZQ" * 4 + " ", "https://" + "disc" + "ord.com/api/" + "webhooks/1/ab", "ey" + "Jabcdefgh.ey"
+               + "Jabcdefgh.abcdefgh", "np" + "m_" + "a1" * 18 + " ", "S" + "G." + "a" * 22 + "." + "b" * 43,
+               "s" + "k_live_" + "a" * 20, "p" + "k-lf-" + "a1b2" * 4, "https://" + "bob:pw" + "x@h", USER + "@corp" + ".test"]
+
+
+def gated_text(rng: random.Random) -> str:
+    parts = []
+    for _ in range(rng.randint(1, 10)):
+        r = rng.random()
+        if r < 0.35:
+            parts.append(rng.choice(GATE_PIECES))
+        elif r < 0.7:
+            parts.append(rng.choice(PIECES))
+        else:
+            alphabet = rng.choice(["abcxyz", "ABC" + "def0123456789", "abc.-_+%", "0123456789abcdef:", "aZ09+/=-_"])
+            parts.append("".join(rng.choice(alphabet) for _ in range(rng.choice([1, 2, 5, 12, 25, 45]))))
+    return "".join(parts)
+
+
+def gated_line(rng: random.Random) -> str:
+    """A JSON line of several strings, so that a gate passes on one string for a rule that matches
+    another, or on none."""
+    texts = [gated_text(rng) for _ in range(rng.randint(1, 5))]
+    obj = {"type": "user", "message": {"content": texts[:-1]}, texts[-1][:6]: texts[-1]}
+    return json.dumps(obj, ensure_ascii=rng.random() < 0.2)
+
+
+class Gates(unittest.TestCase):
+    """The per-line gates of redaction_rules.GATES: never wrong about a line a rule matches."""
+
+    def setUp(self):
+        self.new, self.old = redaction_rules.Rules(PAIRS, USER), Reference(PAIRS, USER)
+
+    def test_every_gate_holds_wherever_its_rule_matches(self):
+        rng = random.Random(23)
+        plan = self.new._plan()
+        rules = ([(rx, g) for (_k, rx, _r), (g, _m, _f) in zip(self.new.literals + self.new.secret_res, plan.leaks)]
+                 + [(rx, g) for (_k, rx, _keep), (g, _m, _f) in zip(self.new.review_res, plan.review)])
+        self.assertTrue(all(g >= 0 for _rx, g in rules), "every rule here has a gate")
+        tested = Counter()
+        for _ in range(30000):
+            s = gated_text(rng)
+            lowered = s.lower() if s.isascii() else None
+            for rx, g in rules:
+                if rx.search(s):
+                    tested[rx.pattern] += 1
+                    self.assertTrue(plan.tests[g](s, lowered), (rx.pattern, s))
+        self.assertEqual(len(tested), len(rules), "every rule matched at least once")
+
+    def test_ignorecase_words_on_ascii_text_compare_as_re_I_does(self):
+        rng = random.Random(29)
+        test = redaction_rules._gate_test(redaction_rules.Gate(("basic", "key"), ignorecase=True))
+        rx = re.compile("basic|key", re.I)
+        for _ in range(20000):
+            s = "".join(rng.choice("bBaAsSiIcCkKeEyY ſKİı") for _ in range(rng.randint(0, 9)))
+            self.assertEqual(test(s, s.lower() if s.isascii() else None), rx.search(s) is not None, repr(s))
+
+    def test_gate_patterns_hold_no_assertion(self):
+        def opcodes(parsed):
+            for op, av in parsed:
+                yield op
+                for x in (av if isinstance(av, (list, tuple)) else [av]):
+                    if isinstance(x, re._parser.SubPattern):
+                        yield from opcodes(x)
+                    elif isinstance(x, (list, tuple)):
+                        for y in x:
+                            if isinstance(y, re._parser.SubPattern):
+                                yield from opcodes(y)
+        forbidden = {re._constants.AT, re._constants.ASSERT, re._constants.ASSERT_NOT, re._constants.GROUPREF}
+        for kind, gate in redaction_rules.GATES.items():
+            for word in gate.words:
+                self.assertNotIn("\x00", word, kind)
+            if gate.pattern:
+                self.assertFalse(forbidden & set(opcodes(re._parser.parse(gate.pattern))), kind)
+        self.assertTrue(forbidden & set(opcodes(re._parser.parse(r"a\bb"))), "the check sees an assertion")
+
+    def test_no_match_is_shorter_than_its_minimum(self):
+        rng = random.Random(31)
+        plan = self.new._plan()
+        patterns = ([(rx, m) for (_k, rx, _r), (_g, m, _f) in zip(self.new.literals + self.new.secret_res, plan.leaks)]
+                    + [(rx, m) for (_k, rx, _keep), (_g, m, _f) in zip(self.new.review_res, plan.review)])
+        self.assertTrue(any(m >= 20 for _rx, m in patterns))
+        for _ in range(20000):
+            s = gated_text(rng)
+            for rx, minimum in patterns:
+                for m in rx.finditer(s):
+                    self.assertGreaterEqual(len(m.group(0)), minimum, rx.pattern)
+
+    def test_redaction_and_findings_are_those_of_the_ungated_rules(self):
+        rng = random.Random(37)
+        for _ in range(8000):
+            line = gated_line(rng)
+            self.assertEqual(self.new(line), self.old(line), line)
+            self.assertEqual(self.new.hits_of_line(line), self.old.hits_of_line(line), line)
+            text = line[3:-2]  # not JSON: the line is one string
+            self.assertEqual(self.new(text), self.old(text), text)
+            self.assertEqual(self.new.hits_of_line(text), self.old.hits_of_line(text), text)
+
+    def test_a_rule_runs_on_what_an_earlier_one_wrote(self):
+        """A literal whose replacement is a bearer token: the line held no "bearer", but once the
+        literal is replaced, the bearer rule runs on the string."""
+        pairs = [("zzplace", "Bearer " + "Q" * 24, 0, "redact.txt literal")]
+        new, old = redaction_rules.Rules(pairs, USER), Reference(pairs, USER)
+        line = json.dumps({"a": "see zzplace here", "b": "nothing"})
+        self.assertIn(b"[REDACTED:bearer]", old(line))
+        self.assertEqual(new(line), old(line))
+
+    def test_a_line_that_passes_no_gate_runs_only_ungated_rules(self):
+        plan = self.new._plan()
+        passed = self.new._passed(plan.tests, "\x00".join(["plain words", "and more"]))
+        self.assertFalse(any(passed))
+        self.assertEqual([g for g, _m, _f in plan.leaks + plan.review if g < 0], [])
+
+    def test_colour_codes_are_removed_before_the_review_gates(self):
+        line = json.dumps({"a": "203.0." + "\x1b[0m" + "113.9 x", "b": "y"})
+        self.assertEqual(self.new.hits_of_line(line), self.old.hits_of_line(line))
+        self.assertIn("public-ip", [k for k, _v in self.new.hits_of_line(line)[1]])
+
+    def test_replaced_rules_run_ungated(self):
+        r = redaction_rules.Rules(PAIRS, USER)
+        r.literals = [("local-secret", re.compile("pl" + "ain"), "x")]
+        self.assertIn(("local-secret", "plain"), r.hits_of_line(json.dumps({"a": "plain words"}))[0])
+        self.assertEqual(r(json.dumps({"a": "plain words"})), b'{"a":"x words"}\n')
 
 
 class Snapshots(unittest.TestCase):
@@ -312,6 +477,21 @@ class Stamp(unittest.TestCase):
         lines = [json.dumps({"a": "a plainword here"}), json.dumps({"a": "nothing"}), "plainword raw"]
         self.assertEqual(sync.rules_differences(old, redaction_rules.Rules(PAIRS, USER), lines), 0)
         self.assertEqual(sync.rules_differences(old, new, lines), 2)
+
+    def test_rules_compared_in_a_pool_count_as_in_one_process(self):
+        source = Path(redaction_rules.__file__).read_text()
+        api_key = 'r"\\bsk-[A-Za-z0-9_\\-]{20,}"'
+        self.assertIn(api_key, source)
+        stricter = source.replace(api_key, api_key.replace("{20,}", "{30,}"))
+        rng = random.Random(41)
+        lines = [gated_line(rng) for _ in range(300)] + [json.dumps({"k": "s" + "k-" + "ab12" * 6})] * 3
+        lines.append(json.dumps({"k": "s" + "k-" + "ab12" * 9}))
+        for processes in (1, 2):
+            self.assertEqual(sync.compare_rules(source, source, (PAIRS, USER), iter(lines), processes), 0)
+        one = sync.compare_rules(source, stricter, (PAIRS, USER), iter(lines), 1)
+        self.assertGreaterEqual(one, 3)
+        self.assertEqual(sync.compare_rules(source, stricter, (PAIRS, USER), iter(lines), 2), one)
+        self.assertEqual(sync._above_stamp(source), redaction_rules.source_hash())
 
     def test_a_kept_date_is_written_back(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1776,7 +1956,8 @@ class ProfileRules(unittest.TestCase):
         for value in (token, address, token[4:12]):
             self.assertNotIn(value, r.stdout + r.stderr)
         for row in ["secret github-token", "secret env-secret", "review public-ip", "email", "all rules",
-                    "credential gate: 1 of 4 lines", "1 lines not JSON; keys not in sorted order in 1 lines; "
+                    "github-token                       1 (25.0%)", "public-ip                          1 (25.0%)",
+                    "bearer                             0 (0.0%)", "scan with the gates", "1 lines not JSON; keys not in sorted order in 1 lines; "
                     "< > or & in 1; non-ASCII in 1", "4 distinct lines in 2 process(es)"]:
             self.assertIn(row, r.stdout)
 
