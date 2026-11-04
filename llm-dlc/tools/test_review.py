@@ -14,6 +14,9 @@ from unittest import mock
 import redaction_rules
 import sync
 
+# No test reaches R2: the real token file, if this machine has one, is never read.
+sync.R2_CREDENTIALS = Path(tempfile.gettempdir()) / "llm-traces-tests-no-r2-credentials"
+
 HOME_A, HOME_B = "/ho" + "me/alpha", "/ho" + "me/bravo"
 
 

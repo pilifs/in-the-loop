@@ -144,14 +144,21 @@ after. The full story of each step is in its commit message and in
   - **3f** `pvuopzzv`: per-line gates in `redaction_rules.py` skip each rule on lines that
     cannot hold its match; `stamp --equivalent` runs in a pool. check --full 32.5 s to 18 s,
     scan --full 32 s to 11.6 s; the stamp kept its 2026-11-01 date (86,318 lines identical).
+- **R2 client** (2026-11-03, after the run): with an R2 API token in
+  `~/.config/llm-traces/r2-credentials` (bucket-scoped, Object Read & Write), push puts and
+  `unpublish` deletes through R2's S3 API (`R2Client` in `sync.py`, SigV4 from the standard
+  library, checked against AWS's documented example), as many puts at once as logs; wrangler
+  remains the fallback without the file. Against stubs, the upload outcome is identical to the
+  wrangler path. The first real use is the next push.
+- **Langfuse robustness** (2026-11-03): a hook that does not finish a send marks its session
+  until one does, `check` warns about it, `sync.py langfuse` resends from the transcript, and a
+  session with no stored log is sent. A replay of 38 real Stop hooks with outages and kills lost
+  nothing.
 - **The run ended** after 3f: the cold paths are below the 30 s that `performance.md` set for
   looking further, and gains have flattened.
 
 **Waiting on the user:**
 
-- **Parallel wrangler puts or an R2 API token** (from 3a): the user will confirm. With
-  either, raise `LLM_TRACES_PUT_JOBS` (or add an S3-compatible client); the upload stage goes
-  from about 26 s to about 10 s.
 - **Which session a commit treats as current** (from 2c): any session whose transcript
   changed in the last 10 minutes (`LIVE_SECONDS`) is treated as current, besides the one in
   `CLAUDE_CODE_SESSION_ID`, so its trailer is stamped on `@`. Narrowing that to the committing

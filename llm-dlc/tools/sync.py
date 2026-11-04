@@ -83,6 +83,7 @@ import base64
 import contextlib
 import gzip
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -129,6 +130,9 @@ STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
 EXTRA_REDACTIONS = Path.home() / ".config" / "llm-traces" / "redact.txt"
 # Cloudflare API token with Zone:Read and Cache Purge on the CDN zone; only `unpublish` uses it.
 PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
+# An R2 API token for the llm-traces bucket (Object Read & Write): account_id=, access_key_id= and
+# secret_access_key= lines. With it, puts and deletes go to R2's S3 API (R2Client); without it, wrangler.
+R2_CREDENTIALS = Path.home() / ".config" / "llm-traces" / "r2-credentials"
 SCHEMA = "llm-trace-manifest/v1"
 # Wrangler keeps its OAuth tokens here; the spec forbids printing them, redaction removes them anyway.
 WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.toml",
@@ -240,6 +244,18 @@ def read_env(path: Path) -> dict[str, str]:
     return env
 
 
+def read_r2_credentials(path: Path | None = None) -> dict[str, str]:
+    """The key=value lines of the R2 token file (R2_CREDENTIALS), keys lowercased; {} without it."""
+    out = {}
+    path = path or R2_CREDENTIALS
+    if path.exists():
+        for line in path.read_text().splitlines():
+            k, sep, v = line.strip().partition("=")
+            if sep and not k.startswith("#"):
+                out[k.strip().lower()] = v.strip().strip('"')
+    return out
+
+
 def _hostnames() -> set[str]:
     names = {socket.gethostname()}
     try:
@@ -279,6 +295,8 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
         secrets.append(base64.b64encode(f"{pk}:{sk}".encode()).decode())
     if PURGE_TOKEN.exists():
         secrets.append(PURGE_TOKEN.read_text().strip())
+    # Both keys; the account id is not a secret (it is in every R2 endpoint) and is left alone.
+    secrets += [v for k, v in read_r2_credentials().items() if k in ("access_key_id", "secret_access_key")]
     for cfg in WRANGLER_CONFIGS:
         if cfg.exists():
             secrets += re.findall(r'^(?:oauth_token|refresh_token)\s*=\s*"([^"]+)"', cfg.read_text(), re.M)
@@ -1347,16 +1365,105 @@ class UploadRecord:
 
 
 def upload_jobs() -> tuple[int, int]:
-    """(logs handled at once, wrangler puts at once). Logs overlap their CDN reads with each other
-    and with the puts. Puts run one at a time unless LLM_TRACES_PUT_JOBS says otherwise: every
-    wrangler process uses the one OAuth login, and whether several that refresh it at once keep it
-    valid is untested. An R2 API token for an S3 client would remove the question."""
+    """(logs handled at once, puts at once). Logs overlap their CDN reads with each other and with
+    the puts. Through R2's S3 API (R2Client) every log may put at once. Through wrangler, puts run
+    one at a time unless LLM_TRACES_PUT_JOBS says otherwise: every wrangler process uses the one
+    OAuth login, and whether several that refresh it at once keep it valid is untested."""
     def number(name: str, default: int) -> int:
         try:
             return max(1, int(os.environ.get(name, default)))
         except ValueError:
             return default
-    return number("LLM_TRACES_UPLOAD_JOBS", UPLOAD_JOBS), number("LLM_TRACES_PUT_JOBS", PUT_JOBS)
+    jobs = number("LLM_TRACES_UPLOAD_JOBS", UPLOAD_JOBS)
+    return jobs, number("LLM_TRACES_PUT_JOBS", jobs if R2Client.configured() else PUT_JOBS)
+
+
+class R2Client:
+    """R2's S3-compatible API, signed with AWS Signature Version 4 (region "auto"), from the token in
+    R2_CREDENTIALS: PUT, DELETE and HEAD of one object, standard library only. Thread-safe: it
+    keeps no connection. Errors name the S3 error code only, never a key or a signature."""
+    SERVICE, REGION = "s3", "auto"
+
+    def __init__(self, account_id: str, access_key_id: str, secret_access_key: str) -> None:
+        if not re.fullmatch(r"[0-9a-f]{32}", account_id):
+            raise ValueError(f"{R2_CREDENTIALS}: account_id is not a Cloudflare account id")
+        self.host = f"{account_id}.r2.cloudflarestorage.com"
+        self.access_key_id, self._secret = access_key_id, secret_access_key
+
+    @staticmethod
+    def configured() -> bool:
+        return R2_CREDENTIALS.exists()
+
+    @classmethod
+    def from_file(cls, path: Path | None = None) -> "R2Client":
+        c = read_r2_credentials(path)
+        missing = [k for k in ("account_id", "access_key_id", "secret_access_key") if not c.get(k)]
+        if missing:
+            raise ValueError(f"{path or R2_CREDENTIALS} lacks {', '.join(missing)}")
+        return cls(c["account_id"], c["access_key_id"], c["secret_access_key"])
+
+    def signed_headers(self, method: str, path: str, headers: dict[str, str], payload_sha256: str,
+                       at: datetime) -> dict[str, str]:
+        """headers plus host, x-amz-date, x-amz-content-sha256 and Authorization, every header signed.
+        path: the request path, already URI-encoded; no query string is used."""
+        amz_date, day = at.strftime("%Y%m%dT%H%M%SZ"), at.strftime("%Y%m%d")
+        headers = {**headers, "x-amz-date": amz_date, "x-amz-content-sha256": payload_sha256}
+        canon = {k.lower().strip(): " ".join(str(v).split()) for k, v in headers.items()}
+        canon.setdefault("host", self.host)
+        names = sorted(canon)
+        request = "\n".join([method, path, "", *(f"{k}:{canon[k]}" for k in names), "", ";".join(names), payload_sha256])
+        scope = f"{day}/{self.REGION}/{self.SERVICE}/aws4_request"
+        to_sign = "\n".join(["AWS4-HMAC-SHA256", amz_date, scope, hashlib.sha256(request.encode()).hexdigest()])
+        key = f"AWS4{self._secret}".encode()
+        for part in (day, self.REGION, self.SERVICE, "aws4_request"):
+            key = hmac.new(key, part.encode(), hashlib.sha256).digest()
+        signature = hmac.new(key, to_sign.encode(), hashlib.sha256).hexdigest()
+        return {**headers, "host": canon["host"], "Authorization":
+                f"AWS4-HMAC-SHA256 Credential={self.access_key_id}/{scope}, SignedHeaders={';'.join(names)}, Signature={signature}"}
+
+    def request(self, method: str, bucket: str, key: str, body: bytes = b"", headers: dict[str, str] | None = None,
+                timeout: float = 300) -> int:
+        """The response status; raises RuntimeError for any other than 2xx (404 too, except for HEAD)."""
+        path = "/" + urllib.parse.quote(f"{bucket}/{key}", safe="/-_.~")
+        signed = self.signed_headers(method, path, headers or {}, hashlib.sha256(body).hexdigest(),
+                                     datetime.now(timezone.utc))
+        signed.pop("host")  # urllib sends the same Host itself
+        req = urllib.request.Request(f"https://{self.host}{path}", data=body if method == "PUT" else None,
+                                     method=method, headers=signed)
+        perf.count(f"network requests R2 {method}")
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                r.read()
+                return r.status
+        except urllib.error.HTTPError as e:
+            if method == "HEAD" and e.code == 404:
+                return 404
+            code = re.search(rb"<Code>([A-Za-z]{1,64})</Code>", e.read(4096) or b"")
+            raise RuntimeError(f"R2 {method} {bucket}/{key}: HTTP {e.code}"
+                               + (f" {code.group(1).decode()}" if code else "")) from None
+
+    def put(self, bucket: str, key: str, path: Path) -> None:
+        self.request("PUT", bucket, key, path.read_bytes(), {"content-type": "application/gzip"})
+
+    def delete(self, bucket: str, key: str) -> None:
+        self.request("DELETE", bucket, key)
+
+    def exists(self, bucket: str, key: str) -> bool:
+        return self.request("HEAD", bucket, key) != 404
+
+
+def put_log(key: str, path: Path) -> None:
+    """Put a log in R2 at key ("raw-traces/SESSION/SHA.jsonl.gz" in CDN_BUCKET): through the S3 API
+    with an R2 token, through wrangler otherwise. Raises RuntimeError if it fails."""
+    if R2Client.configured():
+        perf.count("r2 puts")
+        R2Client.from_file().put(CDN_BUCKET, key, path)
+        return
+    if not WRANGLER.exists():
+        raise FileNotFoundError("wrangler is not installed and there is no R2 token; run: python3 llm-dlc/tools/sync.py init")
+    r = wrangler_put(f"{CDN_BUCKET}/{key}", path)
+    if r.returncode != 0:
+        raise RuntimeError(f"wrangler r2 object put failed:\n{r.stdout}{r.stderr}")
 
 
 def wrangler_put(key: str, path: Path) -> subprocess.CompletedProcess:
@@ -1404,13 +1511,9 @@ class Uploader:
                 raise RuntimeError(f"refusing to upload log {sha[:12]} of {sid}: unredacted {leaks}")
             for warning in self.redact.cached_review(found):
                 print(f"warn  {sid[:8]}/{sha[:12]}: {warning}")
-        if not WRANGLER.exists():
-            raise FileNotFoundError("wrangler is not installed; run: python3 llm-dlc/tools/sync.py init")
         with self.puts:
             self.record.mark(sid, sha, "attempted")
-            r = wrangler_put(f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", path)
-        if r.returncode != 0:
-            raise RuntimeError(f"wrangler r2 object put failed:\n{r.stdout}{r.stderr}")
+            put_log(f"raw-traces/{sid}/{sha}.jsonl.gz", path)
         if not remote_matches(url, sha):
             raise RuntimeError(f"uploaded {url} but the CDN does not serve content with sha256 {sha}")
         self.record.mark(sid, sha, "verified")
@@ -1513,13 +1616,20 @@ def cmd_unpublish(args: list[str]) -> int:
         return 2
     sid, sha = args
     url = log_url(sid, sha)
-    r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "delete",
-                        f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", "--remote"],
-                       cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
-                       env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
-    if r.returncode != 0:
-        print(f"ERROR wrangler r2 object delete failed:\n{r.stdout}{r.stderr}", file=sys.stderr)
-        return 1
+    if R2Client.configured():
+        try:
+            R2Client.from_file().delete(CDN_BUCKET, f"raw-traces/{sid}/{sha}.jsonl.gz")
+        except (OSError, RuntimeError, ValueError) as e:
+            print(f"ERROR {e}", file=sys.stderr)
+            return 1
+    else:
+        r = subprocess.run([NODE, str(WRANGLER), "r2", "object", "delete",
+                            f"{CDN_BUCKET}/raw-traces/{sid}/{sha}.jsonl.gz", "--remote"],
+                           cwd=CDN_DIR, capture_output=True, text=True, timeout=300,
+                           env={**os.environ, "WRANGLER_SEND_METRICS": "false"})
+        if r.returncode != 0:
+            print(f"ERROR wrangler r2 object delete failed:\n{r.stdout}{r.stderr}", file=sys.stderr)
+            return 1
     try:
         purge_url(url)
     except (OSError, RuntimeError) as e:

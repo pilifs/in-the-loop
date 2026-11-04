@@ -6,6 +6,7 @@ this file's own transcript raises no finding."""
 import ast
 import contextlib
 import gzip
+import hashlib
 import io
 import json
 import os
@@ -20,6 +21,7 @@ import time
 import unittest
 import uuid
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -28,6 +30,9 @@ import redaction_rules
 import redactor
 import sync
 from redaction_rules import EMAIL_RE, WIN_USER_RE, email_spans
+
+# No test reaches R2: the real token file, if this machine has one, is never read.
+sync.R2_CREDENTIALS = Path(tempfile.gettempdir()) / "llm-traces-tests-no-r2-credentials"
 
 USER = "qzuser"
 SECRET = "made" + "up" + "-local-" + "value-0001"
@@ -1604,6 +1609,87 @@ class Uploads(unittest.TestCase):
                 f.unlink(missing_ok=True)
             self.assertEqual(self.outcome(sync.cmd_upload, LLM_TRACES_UPLOAD_JOBS=jobs, LLM_TRACES_PUT_JOBS=puts),
                              expected, (jobs, puts))
+
+    def made_up_r2(self):
+        """A token file with made-up values, and a fake S3 endpoint that stores what is put."""
+        creds = Path(self.tmp.name) / "r2-credentials"
+        self.r2_key_id, self.r2_secret = "made" + "up" + "keyid" * 5, "made" + "up" + "secret" * 9
+        creds.write_text(f"account_id={'ab' * 16}\naccess_key_id={self.r2_key_id}\nsecret_access_key={self.r2_secret}\n")
+        self.r2_requests = []
+
+        def urlopen(req, timeout=None):
+            self.r2_requests.append(req)
+            host = "ab" * 16 + ".r2.cloudflarestorage.com"
+            assert req.full_url.startswith(f"https://{host}/{sync.CDN_BUCKET}/raw-traces/"), req.full_url
+            if req.get_method() == "PUT":
+                url = sync.CDN_BASE + req.full_url[len(f"https://{host}/{sync.CDN_BUCKET}"):]
+                self.busy("put", self.latency[1])
+                with self.lock:
+                    self.put_log.append(url)
+                    self.cdn[url] = req.data
+            response = mock.MagicMock(status=200)
+            response.__enter__.return_value = response
+            return response
+        return [mock.patch.object(sync, "R2_CREDENTIALS", creds),
+                mock.patch.object(sync.urllib.request, "urlopen", side_effect=urlopen),
+                mock.patch.object(sync, "wrangler_put", side_effect=AssertionError("wrangler used with an R2 token"))]
+
+    def test_with_an_r2_token_puts_go_to_the_s3_api_and_upload_the_same(self):
+        logs = self.fixture()
+        saved, cdn = Path(self.tmp.name) / "saved", dict(self.cdn)
+        shutil.copytree(sync.TRACES, saved)
+        expected = self.outcome(sync.cmd_upload)
+        shutil.rmtree(sync.TRACES)
+        shutil.copytree(saved, sync.TRACES)
+        self.cdn = dict(cdn)
+        for f in (sync.SCAN_CACHE, sync.CHECK_CACHE, sync.UPLOADS):
+            f.unlink(missing_ok=True)
+        with contextlib.ExitStack() as stack:
+            for p in self.made_up_r2():
+                stack.enter_context(p)
+            self.assertEqual(sync.upload_jobs(), (sync.UPLOAD_JOBS, sync.UPLOAD_JOBS))  # no OAuth login to share
+            self.assertEqual(self.outcome(sync.cmd_upload), expected)
+        puts = [r for r in self.r2_requests if r.get_method() == "PUT"]
+        self.assertEqual(len(puts), len(logs["clean"]) + 2)  # the clean logs, the warned one, the subagent's
+        for r in puts:
+            headers = {k.lower(): v for k, v in r.header_items()}
+            self.assertEqual(headers["x-amz-content-sha256"], hashlib.sha256(r.data).hexdigest())
+            self.assertEqual(headers["content-type"], "application/gzip")
+            self.assertIn(f"Credential={self.r2_key_id}/", headers["authorization"])
+            self.assertNotIn(self.r2_secret, json.dumps(headers))
+
+    def test_r2_signatures_match_the_aws_example(self):
+        """AWS's documented SigV4 example (S3 GET Object with a Range header); its example keys are
+        assembled here so that neither appears whole in the source."""
+        class Documented(sync.R2Client):
+            REGION = "us-east-1"
+        c = Documented("0" * 32, "AKIA" + "IOSFODNN7" + "EXAMPLE", "wJalrXUtnFEMI/K7MDENG/" + "bPxRfiCYEXAMPLEKEY")
+        c.host = "examplebucket.s3.amazonaws.com"
+        h = c.signed_headers("GET", "/test.txt", {"Range": "bytes=0-9"}, hashlib.sha256(b"").hexdigest(),
+                             datetime(2013, 5, 24, tzinfo=timezone.utc))
+        self.assertTrue(h["Authorization"].endswith(
+            "SignedHeaders=host;range;x-amz-content-sha256;x-amz-date, "
+            "Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41"))
+
+    def test_an_r2_error_names_its_code_and_no_key(self):
+        stack = contextlib.ExitStack()
+        patches = self.made_up_r2()
+        stack.enter_context(patches[0])
+        body = f"<Error><Code>SignatureDoesNotMatch</Code><AWSAccessKeyId>{self.r2_key_id}</AWSAccessKeyId></Error>".encode()
+        error = sync.urllib.error.HTTPError("https://x", 403, "Forbidden", {}, io.BytesIO(body))
+        with stack, mock.patch.object(sync.urllib.request, "urlopen", side_effect=error):
+            with self.assertRaises(RuntimeError) as raised:
+                sync.R2Client.from_file().delete(sync.CDN_BUCKET, "raw-traces/s1/x.jsonl.gz")
+        self.assertIn("HTTP 403 SignatureDoesNotMatch", str(raised.exception))
+        self.assertNotIn(self.r2_key_id, str(raised.exception))
+
+    def test_the_r2_keys_are_local_secrets(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(self.made_up_r2()[0])
+            pairs, _ = sync.personal_literals()
+        found = {lit for lit, _, _, kind in pairs if kind == "local-secret"}
+        self.assertLessEqual({self.r2_key_id, self.r2_secret}, found)
+        self.assertNotIn("ab" * 16, found)  # the account id is not a secret
 
     def test_reads_overlap_and_puts_stay_within_their_limit(self):
         self.fixture(logs=8)
