@@ -653,6 +653,19 @@ impl Parser<'_> {
                     if let Some(bound) = self.scope.iter().rev().find(|p| p.name == name) {
                         return Ok(Expr::Var(name, Ty::Int, bound.slot));
                     }
+                    // A record's component is a parameter named `record.component`: `other.cents`, or `this.cents`
+                    // for the receiver's, which is `cents` alone when no parameter has that name.
+                    let mut name = name;
+                    if !self.params.iter().any(|p| p.name == name) {
+                        match (self.peek(), self.tokens.get(self.pos + 1)) {
+                            (Token::Op("."), Some(Token::Ident(field))) if self.params.iter().any(|p| p.name == format!("{name}.{field}")) => {
+                                name = format!("{name}.{field}");
+                                self.pos += 2;
+                            }
+                            _ if self.params.iter().any(|p| p.name == format!("this.{name}")) => name = format!("this.{name}"),
+                            _ => {}
+                        }
+                    }
                     let param = self.params.iter().find(|p| p.name == name).ok_or_else(|| Error::new(format!("unknown name {name:?}; the names are {}", self.params.iter().map(|p| p.name.as_str()).collect::<Vec<_>>().join(", "))))?;
                     if self.in_old && name == "result" {
                         return Err(Error::new("result has no value before the call; \\old applies to the parameters"));
@@ -1286,6 +1299,22 @@ mod tests {
 
     fn locals(price: i64, seats: i32, vip: bool) -> Vec<Value> {
         vec![Value::Long(price), Value::Int(0), Value::Int(seats), Value::Int(vip as i32)]
+    }
+
+    #[test]
+    fn names_a_records_components() {
+        let params = vec![
+            Param { name: "this.cents".into(), ty: Type::Long, slot: 0 },
+            Param { name: "other.cents".into(), ty: Type::Long, slot: 2 },
+            Param { name: "other.scale".into(), ty: Type::Int, slot: 4 },
+        ];
+        let e = parse("cents > other.cents && this.cents - other.cents >= other.scale", &params).unwrap();
+        let locals = |a: i64, b: i64, s: i32| vec![Value::Long(a), Value::Int(0), Value::Long(b), Value::Int(0), Value::Int(s)];
+        assert_eq!(eval(&e, &locals(5, 3, 2)).unwrap(), Value::Int(1));
+        assert_eq!(eval(&e, &locals(5, 3, 3)).unwrap(), Value::Int(0));
+        assert_eq!(eval(&e, &locals(3, 5, 0)).unwrap(), Value::Int(0));
+        let err = parse("other.rate > 0", &params).unwrap_err().to_string();
+        assert!(err.starts_with("unknown name \"other\""), "{err}");
     }
 
     #[test]

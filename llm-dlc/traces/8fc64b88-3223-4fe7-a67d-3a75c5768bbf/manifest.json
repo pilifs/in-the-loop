@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-04T04:45:04.770Z",
-  "ended": "2026-11-04T07:08:44.856Z",
-  "duration_seconds": 8620,
+  "ended": "2026-11-04T07:12:08.766Z",
+  "duration_seconds": 8824,
   "stats": {
     "turns": 5,
-    "api_calls": 9,
-    "tool_calls": 8,
+    "api_calls": 11,
+    "tool_calls": 9,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 66117,
+    "peak_context_tokens": 67811,
     "usage": {
-      "input_tokens": 18,
-      "output_tokens": 2076,
-      "cache_read_input_tokens": 438715,
-      "cache_creation_input_tokens": 61048
+      "input_tokens": 22,
+      "output_tokens": 3112,
+      "cache_read_input_tokens": 571893,
+      "cache_creation_input_tokens": 62742
     }
   },
   "tools": {
-    "Bash": 8
+    "Bash": 9
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-04T04:45:04.770Z",
-      "ended": "2026-11-04T07:08:44.856Z",
+      "ended": "2026-11-04T07:12:08.766Z",
       "turns": 5,
-      "api_calls": 9,
+      "api_calls": 11,
       "usage": {
-        "input_tokens": 18,
-        "output_tokens": 2076,
-        "cache_read_input_tokens": 438715,
-        "cache_creation_input_tokens": 61048
+        "input_tokens": 22,
+        "output_tokens": 3112,
+        "cache_read_input_tokens": 571893,
+        "cache_creation_input_tokens": 62742
       },
-      "peak_context_tokens": 66117
+      "peak_context_tokens": 67811
     }
   ],
   "log": {
-    "sha256": "35de1079e4381360240f6f50d525377bfb6d7835bf1a89b1f6228581207d3c2d",
-    "bytes": 544948,
-    "lines": 134,
-    "gzip_bytes": 127447,
-    "path": "llm-dlc/traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/logs/35de1079e4381360240f6f50d525377bfb6d7835bf1a89b1f6228581207d3c2d.jsonl.gz"
+    "sha256": "8eca44ac5dc6a6f96e7e9077f9c6335b764a4338d60ded492900c36653ac9c93",
+    "bytes": 569279,
+    "lines": 150,
+    "gzip_bytes": 130708,
+    "path": "llm-dlc/traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/logs/8eca44ac5dc6a6f96e7e9077f9c6335b764a4338d60ded492900c36653ac9c93.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -114,20 +114,20 @@
       "log_sha256": "6b0ccfe57f7124b42a7237e8610f7e9d482c34bfca4a6e1f94f24e5c821329b1"
     },
     {
-      "change_id": "kylqnxzvtnvupzstpoypkxvpvpvmtwwu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "35de1079e4381360240f6f50d525377bfb6d7835bf1a89b1f6228581207d3c2d"
-    },
-    {
       "change_id": "uloxsqtzxywkvunrtxusxuzknsrrlsuv",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 10 jobs: two Quorum reruns pass, eight B12 examples fail on a result.json schema mismatch",
       "body": "Runner released a stale claim (pid 2748715 gone) and ran the 10 queued jobs. Both Quorum reruns (58 steps each) passed; the first applied 160 outputs, the second applied 35 and left 128 as conflicts (already applied by the first, changed since its commit). Examples 112-119 each failed their single B12 step in under 2 minutes with 'result.json: Additional properties are not allowed (newProblems was unexpected)': build.py at the job commit writes newProblems but examples/schema/example.schema.json there does not allow it. This is a submitter-side mismatch, not a verdict; resubmit once the schema change is committed.",
       "log_sha256": "35de1079e4381360240f6f50d525377bfb6d7835bf1a89b1f6228581207d3c2d"
+    },
+    {
+      "change_id": "wpvlrvvsuqyxtryqwpyzqrytxwynspxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs on a record's components: a method of a record, or one taking or returning a record of primitives, is proved with the record built from symbolic components in both versions; examples 126 and 127 on a new backoff kernel (verification pending)",
+      "body": "Until now a regression proof took static methods over primitives and arrays, and an instance method or a record parameter was refused. The harness now lays the target out over flat parameters (harness::Layout): a record whose components are all primitive, as the receiver, a parameter or the result, becomes its components, named this.component or parameter.component, which JBMC chooses symbolically. The harness builds the record from them in each version through its canonical constructor, inside handlers for every exception class it tells apart (JBMC matches a handler by the exception's own class, so a catch of Throwable alone does not take a stub IllegalArgumentException), so that an input a constructor of either version rejects is outside the statement and the proof is over the record's invariant; it calls an instance method with invokevirtual on each version's receiver, and compares a record result component by component from the fields of each version's record. The previous version's descriptor is relocated under before/ for the call and the replay, the witness is written as Java prints a record (delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1)), the interpreter replay constructs the records and dispatches on the receiver, and the domain reads this: Backoff(baseMillis: long, capMillis: long) × attempt: int. A scope or relation may name a component as the method does (baseMillis) or as this.baseMillis. A target identical in both versions is verified without a proof only when the records' constructors are identical too. Refused with a reason: a record with a non-primitive component, components that changed between the versions, a static method that became a record's method or the reverse, and a record parameter passed to the previous version by an expression. The tool's own checker has no objects and hands such a harness to JBMC under auto. build.py passes approach.unwind as --unwind, for a loop that needs more than the default sixteen turns.\n\nExamples 126 and 127 are on a new Crosscut kernel, retry.Backoff, a record of a base and a cap whose delayMillis(attempt) doubles the base up to the cap by a loop, with a compact constructor that keeps the base positive and the cap between the base and a day. 126 replaces the loop by Math.min(capMillis, baseMillis << attempt), which the tests pass and the proof refutes: the inline run found delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1), the loop returning 1 and the shift Long.MIN_VALUE, in 1.9 s, and scoped to attempts 0 to 62 the overflow at a base of 32 and 58 attempts. 127 replaces the loop by the shift kept below the base's leading zeros, which the inline run proved equal in 6.2 s with the loop unwound 32 times. Jobs 20261104-071749-example-126-a-backoff-s-doubling-loop-re and 20261104-071749-example-127-a-backoff-s-doubling-loop-re are queued. Verified with 102 unit tests (two new: the layout and harness over a record receiver, argument and result; dotted component names in expressions) and 44 integration tests (four new, through JBMC: a record's method proved on its components, the overflowing shift refuted and proved under a scope naming a component, a record result compared component by component, and a changed constructor keeping an identical method from the no-proof shortcut), clippy with nothing new, the release binary installed, both patches applied and the three Crosscut trees compiled and passing their 45 tests. Docs: lib/README.md (the proof's steps, what is new, limits), examples/approaches.md, examples/README.md, the verify-bytecode reference, the Crosscut README, tags.json (technique record-components), the example schema (approach.unwind).",
+      "log_sha256": "8eca44ac5dc6a6f96e7e9077f9c6335b764a4338d60ded492900c36653ac9c93"
     }
   ],
   "logs": {
@@ -147,6 +147,12 @@
       "bytes": 425279,
       "lines": 75,
       "gzip_bytes": 111253,
+      "url": null
+    },
+    "8eca44ac5dc6a6f96e7e9077f9c6335b764a4338d60ded492900c36653ac9c93": {
+      "bytes": 569279,
+      "lines": 150,
+      "gzip_bytes": 130708,
       "url": null
     },
     "9e7bb127e4e46638ee245e83e14574c45a64042fdab1f40b1d1a8c5f2c62adfc": {

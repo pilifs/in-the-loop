@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "127",
+  "title": "A backoff's doubling loop replaced by a shift kept short of overflow, proved equal on the record",
+  "summary": "The same rewrite as example 126, done right: the delay is `baseMillis << attempt` with the shift distance kept below the leading zeros of the base, so that a shift that would leave the range of a `long` is replaced by one that is already past the cap, and a non-positive attempt returns the base. The regression proof on the record's components shows the closed form equal to the loop for every base, cap and attempt the constructor admits, in six seconds.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "numeric-code",
+    "record-components"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "unwind": 32
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace the loop with a closed form: for an attempt of zero or less, the base; otherwise `Math.min(capMillis, baseMillis << shift)` with `shift = Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1)`, which keeps the shifted base below 2^63. Since the cap is at most a day and a shift cut short by the guard leaves the base at 2^62 or more, the guard never changes the result, only keeps it from overflowing. The tests pass unchanged.",
+    "patch": "change.patch"
+  },
+  "risk": "None: the proof is over every base, cap and attempt that the record's constructor admits. What is at stake is the review of arithmetic with a guard whose correctness rests on three facts at once (the cap's bound, the base's leading zeros, the shift's wrap at 64): the proof checks them together, where a reviewer checks each and hopes they compose.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The harness takes the record's two components and the attempt as symbolic inputs, builds the receiver in both versions through the canonical constructor, skips what the constructor rejects, and asserts that the loop's delay and the closed form's are the same `long`. JBMC proves it in the final stage with the loop unwound 32 times, which covers its at most 27 turns: a base of at least one doubled until it reaches a cap of at most 2^26.4. `Long.numberOfLeadingZeros` is analysed from the JDK's own bytecode, which the tool puts on JBMC's class path. The statement is for readers in `EquivalenceHarness.java`: `check(long this_baseMillis, long this_capMillis, int attempt)`, the two receivers built in a `try` that returns on any exception, and `a = this_before.delayMillis(attempt)` against `b = this_after.delayMillis(attempt)`.",
+  "resolution": "Merge. The closed form is a line where the loop was five, and the proof is the review of the guard.",
+  "notes": [
+    "The library's run of this shape took 6.2 s with JBMC: three stages, three properties (the assertion and the two unwinding assertions), the loop unwound 32 times. The measurement on this kernel is the pipeline's.",
+    "As in example 126, `Math.min` is first taken as one function in both versions, which here gives a counterexample that does not reproduce (the two versions call `min` on different arguments), so the proof is run again with the callee's bytecode; the time above includes both runs.",
+    "The constructor's bounds are what make the loop and the closed form equal: without the cap's bound of a day, a cap above 2^62 would let the loop's `delay * 2` overflow where the guarded shift does not, and the proof would find it. The harness skips an input the constructor rejects, so the proof is over the record's invariant and nothing weaker; a change that loosened the constructor would widen the statement, and the harness builds the receiver through the constructor of each version."
+  ],
+  "provenance": "Constructed as the correct form of example 126's rewrite, on the same new kernel of Crosscut, to show a regression proof on a record's components passing.",
+  "references": [
+    {
+      "title": "Spring Retry: ExponentialBackOffPolicy, the initial interval doubled up to the maximum",
+      "url": "https://docs.spring.io/spring-retry/docs/api/current/org/springframework/retry/backoff/ExponentialBackOffPolicy.html"
+    },
+    {
+      "title": "Java Language Specification §15.19: the shift distance of a long shift is its low six bits",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.19"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

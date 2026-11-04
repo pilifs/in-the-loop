@@ -112,6 +112,16 @@ pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, ta
     plan
 }
 
+/// Whether each of `roots`, with everything it reaches, is identical in both versions: a record's constructor,
+/// which the harness calls in both to build the receiver or an argument, must be for a target identical in both
+/// to need no proof.
+pub fn identical_closure(before: &ClassPath, after: &ClassPath, roots: &[MemberRef]) -> bool {
+    roots.iter().all(|root| {
+        let reached = reach(after, root);
+        reached.closed && same_everywhere(before, &reached)
+    })
+}
+
 /// The callees' names for a report, with parameter types where two overloads would otherwise read the same.
 pub fn names(callees: &[Callee]) -> Vec<String> {
     callees

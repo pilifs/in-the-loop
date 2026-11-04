@@ -160,6 +160,12 @@ which explores the harness path by path with a bundled SAT solver and looks for 
 witness found in the second stage of the search because every non-negative hash agrees, and
 [125](125-jwt-skew-moved-to-the-clock-proved-equal-by-the-tools-own-checker/README.md) proves a JWT validator's skew moved from the
 window to the clock, under the module's precondition as the scope, in a fraction of a second.
+A method of a record whose components are primitive, or one taking or returning such a record, is proved on the components: the harness
+builds the record from them in each version through its constructor, so that an input the constructor rejects is outside the statement and the
+proof is over the record's invariant. On Crosscut, [126](126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components/README.md)
+refutes a backoff's doubling loop replaced by a shift, on the receiver `Backoff[baseMillis=1, capMillis=1]`, and
+[127](127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md) proves the same rewrite with the shift
+kept short of overflow equal to the loop (`approach.unwind` raises the unwinding bound for the loop's turns).
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

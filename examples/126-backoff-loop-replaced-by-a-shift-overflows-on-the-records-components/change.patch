@@ -1,0 +1,18 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java
+@@ -21,13 +21,9 @@
+ 
+     /**
+      * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first
+-     * attempt (zero) waits the base, and so does any earlier one.
++     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift.
+      */
+     public long delayMillis(int attempt) {
+-        long delay = baseMillis;
+-        for (int i = 0; i < attempt && delay < capMillis; i++) {
+-            delay = Math.min(capMillis, delay * 2);
+-        }
+-        return delay;
++        return Math.min(capMillis, baseMillis << attempt);
+     }
+ }

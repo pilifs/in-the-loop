@@ -7,8 +7,8 @@ use std::path::Path;
 
 use crate::classfile::{MethodDescriptor, Type};
 use crate::classpath::ClassPath;
-use crate::harness::{self, Param};
-use crate::interp::{render, Fault, Machine, Object, Value};
+use crate::harness::{self, Layout, Param, Slot};
+use crate::interp::{render, Fault, Machine, Object, Ref, Value};
 use crate::jbmc::Argument;
 use crate::shrink::{self, Shrunk};
 use crate::Error;
@@ -34,19 +34,19 @@ pub fn call(method: &str, params: &[Param], arguments: &[Argument]) -> (String, 
     (rendered, witnesses)
 }
 
-/// The elements of the arrays among `values`, by parameter slot, as they are now.
-fn arrays_of(m: &Machine, values: &[Value], signature: &MethodDescriptor) -> Vec<(u16, Vec<Value>)> {
-    let mut out = Vec::new();
-    let mut slot = 0;
-    for (v, t) in values.iter().zip(&signature.params) {
-        if let Value::Ref(r) = v {
-            if let Object::Array { data, .. } = m.heap.get(*r) {
-                out.push((slot, data.clone()));
-            }
+/// `method(this=Backoff[baseMillis=1, capMillis=1], attempt=63)`: the receiver and the arguments by name, a
+/// record as Java prints it, and the rendering of each flat parameter.
+pub fn call_in(method: &str, layout: &Layout, arguments: &[Argument]) -> (String, Vec<String>) {
+    let witnesses: Vec<String> = layout.params.iter().zip(arguments).map(|(p, a)| argument(a, &p.ty)).collect();
+    let shown = |s: &Slot| match s {
+        Slot::Plain(i) => format!("{}={}", layout.params[*i].name, witnesses[*i]),
+        Slot::Record { name, record, first, .. } => {
+            let components = record.components.iter().zip(&witnesses[*first..]).map(|((c, _), w)| format!("{c}={w}")).collect::<Vec<_>>().join(", ");
+            format!("{name}={}[{components}]", record.simple_name())
         }
-        slot += t.slots();
-    }
-    out
+    };
+    let rendered = format!("{method}({})", layout.receiver.iter().chain(layout.args.iter()).map(shown).collect::<Vec<_>>().join(", "));
+    (rendered, witnesses)
 }
 
 /// The method's behaviour on a counterexample, replayed in the interpreter.
@@ -104,13 +104,74 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
 
 /// Runs the counterexample through `class_internal.method` in the interpreter, with the effect monitor off.
 pub fn replay(cp: &ClassPath, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
+    let names: Vec<String> = (0..signature.params.len()).map(|i| format!("p{i}")).collect();
+    replay_in(cp, &Layout::plain(&names, &signature.params), None, class_internal, method, descriptor, signature, arguments)
+}
+
+/// Runs the counterexample, given as the flat parameters of `layout`, through `class_internal.method` in the
+/// interpreter: each record is built from its components through its constructor (the previous version's record,
+/// under the package `prefix`, when one is given), and an instance method is called on the receiver. The arrays
+/// left are keyed by flat parameter slot.
+#[allow(clippy::too_many_arguments)]
+pub fn replay_in(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
     let mut m = Machine::new(cp);
     m.monitor = false;
     let _ = m.begin_case();
     let ret = &signature.ret;
-    let values = values_for(&mut m, arguments, &signature.params);
-    let outcome = m.call_static(class_internal, method, descriptor, values.clone());
-    let after = arrays_of(&m, &values, signature);
+    let flat = values_for(&mut m, arguments, &layout.types());
+    let build = |m: &mut Machine, slot: &Slot| -> Result<Value, Fault> {
+        match slot {
+            Slot::Plain(i) => Ok(flat[*i]),
+            Slot::Record { record, before, first, .. } => {
+                let owner = match prefix {
+                    Some(p) => format!("{p}/{}", before.class),
+                    None => record.class.clone(),
+                };
+                m.construct(&owner, &record.constructor(), flat[*first..*first + record.components.len()].to_vec())
+            }
+        }
+    };
+    let mut values = Vec::new();
+    let mut receiver = None;
+    let mut rejected = None;
+    for slot in layout.receiver.iter().chain(layout.args.iter()) {
+        match build(&mut m, slot) {
+            Ok(v) if layout.receiver.as_ref() == Some(slot) => receiver = Some(v),
+            Ok(v) => values.push(v),
+            Err(f) => {
+                rejected = Some(f);
+                break;
+            }
+        }
+    }
+    let arrays: Vec<(u16, Ref)> = layout
+        .args
+        .iter()
+        .zip(&values)
+        .filter_map(|(slot, v)| match (slot, v) {
+            (Slot::Plain(i), Value::Ref(r)) if matches!(m.heap.get(*r), Object::Array { .. }) => Some((layout.params[*i].slot, *r)),
+            _ => None,
+        })
+        .collect();
+    // The arrays as the call leaves them.
+    let left = |m: &Machine| -> Vec<(u16, Vec<Value>)> {
+        arrays
+            .iter()
+            .filter_map(|(slot, r)| match m.heap.get(*r) {
+                Object::Array { data, .. } => Some((*slot, data.clone())),
+                _ => None,
+            })
+            .collect()
+    };
+    let outcome = match rejected {
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, arrays_after: left(&m), thrown: Some(m.class_of(r)) },
+        Some(f) => Err(f),
+        None => match receiver {
+            Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
+            None => m.call_static(class_internal, method, descriptor, values),
+        },
+    };
+    let after = left(&m);
     match outcome {
         Ok(Some(v)) => {
             let array = match v {

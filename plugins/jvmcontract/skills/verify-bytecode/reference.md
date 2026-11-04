@@ -66,13 +66,13 @@ Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`
 
 | Proof | Method | Parameters | Needs |
 |---|---|---|---|
-| `equivalence`, `prove` | `static` | primitives, and arrays of `int`, `long`, `short`, `byte`, `char`, `boolean` (never `null`, every length up to `--max-array-length`); `float`/`double` scalars are fine, `double[]` is not | `jbmc`; a JDK (the tool reads `java.lang.Math`, `StrictMath`, `Integer`, `Long`, `Short`, `Byte` and declared exception classes from the JDK image) |
+| `equivalence`, `prove` | `static`; for `equivalence` also a method of a record whose components are primitive (the receiver is built from symbolic components) | primitives, and arrays of `int`, `long`, `short`, `byte`, `char`, `boolean` (never `null`, every length up to `--max-array-length`); `float`/`double` scalars are fine, `double[]` is not; for `equivalence`, a record whose components are primitive, as a parameter or the result (built from its components in each version, an input the constructor rejects skipped, a result compared component by component) | `jbmc`; a JDK (the tool reads `java.lang.Math`, `StrictMath`, `Integer`, `Long`, `Short`, `Byte` and declared exception classes from the JDK image) |
 | `derive` | static, or an instance method of an enum, record or sealed type | enums, booleans, records and sealed interfaces of those (each reference parameter also takes `null`); must be pure | nothing |
 | `capabilities`, `api`, `boundaries` | a module | | nothing (`boundaries` reads the class path and the JDK image for the exception hierarchy) |
 
 Refusals you will see, and what they mean:
 
-- `only static methods are supported`: an instance method. Not provable by `equivalence`/`prove`; if its receiver and parameters are finite, `derive` covers it.
+- `only static methods are supported` (`prove`), or `... is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are` (`equivalence`): an instance method of a class that is not such a record. If its receiver and parameters are finite, `derive` covers it; `equivalence` takes a method of a record of primitives, with `this.component` (or the bare component name) in a scope.
 - `parameter X has type Y; the symbolic verifier handles primitive parameters and arrays of integral or boolean elements`: a `String`, object or `double[]` parameter. Not provable per method; report as not covered.
 - `input domain is not finite` (from `derive`): an `int`, `long`, `String`, ... parameter. If static and primitive, use `equivalence`/`prove` instead.
 - `... is not known to be pure` / `writes static field` / `open to implementations outside the analysed code`: `derive` cannot prove purity; the method's behaviour depends on more than its arguments.

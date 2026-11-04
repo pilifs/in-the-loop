@@ -726,8 +726,8 @@ fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
     let harness_dir = target_tmp().join("buffers-harness");
     let _ = std::fs::remove_dir_all(&harness_dir);
     std::fs::create_dir_all(&harness_dir).unwrap();
-    let params = jvmcontract::harness::params(&["a".into(), "n".into()], &[jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), jvmcontract::classfile::Type::Int]);
-    let harness = jvmcontract::harness::generate("fixtures/Buffers", "prefix", &params, &jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), None, 8, None).unwrap();
+    let layout = jvmcontract::harness::Layout::plain(&["a".into(), "n".into()], &[jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), jvmcontract::classfile::Type::Int]);
+    let harness = jvmcontract::harness::generate("fixtures/Buffers", "prefix", &layout, &jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), None, 8, None).unwrap();
     std::fs::write(harness_dir.join("EquivalenceHarness.class"), &harness.bytes).unwrap();
     let cp = jvmcontract::witness::classpath([harness_dir.as_path(), after.as_path(), relocated.as_path()]).unwrap();
     let mut m = jvmcontract::interp::Machine::new(&cp);
@@ -1534,4 +1534,149 @@ fn the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_app
     assert!(outcome.output.contains("  added configuration: server.port: Integer = 8080, 80 (prod)\n"), "{}", outcome.output);
     let finding = outcome.findings.iter().find(|f| f.rule_id == "boundaries-changed").expect("a finding");
     assert_eq!((finding.uri.as_deref(), finding.line), (Some("tests/fixtures/spring/resources/application.yaml"), 17));
+}
+
+/// An exponential backoff as a record: the delay before an attempt doubles from the base up to the cap, by a loop
+/// that stops at the cap. The compact constructor keeps the components where the doubling cannot overflow.
+const BACKOFF_LOOP: &str = r#"package fixtures;
+public record Backoff(long baseMillis, long capMillis) {
+    public Backoff {
+        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > 86_400_000L) { throw new IllegalArgumentException("base and cap"); }
+    }
+    public long delayMillis(int attempt) {
+        long delay = baseMillis;
+        for (int i = 0; i < attempt && delay < capMillis; i++) { delay = Math.min(capMillis, delay * 2); }
+        return delay;
+    }
+}
+"#;
+
+/// The loop replaced by a shift, which wraps at 64 and overflows before that.
+const BACKOFF_SHIFT: &str = r#"package fixtures;
+public record Backoff(long baseMillis, long capMillis) {
+    public Backoff {
+        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > 86_400_000L) { throw new IllegalArgumentException("base and cap"); }
+    }
+    public long delayMillis(int attempt) {
+        return Math.min(capMillis, baseMillis << attempt);
+    }
+}
+"#;
+
+/// The loop replaced by a shift kept short of overflow, which is the loop's value.
+const BACKOFF_CLOSED: &str = r#"package fixtures;
+public record Backoff(long baseMillis, long capMillis) {
+    public Backoff {
+        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > 86_400_000L) { throw new IllegalArgumentException("base and cap"); }
+    }
+    public long delayMillis(int attempt) {
+        if (attempt <= 0) { return baseMillis; }
+        int shift = Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1);
+        return Math.min(capMillis, baseMillis << shift);
+    }
+}
+"#;
+
+/// A token bucket's state as a record, credited with the tokens earned since the last refill, as the next state.
+const BUCKET_BEFORE: &str = r#"package fixtures;
+public record Bucket(long tokens, long lastNanos) {
+    public Bucket credited(long earned, long nowNanos, long capacity) {
+        return new Bucket(Math.min(capacity, tokens + earned), nowNanos);
+    }
+}
+"#;
+
+fn compile_record(name: &str, class: &str, source: &str) -> Option<PathBuf> {
+    compile_writers(name, class, source)
+}
+
+fn record_run(before: &Path, after: &Path, target: &str, scope: Option<&str>, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, target);
+    let work = target_tmp().join(format!("equivalence-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    options.timeout_seconds = 120;
+    options.unwind = 32;
+    options.unchanged_unless = scope.map(str::to_string);
+    equivalence::run(&options).unwrap()
+}
+
+/// A method of a record whose components are primitive is proved on the components: the harness builds the
+/// record in both versions, skips what a constructor rejects, and calls the method on it.
+#[test]
+fn a_method_of_a_record_is_proved_on_its_components() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_record("backoff-loop", "Backoff", BACKOFF_LOOP), compile_record("backoff-closed", "Backoff", BACKOFF_CLOSED)) else { return };
+    let outcome = record_run(&before, &after, "fixtures.Backoff#delayMillis", None, "backoff-closed");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("this: Backoff(baseMillis: long, capMillis: long) × attempt: int"));
+    assert!(outcome.output.contains("✓ fixtures.Backoff#delayMillis behaves as before on every input ("), "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("public static void check(long this_baseMillis, long this_capMillis, int attempt)"), "{statement}");
+    assert!(statement.contains("try { this_before = new before.fixtures.Backoff(this_baseMillis, this_capMillis); this_after = new fixtures.Backoff(this_baseMillis, this_capMillis); } catch (Throwable t) { return; }"), "{statement}");
+    assert!(statement.contains("try { a = this_before.delayMillis(attempt); }"), "{statement}");
+}
+
+/// The loop replaced by a shift: the shift wraps at 64 and overflows before that, which the components show.
+#[test]
+fn a_shift_that_overflows_is_found_on_the_records_components() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_record("backoff-loop-b", "Backoff", BACKOFF_LOOP), compile_record("backoff-shift", "Backoff", BACKOFF_SHIFT)) else { return };
+    let outcome = record_run(&before, &after, "fixtures.Backoff#delayMillis", None, "backoff-shift");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert!(witness.input.starts_with("delayMillis(this=Backoff[baseMillis="), "{}", outcome.output);
+    assert_ne!(witness.before, witness.after, "{}", outcome.output);
+    assert_eq!(witness.values.len(), 3, "{:?}", witness.values);
+    assert!(outcome.output.contains("✗ Behaviour of fixtures.Backoff#delayMillis changed:"), "{}", outcome.output);
+    // Below 63 attempts from a base of one millisecond, the shift stays within a long and agrees with the loop: a
+    // scope names the receiver's components as the method does, or as this.component.
+    let scoped = record_run(&before, &after, "fixtures.Backoff#delayMillis", Some("attempt < 0 || attempt > 62 || this.baseMillis != 1"), "backoff-shift-scoped");
+    assert_eq!(scoped.verdict, Verdict::Verified, "{}", scoped.output);
+    assert!(scoped.output.contains(" where !(attempt < 0 || attempt > 62 || this.baseMillis != 1) ("), "{}", scoped.output);
+}
+
+/// A record result is compared component by component, in the fields of the record of each version.
+#[test]
+fn a_record_result_is_compared_component_by_component() {
+    if !has("jbmc") {
+        return;
+    }
+    let equal = BUCKET_BEFORE.replace("Math.min(capacity, tokens + earned)", "tokens + earned > capacity ? capacity : tokens + earned");
+    let forgetful = BUCKET_BEFORE.replace("new Bucket(Math.min(capacity, tokens + earned), nowNanos)", "new Bucket(Math.min(capacity, tokens + earned), lastNanos)");
+    let (Some(before), Some(after), Some(wrong)) = (compile_record("bucket-before", "Bucket", BUCKET_BEFORE), compile_record("bucket-equal", "Bucket", &equal), compile_record("bucket-forgetful", "Bucket", &forgetful)) else { return };
+    let outcome = record_run(&before, &after, "fixtures.Bucket#credited", None, "bucket-equal");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("this: Bucket(tokens: long, lastNanos: long) × earned: long × nowNanos: long × capacity: long"));
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("(ea != 0 || (a == null ? b == null : b != null && a.tokens == b.tokens && a.lastNanos == b.lastNanos))"), "{statement}");
+    let outcome = record_run(&before, &wrong, "fixtures.Bucket#credited", None, "bucket-forgetful");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert!(witness.input.starts_with("credited(this=Bucket[tokens="), "{}", outcome.output);
+    assert!(witness.before.starts_with("Bucket[tokens=") && witness.after.starts_with("Bucket[tokens="), "{}", outcome.output);
+    assert_ne!(witness.before, witness.after, "{}", outcome.output);
+}
+
+/// A method identical in both versions is still proved when the record's constructor changed, since the harness
+/// builds the receiver through it: a constructor that clamps the cap changes what the method returns.
+#[test]
+fn a_record_whose_constructor_changed_is_not_identical() {
+    if !has("jbmc") {
+        return;
+    }
+    let clamped = BACKOFF_LOOP.replace("throw new IllegalArgumentException(\"base and cap\"); }", "throw new IllegalArgumentException(\"base and cap\"); }\n        capMillis = Math.min(capMillis, 1000L);");
+    let (Some(before), Some(after)) = (compile_record("backoff-loop-c", "Backoff", BACKOFF_LOOP), compile_record("backoff-clamped", "Backoff", &clamped)) else { return };
+    let outcome = record_run(&before, &after, "fixtures.Backoff#delayMillis", None, "backoff-clamped");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    assert!(!outcome.output.contains("nothing to prove"), "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert!(witness.input.starts_with("delayMillis(this=Backoff[baseMillis="), "{}", outcome.output);
+    let unchanged = record_run(&before, &compile_record("backoff-loop-d", "Backoff", BACKOFF_LOOP).unwrap(), "fixtures.Backoff#delayMillis", None, "backoff-same");
+    assert_eq!(unchanged.verdict, Verdict::Verified, "{}", unchanged.output);
+    assert!(unchanged.output.contains("nothing to prove"), "{}", unchanged.output);
 }

@@ -28,6 +28,11 @@
 //! meaning (a boolean that became a remaining time, nanoseconds that became milliseconds) is related to the previous
 //! one by [`Options::results_agree_when`], a boolean expression over the new parameters, `previous` and `result`,
 //! which takes the place of equality whenever both versions return.
+//!
+//! A method of a record whose components are primitive is a target too, as is a method taking or returning such a
+//! record: the components are the symbolic inputs, the record is built from them in both versions through its
+//! canonical constructor (an input a constructor rejects is outside the statement), and a record result is
+//! compared component by component ([`harness::Layout`]).
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -169,6 +174,24 @@ pub struct Outcome {
 
 /// The parameter values as the harness's locals, with the arrays' elements by slot, for evaluating an expression
 /// over the parameters on a counterexample.
+/// The record a type names, when it is an application record whose components are all primitive.
+fn record_of(cp: &ClassPath, t: &Type) -> Result<Option<harness::RecordType>, Error> {
+    let Type::Object(name) = t else { return Ok(None) };
+    let Some(cf) = cp.application(name)? else { return Ok(None) };
+    if !cf.is_record() {
+        return Ok(None);
+    }
+    let mut components = Vec::new();
+    for c in cf.record_components()? {
+        let ct = Type::parse(&c.descriptor)?;
+        if !ct.is_primitive() {
+            return Ok(None);
+        }
+        components.push((c.name, ct));
+    }
+    Ok(Some(harness::RecordType { class: name.clone(), components }))
+}
+
 fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
     let mut locals = Vec::new();
     let mut arrays = Vec::new();
@@ -242,18 +265,27 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Err(problem) => return refuse(&mut out, 1, problem),
     };
     let line = method.first_line().map(u32::from).unwrap_or(1);
-    if !method.is_static() {
-        return refuse(&mut out, line, "only static methods are supported".into());
-    }
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
-    for (name, t) in names.iter().zip(&descriptor.params) {
-        if !t.is_primitive() && harness::expr::element_ty(t).is_none() {
-            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters and arrays of integral or boolean elements. Finite types (enums, booleans, records) are covered by behavioural contracts.", t.java_name()));
+    // A record whose components are primitive stands in for a value of it: the receiver, a parameter or the result.
+    let receiver_type = Type::Object(class_internal.clone());
+    let receiver = if method.is_static() {
+        None
+    } else {
+        match record_of(&after_cp, &receiver_type)? {
+            Some(r) => Some(r),
+            None => return refuse(&mut out, line, format!("{} is an instance method; a method of a record whose components are primitive is proved on the record's components, otherwise only static methods are", method_name)),
         }
+    };
+    let mut records = Vec::new();
+    for (name, t) in names.iter().zip(&descriptor.params) {
+        let record = record_of(&after_cp, t)?;
+        if !t.is_primitive() && harness::expr::element_ty(t).is_none() && record.is_none() {
+            return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and records whose components are primitive. Finite types (enums, booleans) are covered by behavioural contracts.", t.java_name()));
+        }
+        records.push(record);
     }
-    let params = harness::params(&names, &descriptor.params);
-    let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
+    let result_record = record_of(&after_cp, &descriptor.ret)?;
 
     // The previous version: the target under the same name with the same parameters, or the method named by
     // --before-target, called with the arguments --before-arguments gives.
@@ -274,11 +306,41 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Ok(m) => m.clone(),
         Err(problem) => return refuse(&mut out, line, format!("in the previous version, {problem}; name the method as it was with --before-target")),
     };
-    if !before_method.is_static() {
-        return refuse(&mut out, line, "the previous version is not a static method".into());
-    }
     let before_descriptor = before_method.parsed_descriptor()?;
-    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() {
+    // The previous version's records: the same components, under the previous version's names.
+    let before_receiver = match (&receiver, before_method.is_static()) {
+        (None, true) => None,
+        (Some(r), false) => match record_of(&before_cp, &Type::Object(before_class_internal.clone()))? {
+            Some(b) if b.same_shape(r) => Some((r.clone(), b)),
+            Some(b) => return refuse(&mut out, line, format!("the receiver's components changed: {} before, {} now; a regression proof of a record's method relates the same components in both versions", b.describe(), r.describe())),
+            None => return refuse(&mut out, line, format!("the previous version's class {} is not a record whose components are primitive", before_class_internal.replace('/', "."))),
+        },
+        (Some(_), true) => return refuse(&mut out, line, "the previous version is a static method and the new one a method of the record; a regression proof relates two static methods or two methods of a record".into()),
+        (None, false) => return refuse(&mut out, line, "the previous version is a method of the record and the new one a static method; a regression proof relates two static methods or two methods of a record".into()),
+    };
+    let mut both_records = Vec::new();
+    for ((name, t), record) in names.iter().zip(&descriptor.params).zip(&records) {
+        both_records.push(match record {
+            Some(r) => match record_of(&before_cp, t)? {
+                Some(b) if b.same_shape(r) => Some((r.clone(), b)),
+                Some(b) => return refuse(&mut out, line, format!("the components of parameter {name} changed: {} before, {} now; a regression proof relates the same components in both versions", b.describe(), r.describe())),
+                None => return refuse(&mut out, line, format!("in the previous version, {} is not a record whose components are primitive", t.java_name())),
+            },
+            None => None,
+        });
+    }
+    let result = match (&result_record, record_of(&before_cp, &before_descriptor.ret)?) {
+        (Some(r), Some(b)) if b.same_shape(r) => Some((r.clone(), b)),
+        (Some(r), Some(b)) => return refuse(&mut out, line, format!("the result's components changed: {} before, {} now; a regression proof relates the same components in both versions", b.describe(), r.describe())),
+        (Some(_), None) => return refuse(&mut out, line, format!("the previous version returns {} and the new one the record {}; a regression proof relates the same components in both versions", before_descriptor.ret.java_name(), descriptor.ret.java_name())),
+        (None, Some(b)) if descriptor.ret.is_primitive() || options.results_agree_when.is_none() => return refuse(&mut out, line, format!("the previous version returns the record {} and the new one {}; a regression proof relates the same components in both versions", b.java_name(), descriptor.ret.java_name())),
+        _ => None,
+    };
+    let layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
+    let params = &layout.params;
+    let flat_types = layout.types();
+    let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
+    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() && layout.result.is_none() {
         return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
     }
     if plain && before_descriptor.params != descriptor.params {
@@ -306,17 +368,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         (Some(p), None) => format!("behaves as the previous {p} on every input"),
         (None, _) => "behaves as before on every input".to_string(),
     };
-    let domain = params
-        .iter()
-        .map(|p| match p.ty {
-            Type::Array(_) => format!("{}: {} of length ≤ {}", p.name, p.ty.java_name(), options.max_array_length),
-            _ => format!("{}: {}", p.name, p.ty.java_name()),
-        })
-        .collect::<Vec<_>>()
-        .join(" × ");
+    let domain = layout.domain(options.max_array_length);
 
     // 3. The statement, as a harness JBMC can check.
-    let harness = match harness::generate(&class_internal, &method_name, &params, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
+    let harness = match harness::generate(&class_internal, &method_name, &layout, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
         Ok(h) => h,
         Err(e) => return refuse(&mut out, line, e.to_string()),
     };
@@ -340,11 +395,27 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Ok(cp.with_default_jdk())
     };
     let shared_after_cp = with_jdk(&options.after)?;
-    let plan = if options.shared_callees {
-        shared::plan(&with_jdk(&options.before)?, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain)
+    let shared_before_cp = with_jdk(&options.before)?;
+    let mut plan = if options.shared_callees {
+        shared::plan(&shared_before_cp, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain)
     } else {
         shared::Plan::default()
     };
+    // The harness builds each record through its constructor in both versions: a target identical in both needs no
+    // proof only when the constructors are too.
+    if plan.identical.is_some() {
+        let constructors: Vec<MemberRef> = layout
+            .records()
+            .iter()
+            .filter_map(|s| match s {
+                harness::Slot::Record { record, .. } => Some(MemberRef::new(&record.class, "<init>", &record.constructor())),
+                harness::Slot::Plain(_) => None,
+            })
+            .collect();
+        if !shared::identical_closure(&shared_before_cp, &shared_after_cp, &constructors) {
+            plan.identical = None;
+        }
+    }
     if let Some(compared) = plan.identical {
         let how = match compared - 1 {
             0 => "its bytecode is identical in both versions and it reaches no other method; nothing to prove".to_string(),
@@ -441,10 +512,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     };
     let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
     let before_owner = format!("before/{before_class_internal}");
+    // The previous version's method as relocated: its records are under before/ too.
+    let before_relocated = layout.before_descriptor(&before_descriptor.params, &before_descriptor.ret);
     // The previous version's arguments on a counterexample: the new version's, or the expressions over them.
     let map_arguments = |arguments: &[Argument]| -> Result<Vec<Argument>, Error> {
         let Some(args) = &harness.before_args else { return Ok(arguments.to_vec()) };
-        let (locals, arrays) = locals_of(&params, arguments);
+        let (locals, arrays) = locals_of(params, arguments);
         args.iter()
             .zip(&before_descriptor.params)
             .map(|(arg, t)| match arg {
@@ -457,12 +530,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // the results is the relation holding when both return (with the arrays left the same), and otherwise the two
     // outcomes reading the same; a replay that failed never agrees.
     let replay_both = |arguments: &[Argument]| -> Replays {
-        let after = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-        let after_text = after.with_leftovers(&params, arguments);
+        let after = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
+        let after_text = after.with_leftovers(params, arguments);
         let (before, before_text) = match map_arguments(arguments) {
             Ok(mapped) => {
-                let replayed = witness::replay(&replay_cp, &before_owner, &before_method_name, &before_method.descriptor, &before_descriptor, &mapped);
-                let text = replayed.with_leftovers(&before_params, &mapped);
+                // With the previous version's arguments as expressions, each is a primitive or an array; otherwise
+                // the previous version's records are built from the same components.
+                let replayed = if harness.before_args.is_some() {
+                    witness::replay(&replay_cp, &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
+                } else {
+                    witness::replay_in(&replay_cp, &layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
+                };
+                let text = if harness.before_args.is_some() { replayed.with_leftovers(&before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
                 (Some(replayed), text)
             }
             Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),
@@ -470,7 +549,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let same = before_text == after_text && !before_text.starts_with("<could not replay");
         let (agree, relation_note) = match (&harness.relation, &before) {
             (Some(r), Some(b)) if b.returned.is_some() && after.returned.is_some() => {
-                let (mut locals, mut arrays) = locals_of(&params, arguments);
+                let (mut locals, mut arrays) = locals_of(params, arguments);
                 locals.resize(usize::from(r.previous.max(r.result)) + 2, Value::Int(0));
                 locals[usize::from(r.previous)] = b.returned.unwrap_or(Value::Null);
                 locals[usize::from(r.result)] = after.returned.unwrap_or(Value::Null);
@@ -500,7 +579,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(cp) = &shared_classpath {
             if let Some(result) = run_stages(cp, "-shared")? {
                 let keep = match result.verdict {
-                    Verdict::Violation => !replay_both(&result.arguments(&descriptor.params)?).agree,
+                    Verdict::Violation => !replay_both(&result.arguments(&flat_types)?).agree,
                     _ => true,
                 };
                 if keep {
@@ -535,12 +614,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             proof = Some(how);
         }
         Verdict::Violation => {
-            let found = last.arguments(&descriptor.params)?;
+            let found = last.arguments(&flat_types)?;
             let replays = replay_both(&found);
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
             if replays.agree {
-                let (rendered, _) = witness::call(&method_name, &params, &found);
+                let (rendered, _) = witness::call_in(&method_name, &layout, &found);
                 let both = if replays.before == replays.after { format!("both versions give {}", replays.before) } else { format!("the versions give {} and {}, which the relation relates,", replays.before, replays.after) };
                 let p = format!("JBMC's counterexample {rendered} does not reproduce: {both} in the interpreter. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
                 let message = format!("{} cannot be verified: {p}", options.target);
@@ -558,15 +637,15 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let mut arguments = found.clone();
             if options.shrink {
                 let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?;
-                let shrunk = witness::shrink_in_harness(&harness_cp, harness::CLASS, &descriptor.params, found.clone());
+                let shrunk = witness::shrink_in_harness(&harness_cp, harness::CLASS, &flat_types, found.clone());
                 shrink_runs = shrunk.runs;
                 arguments = shrunk.arguments;
             }
             let shrunk = arguments != found;
             let replays = if shrunk { replay_both(&arguments) } else { replays };
             let Replays { before: before_outcome, after: after_outcome, relation_note, .. } = replays;
-            let (mut rendered, witnesses) = witness::call(&method_name, &params, &arguments);
-            let (rendered_found, _) = witness::call(&method_name, &params, &found);
+            let (mut rendered, witnesses) = witness::call_in(&method_name, &layout, &arguments);
+            let (rendered_found, _) = witness::call_in(&method_name, &layout, &found);
             if harness.before_args.is_some() {
                 if let Ok(mapped) = map_arguments(&arguments) {
                     rendered = format!("{rendered}, previously {}", witness::call(&before_method_name, &before_params, &mapped).0);
@@ -587,7 +666,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}{sharing}", last.version);
             let _ = writeln!(out, "  ({how})");
             if let Some(scope) = &harness.scope {
-                let (locals, arrays) = locals_of(&params, &arguments);
+                let (locals, arrays) = locals_of(params, &arguments);
                 if let Ok(Value::Int(1)) = harness::expr::eval_with(scope, &locals, &arrays) {
                     let _ = writeln!(out, "  (note: the interpreter evaluates the scope expression as true on this input, which the harness should have skipped; check the expression)");
                 }

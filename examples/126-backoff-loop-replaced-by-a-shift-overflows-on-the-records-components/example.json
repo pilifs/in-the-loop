@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "126",
+  "title": "A backoff's doubling loop replaced by a shift overflows, found on the record's components",
+  "summary": "The exponential backoff is a record, `Backoff(baseMillis, capMillis)`, and the delay before an attempt is its method: the base doubled by a loop that stops at the cap. The loop is replaced by `Math.min(capMillis, baseMillis << attempt)`, and the tests pass. The regression proof, which now takes a method of a record and builds the receiver from symbolic components, finds the shift leaving the range of a `long`: a wait of `Long.MIN_VALUE` milliseconds, which a scheduler runs at once, so a failing dependency is retried without pause.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "numeric-code",
+    "integer-overflow",
+    "record-components"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "unwind": 32
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Replace the loop that doubles the delay up to the cap with `Math.min(capMillis, baseMillis << attempt)`: doubling `attempt` times is a shift by `attempt`, and the cap is applied once at the end instead of on every turn. The compact constructor, which keeps the base positive and the cap between the base and a day, is unchanged. The tests pass: doubling from the base, stopping at the cap, and a cap that holds after forty attempts, all with a base of a hundred milliseconds.",
+    "patch": "change.patch"
+  },
+  "risk": "A retry filter asks the policy for the delay before each attempt and hands it to a scheduler. A negative delay is run immediately by every scheduler there is (`ScheduledExecutorService.schedule` treats it as zero), so from the attempt at which the shift overflows, the client retries a failing dependency in a tight loop: the backoff that was meant to let the dependency recover becomes the load that keeps it down, on every client at once, since they all run the same arithmetic. The overflow needs a base of 32 milliseconds and 58 attempts, or a base of one and 63, or a negative attempt count, which the loop treats as the first attempt and the shift as a shift by 63; a filter that counts attempts in a `long` and hands them down as an `int`, or one that keeps retrying a long outage, gets there.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "Until this cycle the regression proof took static methods over primitives and arrays, and a method of a record was refused. Now the record's components are the symbolic inputs: the harness takes `this.baseMillis`, `this.capMillis` and `attempt`, builds a `Backoff` from the two components in each version through the canonical constructor, skips an input that a constructor rejects (the compact constructor's checks are part of the statement, as they are of the program), calls `delayMillis` on each receiver, and compares the results. JBMC finds the two disagreeing in the second stage of the search and the interpreter shrinks the witness to `delayMillis(this=Backoff[baseMillis=1, capMillis=1], attempt=-1)`: the loop does not run for a negative attempt and returns the base, the shift by -1 is a shift by 63 (the JVM keeps the low six bits of the distance) and gives the sign bit, which `Math.min` keeps. Restricting the proof to attempts between 0 and 62 with `--unchanged-unless 'attempt < 0 || attempt > 62'` moves the witness to `delayMillis(this=Backoff[baseMillis=32, capMillis=32], attempt=58)`, where `32 << 58` is 2^63 and overflows: the shift is wrong within ordinary attempt counts too, for any base above one.",
+  "resolution": "Keep the loop, or keep the shift short of the sign bit (example 127): `attempt <= 0 ? baseMillis : Math.min(capMillis, baseMillis << Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1))`, which the regression proof shows equal to the loop on every component and attempt. Either way, a test with a large attempt count and a base above one millisecond belongs in the suite.",
+  "notes": [
+    "The library's run of this shape took 1.9 s with JBMC, the witness found in the stage `[-100000:100000]` as `delayMillis(this=Backoff[baseMillis=62513, capMillis=65792], attempt=-65528)` and shrunk in 120 interpreter runs; with the scope on the attempt count, 1.9 s and 164 runs. The measurement on this kernel is the pipeline's. The unwinding bound is 32 (`approach.unwind`, the tool's `--unwind`): the loop doubles from a base of at least one up to a cap of at most a day, 2^26.4 milliseconds, so at most 27 turns, and the default of 16 would leave an unwinding assertion unproved.",
+    "The receiver is written as `this=Backoff[baseMillis=1, capMillis=1]`, as Java prints a record, and the domain as `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`. In a scope or relation the components are `baseMillis` or `this.baseMillis`, and a record parameter's are `other.component`. An input that a constructor of either version rejects is skipped, as an input outside the scope is: a base of zero or a cap beyond a day is no `Backoff`, so the proof is over the record's invariant, which is where the loop cannot overflow and the shift can. A method identical in both versions is still proved when the record's constructor changed, since the harness builds the receiver through it.",
+    "`Math.min` is called by both versions, and the proof first takes it as one function in both (example 120); that counterexample does not reproduce once `min` is computed as written, since the two versions call it on different arguments and an uninterpreted function may answer each as it likes, so the tool says so in a `note:` line and proves again with the callee's bytecode. The second run is the one reported.",
+    "The tool's own checker (`--engine native`) does not take this harness: it builds objects, which the checker's integer fragment has no circuits for, and `--engine auto` hands it to JBMC with a note."
+  ],
+  "provenance": "Constructed on a new kernel of Crosscut, the exponential backoff as a record, to exercise the regression proof's new support for methods of records whose components are primitive. The rewrite is a review suggestion seen on backoff code (a loop that doubles is a shift), and the overflow is the one backoff libraries have fixed in their own history.",
+  "references": [
+    {
+      "title": "Spring Retry: ExponentialBackOffPolicy, the initial interval doubled up to the maximum",
+      "url": "https://docs.spring.io/spring-retry/docs/api/current/org/springframework/retry/backoff/ExponentialBackOffPolicy.html"
+    },
+    {
+      "title": "Resilience4j retry: IntervalFunction.ofExponentialBackoff",
+      "url": "https://resilience4j.readme.io/docs/retry"
+    },
+    {
+      "title": "Java Language Specification §15.19: the shift distance of a long shift is its low six bits",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.19"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

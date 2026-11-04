@@ -720,6 +720,8 @@ def run_tool_equivalence(folder, example, root, module, result):
     if example["change"].get("resultsAgreeWhen"):
         command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
     command += engine_flag(example)
+    if example["approach"].get("unwind"):
+        command += ["--unwind", str(example["approach"]["unwind"])]
     proc, output = tool(app, root, *command)
     write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
