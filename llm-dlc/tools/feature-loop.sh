@@ -8,7 +8,7 @@
 # The loop re-executes itself in a systemd scope with a memory cap, so a proof
 # that runs away is killed alone and cannot exhaust the machine.
 #
-# Usage: [FEATURE_LOOP_MEMORY_MAX=4G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
+# Usage: [FEATURE_LOOP_MEMORY_MAX=3.5G] llm-dlc/tools/feature-loop.sh PROMPT [CYCLES] [UNTIL]
 #   features  add features and examples to jvmcontract
 #   tla       add advanced TLA examples
 #   spring    make jvmcontract more useful to expert Spring Boot developers
@@ -55,7 +55,7 @@ set -uo pipefail
 SESSION_ID=360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb
 MODEL=claude-fable-5-1
 EFFORT=high
-MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-4G}
+MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-3.5G}
 SCOPE=feature-loop
 
 usage() {
