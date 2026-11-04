@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-03T14:52:02.194Z",
-  "ended": "2026-11-04T04:44:42.810Z",
-  "duration_seconds": 49961,
+  "ended": "2026-11-04T04:45:14.289Z",
+  "duration_seconds": 49992,
   "stats": {
     "turns": 89,
-    "api_calls": 753,
-    "tool_calls": 746,
+    "api_calls": 755,
+    "tool_calls": 747,
     "tool_errors": 11,
     "compactions": 14,
     "peak_context_tokens": 315353,
     "usage": {
-      "input_tokens": 1564,
-      "output_tokens": 783681,
-      "cache_read_input_tokens": 90033676,
-      "cache_creation_input_tokens": 2364570
+      "input_tokens": 1568,
+      "output_tokens": 784010,
+      "cache_read_input_tokens": 90451819,
+      "cache_creation_input_tokens": 2365804
     }
   },
   "tools": {
-    "Bash": 681,
+    "Bash": 682,
     "Edit": 22,
     "Read": 16,
     "ToolSearch": 10,
@@ -247,24 +247,24 @@
     {
       "index": 14,
       "started": "2026-11-04T03:47:06.418Z",
-      "ended": "2026-11-04T04:44:42.810Z",
+      "ended": "2026-11-04T04:45:14.289Z",
       "turns": 12,
-      "api_calls": 95,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 204,
-        "output_tokens": 81624,
-        "cache_read_input_tokens": 13428217,
-        "cache_creation_input_tokens": 189289
+        "input_tokens": 208,
+        "output_tokens": 81953,
+        "cache_read_input_tokens": 13846360,
+        "cache_creation_input_tokens": 190523
       },
-      "peak_context_tokens": 208679
+      "peak_context_tokens": 209913
     }
   ],
   "log": {
-    "sha256": "507dd16ff6a0cc9967ed2b5aa4bcbe32fdd25ab59d6f679e5236aca3497f1169",
-    "bytes": 20963828,
-    "lines": 7789,
-    "gzip_bytes": 3764415,
-    "path": "llm-dlc/traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/logs/507dd16ff6a0cc9967ed2b5aa4bcbe32fdd25ab59d6f679e5236aca3497f1169.jsonl.gz"
+    "sha256": "cb8d3c68b9da1f733cdabee67b7b581b3c6f84a28a920b11535f9466e891dce5",
+    "bytes": 21056131,
+    "lines": 7806,
+    "gzip_bytes": 3793573,
+    "path": "llm-dlc/traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/logs/cb8d3c68b9da1f733cdabee67b7b581b3c6f84a28a920b11535f9466e891dce5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -430,11 +430,19 @@
     },
     {
       "change_id": "yrmnvrltquunznwypmmkoznkxlouqlrr",
-      "commit_id": null,
+      "commit_id": "92368907b2e595304c5e1473b83f17461da47156",
       "immutable": false,
       "summary": "allow approve and allow add commit the decision themselves, so push is never held up by it",
       "body": "After the maintainer approved proposal 37f924ec, push refused with 'uncommitted work in @' because llm-dlc/allowlist.json was left changed, and the agent may not commit that file. A decision recorded at the terminal is now committed by the same command, under the same lock: with nothing else changed in @, through sync.py commit (trace lines and the check after it); with other work in @, the allow list alone by jj commit PATH, leaving the rest in place. A described @ is left alone, since its message is someone else's, and --no-commit keeps the old behaviour. The message names each id, kind, masked value and reason.\n\nCorrection to the earlier report that push exited 0 when it refused: cmd_push returns 1 there; the 0 came from the agent piping its output through tail.",
       "log_sha256": "507dd16ff6a0cc9967ed2b5aa4bcbe32fdd25ab59d6f679e5236aca3497f1169"
+    },
+    {
+      "change_id": "outokllqrlwuzxkupoytsyloryotqzrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "cb8d3c68b9da1f733cdabee67b7b581b3c6f84a28a920b11535f9466e891dce5"
     }
   ],
   "logs": {
@@ -460,7 +468,7 @@
       "bytes": 20963828,
       "lines": 7789,
       "gzip_bytes": 3764415,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/507dd16ff6a0cc9967ed2b5aa4bcbe32fdd25ab59d6f679e5236aca3497f1169.jsonl.gz"
     },
     "55e3054cf390d10aee2733a35631eb827fa9551a564b3affa6fa48dec974ecbd": {
       "bytes": 6489723,
@@ -545,6 +553,12 @@
       "lines": 7104,
       "gzip_bytes": 3581216,
       "url": "https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/c828346730db5326967c807e53e31d604d711d61ab1f6ddfbb740ce5be138bb7.jsonl.gz"
+    },
+    "cb8d3c68b9da1f733cdabee67b7b581b3c6f84a28a920b11535f9466e891dce5": {
+      "bytes": 21056131,
+      "lines": 7806,
+      "gzip_bytes": 3793573,
+      "url": "https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/cb8d3c68b9da1f733cdabee67b7b581b3c6f84a28a920b11535f9466e891dce5.jsonl.gz"
     },
     "cc86917bc5c2c9f309fd97753e03584e8965b00ddb6f101f275e3222b8036eac": {
       "bytes": 2763083,
