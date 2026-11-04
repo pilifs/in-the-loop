@@ -127,20 +127,23 @@ pub struct Layout {
     pub args: Vec<Slot>,
     /// The flat parameters, in slot order.
     pub params: Vec<Param>,
-    /// The result's record, in the new version and in the previous one, when the method returns a record.
-    pub result: Option<(RecordType, RecordType)>,
+    /// The result's record in the new version and in the previous one, when the method returns a record of
+    /// primitive components in that version. Without a relation between the results, both are of the same shape
+    /// and compared component by component; under one, the relation names the components `result.c` and
+    /// `previous.c`.
+    pub result: (Option<RecordType>, Option<RecordType>),
 }
 
 impl Layout {
     /// The usual layout: every parameter a primitive or an array, passed through.
     pub fn plain(names: &[String], types: &[Type]) -> Layout {
-        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: None }
+        Layout { receiver: None, args: (0..types.len()).map(Slot::Plain).collect(), params: params(names, types), result: (None, None) }
     }
 
     /// Lays out the receiver (new record, and the previous one when the previous version has it) and the
     /// parameters, of which `records[i]` says which are records (new, and previous when it has one), flattening
     /// each record into its components.
-    pub fn new(receiver: Option<(RecordType, Option<RecordType>)>, names: &[String], types: &[Type], records: &[Option<(RecordType, Option<RecordType>)>], result: Option<(RecordType, RecordType)>) -> Layout {
+    pub fn new(receiver: Option<(RecordType, Option<RecordType>)>, names: &[String], types: &[Type], records: &[Option<(RecordType, Option<RecordType>)>], result: (Option<RecordType>, Option<RecordType>)) -> Layout {
         let mut flat: Vec<(String, Type)> = Vec::new();
         let flatten = |flat: &mut Vec<(String, Type)>, name: &str, record: &RecordType| {
             for (c, t) in &record.components {
@@ -197,7 +200,7 @@ impl Layout {
         let relocated = |t: &Type| match t {
             Type::Object(name) => {
                 let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name))
-                    || self.result.as_ref().is_some_and(|(_, previous)| previous.class == *name)
+                    || self.result.1.as_ref().is_some_and(|previous| previous.class == *name)
                     || also.iter().flatten().any(|r| r.class == *name);
                 if known {
                     format!("Lbefore/{name};")
@@ -221,7 +224,7 @@ impl Layout {
     }
 
     pub fn has_records(&self) -> bool {
-        self.receiver.is_some() || self.result.is_some() || self.args.iter().any(|s| matches!(s, Slot::Record { .. }))
+        self.receiver.is_some() || self.result.0.is_some() || self.result.1.is_some() || self.args.iter().any(|s| matches!(s, Slot::Record { .. }))
     }
 
     /// `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`.
@@ -246,12 +249,21 @@ impl Layout {
 
 /// The relation between the previous version's result and the new one's (`--results-agree-when`): a boolean
 /// expression over the new parameters, `previous` (the previous version's result, in the slot `previous`) and
-/// `result` (the new version's, in the slot `result`), which must hold whenever both versions return.
+/// `result` (the new version's, in the slot `result`), which must hold whenever both versions return. A result
+/// that is a record of primitive components is in the expression as its components, `previous.c` and `result.c`,
+/// each read from the record into a slot of its own; two record results that are both null agree, and one null
+/// alone does not.
 #[derive(Debug, Clone)]
 pub struct Relation {
     pub expr: Expr,
     pub previous: u16,
     pub result: u16,
+    /// The previous version's result record and the slots its components are read into, when it is a record.
+    pub previous_components: Option<(RecordType, Vec<u16>)>,
+    /// The new version's, likewise.
+    pub result_components: Option<(RecordType, Vec<u16>)>,
+    /// The first slot after those the components take, or 0 when neither result is a record.
+    pub slots_end: u16,
 }
 
 /// The name of the previous version's result in a result relation.
@@ -406,8 +418,10 @@ impl BeforeMethod {
 
     /// Parses the result relation, if one was given, over the new parameters, `previous` (the previous version's
     /// result of type `self.ret`, in slot `previous`) and `result` (the new version's of type `ret`, in slot
-    /// `result`). Without one, the return types must be the same, and the results are compared for equality.
-    pub fn parse_relation(&self, params: &[Param], ret: &Type, previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
+    /// `result`). A result that is a record (`records`: the new version's, the previous one's) is in the
+    /// expression as its components, `result.c` and `previous.c`, in slots from `first_free_slot` on. Without a
+    /// relation, the return types must be the same, and the results are compared for equality.
+    pub fn parse_relation(&self, params: &[Param], ret: &Type, records: &(Option<RecordType>, Option<RecordType>), previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
         let Some(text) = &self.relation else {
             if self.ret != *ret {
                 return Err(Error::new(format!(
@@ -418,9 +432,9 @@ impl BeforeMethod {
             }
             return Ok(None);
         };
-        for (side, t) in [("previous", &self.ret), ("new", ret)] {
-            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() {
-                return Err(Error::new(format!("the {side} version returns {}; a relation can be given between integral, boolean and array results", t.java_name())));
+        for (side, t, record) in [("previous", &self.ret, &records.1), ("new", ret, &records.0)] {
+            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() && record.is_none() {
+                return Err(Error::new(format!("the {side} version returns {}; a relation can be given between integral, boolean and array results, and records of primitive components", t.java_name())));
             }
         }
         for p in params {
@@ -429,10 +443,29 @@ impl BeforeMethod {
             }
         }
         let mut names = params.to_vec();
-        names.push(Param { name: PREVIOUS.into(), ty: self.ret.clone(), slot: previous });
-        names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: result });
-        let expr = expr::parse_in(text, &names, None, first_free_slot).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
-        Ok(Some(Relation { expr, previous, result }))
+        let mut next = first_free_slot;
+        let mut components = |name: &str, t: &Type, slot: u16, record: &Option<RecordType>| -> Option<(RecordType, Vec<u16>)> {
+            match record {
+                Some(record) => {
+                    let mut slots = Vec::new();
+                    for (c, t) in &record.components {
+                        names.push(Param { name: format!("{name}.{c}"), ty: t.clone(), slot: next });
+                        slots.push(next);
+                        next += t.slots();
+                    }
+                    Some((record.clone(), slots))
+                }
+                None => {
+                    names.push(Param { name: name.into(), ty: t.clone(), slot });
+                    None
+                }
+            }
+        };
+        let previous_components = components(PREVIOUS, &self.ret, previous, &records.1);
+        let result_components = components(RESULT, ret, result, &records.0);
+        let expr = expr::parse_in(text, &names, None, next).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
+        let slots_end = if previous_components.is_some() || result_components.is_some() { next } else { 0 };
+        Ok(Some(Relation { expr, previous, result, previous_components, result_components, slots_end }))
     }
 }
 
@@ -572,7 +605,7 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             }
             None
         }
-        Some(bm) => bm.parse_relation(params, ret, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
+        Some(bm) => bm.parse_relation(params, ret, &layout.result, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -805,6 +838,40 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
         code.load(Kind::Int, ea);
         code.if_zero(Cond::Ne, arrays);
         if let Some(r) = &relation {
+            // A record result: two null records agree, a null beside a record or a primitive does not, and
+            // otherwise the components are read into the relation's slots.
+            match (&r.previous_components, &r.result_components) {
+                (Some(_), Some(_)) => {
+                    let both = code.label();
+                    code.load(Kind::Ref, a);
+                    code.if_nonnull(both);
+                    code.load(Kind::Ref, b);
+                    code.if_null(arrays);
+                    code.goto(fail);
+                    code.bind(both);
+                    code.load(Kind::Ref, b);
+                    code.if_null(fail);
+                }
+                (Some(_), None) => {
+                    code.load(Kind::Ref, a);
+                    code.if_null(fail);
+                }
+                (None, Some(_)) => {
+                    code.load(Kind::Ref, b);
+                    code.if_null(fail);
+                }
+                (None, None) => {}
+            }
+            for (side, components) in [(0, &r.previous_components), (1, &r.result_components)] {
+                let Some((record, slots)) = components else { continue };
+                let owner = if side == 0 { format!("before/{}", record.class) } else { record.class.clone() };
+                for ((name, t), slot) in record.components.iter().zip(slots) {
+                    let field = writer.pool.field_ref(&owner, name, &t.descriptor());
+                    code.load(Kind::Ref, if side == 0 { a } else { b });
+                    code.op_u16(0xb4, field); // getfield
+                    code.store(kind_of(t), *slot);
+                }
+            }
             let relate_start = code.label();
             let relate_end = code.label();
             code.bind(relate_start);
@@ -818,7 +885,7 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             code.goto(fail);
             let throwable = writer.pool.class("java/lang/Throwable");
             code.handler(relate_start, relate_end, handler, Some(throwable));
-            code.max_locals = code.max_locals.max(r.expr.slots_used());
+            code.max_locals = code.max_locals.max(r.expr.slots_used()).max(r.slots_end);
         }
         match ret {
             _ if relation.is_some() => {}
@@ -839,9 +906,9 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
                 code.if_icmp(Cond::Ne, fail);
                 compare_arrays(&mut code, a, b, element, None, index, fail);
             }
-            Type::Object(_) if layout.result.is_some() => {
+            Type::Object(_) if layout.result.0.is_some() && layout.result.1.is_some() => {
                 // Two records agree when both are null or every component agrees, read from the fields.
-                let (record, previous) = layout.result.as_ref().expect("checked");
+                let (Some(record), Some(previous)) = (&layout.result.0, &layout.result.1) else { unreachable!("checked") };
                 let compare = code.label();
                 code.load(Kind::Ref, a);
                 code.if_nonnull(compare);
@@ -1046,8 +1113,8 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         let built_receiver = side == "before" && before.is_some_and(|b| b.receiver.is_some());
         let on_receiver = if side == "before" { layout.before_receiver() || built_receiver } else { layout.receiver.is_some() };
         let owner = if built_receiver { "this_".to_string() } else if on_receiver { format!("this_{side}") } else { owner };
-        let type_name = |t: &Type| match (&layout.result, t) {
-            (Some((record, previous)), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, if side == "before" { previous.java_name() } else { record.java_name() }),
+        let type_name = |t: &Type| match (if side == "before" { &layout.result.1 } else { &layout.result.0 }, t) {
+            (Some(record), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, record.java_name()),
             _ => type_name(t),
         };
         if !is_void {
@@ -1061,7 +1128,21 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         s.push('\n');
     }
     if let Some(r) = relation {
-        s.push_str(&format!("        // The results agree when the stated relation holds: previous is the previous version's, result the new one's.\n        {} previous = a; {} result = b;\n", type_name(before_ret), type_name(ret)));
+        // A record result's type, and its components as accessor calls, `previous.c()`.
+        let typed = |t: &Type, record: &Option<RecordType>, prefix: &str| match (record, t) {
+            (Some(record), Type::Object(_)) => format!("{prefix}{}", record.java_name()),
+            _ => type_name(t),
+        };
+        let r = [(PREVIOUS, &layout.result.1), (RESULT, &layout.result.0)].into_iter().fold(r.to_string(), |text, (name, record)| match record {
+            Some(record) => accessor_calls(&text, name, record),
+            None => text,
+        });
+        let null_note = match (&layout.result.1, &layout.result.0) {
+            (Some(_), Some(_)) => " (two null records agree, one alone does not)",
+            (Some(_), None) | (None, Some(_)) => " (a null record does not)",
+            (None, None) => "",
+        };
+        s.push_str(&format!("        // The results agree when the stated relation holds: previous is the previous version's, result the new one's{null_note}.\n        {} previous = a; {} result = b;\n", typed(before_ret, &layout.result.1, "before."), typed(ret, &layout.result.0, "")));
         s.push_str(&format!("        assert ea == eb && (ea != 0 || ({r}))"));
     } else {
         s.push_str("        assert ea == eb");
@@ -1070,8 +1151,8 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                 Type::Float | Type::Double => "a == b || (a != a && b != b)".to_string(),
                 Type::Array(_) => "java.util.Arrays.equals(a, b)".to_string(),
                 t if t.is_primitive() => "a == b".to_string(),
-                Type::Object(_) if layout.result.is_some() => {
-                    let (record, previous) = layout.result.as_ref().expect("checked");
+                Type::Object(_) if layout.result.0.is_some() && layout.result.1.is_some() => {
+                    let (Some(record), Some(previous)) = (&layout.result.0, &layout.result.1) else { unreachable!("checked") };
                     let components = record.components.iter().zip(&previous.components).map(|((n, _), (o, _))| format!("a.{o} == b.{n}")).collect::<Vec<_>>().join(" && ");
                     format!("(a == null ? b == null : b != null && {components})")
                 }
@@ -1085,6 +1166,26 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     }
     s.push_str(";\n    }\n}\n");
     s
+}
+
+/// `text` with each component of `record` read from `name` as an accessor call, `previous.tokens` as
+/// `previous.tokens()`, for the statement as Java.
+fn accessor_calls(text: &str, name: &str, record: &RecordType) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    while let Some(i) = rest.find(&format!("{name}.")) {
+        let after = i + name.len() + 1;
+        let end = after + rest[after..].find(|c: char| !(c.is_alphanumeric() || c == '_' || c == '$')).unwrap_or(rest.len() - after);
+        let preceded = rest[..i].chars().next_back().is_some_and(|c| c.is_alphanumeric() || c == '_' || c == '$' || c == '.');
+        let component = &rest[after..end];
+        out.push_str(&rest[..end]);
+        if !preceded && record.components.iter().any(|(c, _)| c == component) && !rest[end..].starts_with('(') {
+            out.push_str("()");
+        }
+        rest = &rest[end..];
+    }
+    out.push_str(rest);
+    out
 }
 
 /// An exceptional behaviour clause of a property: the method throws `class` (an internal name, an instance of it
@@ -1475,7 +1576,7 @@ mod tests {
 
     /// The usual layout: the parameters as they are.
     fn flat(params: &[Param]) -> Layout {
-        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: None }
+        Layout { receiver: None, args: (0..params.len()).map(Slot::Plain).collect(), params: params.to_vec(), result: (None, None) }
     }
 
     #[test]
@@ -1484,7 +1585,7 @@ mod tests {
         let window = RecordType { class: "net/example/Window".into(), components: vec![("from".into(), Type::Int), ("open".into(), Type::Boolean)] };
         let names = ["attempt".to_string(), "window".to_string()];
         let types = [Type::Int, Type::Object("net/example/Window".into())];
-        let layout = Layout::new(Some((backoff.clone(), Some(backoff.clone()))), &names, &types, &[None, Some((window.clone(), Some(window.clone())))], Some((window.clone(), window.clone())));
+        let layout = Layout::new(Some((backoff.clone(), Some(backoff.clone()))), &names, &types, &[None, Some((window.clone(), Some(window.clone())))], (Some(window.clone()), Some(window.clone())));
         assert_eq!(layout.params.iter().map(|p| (p.name.as_str(), p.slot)).collect::<Vec<_>>(), vec![("this.baseMillis", 0), ("this.capMillis", 2), ("attempt", 4), ("window.from", 5), ("window.open", 6)]);
         assert_eq!(layout.types(), vec![Type::Long, Type::Long, Type::Int, Type::Int, Type::Boolean]);
         assert_eq!(layout.target_types(), vec![Type::Int, Type::Object("net/example/Window".into())]);
@@ -1527,7 +1628,7 @@ mod tests {
     fn calls_a_static_previous_version_with_the_records_components() {
         let batch = RecordType { class: "net/example/Batch".into(), components: vec![("start".into(), Type::Long), ("size".into(), Type::Int)] };
         let names = ["failedIndex".to_string()];
-        let layout = Layout::new(Some((batch.clone(), None)), &names, &[Type::Int], &[None], None);
+        let layout = Layout::new(Some((batch.clone(), None)), &names, &[Type::Int], &[None], (None, None));
         assert!(!layout.before_receiver());
         assert_eq!(layout.before_descriptor(&[Type::Long, Type::Int, Type::Int], &Type::Long), "(JII)J");
         let previous = BeforeMethod {
@@ -1848,6 +1949,74 @@ mod tests {
         assert!(generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&not_boolean)).unwrap_err().to_string().contains("in the result relation: the expression must be boolean"));
         let mistyped = BeforeMethod { relation: Some("previous == result".into()), ..before.clone() };
         assert!(generate("net/example/Expiry", "remainingNanos", &flat(&params), &Type::Long, None, 8, Some(&mistyped)).is_err());
+    }
+
+    #[test]
+    fn generates_a_harness_relating_record_results_by_their_components() {
+        // The record result gained a component: the relation names the components of both records.
+        let old = RecordType { class: "fixtures/Bucket".into(), components: vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long)] };
+        let new = RecordType { class: "fixtures/Bucket".into(), components: vec![("tokens".into(), Type::Long), ("lastNanos".into(), Type::Long), ("refills".into(), Type::Int)] };
+        let params = params(&["tokens".into(), "earned".into()], &[Type::Long, Type::Long]);
+        let layout = Layout { result: (Some(new.clone()), Some(old.clone())), ..flat(&params) };
+        let before = BeforeMethod {
+            owner: "fixtures/Bucket".into(),
+            method: "credited".into(),
+            descriptor: "(JJ)Lfixtures/Bucket;".into(),
+            params: vec![Type::Long, Type::Long],
+            names: vec!["tokens".into(), "earned".into()],
+            arguments: None,
+            receiver: None,
+            records: Vec::new(),
+            ret: Type::Object("fixtures/Bucket".into()),
+            relation: Some("previous.tokens == result.tokens && previous.lastNanos == result.lastNanos && result.refills >= 0".into()),
+        };
+        let harness = generate("fixtures/Bucket", "credited", &layout, &Type::Object("fixtures/Bucket".into()), None, 8, Some(&before)).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(JJ)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        let relation = harness.relation.as_ref().expect("relation");
+        // Slots: the two longs, a, ea, b, eb, the index, the previous version's arguments (four slots); the
+        // components after: two longs of the previous record, two longs and an int of the new one.
+        assert_eq!((relation.previous, relation.result), (4, 6));
+        let (previous_slots, result_slots) = (&relation.previous_components.as_ref().unwrap().1, &relation.result_components.as_ref().unwrap().1);
+        assert_eq!(previous_slots, &vec![13, 15]);
+        assert_eq!(result_slots, &vec![17, 19, 21]);
+        assert_eq!(relation.slots_end, 22);
+        assert_eq!(code.max_locals, 22);
+        let insns = code.instructions().unwrap();
+        let reads: Vec<String> = insns
+            .iter()
+            .filter_map(|(_, i)| match i {
+                crate::classfile::Insn::GetField(index) => class.pool.member(*index).ok().map(|m| format!("{}.{}", m.owner, m.name)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(reads, vec!["before/fixtures/Bucket.tokens", "before/fixtures/Bucket.lastNanos", "fixtures/Bucket.tokens", "fixtures/Bucket.lastNanos", "fixtures/Bucket.refills"]);
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        assert!(harness.source.contains("before.fixtures.Bucket previous = a; fixtures.Bucket result = b;"), "{}", harness.source);
+        assert!(harness.source.contains("(two null records agree, one alone does not)"), "{}", harness.source);
+        assert!(harness.source.contains("assert ea == eb && (ea != 0 || (previous.tokens() == result.tokens() && previous.lastNanos() == result.lastNanos() && result.refills() >= 0));"), "{}", harness.source);
+        // A result that became a record is related to the value it was.
+        let was_long = BeforeMethod { descriptor: "(JJ)J".into(), ret: Type::Long, relation: Some("previous == result.tokens".into()), ..before.clone() };
+        let layout = Layout { result: (Some(new.clone()), None), ..flat(&params) };
+        let harness = generate("fixtures/Bucket", "credited", &layout, &Type::Object("fixtures/Bucket".into()), None, 8, Some(&was_long)).unwrap();
+        assert!(harness.source.contains("long previous = a; fixtures.Bucket result = b;"), "{}", harness.source);
+        assert!(harness.source.contains("(a null record does not)"), "{}", harness.source);
+        assert!(harness.source.contains("(ea != 0 || (previous == result.tokens()));"), "{}", harness.source);
+        let relation = harness.relation.as_ref().expect("relation");
+        assert!(relation.previous_components.is_none());
+        assert_eq!(relation.result_components.as_ref().unwrap().1, vec![14, 16, 18], "a is a long now, two slots");
+        // A component neither record has is unknown.
+        let unknown = BeforeMethod { relation: Some("previous.refills == result.refills".into()), ..before.clone() };
+        let problem = generate("fixtures/Bucket", "credited", &Layout { result: (Some(new.clone()), Some(old.clone())), ..flat(&params) }, &Type::Object("fixtures/Bucket".into()), None, 8, Some(&unknown)).unwrap_err().to_string();
+        assert!(problem.contains("in the result relation: unknown name \"previous\""), "{problem}");
+        // The accessor rewriting leaves other names alone.
+        assert_eq!(accessor_calls("previous.tokens + previousTokens.x - result.tokens()", "previous", &old), "previous.tokens() + previousTokens.x - result.tokens()");
     }
 
     #[test]

@@ -183,6 +183,12 @@ previous record from the new parameters, with a constructor call first among the
 either constructor rejects is outside the statement. On Crosscut, [130](130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md)
 finds the negative attempt a backoff that gained a multiplier counts down to the cap, and [131](131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/README.md)
 proves the same change with the loop kept counting up, both with the multiplier of two as the scope of what was not meant to change.
+A record *result* whose components changed, or a result that became a record, is related by `resultsAgreeWhen` over the components,
+`previous.startNanos == result.startNanos && previous.count == result.count`, each record's components read into the relation. On Crosscut's
+request counter, [134](134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client/README.md) finds the counter
+record, given a previous window's count, advancing by one window where the request fell two or more ahead, and
+[135](135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/README.md) proves the start and the count of the
+counter with the previous window's count equal to the fixed window's, on every input.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

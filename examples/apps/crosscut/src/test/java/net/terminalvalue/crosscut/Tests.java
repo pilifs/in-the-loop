@@ -21,6 +21,7 @@ public final class Tests {
             net.terminalvalue.crosscut.retry.BackoffTest.class,
             net.terminalvalue.crosscut.ratelimit.TokenBucketTest.class,
             net.terminalvalue.crosscut.ratelimit.RetryAfterTest.class,
+            net.terminalvalue.crosscut.ratelimit.WindowTest.class,
             net.terminalvalue.crosscut.idempotency.IdempotentReceiverTest.class,
             net.terminalvalue.crosscut.kafka.PartitionerTest.class,
             net.terminalvalue.crosscut.kafka.BatchCommitTest.class,

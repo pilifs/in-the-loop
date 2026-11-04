@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-085102-example-134-a-window-counter-that-advanc",
+  "title": "Example 134: a window counter that advances by one window leaves its start behind a quiet client, found by a regression proof over the record results' shared components",
+  "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted (a new fixed-window request counter kernel of Crosscut) across the counter record gaining a previousCount component: the old counter is built from the new components (--before-arguments 'new Window(this.startNanos, this.count), nowNanos, windowNanos') and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), within aligned starts as the scope. The new version advances the start by exactly one window instead of aligning it to the clock. Expected violation: a request two windows ahead of an empty counter, the old start at the request's window and the new one a window behind, found by JBMC in under a second inline.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "regression-proof",
+    "record-components"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/witness.rs"
+    ],
+    "examples": [
+      "134"
+    ]
+  },
+  "expected": "violation",
+  "submitted": {
+    "at": "2026-11-04T08:51:02+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 134 (B9)",
+      "run": "python3 examples/tools/build.py 134",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client"
+  ]
+}

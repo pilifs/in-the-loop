@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261104-085102-example-135-a-window-counter-with-the-pr",
+  "title": "Example 135: a window counter with the previous count proved equal on the start and the count by the tool's own checker, the record results related on their shared components",
+  "description": "Regression proof of net.terminalvalue.crosscut.ratelimit.Window#counted by the tool's own bounded model checker (--engine native) across the counter record gaining a previousCount component: the old counter is built from the new components and the two record results are related on the components they share (--results-agree-when 'previous.startNanos == result.startNanos && previous.count == result.count'), with no scope. Expected verified in seconds; JBMC did not finish the same harness within a minute inline (two 64-bit remainders), which is why the example names the checker.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "regression-proof",
+    "record-components",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/harness/mod.rs",
+      "lib/src/equivalence.rs",
+      "lib/src/bmc/mod.rs"
+    ],
+    "examples": [
+      "135"
+    ]
+  },
+  "expected": "verified",
+  "submitted": {
+    "at": "2026-11-04T08:51:02+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 135 (B9)",
+      "run": "python3 examples/tools/build.py 135",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count"
+  ]
+}

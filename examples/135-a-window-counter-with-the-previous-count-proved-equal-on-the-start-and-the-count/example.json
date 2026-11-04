@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "135",
+  "title": "A window counter with the previous count proved equal on the start and the count",
+  "summary": "The same change to Crosscut's `Window` record done right: the counter gains a `previousCount` component and an `estimated` method, and `counted` keeps the alignment of the start to the clock, `nowNanos - nowNanos % windowNanos`, carrying the count only into the window right after the one it was in. The regression proof relates the new record result to the old one on the two components they share, with the old counter built from the new components, and proves the start and the count equal on every input, the tool's own checker in seconds.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "confined-change",
+    "record-components",
+    "signature-change",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add a `previousCount` component to the record and an `estimated(nowNanos, windowNanos)` method that weights it by how much of the previous window the sliding window still covers. `counted` keeps computing the window's start from the clock, `nowNanos - nowNanos % windowNanos`, and when the request opens a new window its previous count is this window's count if that window ended where the new one starts, zero otherwise. The tests take the third component, and one is added for the estimate.",
+    "patch": "change.patch",
+    "previousArguments": "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+    "resultsAgreeWhen": "previous.startNanos == result.startNanos && previous.count == result.count"
+  },
+  "risk": "None: the proof is over every counter, clock reading and window length, the start and the count unchanged. What is at stake is the review of a method that returns a record of other components than before: a reviewer has to see that the two components the filter's limit depends on are computed as they were, and the proof is that.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The harness takes the three components, the clock reading and the window length as symbolic inputs, builds the new record from them and the old one from the start and the count, skips what either constructor rejects, calls both versions, and reads the components of the two result records into the relation, which must hold whenever both return (two null records would agree, one alone would not, and neither version returns null). Both versions compute the start as `nowNanos - nowNanos % windowNanos` and the count as one more or one, and throw for the same inputs; the previous count the new record carries is outside the relation. The tool's own checker proves it in seconds, the two 64-bit remainders being one circuit; JBMC did not finish within a minute on the same harness.",
+  "resolution": "Merge. The proof is the review of the two components the limit depends on; the new component is reviewed by its tests and its own property, if one is written.",
+  "notes": [
+    "No scope: the relation holds on every input, including an unaligned start and time or window values the methods refuse, since both versions throw for the same inputs (a non-positive window, a reading before the start, a count that overflows into the constructor's check) and the start and the count are computed the same way. The checker proves it without a scope, where 134 needs one to show the telling witness.",
+    "The relation names the components the two records share, `previous.startNanos == result.startNanos && previous.count == result.count`; `result.previousCount` is a name it could use, `previous.previousCount` is not, and the tool says so. Without a relation the tool refuses with `the result's components changed: Window(startNanos: long, count: long) before, Window(startNanos: long, count: long, previousCount: long) now` and proposes this very expression, the equalities of the components the records share by name and type.",
+    "Both versions compute `nowNanos % windowNanos` on the same inputs, so in the tool's own checker the two 64-bit remainders are one circuit (as 120's divisions are, see its notes), and the proof is 9 paths and 10 solver calls. Still it takes about 12 s, nearly all of it in CaDiCaL proving the paths infeasible with the remainder's circuit in them (the release build is no faster than the debug one: the time is the solver's). JBMC, with its default solver, did not finish the same harness within 60 s, which is why the example names the checker (`approach.engine`: native).",
+    "The statement the harness prints reads the relation as Java, `previous.startNanos() == result.startNanos() && previous.count() == result.count()`, with `before.net.terminalvalue.crosscut.ratelimit.Window previous = a; net.terminalvalue.crosscut.ratelimit.Window result = b;` before it."
+  ],
+  "provenance": "Constructed as the correct form of example 134's change, on the same kernel of Crosscut, to show a regression proof across a change of a record result's components passing.",
+  "references": [
+    {
+      "title": "Cloudflare: How we built rate limiting capable of scaling to millions of domains (the sliding window approximation over two fixed windows)",
+      "url": "https://blog.cloudflare.com/counting-things-a-lot-of-different-things/"
+    },
+    {
+      "title": "Resilience4j: RateLimiter, permissions per refresh period (the cycle)",
+      "url": "https://resilience4j.readme.io/docs/ratelimiter"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

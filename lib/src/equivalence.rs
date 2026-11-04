@@ -366,18 +366,34 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     for t in &before_descriptor.params {
         previous_records.push(if components_passed { record_of(&before_cp, t)? } else { None });
     }
-    let result = match (&result_record, record_of(&before_cp, &before_descriptor.ret)?) {
-        (Some(r), Some(b)) if b.same_shape(r) => Some((r.clone(), b)),
-        (Some(r), Some(b)) => return refuse(&mut out, line, format!("the result's components changed: {} before, {} now; a regression proof relates the same components in both versions", b.describe(), r.describe())),
-        (Some(_), None) => return refuse(&mut out, line, format!("the previous version returns {} and the new one the record {}; a regression proof relates the same components in both versions", before_descriptor.ret.java_name(), descriptor.ret.java_name())),
-        (None, Some(b)) if descriptor.ret.is_primitive() || options.results_agree_when.is_none() => return refuse(&mut out, line, format!("the previous version returns the record {} and the new one {}; a regression proof relates the same components in both versions", b.java_name(), descriptor.ret.java_name())),
-        _ => None,
+    // The result's records: of the same shape, compared component by component; otherwise, or when the result
+    // became a record or stopped being one, related by --results-agree-when over the components.
+    let relation_given = options.results_agree_when.is_some();
+    let before_result = record_of(&before_cp, &before_descriptor.ret)?;
+    let first_component = |r: &harness::RecordType| r.components.first().map(|(c, _)| c.clone()).unwrap_or_default();
+    let relate = "say how the results are related with --results-agree-when, a boolean expression over the new parameters";
+    let result = match (&result_record, &before_result) {
+        (Some(r), Some(b)) if b.same_shape(r) && !relation_given => (Some(r.clone()), Some(b.clone())),
+        (Some(r), Some(b)) if !relation_given => {
+            let common: Vec<String> = b.components.iter().filter(|(c, t)| r.components.iter().any(|(d, u)| d == c && u == t)).map(|(c, _)| format!("previous.{c} == result.{c}")).collect();
+            let example = if common.is_empty() { format!("previous.{} == result.{}", first_component(b), first_component(r)) } else { common.join(" && ") };
+            return refuse(&mut out, line, format!("the result's components changed: {} before, {} now; {relate} and the results' components previous.c and result.c, such as \"{example}\"", b.describe(), r.describe()));
+        }
+        (Some(r), None) if !relation_given && (before_descriptor.ret.is_primitive() || matches!(before_descriptor.ret, Type::Array(_))) => {
+            return refuse(&mut out, line, format!("the previous version returns {} and the new one the record {}; {relate}, previous and the result's components result.c, such as \"previous == result.{}\"", before_descriptor.ret.java_name(), r.describe(), first_component(r)));
+        }
+        (Some(_), None) if !relation_given => return refuse(&mut out, line, format!("the previous version returns {} and the new one the record {}; a regression proof relates the same components in both versions", before_descriptor.ret.java_name(), descriptor.ret.java_name())),
+        (None, Some(b)) if !relation_given && (descriptor.ret.is_primitive() || matches!(descriptor.ret, Type::Array(_))) => {
+            return refuse(&mut out, line, format!("the previous version returns the record {} and the new one {}; {relate}, the previous result's components previous.c and result, such as \"previous.{} == result\"", b.describe(), descriptor.ret.java_name(), first_component(b)));
+        }
+        (None, Some(b)) if !relation_given => return refuse(&mut out, line, format!("the previous version returns the record {} and the new one {}; a regression proof relates the same components in both versions", b.java_name(), descriptor.ret.java_name())),
+        (r, b) => (r.clone(), b.clone()),
     };
     let layout = harness::Layout::new(before_receiver, &names, &descriptor.params, &both_records, result);
     let params = &layout.params;
     let flat_types = layout.types();
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
-    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() && layout.result.is_none() {
+    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() && !(layout.result.0.is_some() && layout.result.1.is_some()) {
         return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
     }
     if plain && before_descriptor.params != descriptor.params {
@@ -394,7 +410,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         &before_names,
         &before_descriptor.params,
         &previous_records.iter().map(|r| r.clone().map(|r| (r.clone(), Some(r)))).collect::<Vec<_>>(),
-        None,
+        (None, None),
     );
     let before_params = &before_layout.params;
     let previous = (!plain).then(|| harness::BeforeMethod {
@@ -605,20 +621,40 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),
         };
         let same = before_text == after_text && !before_text.starts_with("<could not replay");
+        // A side that returned: a primitive or array value, or a record (null or not).
+        let returned = |x: &witness::Replayed, record: bool| if record { x.thrown.is_none() && !x.outcome.starts_with('<') && x.outcome != "void" } else { x.returned.is_some() };
         let (agree, relation_note) = match (&harness.relation, &before) {
-            (Some(r), Some(b)) if b.returned.is_some() && after.returned.is_some() => {
+            (Some(r), Some(b)) if returned(b, r.previous_components.is_some()) && returned(&after, r.result_components.is_some()) => {
+                let text = options.results_agree_when.as_deref().unwrap_or_default();
+                let leftovers = |t: &str| t.find(", leaving").map(|i| t[i..].to_string()).unwrap_or_default();
+                // A null record: two agree, one beside a record or a value does not, as the harness has it.
+                let null_before = r.previous_components.is_some() && b.result_fields.is_none();
+                let null_after = r.result_components.is_some() && after.result_fields.is_none();
+                if null_before || null_after {
+                    let (agree, note) = match (null_before, null_after) {
+                        (true, true) => (leftovers(&before_text) == leftovers(&after_text), None),
+                        (true, false) => (false, Some("the previous version's result is null and the new one's is not".to_string())),
+                        _ => (false, Some("the new version's result is null and the previous one's is not".to_string())),
+                    };
+                    return Replays { before: before_text, after: after_text, agree, relation_note: note };
+                }
                 let (mut locals, mut arrays) = locals_of(params, arguments);
-                locals.resize(usize::from(r.previous.max(r.result)) + 2, Value::Int(0));
+                locals.resize(usize::from(r.previous.max(r.result).max(r.slots_end)) + 2, Value::Int(0));
                 locals[usize::from(r.previous)] = b.returned.unwrap_or(Value::Null);
                 locals[usize::from(r.result)] = after.returned.unwrap_or(Value::Null);
+                for (components, fields) in [(&r.previous_components, &b.result_fields), (&r.result_components, &after.result_fields)] {
+                    if let (Some((record, slots)), Some(fields)) = (components, fields) {
+                        for ((name, _), slot) in record.components.iter().zip(slots) {
+                            locals[usize::from(*slot)] = fields.get(name).copied().unwrap_or(Value::Int(0));
+                        }
+                    }
+                }
                 if let Some(data) = &b.result_array {
                     arrays.push((r.previous, data.clone()));
                 }
                 if let Some(data) = &after.result_array {
                     arrays.push((r.result, data.clone()));
                 }
-                let text = options.results_agree_when.as_deref().unwrap_or_default();
-                let leftovers = |t: &str| t.find(", leaving").map(|i| t[i..].to_string()).unwrap_or_default();
                 match harness::expr::eval_with(&r.expr, &locals, &arrays) {
                     Ok(Value::Int(1)) => (leftovers(&before_text) == leftovers(&after_text), None),
                     Ok(_) => (false, Some(format!("the results are not related by {text}"))),

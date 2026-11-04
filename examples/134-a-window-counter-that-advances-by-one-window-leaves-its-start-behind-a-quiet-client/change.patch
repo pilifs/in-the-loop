@@ -1,0 +1,116 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+index 8214e20..a073879 100644
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+@@ -1,32 +1,48 @@
+ package net.terminalvalue.crosscut.ratelimit;
+ 
+ /**
+- * A fixed-window request counter, the simplest rate limit: how many requests a client has made in the window its
+- * last request fell in, with windows of one length aligned to the epoch (Spring Cloud Gateway's rate limiter keeps
+- * such a count per key and window; Resilience4j's {@code RateLimiter} calls the window a cycle). The counter is a
+- * value: the filter keeps one per client, replaces it on each request with what {@link #counted} returns, and
+- * refuses the request when the count passes the limit. The clock reading and the window length are arguments, so
+- * that the counter is a pure function.
++ * A sliding-window request counter, the rate limit that does not let a client spend two limits at a window
++ * boundary: how many requests a client has made in the window its last request fell in, and how many in the window
++ * before it, with windows of one length aligned to the epoch (Spring Cloud Gateway's rate limiter keeps such a
++ * count per key and window; Resilience4j's {@code RateLimiter} calls the window a cycle). The counter is a value:
++ * the filter keeps one per client, replaces it on each request with what {@link #counted} returns, and refuses the
++ * request when {@link #estimated} passes the limit. The clock reading and the window length are arguments, so that
++ * the counter is a pure function.
+  *
+- * <p>A counter starts as {@code new Window(0, 0)}: no request yet, in the window at the epoch.
++ * <p>A counter starts as {@code new Window(0, 0, 0)}: no request yet, in the window at the epoch.
+  */
+-public record Window(long startNanos, long count) {
++public record Window(long startNanos, long count, long previousCount) {
+ 
+     public Window {
+-        if (startNanos < 0 || count < 0) {
+-            throw new IllegalArgumentException("the start and the count must not be negative");
++        if (startNanos < 0 || count < 0 || previousCount < 0) {
++            throw new IllegalArgumentException("the start and the counts must not be negative");
+         }
+     }
+ 
+     /**
+      * The counter after a request at {@code nowNanos}, with windows of {@code windowNanos}: one more in the same
+-     * window, or the first request of the window the reading falls in.
++     * window, or the first request of the next window, with this window's count as the previous count.
+      */
+     public Window counted(long nowNanos, long windowNanos) {
+         if (windowNanos <= 0 || nowNanos < startNanos) {
+             throw new IllegalArgumentException("the window must be positive and time must not go back");
+         }
+-        long start = nowNanos - nowNanos % windowNanos;
+-        return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);
++        if (nowNanos - startNanos < windowNanos) {
++            return new Window(startNanos, count + 1, previousCount);
++        }
++        return new Window(startNanos + windowNanos, 1, count);
++    }
++
++    /**
++     * The requests in the window of {@code windowNanos} ending at {@code nowNanos}, estimated as the current
++     * window's count plus the previous window's count weighted by how much of that sliding window it covers
++     * (the approximation Cloudflare's rate limiter uses).
++     */
++    public long estimated(long nowNanos, long windowNanos) {
++        if (windowNanos <= 0 || nowNanos < startNanos) {
++            throw new IllegalArgumentException("the window must be positive and time must not go back");
++        }
++        long elapsed = Math.min(windowNanos, nowNanos - startNanos);
++        return count + previousCount * (windowNanos - elapsed) / windowNanos;
+     }
+ }
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
+index 56a7d08..83e3bca 100644
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
+@@ -9,30 +9,39 @@ public final class WindowTest {
+     private static final long WINDOW = 1_000_000_000L;
+ 
+     public static void countsRequestsInTheSameWindow() {
+-        Window window = new Window(0, 0).counted(100, WINDOW).counted(200, WINDOW).counted(WINDOW - 1, WINDOW);
++        Window window = new Window(0, 0, 0).counted(100, WINDOW).counted(200, WINDOW).counted(WINDOW - 1, WINDOW);
+         check(window.startNanos() == 0, "the first window starts at the epoch");
+         check(window.count() == 3, "three requests in the window");
++        check(window.previousCount() == 0, "nothing before the first window");
+     }
+ 
+-    public static void startsTheNextWindowAtOne() {
+-        Window window = new Window(0, 2).counted(WINDOW + 5, WINDOW);
++    public static void startsTheNextWindowAtOneCarryingTheCount() {
++        Window window = new Window(0, 2, 0).counted(WINDOW + 5, WINDOW);
+         check(window.startNanos() == WINDOW, "the next window starts a window later");
+         check(window.count() == 1, "the request that opened the window");
++        check(window.previousCount() == 2, "the window before had two");
+         window = window.counted(2 * WINDOW, WINDOW);
+-        check(window.startNanos() == 2 * WINDOW && window.count() == 1, "and the one after it");
++        check(window.startNanos() == 2 * WINDOW && window.count() == 1 && window.previousCount() == 1, "and the one after it");
++    }
++
++    public static void estimatesTheSlidingWindow() {
++        Window window = new Window(WINDOW, 1, 4);
++        check(window.estimated(WINDOW, WINDOW) == 5, "at the window's start the whole previous window counts");
++        check(window.estimated(WINDOW + WINDOW / 2, WINDOW) == 3, "halfway, half of it");
++        check(window.estimated(2 * WINDOW - 1, WINDOW) == 1, "at its end, none of it");
+     }
+ 
+     public static void rejectsTimeGoingBackOrAnEmptyWindow() {
+         boolean rejected = false;
+         try {
+-            new Window(WINDOW, 1).counted(WINDOW - 1, WINDOW);
++            new Window(WINDOW, 1, 0).counted(WINDOW - 1, WINDOW);
+         } catch (IllegalArgumentException e) {
+             rejected = true;
+         }
+         check(rejected, "a reading before the window's start");
+         rejected = false;
+         try {
+-            new Window(0, 0).counted(1, 0);
++            new Window(0, 0, 0).counted(1, 0);
+         } catch (IllegalArgumentException e) {
+             rejected = true;
+         }

@@ -1880,6 +1880,64 @@ fn a_record_result_is_compared_component_by_component() {
     assert_ne!(witness.before, witness.after, "{}", outcome.output);
 }
 
+/// The same bucket counting its refills in a third component.
+const BUCKET_COUNTED: &str = r#"package fixtures;
+public record Bucket(long tokens, long lastNanos, int refills) {
+    public Bucket credited(long earned, long nowNanos, long capacity) {
+        return new Bucket(Math.min(capacity, tokens + earned), nowNanos, refills + 1);
+    }
+}
+"#;
+
+/// The tokens after a credit alone, before the state was gathered into a record.
+const BUCKET_TOKENS_STATIC: &str = r#"package fixtures;
+public final class Bucket {
+    private Bucket() {}
+    public static long credited(long tokens, long lastNanos, long earned, long nowNanos, long capacity) {
+        return Math.min(capacity, tokens + earned);
+    }
+}
+"#;
+
+/// A record result that gained a component is related to the record it was by a relation over the components of
+/// both, `previous.c` and `result.c`; a result that became a record, to the value it was.
+#[test]
+fn a_record_result_of_other_components_is_related_by_a_relation_over_them() {
+    if !has("jbmc") {
+        return;
+    }
+    let forgetful = BUCKET_COUNTED.replace("nowNanos, refills + 1)", "lastNanos, refills + 1)");
+    let (Some(before), Some(after), Some(wrong), Some(tokens_only)) = (compile_record("bucket-before-r", "Bucket", BUCKET_BEFORE), compile_record("bucket-counted", "Bucket", BUCKET_COUNTED), compile_record("bucket-counted-forgetful", "Bucket", &forgetful), compile_record("bucket-tokens-static", "Bucket", BUCKET_TOKENS_STATIC)) else { return };
+    let arguments = Some("new Bucket(this.tokens, this.lastNanos), earned, nowNanos, capacity");
+    let relation = Some("previous.tokens == result.tokens && previous.lastNanos == result.lastNanos");
+    let outcome = related_run(&before, &after, "fixtures.Bucket#credited", None, arguments, relation, None, "bucket-counted");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("this: Bucket(tokens: long, lastNanos: long, refills: int) × earned: long × nowNanos: long × capacity: long"));
+    assert!(outcome.output.contains(", the results related by previous.tokens == result.tokens && previous.lastNanos == result.lastNanos"), "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("before.fixtures.Bucket previous = a; fixtures.Bucket result = b;"), "{statement}");
+    assert!(statement.contains("(ea != 0 || (previous.tokens() == result.tokens() && previous.lastNanos() == result.lastNanos()))"), "{statement}");
+    // Without the relation, the tool says what to give.
+    let refused = related_run(&before, &after, "fixtures.Bucket#credited", None, arguments, None, None, "bucket-counted-unrelated");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("the result's components changed: Bucket(tokens: long, lastNanos: long) before, Bucket(tokens: long, lastNanos: long, refills: int) now; say how the results are related with --results-agree-when, a boolean expression over the new parameters and the results' components previous.c and result.c, such as \"previous.tokens == result.tokens && previous.lastNanos == result.lastNanos\""), "{}", refused.output);
+    // A version that keeps the old time breaks the relation; the replays are the records.
+    let outcome = related_run(&before, &wrong, "fixtures.Bucket#credited", None, arguments, relation, None, "bucket-counted-forgetful");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert!(witness.input.starts_with("credited(this=Bucket[tokens="), "{}", outcome.output);
+    assert!(witness.before.starts_with("Bucket[tokens=") && witness.after.starts_with("Bucket[tokens="), "{}", outcome.output);
+    assert!(outcome.output.contains("the results are not related by previous.tokens == result.tokens && previous.lastNanos == result.lastNanos"), "{}", outcome.output);
+    // The tokens alone, before the state was a record: the previous value is one component of the new result.
+    let outcome = related_run(&tokens_only, &before, "fixtures.Bucket#credited", None, Some("this.tokens, this.lastNanos, earned, nowNanos, capacity"), Some("previous == result.tokens"), None, "bucket-became-record");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("long previous = a; fixtures.Bucket result = b;"), "{statement}");
+    let refused = related_run(&tokens_only, &before, "fixtures.Bucket#credited", None, Some("this.tokens, this.lastNanos, earned, nowNanos, capacity"), None, None, "bucket-became-record-unrelated");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("the previous version returns long and the new one the record Bucket(tokens: long, lastNanos: long); say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and the result's components result.c, such as \"previous == result.tokens\""), "{}", refused.output);
+}
+
 /// A method identical in both versions is still proved when the record's constructor changed, since the harness
 /// builds the receiver through it: a constructor that clamps the cap changes what the method returns.
 #[test]

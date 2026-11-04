@@ -12,28 +12,28 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T08:34:01.775Z",
-  "duration_seconds": 317046,
+  "ended": "2026-11-04T08:54:41.627Z",
+  "duration_seconds": 318286,
   "stats": {
-    "turns": 238,
-    "api_calls": 2592,
-    "tool_calls": 3116,
+    "turns": 243,
+    "api_calls": 2654,
+    "tool_calls": 3176,
     "tool_errors": 58,
-    "compactions": 43,
+    "compactions": 44,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 77452,
-      "output_tokens": 5146454,
-      "cache_read_input_tokens": 447313307,
-      "cache_creation_input_tokens": 11250185
+      "input_tokens": 79288,
+      "output_tokens": 5226138,
+      "cache_read_input_tokens": 455391811,
+      "cache_creation_input_tokens": 11430087
     }
   },
   "tools": {
-    "Bash": 2616,
+    "Bash": 2675,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
-    "ToolSearch": 26,
+    "ToolSearch": 27,
     "WebFetch": 16,
     "Monitor": 9,
     "TaskStop": 6
@@ -832,24 +832,38 @@
     {
       "index": 43,
       "started": "2026-11-04T08:01:20.466Z",
-      "ended": "2026-11-04T08:34:01.775Z",
+      "ended": "2026-11-04T08:34:29.138Z",
       "turns": 4,
-      "api_calls": 69,
+      "api_calls": 70,
       "usage": {
-        "input_tokens": 2028,
-        "output_tokens": 99668,
-        "cache_read_input_tokens": 9017321,
-        "cache_creation_input_tokens": 197143
+        "input_tokens": 2060,
+        "output_tokens": 100751,
+        "cache_read_input_tokens": 9229377,
+        "cache_creation_input_tokens": 198590
       },
-      "peak_context_tokens": 212088
+      "peak_context_tokens": 213535
+    },
+    {
+      "index": 44,
+      "started": "2026-11-04T08:35:52.308Z",
+      "ended": "2026-11-04T08:54:41.627Z",
+      "turns": 5,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 1804,
+        "output_tokens": 78601,
+        "cache_read_input_tokens": 7866448,
+        "cache_creation_input_tokens": 178455
+      },
+      "peak_context_tokens": 193400
     }
   ],
   "log": {
-    "sha256": "4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c",
-    "bytes": 93696024,
-    "lines": 36180,
-    "gzip_bytes": 15948264,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c.jsonl.gz"
+    "sha256": "3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715",
+    "bytes": 95609299,
+    "lines": 37033,
+    "gzip_bytes": 16269645,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1324,6 +1338,14 @@
       "summary": "The tool's own checker asks the solver once per branch: each path carries a model of its condition, a condition taken before costs nothing, and records are in its fragment; examples 132 and 133 on the token bucket's refill (verification pending)",
       "body": "The bounded model checker in lib/src/bmc explored the harness path by path and asked the SAT solver about both sides of every branch. Now each path carries a model of its condition (bits.rs: the solver's answer for the inputs when the path was split off, with the gates made since evaluated on demand from the definitions the Blaster records per variable), so the side the model takes is known feasible without a call and the solver is asked once, about the other side, whose model goes with the twin; a branch whose literal, or its negation, is already in the path condition (the same comparison of the same bits, hashed to one literal, as a loop bound both versions test) costs no call at all. Each solver call is also given the time left to the deadline, so the search for a smaller witness after a violation can no longer overrun its budget by one long call. The engine's log line reports the solver time and the gates evaluated. On example 131's proof the solver calls fall from 3432 to 846 and the time from 49.7 s to 22 s; the plain proof of example 120, which JBMC did not finish in 60 s without the shared-callee stubs, takes the checker 1.1 s because both versions' divisions are one circuit. The engine was found to handle records of primitive components already (objects with fields, constructors inlined), which the README, the skill reference and the limits now say.\n\nExamples 132 and 133 are regression proofs of Crosscut's TokenBucket#tokensAfter by the checker, with the module's precondition (the property contract's assume) as the scope, as example 125 does: 132 counts the periods earned as nowNanos / periodNanos - lastNanos / periodNanos, which the tests, polling from time zero, and the property both pass, and the proof finds crediting a token for a nanosecond (tokensAfter(tokens=0, lastNanos=1, nowNanos=2, periodNanos=2, capacity=1), 0 before and 1 after, found in the first search stage in 3.0 s); 133 caps the tokens earned by the room left instead of capping the sum, proved equal within the precondition in 0.5 s over nine paths and ten solver calls, with the overflow outside it shown in its notes. Example 120's notes record the checker's 1.1 s run. Verified by the unit test a_branch_costs_one_solver_call_and_a_condition_taken_before_none (two paths and one call; four paths and three calls), the full suite (105 unit, 49 integration tests, the integration tests cross-checking the checker against JBMC on the fixture proofs), clippy with nothing new, both patches applying and their trees passing the app's 45 tests, and the two proofs run inline through the release binary, which is installed. Jobs 20261104-083123-example-132-a-refill-counting-periods-fr and 20261104-083123-example-133-a-refill-capped-by-the-room are queued for the pipeline.",
       "log_sha256": "4c30bb561280fbe04ee9d69b450a040eca2f6ab20c9771f0cb11d3347d030f0c"
+    },
+    {
+      "change_id": "umsorzvyqlqskoywnzpuxpooksuyxmuy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs relate a record result whose components changed, or a result that became a record, by a relation over the components; examples 134 and 135 on a new window-counter kernel of Crosscut (verification pending)",
+      "body": "A record result of other components than before, or a result that is a record in one version and a primitive in the other, had no way into a regression proof: there was no expression for the previous result. Now --results-agree-when takes the components of a record result by name, previous.c and result.c (harness::Layout.result is the pair of the two versions' result records, BeforeMethod::parse_relation names each record's components in slots of their own, and the generated harness reads them from the two results by getfield before the relation; two null records agree, one null alone does not; the statement as Java prints them as accessor calls). Without a relation the tool refuses and proposes one over the components the records share by name and type. A replayed counterexample reads the components back from the interpreter's object (witness::Replayed.result_fields) to check the relation and to show both records.\n\nExamples 134 and 135 are regression proofs on a new kernel of Crosscut, ratelimit.Window, a fixed-window request counter whose counter is a record the method returns, across the record gaining a previousCount component for the sliding-window estimate: 134 advances the start by exactly one window instead of aligning it to the clock, found by JBMC in a fraction of a second within aligned starts as the scope (the witness a request two windows ahead of an empty counter); 135 keeps the alignment and is proved equal on the start and the count on every input by the tool's own checker in 12 s, where JBMC did not finish within a minute. Jobs 20261104-085102-example-134-a-window-counter-that-advanc and 20261104-085102-example-135-a-window-counter-with-the-pr are queued.\n\nVerified by a new unit test on the harness (the components' slots, the getfield reads, the Java statement), a new integration test cross-checking the verified, violated, became-a-record and refused cases with JBMC (4 s), the full suite (106 unit, 50 integration tests), the Crosscut app's 49 tests on the base tree and on both patched trees, both patches applying, and the four proof runs inline with both engines.",
+      "log_sha256": "3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715"
     }
   ],
   "logs": {
@@ -1391,6 +1413,12 @@
       "bytes": 83286217,
       "lines": 31602,
       "gzip_bytes": 14179822,
+      "url": null
+    },
+    "3fab2f969f9dff946e7d8e029fa600bc89f68eff6cf0ea24e0d7e618281c1715": {
+      "bytes": 95609299,
+      "lines": 37033,
+      "gzip_bytes": 16269645,
       "url": null
     },
     "40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2": {

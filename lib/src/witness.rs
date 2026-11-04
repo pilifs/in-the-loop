@@ -3,6 +3,7 @@
 //! would write it. Shared by the regression proofs ([`crate::equivalence`]) and the property proofs
 //! ([`crate::property`]).
 
+use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::classfile::{MethodDescriptor, Type};
@@ -57,6 +58,8 @@ pub struct Replayed {
     pub returned: Option<Value>,
     /// The elements of a returned array.
     pub result_array: Option<Vec<Value>>,
+    /// The fields of a returned object (a record's components by name), when one was returned and not null.
+    pub result_fields: Option<BTreeMap<String, Value>>,
     /// The elements of the array arguments after the call, by parameter slot.
     pub arrays_after: Vec<(u16, Vec<Value>)>,
     /// The class of the exception thrown, as an internal name.
@@ -164,7 +167,7 @@ pub fn replay_in(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_in
             .collect()
     };
     let outcome = match rejected {
-        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, arrays_after: left(&m), thrown: Some(m.class_of(r)) },
+        Some(Fault::Throw(r)) => return Replayed { outcome: format!("<the constructor {}>", render::thrown(&m, r)), returned: None, result_array: None, result_fields: None, arrays_after: left(&m), thrown: Some(m.class_of(r)) },
         Some(f) => Err(f),
         None => match receiver {
             Some(this) => m.call_virtual(this, class_internal, method, descriptor, values),
@@ -174,23 +177,24 @@ pub fn replay_in(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_in
     let after = left(&m);
     match outcome {
         Ok(Some(v)) => {
-            let array = match v {
+            let (array, fields) = match v {
                 Value::Ref(r) => match m.heap.get(r) {
-                    Object::Array { data, .. } => Some(data.clone()),
-                    _ => None,
+                    Object::Array { data, .. } => (Some(data.clone()), None),
+                    Object::Instance { fields, .. } => (None, Some(fields.clone())),
+                    _ => (None, None),
                 },
-                _ => None,
+                _ => (None, None),
             };
             let text = match (&array, ret) {
                 (Some(data), Type::Array(element)) => self::array(data, element),
                 _ => render::value(&mut m, v, ret).unwrap_or_else(|f| render::fault(&m, &f)),
             };
             let returned = (ret.is_primitive() || array.is_some()).then_some(v);
-            Replayed { outcome: text, returned, result_array: array, arrays_after: after, thrown: None }
+            Replayed { outcome: text, returned, result_array: array, result_fields: fields, arrays_after: after, thrown: None }
         }
-        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, arrays_after: after, thrown: None },
-        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, arrays_after: after, thrown: Some(m.class_of(r)) },
-        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, arrays_after: after, thrown: None },
+        Ok(None) => Replayed { outcome: "void".to_string(), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
+        Err(Fault::Throw(r)) => Replayed { outcome: render::thrown(&m, r), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: Some(m.class_of(r)) },
+        Err(f) => Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), returned: None, result_array: None, result_fields: None, arrays_after: after, thrown: None },
     }
 }
 

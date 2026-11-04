@@ -5251,6 +5251,94 @@
         "A rewrite of `lastAfter` as `lastNanos + earned * periodNanos`, the credited time advanced by the periods earned, is the same function by Java's division identity (`d == (d / p) * p + d % p` for every `d` and `p`), but the checker did not prove it within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in this checker and in JBMC alike. The gate hashing shares what is computed the same way, not what is equal for a reason."
       ],
       "source": null
+    },
+    {
+      "id": "134",
+      "path": "examples/134-a-window-counter-that-advances-by-one-window-leaves-its-start-behind-a-quiet-client",
+      "title": "A window counter that advances by one window leaves its start behind a quiet client",
+      "summary": "Crosscut's `Window` record, the fixed-window request counter a rate-limiting filter keeps per client, gains a `previousCount` component for the sliding-window estimate (Cloudflare's approximation: the previous window's count weighted by how much of it the sliding window still covers). The counting method is rewritten with it: a request in the same window adds one, and a request after it opens the next window, carrying this window's count. The tests pass, polling one window after another. But a client quiet for two or more windows gets a window starting one window after its old one, behind the clock, with the count of a window long gone carried into the estimate: its next request opens yet another window, so the count never passes one and the limit never applies to it. The regression proof relates the new record result to the old one on the components they share, `previous.startNanos == result.startNanos && previous.count == result.count`, with the old counter built from the new components, and finds a request two windows ahead.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "record-components",
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The counter's start is aligned to the window: a counter begins as `Window(0, 0)` and every start the old method produces is `nowNanos - nowNanos % windowNanos`. A start that is not aligned is no state the filter can hold, so the scope leaves those inputs out (`windowNanos > 0 && this.startNanos % windowNanos != 0` is the intended-change expression, used as the module's precondition is in 125, 132 and 133). Without the scope the first witness is an unaligned start, `counted(this=Window[startNanos=1, count=0, previousCount=0], nowNanos=1, windowNanos=2)`, which the old method realigns to zero and the new one keeps.",
+        "The relation is over the components both records have. A record result of other components has no previous result to compare to: `resultsAgreeWhen` names each record's components as `previous.c` and `result.c`, read from the two records into the relation's locals, and the harness treats two null records as agreeing and one null alone as not. The old counter is built from the new components as in 130 and 131, `new Window(this.startNanos, this.count), nowNanos, windowNanos`.",
+        "The new component is outside the relation: whether `previousCount` is right is not what this proof is about, only that the start and the count are what they were. A relation over `result.previousCount` alone would have to say what the old method, which had no such count, implies for it, and it implies nothing.",
+        "The tests poll consecutive windows, where advancing by one window and realigning to the clock agree; the defect needs a gap of two windows or more, or a window length that does not divide the clock reading the counter started at.",
+        "A counter left behind the clock is not only a wrong estimate: each later request finds `nowNanos - startNanos >= windowNanos` again and opens another window at one, so the client is never refused, and the carried count is the one from before its silence.",
+        "The scope's guard matters: `this.startNanos % windowNanos != 0` alone divides by zero where the window is zero, in the scope expression itself, before either version runs. JBMC then reports a counterexample with `windowNanos=0` that does not reproduce (both versions throw `IllegalArgumentException` there), and the tool's own checker refuses the harness as outside its fragment, an uncaught `ArithmeticException` leaving it. With `windowNanos > 0 &&` first, the remainder is only taken where it is defined.",
+        "JBMC finds the witness in a fraction of a second. The tool's own checker does not: without the scope it finds the unaligned-start witness in about 13 s (5 paths, 13 solver calls, nearly all of it in the SAT solver on the two 64-bit remainders), and with the scope, whose `this.startNanos % windowNanos` is a third remainder over other operands, it does not finish within a minute. So this example runs under JBMC, and 135, which JBMC does not finish within a minute, under the checker: neither engine is the faster one on both."
+      ],
+      "source": null
+    },
+    {
+      "id": "135",
+      "path": "examples/135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count",
+      "title": "A window counter with the previous count proved equal on the start and the count",
+      "summary": "The same change to Crosscut's `Window` record done right: the counter gains a `previousCount` component and an `estimated` method, and `counted` keeps the alignment of the start to the clock, `nowNanos - nowNanos % windowNanos`, carrying the count only into the window right after the one it was in. The regression proof relates the new record result to the old one on the two components they share, with the old counter built from the new components, and proves the start and the count equal on every input, the tool's own checker in seconds.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [],
+        "technique": [
+          "confined-change",
+          "record-components",
+          "signature-change",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "No scope: the relation holds on every input, including an unaligned start and time or window values the methods refuse, since both versions throw for the same inputs (a non-positive window, a reading before the start, a count that overflows into the constructor's check) and the start and the count are computed the same way. The checker proves it without a scope, where 134 needs one to show the telling witness.",
+        "The relation names the components the two records share, `previous.startNanos == result.startNanos && previous.count == result.count`; `result.previousCount` is a name it could use, `previous.previousCount` is not, and the tool says so. Without a relation the tool refuses with `the result's components changed: Window(startNanos: long, count: long) before, Window(startNanos: long, count: long, previousCount: long) now` and proposes this very expression, the equalities of the components the records share by name and type.",
+        "Both versions compute `nowNanos % windowNanos` on the same inputs, so in the tool's own checker the two 64-bit remainders are one circuit (as 120's divisions are, see its notes), and the proof is 9 paths and 10 solver calls. Still it takes about 12 s, nearly all of it in CaDiCaL proving the paths infeasible with the remainder's circuit in them (the release build is no faster than the debug one: the time is the solver's). JBMC, with its default solver, did not finish the same harness within 60 s, which is why the example names the checker (`approach.engine`: native).",
+        "The statement the harness prints reads the relation as Java, `previous.startNanos() == result.startNanos() && previous.count() == result.count()`, with `before.net.terminalvalue.crosscut.ratelimit.Window previous = a; net.terminalvalue.crosscut.ratelimit.Window result = b;` before it."
+      ],
+      "source": null
     }
   ]
 }

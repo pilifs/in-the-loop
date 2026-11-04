@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "134",
+  "title": "A window counter that advances by one window leaves its start behind a quiet client",
+  "summary": "Crosscut's `Window` record, the fixed-window request counter a rate-limiting filter keeps per client, gains a `previousCount` component for the sliding-window estimate (Cloudflare's approximation: the previous window's count weighted by how much of it the sliding window still covers). The counting method is rewritten with it: a request in the same window adds one, and a request after it opens the next window, carrying this window's count. The tests pass, polling one window after another. But a client quiet for two or more windows gets a window starting one window after its old one, behind the clock, with the count of a window long gone carried into the estimate: its next request opens yet another window, so the count never passes one and the limit never applies to it. The regression proof relates the new record result to the old one on the components they share, `previous.startNanos == result.startNanos && previous.count == result.count`, with the old counter built from the new components, and finds a request two windows ahead.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "dropped-case",
+    "record-components",
+    "signature-change"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add a `previousCount` component to the record and an `estimated(nowNanos, windowNanos)` method that weights it by how much of the previous window the sliding window still covers. `counted` is rewritten: `nowNanos - startNanos < windowNanos` keeps the window and adds one; otherwise the result is `new Window(startNanos + windowNanos, 1, count)`, the next window with this one's count as the previous count. The tests take the third component, and one is added for the estimate.",
+    "patch": "change.patch",
+    "intendedInputs": "windowNanos > 0 && this.startNanos % windowNanos != 0",
+    "previousArguments": "new Window(this.startNanos, this.count), nowNanos, windowNanos",
+    "resultsAgreeWhen": "previous.startNanos == result.startNanos && previous.count == result.count"
+  },
+  "risk": "A client that pauses for two windows or more is never rate-limited again until it sends two requests within one window of its own stale start, and its sliding-window estimate carries the count of a window long gone: the limit is both too loose for a bursty client that paused and too tight right after the pause. The filter's job is the limit, and the counter is where it lives.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The old method aligns the window's start to the clock, `nowNanos - nowNanos % windowNanos`, so a request after any gap lands in the window it falls in. The new one keeps the window while `nowNanos - startNanos < windowNanos` and otherwise moves the start by exactly one window, `startNanos + windowNanos`, which is the window the request falls in only when the gap is shorter than two windows. The proof's witness, within the aligned starts, is a request two windows ahead of an empty counter, `counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=2, windowNanos=1)`: the old counter is `Window[startNanos=2, count=1]`, the new one `Window[startNanos=1, count=1, previousCount=0]`, a window behind. The harness builds the old record from the new components, calls both versions, and reads the two results' components into the relation `previous.startNanos == result.startNanos && previous.count == result.count`, which fails on the start. JBMC finds it in a fraction of a second searching inputs in [0:20], as `nowNanos=19, windowNanos=2`, shrunk in 24 interpreter runs.",
+  "resolution": "Keep the start aligned to the clock, and carry the count only into the window right after the one the counter was in, as example 135 does: `start - startNanos == windowNanos ? count : 0`.",
+  "notes": [
+    "The counter's start is aligned to the window: a counter begins as `Window(0, 0)` and every start the old method produces is `nowNanos - nowNanos % windowNanos`. A start that is not aligned is no state the filter can hold, so the scope leaves those inputs out (`windowNanos > 0 && this.startNanos % windowNanos != 0` is the intended-change expression, used as the module's precondition is in 125, 132 and 133). Without the scope the first witness is an unaligned start, `counted(this=Window[startNanos=1, count=0, previousCount=0], nowNanos=1, windowNanos=2)`, which the old method realigns to zero and the new one keeps.",
+    "The relation is over the components both records have. A record result of other components has no previous result to compare to: `resultsAgreeWhen` names each record's components as `previous.c` and `result.c`, read from the two records into the relation's locals, and the harness treats two null records as agreeing and one null alone as not. The old counter is built from the new components as in 130 and 131, `new Window(this.startNanos, this.count), nowNanos, windowNanos`.",
+    "The new component is outside the relation: whether `previousCount` is right is not what this proof is about, only that the start and the count are what they were. A relation over `result.previousCount` alone would have to say what the old method, which had no such count, implies for it, and it implies nothing.",
+    "The tests poll consecutive windows, where advancing by one window and realigning to the clock agree; the defect needs a gap of two windows or more, or a window length that does not divide the clock reading the counter started at.",
+    "A counter left behind the clock is not only a wrong estimate: each later request finds `nowNanos - startNanos >= windowNanos` again and opens another window at one, so the client is never refused, and the carried count is the one from before its silence.",
+    "The scope's guard matters: `this.startNanos % windowNanos != 0` alone divides by zero where the window is zero, in the scope expression itself, before either version runs. JBMC then reports a counterexample with `windowNanos=0` that does not reproduce (both versions throw `IllegalArgumentException` there), and the tool's own checker refuses the harness as outside its fragment, an uncaught `ArithmeticException` leaving it. With `windowNanos > 0 &&` first, the remainder is only taken where it is defined.",
+    "JBMC finds the witness in a fraction of a second. The tool's own checker does not: without the scope it finds the unaligned-start witness in about 13 s (5 paths, 13 solver calls, nearly all of it in the SAT solver on the two 64-bit remainders), and with the scope, whose `this.startNanos % windowNanos` is a third remainder over other operands, it does not finish within a minute. So this example runs under JBMC, and 135, which JBMC does not finish within a minute, under the checker: neither engine is the faster one on both."
+  ],
+  "provenance": "Constructed on a new kernel of Crosscut, the fixed-window request counter, to show a regression proof across a change of a record result's components finding a defect the tests miss.",
+  "references": [
+    {
+      "title": "Cloudflare: How we built rate limiting capable of scaling to millions of domains (the sliding window approximation over two fixed windows)",
+      "url": "https://blog.cloudflare.com/counting-things-a-lot-of-different-things/"
+    },
+    {
+      "title": "Resilience4j: RateLimiter, permissions per refresh period (the cycle)",
+      "url": "https://resilience4j.readme.io/docs/ratelimiter"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}
