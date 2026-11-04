@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T06:32:46.737Z",
-  "duration_seconds": 309771,
+  "ended": "2026-11-04T06:52:37.861Z",
+  "duration_seconds": 310962,
   "stats": {
-    "turns": 218,
-    "api_calls": 2300,
-    "tool_calls": 2829,
+    "turns": 222,
+    "api_calls": 2345,
+    "tool_calls": 2873,
     "tool_errors": 55,
-    "compactions": 38,
+    "compactions": 39,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 68618,
-      "output_tokens": 4722161,
-      "cache_read_input_tokens": 409133555,
-      "cache_creation_input_tokens": 10322845
+      "input_tokens": 70028,
+      "output_tokens": 4783329,
+      "cache_read_input_tokens": 413942076,
+      "cache_creation_input_tokens": 10475314
     }
   },
   "tools": {
-    "Bash": 2329,
+    "Bash": 2373,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -762,24 +762,38 @@
     {
       "index": 38,
       "started": "2026-11-04T06:16:27.655Z",
-      "ended": "2026-11-04T06:32:46.737Z",
+      "ended": "2026-11-04T06:34:08.920Z",
       "turns": 4,
-      "api_calls": 35,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 1090,
-        "output_tokens": 73632,
-        "cache_read_input_tokens": 3285791,
-        "cache_creation_input_tokens": 149524
+        "input_tokens": 1154,
+        "output_tokens": 75256,
+        "cache_read_input_tokens": 3617448,
+        "cache_creation_input_tokens": 152934
       },
-      "peak_context_tokens": 164469
+      "peak_context_tokens": 167879
+    },
+    {
+      "index": 39,
+      "started": "2026-11-04T06:35:38.271Z",
+      "ended": "2026-11-04T06:52:37.861Z",
+      "turns": 4,
+      "api_calls": 43,
+      "usage": {
+        "input_tokens": 1346,
+        "output_tokens": 59544,
+        "cache_read_input_tokens": 4476864,
+        "cache_creation_input_tokens": 149059
+      },
+      "peak_context_tokens": 164004
     }
   ],
   "log": {
-    "sha256": "9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7",
-    "bytes": 84650095,
-    "lines": 32163,
-    "gzip_bytes": 14415767,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7.jsonl.gz"
+    "sha256": "9692170ca0dce5beb944e3e21745bee90db34305cc767d8f54704f34cdd29b4e",
+    "bytes": 86192297,
+    "lines": 32811,
+    "gzip_bytes": 14692606,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9692170ca0dce5beb944e3e21745bee90db34305cc767d8f54704f34cdd29b4e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1206,6 +1220,14 @@
       "summary": "Regression proofs under a stated relation between the results: a result that changed its type or meaning is related to the previous one with --results-agree-when (verification pending)",
       "body": "A regression proof compared what the two versions return, so a method whose return type changed, or whose result changed its meaning (a boolean that became the time left, nanoseconds that became milliseconds), could not be proved against its previous version. jvmcontract equivalence now takes --results-agree-when EXPR, a boolean expression over the new parameters, previous (the previous version's result) and result (the new one's), which takes the place of equality whenever both versions return; the versions must still throw alike, array parameters are still compared, and a relation that throws on a pair of results does not hold. The expression is type-checked against both return types, compiled into the generated harness (lib/src/harness/mod.rs, BeforeMethod::parse_relation, Harness.relation) and rendered in the Java statement written for readers. Differing return types are refused without a relation, with a message that names the flag. The identical-bytecode shortcut and the shared-callee plan are off under a relation, since identical code proves nothing about it. A counterexample is replayed in the interpreter and the relation evaluated on the replayed results (lib/src/equivalence.rs, Replays), so that a JBMC counterexample a missing model produced is still recognised as not reproducing; the report adds the line 'the results are not related by ...' under the two outcomes, and the JSON outcome carries the relation.\n\nExamples 122 and 123 on Crosscut's cache expiry: Expiry#isExpired, a boolean, turned into the time an entry has left, related by previousSymbol and resultsAgreeWhen 'previous == (result <= 0)' with the module's own precondition as the scope (outside it the new subtraction overflows). 123 (remainingNanos) is expected verified; 122 (remainingMillis) is expected to show an entry with a fraction of a millisecond to go reported expired, since the integer division rounds it to no millisecond. The example runner passes change.resultsAgreeWhen to the tool (examples/tools/build.py, examples/schema/example.schema.json), and the pages, lib/README.md, examples/approaches.md, the Crosscut README and the verify-bytecode skill reference describe the flag. Jobs 20261104-063213-example-122-a-cache-expiry-in-millisecon and 20261104-063213-example-123-a-cache-expiry-turned-from-a.",
       "log_sha256": "9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7"
+    },
+    {
+      "change_id": "klvxzxmuvvukpxuulntzknxykvpztqqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The tool's own checker looks for a violating input in JBMC's stages, so its witnesses read as JBMC's; examples 124 and 125 run regression proofs through it (verification pending)",
+      "body": "The native bounded model checker (lib/src/bmc) returned the first model the SAT solver gave for a violating path, which for three 64-bit values the interpreter's shrinker did not bring down (example 122's second note). It now asks, on each violating path, for an input in the ranges JBMC is run through, [0:20], then [-100000:100000], then everything, and reports the stage in the proof line as JBMC does (searching inputs in [0:20]). A path that fails only on large values does not end the search: the remaining paths are explored for as long again as the first violation took, within the deadline, in case one of them fails in a smaller stage, and any stop after a violation is found (budget, a loop beyond the bound, something outside the fragment) returns the violation. A proof pays nothing: the range literals are built at the first violation. Unit tests cover the stage chosen per shape (an overflow in the second stage, a single large value in none, a small-value path found after a large-value one, a long and a boolean), and that the stages spell JBMC's; the millisecond Expiry integration test now also runs the tool's own checker and expects the same shrunk witness and the stage in its output.\n\nExamples 124 and 125 (Crosscut, B9) are run by the tool's own checker: approach.engine (schema enum jbmc/native/auto) becomes build.py's --engine on B9 and B11 of the javac apps, the proof-line regexes accept the checker's line, and the findings text names the checker that proved it. 124 rewrites kafka.Partitioner#partitionFor with Math.floorMod: the property of example 023 still holds and the tests pass, but every negative hash moves partition; the library's run found the difference in the second stage in 0.4 s and shrank it to partitionFor(hash=-1, numPartitions=3), 1 before and 2 after. 125 moves JwtTimestamps#valid's skew from the window's ends to the clock under the module's precondition as the scope, proved in 0.3 s over eleven paths; without the scope the versions differ on an overflow, with a witness no stage contains. New tags: routing-change (defect) and own-checker (technique). Both patches apply, both patched trees compile and pass the 42 Crosscut tests. Jobs 20261104-064900-example-124-a-partitioner-rewritten-with and 20261104-064900-example-125-a-jwt-skew-moved-from-the-wi are queued.",
+      "log_sha256": "9692170ca0dce5beb944e3e21745bee90db34305cc767d8f54704f34cdd29b4e"
     }
   ],
   "logs": {
@@ -1352,6 +1374,12 @@
       "lines": 7723,
       "gzip_bytes": 4112339,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9282ed25a83ab4efe045a2ab1e83991102abb2bc96554fecad2dc8f0f2f9b47c.jsonl.gz"
+    },
+    "9692170ca0dce5beb944e3e21745bee90db34305cc767d8f54704f34cdd29b4e": {
+      "bytes": 86192297,
+      "lines": 32811,
+      "gzip_bytes": 14692606,
+      "url": null
     },
     "99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3": {
       "bytes": 32696099,

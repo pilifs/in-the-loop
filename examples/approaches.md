@@ -154,6 +154,12 @@ A result that changed its type or meaning is related to the previous one by a st
 (`resultsAgreeWhen`, the tool's `--results-agree-when`): on Crosscut, [123](123-cache-expiry-as-the-time-left-proved-expired-exactly-when-none-is-left/README.md) proves a
 cache's expire-after-write boolean turned into the time left expired exactly when none is left, and [122](122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond/README.md)
 finds the same rewrite in milliseconds expiring entries that have a fraction of a millisecond to go.
+A method over integers can be checked by the tool's own bounded model checker instead of JBMC (`approach.engine: native`, the tool's `--engine native`),
+which explores the harness path by path with a bundled SAT solver and looks for a violating input in the same small ranges first: on Crosscut,
+[124](124-partitioner-rewritten-with-floormod-moves-every-negative-key/README.md) refutes a partitioner rewritten with `floorMod`, the
+witness found in the second stage of the search because every non-negative hash agrees, and
+[125](125-jwt-skew-moved-to-the-clock-proved-equal-by-the-tools-own-checker/README.md) proves a JWT validator's skew moved from the
+window to the clock, under the module's precondition as the scope, in a fraction of a second.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

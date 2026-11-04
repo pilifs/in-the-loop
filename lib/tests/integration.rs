@@ -592,6 +592,22 @@ fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_th
     assert_eq!((c.before.as_str(), c.after.as_str()), ("false", "0"), "{}", outcome.output);
     assert!(outcome.output.contains("✗ fixtures.Expiry#remainingMillis differs from the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) outside the intended inputs"), "{}", outcome.output);
     assert!(outcome.output.contains("\n    the results are not related by previous == (result <= 0)\n"), "{}", outcome.output);
+    assert!(outcome.output.contains(" searching inputs in [0:20]"), "{}", outcome.output);
+    // The tool's own checker looks in the same stages, so it reports the same input without the shrinker's help.
+    let mut options = equivalence::Options::new(&before, &after, "fixtures.Expiry#remainingMillis");
+    options.before_target = Some("fixtures.Expiry#isExpired".into());
+    options.results_agree_when = Some("previous == (result <= 0)".into());
+    options.unchanged_unless = Some(EXPIRY_SCOPE.into());
+    options.engine = jvmcontract::Engine::Native;
+    let work = target_tmp().join("equivalence-expiry-millis-native");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let native = equivalence::run(&options).unwrap();
+    assert_eq!(native.verdict, Verdict::Violation, "{}", native.output);
+    let n = native.counterexample.as_ref().expect("counterexample");
+    assert_eq!(n.input, c.input, "{}", native.output);
+    assert!(native.output.contains("found by jvmcontract's own checker (CaDiCaL) in "), "{}", native.output);
+    assert!(native.output.contains(" searching inputs in [0:20]"), "{}", native.output);
 }
 
 #[test]

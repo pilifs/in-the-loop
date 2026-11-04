@@ -4838,6 +4838,89 @@
         "The relation is checked again on a replayed counterexample, in the interpreter, so that a counterexample from a method JBMC had no bytecode for is recognised as one that does not reproduce, as for an equality."
       ],
       "source": null
+    },
+    {
+      "id": "124",
+      "path": "examples/124-partitioner-rewritten-with-floormod-moves-every-negative-key",
+      "title": "A partitioner rewritten with floorMod keeps every hash on a partition and moves every negative key",
+      "summary": "Kafka's `toPositive(hash) % n`, with its bit mask, is rewritten as `Math.floorMod(hash, n)`, which also lands every hash on a partition: the module's property still holds and the tests pass. The regression proof, run by the tool's own checker, finds that every negative hash now goes to a different partition than before. Half the keys of a topic move on deploy, and the records of such a key straddle two partitions.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging",
+          "numeric-code"
+        ],
+        "defect": [
+          "routing-change"
+        ],
+        "technique": [
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "cleanup",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), not JBMC: the method is over two `int` parameters, with a remainder and `Math.floorMod`, both circuits the checker has. The library's run of this shape took 0.4 s: three paths, fifteen solver calls, the witness found in the second stage of the search as `partitionFor(hash=-85120, numPartitions=100000)` and shrunk to `(-1, 3)` in 87 interpreter runs. The measurement on this kernel is the pipeline's.",
+        "The checker's search is staged as JBMC's is (inputs in [0:20], then [-100000:100000], then everything), and the stage is reported: `searching inputs in [-100000:100000]` says that the first stage had no counterexample, so every non-negative hash keeps its partition. A path that fails only on large values does not end the search: the checker goes on through the remaining paths, for as long again as the first violation took, in case one of them fails in a smaller stage. Until this cycle the checker returned the first model the solver gave, which for three 64-bit values the shrinker did not bring down (example 122's second note).",
+        "The module's property, `result >= 0 && result < numPartitions` for every `numPartitions > 0` (example 023), holds of `floorMod` as it does of the mask, so a property proof passes this change: the property says what every partitioner must do, not that this one does what it did. Regression verification is the check for a cleanup that is meant to change nothing. (The tool's own checker proves that property too, in 53 s: an unsatisfiability proof over a 32-bit remainder is where JBMC's single formula beats path-by-path exploration.)",
+        "The disagreement is wide: `hash & 0x7fffffff` is `hash + 2^31` for a negative hash, so the two remainders agree on negative hashes only when the partition count divides 2^31, that is for a count that is a power of two. With 12 partitions, as the tests use, 2^31 leaves a remainder of 8, and every negative hash moves eight partitions along."
+      ],
+      "source": null
+    },
+    {
+      "id": "125",
+      "path": "examples/125-jwt-skew-moved-to-the-clock-proved-equal-by-the-tools-own-checker",
+      "title": "A JWT skew moved from the window's ends to the clock, proved equal by the tool's own checker",
+      "summary": "The clock-skew tolerance of a JWT validator is moved from the token's window, `now >= nbf - skew && now < exp + skew`, to the clock, `now + skew >= nbf && now - skew < exp`. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in a fraction of a second, with no JBMC; outside it they differ where a sum of seconds overflows a `long`, which the checker also shows when run without the scope.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.security.JwtTimestamps#valid",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "authentication",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "confined-change",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), which has everything the method needs: four `long` parameters, additions, comparisons, one exception. The library's run of this shape took 0.3 s, eleven paths and 38 solver calls; the measurement on this kernel is the pipeline's. The same proof through JBMC runs the three stages of its search over four longs, each a JBMC process.",
+        "Without `intendedInputs`, the checker refutes the change in 0.2 s: `valid(nowSeconds=0, notBefore=-4035225266123908894, expiresAt=0, skewSeconds=5188146770730866915)`, false before and true after, which is the overflow of `notBefore - skewSeconds`. The witness is huge because every witness is: the versions agree wherever no sum overflows, so no stage of the search has one, and the report says so by naming none. The shrinker brings the solver's model down to the values shown in 691 interpreter runs, and no further.",
+        "The module's precondition for this method (`properties.contract`) bounds every argument so that the properties about the skew are provable; the scope negates it. A precondition is the right scope for a regression proof, because the proof is then exactly the module's promise: outside what it promises, the versions may differ."
+      ],
+      "source": null
     }
   ]
 }

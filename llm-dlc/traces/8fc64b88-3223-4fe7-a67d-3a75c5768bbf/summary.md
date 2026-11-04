@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (ended) |
+| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (open) |
 | When | 2026-11-04 04:45 UTC to 2026-11-04 05:06 UTC (21 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.318 |
@@ -39,6 +39,14 @@ jvmcontract equivalence now compares the two versions' bytecode before any solve
 Why: a 64-bit division in a helper both versions call was what turned a regression proof of a caller into a time-out, since each version carried its own copy for the solver to relate. Measured: a refactor of a caller around a division helper went from not finishing in 60 s to a proof in 0.2 s, and HoldPolicy-style pricing with Math.multiplyExact shared from 3.4 s to 0.4 s.
 
 Example 120 on Crosscut: a new kernel, ratelimit.RetryAfter#nanosUntilToken (the Retry-After of a refused request, from TokenBucket's refill helpers), with a test, a property proved in 1.7 s, and the API contract regenerated; the example's patch rewrites the wait as the period less the time since the credit, around the unchanged helpers. By hand: proved in 1.3 s with the helpers shared; without sharing the [-100000:100000] search stage had not finished after 60 s. New technique tag shared-callees. Job 20261104-054836-example-120-a-retry-after-rewrite-proved queued (build.py on the example). Docs: lib README (proof steps and limits), approaches.md B9, the Crosscut README, the plugin reference; build.py reads the 'nothing to prove' proof line.
+
+### The tool's own checker looks for a violating input in JBMC's stages, so its witnesses read as JBMC's; examples 124 and 125 run regression proofs through it (verification pending)
+
+change `klvxzxmuvvuk` · [log `6b0ccfe57f71`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/6b0ccfe57f7124b42a7237e8610f7e9d482c34bfca4a6e1f94f24e5c821329b1.jsonl.gz)
+
+The native bounded model checker (lib/src/bmc) returned the first model the SAT solver gave for a violating path, which for three 64-bit values the interpreter's shrinker did not bring down (example 122's second note). It now asks, on each violating path, for an input in the ranges JBMC is run through, [0:20], then [-100000:100000], then everything, and reports the stage in the proof line as JBMC does (searching inputs in [0:20]). A path that fails only on large values does not end the search: the remaining paths are explored for as long again as the first violation took, within the deadline, in case one of them fails in a smaller stage, and any stop after a violation is found (budget, a loop beyond the bound, something outside the fragment) returns the violation. A proof pays nothing: the range literals are built at the first violation. Unit tests cover the stage chosen per shape (an overflow in the second stage, a single large value in none, a small-value path found after a large-value one, a long and a boolean), and that the stages spell JBMC's; the millisecond Expiry integration test now also runs the tool's own checker and expects the same shrunk witness and the stage in its output.
+
+Examples 124 and 125 (Crosscut, B9) are run by the tool's own checker: approach.engine (schema enum jbmc/native/auto) becomes build.py's --engine on B9 and B11 of the javac apps, the proof-line regexes accept the checker's line, and the findings text names the checker that proved it. 124 rewrites kafka.Partitioner#partitionFor with Math.floorMod: the property of example 023 still holds and the tests pass, but every negative hash moves partition; the library's run found the difference in the second stage in 0.4 s and shrank it to partitionFor(hash=-1, numPartitions=3), 1 before and 2 after. 125 moves JwtTimestamps#valid's skew from the window's ends to the clock under the module's precondition as the scope, proved in 0.3 s over eleven paths; without the scope the versions differ on an overflow, with a witness no stage contains. New tags: routing-change (defect) and own-checker (technique). Both patches apply, both patched trees compile and pass the 42 Crosscut tests. Jobs 20261104-064900-example-124-a-partitioner-rewritten-with and 20261104-064900-example-125-a-jwt-skew-moved-from-the-wi are queued.
 
 ## Conversation
 

@@ -38,12 +38,21 @@ impl Default for Options {
     }
 }
 
+/// The ranges a violating input is looked for in, smallest first, so that a counterexample is small enough to
+/// read: the same stages as JBMC is run through (`[0:20]`, then `[-100000:100000]`, then everything). The engine
+/// explores every path once; on a path that violates the property it asks the solver for an input in the first
+/// stage that has one, and goes on to the next path only while no path has given one in the first stage.
+pub const STAGES: &[(i64, i64)] = &[(0, 20), (-100_000, 100_000)];
+
 /// The engine's answer about one harness.
 #[derive(Debug, Clone)]
 pub struct Outcome {
     pub verdict: Verdict,
     /// The violating input by parameter slot, as decimal numbers (a boolean as 0 or 1, a char by its code).
     pub raw_inputs: BTreeMap<u32, String>,
+    /// The stage the violating input was found in, as JBMC's `--java-assume-inputs-interval` would spell it;
+    /// `None` when only the whole range has one.
+    pub stage: Option<String>,
     /// Why there is no verdict: something outside the fragment, a loop beyond the bound, or the budget.
     pub problem: Option<String>,
     pub paths: u64,
@@ -64,7 +73,7 @@ impl Outcome {
             properties: 1,
             raw_inputs: self.raw_inputs,
             raw_arrays: BTreeMap::new(),
-            stage: None,
+            stage: self.stage,
             problem: self.problem,
             log,
             seconds: self.seconds,
@@ -152,8 +161,8 @@ enum End {
     Returned,
     /// The path condition cannot be satisfied.
     Infeasible,
-    /// The harness's assertion failed, and the solver's model is the input.
-    Violation,
+    /// The harness's assertion failed on a path of this condition, which the solver found satisfiable.
+    Violation(Vec<Lit>),
     /// A loop needed more iterations than the bound.
     Unwound(String),
 }
@@ -185,6 +194,9 @@ struct Engine<'a> {
     paths: u64,
     /// The harness's parameters: slot, type and bits, for reading the input off a model.
     params: Vec<(u32, Type, Bits)>,
+    /// One literal per entry of [`STAGES`], true when every parameter is in the range; built at the first
+    /// violation, so that a proof pays nothing for them.
+    stage_lits: Vec<Option<Lit>>,
 }
 
 fn unsupported<T>(what: impl Into<String>) -> Result<T, Stop> {
@@ -210,12 +222,14 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         max_paths: options.max_paths,
         paths: 0,
         params: Vec::new(),
+        stage_lits: vec![None; STAGES.len()],
     };
     engine.b.set_timeout(options.timeout.as_secs_f32());
     let solver = engine.b.signature();
-    let outcome = |engine: &Engine, verdict: Verdict, raw_inputs: BTreeMap<u32, String>, problem: Option<String>| Outcome {
+    let outcome = |engine: &Engine, verdict: Verdict, raw_inputs: BTreeMap<u32, String>, stage: Option<String>, problem: Option<String>| Outcome {
         verdict,
         raw_inputs,
+        stage,
         problem,
         paths: engine.paths,
         solves: engine.b.solves,
@@ -230,7 +244,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     let mut slot = 0u32;
     for t in &descriptor.params {
         if let Some(why) = unsupported_parameter(t) {
-            return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), Some(format!("outside the fragment: {why}"))));
+            return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("outside the fragment: {why}"))));
         }
         let bits = match t {
             Type::Boolean => {
@@ -266,31 +280,53 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), objects: Vec::new(), back_edges: HashMap::new() };
     engine.pending.push(first);
 
+    // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
+    // search, since another path may have one in the first stage, as it does when the first path to fail is an
+    // overflow and the second a rounding. The search for a better one is given as long again as the first took,
+    // within the deadline; the violation stands whatever the remaining paths do.
+    let mut best: Option<(usize, BTreeMap<u32, String>)> = None;
+    let violation = |engine: &Engine, best: Option<(usize, BTreeMap<u32, String>)>| {
+        let (stage, raw_inputs) = best.expect("a violation");
+        let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
+        outcome(engine, Verdict::Violation, raw_inputs, stage, None)
+    };
     while let Some(path) = engine.pending.pop() {
         engine.paths += 1;
         if engine.paths > engine.max_paths {
-            return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), Some(format!("more than {} paths; the budget is spent", engine.max_paths))));
+            return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
         }
         match engine.run(path) {
             Ok(End::Returned) | Ok(End::Infeasible) => {}
-            Ok(End::Violation) => {
-                let mut raw_inputs = BTreeMap::new();
-                for (slot, t, bits) in &engine.params {
-                    let v = engine.b.eval(bits);
-                    let v = match t {
-                        Type::Char => v & 0xFFFF,
-                        _ => v,
-                    };
-                    raw_inputs.insert(*slot, v.to_string());
+            Ok(End::Violation(cond)) => {
+                let (stage, raw_inputs) = match engine.staged_input(&cond) {
+                    Ok(found) => found,
+                    Err(stop) if best.is_some() => {
+                        let _ = stop;
+                        return Ok(violation(&engine, best));
+                    }
+                    Err(stop) => return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(stop_text(&stop)))),
+                };
+                if best.as_ref().is_none_or(|(s, _)| stage < *s) {
+                    if best.is_none() {
+                        let elapsed = started.elapsed();
+                        engine.deadline = engine.deadline.min(Instant::now() + elapsed.max(Duration::from_secs(1)));
+                    }
+                    best = Some((stage, raw_inputs));
                 }
-                return Ok(outcome(&engine, Verdict::Violation, raw_inputs, None));
+                if stage == 0 {
+                    return Ok(violation(&engine, best));
+                }
             }
-            Ok(End::Unwound(what)) => return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind)))),
-            Err(Stop::Unsupported(what)) => return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), Some(format!("outside the fragment: {what}")))),
-            Err(Stop::Budget(what)) => return Ok(outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), Some(what))),
+            Ok(End::Unwound(what)) => {
+                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("a loop was not fully unwound with --unwind {} ({what})", options.unwind))) })
+            }
+            Err(Stop::Unsupported(what)) => {
+                return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("outside the fragment: {what}"))) })
+            }
+            Err(Stop::Budget(what)) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(what)) }),
         }
     }
-    Ok(outcome(&engine, Verdict::Verified, BTreeMap::new(), None))
+    Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Verified, BTreeMap::new(), None, None) })
 }
 
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
@@ -375,6 +411,61 @@ impl<'a> Engine<'a> {
             (false, true) => Sides::Else,
             (false, false) => Sides::Neither,
         })
+    }
+
+    /// The literal of stage `i`: every parameter within its range (a boolean is in every range).
+    fn stage_literal(&mut self, i: usize) -> Lit {
+        if let Some(l) = self.stage_lits[i] {
+            return l;
+        }
+        let (lo, hi) = STAGES[i];
+        let mut lits = Vec::new();
+        for (_, t, bits) in self.params.clone() {
+            if t == Type::Boolean {
+                continue;
+            }
+            let width = bits.len();
+            let low = self.b.constant(lo, width);
+            let high = self.b.constant(hi, width);
+            let above = self.b.sle(&low, &bits);
+            let below = self.b.sle(&bits, &high);
+            lits.push(self.b.and(above, below));
+        }
+        let l = self.b.all(&lits);
+        self.stage_lits[i] = Some(l);
+        l
+    }
+
+    /// An input that takes the violating path of condition `cond`, from the first stage of [`STAGES`] that has
+    /// one, or from the whole range (stage `STAGES.len()`) when none does.
+    fn staged_input(&mut self, cond: &[Lit]) -> Result<(usize, BTreeMap<u32, String>), Stop> {
+        let mut assumptions = cond.to_vec();
+        for i in 0..STAGES.len() {
+            let l = self.stage_literal(i);
+            assumptions.push(l);
+            if self.solve(&assumptions)? {
+                return Ok((i, self.input()));
+            }
+            assumptions.pop();
+        }
+        if !self.solve(cond)? {
+            return Err(Stop::Budget("the solver changed its mind about a violating path".into()));
+        }
+        Ok((STAGES.len(), self.input()))
+    }
+
+    /// The parameters' values in the solver's last model.
+    fn input(&self) -> BTreeMap<u32, String> {
+        let mut raw_inputs = BTreeMap::new();
+        for (slot, t, bits) in &self.params {
+            let v = self.b.eval(bits);
+            let v = match t {
+                Type::Char => v & 0xFFFF,
+                _ => v,
+            };
+            raw_inputs.insert(*slot, v.to_string());
+        }
+        raw_inputs
     }
 
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
@@ -515,7 +606,7 @@ impl<'a> Engine<'a> {
         }
         if self.cp.is_subtype(&class, "java/lang/AssertionError") {
             let feasible = self.solve(&path.cond.clone())?;
-            return Ok(Some(if feasible { End::Violation } else { End::Infeasible }));
+            return Ok(Some(if feasible { End::Violation(std::mem::take(&mut path.cond)) } else { End::Infeasible }));
         }
         unsupported(format!("an uncaught {} leaves the harness", class.replace('/', ".")))
     }
@@ -1379,6 +1470,80 @@ mod tests {
         let out = run(&cp);
         assert_eq!(out.verdict, Verdict::Unverifiable);
         assert!(out.problem.unwrap().contains("uncaught java.lang.ArithmeticException"));
+    }
+
+    #[test]
+    fn a_violating_input_is_taken_from_the_first_stage_that_has_one() {
+        // a * a >= 0 fails only from 46341 up: nothing in [0:20], the second stage has it.
+        let cp = harness("(I)V", |code, _, fail| {
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 0);
+            code.op(0x68); // imul
+            code.if_zero(Cond::Lt, fail);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!(out.stage.as_deref(), Some("[-100000:100000]"));
+        let a: i32 = out.raw_inputs[&0].parse().unwrap();
+        assert!(a.wrapping_mul(a) < 0 && a.abs() <= 100_000, "{a}");
+
+        // a != 5000000 fails on one input only, outside every stage.
+        let cp = harness("(I)V", |code, writer, fail| {
+            code.load(Kind::Int, 0);
+            let big = writer.pool.integer(5_000_000);
+            code.ldc(big);
+            code.if_icmp(Cond::Eq, fail);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!(out.stage, None);
+        assert_eq!(out.raw_inputs[&0], "5000000");
+
+        // The path explored first (the jump, a < 0) fails only at -7000000; the other fails at 3. The search
+        // goes on past the first violating path and reports the small input, from the first stage.
+        let cp = harness("(I)V", |code, writer, fail| {
+            let negative = code.label();
+            let done = code.label();
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, negative);
+            code.load(Kind::Int, 0);
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.goto(done);
+            code.bind(negative);
+            code.load(Kind::Int, 0);
+            let big = writer.pool.integer(-7_000_000);
+            code.ldc(big);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(done);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!(out.stage.as_deref(), Some("[0:20]"));
+        assert_eq!(out.raw_inputs[&0], "3");
+        assert!(out.paths >= 2, "{}", out.paths);
+
+        // A long parameter is staged too, and a boolean is in every stage.
+        let cp = harness("(JZ)V", |code, _, fail| {
+            code.load(Kind::Int, 2);
+            code.if_zero(Cond::Eq, fail);
+            code.load(Kind::Long, 0);
+            code.op(0x09); // lconst_0
+            code.op(0x94); // lcmp
+            code.if_zero(Cond::Le, fail);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        assert_eq!(out.stage.as_deref(), Some("[0:20]"));
+        let a: i64 = out.raw_inputs[&0].parse().unwrap();
+        assert!((0..=20).contains(&a), "{a}");
+    }
+
+    #[test]
+    fn the_stages_are_jbmcs() {
+        let spelled: Vec<Option<String>> = STAGES.iter().map(|(lo, hi)| Some(format!("[{lo}:{hi}]"))).chain(std::iter::once(None)).collect();
+        let jbmc: Vec<Option<String>> = crate::equivalence::STAGES.iter().map(|s| s.map(str::to_string)).collect();
+        assert_eq!(spelled, jbmc);
     }
 
     #[test]

@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "125",
+  "title": "A JWT skew moved from the window's ends to the clock, proved equal by the tool's own checker",
+  "summary": "The clock-skew tolerance of a JWT validator is moved from the token's window, `now >= nbf - skew && now < exp + skew`, to the clock, `now + skew >= nbf && now - skew < exp`. Within the module's precondition the two are the same arithmetic, and the tool's own checker proves it in a fraction of a second, with no JBMC; outside it they differ where a sum of seconds overflows a `long`, which the checker also shows when run without the scope.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "authentication",
+    "clocks-and-time",
+    "integer-overflow",
+    "confined-change",
+    "own-checker"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java",
+    "symbol": "net.terminalvalue.crosscut.security.JwtTimestamps#valid"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Write the check as the javadoc describes it, the clock moved by the skew in the token's favour: `nowSeconds + skewSeconds >= notBefore && nowSeconds - skewSeconds < expiresAt` instead of `nowSeconds >= notBefore - skewSeconds && nowSeconds < expiresAt + skewSeconds`. The negative-skew check stays, and so do the tests. The pull request declares the module's precondition as the scope: outside it, where a sum of seconds can overflow, the versions may differ.",
+    "patch": "change.patch",
+    "intendedInputs": "!(skewSeconds >= 0 && skewSeconds <= 86400 && nowSeconds >= 0 && nowSeconds <= 1099511627776L && notBefore >= 0 && notBefore <= 1099511627776L && expiresAt >= 0 && expiresAt <= 1099511627776L)"
+  },
+  "risk": "None within the validator's domain: seconds since the epoch up to 2^40 and a skew of at most a day, which the module's properties file states as its precondition, keep every sum far from the range of a `long`. What is at stake is the cost of knowing it on every pull request: a check that takes a JBMC run of several seconds per method gets skipped, one that takes a fraction of a second does not.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The proof is stated for every input outside the declared scope, which is the module's own precondition. The tool's own checker runs the harness symbolically: the scope's eight comparisons and the two versions' branches make eleven paths, each a conjunction the bundled SAT solver settles in milliseconds, and on every path either the scope excludes the input or the two versions' `boolean` results are the same bits. No JBMC process, no JDK classes extracted onto a class path, no formula for the whole program: the proof is done in a fraction of a second. Without the scope the versions do differ: the checker finds a not-before far below zero with a skew above 2^62, where `notBefore - skewSeconds` wraps to a large positive value and the token is rejected before the change and accepted after, a witness that no small range contains, so the search reports no stage. The scope is what a reviewer approves: that an issuer's clock never reads before 1970 nor tens of thousands of years later, and that a skew is at most a day.",
+  "resolution": "Merge. The scope in the pull request is the module's precondition, and the proof line names it.",
+  "notes": [
+    "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), which has everything the method needs: four `long` parameters, additions, comparisons, one exception. The library's run of this shape took 0.3 s, eleven paths and 38 solver calls; the measurement on this kernel is the pipeline's. The same proof through JBMC runs the three stages of its search over four longs, each a JBMC process.",
+    "Without `intendedInputs`, the checker refutes the change in 0.2 s: `valid(nowSeconds=0, notBefore=-4035225266123908894, expiresAt=0, skewSeconds=5188146770730866915)`, false before and true after, which is the overflow of `notBefore - skewSeconds`. The witness is huge because every witness is: the versions agree wherever no sum overflows, so no stage of the search has one, and the report says so by naming none. The shrinker brings the solver's model down to the values shown in 691 interpreter runs, and no further.",
+    "The module's precondition for this method (`properties.contract`) bounds every argument so that the properties about the skew are provable; the scope negates it. A precondition is the right scope for a regression proof, because the proof is then exactly the module's promise: outside what it promises, the versions may differ."
+  ],
+  "provenance": "Constructed on the JWT validator kernel of example 024, whose skew-on-the-wrong-side bug a property catches; this rewrite keeps the sides and moves the skew to the clock. The technique is regression verification under a declared scope, run by the tool's own checker.",
+  "references": [
+    {
+      "title": "RFC 7519, section 4.1.4 (exp) and 4.1.5 (nbf): implementers may provide for some small leeway, usually no more than a few minutes, to account for clock skew",
+      "url": "https://www.rfc-editor.org/rfc/rfc7519#section-4.1.4"
+    },
+    {
+      "title": "Spring Security JwtTimestampValidator: the clock skew applied to nbf and exp",
+      "url": "https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/JwtTimestampValidator.html"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

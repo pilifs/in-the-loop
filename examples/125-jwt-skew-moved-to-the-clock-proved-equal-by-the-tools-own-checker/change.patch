@@ -1,0 +1,19 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/security/JwtTimestamps.java
+@@ -10,11 +10,14 @@
+ 
+     private JwtTimestamps() {}
+ 
+-    /** Whether a token with the given {@code nbf} and {@code exp} is valid at {@code nowSeconds}, with the skew. */
++    /**
++     * Whether a token with the given {@code nbf} and {@code exp} is valid at {@code nowSeconds}, with the skew: the
++     * clock is moved by the skew in the token's favour, forward against {@code nbf} and back against {@code exp}.
++     */
+     public static boolean valid(long nowSeconds, long notBefore, long expiresAt, long skewSeconds) {
+         if (skewSeconds < 0) {
+             throw new IllegalArgumentException("the clock skew tolerance is not negative");
+         }
+-        return nowSeconds >= notBefore - skewSeconds && nowSeconds < expiresAt + skewSeconds;
++        return nowSeconds + skewSeconds >= notBefore && nowSeconds - skewSeconds < expiresAt;
+     }
+ }

@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "124",
+  "title": "A partitioner rewritten with floorMod keeps every hash on a partition and moves every negative key",
+  "summary": "Kafka's `toPositive(hash) % n`, with its bit mask, is rewritten as `Math.floorMod(hash, n)`, which also lands every hash on a partition: the module's property still holds and the tests pass. The regression proof, run by the tool's own checker, finds that every negative hash now goes to a different partition than before. Half the keys of a topic move on deploy, and the records of such a key straddle two partitions.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "messaging",
+    "numeric-code",
+    "routing-change",
+    "own-checker"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Partitioner.java",
+    "symbol": "net.terminalvalue.crosscut.kafka.Partitioner#partitionFor"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "cleanup",
+    "behaviourChangeIntended": false,
+    "description": "Replace `(hash & 0x7fffffff) % numPartitions` with `Math.floorMod(hash, numPartitions)`: the remainder in the mathematical sense, never negative, so the mask is not needed and the method says what it computes. The check on the partition count stays. The tests pass unchanged: positive hashes spread as before, negative hashes land on a partition, a topic without partitions is refused.",
+    "patch": "change.patch"
+  },
+  "risk": "Kafka's ordering guarantee is per partition, and a consumer, a Streams state store or a compacted topic rests on every record of a key landing on the same partition as the last. `floorMod` and the masked remainder agree on non-negative hashes and on little else: for a negative hash the mask adds 2^31 while `floorMod` adds a multiple of the partition count, and the two remainders differ unless the count divides 2^31. Half of all keys, those whose hash is negative, move to another partition the moment the new producer is deployed; during a rolling deploy the records of such a key go to two partitions at once, consumers see them out of order, a Streams application finds the key's state on another instance, and a compacted topic keeps two latest values for one key. Nothing fails: the property that every hash lands on a partition still holds, and the tests still pass.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The regression proof asks whether the two versions give the same partition for every hash and count, and the tool's own checker answers it: the harness is run symbolically path by path, the bundled SAT solver deciding at each branch which sides are feasible, and on the path where both versions return it is asked for a hash and a count on which the results differ. It looks in small ranges first, as JBMC is run: among hashes and counts in [0, 20] the versions agree, since the mask and `floorMod` are the same function on non-negative hashes; among values in [-100000, 100000] the solver finds a negative hash, and the interpreter shrinks it to `partitionFor(hash=-1, numPartitions=3)`: 1 before, 2 after. The staged search is what makes the witness readable, and the stage it was found in says that no non-negative hash is affected, which is the shape of the defect.",
+  "resolution": "Keep the mask, with a comment saying why it is not `floorMod` either: a partitioner's output is part of the topic's layout, and a change to it is a migration, not a cleanup. If the mathematical remainder is wanted, introduce it as a second partitioner class for new topics only, as Kafka's `partitioner.class` setting allows.",
+  "notes": [
+    "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`), not JBMC: the method is over two `int` parameters, with a remainder and `Math.floorMod`, both circuits the checker has. The library's run of this shape took 0.4 s: three paths, fifteen solver calls, the witness found in the second stage of the search as `partitionFor(hash=-85120, numPartitions=100000)` and shrunk to `(-1, 3)` in 87 interpreter runs. The measurement on this kernel is the pipeline's.",
+    "The checker's search is staged as JBMC's is (inputs in [0:20], then [-100000:100000], then everything), and the stage is reported: `searching inputs in [-100000:100000]` says that the first stage had no counterexample, so every non-negative hash keeps its partition. A path that fails only on large values does not end the search: the checker goes on through the remaining paths, for as long again as the first violation took, in case one of them fails in a smaller stage. Until this cycle the checker returned the first model the solver gave, which for three 64-bit values the shrinker did not bring down (example 122's second note).",
+    "The module's property, `result >= 0 && result < numPartitions` for every `numPartitions > 0` (example 023), holds of `floorMod` as it does of the mask, so a property proof passes this change: the property says what every partitioner must do, not that this one does what it did. Regression verification is the check for a cleanup that is meant to change nothing. (The tool's own checker proves that property too, in 53 s: an unsatisfiability proof over a 32-bit remainder is where JBMC's single formula beats path-by-path exploration.)",
+    "The disagreement is wide: `hash & 0x7fffffff` is `hash + 2^31` for a negative hash, so the two remainders agree on negative hashes only when the partition count divides 2^31, that is for a count that is a power of two. With 12 partitions, as the tests use, 2^31 leaves a remainder of 8, and every negative hash moves eight partitions along."
+  ],
+  "provenance": "Constructed on the partitioner kernel of example 023, whose `Math.abs` rewrite the property catches; this rewrite the property does not catch, and the regression proof does. The technique is regression verification run by the tool's own checker, with the staged search over inputs that JBMC's runs have.",
+  "references": [
+    {
+      "title": "Apache Kafka producer configuration: partitioner.class, and the default partitioner's murmur2 hash made positive",
+      "url": "https://kafka.apache.org/documentation/#producerconfigs_partitioner.class"
+    },
+    {
+      "title": "Math.floorMod (Java SE 21): the remainder with the sign of the divisor",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#floorMod(int,int)"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

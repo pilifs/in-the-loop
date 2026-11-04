@@ -396,7 +396,7 @@ def run_equivalence(folder, example, tmp, module, result):
     verdict = "verified" if proc.returncode == 0 else (
         "unverifiable" if "cannot be verified" in output else "violation")
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
              or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({
         "verdict": verdict,
@@ -697,7 +697,7 @@ def finish_symbolic(folder, example, result, output, work, harness, verdict_labe
         shutil.copy(statement, folder / "statement.java")
         result["statement"] = "statement.java"
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\((JBMC .*)\)$", output, re.M)
+    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
              or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output)})
     result["verdictLabel"] = verdict_labels[result["verdict"]]
@@ -719,6 +719,7 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--before-arguments", example["change"]["previousArguments"]]
     if example["change"].get("resultsAgreeWhen"):
         command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
+    command += engine_flag(example)
     proc, output = tool(app, root, *command)
     write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
@@ -730,18 +731,25 @@ def run_tool_equivalence(folder, example, root, module, result):
     })
 
 
+def engine_flag(example):
+    """`--engine` for an example that names the checker (`approach.engine`: jbmc, native or auto); JBMC otherwise."""
+    engine = example["approach"].get("engine")
+    return ["--engine", engine] if engine else []
+
+
 def run_tool_property(folder, example, root, module, result):
     """B11 on a javac app: `jvmcontract prove` of the symbol's property in the module's properties file."""
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     work = build / "build/property"
     proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
-                        "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"))
+                        "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"),
+                        *engine_flag(example))
     write_evidence(folder, output, build / "build/reports/property.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
     # A method may have several properties; the one that failed is the one to report, if any did.
     m = (re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M)
-         or re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \(JBMC", output))
+         or re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \((?:JBMC|jvmcontract)", output))
     throws = [t for t in m.group(3).split(", and throws ") if t] if m else []
     result["property"] = {"assert": m.group(1), "assume": m.group(2), **({"throws": throws} if throws else {})} if m else None
     witness = re.search(r"^  (\S.*)\n    outcome: (.*)$(?:\n    expected: (.*)$)?", output, re.M)
@@ -1730,6 +1738,15 @@ def findings_contracts(ex, res):
     return out
 
 
+def prover_text(res, whose):
+    """How the proof was done, by the checker the proof line names: JBMC's one formula, or the tool's own checker's paths."""
+    if (res.get("proof") or "").startswith("jvmcontract's own checker"):
+        return ("The tool's own checker ran the harness symbolically, path by path, with its bundled SAT solver deciding "
+                "at each branch which sides are feasible, and no feasible path reaches the assertion:")
+    return (f"JBMC turned the statement into a satisfiability problem over the bytecode{' ' + whose if whose else ''} "
+            "and showed that it has no solution:")
+
+
 def findings_equivalence(ex, res):
     intended = ex["change"].get("intendedInputs")
     domain = res.get("domain") or "all inputs"
@@ -1758,9 +1775,8 @@ def findings_equivalence(ex, res):
         + (f", the old code being called with the arguments `{previous}` computed from the new parameters" if previous else "")
         + ".",
         "",
-        f"This is a proof over the whole domain ({domain}), not a sample. JBMC turned the statement into a "
-        "satisfiability problem over the bytecode of both versions and showed that it has no solution: no input "
-        "exists on which they differ.",
+        f"This is a proof over the whole domain ({domain}), not a sample. " + prover_text(res, "of both versions")
+        + " no input exists on which they differ.",
     ]
 
 
@@ -1849,8 +1865,8 @@ def findings_property(ex, res):
         (f"The method returns without throwing and `{prop.get('assert')}` holds{where}{clauses}." if prop.get("assert")
          else f"The method returns without throwing{where}{clauses}."),
         "",
-        f"This is a proof over the whole domain ({domain}), not a sample. JBMC turned the statement into a "
-        "satisfiability problem over the bytecode and showed that it has no solution: no input violates the property.",
+        f"This is a proof over the whole domain ({domain}), not a sample. " + prover_text(res, "")
+        + " no input violates the property.",
     ]
 
 
