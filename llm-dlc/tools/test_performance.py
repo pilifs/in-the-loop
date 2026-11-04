@@ -688,6 +688,42 @@ class Incremental(unittest.TestCase):
                 self.assertLessEqual(wanted, {x[0] for x in state["commits"]}, sid)
 
 
+class CommitChecks(unittest.TestCase):
+    """commit runs the check after it has committed, with the redactor its sync used, so agents need
+    no separate `check`; its notes are counted rather than listed."""
+
+    def test_commit_checks_what_it_committed_and_fails_on_an_error(self):
+        for found, expected in ((0, 0), (1, 1)):
+            calls, redact = [], object()
+            ok = lambda *a, **k: sync.subprocess.CompletedProcess(a, 0, "", "")
+            with mock.patch.object(sync, "jj", side_effect=lambda *a: calls.append(("jj",) + a[:1]) or ok()), \
+                 mock.patch.object(sync, "jj_commits", return_value=[{"change_id": "k" * 32}]), \
+                 mock.patch.object(sync, "cmd_sync", side_effect=lambda a: calls.append(("sync",)) or redact), \
+                 mock.patch.object(sync, "cmd_check", side_effect=lambda a, **k: calls.append(("check", k)) or found), \
+                 mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO()) as err:
+                self.assertEqual(sync.cmd_commit(["-m", "Made-up summary", "-m", "Made-up body"]), expected)
+            self.assertEqual(calls, [("jj", "describe"), ("sync",), ("jj", "new"),
+                                     ("check", {"redact": redact, "notes_listed": False})])
+            self.assertEqual("found errors" in err.getvalue(), bool(found))
+
+    def test_notes_are_counted_when_not_listed(self):
+        def report(listed):
+            with mock.patch.object(sync, "reviewed_problems", return_value=[]), \
+                 mock.patch.object(sync, "allowlist_problems", return_value=([], [])), \
+                 mock.patch.object(sync, "all_manifests", return_value={}), \
+                 mock.patch.object(sync, "check_sessions", return_value=([], ["made-up warning"], ["n1", "n2"], 0)), \
+                 mock.patch.object(sync, "check_trailers", return_value=([], [])), \
+                 mock.patch.object(sync, "check_global_files", return_value=[]), \
+                 mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stdout", io.StringIO()) as out:
+                self.assertEqual(sync.cmd_check([], notes_listed=listed), 0)
+            return out.getvalue()
+        listed, counted = report(True), report(False)
+        self.assertIn("note  n1", listed)
+        self.assertNotIn("note ", counted)
+        self.assertIn("warn  made-up warning", counted)
+        self.assertIn("2 note(s) needing no action (sync.py check lists them)", counted)
+
+
 class Perf(unittest.TestCase):
     def test_phases_nest_and_records_are_kept(self):
         perf = sync.Perf()

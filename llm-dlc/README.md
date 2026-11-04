@@ -79,7 +79,7 @@ Claude Code runs this procedure in this repo. `CLAUDE.md` points here, and the h
    The later paragraphs become the feature's entry under *Changes* in `summary.md`, so write them for a reader who did not see the conversation: what changed, why, and how you verified it.
    Add `Co-Authored-By:` as the last paragraph if your harness asks for it. The trace lines are added after it.
    The command writes the message, syncs the manifest and summary so they match it, and starts a new empty change. `jj trace-commit` is the same command.
-4. **Verify:** `python3 llm-dlc/tools/sync.py check` must report 0 errors.
+4. **Verify:** the command then runs the check of `sync.py check` on what it committed, counting the notes instead of listing them, and must report 0 errors. An error fails the command but leaves the commit in place: fix it and commit the fix. A separate `python3 llm-dlc/tools/sync.py check` is needed only to list the notes, or after a commit made with plain `jj commit`, which the hook traces but does not check.
 
 **Push only when the user asks.** Pushing publishes the log, and a person should read it first; see *Redaction* in [`specification.md`](specification.md#redaction).
 ```bash
@@ -146,7 +146,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
 | 2026-11-03 23:49 UTC | [Langfuse sync background script](traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 5 | 1 | ended |
-| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 19 | 6 | open |
+| 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 25 | 7 | open |
 | 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](traces/20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 7 | 5 | ended |
 | 2026-11-03 13:48 UTC | [sync.py redaction allow list](traces/0d3dce51-36ed-453d-bd2c-6adeaf97b230/summary.md) | 6 | 2 | ended |
 | 2026-11-03 13:40 UTC | [Verification pipeline job queue](traces/bb39c22a-5d6e-48b2-af0a-45d8b973d822/summary.md) | 1 | 1 | ended |

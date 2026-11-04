@@ -32,7 +32,8 @@ Commands:
                                 were last synced (--all: every one); only what a transcript gained since
                                 the last sync is redacted, --full redacts it all and trusts no cache
   sync.py commit -m MSG [-m ..] finish @ with trailers matching its manifest (alias: jj trace-commit);
-                                each -m is one paragraph, as in git
+                                each -m is one paragraph, as in git; then runs `check` on the result,
+                                counting its notes, and fails if it finds an error
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it; leaves @ empty (alias: jj trace-push)
@@ -1858,7 +1859,7 @@ def cmd_hook_commit() -> None:
         log(traceback.format_exc())
 
 
-def cmd_sync(args: list[str], publishing: bool = False) -> None:
+def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None" = None) -> "Redactor":
     """Sync the sessions named, or else every session whose state (session_state) differs from the
     one recorded after it was last synced: one whose transcript grew, whose commits were described,
     rewritten or became immutable, whose note or generated files changed, or that went from open to
@@ -1867,7 +1868,7 @@ def cmd_sync(args: list[str], publishing: bool = False) -> None:
     named = [a for a in args if a not in ("--full", "--all")]
     every = full or publishing or "--all" in args
     paths = [src / f"{a}.jsonl" for a in named] if named else sorted(src.glob("*.jsonl"))
-    redact = Redactor()
+    redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
     me, index, unchanged = running_session(), commit_index(), 0
     for p in paths:
@@ -1894,6 +1895,7 @@ def cmd_sync(args: list[str], publishing: bool = False) -> None:
     states.save()
     with perf.phase("index"):
         write_index()  # once, after every session: it reads all their manifests
+    return redact
 
 
 def cmd_scan(args: list[str]) -> int:
@@ -2430,13 +2432,20 @@ def cmd_commit(args: list[str]) -> int:
     if jj("describe", "-r", "@", "-m", message).returncode:
         print("jj describe failed", file=sys.stderr)
         return 1
-    cmd_sync([])
+    redact = cmd_sync([])
     at = jj_commits("@")[0]
     if jj("new").returncode:
         print("jj new failed", file=sys.stderr)
         return 1
     print(f"committed {at['change_id'][:12]}")
-    return 0
+    # The check that used to follow every commit, run here on what the commit left: the same one as
+    # `sync.py check`, with its caches, so it rescans only what this commit added. The commit stands
+    # either way; an error is fixed by a later commit, as before.
+    with perf.phase("check"):
+        failed = cmd_check([], redact=redact, notes_listed=False)  # LLM_TRACES_FULL=1: trusting no cache
+    if failed:
+        print(f"the check after commit {at['change_id'][:12]} found errors: fix them and commit the fix", file=sys.stderr)
+    return failed
 
 
 def uncommitted_work() -> list[str]:
@@ -2687,12 +2696,13 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor) -> list[str
     return errors
 
 
-def cmd_check(args: list[str] = ()) -> int:
+def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed: bool = True) -> int:
     """Everything published or about to be, checked. Logs already scanned with these rules and
     tools are not scanned again (ScanCache), and .gz bytes already verified are not decompressed
-    again (CheckCache); --full does all of it again, trusting no earlier result."""
+    again (CheckCache); --full does all of it again, trusting no earlier result. `commit` runs it
+    with notes_listed off: the notes are only counted, since they need no action."""
     remote, full = "--remote" in args, full_audit(args)
-    redact, errors, notes, warnings = Redactor(), [], [], []
+    redact, errors, notes, warnings = redact or Redactor(), [], [], []
     scans, checks = ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full)
     errors += reviewed_problems()
     found_errors, found_warnings = allowlist_problems(redact)
@@ -2720,14 +2730,14 @@ def cmd_check(args: list[str] = ()) -> int:
     elif left_out:
         notes.append(f"{left_out} log(s) older than the rules' stamp of {redaction_rules.RULES_GENERATED} were not "
                      f"scanned: they count as checked, and any findings in them are not reported")
-    for n in notes:
+    for n in notes if notes_listed else ():
         print("note ", n)
     for w in warnings:
         print("warn ", w)
     for e in errors:
         print("ERROR", e)
     print(f"{len(manifests)} session(s): {len(errors)} error(s), {len(warnings)} warning(s) for a person to judge, "
-          f"{len(notes)} note(s) needing no action")
+          f"{len(notes)} note(s) needing no action{'' if notes_listed or not notes else ' (sync.py check lists them)'}")
     return 1 if errors else 0
 
 

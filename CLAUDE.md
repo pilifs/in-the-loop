@@ -6,7 +6,7 @@ This repo publishes every LLM session alongside the code it produced. Follow the
 - Commit each feature as soon as it is finished and verified, without asking:
   `python3 llm-dlc/tools/sync.py commit -m "Summary line" -m "What changed, why, and how it was verified."`
   The later `-m` paragraphs appear in the session summary, so write them for a reader who did not see the conversation.
-- Then run `python3 llm-dlc/tools/sync.py check`, which must report 0 errors.
+- The commit then checks what it left, as `python3 llm-dlc/tools/sync.py check` does (notes are only counted), and must report 0 errors. An error fails the command but the commit stands: fix it and commit the fix. Run `check` on its own only to list the notes or after a plain `jj commit`.
 - Don't edit anything under `llm-dlc/traces/` (including its README, which comes from `llm-dlc/traces-readme-template.md`), `llm-dlc/index.json`, or the `LLM-Trace` lines in commit messages. `sync.py commit` and `sync.py push` regenerate them.
 - Push only when the user asks, with `python3 llm-dlc/tools/sync.py push --bookmark main`. It records any outstanding traces in a last commit and leaves `@` empty. The user can also run `/publish`.
 - Don't print secrets: `llm-dlc/infra/langfuse/.env`, `~/.config/llm-traces/cloudflare-token`, and the wrangler OAuth token. Transcripts are published. Don't print raw transcripts or `~/.claude.json` either, and test redaction with made-up values only.
