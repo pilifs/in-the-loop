@@ -1688,5 +1688,27 @@ class Coordinator(unittest.TestCase):
         self.assertFalse(sync.Operation("x").journal_path.exists())
 
 
+class ProfileRules(unittest.TestCase):
+    """profile_rules.py, the harness behind performance.md, prints rule names and numbers only."""
+
+    def test_it_prints_every_rule_and_counts_but_none_of_what_matched(self):
+        token = "gh" + "p_" + "Q7x" * 12  # made up, assembled here
+        address = "203.0." + "113.7"
+        lines = [json.dumps({"b": f"token {token}", "a": "x < y"}), json.dumps({"a": f"host {address}"}),
+                 json.dumps({"a": "plain é"}, ensure_ascii=False), "not json"]
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "made-up.jsonl.gz"
+            log.write_bytes(gzip.compress(("\n".join(lines) + "\n").encode(), mtime=0))
+            r = subprocess.run([sys.executable, str(Path(__file__).with_name("profile_rules.py")),
+                                "--processes", "2", str(log)], capture_output=True, text=True, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stderr[-2000:])
+        for value in (token, address, token[4:12]):
+            self.assertNotIn(value, r.stdout + r.stderr)
+        for row in ["secret github-token", "secret env-secret", "review public-ip", "email", "all rules",
+                    "credential gate: 1 of 4 lines", "1 lines not JSON; keys not in sorted order in 1 lines; "
+                    "< > or & in 1; non-ASCII in 1", "4 distinct lines in 2 process(es)"]:
+            self.assertIn(row, r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
