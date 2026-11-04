@@ -1603,12 +1603,24 @@ def render_example(folder, ex, res):
         ]
     if change.get("previousSymbol") or change.get("previousArguments"):
         previous = change.get("previousSymbol") or symbol
-        lines += [
-            "The method's signature changed, so the developer states how the previous version is called from the "
-            f"new parameters: `{previous}({change.get('previousArguments', '')})`. The verifier proves that on every "
-            "input, the new method agrees with the previous one called that way, or shows one on which it does not.",
-            "",
-        ]
+        arguments = change.get("previousArguments", "")
+        if arguments.startswith("new "):
+            # The previous version's receiver, built from the new parameters, comes first.
+            receiver, _, rest = arguments.partition(")")
+            called = f"`{previous}({rest.strip(', ')})` on `{receiver})`"
+            lines += [
+                "The record the method belongs to changed, so the developer states how the previous version's receiver "
+                f"is built from the new parameters, and how it is called: {called}. The verifier proves that on every "
+                "input, the new method agrees with the previous one called that way, or shows one on which it does not.",
+                "",
+            ]
+        else:
+            lines += [
+                "The method's signature changed, so the developer states how the previous version is called from the "
+                f"new parameters: `{previous}({arguments})`. The verifier proves that on every "
+                "input, the new method agrees with the previous one called that way, or shows one on which it does not.",
+                "",
+            ]
     if change.get("resultsAgreeWhen"):
         previous = change.get("previousSymbol") or symbol
         lines += [

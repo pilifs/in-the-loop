@@ -1,0 +1,106 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java
+index ddc4a2b..693fb0e 100644
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java
+@@ -1,32 +1,34 @@
+ package net.terminalvalue.crosscut.retry;
+ 
+ /**
+- * How long a retry waits: an exponential backoff from {@code baseMillis}, doubled on each attempt, never longer
+- * than {@code capMillis}. The policy is a value, held by the retry filter (Spring Retry's
+- * {@code ExponentialBackOffPolicy}, Resilience4j's {@code IntervalFunction.ofExponentialBackoff}), and the delay
+- * is a pure function of it and the attempt count; the scheduler does the waiting.
++ * How long a retry waits: an exponential backoff from {@code baseMillis}, multiplied by {@code multiplier} on
++ * each attempt, never longer than {@code capMillis}. The policy is a value, held by the retry filter (Spring
++ * Retry's {@code ExponentialBackOffPolicy}, whose multiplier is 2 by default, Resilience4j's
++ * {@code IntervalFunction.ofExponentialBackoff}), and the delay is a pure function of it and the attempt count;
++ * the scheduler does the waiting.
+  *
+- * <p>The base is positive, the cap at least the base and at most a day: a wait longer than that is a configuration
+- * error, and within these bounds the doubling never leaves the range of a {@code long}.
++ * <p>The base is positive, the cap at least the base and at most a day, the multiplier at least two: a wait
++ * longer than a day is a configuration error, a multiplier below two no backoff, and within these bounds the
++ * growth never leaves the range of a {@code long}.
+  */
+-public record Backoff(long baseMillis, long capMillis) {
++public record Backoff(long baseMillis, long capMillis, int multiplier) {
+ 
+     public static final long MAX_CAP_MILLIS = 86_400_000L;
+ 
+     public Backoff {
+-        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > MAX_CAP_MILLIS) {
+-            throw new IllegalArgumentException("base must be positive and the cap between the base and a day");
++        if (baseMillis <= 0 || capMillis < baseMillis || capMillis > MAX_CAP_MILLIS || multiplier < 2) {
++            throw new IllegalArgumentException("base must be positive, the cap between the base and a day, the multiplier at least two");
+         }
+     }
+ 
+     /**
+-     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first
+-     * attempt (zero) waits the base, and so does any earlier one.
++     * The delay before the given attempt: the base multiplied {@code attempt} times, stopping at the cap. The
++     * first attempt (zero) waits the base, and so does any earlier one.
+      */
+     public long delayMillis(int attempt) {
+         long delay = baseMillis;
+-        for (int i = 0; i < attempt && delay < capMillis; i++) {
+-            delay = Math.min(capMillis, delay * 2);
++        for (int left = attempt; left != 0 && delay < capMillis; left--) {
++            delay = Math.min(capMillis, delay * multiplier);
+         }
+         return delay;
+     }
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/BackoffTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/BackoffTest.java
+index 234d6ce..4a3b398 100644
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/BackoffTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/retry/BackoffTest.java
+@@ -7,14 +7,14 @@ public final class BackoffTest {
+     private BackoffTest() {}
+ 
+     public static void doublesFromTheBase() {
+-        Backoff backoff = new Backoff(100, 10_000);
++        Backoff backoff = new Backoff(100, 10_000, 2);
+         check(backoff.delayMillis(0) == 100, "first attempt waits the base");
+         check(backoff.delayMillis(1) == 200, "second attempt waits twice the base");
+         check(backoff.delayMillis(3) == 800, "fourth attempt waits eight times the base");
+     }
+ 
+     public static void stopsAtTheCap() {
+-        Backoff backoff = new Backoff(100, 1_000);
++        Backoff backoff = new Backoff(100, 1_000, 2);
+         check(backoff.delayMillis(4) == 1_000, "the cap, not 1600");
+         check(backoff.delayMillis(40) == 1_000, "the cap, however many attempts");
+     }
+@@ -22,17 +22,30 @@ public final class BackoffTest {
+     public static void rejectsAnEmptyOrEndlessPolicy() {
+         boolean rejected = false;
+         try {
+-            new Backoff(0, 1_000);
++            new Backoff(0, 1_000, 2);
+         } catch (IllegalArgumentException e) {
+             rejected = true;
+         }
+         check(rejected, "a zero base");
+         rejected = false;
+         try {
+-            new Backoff(100, Backoff.MAX_CAP_MILLIS + 1);
++            new Backoff(100, Backoff.MAX_CAP_MILLIS + 1, 2);
+         } catch (IllegalArgumentException e) {
+             rejected = true;
+         }
+         check(rejected, "a cap beyond a day");
++        rejected = false;
++        try {
++            new Backoff(100, 1_000, 1);
++        } catch (IllegalArgumentException e) {
++            rejected = true;
++        }
++        check(rejected, "a multiplier that does not back off");
++    }
++
++    public static void multipliesByTheFactor() {
++        Backoff backoff = new Backoff(100, 10_000, 3);
++        check(backoff.delayMillis(2) == 900, "third attempt waits nine times the base");
++        check(backoff.delayMillis(5) == 10_000, "the cap, not 24300");
+     }
+ }

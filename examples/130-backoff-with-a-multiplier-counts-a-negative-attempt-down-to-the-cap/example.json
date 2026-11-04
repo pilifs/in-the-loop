@@ -1,0 +1,67 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "130",
+  "title": "A backoff that gained a multiplier counts a negative attempt down to the cap",
+  "summary": "Crosscut's `Backoff` record, the retry filter's wait between attempts, gains a `multiplier` component (Spring Retry's `ExponentialBackOffPolicy` has one, 2 by default) and the doubling loop is rewritten around it, counting the attempt down to zero instead of up to it. An attempt below zero, which the old loop treated as zero and answered with the base, now counts down past zero and multiplies until the cap. The tests pass, none of them passing a negative attempt. The regression proof relates the new record to the old one by building the old `Backoff` from the new components, `new Backoff(this.baseMillis, this.capMillis)`, with the multiplier of two as the scope of what should not have changed, and finds the attempt of minus one in nine seconds.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "special-values",
+    "record-components",
+    "signature-change"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "unwind": 32
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add a `multiplier` component to the record, at least two, and multiply by it instead of doubling: `delay = Math.min(capMillis, delay * multiplier)`. The loop is rewritten to count the attempt down, `for (int left = attempt; left != 0 && delay < capMillis; left--)`. The tests are updated for the third component and one is added for a multiplier of three.",
+    "patch": "change.patch",
+    "intendedInputs": "this.multiplier != 2",
+    "previousArguments": "new Backoff(this.baseMillis, this.capMillis), attempt"
+  },
+  "risk": "A retry filter that passes an attempt count below zero (a counter reset to minus one before the first attempt, a count decremented on success) waits the cap before its first retry instead of the base: a dependency that was briefly unavailable is retried after the longest wait the policy allows. The javadoc's rule that an attempt before the first waits the base is what the old loop guaranteed and the new one does not.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The old loop runs while `i < attempt`, so an attempt of zero or less runs it zero times and the base is returned. The new loop runs while `left != 0`, counting down from the attempt: from minus one it never reaches zero, and runs until the delay reaches the cap. The proof's witness is the smallest record the constructor admits with a cap above the base, `Backoff[baseMillis=1, capMillis=2, multiplier=2]`, and the attempt minus one: the old record waits 1, the new one 2. The counterexample is found in the second search stage, over attempts in [-100000:100000], since none in [0:20] differs, and shrunk from the attempt JBMC found (-99583) to minus one in the interpreter.",
+  "resolution": "Count up as before, `for (int i = 0; i < attempt && delay < capMillis; i++)`, or guard the countdown with `left > 0`; example 131 is the same change with the loop kept counting up, proved equal for a multiplier of two.",
+  "notes": [
+    "The library's run of this shape took 9.0 s with JBMC: the first stage, over attempts in [0:20], proves the versions equal there; the second, over [-100000:100000], finds the negative attempt. The witness is shrunk in 110 interpreter runs. The measurement on this kernel is the pipeline's.",
+    "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
+    "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
+    "A scope narrower than the multiplier, `attempt < 0`, would declare the defect intended and the proof would pass: the scope is what a reviewer approves, and a negative attempt is not what the pull request is about."
+  ],
+  "provenance": "Constructed on Crosscut's backoff kernel (examples 126 and 127) to show a regression proof across a change of a record's components finding a defect the tests miss.",
+  "references": [
+    {
+      "title": "Spring Retry: ExponentialBackOffPolicy, the initial interval multiplied up to the maximum (multiplier 2 by default)",
+      "url": "https://docs.spring.io/spring-retry/docs/api/current/org/springframework/retry/backoff/ExponentialBackOffPolicy.html"
+    },
+    {
+      "title": "Resilience4j: IntervalFunction.ofExponentialBackoff(initialInterval, multiplier)",
+      "url": "https://resilience4j.readme.io/docs/retry"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -309,23 +309,39 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Err(problem) => return refuse(&mut out, line, format!("in the previous version, {problem}; name the method as it was with --before-target")),
     };
     let before_descriptor = before_method.parsed_descriptor()?;
+    let before_names = before_method.parameter_names(&before_class.pool);
     // The previous version's records: the same components, under the previous version's names. A static previous
     // version that took the components themselves (the record introduced since) is called with them by the
     // expressions of --before-arguments, which name them `this.component` or `parameter.component`.
+    // A record of other components, or one the new version has no record for (a record's method made static),
+    // is built from the new parameters by a constructor call among the expressions of --before-arguments, the
+    // receiver's first: `new Window(this.lo, this.hi), x`.
     let components_passed = options.before_arguments.is_some();
+    let receiver_built = options.before_arguments.as_deref().is_some_and(|a| a.trim_start().starts_with("new") && a.trim_start()[3..].starts_with(char::is_whitespace));
+    let mut previous_receiver = None;
     let before_receiver = match (&receiver, before_method.is_static()) {
         (None, true) => None,
         (Some(r), true) if components_passed => Some((r.clone(), None)),
-        (Some(r), false) => match record_of(&before_cp, &Type::Object(before_class_internal.clone()))? {
-            Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
-            Some(b) => return refuse(&mut out, line, format!("the receiver's components changed: {} before, {} now; a regression proof of a record's method relates the same components in both versions", b.describe(), r.describe())),
+        (_, false) => match record_of(&before_cp, &Type::Object(before_class_internal.clone()))? {
+            Some(b) if receiver.as_ref().is_some_and(|r| b.same_shape(r)) && !receiver_built => Some((receiver.clone().expect("checked"), Some(b))),
+            Some(b) if components_passed => {
+                previous_receiver = Some(b);
+                receiver.as_ref().map(|r| (r.clone(), None))
+            }
+            Some(b) => {
+                let build = format!("new {}({})", b.simple_name(), b.components.iter().map(|(c, _)| if receiver.is_some() { format!("this.{c}") } else { c.clone() }).collect::<Vec<_>>().join(", "));
+                let example = std::iter::once(build).chain(before_names.iter().cloned()).collect::<Vec<_>>().join(", ");
+                return match &receiver {
+                    Some(r) => refuse(&mut out, line, format!("the receiver's components changed: {} before, {} now; build the previous version's receiver from the new components with --before-arguments, such as \"{example}\"", b.describe(), r.describe())),
+                    None => refuse(&mut out, line, format!("the previous version is a method of the record {} and the new one a static method; build its receiver from the new parameters with --before-arguments, such as \"{example}\"", b.simple_name())),
+                };
+            }
             None => return refuse(&mut out, line, format!("the previous version's class {} is not a record whose components are primitive", before_class_internal.replace('/', "."))),
         },
         (Some(r), true) => {
             let example = r.components.iter().map(|(c, _)| format!("this.{c}")).chain(names.iter().cloned()).collect::<Vec<_>>().join(", ");
             return refuse(&mut out, line, format!("the previous version is a static method and the new one a method of the record {}; give the previous version's arguments as expressions over the record's components and the parameters with --before-arguments, such as \"{example}\"", r.simple_name()));
         }
-        (None, false) => return refuse(&mut out, line, "the previous version is a method of the record and the new one a static method; a regression proof relates two static methods, two methods of a record, or a static method that became a method of a record".into()),
     };
     let mut both_records = Vec::new();
     for ((name, t), record) in names.iter().zip(&descriptor.params).zip(&records) {
@@ -333,11 +349,22 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             Some(r) if components_passed => Some((r.clone(), None)),
             Some(r) => match record_of(&before_cp, t)? {
                 Some(b) if b.same_shape(r) => Some((r.clone(), Some(b))),
-                Some(b) => return refuse(&mut out, line, format!("the components of parameter {name} changed: {} before, {} now; a regression proof relates the same components in both versions", b.describe(), r.describe())),
+                Some(b) => {
+                    let example = names.iter().zip(&records).map(|(n, rec)| match rec {
+                        Some(_) if n == name => format!("new {}({})", b.simple_name(), b.components.iter().map(|(c, _)| format!("{n}.{c}")).collect::<Vec<_>>().join(", ")),
+                        _ => n.clone(),
+                    }).collect::<Vec<_>>().join(", ");
+                    return refuse(&mut out, line, format!("the components of parameter {name} changed: {} before, {} now; build the previous version's record from the new components with --before-arguments, such as \"{example}\"", b.describe(), r.describe()));
+                }
                 None => return refuse(&mut out, line, format!("in the previous version, {} is not a record whose components are primitive; give its arguments as expressions over the record's components with --before-arguments", t.java_name())),
             },
             None => None,
         });
+    }
+    // The records among the previous version's parameters, each built by a constructor call among the expressions.
+    let mut previous_records = Vec::new();
+    for t in &before_descriptor.params {
+        previous_records.push(if components_passed { record_of(&before_cp, t)? } else { None });
     }
     let result = match (&result_record, record_of(&before_cp, &before_descriptor.ret)?) {
         (Some(r), Some(b)) if b.same_shape(r) => Some((r.clone(), b)),
@@ -360,8 +387,16 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             descriptor.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")
         ));
     }
-    let before_names = before_method.parameter_names(&before_class.pool);
-    let before_params = harness::params(&before_names, &before_descriptor.params);
+    // The previous version's own layout, for replaying it on the arguments computed by the expressions: its
+    // records, built by expressions, flattened into their components.
+    let before_layout = harness::Layout::new(
+        previous_receiver.clone().map(|r| (r.clone(), Some(r))),
+        &before_names,
+        &before_descriptor.params,
+        &previous_records.iter().map(|r| r.clone().map(|r| (r.clone(), Some(r)))).collect::<Vec<_>>(),
+        None,
+    );
+    let before_params = &before_layout.params;
     let previous = (!plain).then(|| harness::BeforeMethod {
         owner: before_class_internal.clone(),
         method: before_method_name.clone(),
@@ -369,6 +404,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         params: before_descriptor.params.clone(),
         names: before_names.clone(),
         arguments: options.before_arguments.clone(),
+        receiver: previous_receiver.clone(),
+        records: previous_records.clone(),
         ret: before_descriptor.ret.clone(),
         relation: options.results_agree_when.clone(),
     });
@@ -523,18 +560,29 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
     let before_owner = format!("before/{before_class_internal}");
     // The previous version's method as relocated: its records are under before/ too.
-    let before_relocated = layout.before_descriptor(&before_descriptor.params, &before_descriptor.ret);
-    // The previous version's arguments on a counterexample: the new version's, or the expressions over them.
+    let before_relocated = match &previous {
+        Some(b) => b.relocated_descriptor(&layout),
+        None => layout.before_descriptor(&before_descriptor.params, &before_descriptor.ret),
+    };
+    // The previous version's arguments on a counterexample: the new version's, or the expressions over them, as
+    // the flat parameters of the previous version's layout (a record built by an expression as its components).
     let map_arguments = |arguments: &[Argument]| -> Result<Vec<Argument>, Error> {
         let Some(args) = &harness.before_args else { return Ok(arguments.to_vec()) };
         let (locals, arrays) = locals_of(params, arguments);
-        args.iter()
-            .zip(&before_descriptor.params)
-            .map(|(arg, t)| match arg {
-                CallArg::Value(e) => harness::expr::eval_with(e, &locals, &arrays).map(|v| Argument::Scalar(as_parameter(v, t))),
-                CallArg::Array(_, slot) => Ok(params.iter().zip(arguments).find(|(p, _)| p.slot == *slot).map(|(_, a)| a.clone()).unwrap_or(Argument::Null)),
-            })
-            .collect()
+        let types = previous.as_ref().map(harness::BeforeMethod::argument_types).unwrap_or_default();
+        let mut flat = Vec::new();
+        for (arg, t) in args.iter().zip(&types) {
+            match arg {
+                CallArg::Value(e) => flat.push(Argument::Scalar(as_parameter(harness::expr::eval_with(e, &locals, &arrays)?, t))),
+                CallArg::Array(_, slot) => flat.push(params.iter().zip(arguments).find(|(p, _)| p.slot == *slot).map(|(_, a)| a.clone()).unwrap_or(Argument::Null)),
+                CallArg::Record(record, components) => {
+                    for (e, (_, t)) in components.iter().zip(&record.components) {
+                        flat.push(Argument::Scalar(as_parameter(harness::expr::eval_with(e, &locals, &arrays)?, t)));
+                    }
+                }
+            }
+        }
+        Ok(flat)
     };
     // Both versions replayed on an input: what each did, and whether the two agree, which under a relation between
     // the results is the relation holding when both return (with the arrays left the same), and otherwise the two
@@ -547,11 +595,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 // With the previous version's arguments as expressions, each is a primitive or an array; otherwise
                 // the previous version's records are built from the same components.
                 let replayed = if harness.before_args.is_some() {
-                    witness::replay(&replay_cp, &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
+                    witness::replay_in(&replay_cp, &before_layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
                 } else {
                     witness::replay_in(&replay_cp, &layout, Some("before"), &before_owner, &before_method_name, &before_relocated, &before_descriptor, &mapped)
                 };
-                let text = if harness.before_args.is_some() { replayed.with_leftovers(&before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
+                let text = if harness.before_args.is_some() { replayed.with_leftovers(before_params, &mapped) } else { replayed.with_leftovers(params, &mapped) };
                 (Some(replayed), text)
             }
             Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),
@@ -658,7 +706,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let (rendered_found, _) = witness::call_in(&method_name, &layout, &found);
             if harness.before_args.is_some() {
                 if let Ok(mapped) = map_arguments(&arguments) {
-                    rendered = format!("{rendered}, previously {}", witness::call(&before_method_name, &before_params, &mapped).0);
+                    rendered = format!("{rendered}, previously {}", witness::call_in(&before_method_name, &before_layout, &mapped).0);
                 }
             }
             let message = format!(

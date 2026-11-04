@@ -1717,6 +1717,108 @@ fn a_check_lost_in_the_move_to_a_record_is_found_on_the_components() {
     assert_eq!(witness.after, "1", "{}", outcome.output);
 }
 
+/// A window of ints, as a record with a method.
+const WINDOW_RECORD: &str = r#"package fixtures;
+public record Window(int lo, int hi) {
+    public Window {
+        if (lo > hi) {
+            throw new IllegalArgumentException("empty window");
+        }
+    }
+    public int clamp(int x) {
+        return x < lo ? lo : x > hi ? hi : x;
+    }
+    public boolean contains(int x) {
+        return lo <= x && x < hi;
+    }
+}
+"#;
+
+/// The same record with a component added, its methods as they were.
+const WINDOW_STEPPED: &str = r#"package fixtures;
+public record Window(int lo, int hi, int step) {
+    public Window {
+        if (lo > hi || step <= 0) {
+            throw new IllegalArgumentException("empty window or no step");
+        }
+    }
+    public int clamp(int x) {
+        return x < lo ? lo : x > hi ? hi : x;
+    }
+    public boolean contains(int x) {
+        return lo <= x && x < hi;
+    }
+}
+"#;
+
+/// The record's methods made static, the window's bounds as parameters: `clamp` as it was, `contains` with the
+/// upper bound now inside.
+const WINDOW_STATIC: &str = r#"package fixtures;
+public final class Windows {
+    private Windows() {}
+    public static int clamp(int lo, int hi, int x) {
+        if (lo > hi) {
+            throw new IllegalArgumentException("empty window");
+        }
+        return x < lo ? lo : x > hi ? hi : x;
+    }
+    public static boolean contains(int lo, int hi, int x) {
+        return lo <= x && x <= hi;
+    }
+}
+"#;
+
+/// A record that gained a component is related to its previous version by building the previous record from the
+/// new components, with a constructor call first among the expressions of --before-arguments.
+#[test]
+fn a_record_that_gained_a_component_is_related_by_building_the_previous_record() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_record("window-record", "Window", WINDOW_RECORD), compile_record("window-stepped", "Window", WINDOW_STEPPED)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Window#clamp", None, Some("new Window(this.lo, this.hi), x"), None, None, "window-stepped");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("this: Window(lo: int, hi: int, step: int) × x: int"));
+    assert!(outcome.output.starts_with("✓ fixtures.Window#clamp behaves as the previous clamp(x) on new Window(this.lo, this.hi) on every input ("), "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("before.fixtures.Window this_ = new before.fixtures.Window(this_lo, this_hi); int x_ = x;"), "{statement}");
+    assert!(statement.contains("try { a = this_.clamp(x_); }"), "{statement}");
+    assert!(statement.contains("try { b = this_after.clamp(x); }"), "{statement}");
+    // Without the expressions, the tool says what to give; with the wrong number of components, too.
+    let refused = related_run(&before, &after, "fixtures.Window#clamp", None, None, None, None, "window-stepped-unrelated");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("the receiver's components changed: Window(lo: int, hi: int) before, Window(lo: int, hi: int, step: int) now; build the previous version's receiver from the new components with --before-arguments, such as \"new Window(this.lo, this.hi), x\""), "{}", refused.output);
+    let refused = related_run(&before, &after, "fixtures.Window#clamp", None, Some("new Window(this.lo), x"), None, None, "window-stepped-short");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("Window has 2 components, 1 given; build it as new Window(lo, hi)"), "{}", refused.output);
+}
+
+/// A record's method made static is related to its previous version by building the receiver it had from the
+/// new parameters; a bound that moved with it is found.
+#[test]
+fn a_records_method_made_static_is_related_by_building_its_receiver() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_record("window-record-before", "Window", WINDOW_RECORD), compile_record("window-static", "Windows", WINDOW_STATIC)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Windows#clamp", Some("fixtures.Window#clamp"), Some("new Window(lo, hi), x"), None, None, "window-static");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.domain.as_deref(), Some("lo: int × hi: int × x: int"));
+    assert!(outcome.output.starts_with("✓ fixtures.Windows#clamp behaves as the previous fixtures.Window#clamp(x) on new Window(lo, hi) on every input ("), "{}", outcome.output);
+    let refused = related_run(&before, &after, "fixtures.Windows#clamp", Some("fixtures.Window#clamp"), None, None, None, "window-static-unrelated");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("the previous version is a method of the record Window and the new one a static method; build its receiver from the new parameters with --before-arguments, such as \"new Window(lo, hi), x\""), "{}", refused.output);
+    let refused = related_run(&before, &after, "fixtures.Windows#clamp", Some("fixtures.Window#clamp"), Some("lo, hi, x"), None, None, "window-static-flat");
+    assert_eq!(refused.verdict, Verdict::Unverifiable, "{}", refused.output);
+    assert!(refused.output.contains("the previous version is a method of the record Window; build its receiver from the new parameters as the first argument, new Window(lo, hi)"), "{}", refused.output);
+    let outcome = related_run(&before, &after, "fixtures.Windows#contains", Some("fixtures.Window#contains"), Some("new Window(lo, hi), x"), None, None, "window-static-contains");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert_eq!(witness.input, "contains(lo=0, hi=0, x=0), previously contains(this=Window[lo=0, hi=0], x=0)", "{}", outcome.output);
+    assert_eq!(witness.before, "false", "{}", outcome.output);
+    assert_eq!(witness.after, "true", "{}", outcome.output);
+}
+
 /// A method of a record whose components are primitive is proved on the components: the harness builds the
 /// record in both versions, skips what a constructor rejects, and calls the method on it.
 #[test]

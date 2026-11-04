@@ -145,18 +145,21 @@ impl Quantifier {
     }
 }
 
-/// An argument of a call: a value, or an array parameter passed through by name (its name and slot).
+/// An argument of a call: a value, an array parameter passed through by name (its name and slot), or a record
+/// built from a value per component (`new Window(lo, hi)`, the previous version's record in a regression proof).
 #[derive(Debug, Clone, PartialEq)]
 pub enum CallArg {
     Value(Expr),
     Array(String, u16),
+    Record(super::RecordType, Vec<Expr>),
 }
 
 impl CallArg {
-    fn slots_used(&self) -> u16 {
+    pub fn slots_used(&self) -> u16 {
         match self {
             CallArg::Value(e) => e.slots_used(),
             CallArg::Array(_, slot) => slot + 1,
+            CallArg::Record(_, components) => components.iter().map(Expr::slots_used).max().unwrap_or(0),
         }
     }
 
@@ -164,6 +167,15 @@ impl CallArg {
         match self {
             CallArg::Value(e) => e.mentions(slot),
             CallArg::Array(_, s) => *s == slot,
+            CallArg::Record(_, components) => components.iter().any(|e| e.mentions(slot)),
+        }
+    }
+
+    fn passes(&self, slot: u16) -> bool {
+        match self {
+            CallArg::Value(e) => e.passes(slot),
+            CallArg::Array(_, s) => *s == slot,
+            CallArg::Record(_, components) => components.iter().any(|e| e.passes(slot)),
         }
     }
 }
@@ -271,10 +283,7 @@ impl Expr {
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
             Expr::Binary(_, l, r) => l.passes(slot) || r.passes(slot),
             Expr::Ternary(c, t, e) => c.passes(slot) || t.passes(slot) || e.passes(slot),
-            Expr::Call(_, args) => args.iter().any(|a| match a {
-                CallArg::Value(e) => e.passes(slot),
-                CallArg::Array(_, s) => *s == slot,
-            }),
+            Expr::Call(_, args) => args.iter().any(|a| a.passes(slot)),
             Expr::Quantifier(q) => q.lo.passes(slot) || q.hi.passes(slot) || q.body.passes(slot) || q.filter.as_ref().is_some_and(|f| f.passes(slot)),
         }
     }
@@ -1123,6 +1132,7 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
                 match arg {
                     CallArg::Value(e) => emit_promoted(e, ty_of(param).unwrap_or(Ty::Int), code, pool),
                     CallArg::Array(_, slot) => code.load(Kind::Ref, *slot),
+                    CallArg::Record(record, components) => emit_record(record, &record.class, components, code, pool),
                 }
             }
             let index = pool.method_ref(&callee.owner, &callee.name, &callee.descriptor);
@@ -1261,6 +1271,25 @@ pub fn emit_promoted(e: &Expr, target: Ty, code: &mut CodeBuilder, pool: &mut Po
     if target == Ty::Long && e.ty() == Ty::Int {
         code.op(0x85); // i2l
     }
+}
+
+/// Leaves a new `owner` on the stack, built through the record's canonical constructor from one value per
+/// component, each promoted or narrowed to the component's type as a cast would.
+pub fn emit_record(record: &super::RecordType, owner: &str, components: &[Expr], code: &mut CodeBuilder, pool: &mut PoolBuilder) {
+    let class = pool.class(owner);
+    code.op_u16(0xbb, class); // new
+    code.op(0x59); // dup
+    for (e, (_, t)) in components.iter().zip(&record.components) {
+        emit_promoted(e, ty_of(t).unwrap_or(Ty::Int), code, pool);
+        match t {
+            Type::Byte => code.op(0x91),  // i2b
+            Type::Char => code.op(0x92),  // i2c
+            Type::Short => code.op(0x93), // i2s
+            _ => {}
+        }
+    }
+    let init = pool.method_ref(owner, "<init>", &record.constructor());
+    code.op_u16(0xb7, init); // invokespecial
 }
 
 fn emit_int(v: i32, code: &mut CodeBuilder, pool: &mut PoolBuilder) {

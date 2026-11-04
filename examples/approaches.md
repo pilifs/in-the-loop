@@ -172,6 +172,13 @@ previous version gets the components. On Crosscut, [128](128-batch-commit-made-a
 commit's guard moved into the record's constructor without the part about the failed index, which was never a component, and
 [129](129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md) proves the same refactor with the check kept.
 
+A record whose components changed (one added, removed or retyped), or a record's method made static, is related to its previous version by building the
+previous record from the new parameters, with a constructor call first among the expressions of `previousArguments`:
+`new Backoff(this.baseMillis, this.capMillis), attempt`. The previous record is built under `before/` in the same handler as the new one, so an input
+either constructor rejects is outside the statement. On Crosscut, [130](130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md)
+finds the negative attempt a backoff that gained a multiplier counts down to the cap, and [131](131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two/README.md)
+proves the same change with the loop kept counting up, both with the multiplier of two as the scope of what was not meant to change.
+
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 
 A different property under the same lockfile-and-diff workflow: what a module is *able to do*. From the compiled

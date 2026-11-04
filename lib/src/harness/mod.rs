@@ -188,9 +188,17 @@ impl Layout {
     /// The previous version's descriptor as relocated: its parameters and result, with every record of this layout
     /// under `before/`, since the previous version's classes are.
     pub fn before_descriptor(&self, params: &[Type], ret: &Type) -> String {
+        self.before_descriptor_with(params, ret, &[])
+    }
+
+    /// As [`Layout::before_descriptor`], with the records the previous version takes that this layout has no
+    /// counterpart of (built from expressions) relocated too.
+    pub fn before_descriptor_with(&self, params: &[Type], ret: &Type, also: &[Option<RecordType>]) -> String {
         let relocated = |t: &Type| match t {
             Type::Object(name) => {
-                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name)) || self.result.as_ref().is_some_and(|(_, previous)| previous.class == *name);
+                let known = self.args.iter().any(|s| matches!(s, Slot::Record { before: Some(b), .. } if b.class == *name))
+                    || self.result.as_ref().is_some_and(|(_, previous)| previous.class == *name)
+                    || also.iter().flatten().any(|r| r.class == *name);
                 if known {
                     format!("Lbefore/{name};")
                 } else {
@@ -252,7 +260,9 @@ pub const PREVIOUS: &str = "previous";
 /// The previous version of the method, when it is not the target under the same name with the same parameters:
 /// a method renamed or moved, or whose parameters were reordered, added, removed or retyped. The arguments it
 /// is called with are expressions over the new version's parameters (`--before-arguments`); without them, the
-/// parameters must be the same and are passed through.
+/// parameters must be the same and are passed through. A record the previous version takes, as its receiver or
+/// a parameter, that the new version has no record of the same shape for is built from the new parameters by a
+/// constructor call among the arguments, `new Window(this.lo, this.hi)`, the receiver's first.
 #[derive(Debug, Clone)]
 pub struct BeforeMethod {
     /// The internal name of the class as it was, before relocation (`net/example/Clock`).
@@ -262,8 +272,14 @@ pub struct BeforeMethod {
     pub params: Vec<Type>,
     /// The parameter names, for the report.
     pub names: Vec<String>,
-    /// The arguments as written, one per parameter, separated by commas.
+    /// The arguments as written, one per parameter (one more, first, for a receiver built by an expression),
+    /// separated by commas.
     pub arguments: Option<String>,
+    /// The record the previous version is a method of, when its receiver is built by an expression among the
+    /// arguments: the new version is static, or a method of a record of other components.
+    pub receiver: Option<RecordType>,
+    /// By parameter, the record of primitive components it is, built by an expression among the arguments.
+    pub records: Vec<Option<RecordType>>,
     /// The previous version's return type.
     pub ret: Type,
     /// The relation its result and the new one's must satisfy, as written, when it is not equality: a boolean
@@ -272,13 +288,39 @@ pub struct BeforeMethod {
 }
 
 impl BeforeMethod {
-    /// `pkg.Class#method(args)`, or `method(args)` when the class is `class_internal`.
+    /// `pkg.Class#method(args)`, or `method(args)` when the class is `class_internal`; with a receiver built by an
+    /// expression, `method(args) on new Rec(...)`.
     pub fn display(&self, class_internal: &str) -> String {
         let name = if self.owner == class_internal { self.method.clone() } else { format!("{}#{}", self.owner.replace('/', "."), self.method) };
         match &self.arguments {
+            Some(a) if self.receiver.is_some() => {
+                let pieces = split_arguments(a);
+                match pieces.split_first() {
+                    Some((receiver, rest)) => format!("{name}({}) on {receiver}", rest.join(", ")),
+                    None => format!("{name}({a})"),
+                }
+            }
             Some(a) => format!("{name}({a})"),
             None => format!("{name}({})", self.names.join(", ")),
         }
+    }
+
+    /// What the arguments stand for, in order: the receiver when it is built by an expression, then each
+    /// parameter, with its name, type and the record it is when it is one.
+    pub fn expected(&self) -> Vec<(String, Type, Option<&RecordType>)> {
+        let receiver = self.receiver.as_ref().map(|r| ("this".to_string(), Type::Object(r.class.clone()), Some(r)));
+        let records = self.records.iter().map(Option::as_ref).chain(std::iter::repeat(None));
+        receiver.into_iter().chain(self.names.iter().zip(&self.params).zip(records).map(|((n, t), r)| (n.clone(), t.clone(), r))).collect()
+    }
+
+    /// The types of the arguments as given: the receiver's, when it is built by an expression, then the parameters'.
+    pub fn argument_types(&self) -> Vec<Type> {
+        self.expected().into_iter().map(|(_, t, _)| t).collect()
+    }
+
+    /// The previous version's descriptor as relocated under `before/`: every record it takes or returns is there.
+    pub fn relocated_descriptor(&self, layout: &Layout) -> String {
+        layout.before_descriptor_with(&self.params, &self.ret, &self.records)
     }
 
     /// Parses the arguments against the new version's parameters: each must have the type of the parameter it is
@@ -296,16 +338,70 @@ impl BeforeMethod {
             }
             return Ok(None);
         };
-        for (name, t) in self.names.iter().zip(&self.params) {
-            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() {
-                return Err(Error::new(format!("the previous version's parameter {name} has type {}; an argument can be given for integral and boolean parameters, and for arrays of those", t.java_name())));
+        let expected = self.expected();
+        for (name, t, record) in &expected {
+            if record.is_none() && expr::ty_of(t).is_none() && expr::element_ty(t).is_none() {
+                return Err(Error::new(format!("the previous version's parameter {name} has type {}; an argument can be given for integral and boolean parameters, for arrays of those, and for records whose components are primitive", t.java_name())));
             }
         }
-        let callee = Callee { name: self.method.clone(), owner: self.owner.clone(), descriptor: self.descriptor.clone(), params: self.params.clone(), ret: expr::Ty::Int };
-        match expr::parse_value(&format!("{}({text})", self.method), params, Some(&callee), first_free_slot)? {
-            Expr::Call(_, args) => Ok(Some(args)),
-            _ => Err(Error::new("the arguments must be a list of expressions separated by commas")),
+        let pieces = split_arguments(text);
+        // A receiver to build comes first, whatever follows.
+        if let (Some(r), Some(first)) = (&self.receiver, pieces.first()) {
+            if !first.starts_with("new") {
+                self.parse_record(r, "this", first, params, first_free_slot)?;
+            }
         }
+        if pieces.len() != expected.len() {
+            let plural = |n: usize| if n == 1 { "argument".to_string() } else { format!("{n} arguments") };
+            let what = match &self.receiver {
+                Some(r) => format!("{} takes {} after its receiver, a {} to build first", self.method, plural(self.params.len()), r.simple_name()),
+                None => format!("{} takes {}", self.method, plural(self.params.len())),
+            };
+            return Err(Error::new(format!("{what}, {} given", pieces.len())));
+        }
+        let mut args = Vec::new();
+        for (i, ((name, t, record), piece)) in expected.iter().zip(&pieces).enumerate() {
+            let position = match &self.receiver {
+                Some(_) if i == 0 => "the receiver".to_string(),
+                Some(_) => format!("argument {i}"),
+                None => format!("argument {}", i + 1),
+            };
+            args.push(match record {
+                Some(record) => self.parse_record(record, name, piece, params, first_free_slot)?,
+                None => parse_argument(&self.method, &position, t, piece, params, first_free_slot)?,
+            });
+        }
+        Ok(Some(args))
+    }
+
+    /// `new Window(lo, hi)`: the previous version's record `record`, built from one expression per component.
+    fn parse_record(&self, record: &RecordType, name: &str, piece: &str, params: &[Param], first_free_slot: u16) -> Result<CallArg, Error> {
+        let simple = record.simple_name();
+        let hint = || format!("new {simple}({})", record.components.iter().map(|(c, _)| c.clone()).collect::<Vec<_>>().join(", "));
+        let inner = piece
+            .strip_prefix("new")
+            .filter(|rest| rest.starts_with(char::is_whitespace))
+            .map(str::trim_start)
+            .and_then(|rest| rest.strip_suffix(')'))
+            .and_then(|rest| rest.split_once('('))
+            .filter(|(class, _)| class.trim() == simple || class.trim() == record.java_name())
+            .map(|(_, inner)| inner);
+        let Some(inner) = inner else {
+            let what = if name == "this" { format!("the previous version is a method of the record {simple}; build its receiver") } else { format!("the previous version's parameter {name} is the record {simple}; build it") };
+            return Err(Error::new(format!("{what} from the new parameters as the first argument, {}", hint())));
+        };
+        let values = split_arguments(inner);
+        if values.len() != record.components.len() {
+            return Err(Error::new(format!("{simple} has {} components, {} given; build it as {}", record.components.len(), values.len(), hint())));
+        }
+        let mut components = Vec::new();
+        for ((c, t), value) in record.components.iter().zip(&values) {
+            match parse_argument(&format!("new {simple}"), &format!("the component {c}"), t, value, params, first_free_slot)? {
+                CallArg::Value(e) => components.push(e),
+                _ => return Err(Error::new(format!("the component {c} of {simple} must be a value"))),
+            }
+        }
+        Ok(CallArg::Record(record.clone(), components))
     }
 
     /// Parses the result relation, if one was given, over the new parameters, `previous` (the previous version's
@@ -362,6 +458,34 @@ fn split_arguments(text: &str) -> Vec<String> {
         out.push(current.trim().to_string());
     }
     out
+}
+
+/// One argument of the previous version: an array parameter passed by name, or a value of the parameter's type
+/// (an `int` expression for a `byte`, `short` or `char` parameter is narrowed as a cast is).
+fn parse_argument(method: &str, position: &str, t: &Type, piece: &str, params: &[Param], first_free_slot: u16) -> Result<CallArg, Error> {
+    if let Some(p) = params.iter().find(|p| p.name == piece && matches!(p.ty, Type::Array(_))) {
+        if p.ty != *t {
+            return Err(Error::new(format!("{position} of {method} must be {}, {} is {}", t.java_name(), p.name, p.ty.java_name())));
+        }
+        return Ok(CallArg::Array(p.name.clone(), p.slot));
+    }
+    let e = expr::parse_value(piece, params, None, first_free_slot)?;
+    let ok = match expr::ty_of(t) {
+        Some(expr::Ty::Boolean) => e.ty() == expr::Ty::Boolean,
+        Some(expr::Ty::Int) => e.ty() == expr::Ty::Int,
+        Some(expr::Ty::Long) => e.ty() != expr::Ty::Boolean,
+        _ => false,
+    };
+    if !ok {
+        let wanted = match expr::ty_of(t) {
+            Some(expr::Ty::Boolean) => "boolean".to_string(),
+            Some(expr::Ty::Int) => "int".to_string(),
+            Some(expr::Ty::Long) => "a number".to_string(),
+            None => format!("the {} parameter {}", t.java_name(), params.iter().find(|p| p.ty == *t).map(|p| p.name.as_str()).unwrap_or("itself")),
+        };
+        return Err(Error::new(format!("{position} of {method} must be {wanted}")));
+    }
+    Ok(CallArg::Value(e))
 }
 
 /// Lays out the method's parameters in local-variable slots, as the static harness method receives them.
@@ -438,7 +562,7 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
     // quantifier's variable after those.
     let temps = objects + 2 * records.len() as u16;
     let before_args = match before {
-        Some(b) => b.parse_arguments(params, temps + b.params.iter().map(Type::slots).sum::<u16>())?,
+        Some(b) => b.parse_arguments(params, temps + b.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let relation = match before {
@@ -448,7 +572,7 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             }
             None
         }
-        Some(bm) => bm.parse_relation(params, ret, a, b, temps + bm.params.iter().map(Type::slots).sum::<u16>())?,
+        Some(bm) => bm.parse_relation(params, ret, a, b, temps + bm.argument_types().iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -538,9 +662,10 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
     }
 
     // The previous version's arguments, from the new parameters; an input for which one cannot be computed (a
-    // division by zero in the expression) is outside the relation, and skipped as the scope skips an input.
+    // division by zero in the expression, a record its constructor rejects) is outside the relation, and skipped
+    // as the scope skips an input.
     let before_types: Vec<Type> = match before {
-        Some(b) => b.params.clone(),
+        Some(b) => b.argument_types(),
         None => params.iter().map(|p| p.ty.clone()).collect(),
     };
     if let Some(args) = &before_args {
@@ -566,6 +691,10 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
                     code.load(Kind::Ref, copy);
                     code.store(Kind::Ref, slot);
                 }
+                CallArg::Record(record, components) => {
+                    expr::emit_record(record, &format!("before/{}", record.class), components, &mut code, &mut writer.pool);
+                    code.store(Kind::Ref, slot);
+                }
             }
             slot += t.slots();
         }
@@ -575,19 +704,20 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
         code.bind(handler);
         code.op(0x57); // pop the exception
         code.return_(None);
-        let throwable = writer.pool.class("java/lang/Throwable");
-        code.handler(map_start, map_end, handler, Some(throwable));
+        // As for the records built from the components: JBMC matches a handler by the exception's own class.
+        for exception in EXCEPTIONS.iter().chain(["java/lang/Throwable"].iter()) {
+            let catch_type = writer.pool.class(exception);
+            code.handler(map_start, map_end, handler, Some(catch_type));
+        }
         code.bind(mapped);
         code.max_locals = code.max_locals.max(slot);
         for arg in args {
-            if let CallArg::Value(e) = arg {
-                code.max_locals = code.max_locals.max(e.slots_used());
-            }
+            code.max_locals = code.max_locals.max(arg.slots_used());
         }
     }
 
     let (before_class, before_method, before_descriptor) = match before {
-        Some(b) => (b.owner.as_str(), b.method.as_str(), layout.before_descriptor(&b.params, &b.ret)),
+        Some(b) => (b.owner.as_str(), b.method.as_str(), b.relocated_descriptor(layout)),
         None => (class_internal, method, layout.before_descriptor(&layout.target_types(), ret)),
     };
     let before_owner = format!("before/{before_class}");
@@ -615,9 +745,11 @@ pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type,
             let (new_local, old_local) = object_slots(i);
             Some(if on_copies { old_local } else { new_local })
         };
-        // The previous version is called on a receiver only when it has one; a static one gets the components.
-        let on_receiver = if on_copies { layout.before_receiver() } else { layout.receiver.is_some() };
-        if let (Some(receiver), true) = (&layout.receiver, on_receiver) {
+        // The previous version is called on a receiver only when it has one: the same record as the new version's,
+        // or one built by an expression, first among its arguments; a static one gets the components.
+        let built_receiver = on_copies && before.is_some_and(|b| b.receiver.is_some());
+        let on_receiver = if on_copies { layout.before_receiver() || built_receiver } else { layout.receiver.is_some() };
+        if let (Some(receiver), true, false) = (&layout.receiver, on_receiver, built_receiver) {
             code.load(Kind::Ref, object_of(receiver).expect("the receiver is a record"));
         }
         if on_copies && before_args.is_some() {
@@ -843,8 +975,7 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
     let records = layout.records();
     let args_before = match before.and_then(|b| b.arguments.as_deref().map(|a| (b, a))) {
         Some((b, text)) => {
-            let names: Vec<String> = b.names.iter().map(|n| format!("{n}_")).collect();
-            for ((name, t), given) in names.iter().zip(&b.params).zip(split_arguments(text)) {
+            for ((name, t, record), given) in b.expected().into_iter().zip(split_arguments(text)) {
                 // A record's components are named as the parameters are, `this_component` for `this.component`.
                 let given = records.iter().fold(given, |e, slot| match slot {
                     Slot::Record { name, .. } => e.replace(&format!("{name}."), &format!("{name}_")),
@@ -854,9 +985,14 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
                     Some(p) => format!("{}_before", p.name),
                     None => given,
                 };
-                mapping.push(format!("{} {name} = {value};", t.java_name()));
+                // The previous version's record is its class under before/.
+                let (t, value) = match record {
+                    Some(r) => (format!("before.{}", r.java_name()), value.replacen("new ", &format!("new before.{}.", r.java_name().rsplit_once('.').map(|(pkg, _)| pkg).unwrap_or_default()), 1).replace("..", ".")),
+                    None => (t.java_name(), value),
+                };
+                mapping.push(format!("{t} {name}_ = {value};"));
             }
-            names.join(", ")
+            b.names.iter().map(|n| format!("{n}_")).collect::<Vec<_>>().join(", ")
         }
         None => pass_through,
     };
@@ -902,13 +1038,14 @@ pub fn source(class_internal: &str, method: &str, layout: &Layout, ret: &Type, u
         }
     }
     if !mapping.is_empty() {
-        s.push_str("        // The previous version's arguments, from the new parameters; an input for which one throws is outside the relation.\n");
+        s.push_str("        // The previous version's arguments, from the new parameters; an input for which one throws (a record its constructor rejects) is outside the relation.\n");
         s.push_str(&format!("        {}\n", mapping.join(" ")));
     }
     for (side, owner, callee, args) in [("before", format!("before.{before_class}"), before_method, &args_before), ("after", class.clone(), method, &args)] {
         let (var, t) = if side == "before" { ("a", before_ret) } else { ("b", ret) };
-        let on_receiver = if side == "before" { layout.before_receiver() } else { layout.receiver.is_some() };
-        let owner = if on_receiver { format!("this_{side}") } else { owner };
+        let built_receiver = side == "before" && before.is_some_and(|b| b.receiver.is_some());
+        let on_receiver = if side == "before" { layout.before_receiver() || built_receiver } else { layout.receiver.is_some() };
+        let owner = if built_receiver { "this_".to_string() } else if on_receiver { format!("this_{side}") } else { owner };
         let type_name = |t: &Type| match (&layout.result, t) {
             (Some((record, previous)), Type::Object(_)) => format!("{}{}", if side == "before" { "before." } else { "" }, if side == "before" { previous.java_name() } else { record.java_name() }),
             _ => type_name(t),
@@ -1400,6 +1537,8 @@ mod tests {
             params: vec![Type::Long, Type::Int, Type::Int],
             names: vec!["batchStart".into(), "batchSize".into(), "failedIndex".into()],
             arguments: Some("this.start, this.size, failedIndex".into()),
+            receiver: None,
+            records: Vec::new(),
             ret: Type::Long,
             relation: None,
         };
@@ -1418,6 +1557,49 @@ mod tests {
         // Without the expressions there is no way to pass the record to a previous version that has none.
         let same = BeforeMethod { arguments: None, ..previous };
         assert!(generate("net/example/Batch", "offsetToCommit", &layout, &Type::Long, None, 8, Some(&same)).unwrap_err().to_string().contains("takes the record's components"));
+    }
+
+    /// A record's method made static: the previous version's receiver is built by a constructor call among the
+    /// expressions, under before/, inside the handler that skips an input a constructor rejects.
+    #[test]
+    fn builds_the_previous_versions_receiver_from_the_new_parameters() {
+        let window = RecordType { class: "net/example/Window".into(), components: vec![("lo".into(), Type::Int), ("hi".into(), Type::Int)] };
+        let params = params(&["lo".into(), "hi".into(), "x".into()], &[Type::Int, Type::Int, Type::Int]);
+        let layout = flat(&params);
+        let previous = BeforeMethod {
+            owner: "net/example/Window".into(),
+            method: "clamp".into(),
+            descriptor: "(I)I".into(),
+            params: vec![Type::Int],
+            names: vec!["x".into()],
+            arguments: Some("new Window(lo, hi), x".into()),
+            receiver: Some(window.clone()),
+            records: Vec::new(),
+            ret: Type::Int,
+            relation: None,
+        };
+        assert_eq!(previous.display("net/example/Windows"), "net.example.Window#clamp(x) on new Window(lo, hi)");
+        assert_eq!(previous.argument_types(), vec![Type::Object("net/example/Window".into()), Type::Int]);
+        let harness = generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&previous)).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(III)V").expect("check method over the parameters");
+        let insns = check.code.as_ref().unwrap().instructions().unwrap();
+        use crate::classfile::Insn;
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::New(_))).count(), 2, "the previous version's record, and the AssertionError");
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeVirtual(_))).count(), 1, "the previous version on its receiver");
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, Insn::InvokeStatic(_))).count(), 1, "the new version");
+        assert!(harness.source.contains("before.net.example.Window this_ = new before.net.example.Window(lo, hi); int x_ = x;"), "{}", harness.source);
+        assert!(harness.source.contains("try { a = this_.clamp(x_); }"), "{}", harness.source);
+        assert!(harness.source.contains("try { b = net.example.Windows.clamp(lo, hi, x); }"), "{}", harness.source);
+        // The receiver must be built, and from as many values as the record has components.
+        let flat_args = BeforeMethod { arguments: Some("lo, hi, x".into()), ..previous.clone() };
+        assert!(generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&flat_args)).unwrap_err().to_string().contains("build its receiver from the new parameters as the first argument, new Window(lo, hi)"));
+        let short = BeforeMethod { arguments: Some("new Window(lo), x".into()), ..previous.clone() };
+        assert!(generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&short)).unwrap_err().to_string().contains("Window has 2 components, 1 given"));
+        let other = BeforeMethod { arguments: Some("new Range(lo, hi), x".into()), ..previous.clone() };
+        assert!(generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&other)).unwrap_err().to_string().contains("build its receiver"));
+        let mistyped = BeforeMethod { arguments: Some("new Window(lo, hi), x > 0".into()), ..previous.clone() };
+        assert!(generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&mistyped)).unwrap_err().to_string().contains("argument 1 of clamp must be int"));
     }
 
     #[test]
@@ -1570,6 +1752,8 @@ mod tests {
             params: vec![Type::Long, Type::Short, Type::Long, Type::Short],
             names: vec!["a".into(), "na".into(), "b".into(), "nb".into()],
             arguments: Some("tsA, nodeA, tsB, nodeB + 1".into()),
+            receiver: None,
+            records: Vec::new(),
             ret: Type::Int,
             relation: None,
         };
@@ -1577,8 +1761,9 @@ mod tests {
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let check = class.method(METHOD, "(JJII)V").expect("check method");
         let code = check.code.as_ref().unwrap();
-        // The handler around the arguments' computation, and the two versions' handlers.
-        assert_eq!(code.exception_table.len(), 1 + 2 * EXCEPTIONS.len());
+        // The handlers around the arguments' computation (one per class JBMC tells apart, and Throwable), and the
+        // two versions' handlers.
+        assert_eq!(code.exception_table.len(), EXCEPTIONS.len() + 1 + 2 * EXCEPTIONS.len());
         let insns = code.instructions().unwrap();
         let calls: Vec<String> = insns
             .iter()
@@ -1620,6 +1805,8 @@ mod tests {
             params: vec![Type::Long, Type::Long, Type::Long],
             names: vec!["writtenAt".into(), "ttl".into(), "now".into()],
             arguments: None,
+            receiver: None,
+            records: Vec::new(),
             ret: Type::Boolean,
             relation: Some("previous == (result <= 0)".into()),
         };

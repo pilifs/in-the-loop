@@ -5083,6 +5083,88 @@
         "The patch changes the kernel and its test, with the test class renamed and the test of an index past the batch kept or dropped with the check. The module's property on the static function (example 032, `src/contract/properties.contract`) and its API contract are not in the patch: the property proof (`prove`) takes static methods only, so the property would have to be restated on a static entry point, a limit of the tool noted in `lib/README.md`, and the regression proof is the check this example is about."
       ],
       "source": null
+    },
+    {
+      "id": "130",
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap",
+      "title": "A backoff that gained a multiplier counts a negative attempt down to the cap",
+      "summary": "Crosscut's `Backoff` record, the retry filter's wait between attempts, gains a `multiplier` component (Spring Retry's `ExponentialBackOffPolicy` has one, 2 by default) and the doubling loop is rewritten around it, counting the attempt down to zero instead of up to it. An attempt below zero, which the old loop treated as zero and answered with the base, now counts down past zero and multiplies until the cap. The tests pass, none of them passing a negative attempt. The regression proof relates the new record to the old one by building the old `Backoff` from the new components, `new Backoff(this.baseMillis, this.capMillis)`, with the multiplier of two as the scope of what should not have changed, and finds the attempt of minus one in nine seconds.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "record-components",
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's run of this shape took 9.0 s with JBMC: the first stage, over attempts in [0:20], proves the versions equal there; the second, over [-100000:100000], finds the negative attempt. The witness is shrunk in 110 interpreter runs. The measurement on this kernel is the pipeline's.",
+        "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
+        "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
+        "A scope narrower than the multiplier, `attempt < 0`, would declare the defect intended and the proof would pass: the scope is what a reviewer approves, and a negative attempt is not what the pull request is about."
+      ],
+      "source": null
+    },
+    {
+      "id": "131",
+      "path": "examples/131-backoff-with-a-multiplier-proved-equal-to-the-doubling-record-for-a-multiplier-of-two",
+      "title": "A backoff that gained a multiplier proved equal to the doubling record for a multiplier of two",
+      "summary": "The same change as example 130, done right: the `multiplier` component is added, the loop keeps counting up and multiplies by it, and the cap is applied once after the loop instead of in every turn. The regression proof relates the three-component record to the two-component one by building the old `Backoff` from the new base and cap, and shows the delay unchanged for every base, cap and attempt when the multiplier is two, the scope of what the change was not meant to touch.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "numeric-code"
+        ],
+        "defect": [],
+        "technique": [
+          "record-components",
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's run of this shape took 16.7 s with JBMC: three stages, four properties (the assertion, the unwinding assertions of the two loops and of the shrinking copy), the loops unwound 32 times. Example 127's doubling took 5.9 s; the multiplication by a component is the difference. The measurement on this kernel is the pipeline's.",
+        "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
+        "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
+        "A test for the multiplier of three is in the patch; the proof says nothing about multipliers other than two, which are outside its scope, and the test is what covers them."
+      ],
+      "source": null
     }
   ]
 }

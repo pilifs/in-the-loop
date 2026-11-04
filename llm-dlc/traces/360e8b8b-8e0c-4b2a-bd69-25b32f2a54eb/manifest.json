@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T07:37:42.105Z",
-  "duration_seconds": 313667,
+  "ended": "2026-11-04T07:59:26.366Z",
+  "duration_seconds": 314971,
   "stats": {
-    "turns": 230,
-    "api_calls": 2474,
-    "tool_calls": 3000,
+    "turns": 234,
+    "api_calls": 2522,
+    "tool_calls": 3047,
     "tool_errors": 55,
-    "compactions": 41,
+    "compactions": 42,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 73916,
-      "output_tokens": 4958073,
-      "cache_read_input_tokens": 431968378,
-      "cache_creation_input_tokens": 10873554
+      "input_tokens": 75392,
+      "output_tokens": 5045843,
+      "cache_read_input_tokens": 438104403,
+      "cache_creation_input_tokens": 11051560
     }
   },
   "tools": {
-    "Bash": 2500,
+    "Bash": 2547,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -804,24 +804,38 @@
     {
       "index": 41,
       "started": "2026-11-04T07:21:41.690Z",
-      "ended": "2026-11-04T07:37:42.105Z",
+      "ended": "2026-11-04T07:38:06.976Z",
       "turns": 4,
-      "api_calls": 51,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 1542,
-        "output_tokens": 69484,
-        "cache_read_input_tokens": 5816690,
-        "cache_creation_input_tokens": 163220
+        "input_tokens": 1574,
+        "output_tokens": 70437,
+        "cache_read_input_tokens": 5994823,
+        "cache_creation_input_tokens": 164556
       },
-      "peak_context_tokens": 178165
+      "peak_context_tokens": 179501
+    },
+    {
+      "index": 42,
+      "started": "2026-11-04T07:39:55.147Z",
+      "ended": "2026-11-04T07:59:26.366Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 1444,
+        "output_tokens": 86817,
+        "cache_read_input_tokens": 5957892,
+        "cache_creation_input_tokens": 176670
+      },
+      "peak_context_tokens": 191615
     }
   ],
   "log": {
-    "sha256": "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188",
-    "bytes": 90192981,
-    "lines": 34555,
-    "gzip_bytes": 15353424,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188.jsonl.gz"
+    "sha256": "579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243",
+    "bytes": 91883353,
+    "lines": 35252,
+    "gzip_bytes": 15646047,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1280,6 +1294,14 @@
       "summary": "Regression proofs relate a static method to the record's method it became, and leave trivial callees as written; examples 128 and 129 on the batch commit kernel (verification pending)",
       "body": "A static method whose parameters were gathered into a record (Fowler's introduce parameter object) is now related to the record's method, or to a static method taking the record, with --before-arguments over the record's components: the harness builds the record from symbolic components in the new version only and calls the previous version with the components (harness::Slot::Record keeps an optional previous record, Layout::before_receiver chooses invokevirtual or invokestatic per side, the generated source says so), the counterexample is replayed on each side as it received the input, and a target refused for the mismatch now says which arguments to give. The reverse direction, a record's method made static, stays refused with a reason. Shared callees skip a closure of at most sixteen instructions without a loop, multiplication, division or remainder (Math.min, Math.abs): as one function in both versions such a callee only gives counterexamples that do not reproduce and a second solver run, which examples 126 and 127 paid (126 now 1.1 s instead of 1.9 s, 127 5.9 s instead of 6.2 s; their notes updated). Example 120 still shares its two refill helpers.\n\nExamples 128 and 129 on Crosscut's batch commit kernel: the static offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor. In 128 the part of the guard about the failed index, which is no component, is lost with the move and the tests pass; the proof finds offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method committing one past the batch, in 0.5 s. In 129 the check stays in the method and the two are proved equal in 0.5 s. Jobs 20261104-073659-example-128-a-batch-commit-made-the-batc and 20261104-073700-example-129-a-batch-commit-made-the-batc are queued.\n\nVerified with 103 unit tests and 47 integration tests (one unit and three integration tests new, one fallback test's helper made non-trivial so that it is still shared), clippy clean in the changed files, the release binary rebuilt and installed, both patches applied with git apply --check, and the three Crosscut trees compiled with their 45 or 46 tests passing. Documentation: lib/README.md, examples/approaches.md, examples/README.md, the verify-bytecode skill reference and the Crosscut README.",
       "log_sha256": "25c1899fb1e99255c67c30bcff2749b36676347e53d4292dc780056f44e8a188"
+    },
+    {
+      "change_id": "nkurkxxusslpkwqstyrmoznvkxuxvzmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs build the previous version's record from the new parameters: a record whose components changed, or a record's method made static, is related by a constructor call among --before-arguments; examples 130 and 131 on the backoff record gaining a multiplier (verification pending)",
+      "body": "A regression proof now relates a method of a record whose components changed (one added, removed or retyped), and a record's method that became static, to its previous version. The previous version's record is built from the new parameters by a constructor call given first among the expressions of --before-arguments, such as 'new Backoff(this.baseMillis, this.capMillis), attempt' or 'new Window(lo, hi), x', and a record among the previous version's parameters the same way. The harness builds it under before/ in the block that computes the previous version's arguments, which now has the typed handlers JBMC needs (it matches a handler by the exception's exact class), so an input the previous constructor rejects is outside the statement as before. The report reads 'behaves as the previous delayMillis(attempt) on new Backoff(this.baseMillis, this.capMillis)', a witness shows both versions as they received the input (the previous record as built), and the refusals for a record of other components or a receiver the new version lacks print the constructor call to give, with the previous version's parameter names. A record result of other components is still refused. In the library: harness::CallArg::Record, BeforeMethod.receiver and .records with expected(), argument_types() and relocated_descriptor(), parse_arguments split at top-level commas with each piece type-checked, expr::emit_record, and in equivalence.rs a layout of the previous version used to replay it and render the witness.\n\nExamples 130 and 131 are on Crosscut's retry.Backoff record, which gains an int multiplier component (Spring Retry's ExponentialBackOffPolicy has one). In 130 the doubling loop is rewritten to count the attempt down to zero, and a negative attempt, which the old loop answered with the base, now counts down to the cap: the proof finds attempt=-1 on Backoff[baseMillis=1, capMillis=2, multiplier=2] (before 1, after 2) in 9.0 s, in the second search stage, with this.multiplier != 2 as the scope of the intended change. In 131 the loop keeps counting up and applies the cap once after it; proved equal for the multiplier of two in 16.7 s with the loops unwound 32 times. Both patches apply, the three Crosscut trees compile and pass their 46 tests, and the two pipeline jobs are queued. The examples' router, approaches page, lib README, skill reference and the Crosscut README are updated; build.py renders a previousArguments that starts with a constructor call as the receiver and the call. Verified with 104 unit tests and 49 integration tests (one unit test and two integration tests new: a record that gained a component, a record's method made static with a bound that moved, and the refusals' hints), clippy with nothing new, the release binary built and installed.",
+      "log_sha256": "579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243"
     }
   ],
   "logs": {
@@ -1372,6 +1394,12 @@
       "lines": 13473,
       "gzip_bytes": 6803755,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/565fce27b9802a06c5cdac2e9a0d20dbc529a2d62730e18f8ad0165af3d6140f.jsonl.gz"
+    },
+    "579230dc1a83a8a1ce8c3e8bf080d99cc3c2acebc0bb9f2698b14d59c588c243": {
+      "bytes": 91883353,
+      "lines": 35252,
+      "gzip_bytes": 15646047,
+      "url": null
     },
     "60d86acb58f45e9afa8db5ba7027d3b3b47a4258e4be27f9ae025c1a088012bc": {
       "bytes": 8425676,

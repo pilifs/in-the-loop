@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "131",
+  "title": "A backoff that gained a multiplier proved equal to the doubling record for a multiplier of two",
+  "summary": "The same change as example 130, done right: the `multiplier` component is added, the loop keeps counting up and multiplies by it, and the cap is applied once after the loop instead of in every turn. The regression proof relates the three-component record to the two-component one by building the old `Backoff` from the new base and cap, and shows the delay unchanged for every base, cap and attempt when the multiplier is two, the scope of what the change was not meant to touch.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "resilience",
+    "numeric-code",
+    "record-components",
+    "signature-change"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+    "symbol": "net.terminalvalue.crosscut.retry.Backoff#delayMillis"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "unwind": 32
+  },
+  "change": {
+    "kind": "feature",
+    "behaviourChangeIntended": true,
+    "description": "Add a `multiplier` component to the record, at least two, and multiply by it instead of doubling: the loop runs while `i < attempt && delay < capMillis` as before, with `delay *= multiplier` in its body, and returns `Math.min(delay, capMillis)`. The tests are updated for the third component and one is added for a multiplier of three.",
+    "patch": "change.patch",
+    "intendedInputs": "this.multiplier != 2",
+    "previousArguments": "new Backoff(this.baseMillis, this.capMillis), attempt"
+  },
+  "risk": "None: the proof is over every base, cap and attempt that the old record's constructor admits, with the multiplier of two. What is at stake is the review of a loop whose cap moved from inside to after it: the delay may now exceed the cap for one turn before the minimum is taken, and the proof is that the result is the same.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The harness takes the three components and the attempt as symbolic inputs, builds the new record from them and the old one from the base and cap, skips what either constructor rejects, and asserts that the two delays are the same `long` wherever the multiplier is two. The old loop stops when the delay reaches the cap, which `Math.min` keeps it at; the new one stops at the same turn with the delay once multiplied past the cap, and the minimum after the loop brings it back. JBMC proves it with the loops unwound 32 times, which covers their at most 27 turns, in 17 s: the multiplication by a symbolic `int` is what the doubling of example 127 did not cost.",
+  "resolution": "Merge. The proof is the review of the moved cap and of the new component.",
+  "notes": [
+    "The library's run of this shape took 16.7 s with JBMC: three stages, four properties (the assertion, the unwinding assertions of the two loops and of the shrinking copy), the loops unwound 32 times. Example 127's doubling took 5.9 s; the multiplication by a component is the difference. The measurement on this kernel is the pipeline's.",
+    "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
+    "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
+    "A test for the multiplier of three is in the patch; the proof says nothing about multipliers other than two, which are outside its scope, and the test is what covers them."
+  ],
+  "provenance": "Constructed as the correct form of example 130's change, on the same kernel of Crosscut, to show a regression proof across a change of a record's components passing.",
+  "references": [
+    {
+      "title": "Spring Retry: ExponentialBackOffPolicy, the initial interval multiplied up to the maximum (multiplier 2 by default)",
+      "url": "https://docs.spring.io/spring-retry/docs/api/current/org/springframework/retry/backoff/ExponentialBackOffPolicy.html"
+    },
+    {
+      "title": "Resilience4j: IntervalFunction.ofExponentialBackoff(initialInterval, multiplier)",
+      "url": "https://resilience4j.readme.io/docs/retry"
+    },
+    {
+      "title": "Java Language Specification §8.10: record classes, their components and canonical constructor",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}
