@@ -1,0 +1,28 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+index 8214e20..ef282b5 100644
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+@@ -26,7 +26,8 @@ public record Window(long startNanos, long count) {
+         if (windowNanos <= 0 || nowNanos < startNanos) {
+             throw new IllegalArgumentException("the window must be positive and time must not go back");
+         }
+-        long start = nowNanos - nowNanos % windowNanos;
++        // Windows are configured as powers of two, so the window's start is the reading with the low bits cleared.
++        long start = nowNanos & -windowNanos;
+         return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);
+     }
+ }
+diff --git a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
+index 56a7d08..b0bc75f 100644
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/ratelimit/WindowTest.java
+@@ -6,7 +6,8 @@ public final class WindowTest {
+ 
+     private WindowTest() {}
+ 
+-    private static final long WINDOW = 1_000_000_000L;
++    /** Windows are powers of two: about a second. */
++    private static final long WINDOW = 1L << 30;
+ 
+     public static void countsRequestsInTheSameWindow() {
+         Window window = new Window(0, 0).counted(100, WINDOW).counted(200, WINDOW).counted(WINDOW - 1, WINDOW);

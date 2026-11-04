@@ -189,6 +189,12 @@ request counter, [134](134-a-window-counter-that-advances-by-one-window-leaves-i
 record, given a previous window's count, advancing by one window where the request fell two or more ahead, and
 [135](135-a-window-counter-with-the-previous-count-proved-equal-on-the-start-and-the-count/README.md) proves the start and the count of the
 counter with the previous window's count equal to the fixed window's, on every input.
+The tool's own checker leaves a division to the solver under what holds of every division and builds its circuit only where a model got it
+wrong, and does not wait for the solver on a branch side it cannot decide in the time its calls took so far: on the same counter,
+[136](136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two/README.md) finds the window's start
+aligned by a mask opening a window per request on a window of three, and proves the mask unchanged on power-of-two windows when that is the
+scope, and [137](137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal/README.md) proves the
+mask on power-of-two windows with the remainder elsewhere equal on every input in half a second, where JBMC does not finish in a minute.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

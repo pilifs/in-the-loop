@@ -3,8 +3,11 @@
 //! every branch which sides are feasible and, when a path reaches the harness's `AssertionError`, what input takes
 //! it there. Each path carries a model of its condition (the solver's answer when it was split off), so the side
 //! of a branch that model takes is known feasible and the solver is asked once per branch, about the other side,
-//! and not at all about a condition the path has taken before. Loops are unwound up to a bound, as JBMC's are,
-//! and a path that needs more is no verdict.
+//! and not at all about a condition the path has taken before. That one question is given as long as the solver's
+//! calls so far took together, and a side undecided by then waits until the decided paths are done, so a violation
+//! is not held up by an infeasible side that is hard to refute. A division is left to the solver under what holds
+//! of every division and built as a circuit only where a model got it wrong ([`bits::Blaster::sdivrem_lazy`]).
+//! Loops are unwound up to a bound, as JBMC's are, and a path that needs more is no verdict.
 //!
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
 //! `short`, `byte`, `char` and `boolean`, straight-line and branching arithmetic, calls into the application's own
@@ -65,6 +68,10 @@ pub struct Outcome {
     pub evaluating: f64,
     pub clauses: u64,
     pub variables: i32,
+    /// How many divisions were left to the solver under the cheap facts, and how many of them had their circuit
+    /// built because the solver got one wrong ([`bits::Blaster::sdivrem_lazy`]).
+    pub divisions: u64,
+    pub refined: u64,
     pub seconds: f64,
     /// The solver, for the report.
     pub solver: String,
@@ -88,7 +95,7 @@ impl Outcome {
 
     /// One line on what the run did, for the log.
     pub fn summary(&self) -> String {
-        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
 }
 
@@ -160,6 +167,10 @@ struct Path {
     /// An input that takes the path: the solver's answer when the path was split off, or every input zero for
     /// the first. The side of a branch it takes is feasible without asking the solver.
     model: Model,
+    /// Whether the path is known feasible: a twin split off at a branch the solver did not decide within its
+    /// probe's budget keeps its parent's model, which takes the other side, and waits in `Engine::deferred`
+    /// until every decided path is done, when the solver is asked about it with all the time left.
+    undecided: bool,
     objects: Vec<Obj>,
     back_edges: HashMap<(String, String, u32), u32>,
 }
@@ -190,6 +201,8 @@ enum Sides {
     Both { model_takes_then: bool, other: Model },
     Then,
     Else,
+    /// The side the path's model takes, the other undecided: the solver did not answer within the probe's budget.
+    Undecided { model_takes_then: bool },
 }
 
 struct Engine<'a> {
@@ -197,6 +210,8 @@ struct Engine<'a> {
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
+    /// The paths the solver did not decide in time, taken up when `pending` is empty.
+    deferred: Vec<Path>,
     unwind: u32,
     deadline: Instant,
     max_paths: u64,
@@ -226,6 +241,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         b: Blaster::new(),
         codes: HashMap::new(),
         pending: Vec::new(),
+        deferred: Vec::new(),
         unwind: options.unwind,
         deadline: started + options.timeout,
         max_paths: options.max_paths,
@@ -246,6 +262,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         evaluating: engine.b.evaluating.as_secs_f64(),
         clauses: engine.b.clauses,
         variables: engine.b.variables(),
+        divisions: engine.b.divisions(),
+        refined: engine.b.refined,
         seconds: started.elapsed().as_secs_f64(),
         solver: solver.clone(),
     };
@@ -288,7 +306,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), model: Model::default(), objects: Vec::new(), back_edges: HashMap::new() };
+    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond: Vec::new(), model: Model::default(), undecided: false, objects: Vec::new(), back_edges: HashMap::new() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -301,7 +319,12 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         let stage = STAGES.get(stage).map(|(lo, hi)| format!("[{lo}:{hi}]"));
         outcome(engine, Verdict::Violation, raw_inputs, stage, None)
     };
-    while let Some(path) = engine.pending.pop() {
+    loop {
+        let path = match engine.next_path() {
+            Ok(Some(path)) => path,
+            Ok(None) => break,
+            Err(stop) => return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(stop_text(&stop))) }),
+        };
         engine.paths += 1;
         if engine.paths > engine.max_paths {
             return Ok(if best.is_some() { violation(&engine, best) } else { outcome(&engine, Verdict::Unverifiable, BTreeMap::new(), None, Some(format!("more than {} paths; the budget is spent", engine.max_paths))) });
@@ -417,12 +440,11 @@ impl<'a> Engine<'a> {
         let model_takes_then = self.b.holds(&mut path.model, c);
         let mut assumptions = path.cond.clone();
         assumptions.push(if model_takes_then { -c } else { c });
-        if self.solve(&assumptions)? {
-            Ok(Sides::Both { model_takes_then, other: self.b.snapshot() })
-        } else if model_takes_then {
-            Ok(Sides::Then)
-        } else {
-            Ok(Sides::Else)
+        match self.probe(&assumptions)? {
+            Some(true) => Ok(Sides::Both { model_takes_then, other: self.b.snapshot() }),
+            None => Ok(Sides::Undecided { model_takes_then }),
+            Some(false) if model_takes_then => Ok(Sides::Then),
+            Some(false) => Ok(Sides::Else),
         }
     }
 
@@ -438,6 +460,26 @@ impl<'a> Engine<'a> {
         twin.cond.push(if twin_takes_then { c } else { -c });
         path.cond.push(if twin_takes_then { -c } else { c });
         twin
+    }
+
+    /// Splits the path on `c` when the side its model does not take is undecided: the path goes on with its
+    /// side, and the twin returned takes the other, undecided, with the path's model (see `Path::undecided`).
+    fn split_undecided(&self, path: &mut Path, c: Lit, model_takes_then: bool) -> Path {
+        let mut twin = path.clone();
+        twin.undecided = true;
+        twin.cond.push(if model_takes_then { -c } else { c });
+        path.cond.push(if model_takes_then { c } else { -c });
+        twin
+    }
+
+    /// Decides an undecided twin now, with all the time left, where it cannot wait: `None` when it is infeasible.
+    fn settle(&mut self, mut twin: Path) -> Result<Option<Path>, Stop> {
+        if !self.solve(&twin.cond)? {
+            return Ok(None);
+        }
+        twin.model = self.b.snapshot();
+        twin.undecided = false;
+        Ok(Some(twin))
     }
 
     /// The literal of stage `i`: every parameter within its range (a boolean is in every range).
@@ -496,14 +538,68 @@ impl<'a> Engine<'a> {
     }
 
     /// Asks the solver, which is given the time left until the deadline (the search for a smaller witness after
-    /// a violation shortens it, and one call must not run past it).
+    /// a violation shortens it, and one call must not run past it). A model is only taken when it is a real one:
+    /// while the solver's choice for a division left to it is not the real division of the operands it chose, the
+    /// circuit of that division is built and the solver asked again, so a `true` means an execution exists and
+    /// its model (the parameters' values, the sides of later branches) is one.
     fn solve(&mut self, assumptions: &[Lit]) -> Result<bool, Stop> {
-        let now = Instant::now();
-        if now > self.deadline {
-            return Err(Stop::Budget("the engine did not finish within the time limit".into()));
+        let deadline = self.deadline;
+        self.solve_until(assumptions, deadline)?.ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
+    }
+
+    /// Asks the solver about the other side of a branch, for as long as all the solver calls so far took
+    /// together, at least a second: `None` when it did not answer, and the side is left undecided rather than
+    /// waited for, since an infeasible side can be as hard to refute as the whole proof (that a value is not a
+    /// multiple of another, say) while the violation on the feasible side is found at once, as JBMC finds it
+    /// without ever deciding the side. What is undecided is decided once the decided paths are done, with all the
+    /// time left, so a proof loses at most the probes' time.
+    fn probe(&mut self, assumptions: &[Lit]) -> Result<Option<bool>, Stop> {
+        let budget = self.b.solving.max(Duration::from_secs(1));
+        let until = self.deadline.min(Instant::now() + budget);
+        self.solve_until(assumptions, until)
+    }
+
+    fn solve_until(&mut self, assumptions: &[Lit], until: Instant) -> Result<Option<bool>, Stop> {
+        loop {
+            let now = Instant::now();
+            if now > self.deadline {
+                return Err(Stop::Budget("the engine did not finish within the time limit".into()));
+            }
+            if now > until {
+                return Ok(None);
+            }
+            self.b.set_timeout((until - now).as_secs_f32());
+            match self.b.solve_with(assumptions) {
+                None => return Ok(None),
+                Some(false) => return Ok(false).map(Some),
+                Some(true) => match self.b.wrong_division() {
+                    None => return Ok(Some(true)),
+                    Some(i) => self.b.refine_division(i),
+                },
+            }
         }
-        self.b.set_timeout((self.deadline - now).as_secs_f32());
-        self.b.solve_with(assumptions).ok_or_else(|| Stop::Budget("the solver did not finish within the time limit".into()))
+    }
+
+    /// The next path to run: a decided one from `pending`, or, when there is none, a deferred one the solver now
+    /// decides with all the time left (an infeasible one is dropped). `None` when every path is done.
+    fn next_path(&mut self) -> Result<Option<Path>, Stop> {
+        loop {
+            if let Some(path) = self.pending.pop() {
+                if path.undecided {
+                    self.deferred.push(path);
+                    continue;
+                }
+                return Ok(Some(path));
+            }
+            let Some(mut path) = self.deferred.pop() else {
+                return Ok(None);
+            };
+            if self.solve(&path.cond)? {
+                path.model = self.b.snapshot();
+                path.undecided = false;
+                return Ok(Some(path));
+            }
+        }
     }
 
     /// Takes the branch on `c`: the path goes on with `c` and jumps to `then`, or with `¬c` and jumps to `else_`,
@@ -523,6 +619,12 @@ impl<'a> Engine<'a> {
             Sides::Else => {
                 path.cond.push(-c);
                 path.frames.last_mut().expect("a frame").at = else_;
+            }
+            Sides::Undecided { model_takes_then } => {
+                let mut twin = self.split_undecided(path, c, model_takes_then);
+                twin.frames.last_mut().expect("a frame").at = if model_takes_then { else_ } else { then };
+                self.pending.push(twin);
+                path.frames.last_mut().expect("a frame").at = if model_takes_then { then } else { else_ };
             }
         }
         Ok(None)
@@ -545,6 +647,25 @@ impl<'a> Engine<'a> {
             }
             Sides::Else => {
                 path.cond.push(-c);
+                self.push(path, value);
+                self.advance(path);
+                Ok(None)
+            }
+            Sides::Undecided { model_takes_then: true } => {
+                let mut twin = self.split_undecided(path, c, true);
+                self.push(&mut twin, value);
+                self.advance(&mut twin);
+                self.pending.push(twin);
+                self.raise(path, exception)
+            }
+            Sides::Undecided { model_takes_then: false } => {
+                // The throwing side cannot wait undecided: whether the exception leaves the harness is judged as
+                // it is thrown.
+                let twin = self.split_undecided(path, c, false);
+                if let Some(mut twin) = self.settle(twin)? {
+                    self.raise(&mut twin, exception)?;
+                    self.pending.push(twin);
+                }
                 self.push(path, value);
                 self.advance(path);
                 Ok(None)
@@ -1136,6 +1257,28 @@ impl<'a> Engine<'a> {
                     path.frames.last_mut().expect("a frame").at = fall;
                     return Ok(None);
                 }
+                Sides::Undecided { model_takes_then: true } => {
+                    let mut twin = self.split_undecided(path, c, true);
+                    twin.frames.last_mut().expect("a frame").at = fall;
+                    self.pending.push(twin);
+                    return self.jump(path, target);
+                }
+                Sides::Undecided { model_takes_then: false } => {
+                    let mut twin = self.split_undecided(path, c, false);
+                    if let Some(end) = self.jump(&mut twin, target)? {
+                        // The twin hit the unwinding bound, which counts only if it is feasible.
+                        if !matches!(end, End::Infeasible) {
+                            if let Some(twin) = self.settle(twin)? {
+                                *path = twin;
+                                return Ok(Some(end));
+                            }
+                        }
+                    } else {
+                        self.pending.push(twin);
+                    }
+                    path.frames.last_mut().expect("a frame").at = fall;
+                    return Ok(None);
+                }
             }
         }
         self.branch(path, c, then, fall)
@@ -1165,6 +1308,26 @@ impl<'a> Engine<'a> {
                     return self.jump(path, target);
                 }
                 Sides::Else => path.cond.push(-c),
+                Sides::Undecided { model_takes_then: true } => {
+                    // The twin takes the other cases: it runs the switch again, with this case decided against.
+                    let mut twin = self.split_undecided(path, c, true);
+                    twin.frames.last_mut().expect("a frame").stack.push(Val::I(key.clone()));
+                    self.pending.push(twin);
+                    return self.jump(path, target);
+                }
+                Sides::Undecided { model_takes_then: false } => {
+                    let mut twin = self.split_undecided(path, c, false);
+                    if let Some(end) = self.jump(&mut twin, target)? {
+                        if !matches!(end, End::Infeasible) {
+                            if let Some(twin) = self.settle(twin)? {
+                                *path = twin;
+                                return Ok(Some(end));
+                            }
+                        }
+                    } else {
+                        self.pending.push(twin);
+                    }
+                }
             }
         }
         self.jump(path, default)
@@ -1193,7 +1356,7 @@ impl<'a> Engine<'a> {
             ArithOp::Mul => self.b.mul(&x, &y),
             ArithOp::Div | ArithOp::Rem => {
                 let zero = self.b.is_zero(&y);
-                let (q, r) = self.b.sdivrem(&x, &y);
+                let (q, r) = self.b.sdivrem_lazy(&x, &y);
                 let value = wrap(if op == ArithOp::Div { q } else { r });
                 return self.branch_throw(path, zero, "java/lang/ArithmeticException", value);
             }
@@ -1298,7 +1461,7 @@ impl<'a> Engine<'a> {
                 let width = a[0].len();
                 let y = if a[1].len() == width { a[1].clone() } else { self.b.sext(&a[1], width) };
                 let zero = self.b.is_zero(&y);
-                let (q, r) = self.b.sdivrem(&a[0], &y);
+                let (q, r) = self.b.sdivrem_lazy(&a[0], &y);
                 let inexact = -self.b.is_zero(&r);
                 let differ = self.b.xor(self.b.negative(&a[0]), self.b.negative(&y));
                 let adjust = self.b.and(inexact, differ);
@@ -1624,6 +1787,47 @@ mod tests {
         let out = check(&cp, "Check", "check", &Options { unwind: 4, ..Options::default() }).unwrap();
         assert_eq!(out.verdict, Verdict::Unverifiable, "{:?}", out.problem);
         assert!(out.problem.unwrap().contains("not fully unwound"));
+    }
+
+    #[test]
+    fn a_division_is_built_in_full_only_when_the_solver_gets_it_wrong() {
+        // x % y < y for x >= 0 and y > 0: what holds of every remainder proves it, with no division circuit.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 0);
+            code.if_zero(Cond::Lt, ok);
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Le, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x70); // irem
+            code.load(Kind::Int, 1);
+            code.if_icmp(Cond::Ge, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.divisions, out.refined), (1, 0), "{}", out.summary());
+
+        // x / y == 3 claimed impossible: refuted with an input whose real quotient is 3, the circuit built if the
+        // solver's first guess was not a real division.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.iconst(3);
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        let (x, y): (i32, i32) = (out.raw_inputs[&0].parse().unwrap(), out.raw_inputs[&1].parse().unwrap());
+        assert_eq!(x.wrapping_div(y), 3, "{x} / {y}");
+        assert!(out.refined <= 1, "{}", out.summary());
+        assert!(out.summary().contains(&format!("{} of 1 divisions built in full", out.refined)));
     }
 
     #[test]

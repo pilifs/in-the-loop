@@ -4715,7 +4715,7 @@
         "The helpers are shared because both versions call them, their bytecode is identical in both (constant pool references resolved, so a renumbered pool does not count), and they are pure functions of primitives. A helper that reads a field, takes an array, or calls into the JDK beyond its arithmetic is proved as written, as before.",
         "The stub throws what the helper can throw, here `ArithmeticException` from the division, chosen arbitrarily per new arguments: a version that catches it where the other does not is still found to differ (the library's tests cover that case).",
         "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids.",
-        "Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls: in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker."
+        "Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls (0.3 s since the checker leaves a division to the solver under cheap facts and builds its circuit only where a model got it wrong: here never, `0 of 1 divisions built in full` in its log): in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker."
       ],
       "source": null
     },
@@ -5293,7 +5293,7 @@
         "The tests poll consecutive windows, where advancing by one window and realigning to the clock agree; the defect needs a gap of two windows or more, or a window length that does not divide the clock reading the counter started at.",
         "A counter left behind the clock is not only a wrong estimate: each later request finds `nowNanos - startNanos >= windowNanos` again and opens another window at one, so the client is never refused, and the carried count is the one from before its silence.",
         "The scope's guard matters: `this.startNanos % windowNanos != 0` alone divides by zero where the window is zero, in the scope expression itself, before either version runs. JBMC then reports a counterexample with `windowNanos=0` that does not reproduce (both versions throw `IllegalArgumentException` there), and the tool's own checker refuses the harness as outside its fragment, an uncaught `ArithmeticException` leaving it. With `windowNanos > 0 &&` first, the remainder is only taken where it is defined.",
-        "JBMC finds the witness in a fraction of a second. The tool's own checker does not: without the scope it finds the unaligned-start witness in about 13 s (5 paths, 13 solver calls, nearly all of it in the SAT solver on the two 64-bit remainders), and with the scope, whose `this.startNanos % windowNanos` is a third remainder over other operands, it does not finish within a minute. So this example runs under JBMC, and 135, which JBMC does not finish within a minute, under the checker: neither engine is the faster one on both."
+        "JBMC finds the witness in a fraction of a second. When this example was written the tool's own checker did not: without the scope it found the unaligned-start witness in about 13 s (5 paths, 13 solver calls, nearly all of it in the SAT solver on the two 64-bit remainders), and with the scope, whose `this.startNanos % windowNanos` is a third remainder over other operands, it did not finish within two minutes. The time went into one solver call: refuting the side of `start == startNanos` that the scope makes infeasible, which is proving that one value is not a multiple of another through two divider circuits, something JBMC's one formula never has to do. Since then the checker asks about a branch's other side only for as long as its calls so far took (at least a second) and leaves an undecided side for after the decided paths, and it leaves a division to the solver under cheap facts, building the circuit only where a model got it wrong: it finds this example's witness under the scope in 2.4 s (5 paths, 16 solver calls, both remainders built in full), `counted(this=Window[startNanos=0, count=16, previousCount=16], nowNanos=16, windowNanos=8)` shrunk to the one above. The example still names JBMC, which is faster here, where 135 names the checker."
       ],
       "source": null
     },
@@ -5335,8 +5335,94 @@
       "notes": [
         "No scope: the relation holds on every input, including an unaligned start and time or window values the methods refuse, since both versions throw for the same inputs (a non-positive window, a reading before the start, a count that overflows into the constructor's check) and the start and the count are computed the same way. The checker proves it without a scope, where 134 needs one to show the telling witness.",
         "The relation names the components the two records share, `previous.startNanos == result.startNanos && previous.count == result.count`; `result.previousCount` is a name it could use, `previous.previousCount` is not, and the tool says so. Without a relation the tool refuses with `the result's components changed: Window(startNanos: long, count: long) before, Window(startNanos: long, count: long, previousCount: long) now` and proposes this very expression, the equalities of the components the records share by name and type.",
-        "Both versions compute `nowNanos % windowNanos` on the same inputs, so in the tool's own checker the two 64-bit remainders are one circuit (as 120's divisions are, see its notes), and the proof is 9 paths and 10 solver calls. Still it takes about 12 s, nearly all of it in CaDiCaL proving the paths infeasible with the remainder's circuit in them (the release build is no faster than the debug one: the time is the solver's). JBMC, with its default solver, did not finish the same harness within 60 s, which is why the example names the checker (`approach.engine`: native).",
+        "Both versions compute `nowNanos % windowNanos` on the same inputs, so in the tool's own checker the two 64-bit remainders are one circuit (as 120's divisions are, see its notes), and the proof is 9 paths and 10 solver calls. When this example was written it still took about 12 s, nearly all of it in CaDiCaL proving the paths infeasible with the remainder's circuit in them (the release build is no faster than the debug one: the time is the solver's). Since then the checker leaves a division to the solver as bits under what holds of every division (the remainder is smaller than the divisor and takes the dividend's sign, a division by one is exact, a power of two divides by masking) and builds the circuit only where a model got it wrong: the same proof takes 0.3 s, 11 solver calls, the circuit built once, the facts being what the infeasibility of the paths rests on. JBMC, with its default solver, did not finish the same harness within 60 s, nor with its arithmetic refinement (`--refine-arithmetic`) within 90 s, which is why the example names the checker (`approach.engine`: native).",
         "The statement the harness prints reads the relation as Java, `previous.startNanos() == result.startNanos() && previous.count() == result.count()`, with `before.net.terminalvalue.crosscut.ratelimit.Window previous = a; net.terminalvalue.crosscut.ratelimit.Window result = b;` before it."
+      ],
+      "source": null
+    },
+    {
+      "id": "136",
+      "path": "examples/136-a-window-start-aligned-by-masking-opens-a-window-per-request-unless-the-window-is-a-power-of-two",
+      "title": "A window start aligned by masking opens a window per request unless the window is a power of two",
+      "summary": "Crosscut's `Window` record, the fixed-window request counter a rate-limiting filter keeps per client, aligns a window's start to the clock with a remainder, `nowNanos - nowNanos % windowNanos`. A rewrite clears the reading's low bits instead, `nowNanos & -windowNanos`, which is the same alignment when the window is a power of two, and the tests are changed to one (`1L << 30`, about a second). The filter is configured in seconds: with a window of a billion nanoseconds the mask is not the alignment, every request lands in a window of its own, and the count never passes one, so no client is ever refused. The regression proof finds it on the smallest window that is not a power of two, in a fraction of a second with either engine, and proves the rewrite unchanged where the window is a power of two when that is stated as the scope.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "record-components",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The witness is the smallest counterexample: a window of three, a reading of one, an empty counter at the epoch. `1 & -3` is `1 & ...11111101`, which is 1, so the rewrite opens a window at nanosecond one where the old method, `1 - 1 % 3`, keeps the window at zero. Both engines find it searching inputs in [0:20] first, the own checker as `Window[startNanos=16, count=20], nowNanos=20, windowNanos=20` shrunk in 41 interpreter runs, JBMC as `Window[startNanos=18, count=0], nowNanos=18, windowNanos=17` shrunk in 22.",
+        "With the scope `(windowNanos & (windowNanos - 1)) != 0`, the intended-change expression naming the windows the rewrite is allowed to differ on, both engines prove the rewrite unchanged on every power-of-two window: the own checker in 0.3 s, JBMC in 1.6 s. The scope is the assumption the comment makes, turned into something a reviewer approves or refuses; the filter's configuration in seconds refuses it.",
+        "The tool's own checker leaves a division to the solver under what holds of every division, and one of those facts is that a power of two divides a non-negative dividend with the remainder `dividend & (divisor - 1)`, so the scoped proof is bit-level reasoning about a mask and a subtraction, no divider circuit needed; the unscoped violation needs the real remainder of the values the solver chose, and the log (`bmc.log` in the work directory) records the one division built in full. Example 137 is the same rewrite with the remainder kept for the other windows.",
+        "The tests pass because they were changed with the code: `WINDOW` became `1L << 30`, about 1.07 s, with a comment that windows are powers of two. A test with the filter's actual window of a second (`1_000_000_000L`, which is not a power of two) fails on the first request after the epoch.",
+        "The consequence is the opposite of 134's: there a quiet client was never refused because its window lagged the clock; here no client is ever refused, since every request is the first of its own window. Both are counts that never reach the limit, and both pass tests that poll windows of the tests' own length."
+      ],
+      "source": null
+    },
+    {
+      "id": "137",
+      "path": "examples/137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal",
+      "title": "A window start aligned by a mask on power-of-two windows and by the remainder elsewhere proved equal",
+      "summary": "The same rewrite of Crosscut's `Window` counter done right: a window that is a power of two aligns its start by clearing the reading's low bits, `nowNanos & -windowNanos`, the fast path for the filter's default windows, and any other window by the remainder as before. The regression proof shows the counter unchanged on every counter, reading and window: the tool's own checker in 0.5 s, the division left to the solver under the facts of every division, among them that a power of two divides by masking; JBMC did not finish the same harness within a minute.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "record-components",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "No scope: the proof covers every input, including windows that are not powers of two, where both versions take the remainder, and the inputs both versions refuse (a non-positive window, a reading before the start, a count that overflows into the constructor's check), where both throw `IllegalArgumentException`.",
+        "The tool's own checker leaves `nowNanos % windowNanos` to the solver as bits under what holds of every division: the remainder is smaller than the divisor and takes the dividend's sign, a division by one is exact, and a power of two divides a non-negative dividend with the remainder `dividend & (divisor - 1)`. On the masking path that last fact is what relates the old start to the new; on the other path both versions use the same remainder bits. The circuit of the division is built only when the solver's model of a branch side gets the remainder wrong, once here, and the log (`bmc.log` in the work directory) says `1 of 1 divisions built in full`. Before the facts, the checker took 12 s on 135's one remainder and did not finish 134's scoped harness in two minutes.",
+        "The other side of a branch is asked of the solver only for as long as its calls so far took together, at least a second; a side it has not refuted by then is explored once the decided paths are done, with the time left. A proof with an infeasible side that is hard to refute (that a value is not a multiple of another) loses at most the probe's time; a violation on the feasible side is found without waiting, which is how JBMC's one formula finds 134's.",
+        "JBMC, with its default solver, did not finish the same harness within 60 s, nor 135's with its own arithmetic refinement (`--refine-arithmetic`); the mask and the remainder in one formula over 64-bit values are what it struggles with, where the checker's facts settle the mask side without the divider. A rewrite to `nowNanos / windowNanos * windowNanos`, the divide-and-multiply form of the same alignment, neither engine proves within a minute: it rests on the identity of a 64-bit division and multiplication (example 133's last note), which the facts do not include."
       ],
       "source": null
     }
