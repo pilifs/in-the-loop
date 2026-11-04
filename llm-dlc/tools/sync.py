@@ -1558,16 +1558,35 @@ def turn_spans(sid: str, n: int, turn: list[dict], m: dict) -> list[dict]:
     return spans
 
 
-def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool) -> int:
+def langfuse_state(sid: str) -> dict:
+    """What has been sent of a session: "exported", the prompt uuids of the turns sent; "complete",
+    the log found to have nothing more to send; "hook_cursor", where the Stop hook reads from."""
+    try:
+        state = json.loads((STATE / f"{sid}.json").read_text())
+    except (OSError, ValueError):
+        return {"exported": []}
+    return state if isinstance(state, dict) and isinstance(state.get("exported"), list) else {"exported": []}
+
+
+def save_langfuse_state(sid: str, state: dict) -> None:
+    STATE.mkdir(parents=True, exist_ok=True)
+    path = STATE / f"{sid}.json"
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(state))
+    tmp.replace(path)
+
+
+def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool, first_turn: int = 1) -> int:
+    """Send the turns of entries not sent yet. first_turn: the number of the first turn in entries,
+    when they are the end of a transcript."""
     if (config := langfuse_config()) is None:
         return 0
     host, pk, sk = config
-    state_file = STATE / f"{sid}.json"
-    done = set(json.loads(state_file.read_text())["exported"]) if state_file.exists() else set()
+    done = set(langfuse_state(sid)["exported"])
     turns = turns_of(entries)
     if live:  # the last turn may still be running; the Stop hook exports it when it ends
         turns = turns[:-1]
-    pending = [(n, t) for n, t in enumerate(turns, 1) if t[0]["uuid"] not in done]
+    pending = [(n, t) for n, t in enumerate(turns, first_turn) if t[0]["uuid"] not in done]
     if not pending:
         return 0
     spans = [s for n, t in pending for s in turn_spans(sid, n, t, m)]
@@ -1580,8 +1599,9 @@ def export_langfuse(sid: str, entries: list[dict], m: dict, live: bool) -> int:
     perf.count("network requests langfuse")
     with urllib.request.urlopen(req, timeout=15) as r:
         r.read()
-    STATE.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(json.dumps({"exported": sorted(done | {t[0]["uuid"] for _, t in pending})}))
+    state = langfuse_state(sid)  # read again: keep what else it records
+    state["exported"] = sorted(set(state["exported"]) | done | {t[0]["uuid"] for _, t in pending})
+    save_langfuse_state(sid, state)
     return len(pending)
 
 
@@ -1778,11 +1798,9 @@ def langfuse_send(sid: str, live: bool | None = None) -> None:
         return
     live = m.get("status") != "ended" if live is None else live
     export_langfuse(sid, read_jsonl(data), m, live=live)
-    state_file = STATE / f"{sid}.json"
-    state = json.loads(state_file.read_text()) if state_file.exists() else {"exported": []}
+    state = langfuse_state(sid)
     state["complete"] = m["log"]["sha256"]  # this log has nothing more to send (a live one keeps its last turn)
-    STATE.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(json.dumps(state))
+    save_langfuse_state(sid, state)
 
 
 def cmd_langfuse(args: list[str]) -> int:
@@ -1808,6 +1826,77 @@ def cmd_langfuse(args: list[str]) -> int:
     return 0
 
 
+_MAY_BREAK = re.compile(rb"[\r\x0b\x0c\x1c-\x1e\x80-\xff]")
+
+
+def lines_in(raw: bytes) -> int:
+    """len(decoded(raw).splitlines()): how many lines Rules.__call__ reads, and so writes, for these
+    bytes of a transcript, cut after a newline. Bytes without a carriage return, another ASCII line
+    break or a non-ASCII byte decode to themselves in any ASCII-compatible encoding."""
+    if not _MAY_BREAK.search(raw):
+        return raw.count(b"\n") + (not raw.endswith(b"\n") and bool(raw))
+    return len(decoded(raw).splitlines())
+
+
+def hook_export(transcript: Path, redact: Redactor) -> int:
+    """Send a transcript's finished turns, reading it from the hook's cursor: the start of the first
+    turn not sent yet, or of the unfinished last line when every turn was sent. Turns before it are
+    never sent again, so it is enough to redact and parse what follows it. The cursor is used only
+    when the transcript's bytes before it have the recorded SHA-256 under the same rules and tools,
+    so a replaced or truncated transcript is read whole, as is every one under --full
+    (LLM_TRACES_FULL=1). It records the number of turns before it and the last title there, which
+    the turns after it are numbered and named by. Without a cursor, the log `sync` last made of the
+    transcript is reused (redacted_incrementally; the cache is not saved). The cursor moves only
+    after a send succeeds, and over whole lines of the transcript: one that the decoder or the
+    redactor splits in two (a carriage return, a raw U+2028) is read as the lines it gives."""
+    sid, fingerprint = transcript.stem, redact.fingerprint()
+    raw = transcript.read_bytes()
+    state, start, turns_before, title = langfuse_state(sid), 0, 0, None
+    cursor = state.get("hook_cursor")
+    if (isinstance(cursor, dict) and not full_audit([]) and cursor.get("fingerprint") == fingerprint
+            and 0 < cursor.get("source_bytes", -1) <= len(raw)
+            and sha256(memoryview(raw)[:cursor["source_bytes"]]) == cursor.get("source_sha256")):
+        start, turns_before, title = cursor["source_bytes"], cursor["turns"], cursor["title"]
+        perf.count("transcript bytes not read again (hook cursor)", start)
+    with perf.phase("redact"):
+        if start:
+            log = redact(decoded(raw[start:]))
+        else:
+            log = redacted_incrementally(raw, sid, sid, redact, None if full_audit([]) else transcript_cache(redact))
+    perf.count("transcript bytes redacted (hook)", len(raw) - start)
+    raw_lines = raw[start:].split(b"\n")
+    counts = [lines_in(line + b"\n") for line in raw_lines[:-1]] + [lines_in(raw_lines[-1])]
+    log_lines = log.split(b"\n")[:-1]  # Rules.__call__ ends every line it writes with a newline
+    if sum(counts) != len(log_lines):  # never, as the redactor works: read it all, move no cursor
+        counts, raw_lines = [], [b""]
+        lines = [read_jsonl(log)]
+    else:
+        at = [0]
+        for n in counts:
+            at.append(at[-1] + n)
+        lines = [read_jsonl(b"\n".join(log_lines[a:b])) for a, b in zip(at, at[1:])]  # read_jsonl(log), by raw line
+    entries = [e for found in lines for e in found]
+    for e in entries:
+        if e.get("type") == "ai-title":
+            title = e.get("aiTitle") or title
+    m = {**load_manifest(sid), "title": title}
+    sent = export_langfuse(sid, entries, m, live=False, first_turn=turns_before + 1)
+    done = set(langfuse_state(sid)["exported"])
+    offset, title = start, cursor["title"] if start else None
+    for raw_line, found in zip(raw_lines[:-1], lines):  # the last is unfinished, or empty
+        if any(is_prompt(e) and e.get("uuid") not in done for e in found):
+            break
+        turns_before += sum(1 for e in found if is_prompt(e))
+        title = next((e.get("aiTitle") for e in reversed(found) if e.get("type") == "ai-title" and e.get("aiTitle")), title)
+        offset += len(raw_line) + 1
+    if offset > start:
+        state = langfuse_state(sid)
+        state["hook_cursor"] = {"fingerprint": fingerprint, "source_bytes": offset,
+                                "source_sha256": sha256(memoryview(raw)[:offset]), "turns": turns_before, "title": title}
+        save_langfuse_state(sid, state)
+    return sent
+
+
 def cmd_hook() -> None:
     """Stop and SessionEnd: send finished turns to Langfuse, and leave the repo alone. A transcript
     is kept on disk until a commit or a push records it, so nothing depends on this running."""
@@ -1815,10 +1904,7 @@ def cmd_hook() -> None:
         payload = json.load(sys.stdin)
         if langfuse_config() is None:  # before reading and redacting the whole transcript
             return
-        transcript, redact = Path(payload["transcript_path"]), Redactor()
-        entries = read_jsonl(redact(transcript.read_text(errors="replace")))
-        m = {**load_manifest(transcript.stem), **summarize(entries, redact.string(str(REPO)))}
-        export_langfuse(transcript.stem, entries, m, live=False)
+        hook_export(Path(payload["transcript_path"]), Redactor())
     except OSError as e:  # Langfuse down: those turns are retried next time
         log(f"langfuse export deferred: {e}")
     except Exception:

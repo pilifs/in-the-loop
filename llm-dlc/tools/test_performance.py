@@ -8,6 +8,7 @@ import io
 import json
 import random
 import re
+import shutil
 import tempfile
 import time
 import unittest
@@ -976,6 +977,166 @@ class PublicationGate(unittest.TestCase):
                 self.assertEqual(sync.cmd_push(["--bookmark", "main"]), 0 if pushed else 1)
             gate.assert_called_once_with('bookmarks(exact:"main")')
             self.assertEqual(run.called, pushed)
+
+
+class HookCursor(unittest.TestCase):
+    """The Stop hook reads a transcript from its cursor and sends what reading it whole sends."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.state_new, self.state_old = root / "state-new", root / "state-old"
+        self.sent = []
+        self.down = False
+
+        def urlopen(req, timeout=None):
+            if self.down:
+                raise OSError("down")
+            self.sent.append(json.loads(gzip.decompress(req.data)))
+            return mock.MagicMock()
+        self.patches = [mock.patch.object(sync, "REPO", root), mock.patch.object(sync, "TRACES", root / "traces"),
+                        mock.patch.object(sync, "langfuse_config", return_value=("http://stub.invalid", "pk", "sk")),
+                        mock.patch.object(sync.urllib.request, "urlopen", side_effect=urlopen)]
+        for p in self.patches:
+            p.start()
+        sync.TRANSCRIPT_CACHE.unlink(missing_ok=True)
+        sync.save_manifest("s1", {"session_id": "s1", "log": {"sha256": "0" * 64}})
+        self.transcript = root / "project" / "s1.jsonl"
+        self.transcript.parent.mkdir()
+        self.transcript.write_bytes(b"")
+        self.r = MadeUpRedactor()
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def reference(self):
+        """The hook as it was: redact and parse the whole transcript."""
+        entries = sync.read_jsonl(self.r(self.transcript.read_text(errors="replace")))
+        m = {**sync.load_manifest("s1"), **sync.summarize(entries, self.r.string(str(sync.REPO)))}
+        return sync.export_langfuse("s1", entries, m, live=False)
+
+    def both(self):
+        """What the reference and the hook send, each with its own state."""
+        out = []
+        for state, run in ((self.state_old, self.reference), (self.state_new, lambda: sync.hook_export(self.transcript, self.r))):
+            with mock.patch.object(sync, "STATE", state):
+                try:
+                    run()
+                except OSError:
+                    pass
+            out.append(self.sent[:])
+            self.sent.clear()
+        return out
+
+    @staticmethod
+    def turn(rng, n):
+        ts = lambda k: "2026-11-03T10:%02d:%02dZ" % (n % 60, k)
+        text = lambda: random_text(rng)
+        lines = [{"type": "user", "uuid": f"p{n}-{rng.random()}", "timestamp": ts(0), "message": {"role": "user", "content": text()}}]
+        for k in range(rng.randint(0, 3)):
+            tid = f"t{n}.{k}"
+            lines.append({"type": "assistant", "timestamp": ts(2 * k + 1), "message": {
+                "id": f"m{n}.{k}", "model": "made-up-model", "usage": {"input_tokens": k, "output_tokens": 1},
+                "content": [{"type": "text", "text": text()}, {"type": "tool_use", "id": tid, "name": "Bash", "input": {"command": text()}}]}})
+            lines.append({"type": "user", "timestamp": ts(2 * k + 2), "message": {"content": [
+                {"type": "tool_result", "tool_use_id": tid, "content": text(), "is_error": rng.random() < 0.2}]}})
+        if rng.random() < 0.3:
+            lines.append({"type": "ai-title", "aiTitle": "title " + text()})
+        out = []
+        for e in lines:
+            line = json.dumps(e, ensure_ascii=rng.random() < 0.5).encode()
+            out.append(line + rng.choice([b"\n", b"\n", b"\n", b"\r\n", b"\r", b"\xe2\x80\xa8"]))
+            if rng.random() < 0.15:  # noise: a broken line, a raw line separator, invalid UTF-8
+                out.append(rng.choice([b"{broken", b'{"type":"progress","t":"a\xe2\x80\xa8b"}', b"\xff\xfe", b""]) + b"\n")
+        return b"".join(out)
+
+    def test_it_sends_what_reading_everything_sends(self):
+        turns = 0
+        for seed in range(12):
+            rng = random.Random(seed)
+            for d in (self.state_new, self.state_old):
+                shutil.rmtree(d, ignore_errors=True)
+            data, n, unfinished = b"", 0, b""
+            self.transcript.write_bytes(b"")
+            for step in range(10):
+                if step == 6 and seed % 3 == 0:  # replaced: another transcript under the same name
+                    data, n = b"", 100
+                for _ in range(rng.randint(0, 3)):
+                    data += unfinished
+                    unfinished = b""
+                    data += self.turn(rng, n)
+                    n += 1
+                if rng.random() < 0.3:  # cut mid-line, finished at the next step
+                    cut = rng.randint(1, len(data)) if data else 0
+                    data, unfinished = data[:cut], data[cut:]
+                self.transcript.write_bytes(data)
+                self.down = rng.random() < 0.2
+                old, new = self.both()
+                self.assertEqual(new, old, f"seed {seed}, step {step}")
+                turns += sum(1 for b in new for s in b["resourceSpans"][0]["scopeSpans"][0]["spans"] if "parentSpanId" not in s)
+        self.assertGreater(turns, 100)
+
+    def lengths(self):
+        """The length of each text the hook redacts."""
+        seen = []
+        real = MadeUpRedactor.__call__
+        return seen, mock.patch.object(MadeUpRedactor, "__call__", lambda r, text: seen.append(len(text)) or real(r, text))
+
+    def test_it_reads_only_what_follows_the_cursor(self):
+        rng = random.Random(1)
+        first, second = self.turn(rng, 0) + self.turn(rng, 1), self.turn(rng, 2)
+        unix = lambda b: b.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        first, second = unix(first), unix(second)
+        self.transcript.write_bytes(first)
+        seen, patch = self.lengths()
+        with mock.patch.object(sync, "STATE", self.state_new), patch:
+            self.assertEqual(sync.hook_export(self.transcript, self.r), 2)
+            self.transcript.write_bytes(first + second)
+            self.assertEqual(sync.hook_export(self.transcript, self.r), 1)
+            self.assertEqual(sync.hook_export(self.transcript, self.r), 0)
+        self.assertEqual(seen[2:], [len(second.decode(errors="replace")), 0])  # the first read is in two calls
+        names = [s["name"] for b in self.sent for s in b["resourceSpans"][0]["scopeSpans"][0]["spans"] if "parentSpanId" not in s]
+        self.assertEqual(names, ["turn 1", "turn 2", "turn 3"])
+
+    def test_it_reads_everything_when_the_cursor_cannot_be_trusted(self):
+        rng = random.Random(2)
+        data = self.turn(rng, 0).replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        self.transcript.write_bytes(data)
+        with mock.patch.object(sync, "STATE", self.state_new):
+            sync.hook_export(self.transcript, self.r)
+            changed = data.replace(b"10:00:00", b"10:00:01", 1)  # same length, other bytes
+            for label, content, patch in (
+                    ("replaced", changed, mock.patch.dict("os.environ", {})),
+                    ("--full", changed, mock.patch.dict("os.environ", {"LLM_TRACES_FULL": "1"})),
+                    ("other rules", changed, mock.patch.object(MadeUpRedactor, "fingerprint", return_value="other"))):
+                self.transcript.write_bytes(content)
+                seen, counting = self.lengths()
+                with patch, counting:
+                    sync.hook_export(self.transcript, self.r)
+                self.assertEqual(sum(seen), len(content.decode(errors="replace")), label)
+
+    def test_the_state_keeps_what_else_it_records(self):
+        self.state_new.mkdir()
+        (self.state_new / "s1.json").write_text(json.dumps({"exported": ["x"], "complete": "c" * 64}))
+        self.transcript.write_bytes(self.turn(random.Random(3), 0))
+        with mock.patch.object(sync, "STATE", self.state_new):
+            sync.hook_export(self.transcript, self.r)
+            state = sync.langfuse_state("s1")
+        self.assertEqual(state["complete"], "c" * 64)
+        self.assertIn("x", state["exported"])
+        self.assertEqual(len(state["exported"]), 2)
+        self.assertEqual(state["hook_cursor"]["turns"], 1)
+
+    def test_lines_in_counts_what_the_redactor_reads(self):
+        rng = random.Random(4)
+        for _ in range(300):
+            raw = made_up_transcript(rng, rng.randint(0, 3))
+            for piece in raw.split(b"\n"):
+                for line in (piece, piece + b"\n"):
+                    self.assertEqual(sync.lines_in(line), len(sync.decoded(line).splitlines()), line)
+                    self.assertEqual(sync.lines_in(line), self.r(sync.decoded(line)).count(b"\n"), line)
 
 
 class Perf(unittest.TestCase):
