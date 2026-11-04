@@ -236,7 +236,7 @@ How the verdict was reached: two calls in flight: TLC 2.19 explored 102 distinct
 ```text
 == two calls in flight: spec/CircuitBreaker.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 909913] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098191] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -247,9 +247,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CircuitBreakerContract
 Semantic processing of module CircuitBreaker
-Starting... (2026-11-02 21:28:33)
+Starting... (2026-11-03 23:55:05)
 Computing initial states...
-Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:33.
+Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:05.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -275,11 +275,11 @@ Rows of net.terminalvalue.crosscut.resilience.CircuitBreaker#decide a step of th
 294 states generated, 102 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 19.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
-Finished in 00s at (2026-11-02 21:28:34)
+Finished in 00s at (2026-11-03 23:55:05)
 
 == fairness: spec/CircuitBreakerLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 820MB heap and 64MB offheap memory [pid: 910052] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098367] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -290,11 +290,11 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module CircuitBreakerContract
 Semantic processing of module CircuitBreaker
-Starting... (2026-11-02 21:28:36)
+Starting... (2026-11-03 23:55:08)
 Implied-temporal checking--satisfiability problem has 1 branches.
 Computing initial states...
-Finished computing initial states: 2 distinct states generated at 2026-11-02 21:28:36.
-Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-02 21:28:36)
+Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:08.
+Checking temporal properties for the complete state space with 102 total distinct states at (2026-11-03 23:55:08)
 Error: Temporal properties were violated.
 
 Error: The following behavior constitutes a counter-example:
@@ -381,8 +381,8 @@ State 8: <Request line 68, col 5 to line 78, col 44 of module CircuitBreaker>
 
 Back to state 7: <Tick line 111, col 5 to line 113, col 88 of module CircuitBreaker>
 
-Finished checking temporal properties in 00s at 2026-11-02 21:28:36
-The coverage statistics at 2026-11-02 21:28:36
+Finished checking temporal properties in 00s at 2026-11-03 23:55:08
+The coverage statistics at 2026-11-03 23:55:08
 <Init line 124, col 1 to line 124, col 4 of module CircuitBreaker>: 4:4
   line 126, col 8 to line 126, col 36 of module CircuitBreaker: 2
   line 127, col 8 to line 127, col 20 of module CircuitBreaker: 4
@@ -1665,7 +1665,7 @@ The coverage statistics at 2026-11-02 21:28:36
   ||||line 165, col 91 to line 165, col 96 of module CircuitBreaker: 10
 End of statistics.
 294 states generated, 102 distinct states found, 0 states left on queue.
-Finished in 00s at (2026-11-02 21:28:36)
+Finished in 00s at (2026-11-03 23:55:08)
 (jvmcontract checked the temporal properties one at a time to name the violated one: AnOpenBreakerProbesAgain)
 ```
 

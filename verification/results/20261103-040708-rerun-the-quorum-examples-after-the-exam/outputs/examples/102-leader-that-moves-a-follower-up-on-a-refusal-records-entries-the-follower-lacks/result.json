@@ -1,0 +1,641 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: LeaderCompleteness, 12-step trace",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java",
+    "startLine": 10,
+    "code": "\n/**\n * What a Raft leader does with a follower's reply to an AppendEntries request (Ongaro and Ousterhout, section 5.3,\n * and the rules for leaders of figure 2): on an acceptance, the follower's match index moves up through the entries\n * sent and its next index past them; on a refusal, the next index moves back by one, and the next request tries from\n * one entry earlier, until the consistency check passes.\n *\n * <p>A reply the leader's record reflects already, a late or repeated one, changes nothing: an acceptance of entries\n * the leader knows the follower holds moves nothing backwards, and a refusal of a request the leader has moved on\n    // ...\n\n    public static Decision<RequestStatus, ReplyEffect> decide(RequestStatus status, AppendReply reply) {\n        return switch (status) {\n            case AWAITED -> reply.accepted() ? transition(ANSWERED, ADVANCE) : transition(ANSWERED, BACK_UP);\n            case ANSWERED -> reply.accepted()\n                    ? unchanged(\"holds what the leader has recorded already\")\n                    : unchanged(\"a refusal the leader has moved on from\");\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/ReplyRule.java",
+    "startLine": 10,
+    "code": "\n/**\n * What a Raft leader does with a follower's reply to an AppendEntries request (Ongaro and Ousterhout, section 5.3,\n * and the rules for leaders of figure 2): on a reply, the follower's match index moves up through the entries sent\n * and its next index past them. Whether the follower took the entries is the append rule's business: a follower\n * that refused them is behind, and the heartbeats compare the logs again until it has caught up.\n *\n * <p>A reply the leader's record reflects already, a late or repeated one, changes nothing: an acceptance of entries\n * the leader knows the follower holds moves nothing backwards, and a refusal of a request the leader has moved on\n    // ...\n\n    public static Decision<RequestStatus, ReplyEffect> decide(RequestStatus status, AppendReply reply) {\n        return switch (status) {\n            case AWAITED -> transition(ANSWERED, ADVANCE); // accepted or not: the record follows the request, the logs are compared again on the next one\n            case ANSWERED -> reply.accepted()\n                    ? unchanged(\"holds what the leader has recorded already\")\n                    : unchanged(\"a refusal the leader has moved on from\");\n"
+  },
+  "casesTotal": null,
+  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/quorum/src/contract/ReplyRule.decide.contract\n+++ b/examples/apps/quorum/src/contract/ReplyRule.decide.contract\n@@ -4,9 +4,9 @@\n target: net.terminalvalue.quorum.raft.ReplyRule#decide\n domain: RequestStatus (3) × AppendReply (3) = 9 cases\n \n-decide(AWAITED, AppendReply[accepted=false])  => Transition[next=ANSWERED, effects=[BACK_UP]]\n+decide(AWAITED, AppendReply[accepted=false])  => Transition[next=ANSWERED, effects=[ADVANCE]]\n decide(AWAITED, AppendReply[accepted=true])   => Transition[next=ANSWERED, effects=[ADVANCE]]\n-decide(AWAITED, null)                         => throws NullPointerException\n+decide(AWAITED, null)                         => Transition[next=ANSWERED, effects=[ADVANCE]]\n decide(ANSWERED, AppendReply[accepted=false]) => Unchanged[reason=\"a refusal the leader has moved on from\"]\n decide(ANSWERED, AppendReply[accepted=true])  => Unchanged[reason=\"holds what the leader has recorded already\"]\n decide(ANSWERED, null)                        => throws NullPointerException\n",
+  "proof": "three terms, two entries: TLC 2.19 explored 6,948 distinct states to depth 12 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 8,520 distinct states to depth 17 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,040 distinct states in 23 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 1,560 distinct states to depth 9 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+  "problem": null,
+  "statement": null,
+  "trace": [
+    {
+      "step": 1,
+      "action": "Initial predicate",
+      "changes": {
+        "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+        "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+        "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "replies": "{}",
+        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+        "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Timeout",
+      "changes": {
+        "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+        "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Canvass",
+      "changes": {
+        "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+        "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 4,
+      "action": "ClientRequest",
+      "changes": {
+        "log": "(s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Replicate",
+      "changes": {
+        "log": "(s1 :> <<1>> @@ s2 :> <<1>> @@ s3 :> <<>>)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+      }
+    },
+    {
+      "step": 6,
+      "action": "Timeout",
+      "changes": {
+        "currentTerm": "(s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)",
+        "role": "(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+        "votes": "(s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 7,
+      "action": "Canvass",
+      "changes": {
+        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\")",
+        "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 8,
+      "action": "Timeout",
+      "changes": {
+        "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 0)",
+        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+        "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 9,
+      "action": "ClientRequest",
+      "changes": {
+        "log": "(s1 :> <<1>> @@ s2 :> <<1, 2>> @@ s3 :> <<>>)"
+      }
+    },
+    {
+      "step": 10,
+      "action": "Replicate",
+      "changes": {
+        "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 2)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 3) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+      }
+    },
+    {
+      "step": 11,
+      "action": "Canvass",
+      "changes": {
+        "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)",
+        "nextIndex": "( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 3) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+        "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+        "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)",
+        "votes": "(s1 :> {s1, s3} @@ s2 :> {s1, s2} @@ s3 :> {})"
+      }
+    },
+    {
+      "step": 12,
+      "action": "AdvanceCommit",
+      "changes": {
+        "commitIndex": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 0)"
+      }
+    }
+  ],
+  "statesExplored": 6948,
+  "invariant": "LeaderCompleteness",
+  "property": null,
+  "stateMachine": "stateDiagram-v2\n    ANSWERED: ANSWERED (terminal)\n    AWAITED: AWAITED (no incoming transition)\n    AWAITED --> ANSWERED: AppendReply[accepted=false] → effects=[ADVANCE]\n    AWAITED --> ANSWERED: AppendReply[accepted=true] → effects=[ADVANCE]\n    ANSWERED --> ANSWERED: AppendReply[accepted=false] (Unchanged)\n    ANSWERED --> ANSWERED: AppendReply[accepted=true] (Unchanged)\n",
+  "coverage": {
+    "configurations": [
+      {
+        "label": "three terms, two entries",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "figure 8",
+        "fromRuns": true,
+        "finished": true,
+        "counted": true,
+        "operators": [
+          {
+            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "reached": 27,
+            "total": 36,
+            "never": [
+              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "reached": 12,
+            "total": 27,
+            "never": [
+              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+            "reached": 10,
+            "total": 24,
+            "never": [
+              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged",
+              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]"
+            ]
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+            "reached": 4,
+            "total": 4,
+            "never": []
+          },
+          {
+            "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+            "reached": 4,
+            "total": 12,
+            "never": [
+              "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
+              "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
+              "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
+              "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
+              "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
+              "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
+              "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
+              "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "fairness",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      },
+      {
+        "label": "delayed replies",
+        "fromRuns": true,
+        "finished": false,
+        "counted": true,
+        "operators": []
+      }
+    ],
+    "changedRows": [
+      {
+        "case": "decide(AWAITED, AppendReply[accepted=false])",
+        "before": "Transition[next=ANSWERED, effects=[BACK_UP]]",
+        "after": "Transition[next=ANSWERED, effects=[ADVANCE]]",
+        "takenUnder": [
+          "figure 8"
+        ]
+      }
+    ],
+    "nullRows": 1,
+    "vacuous": false
+  },
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "violationKind": "invariant",
+  "forever": null,
+  "configurations": [
+    {
+      "label": "three terms, two entries",
+      "cfg": "spec/RaftReplication.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: LeaderCompleteness, 12-step trace",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE",
+      "invariant": "LeaderCompleteness",
+      "violationKind": "invariant",
+      "statesExplored": 6948,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "replies": "{}",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "ClientRequest",
+          "changes": {
+            "log": "(s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Replicate",
+          "changes": {
+            "log": "(s1 :> <<1>> @@ s2 :> <<1>> @@ s3 :> <<>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+          }
+        },
+        {
+          "step": 6,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 7,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 8,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 9,
+          "action": "ClientRequest",
+          "changes": {
+            "log": "(s1 :> <<1>> @@ s2 :> <<1, 2>> @@ s3 :> <<>>)"
+          }
+        },
+        {
+          "step": 10,
+          "action": "Replicate",
+          "changes": {
+            "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 2)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 3) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+          }
+        },
+        {
+          "step": 11,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 3 @@ s2 :> 2 @@ s3 :> 3)",
+            "nextIndex": "( s1 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 3) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> s1)",
+            "votes": "(s1 :> {s1, s3} @@ s2 :> {s1, s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 12,
+          "action": "AdvanceCommit",
+          "changes": {
+            "commitIndex": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 0)"
+          }
+        }
+      ],
+      "forever": null
+    },
+    {
+      "label": "figure 8",
+      "cfg": "spec/RaftReplicationFigureEight.cfg",
+      "verdict": "verified",
+      "summary": "✓ Verified: all invariants and properties hold in 8,520 states",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE",
+      "invariant": null,
+      "violationKind": null,
+      "statesExplored": 8520,
+      "trace": null,
+      "forever": null
+    },
+    {
+      "label": "fairness",
+      "cfg": "spec/RaftReplicationLive.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: FollowersCatchUp, 10-step trace then forever",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
+      "invariant": "FollowersCatchUp",
+      "violationKind": "temporal",
+      "statesExplored": 14040,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "replies": "{}",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 1)",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"LEADER\")",
+            "votedFor": "(s1 :> s3 @@ s2 :> \"none\" @@ s3 :> s3)",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s1, s3})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "ClientRequest",
+          "changes": {
+            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<1>>)"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 1)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"LEADER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> s3)",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {s1, s3})"
+          }
+        },
+        {
+          "step": 6,
+          "action": "Replicate",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 1)",
+            "log": "(s1 :> <<>> @@ s2 :> <<1>> @@ s3 :> <<1>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 1) )"
+          }
+        },
+        {
+          "step": 7,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 1)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"LEADER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> s3)",
+            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {s1, s3})"
+          }
+        },
+        {
+          "step": 8,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> s2)",
+            "votes": "(s1 :> {s1} @@ s2 :> {s2, s3} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 9,
+          "action": "Replicate",
+          "changes": {
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+          }
+        },
+        {
+          "step": 10,
+          "action": "Replicate",
+          "changes": {
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 1 @@ s2 :> 0 @@ s3 :> 1) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")"
+          }
+        }
+      ],
+      "forever": "stays in that state forever"
+    },
+    {
+      "label": "delayed replies",
+      "cfg": "spec/RaftReplicationDelayed.cfg",
+      "verdict": "violation",
+      "summary": "✗ Violation: MatchIndexIsRight, 9-step trace",
+      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+      "invariant": "MatchIndexIsRight",
+      "violationKind": "invariant",
+      "statesExplored": 1560,
+      "trace": [
+        {
+          "step": 1,
+          "action": "Initial predicate",
+          "changes": {
+            "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "replies": "{}",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 2,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 3,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 4,
+          "action": "ClientRequest",
+          "changes": {
+            "log": "(s1 :> <<1>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+          }
+        },
+        {
+          "step": 5,
+          "action": "Ask",
+          "changes": {
+            "log": "(s1 :> <<1>> @@ s2 :> <<1>> @@ s3 :> <<>>)",
+            "replies": "{ [ term |-> 1, prev |-> 0, last |-> 1, to |-> s1, from |-> s2, accepted |-> TRUE ] }"
+          }
+        },
+        {
+          "step": 6,
+          "action": "Timeout",
+          "changes": {
+            "currentTerm": "(s1 :> 1 @@ s2 :> 2 @@ s3 :> 0)",
+            "role": "(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s1 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 7,
+          "action": "Canvass",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 2) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\")",
+            "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {})"
+          }
+        },
+        {
+          "step": 8,
+          "action": "Ask",
+          "changes": {
+            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
+            "replies": "{ [ term |-> 1, prev |-> 0, last |-> 1, to |-> s1, from |-> s2, accepted |-> TRUE ], [ term |-> 2, prev |-> 1, last |-> 1, to |-> s2, from |-> s3, accepted |-> FALSE ] }"
+          }
+        },
+        {
+          "step": 9,
+          "action": "Answer",
+          "changes": {
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+            "replies": "{ [ term |-> 1, prev |-> 0, last |-> 1, to |-> s1, from |-> s2, accepted |-> TRUE ] }"
+          }
+        }
+      ],
+      "forever": null
+    }
+  ]
+}

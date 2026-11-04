@@ -120,7 +120,7 @@ Keep the `max` of the two counters when the physical parts are equal, as example
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long.
 
 <details><summary>Verifier output</summary>
 
@@ -128,7 +128,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
 ✗ Property of net.terminalvalue.quorum.clock.HybridLogicalClock#receive violated: `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF:
   receive(nowMillis=0, last=0, message=1)
     outcome: 1
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long)
+  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
@@ -187,6 +187,12 @@ public final class PropertyHarness {
               "id": "api-changed",
               "shortDescription": {
                 "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
               }
             },
             {

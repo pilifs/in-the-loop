@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-063503-example-116-get-holds-id-made-to-extend",
+  "title": "Example 116: GET /holds/{id} made to extend the hold it returns, a GET with side effects, caught by the reach lines of the boundary contract (B12)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m41s, peak 1.7 GiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (example 116 (B12)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-063503-example-116-get-holds-id-made-to-extend.json",
+    "sha256": "a3b4322a49b7fe50e68e56940fce0366888216f4b34dd26303b5c8e5706f84bb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-063503-example-116-get-holds-id-made-to-extend",
+      "title": "Example 116: GET /holds/{id} made to extend the hold it returns, a GET with side effects, caught by the reach lines of the boundary contract (B12)",
+      "description": "The first example of the reach lines of a boundary contract: under each entry point and advised method, jvmcontract now writes what the method reaches (reads and writes of documents, entities and tables; sends to topics; HTTP calls; application events published), found by following the calls in the bytecode from the method through the application's own classes to the Spring Data, JDBC, Kafka, HTTP client and event APIs, with a ! line for a GET or HEAD route that writes, sends, publishes or makes a non-GET call, and for a @Transactional(readOnly = true) method that writes. The patch adds TicketingStore.extend and makes HoldService.get push the expiry of the hold and of its seats forward on every call, so that a customer on the checkout page keeps the seats; the page polls GET /holds/{id} for its countdown, so a hold never expires while a tab is open, and prefetches, probes and retried GETs change state. The change is a feature (intended), so the runner regenerates the contract and reports as the violation the new ! line under GET /holds/{id} (a GET that writes HoldDocument and SeatDocument: a safe method with side effects), next to the new writes HoldDocument, SeatDocument line. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/reach.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "116"
+        ]
+      },
+      "expected": "build.py 116 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-03T06:35:03+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 116 (B12)",
+          "run": "python3 examples/tools/build.py 116",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/116-get-hold-extends-the-hold-it-returns"
+      ]
+    }
+  },
+  "sourceCommit": "324a9d978365d0a29e877f333d32c21121a666b2",
+  "startedAt": "2026-11-04T07:01:16+00:00",
+  "finishedAt": "2026-11-04T07:02:58+00:00",
+  "wallSeconds": 102.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 1063331,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1791156224,
+    "wallSeconds": 101.1,
+    "cpuSeconds": 148.6,
+    "memoryOfEstimate": 0.56,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 116 (B12)",
+      "run": "python3 examples/tools/build.py 116",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 101.125,
+      "cpuSeconds": 148.586,
+      "cpuThrottledSeconds": 5.439,
+      "peakMemoryBytes": 1791156224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-116-b12.log",
+        "lines": 2,
+        "bytes": 311,
+        "sha256": "a16ee4bd2f6940228986b7a94ad900672a791e229f971de51e5279f775de8aba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "116-get-hold-extends-the-hold-it-returns: running (B12)",
+        "/home/filip/code/java-formal-verification/verification/.state/work/20261103-063503-example-116-get-holds-id-made-to-extend/examples/116-get-hold-extends-the-hold-it-returns/result.json: Additional properties are not allowed ('newProblems' was unexpected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/116-get-hold-extends-the-hold-it-returns/result.json",
+      "change": "added",
+      "bytes": 11245,
+      "sha256": "4852ee911fc88ec6ca5dc6d5e57198f0a657d67585595397d2e70a65ab8c337c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/116-get-hold-extends-the-hold-it-returns/result.sarif",
+      "change": "added",
+      "bytes": 5327,
+      "sha256": "1a2b7d9fff3b3e50b7f0f9a47d4341276a125549e10ca928954a04e4ef802978",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/116-get-hold-extends-the-hold-it-returns/verifier-output.txt",
+      "change": "added",
+      "bytes": 3828,
+      "sha256": "368d2d9fa36ec1c89629f0b77acf235a7a761629617debfe50bf0cc27c9d8c2d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T07:08:26+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/116-get-hold-extends-the-hold-it-returns/result.json",
+      "examples/116-get-hold-extends-the-hold-it-returns/result.sarif",
+      "examples/116-get-hold-extends-the-hold-it-returns/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261103-063503-example-116-get-holds-id-made-to-extend"
+}

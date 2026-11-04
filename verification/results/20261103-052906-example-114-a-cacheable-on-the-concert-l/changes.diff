@@ -1,0 +1,229 @@
+--- /dev/null
++++ b/examples/114-cacheable-without-enable-caching/result.json
+@@ -0,0 +1,132 @@
++{
++  "verdict": "violation",
++  "verdictLabel": "✗ Violation: 2 new problems",
++  "matchesExpected": true,
++  "existingTests": {
++    "task": ":ticketing-service:test",
++    "passed": true,
++    "failures": []
++  },
++  "before": {
++    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java",
++    "startLine": 8,
++    "code": "import java.util.Optional;\nimport net.terminalvalue.boxoffice.ticketing.domain.OrderStatus;\nimport net.terminalvalue.boxoffice.ticketing.domain.SeatStatus;\nimport org.springframework.data.domain.Sort;\nimport org.springframework.data.mongodb.core.MongoTemplate;\nimport org.springframework.data.mongodb.core.index.Index;\n    // ...\n                SeatDocument.class);\n    }\n\n    public Optional<ConcertDocument> concert(String id) {\n        return Optional.ofNullable(mongo.findById(id, ConcertDocument.class));\n    }\n"
++  },
++  "after": {
++    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/TicketingStore.java",
++    "startLine": 8,
++    "code": "import java.util.Optional;\nimport net.terminalvalue.boxoffice.ticketing.domain.OrderStatus;\nimport net.terminalvalue.boxoffice.ticketing.domain.SeatStatus;\nimport org.springframework.cache.annotation.Cacheable;\nimport org.springframework.data.domain.Sort;\nimport org.springframework.data.mongodb.core.MongoTemplate;\nimport org.springframework.data.mongodb.core.index.Index;\n    // ...\n                SeatDocument.class);\n    }\n\n    /** A concert does not change after it is created, and every hold and order reads it: cache it. */\n    @Cacheable(\"concerts\")\n    public Optional<ConcertDocument> concert(String id) {\n        return Optional.ofNullable(mongo.findById(id, ConcertDocument.class));\n    }\n"
++  },
++  "casesTotal": null,
++  "domain": "16 beans, 13 entry points, 1 advised methods, 14 configuration keys, 9 wire types, 1 problems",
++  "counterexamples": [
++    {
++      "input": "configuration",
++      "contract": null,
++      "actual": "boxoffice.outbox.batch-size: int, default 100"
++    },
++    {
++      "input": "configuration",
++      "contract": null,
++      "actual": "boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100"
++    },
++    {
++      "input": "configuration",
++      "contract": null,
++      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms"
++    },
++    {
++      "input": "configuration",
++      "contract": null,
++      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "CONFIRMED"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "DECLINED"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "PENDING_PAYMENT"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "REFUNDED"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "REFUND_PENDING"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
++      "contract": null,
++      "actual": "enum"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
++      "contract": null,
++      "actual": "AVAILABLE"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
++      "contract": null,
++      "actual": "HELD"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
++      "contract": null,
++      "actual": "SOLD"
++    },
++    {
++      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
++      "contract": null,
++      "actual": "enum"
++    },
++    {
++      "input": "configuration",
++      "contract": "boxoffice.outbox.poll-interval = 100ms",
++      "actual": null
++    },
++    {
++      "input": "configuration",
++      "contract": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it",
++      "actual": null
++    },
++    {
++      "input": "activation",
++      "contract": null,
++      "actual": "@Cacheable: nothing enables it: ! no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted"
++    },
++    {
++      "input": "configuration",
++      "contract": null,
++      "actual": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
++    }
++  ],
++  "purityViolations": [],
++  "trustedCalls": [],
++  "contractDiff": "--- a/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n+++ b/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n@@ -6,7 +6,7 @@\n # files set, what the class path's metadata declares), then the wire types: the JSON shape of each request,\n # response and message type. A `!` line is a place where an annotation or a setting does not do what it says.\n kind: boundaries\n-module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 0 problems\n+module: ticketing-service, 16 beans, 13 entry points, 1 advised methods, 13 configuration keys, 7 wire types, 2 problems\n \n net.terminalvalue.boxoffice.ticketing.TicketingApplication: @SpringBootApplication @Import(net.terminalvalue.boxoffice.messaging.MessagingConfiguration.class)\n   @Bean => HoldPolicy holdPolicy(@Value(\"${boxoffice.hold.max-seats:8}\") int maxSeats, @Value(\"${boxoffice.hold.ttl:2m}\") Duration ttl)\n@@ -56,9 +56,13 @@\n   @Id String id\n \n net.terminalvalue.boxoffice.ticketing.store.TicketingStore: @Repository\n+  Optional<ConcertDocument> concert(String id)\n+    @Cacheable(\"concerts\")\n \n activation: net.terminalvalue.boxoffice.ticketing.TicketingApplication (@SpringBootApplication), scanning net.terminalvalue.boxoffice.ticketing\n   @Scheduled: @EnableScheduling on net.terminalvalue.boxoffice.messaging.MessagingConfiguration, imported by TicketingApplication\n+  @Cacheable: nothing enables it\n+    ! no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted\n   @KafkaListener: @EnableKafka on KafkaAnnotationDrivenConfiguration.EnableKafkaConfiguration, auto-configured\n   @Valid: Bean Validation provider org.hibernate.validator.HibernateValidator in hibernate-validator-9.1.3.Final.jar\n \n@@ -69,10 +73,8 @@\n     @Scheduled in HoldService.releaseExpiredHolds(), default 1s\n   boxoffice.hold.ttl: Duration = 2m\n     @Value in TicketingApplication.holdPolicy(int, Duration), ttl, default 2m\n-  boxoffice.outbox.batch-size: int, default 100\n-    @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100\n-  boxoffice.outbox.poll-interval: Duration = 100ms\n-    @Scheduled in OutboxRelay.publishPending(), default 100ms\n+  boxoffice.outbox.poll-interval = 100ms\n+    ! nothing binds it: no class on the class path reads it and no configuration metadata declares it\n   management.endpoints.web.exposure.include: Set<String> = health,info\n     declared by WebEndpointProperties$Exposure\n   server.port: Integer = 8081\n@@ -139,15 +141,3 @@\n   holdId: @NotBlank String\n   paymentToken: @NotBlank String\n \n-wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum\n-  PENDING_PAYMENT\n-  CONFIRMED\n-  DECLINED\n-  REFUND_PENDING\n-  REFUNDED\n-\n-wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum\n-  AVAILABLE\n-  HELD\n-  SOLD\n-\n",
++  "proof": null,
++  "problem": null,
++  "statement": null,
++  "trace": null,
++  "statesExplored": null,
++  "invariant": null,
++  "property": null,
++  "stateMachine": null,
++  "coverage": null,
++  "sarif": "result.sarif",
++  "output": "verifier-output.txt",
++  "newProblems": [
++    "activation: @Cacheable: nothing enables it: ! no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted",
++    "configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
++  ]
++}
+--- /dev/null
++++ b/examples/114-cacheable-without-enable-caching/result.sarif
+@@ -0,0 +1,67 @@
++{
++  "version": "2.1.0",
++  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
++  "runs": [
++    {
++      "tool": {
++        "driver": {
++          "name": "jvmcontract",
++          "version": "0.1.0",
++          "rules": [
++            {
++              "id": "behaviour-changed",
++              "shortDescription": {
++                "text": "The code no longer matches its behavioural contract."
++              }
++            },
++            {
++              "id": "unverifiable",
++              "shortDescription": {
++                "text": "The method cannot be verified: it is not pure, or its inputs are not finite."
++              }
++            },
++            {
++              "id": "capability-changed",
++              "shortDescription": {
++                "text": "The module's bytecode reaches a capability, or a library, that its contract does not list."
++              }
++            },
++            {
++              "id": "api-changed",
++              "shortDescription": {
++                "text": "The module's public API differs from its contract."
++              }
++            },
++            {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
++              "id": "property-violated",
++              "shortDescription": {
++                "text": "An input exists on which the method violates its stated property."
++              }
++            },
++            {
++              "id": "invariant-violated",
++              "shortDescription": {
++                "text": "The model checker found a behaviour of the model that violates an invariant."
++              }
++            }
++          ]
++        }
++      },
++      "results": [
++        {
++          "ruleId": "boundaries-changed",
++          "level": "error",
++          "message": {
++            "text": "Boundaries of module ticketing-service differ from their contract:\n  added configuration: boxoffice.outbox.batch-size: int, default 100\n  added configuration: boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100\n  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms\n  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: CONFIRMED\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: DECLINED\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: PENDING_PAYMENT\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUNDED\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUND_PENDING\n  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum\n  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: AVAILABLE\n  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: HELD\n  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: SOLD\n  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum\n  removed configuration: boxoffice.outbox.poll-interval = 100ms\n  removed configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
++          }
++        }
++      ]
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/114-cacheable-without-enable-caching/verifier-output.txt
+@@ -0,0 +1,21 @@
++✗ Boundaries of module ticketing-service differ from their contract:
++  added configuration: boxoffice.outbox.batch-size: int, default 100
++  added configuration: boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100
++  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms
++  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: CONFIRMED
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: DECLINED
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: PENDING_PAYMENT
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUNDED
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUND_PENDING
++  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum
++  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: AVAILABLE
++  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: HELD
++  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: SOLD
++  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum
++  removed configuration: boxoffice.outbox.poll-interval = 100ms
++  removed configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it
++  (16 beans, 13 entry points, 1 advised methods, 14 configuration keys, 9 wire types, 1 problems)
++New `!` lines in the regenerated contract:
++  added activation: @Cacheable: nothing enables it: ! no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted
++  added configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it

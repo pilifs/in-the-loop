@@ -112,7 +112,7 @@ Do not put the skew window in the resolution rule. If close timestamps should no
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as winner(tsA=2, nodeA=0, tsB=0, nodeB=0), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int.
 
 <details><summary>Verifier output</summary>
 
@@ -120,7 +120,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [
 ✗ Property of net.terminalvalue.quorum.replication.LastWriterWins#winner violated: `result == 1 - winner(tsB, nodeB, tsA, nodeA)` where tsA != tsB || nodeA != nodeB:
   winner(tsA=1, nodeA=0, tsB=0, nodeB=0)
     outcome: 0
-  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as winner(tsA=2, nodeA=0, tsB=0, nodeB=0), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int)
+  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
@@ -179,6 +179,12 @@ public final class PropertyHarness {
               "id": "api-changed",
               "shortDescription": {
                 "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
               }
             },
             {

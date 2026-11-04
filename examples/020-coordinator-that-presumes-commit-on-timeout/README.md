@@ -179,7 +179,7 @@ How the verdict was reached: three participants: TLC 2.19 explored 27 distinct s
 ```text
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926194] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066245] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -196,10 +196,10 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:16)
+Starting... (2026-11-03 23:45:46)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:32:17.
+Finished computing initial states: 1 distinct state generated at 2026-11-03 23:45:47.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -284,11 +284,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 27 states generated, 27 distinct states found, 23 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 9 (minimum is 8, the maximum 10 and the 95th percentile is 10).
-Finished in 00s at (2026-11-02 21:32:17)
+Finished in 00s at (2026-11-03 23:45:47)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926251] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066344] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -305,7 +305,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:17)
+Starting... (2026-11-03 23:45:48)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -316,7 +316,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-02 21:32:18.
+Finished computing initial states: 736 distinct states generated at 2026-11-03 23:45:48.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -394,11 +394,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
   decide(ABORTED, Restarted[]) => Unchanged
 737 states generated, 737 distinct states found, 735 states left on queue.
 The depth of the complete state graph search is 2.
-Finished in 00s at (2026-11-02 21:32:18)
+Finished in 00s at (2026-11-03 23:45:48)
 
 == crashes: spec/TwoPhaseCommitCrash.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926365] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066403] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -415,10 +415,10 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:19)
+Starting... (2026-11-03 23:45:49)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:32:19.
+Finished computing initial states: 1 distinct state generated at 2026-11-03 23:45:49.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -503,11 +503,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 33 states generated, 33 distinct states found, 29 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 12 (minimum is 11, the maximum 12 and the 95th percentile is 12).
-Finished in 00s at (2026-11-02 21:32:19)
+Finished in 00s at (2026-11-03 23:45:49)
 
 == the inductive step with crashes: spec/TwoPhaseCommitCrashInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926455] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066478] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -524,7 +524,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:20)
+Starting... (2026-11-03 23:45:50)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -537,7 +537,7 @@ Computed 256 initial states...
 Computed 512 initial states...
 Computed 1024 initial states...
 Computed 2048 initial states...
-Finished computing initial states: 2728 distinct states generated at 2026-11-02 21:32:20.
+Finished computing initial states: 2728 distinct states generated at 2026-11-03 23:45:51.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -615,11 +615,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
   decide(ABORTED, Restarted[]) => Unchanged
 2729 states generated, 2729 distinct states found, 2727 states left on queue.
 The depth of the complete state graph search is 2.
-Finished in 00s at (2026-11-02 21:32:20)
+Finished in 00s at (2026-11-03 23:45:51)
 
 == participant crashes: spec/TwoPhaseCommitParticipantCrash.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926552] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066556] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -636,10 +636,10 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:21)
+Starting... (2026-11-03 23:45:51)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:32:21.
+Finished computing initial states: 1 distinct state generated at 2026-11-03 23:45:52.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -723,11 +723,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 96 states generated, 88 distinct states found, 82 states left on queue.
 The depth of the complete state graph search is 3.
 The average outdegree of the complete state graph is 18 (minimum is 10, the maximum 27 and the 95th percentile is 27).
-Finished in 00s at (2026-11-02 21:32:21)
+Finished in 00s at (2026-11-03 23:45:52)
 
 == the inductive step with participant crashes: spec/TwoPhaseCommitParticipantCrashInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926612] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066650] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -744,7 +744,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-02 21:32:22)
+Starting... (2026-11-03 23:45:52)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -761,7 +761,7 @@ Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
 Computed 32768 initial states...
-Finished computing initial states: 33204 states generated, with 18636 of them distinct at 2026-11-02 21:32:23.
+Finished computing initial states: 33204 states generated, with 18636 of them distinct at 2026-11-03 23:45:53.
 Error: Invariant Atomicity is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -839,11 +839,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
   decide(ABORTED, Restarted[]) => Unchanged
 33205 states generated, 18637 distinct states found, 18635 states left on queue.
 The depth of the complete state graph search is 2.
-Finished in 01s at (2026-11-02 21:32:23)
+Finished in 01s at (2026-11-03 23:45:54)
 
 == the recorded runs: spec/TwoPhaseCommitTrace.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 926728] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1066758] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommitTrace.tla
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/apps/quorum/spec/TwoPhaseCommitTraces.tla
@@ -864,12 +864,12 @@ Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
 Semantic processing of module TwoPhaseCommitTraces
 Semantic processing of module TwoPhaseCommitTrace
-Starting... (2026-11-02 21:32:23)
+Starting... (2026-11-03 23:45:54)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
 Computed 8 initial states...
-Finished computing initial states: 11 distinct states generated at 2026-11-02 21:32:24.
+Finished computing initial states: 11 distinct states generated at 2026-11-03 23:45:54.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -877,7 +877,7 @@ Model checking completed. No error has been found.
 103 states generated, 103 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 12.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 1 and the 95th percentile is 1).
-Finished in 00s at (2026-11-02 21:32:24)
+Finished in 00s at (2026-11-03 23:45:55)
 ```
 
 </details>

@@ -270,14 +270,14 @@ Reject. An entry from an earlier term is committed by the entry of the current t
 
 ## Evidence
 
-How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 21 in 16 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 16,452 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 362,408 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
+How the verdict was reached: three terms, two entries: TLC 2.19 explored 25,666 distinct states to depth 21 in 15 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 10,087 distinct states to depth 16 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 16,452 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 362,408 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1002859] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1139903] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -298,9 +298,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 21:53:58)
+Starting... (2026-11-04 00:07:51)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:01.
+Finished computing initial states: 1 distinct state generated at 2026-11-04 00:07:54.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -355,11 +355,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 135589 states generated, 25666 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 21.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 3).
-Finished in 16s at (2026-11-02 21:54:14)
+Finished in 15s at (2026-11-04 00:08:07)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1003664] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1140636] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -380,9 +380,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 21:54:16)
+Starting... (2026-11-04 00:08:08)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:18.
+Finished computing initial states: 1 distinct state generated at 2026-11-04 00:08:10.
 Error: Invariant LeaderCompleteness is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -680,11 +680,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 55256 states generated, 10087 distinct states found, 466 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 08s at (2026-11-02 21:54:24)
+Finished in 08s at (2026-11-04 00:08:16)
 
 == fairness: spec/RaftReplicationLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1004124] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1141062] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -705,16 +705,16 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 21:54:24)
+Starting... (2026-11-04 00:08:17)
 Implied-temporal checking--satisfiability problem has 5 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:54:27.
-Checking 5 branches of temporal properties for the current state space with 3085 total distinct states at (2026-11-02 21:54:30)
-Finished checking temporal properties in 00s at 2026-11-02 21:54:30
-Checking 5 branches of temporal properties for the current state space with 55260 total distinct states at (2026-11-02 21:55:30)
-Finished checking temporal properties in 00s at 2026-11-02 21:55:30
-Checking 5 branches of temporal properties for the complete state space with 82260 total distinct states at (2026-11-02 21:55:57)
-Finished checking temporal properties in 00s at 2026-11-02 21:55:57
+Finished computing initial states: 1 distinct state generated at 2026-11-04 00:08:19.
+Checking 5 branches of temporal properties for the current state space with 2945 total distinct states at (2026-11-04 00:08:22)
+Finished checking temporal properties in 00s at 2026-11-04 00:08:22
+Checking 5 branches of temporal properties for the current state space with 53800 total distinct states at (2026-11-04 00:09:22)
+Finished checking temporal properties in 00s at 2026-11-04 00:09:22
+Checking 5 branches of temporal properties for the complete state space with 82260 total distinct states at (2026-11-04 00:09:49)
+Finished checking temporal properties in 00s at 2026-11-04 00:09:49
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -774,11 +774,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 83995 states generated, 16452 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 01min 33s at (2026-11-02 21:55:58)
+Finished in 01min 32s at (2026-11-04 00:09:49)
 
 == delayed replies: spec/RaftReplicationDelayed.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1008718] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1145702] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -799,9 +799,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-02 21:55:59)
+Starting... (2026-11-04 00:09:50)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:56:02.
+Finished computing initial states: 1 distinct state generated at 2026-11-04 00:09:52.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -861,7 +861,7 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 4792353 states generated, 362408 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 23.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 9 and the 95th percentile is 3).
-Finished in 03min 58s at (2026-11-02 21:59:58)
+Finished in 04min 32s at (2026-11-04 00:14:23)
 ```
 
 </details>

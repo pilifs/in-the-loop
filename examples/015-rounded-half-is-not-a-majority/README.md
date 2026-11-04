@@ -159,6 +159,12 @@ public final class PropertyHarness {
               }
             },
             {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
               "id": "property-violated",
               "shortDescription": {
                 "text": "An input exists on which the method violates its stated property."

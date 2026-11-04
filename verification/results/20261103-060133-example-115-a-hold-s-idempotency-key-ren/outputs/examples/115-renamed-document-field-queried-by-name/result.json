@@ -1,0 +1,64 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 5 boundary changes",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java",
+    "startLine": 9,
+    "code": " * A customer's claim on some seats until {@code expiresAt}. The seats themselves record whether the claim still\n * stands; this document only remembers what was asked for and what it costs.\n *\n * @param idempotencyKey the client's {@code Idempotency-Key}, if it sent one\n */\n@Document(\"holds\")\npublic record HoldDocument(\n    // ...\n        long amountCents,\n        Instant createdAt,\n        Instant expiresAt,\n        String idempotencyKey) {}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/store/HoldDocument.java",
+    "startLine": 9,
+    "code": " * A customer's claim on some seats until {@code expiresAt}. The seats themselves record whether the claim still\n * stands; this document only remembers what was asked for and what it costs.\n *\n * @param requestKey the client's {@code Idempotency-Key}, if it sent one\n */\n@Document(\"holds\")\npublic record HoldDocument(\n    // ...\n        long amountCents,\n        Instant createdAt,\n        Instant expiresAt,\n        String requestKey) {}\n"
+  },
+  "casesTotal": null,
+  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 3 problems",
+  "counterexamples": [
+    {
+      "input": "stored net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "contract": null,
+      "actual": "! TicketingStore(MongoTemplate) indexes \"idempotencyKey\": not a field of HoldDocument, OrderDocument or SeatDocument, so the index is on a field that is never set"
+    },
+    {
+      "input": "stored net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "contract": null,
+      "actual": "! TicketingStore(MongoTemplate) queries \"idempotencyKey\": not a field of HoldDocument, OrderDocument or SeatDocument, so the condition tests a field that is never set"
+    },
+    {
+      "input": "stored net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "contract": null,
+      "actual": "! TicketingStore.holdByIdempotencyKey(String, String) queries \"idempotencyKey\": not a field of HoldDocument, so the condition tests a field that is never set"
+    },
+    {
+      "input": "stored net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "contract": null,
+      "actual": "requestKey: String"
+    },
+    {
+      "input": "stored net.terminalvalue.boxoffice.ticketing.store.HoldDocument",
+      "contract": "idempotencyKey: String",
+      "actual": null
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": []
+}

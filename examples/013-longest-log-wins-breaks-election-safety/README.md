@@ -97,7 +97,7 @@ Keep term first. If the comparison must read differently, write it as a tuple co
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=1, votedFor=0, lastLogTerm=0, lastLogIndex=2, candidate=0, candidateTerm=19, candidateLastLogTerm=4, candidateLastLogIndex=0), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=0, lastLogIndex=12, candidate=20, candidateTerm=20, candidateLastLogTerm=17, candidateLastLogIndex=4), shrunk to the input above in 39 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
 <details><summary>Verifier output</summary>
 
@@ -106,7 +106,7 @@ How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [
   grant(currentTerm=0, votedFor=0, lastLogTerm=0, lastLogIndex=1, candidate=0, candidateTerm=0, candidateLastLogTerm=1, candidateLastLogIndex=0)
     before: true
     after:  false
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=1, votedFor=0, lastLogTerm=0, lastLogIndex=2, candidate=0, candidateTerm=19, candidateLastLogTerm=4, candidateLastLogIndex=0), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=0, lastLogIndex=12, candidate=20, candidateTerm=20, candidateLastLogTerm=17, candidateLastLogIndex=4), shrunk to the input above in 39 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -167,6 +167,12 @@ public final class EquivalenceHarness {
               "id": "api-changed",
               "shortDescription": {
                 "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
               }
             },
             {

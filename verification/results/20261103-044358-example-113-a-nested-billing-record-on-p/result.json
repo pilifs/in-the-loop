@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-044358-example-113-a-nested-billing-record-on-p",
+  "title": "Example 113: a nested Billing record on PlaceOrder carries constraints no @Valid leads into, caught by the validation checks of the boundary contract (B12)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m37s, peak 2.0 GiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (example 113 (B12)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-044358-example-113-a-nested-billing-record-on-p.json",
+    "sha256": "942549c44a2f7899dc20458129567620807a00d23a538bfa94990ed3bf989bd7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-044358-example-113-a-nested-billing-record-on-p",
+      "title": "Example 113: a nested Billing record on PlaceOrder carries constraints no @Valid leads into, caught by the validation checks of the boundary contract (B12)",
+      "description": "The first example of the validation checks on a boundary contract: jvmcontract reads the Bean Validation constraints on each wire type of the Box Office ticketing service, inside the types too (from the class file's type annotations), and writes a ! line under a property whose type carries constraints that no @Valid on the property or inside its type leads into, as Hibernate Validator does not cascade without one. The patch adds a nested Billing record with @NotBlank and @Email fields to PlaceOrder as a @NotNull component; the handler's @Valid validates PlaceOrder's own properties only, so a blank name or a bad email is accepted, and every test posts valid ones. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: constraints on Billing are not checked: no @Valid on billing. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/validation.rs",
+          "lib/src/wire.rs"
+        ],
+        "examples": [
+          "113"
+        ]
+      },
+      "expected": "build.py 113 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-03T04:43:58+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 113 (B12)",
+          "run": "python3 examples/tools/build.py 113",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/113-billing-constraints-without-valid-cascade"
+      ]
+    }
+  },
+  "sourceCommit": "47ba90eb750e82b76d968b47510dd4c85335d6e2",
+  "startedAt": "2026-11-04T06:56:20+00:00",
+  "finishedAt": "2026-11-04T06:57:58+00:00",
+  "wallSeconds": 98.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 1063331,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2128601088,
+    "wallSeconds": 97.9,
+    "cpuSeconds": 142.4,
+    "memoryOfEstimate": 0.66,
+    "durationOfEstimate": 0.33
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 113 (B12)",
+      "run": "python3 examples/tools/build.py 113",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 97.936,
+      "cpuSeconds": 142.411,
+      "cpuThrottledSeconds": 3.667,
+      "peakMemoryBytes": 2128601088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-113-b12.log",
+        "lines": 2,
+        "bytes": 322,
+        "sha256": "074285af63dcd0144d089de65db86a1fe8c9c9e1cb60511a1ca43aedeb8be19c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "113-billing-constraints-without-valid-cascade: running (B12)",
+        "/home/filip/code/java-formal-verification/verification/.state/work/20261103-044358-example-113-a-nested-billing-record-on-p/examples/113-billing-constraints-without-valid-cascade/result.json: Additional properties are not allowed ('newProblems' was unexpected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/113-billing-constraints-without-valid-cascade/result.json",
+      "change": "added",
+      "bytes": 8077,
+      "sha256": "14b48c1f2912675c291e087079060e07a5fcdec9f66adf45ffb50e82531bf9d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/113-billing-constraints-without-valid-cascade/result.sarif",
+      "change": "added",
+      "bytes": 3593,
+      "sha256": "1017d7f1999ed106a469b679bffe7881f77a8449267470fdadac94de891791fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/113-billing-constraints-without-valid-cascade/verifier-output.txt",
+      "change": "added",
+      "bytes": 2022,
+      "sha256": "9915dc6901e85ff6bd31ace80411af2982437c9e14fec5df14bd96a242058b46",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T07:08:26+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/113-billing-constraints-without-valid-cascade/result.json",
+      "examples/113-billing-constraints-without-valid-cascade/result.sarif",
+      "examples/113-billing-constraints-without-valid-cascade/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261103-044358-example-113-a-nested-billing-record-on-p"
+}

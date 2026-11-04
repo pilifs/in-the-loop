@@ -70,7 +70,7 @@ The property `result >= baseMillis && result <= capMillis && (attempt == 0 || re
 
 | Input | The method's outcome |
 |---|---|
-| `delayMillis(attempt=48, baseMillis=32768, capMillis=32768)` | `-9223372036854775808` |
+| `delayMillis(attempt=47, baseMillis=65536, capMillis=65536)` | `-9223372036854775808` |
 
 One input is enough to fail the build. The domain is `attempt: int × baseMillis: long × capMillis: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -92,15 +92,15 @@ Keep the guard, or write the cap test as the old code did (`base > cap >> attemp
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000] as delayMillis(attempt=176, baseMillis=63488, capMillis=64512), shrunk to the input above in 234 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.
+How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000] as delayMillis(attempt=99951, baseMillis=65536, capMillis=65536), shrunk to the input above in 58 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:
-  delayMillis(attempt=48, baseMillis=32768, capMillis=32768)
+  delayMillis(attempt=47, baseMillis=65536, capMillis=65536)
     outcome: -9223372036854775808
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [-100000:100000] as delayMillis(attempt=176, baseMillis=63488, capMillis=64512), shrunk to the input above in 234 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000] as delayMillis(attempt=99951, baseMillis=65536, capMillis=65536), shrunk to the input above in 58 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
@@ -162,6 +162,12 @@ public final class PropertyHarness {
               }
             },
             {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
               "id": "property-violated",
               "shortDescription": {
                 "text": "An input exists on which the method violates its stated property."
@@ -181,7 +187,7 @@ public final class PropertyHarness {
           "ruleId": "property-violated",
           "level": "error",
           "message": {
-            "text": "Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:\n  delayMillis(attempt=48, baseMillis=32768, capMillis=32768)\n    outcome: -9223372036854775808"
+            "text": "Property of net.terminalvalue.quorum.backoff.Backoff#delayMillis violated: `result >= baseMillis && result <= capMillis && (attempt == 0 || result >= delayMillis(attempt - 1, baseMillis, capMillis))` where attempt >= 0 && baseMillis > 0 && capMillis >= baseMillis:\n  delayMillis(attempt=47, baseMillis=65536, capMillis=65536)\n    outcome: -9223372036854775808"
           },
           "locations": [
             {

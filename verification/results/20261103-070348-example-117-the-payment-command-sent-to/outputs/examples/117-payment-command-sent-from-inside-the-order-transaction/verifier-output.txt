@@ -1,0 +1,27 @@
+✗ Boundaries of module ticketing-service differ from their contract:
+  added configuration: boxoffice.outbox.batch-size: int, default 100
+  added configuration: boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100
+  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms
+  added configuration: boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): ! a transaction that sends to payments.commands: the send is not part of the transaction, so a rollback leaves the message sent and a crash before the send leaves the commit unannounced
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, Outbox.Entry, SeatDocument
+  added net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @KafkaListener(topics = "payments.events", groupId = "ticketing") => void on(ConsumerRecord<String, String> record): reads Inbox.Entry, OrderDocument, SeatDocument
+  added net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @KafkaListener(topics = "payments.events", groupId = "ticketing") => void on(ConsumerRecord<String, String> record): writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: CONFIRMED
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: DECLINED
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: PENDING_PAYMENT
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUNDED
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: REFUND_PENDING
+  added wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum
+  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: AVAILABLE
+  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: HELD
+  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: SOLD
+  added wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum
+  removed configuration: boxoffice.outbox.poll-interval = 100ms
+  removed configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it
+  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, SeatDocument
+  removed net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @KafkaListener(topics = "payments.events", groupId = "ticketing") => void on(ConsumerRecord<String, String> record): reads OrderDocument, SeatDocument
+  removed net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @KafkaListener(topics = "payments.events", groupId = "ticketing") => void on(ConsumerRecord<String, String> record): writes OrderDocument, SeatDocument
+  (16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems)
+New `!` lines in the regenerated contract:
+  added configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it

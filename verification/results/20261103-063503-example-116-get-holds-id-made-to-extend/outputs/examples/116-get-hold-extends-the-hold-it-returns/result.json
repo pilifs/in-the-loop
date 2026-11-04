@@ -1,0 +1,172 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 2 new problems",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "startLine": 76,
+    "code": "    });\n}\n\npublic HoldDocument get(String holdId) {\n    return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n}\n\n/**\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+    "startLine": 76,
+    "code": "    });\n}\n\n/**\n * Returns the hold and keeps it alive: the checkout page shows the hold while the customer fills in the\n * payment form, and should not lose the seats under them while they do.\n */\npublic HoldDocument get(String holdId) {\n    var hold = store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    Instant now = clock.instant();\n    if (hold.expiresAt().isAfter(now)) {\n        store.extend(hold.id(), policy.expiresAt(now));\n    }\n    return hold;\n}\n\n/**\n"
+  },
+  "casesTotal": null,
+  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
+  "counterexamples": [
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.batch-size: int, default 100"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.batch-size: int, default 100: @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval: Duration = 100ms: @Scheduled in OutboxRelay.publishPending(), default 100ms"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, Outbox.Entry, SeatDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": null,
+      "actual": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): reads Inbox.Entry, OrderDocument, SeatDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": null,
+      "actual": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "CONFIRMED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "DECLINED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "PENDING_PAYMENT"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "REFUNDED"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "REFUND_PENDING"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus",
+      "contract": null,
+      "actual": "enum"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "AVAILABLE"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "HELD"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "SOLD"
+    },
+    {
+      "input": "wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus",
+      "contract": null,
+      "actual": "enum"
+    },
+    {
+      "input": "configuration",
+      "contract": "boxoffice.outbox.poll-interval = 100ms",
+      "actual": null
+    },
+    {
+      "input": "configuration",
+      "contract": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id): writes OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): reads OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener",
+      "contract": "@KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record): writes OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": null,
+      "actual": "GET /holds/{id} => Hold get(@PathVariable String id): ! a GET that writes HoldDocument and SeatDocument: a safe method with side effects, so a retry, a prefetch or a crawler changes state"
+    },
+    {
+      "input": "configuration",
+      "contract": null,
+      "actual": "boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": "--- a/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n+++ b/examples/apps/boxoffice/ticketing-service/src/contract/boundaries.contract\n@@ -9,7 +9,7 @@\n # the topics it sends to, the HTTP calls it makes, the events it publishes. A `!` line is a place where\n # something does not do what it says.\n kind: boundaries\n-module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 0 problems\n+module: ticketing-service, 16 beans, 13 entry points, 0 advised methods, 13 configuration keys, 7 wire types, 4 stored types, 2 problems\n \n net.terminalvalue.boxoffice.ticketing.TicketingApplication: @SpringBootApplication @Import(net.terminalvalue.boxoffice.messaging.MessagingConfiguration.class)\n   @Bean => HoldPolicy holdPolicy(@Value(\"${boxoffice.hold.max-seats:8}\") int maxSeats, @Value(\"${boxoffice.hold.ttl:2m}\") Duration ttl)\n@@ -32,16 +32,18 @@\n net.terminalvalue.boxoffice.ticketing.api.HoldController: @RestController\n   GET /holds/{id} => Hold get(@PathVariable String id)\n     reads HoldDocument\n+    writes HoldDocument, SeatDocument\n+    ! a GET that writes HoldDocument and SeatDocument: a safe method with side effects, so a retry, a prefetch or a crawler changes state\n \n net.terminalvalue.boxoffice.ticketing.api.OrderController: @RestController @RequestMapping(\"/orders\")\n   POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)\n     reads HoldDocument, OrderDocument, SeatDocument\n-    writes OrderDocument, Outbox.Entry\n+    writes OrderDocument\n   GET /orders/{id} => Order get(@PathVariable String id)\n     reads OrderDocument\n   POST /orders/{id}/cancellation => ResponseEntity<Order> cancel(@PathVariable String id)\n     reads OrderDocument\n-    writes OrderDocument, Outbox.Entry, SeatDocument\n+    writes OrderDocument, SeatDocument\n \n net.terminalvalue.boxoffice.ticketing.app.ConcertService: @Service\n \n@@ -57,8 +59,8 @@\n \n net.terminalvalue.boxoffice.ticketing.events.PaymentEventListener: @Component\n   @KafkaListener(topics = \"payments.events\", groupId = \"ticketing\") => void on(ConsumerRecord<String, String> record)\n-    reads Inbox.Entry, OrderDocument, SeatDocument\n-    writes Inbox.Entry, OrderDocument, Outbox.Entry, SeatDocument\n+    reads OrderDocument, SeatDocument\n+    writes OrderDocument, SeatDocument\n \n net.terminalvalue.boxoffice.ticketing.store.ConcertDocument: @Document(\"concerts\")\n   @Id String id\n@@ -86,10 +88,8 @@\n     @Scheduled in HoldService.releaseExpiredHolds(), default 1s\n   boxoffice.hold.ttl: Duration = 2m\n     @Value in TicketingApplication.holdPolicy(int, Duration), ttl, default 2m\n-  boxoffice.outbox.batch-size: int, default 100\n-    @Value in MessagingConfiguration.outboxRelay(MongoTemplate, KafkaTemplate, Clock, int), batchSize, default 100\n-  boxoffice.outbox.poll-interval: Duration = 100ms\n-    @Scheduled in OutboxRelay.publishPending(), default 100ms\n+  boxoffice.outbox.poll-interval = 100ms\n+    ! nothing binds it: no class on the class path reads it and no configuration metadata declares it\n   management.endpoints.web.exposure.include: Set<String> = health,info\n     declared by WebEndpointProperties$Exposure\n   server.port: Integer = 8081\n@@ -156,18 +156,6 @@\n   holdId: @NotBlank String\n   paymentToken: @NotBlank String\n \n-wire net.terminalvalue.boxoffice.ticketing.domain.OrderStatus: enum\n-  PENDING_PAYMENT\n-  CONFIRMED\n-  DECLINED\n-  REFUND_PENDING\n-  REFUNDED\n-\n-wire net.terminalvalue.boxoffice.ticketing.domain.SeatStatus: enum\n-  AVAILABLE\n-  HELD\n-  SOLD\n-\n stored net.terminalvalue.boxoffice.ticketing.store.ConcertDocument: record, collection \"concerts\"\n   _id: String (id)\n   name: String\n",
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": [
+    "net.terminalvalue.boxoffice.ticketing.api.HoldController: GET /holds/{id} => Hold get(@PathVariable String id): ! a GET that writes HoldDocument and SeatDocument: a safe method with side effects, so a retry, a prefetch or a crawler changes state",
+    "configuration: boxoffice.outbox.poll-interval = 100ms: ! nothing binds it: no class on the class path reads it and no configuration metadata declares it"
+  ]
+}

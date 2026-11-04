@@ -1,0 +1,64 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: 5 boundary changes",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": ":ticketing-service:test",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java",
+    "startLine": 14,
+    "code": "    this.holds = holds;\n}\n\n@GetMapping(\"/holds/{id}\")\nConcertController.Hold get(@PathVariable String id) {\n    return ConcertController.Hold.of(holds.get(id));\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/HoldController.java",
+    "startLine": 14,
+    "code": "    this.holds = holds;\n}\n\n/** The variable is named for what it is, as in the OpenAPI description; the order and concert routes follow. */\n@GetMapping(\"/holds/{holdId}\")\nConcertController.Hold get(@PathVariable String id) {\n    return ConcertController.Hold.of(holds.get(id));\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
+  "counterexamples": [
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": null,
+      "actual": "GET /holds/{holdId} => Hold get(@PathVariable String id)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": null,
+      "actual": "GET /holds/{holdId} => Hold get(@PathVariable String id): ! @PathVariable id matches no variable in /holds/{holdId}: MissingPathVariableException, a 500 on every request"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": null,
+      "actual": "GET /holds/{holdId} => Hold get(@PathVariable String id): reads HoldDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": "GET /holds/{id} => Hold get(@PathVariable String id)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.HoldController",
+      "contract": "GET /holds/{id} => Hold get(@PathVariable String id): reads HoldDocument",
+      "actual": null
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": null,
+  "problem": null,
+  "statement": null,
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "newProblems": []
+}

@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261103-052906-example-114-a-cacheable-on-the-concert-l",
+  "title": "Example 114: a @Cacheable on the concert lookup with no @EnableCaching in scope, caught by the activation block of the boundary contract (B12)",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m36s, peak 1.6 GiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (example 114 (B12)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261103-052906-example-114-a-cacheable-on-the-concert-l.json",
+    "sha256": "7574d3be1f71712978bf31b102f63eddd2d1cb2d36c7a824d848249136a13e43",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261103-052906-example-114-a-cacheable-on-the-concert-l",
+      "title": "Example 114: a @Cacheable on the concert lookup with no @EnableCaching in scope, caught by the activation block of the boundary contract (B12)",
+      "description": "The first example of the activation block of a boundary contract: jvmcontract names, for each kind of annotation the Box Office ticketing service uses, what switches it on (an @Enable annotation on a configuration in scope, an auto-configuration whose class-path conditions hold, a Bean Validation provider on the class path) and writes a ! line for a family nothing enables. The patch puts @Cacheable(\"concerts\") on TicketingStore.concert(String); no configuration in scope carries @EnableCaching and Spring Boot does not switch caching on by itself, so every call still reads Mongo and every test passes. The change is intended, so the runner regenerates the contract and reports as the violation the new ! line: no @EnableCaching on a configuration in scope: every call runs the method and nothing is cached or evicted. The runner compiles the module with Gradle, reads the runtime class path through the build's printRuntimeClasspath task, and runs jvmcontract update then verify with --resources and --classpath; the module's Spring Boot tests need Docker and are recorded as the tests' result.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/activation.rs",
+          "lib/src/boundaries.rs"
+        ],
+        "examples": [
+          "114"
+        ]
+      },
+      "expected": "build.py 114 exits 0: verdict violation, 1 new problem, matches expected",
+      "submitted": {
+        "at": "2026-11-03T05:29:06+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 114 (B12)",
+          "run": "python3 examples/tools/build.py 114",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/114-cacheable-without-enable-caching"
+      ]
+    }
+  },
+  "sourceCommit": "efb3907f5f394e0acdd6de534aed0339617f288a",
+  "startedAt": "2026-11-04T06:57:59+00:00",
+  "finishedAt": "2026-11-04T06:59:36+00:00",
+  "wallSeconds": 97.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 1063331,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1740111872,
+    "wallSeconds": 96.5,
+    "cpuSeconds": 141.8,
+    "memoryOfEstimate": 0.54,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 114 (B12)",
+      "run": "python3 examples/tools/build.py 114",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 96.482,
+      "cpuSeconds": 141.839,
+      "cpuThrottledSeconds": 4.012,
+      "peakMemoryBytes": 1740111872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-114-b12.log",
+        "lines": 2,
+        "bytes": 304,
+        "sha256": "ef7976bc1149b2f984867472c79f1a04a1375a8441d7cd6b2c0296430b9fccf6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "114-cacheable-without-enable-caching: running (B12)",
+        "/home/filip/code/java-formal-verification/verification/.state/work/20261103-052906-example-114-a-cacheable-on-the-concert-l/examples/114-cacheable-without-enable-caching/result.json: Additional properties are not allowed ('newProblems' was unexpected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/114-cacheable-without-enable-caching/result.json",
+      "change": "added",
+      "bytes": 8570,
+      "sha256": "54c8c2006c30fdade443a2ea80b58e2fc0c0c00920506abe7f69963258faf73d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/114-cacheable-without-enable-caching/result.sarif",
+      "change": "added",
+      "bytes": 3593,
+      "sha256": "1017d7f1999ed106a469b679bffe7881f77a8449267470fdadac94de891791fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/114-cacheable-without-enable-caching/verifier-output.txt",
+      "change": "added",
+      "bytes": 2009,
+      "sha256": "48f6747a8b2a667f19cdeaff897d197ecffe6b2a8c253b5e6dec660ee213a8cb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-04T07:08:26+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/114-cacheable-without-enable-caching/result.json",
+      "examples/114-cacheable-without-enable-caching/result.sarif",
+      "examples/114-cacheable-without-enable-caching/verifier-output.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/java-formal-verification/verification/.state/work/20261103-052906-example-114-a-cacheable-on-the-concert-l"
+}

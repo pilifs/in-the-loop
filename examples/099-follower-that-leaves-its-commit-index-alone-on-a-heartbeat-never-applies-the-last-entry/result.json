@@ -1,6 +1,6 @@
 {
   "verdict": "violation",
-  "verdictLabel": "✗ Violation: FollowersLearnCommits, 8-step trace then forever (fairness)",
+  "verdictLabel": "✗ Violation: FollowersLearnCommits, 7-step trace then forever (fairness)",
   "matchesExpected": true,
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
@@ -23,7 +23,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/AppendRule.decide.contract\n+++ b/examples/apps/quorum/src/contract/AppendRule.decide.contract\n@@ -22,12 +22,12 @@\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true])  => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, null)                                                => Rejected[reason=\"another entry at the previous index\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=false])         => Transition[next=MATCHING, effects=[APPEND]]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=true])          => Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=false])    => Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=true])     => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]\n decide(MATCHING, null)                                                   => throws NullPointerException\n",
-  "proof": "three terms, two entries: TLC 2.19 explored 17,221 distinct states to depth 20 in 9 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 7,277 distinct states to depth 18 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 2,636 distinct states in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 214,040 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+  "proof": "three terms, two entries: TLC 2.19 explored 17,221 distinct states to depth 20 in 12 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 7,277 distinct states to depth 18 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 2,286 distinct states in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 214,040 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
   "problem": null,
   "statement": null,
   "trace": [
@@ -46,66 +46,59 @@
       "step": 2,
       "action": "Timeout",
       "changes": {
-        "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
-        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-        "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
-        "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+        "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)",
+        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
+        "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
       }
     },
     {
       "step": 3,
-      "action": "Timeout",
+      "action": "Canvass",
       "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
+        "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 1)",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )",
+        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"LEADER\")",
+        "votedFor": "(s1 :> s3 @@ s2 :> \"none\" @@ s3 :> s3)",
+        "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s1, s3})"
       }
     },
     {
       "step": 4,
-      "action": "Canvass",
+      "action": "ClientRequest",
       "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-        "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
-        "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+        "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<1>>)"
       }
     },
     {
       "step": 5,
-      "action": "ClientRequest",
+      "action": "Replicate",
       "changes": {
-        "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+        "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)",
+        "log": "(s1 :> <<>> @@ s2 :> <<1>> @@ s3 :> <<1>>)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 1) )"
       }
     },
     {
       "step": 6,
-      "action": "Replicate",
+      "action": "AdvanceCommit",
       "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
-        "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
-        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+        "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)"
       }
     },
     {
       "step": 7,
-      "action": "AdvanceCommit",
-      "changes": {
-        "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
-      }
-    },
-    {
-      "step": 8,
       "action": "Replicate",
       "changes": {
-        "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
-        "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
-        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+        "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 1)",
+        "log": "(s1 :> <<1>> @@ s2 :> <<1>> @@ s3 :> <<1>>)",
+        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0) )",
+        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1) )"
       }
     }
   ],
-  "statesExplored": 2636,
+  "statesExplored": 2286,
   "invariant": "FollowersLearnCommits",
   "property": null,
   "stateMachine": "stateDiagram-v2\n    CONFLICTING: CONFLICTING (no incoming transition, terminal)\n    MATCHING: MATCHING (no incoming transition, terminal)\n    MISSING: MISSING (no incoming transition, terminal)\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=false] → effects=[APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=true] → effects=[APPEND, ADVANCE_COMMIT]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=false] → effects=[TRUNCATE, APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=true] → effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=true] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=true] (Unchanged)\n",
@@ -438,11 +431,11 @@
       "label": "fairness",
       "cfg": "spec/RaftReplicationLive.cfg",
       "verdict": "violation",
-      "summary": "✗ Violation: FollowersLearnCommits, 8-step trace then forever",
+      "summary": "✗ Violation: FollowersLearnCommits, 7-step trace then forever",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
       "invariant": "FollowersLearnCommits",
       "violationKind": "temporal",
-      "statesExplored": 2636,
+      "statesExplored": 2286,
       "trace": [
         {
           "step": 1,
@@ -463,62 +456,55 @@
           "step": 2,
           "action": "Timeout",
           "changes": {
-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
           }
         },
         {
           "step": 3,
-          "action": "Timeout",
+          "action": "Canvass",
           "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
+            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 1)",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) )",
+            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"LEADER\")",
+            "votedFor": "(s1 :> s3 @@ s2 :> \"none\" @@ s3 :> s3)",
+            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s1, s3})"
           }
         },
         {
           "step": 4,
-          "action": "Canvass",
+          "action": "ClientRequest",
           "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
-            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<1>>)"
           }
         },
         {
           "step": 5,
-          "action": "ClientRequest",
+          "action": "Replicate",
           "changes": {
-            "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 1)",
+            "log": "(s1 :> <<>> @@ s2 :> <<1>> @@ s3 :> <<1>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 1) )"
           }
         },
         {
           "step": 6,
-          "action": "Replicate",
+          "action": "AdvanceCommit",
           "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
-            "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
-            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+            "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)"
           }
         },
         {
           "step": 7,
-          "action": "AdvanceCommit",
-          "changes": {
-            "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
-          }
-        },
-        {
-          "step": 8,
           "action": "Replicate",
           "changes": {
-            "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
-            "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
-            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+            "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 1)",
+            "log": "(s1 :> <<1>> @@ s2 :> <<1>> @@ s3 :> <<1>>)",
+            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 0) )",
+            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 2 @@ s2 :> 2 @@ s3 :> 1) )"
           }
         }
       ],
