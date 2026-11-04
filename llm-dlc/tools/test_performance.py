@@ -3,6 +3,8 @@
 code it replaced. Run: python3 llm-dlc/tools/test_performance.py
 Every value here is made up, and those that look like secrets are assembled at run time, so that
 this file's own transcript raises no finding."""
+import ast
+import contextlib
 import gzip
 import io
 import json
@@ -10,6 +12,7 @@ import os
 import random
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import threading
@@ -19,7 +22,9 @@ from collections import Counter
 from pathlib import Path
 from unittest import mock
 
+import measure
 import redaction_rules
+import redactor
 import sync
 from redaction_rules import EMAIL_RE, WIN_USER_RE, email_spans
 
@@ -27,6 +32,14 @@ USER = "qzuser"
 SECRET = "made" + "up" + "-local-" + "value-0001"
 PAIRS = [("/ho" + "me/" + USER, "~", 0, "home"), ("zorbhost", "host", re.I, "hostname"),
          (USER + "@corp" + ".test", "user@example.com", re.I, "email"), (SECRET, "[REDACTED:local-secret]", 0, "local-secret")]
+
+
+def patch_both(name: str, new) -> contextlib.ExitStack:
+    """Patch a helper redactor.py defines and sync.py imports, in both modules, with one object."""
+    stack = contextlib.ExitStack()
+    for module in (sync, redactor):
+        stack.enter_context(mock.patch.object(module, name, new))
+    return stack
 
 
 STATE = tempfile.TemporaryDirectory()  # the caches and measurements of these tests, not this machine's
@@ -197,7 +210,7 @@ class Snapshots(unittest.TestCase):
                          {"change_id": "c3", "log_sha256": shas[0]}],
              "logs": {sha: {} for sha in shas}}
         loads = mock.Mock(wraps=sync.decompress)
-        with mock.patch.object(sync, "decompress", loads), mock.patch.object(sync, "load_log", side_effect=AssertionError), \
+        with patch_both("decompress", loads), mock.patch.object(sync, "load_log", side_effect=AssertionError), \
                 mock.patch.object(sync, "metrics_problems", return_value=([], [])):
             errors, _, notes, _ = sync.check_sessions({"s1": m}, sync.Redactor(), remote=False)
         self.assertEqual(sorted(sync.sha256(c.args[0]) for c in loads.call_args_list),
@@ -417,8 +430,8 @@ class Caches(unittest.TestCase):
                 data = full[:cut]
                 found = scans.hits("s1", sync.sha256(data), data)
                 text = data.decode(errors="replace")
-                self.assertEqual(found["leaks"], sync._counted(self.r.hits_of_text(text)[0]))
-                self.assertEqual(found["review"], sync._counted(self.r.hits_of_text(text)[1]))
+                self.assertEqual(found["leaks"], redactor._counted(self.r.hits_of_text(text)[0]))
+                self.assertEqual(found["review"], redactor._counted(self.r.hits_of_text(text)[1]))
                 # judged the same way as the text: a reviewed false positive is left out and counted
                 for kind, rows in found["review"].items():
                     listed.setdefault(next(iter(rows)), {})
@@ -635,8 +648,8 @@ class Checks(unittest.TestCase):
         self.assertIn("s1: 1 older log(s) are not a prefix of the current log, as after a redaction policy change", first[2])
         checks = sync.CheckCache(self.r, self.path)
         self.assertEqual(len([k for k in checks.entries if k.startswith("gz:")]), 4)
-        with mock.patch.object(sync, "decompress", side_effect=AssertionError("decompressed again")), \
-                mock.patch.object(sync, "prefix_digests", side_effect=AssertionError("hashed again")):
+        with patch_both("decompress", mock.Mock(side_effect=AssertionError("decompressed again"))), \
+                patch_both("prefix_digests", mock.Mock(side_effect=AssertionError("hashed again"))):
             self.assertEqual(self.check(m, checks), first)
         self.assertEqual(sync.CheckCache(self.r, self.path, trusted=False).entries, {})
         self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
@@ -687,10 +700,13 @@ class Checks(unittest.TestCase):
         m["stats"]["usage"]["input_tokens"] = 1
         problems([shas[2]])
         self.assertEqual(rendered.call_count, 6)
+        with mock.patch.object(sync, "tools_digest", return_value="made-up other tools"):  # sync.py or metrics.py edited
+            problems([shas[2]])
+        self.assertEqual(rendered.call_count, 7)
         problems([shas[2]], "{}")
-        self.assertEqual(rendered.call_count, 7)
+        self.assertEqual(rendered.call_count, 8)
         problems([shas[2]])
-        self.assertEqual(rendered.call_count, 7)
+        self.assertEqual(rendered.call_count, 8)
 
     def test_tree_files_are_what_jj_file_show_prints(self):
         with mock.patch.object(sync, "REPO", Path(sync.__file__).resolve().parents[2]):
@@ -704,6 +720,70 @@ class Checks(unittest.TestCase):
                 r = sync.jj("file", "show", "-r", c, p)
                 expected = r.stdout.encode() if r.returncode == 0 and p != "llm-dlc" else None
                 self.assertEqual(found[c, p], expected, (c, p))
+
+
+FINGERPRINTS = """
+import sys
+sys.path.insert(0, sys.argv[1])
+import redactor, sync
+print(redactor.Redactor(([], "qzuser"), {}).fingerprint(), sync.tools_digest())
+"""
+
+
+class Fingerprints(unittest.TestCase):
+    """The transcript, scan and check caches are keyed on redactor.py and the rules, not on the rest
+    of sync.py, which is safe only while redactor.py runs nothing from sync.py or metrics.py."""
+
+    TOOLS = Path(__file__).resolve().parent
+    SOURCES = ("sync.py", "redactor.py", "redaction_rules.py", "measure.py", "metrics.py")
+
+    def imports(self, name: str) -> set[str]:
+        tree = ast.parse((self.TOOLS / name).read_text())
+        found = set()
+        for node in ast.walk(tree):  # anywhere in the file, inside functions too
+            if isinstance(node, ast.Import):
+                found |= {a.name.split(".")[0] for a in node.names}
+            elif isinstance(node, ast.ImportFrom):
+                found.add((node.module or "").split(".")[0] if not node.level else ".")
+            elif isinstance(node, ast.Call) and getattr(node.func, "id", None) == "__import__":
+                found.add("__import__")
+        return found
+
+    def test_redactor_runs_nothing_from_sync_or_metrics(self):
+        allowed = set(sys.stdlib_module_names) | {"__future__"}
+        self.assertEqual(self.imports("redactor.py") - allowed, {"redaction_rules", "measure"})
+        self.assertEqual(self.imports("measure.py") - allowed, set())
+        self.assertEqual(self.imports("redaction_rules.py") - allowed, set())
+        self.assertEqual({p.name for p in redactor.FINGERPRINTED}, {"redaction_rules.py", "redactor.py"})
+        self.assertEqual(sync.ScanCache(MadeUpRedactor(), path=None).fingerprint, MadeUpRedactor().fingerprint())
+        self.assertEqual(sync.CheckCache(MadeUpRedactor(), path=None).fingerprint, MadeUpRedactor().fingerprint())
+        self.assertEqual(sync.transcript_cache(MadeUpRedactor()).fingerprint, MadeUpRedactor().fingerprint())
+
+    def fingerprints(self, edited: str | None) -> tuple[str, str]:
+        with tempfile.TemporaryDirectory() as d:
+            for name in self.SOURCES:
+                shutil.copy(self.TOOLS / name, d)
+            if edited:
+                with open(Path(d) / edited, "a") as f:
+                    f.write("\n# a made-up edit\n")
+            out = subprocess.run([sys.executable, "-I", "-c", FINGERPRINTS, d], capture_output=True, text=True, check=True)
+        return tuple(out.stdout.split())
+
+    def test_an_edit_to_sync_keeps_the_content_caches_and_drops_what_depends_on_it(self):
+        before = self.fingerprints(None)
+        self.assertEqual(self.fingerprints(None), before)  # by content, not by path
+        for edited, redactor_changes, tools_change in (("sync.py", False, True), ("metrics.py", False, True),
+                                                       ("measure.py", False, False), ("redactor.py", True, False),
+                                                       ("redaction_rules.py", True, False)):
+            after = self.fingerprints(edited)
+            self.assertEqual((after[0] != before[0], after[1] != before[1]), (redactor_changes, tools_change), edited)
+
+    def test_the_sync_cache_depends_on_the_rest_of_the_tools(self):
+        r = MadeUpRedactor()
+        with mock.patch.object(sync, "repo_web_url", return_value=None), mock.patch.object(sync, "has_jj", return_value=False):
+            first = sync.sync_cache(r).fingerprint
+            with mock.patch.object(sync, "tools_digest", return_value="made-up other tools"):
+                self.assertNotEqual(sync.sync_cache(r).fingerprint, first)
 
 
 class Incremental(unittest.TestCase):
@@ -1115,6 +1195,7 @@ class HookCursor(unittest.TestCase):
             for label, content, patch in (
                     ("replaced", changed, mock.patch.dict("os.environ", {})),
                     ("--full", changed, mock.patch.dict("os.environ", {"LLM_TRACES_FULL": "1"})),
+                    ("other tools", changed, mock.patch.object(sync, "tools_digest", return_value="other")),
                     ("other rules", changed, mock.patch.object(MadeUpRedactor, "fingerprint", return_value="other"))):
                 self.transcript.write_bytes(content)
                 seen, counting = self.lengths()
@@ -1293,7 +1374,7 @@ class Uploads(unittest.TestCase):
         checks.save()
         scanned = mock.Mock(side_effect=AssertionError("scanned again"))
         with mock.patch.object(MadeUpRedactor, "raw_hits", scanned), \
-                mock.patch.object(sync, "decompress", side_effect=AssertionError("decompressed again")):
+                patch_both("decompress", mock.Mock(side_effect=AssertionError("decompressed again"))):
             code, out, err = self.run_upload(lambda: sync.cmd_upload())
         self.assertEqual(code, 1)  # the secret and the missing log, from the caches
         self.assertTrue(any("unredacted ['local-secret']" in e for e in err))
@@ -1397,7 +1478,7 @@ class AtomicWrites(unittest.TestCase):
 
 class Perf(unittest.TestCase):
     def test_phases_nest_and_records_are_kept(self):
-        perf = sync.Perf()
+        perf = measure.Perf()
         with perf.phase("outer"):
             with perf.phase("inner"):
                 perf.count("things", 2)
@@ -1415,7 +1496,7 @@ class Perf(unittest.TestCase):
         self.assertIn("outer/inner", out.getvalue())
 
     def test_threads_count_and_nest_on_their_own(self):
-        perf = sync.Perf()
+        perf = measure.Perf()
 
         def work(n):
             with perf.phase("worker"):

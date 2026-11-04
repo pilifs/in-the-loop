@@ -83,11 +83,9 @@ import base64
 import contextlib
 import gzip
 import hashlib
-import io
 import json
 import os
 import re
-import resource
 import shutil
 import signal
 import socket
@@ -107,6 +105,9 @@ from pathlib import Path
 
 import metrics  # llm-dlc/tools/metrics.py
 import redaction_rules  # llm-dlc/tools/redaction_rules.py
+import redactor  # llm-dlc/tools/redactor.py: what decides a cached result
+from measure import perf  # llm-dlc/tools/measure.py
+from redactor import LocalCache, _mask, atomic_write, decoded, decompress, finding_id, prefix_digests, sha256
 from redaction_rules import NEVER_REVIEWED, REDACTION_POLICY, REVIEW_PATTERNS, older_than_stamp
 
 REPO = Path(__file__).resolve().parents[2]
@@ -179,60 +180,6 @@ PERF_LOG_LINES = 2000          # kept when the file is trimmed
 # 2026): level 9, Python's default, 1.66 s and 16.9% of the size; 6, 1.25 s and 17.0%; 3, 0.49 s and
 # 20.2%; 1, 0.42 s and 21.9%. Decompression takes 0.2 s at any level.
 GZIP_LEVEL = 6
-
-
-def _child_cpu() -> float:
-    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
-    return usage.ru_utime + usage.ru_stime
-
-
-class Perf:
-    """Where one command's time goes: wall time, its own CPU time and its subprocesses', per phase
-    (nested phases are named by path, a/b), and counters of bytes, cache hits, subprocesses and
-    network requests. Every command appends one record to PERF_LOG; LLM_TRACES_PERF=1 prints it
-    too. Holds names and numbers only, no paths or content. Threads may count and time phases:
-    each has its own nesting, and CPU time is the process's, so phases that overlap in time
-    share it."""
-
-    def __init__(self) -> None:
-        self.wall, self.cpu, self.child = time.perf_counter(), time.process_time(), _child_cpu()
-        self.phases: dict[str, list[float]] = {}  # path -> [calls, wall, cpu, child cpu]
-        self.counters: Counter = Counter()
-        self._local = threading.local()  # .stack: the phases this thread is in
-        self._lock = threading.Lock()
-
-    @contextlib.contextmanager
-    def phase(self, name: str):
-        stack = self._local.__dict__.setdefault("stack", [])
-        stack.append(name)
-        path = "/".join(stack)
-        wall, cpu, child = time.perf_counter(), time.process_time(), _child_cpu()
-        try:
-            yield
-        finally:
-            stack.pop()
-            with self._lock:
-                row = self.phases.setdefault(path, [0, 0.0, 0.0, 0.0])
-                row[0] += 1
-                row[1] += time.perf_counter() - wall
-                row[2] += time.process_time() - cpu
-                row[3] += _child_cpu() - child
-
-    def count(self, key: str, n: float = 1) -> None:
-        with self._lock:
-            self.counters[key] += n
-
-    def record(self, command: str) -> dict:
-        r3 = lambda x: round(x, 3)
-        return {"command": command, "at": datetime.now().isoformat(timespec="seconds"),
-                "wall": r3(time.perf_counter() - self.wall), "cpu": r3(time.process_time() - self.cpu),
-                "child_cpu": r3(_child_cpu() - self.child),
-                "phases": {k: {"calls": int(c), "wall": r3(w), "cpu": r3(u), "child_cpu": r3(ch)}
-                           for k, (c, w, u, ch) in self.phases.items()},
-                "counters": {k: r3(v) if isinstance(v, float) else v for k, v in sorted(self.counters.items())}}
-
-
-perf = Perf()
 
 
 def format_perf(record: dict) -> str:
@@ -345,16 +292,6 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
     return pairs, user
 
 
-def _mask(s: str) -> str:
-    """Enough of a finding to recognise it, not enough to repeat it: scan output lands in transcripts."""
-    return s if len(s) <= 4 else s[:3] + "…" + s[-2:] + f" ({len(s)} chars)" if len(s) > 12 else s[:2] + "…" + s[-1]
-
-
-def finding_id(kind: str, value: str) -> str:
-    """Names a finding without repeating it: the review list is published."""
-    return hashlib.sha256(f"{kind}\0{value}".encode()).hexdigest()[:32]
-
-
 def load_reviewed() -> dict[str, dict]:
     return json.loads(REVIEWED.read_text())["findings"] if REVIEWED.exists() else {}
 
@@ -368,102 +305,11 @@ def allowed_ids() -> dict[str, dict]:
     return {fid: e for fid, e in load_allowlist().items() if e.get("status") == "approved"}
 
 
-class Redactor(redaction_rules.Rules):
+class Redactor(redactor.Redactor):
     """The rules with this machine's literals, less the false positives a person has reviewed."""
 
     def __init__(self) -> None:
-        self.inputs = personal_literals()
-        super().__init__(*self.inputs)
-        self.reviewed = load_reviewed() | allowed_ids()
-        self.skipped: Counter = Counter()  # kinds of finding left out because a person reviewed them
-        self._latest: tuple[str, tuple] | None = None  # callers ask about one text twice
-
-    def _unreviewed(self, kind: str, value: str) -> bool:
-        return kind in NEVER_REVIEWED or finding_id(kind, value) not in self.reviewed
-
-    def _without_reviewed(self, hits: dict[str, Counter]) -> dict[str, Counter]:
-        kept: dict[str, Counter] = {}
-        for kind, values in hits.items():
-            for value, n in values.items():
-                if self._unreviewed(kind, value):
-                    kept.setdefault(kind, Counter())[value] = n
-                else:
-                    self.skipped[kind] += n
-        return kept
-
-    def fingerprint(self) -> str:
-        """Everything besides the content that decides what redacting or scanning gives: the
-        rules, this tool, the Python version and this machine's literals. Holds no literal."""
-        h = hashlib.sha256(f"{CACHE_VERSION}\0{sys.version}\0".encode())
-        for source in (Path(redaction_rules.__file__), Path(__file__)):
-            h.update(source.read_bytes() + b"\0")
-        h.update(json.dumps(self.inputs, ensure_ascii=False).encode())
-        return h.hexdigest()
-
-    def raw_hits(self, text: str) -> tuple:
-        """hits_of_text, measured; no judgement applied."""
-        before = len(self._seen)
-        with perf.phase("scan"):
-            hits = self.hits_of_text(text)
-        perf.count("scan texts")
-        perf.count("scan chars", len(text))
-        perf.count("scan lines scanned (not cached)", len(self._seen) - before)
-        return hits
-
-    def _hits(self, text: str) -> tuple:
-        if self._latest is None or self._latest[0] is not text:
-            self._latest = (text, self.raw_hits(text))
-        return self._latest[1]
-
-    def _counted_without_reviewed(self, found: dict[str, dict[str, list]]) -> dict[str, list]:
-        """_without_reviewed for findings kept by finding id (ScanCache): kind -> [[masked, count]]."""
-        kept: dict[str, list] = {}
-        for kind, rows in found.items():
-            for fid, (masked, n) in rows.items():
-                if kind in NEVER_REVIEWED or fid not in self.reviewed:
-                    kept.setdefault(kind, []).append([masked, n])
-                else:
-                    self.skipped[kind] += n
-        return kept
-
-    def cached_leaks(self, entry: dict) -> list[str]:
-        """leaks() of the text a ScanCache entry was made from."""
-        return sorted(self._counted_without_reviewed(entry["leaks"]))
-
-    def cached_review(self, entry: dict) -> list[str]:
-        """review() of the text a ScanCache entry was made from."""
-        return [_review_line(kind, rows) for kind, rows in sorted(self._counted_without_reviewed(entry["review"]).items())]
-
-    def __call__(self, jsonl: str) -> bytes:
-        with perf.phase("redact"):
-            perf.count("redact chars", len(jsonl))
-            return super().__call__(jsonl)
-
-    def leak_hits(self, text: str) -> dict[str, Counter]:
-        """What the redactor would still change in this text, by kind, without reviewed false
-        positives. Empty for its own output."""
-        return self._without_reviewed(self._hits(text)[0])
-
-    def leaks(self, text: str) -> list[str]:
-        """Kinds of thing the redactor would still change in this text."""
-        return sorted(self.leak_hits(text))
-
-    def review_hits(self, text: str) -> dict[str, Counter]:
-        """Things that may identify someone or something and that no rule removes, by kind, without
-        reviewed false positives. Public IPs, foreign home directories, unknown token formats."""
-        return self._without_reviewed(self._hits(text)[1])
-
-    def review(self, text: str) -> list[str]:
-        """The same, as masked warning lines with counts."""
-        return [_review_line(kind, [[_mask(v), n] for v, n in c.items()]) for kind, c in sorted(self.review_hits(text).items())]
-
-
-def _review_line(kind: str, rows: list[list]) -> str:
-    """One kind of finding as a warning: [masked value, count] rows in the order they were found,
-    the three most frequent shown (Counter.most_common: by count, ties in that order)."""
-    top = sorted(rows, key=lambda r: r[1], reverse=True)[:3]
-    return (f"{kind} ×{sum(n for _, n in rows)}: " + ", ".join(masked for masked, _ in top)
-            + (f", +{len(rows) - 3} more" if len(rows) > 3 else ""))
+        super().__init__(personal_literals(), load_reviewed() | allowed_ids())
 
 
 # --------------------------------------------------------------------------- transcripts
@@ -616,23 +462,6 @@ def load_log(sid: str, sha: str) -> bytes | None:
     return data
 
 
-def atomic_write(path: Path, data: str | bytes, private: bool = False) -> None:
-    """Replace path with data in one step, as write_text or write_bytes would write it: into a
-    temporary file of its own beside path, created exclusively under a name with this process,
-    thread and a random part (two writers never share one, and none is left by a failed write),
-    then renamed over path. private: readable by its owner only, from the first byte."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.{threading.get_ident()}.{os.urandom(4).hex()}.tmp")
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600 if private else 0o666)
-    try:
-        with open(fd, "w" if isinstance(data, str) else "wb") as f:
-            f.write(data)
-        os.replace(tmp, path)
-    except BaseException:
-        tmp.unlink(missing_ok=True)
-        raise
-
-
 def write_if_changed(path: Path, text: str) -> bool:
     """Write a generated file only when its content differs, atomically. Whether it was written."""
     try:
@@ -650,13 +479,16 @@ def write_if_changed(path: Path, text: str) -> bool:
 #
 # Results kept between commands, on this machine only, so that bytes already redacted or scanned
 # are not processed again. An entry is used only when its exact inputs are shown to be the same:
-# the content, by its SHA-256, and everything else that decides the result, by a fingerprint of
-# both tools' source, the Python version and this machine's redaction literals. Anything else,
-# a missing or damaged file included, means the work is done again. `--full` (or LLM_TRACES_FULL=1)
-# trusts no cached result and records fresh ones. The files hold digests, lengths, kinds, finding
-# ids, masked values and counts, never a finding's value or any log content.
+# the content, by its SHA-256, and everything else that decides the result, by a fingerprint.
+# Redacted logs, scans and verified snapshots are decided by redactor.py and the rules alone, and
+# their fingerprint (Redactor.fingerprint) covers those two files, the Python version and this
+# machine's redaction literals: an edit to the rest of sync.py keeps them. What also depends on the
+# rest of sync.py or on metrics.py (a session's synced state, check's metrics entries, the Stop
+# hook's cursor) adds tools_digest(). Anything else, a missing or damaged file included, means the
+# work is done again. `--full` (or LLM_TRACES_FULL=1) trusts no cached result and records fresh
+# ones. The files hold digests, lengths, kinds, finding ids, masked values and counts, never a
+# finding's value or any log content.
 
-CACHE_VERSION = 1              # bump when what an entry means changes
 TRANSCRIPT_CACHE = STATE / "transcript-cache.json"
 SCAN_CACHE = STATE / "scan-cache.json"
 CHECK_CACHE = STATE / "check-cache.json"
@@ -667,196 +499,34 @@ def full_audit(args: list[str]) -> bool:
     return "--full" in args or bool(os.environ.get("LLM_TRACES_FULL"))
 
 
-def sha256(data) -> str:
-    return hashlib.sha256(data).hexdigest()
+_tools_digest: str | None = None
 
 
-class LocalCache:
-    """A JSON object of entries under a fingerprint of their inputs; one with another fingerprint
-    is empty. Saved whole and atomically; when two commands save at once, the later one wins,
-    and what the other found is worked out again next time."""
-
-    def __init__(self, path: Path | None, fingerprint: str, trusted: bool = True) -> None:
-        self.path, self.fingerprint, self.entries = path, fingerprint, {}
-        if path and trusted:
-            try:
-                stored = json.loads(path.read_text())
-                if stored.get("fingerprint") == fingerprint:
-                    self.entries = stored["entries"]
-            except (OSError, ValueError, KeyError, AttributeError):
-                pass
-
-    def save(self, keep: set[str] | None = None) -> None:
-        if self.path is None:
-            return
-        entries = self.entries if keep is None else {k: v for k, v in self.entries.items() if k in keep}
-        text = json.dumps({"fingerprint": self.fingerprint, "entries": entries})
-        try:
-            atomic_write(self.path, text, private=True)
-        except OSError:
-            pass  # a cache: the work is done again next time
-
-
-def decoded(raw: bytes) -> str:
-    """raw as Path.read_text(errors="replace") reads it: the default encoding, universal newlines."""
-    return io.TextIOWrapper(io.BytesIO(raw), encoding=io.text_encoding(None), errors="replace").read()
+def tools_digest() -> str:
+    """SHA-256 of the source of sync.py and metrics.py, read once: for results that depend on more
+    than the redactor and the rules (Redactor.fingerprint)."""
+    global _tools_digest
+    if _tools_digest is None:
+        h = hashlib.sha256()
+        for source in (Path(__file__), Path(metrics.__file__)):
+            h.update(source.read_bytes() + b"\0")
+        _tools_digest = h.hexdigest()
+    return _tools_digest
 
 
 def redacted_incrementally(raw: bytes, sid: str, key: str, redact: Redactor, cache: LocalCache | None) -> bytes:
-    """redact(decoded(raw)), reusing the log of an earlier, shorter version of the same transcript.
-    The redactor works line by line, and a cut right after a newline byte splits the decoded text,
-    its lines and so the log at the same place: the log of raw is the log of its first n bytes
-    followed by the log of the rest. Reused only when those n bytes have the recorded SHA-256 and
-    the stored log the cache names holds the content of its name. An unfinished last line is
-    redacted on its own, so that the recorded cut always follows a newline."""
-    start, head = 0, b""
-    entry = cache.entries.get(key) if cache else None
-    if entry and len(raw) >= entry["source_bytes"]:
-        n = entry["source_bytes"]
-        with perf.phase("verify cached"):
-            same = sha256(memoryview(raw)[:n]) == entry["source_sha256"]
-            log = load_log(sid, entry["log_sha256"]) if same else None
-            same = log is not None and len(log) >= entry["log_bytes"] and sha256(log) == entry["log_sha256"]
-        if same:
-            start, head = n, log[:entry["log_bytes"]]
-            perf.count("transcript bytes not redacted again (cached)", n)
-        del log
-    end = max(start, raw.rfind(b"\n") + 1)
-    body = redact(decoded(raw[start:end]))
-    data = head + body + redact(decoded(raw[end:]))
-    if cache is not None:
-        cache.entries[key] = {"source_bytes": end, "source_sha256": sha256(memoryview(raw)[:end]),
-                              "log_sha256": sha256(data), "log_bytes": len(head) + len(body)}
-    return data
+    """redactor.redacted_incrementally, reusing session sid's stored logs."""
+    return redactor.redacted_incrementally(raw, key, redact, cache, lambda sha: load_log(sid, sha))
 
 
-def _counted(hits: dict[str, Counter]) -> dict[str, dict[str, list]]:
-    """Findings without their values: kind -> finding id -> [masked value, count], in the order
-    they were first found."""
-    return {kind: {finding_id(kind, value): [_mask(value), n] for value, n in values.items()}
-            for kind, values in hits.items()}
-
-
-def _add_counted(into: dict, more: dict) -> None:
-    for kind, found in more.items():
-        rows = into.setdefault(kind, {})
-        for fid, (masked, n) in found.items():
-            rows.setdefault(fid, [masked, 0])[1] += n
-
-
-class ScanCache(LocalCache):
-    """What scanning a stored log found, by the log's SHA-256: Redactor.hits_of_text, without the
-    values. A log not scanned before is scanned from where the longest log scanned before ends,
-    when that log is a prefix of it (same SHA-256 over its length, ending in a newline): logs are
-    append-only, and the scan is line by line, so the findings of the whole are those of the
-    prefix plus those of the rest."""
-
+class ScanCache(redactor.ScanCache):
     def __init__(self, redact: Redactor, path: Path | None = ..., trusted: bool = True) -> None:
-        path = SCAN_CACHE if path is ... else path  # read now, not at import: tests point it elsewhere
-        super().__init__(path, redact.fingerprint(), trusted)
-        self.redact, self.used = redact, set()
-        self.values: dict[str, tuple[str, str]] = {}  # finding id -> (kind, value), of what this run scanned
-
-    def hits(self, sid: str | None, sha: str, data, size: int | None = None) -> dict:
-        """{"leaks": ..., "review": ...} for data, whose SHA-256 the caller has computed as sha.
-        data may be a function giving the bytes, called only when they are scanned; size is then
-        their length. sid None: not a log, so not scanned from the end of an earlier one."""
-        self.used.add(sha)
-        size = len(data) if size is None else size
-        if (entry := self.entries.get(sha)) and entry["bytes"] == size:
-            perf.count("scan cache hits")
-            return entry
-        if callable(data):
-            data = data()
-        earlier = {e["bytes"]: s for s, e in self.entries.items()
-                   if sid is not None and e.get("session") == sid and 0 < e["bytes"] < len(data)}
-        with perf.phase("prefixes"):
-            digests = prefix_digests(data, set(earlier))
-        start = max((n for n, s in earlier.items() if digests.get(n) == s and data[n - 1] == 10), default=0)
-        entry = {"session": sid, "bytes": len(data), "leaks": {}, "review": {}}
-        if start:
-            self.used.add(earlier[start])
-            for part in ("leaks", "review"):
-                _add_counted(entry[part], self.entries[earlier[start]][part])
-            perf.count("scan bytes not scanned again (cached prefix)", start)
-        leaks, review = self.redact.raw_hits(data[start:].decode(errors="replace"))
-        for hits in (leaks, review):  # in memory only; remember_findings keeps them, never this cache
-            self.values |= {finding_id(kind, value): (kind, value) for kind, values in hits.items() for value in values}
-        _add_counted(entry["leaks"], _counted(leaks))
-        _add_counted(entry["review"], _counted(review))
-        self.entries[sha] = entry
-        return entry
-
-    def save(self, keep: set[str] | None = None) -> None:
-        super().save(self.used if keep is None else keep)
+        super().__init__(redact, SCAN_CACHE if path is ... else path, trusted)  # read now: tests point it elsewhere
 
 
-def decompress(gz: bytes) -> bytes:
-    with perf.phase("decompress"):
-        data = gzip.decompress(gz)
-    perf.count("log loads")
-    perf.count("log bytes decompressed", len(data))
-    return data
-
-
-class CheckCache(LocalCache):
-    """What `check` worked out from content, besides scanning (ScanCache), each under the SHA-256
-    of exactly the content it came from:
-
-    - "gz:<sha of a .gz file's bytes>": the SHA-256 and length of what those bytes decompress to.
-      Decompression is deterministic, so the same .gz bytes always hold the same content, and a
-      stored snapshot is verified against its name without decompressing it again.
-    - "prefixes:<sha of a log>": {length: SHA-256 of the log's first length bytes}.
-    - "metrics:<sha of the inputs>": whether a metrics.json is what its log, subagent logs,
-      manifest and price list give. The fingerprint adds metrics.py to the redactor's."""
-
+class CheckCache(redactor.CheckCache):
     def __init__(self, redact: Redactor, path: Path | None = ..., trusted: bool = True) -> None:
-        path = CHECK_CACHE if path is ... else path  # read now, not at import: tests point it elsewhere
-        fingerprint = sha256(redact.fingerprint().encode() + b"\0" + Path(metrics.__file__).read_bytes())
-        super().__init__(path, fingerprint, trusted)
-        self.used: set[str] = set()
-
-    def get(self, key: str):
-        self.used.add(key)
-        return self.entries.get(key)
-
-    def put(self, key: str, value) -> None:
-        self.used.add(key)
-        self.entries[key] = value
-
-    def snapshot(self, path: Path) -> tuple[str, int, bytes | None, bytes] | None:
-        """(SHA-256, length, content or None, .gz bytes) of a stored snapshot, None if there is no
-        file. The content is decompressed only when these .gz bytes were not seen before; the
-        caller decompresses the returned .gz bytes when it needs it, never the file again."""
-        try:
-            gz = path.read_bytes()
-        except FileNotFoundError:
-            return None
-        with perf.phase("hash gz"):
-            key = "gz:" + sha256(gz)
-        if (entry := self.get(key)) is not None:
-            perf.count("snapshot cache hits")
-            return entry["sha256"], entry["bytes"], None, gz
-        data = decompress(gz)
-        with perf.phase("hash"):
-            actual = sha256(data)
-        self.put(key, {"sha256": actual, "bytes": len(data)})
-        return actual, len(data), data, gz
-
-    def prefix_digests(self, sha: str, content, lengths: set[int]) -> dict[int, str]:
-        """prefix_digests(content(), lengths) for the log whose content has SHA-256 sha."""
-        key = "prefixes:" + sha
-        known = {int(n): d for n, d in (self.get(key) or {}).items()}
-        if not lengths <= known.keys():
-            with perf.phase("prefixes"):
-                known |= prefix_digests(content(), lengths)
-            self.put(key, {str(n): d for n, d in sorted(known.items())})
-        else:
-            perf.count("prefix cache hits")
-        return {n: known[n] for n in lengths if n in known}
-
-    def save(self, keep: set[str] | None = None) -> None:
-        super().save(self.used if keep is None else keep)
+        super().__init__(redact, CHECK_CACHE if path is ... else path, trusted)
 
 
 # --------------------------------------------------------------------------- manifest
@@ -894,10 +564,11 @@ def transcript_cache(redact: Redactor, full: bool = False) -> LocalCache:
 
 def sync_cache(redact: Redactor, trusted: bool = True) -> LocalCache:
     """Each session's state (session_state) as it was right after it was last synced. The
-    fingerprint covers what process() reads besides the session's own files and commits: both
-    tools and the rules (in redact's), the templates, prices and reviewed findings, and the repo."""
-    h = hashlib.sha256(f"{redact.fingerprint()}\0{REPO}\0{repo_web_url()}\0{has_jj()}\0".encode())
-    for source in (Path(metrics.__file__), SUMMARY_TEMPLATE, PRICING, REVIEWED, ALLOWLIST):
+    fingerprint covers what process() reads besides the session's own files and commits: the
+    rules and redactor (in redact's), the rest of the tools, the templates, prices and reviewed
+    findings, and the repo."""
+    h = hashlib.sha256(f"{redact.fingerprint()}\0{tools_digest()}\0{REPO}\0{repo_web_url()}\0{has_jj()}\0".encode())
+    for source in (SUMMARY_TEMPLATE, PRICING, REVIEWED, ALLOWLIST):
         h.update((source.read_bytes() if source.exists() else b"-") + b"\0")
     return LocalCache(SYNC_CACHE, h.hexdigest(), trusted=trusted and not full_audit([]))
 
@@ -1315,7 +986,7 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
     if data is not None:
         key = same = None
         if checks is not None and logs is not None:
-            key = "metrics:" + sha256(json.dumps([logs, m, text, PRICING.read_text()], sort_keys=True,
+            key = "metrics:" + sha256(json.dumps([tools_digest(), logs, m, text, PRICING.read_text()], sort_keys=True,
                                                  ensure_ascii=False).encode())
             if (entry := checks.get(key)) is not None:
                 perf.count("metrics cache hits")
@@ -2188,7 +1859,7 @@ def hook_export(transcript: Path, redact: Redactor) -> int:
     transcript is reused (redacted_incrementally; the cache is not saved). The cursor moves only
     after a send succeeds, and over whole lines of the transcript: one that the decoder or the
     redactor splits in two (a carriage return, a raw U+2028) is read as the lines it gives."""
-    sid, fingerprint = transcript.stem, redact.fingerprint()
+    sid, fingerprint = transcript.stem, sha256(f"{redact.fingerprint()}\0{tools_digest()}".encode())
     raw = transcript.read_bytes()
     state, start, turns_before, title = langfuse_state(sid), 0, 0, None
     cursor = state.get("hook_cursor")
@@ -3126,18 +2797,6 @@ def publication_gate(revset: str) -> list[str]:
                     errors.append(f"change {c['change_id'][:12]}: points at log {sha[:12]} of {sid}, "
                                   f"which is not uploaded")
     return errors
-
-
-def prefix_digests(data: bytes, lengths: set[int]) -> dict[int, str]:
-    """sha256 of data[:n] for each length n that data has, in one pass over data."""
-    hasher, at, out, view = hashlib.sha256(), 0, {}, memoryview(data)
-    for n in sorted(lengths):
-        if n > len(data):
-            break
-        hasher.update(view[at:n])
-        at = n
-        out[n] = hasher.copy().hexdigest()
-    return out
 
 
 def check_sessions(manifests: dict[str, dict], redact: Redactor, remote: bool,
