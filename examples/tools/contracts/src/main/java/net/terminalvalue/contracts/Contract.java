@@ -23,6 +23,17 @@ record Contract(String target, String domain, Map<String, String> cases) {
         return simple.replace('#', '.') + ".contract";
     }
 
+    /** The file's `kind:` (capabilities, boundaries), or null for a behavioural contract, which has none. */
+    static String kind(Path file) throws IOException {
+        for (String line : Files.readAllLines(file)) {
+            if (line.isBlank() || line.startsWith("#")) {
+                continue;
+            }
+            return line.startsWith("kind: ") ? line.substring("kind: ".length()).trim() : null;
+        }
+        return null;
+    }
+
     static Contract read(Path file) throws IOException {
         String target = null;
         String domain = null;

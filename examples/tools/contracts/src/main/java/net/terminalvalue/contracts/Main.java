@@ -76,7 +76,10 @@ public final class Main {
         if (Files.isDirectory(contracts)) {
             try (Stream<Path> files = Files.list(contracts)) {
                 for (Path file : files.filter(f -> f.toString().endsWith(".contract")).sorted().toList()) {
-                    if (!file.getFileName().toString().equals(Capabilities.FILE_NAME)) {
+                    // A file with a `kind:` line is not a behavioural contract: the capability contract is checked
+                    // above, and another tool's (jvmcontract's boundaries.contract, in a module that also applies
+                    // the boundaries plugin) is not this verifier's to read.
+                    if (!file.getFileName().toString().equals(Capabilities.FILE_NAME) && Contract.kind(file) == null) {
                         targets.put(Contract.read(file).target(), file);
                     }
                 }

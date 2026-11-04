@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb",
-  "status": "ended",
+  "status": "open",
   "title": "Rust Java formal verification library",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,14 +12,14 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T12:59:13.381Z",
-  "duration_seconds": 332958,
+  "ended": "2026-11-04T13:14:35.836Z",
+  "duration_seconds": 333880,
   "stats": {
-    "turns": 266,
+    "turns": 270,
     "api_calls": 2994,
     "tool_calls": 3508,
     "tool_errors": 64,
-    "compactions": 49,
+    "compactions": 50,
     "peak_context_tokens": 535846,
     "usage": {
       "input_tokens": 89570,
@@ -916,8 +916,8 @@
     {
       "index": 49,
       "started": "2026-11-04T11:06:50.335Z",
-      "ended": "2026-11-04T12:59:13.381Z",
-      "turns": 7,
+      "ended": "2026-11-04T13:12:57.434Z",
+      "turns": 8,
       "api_calls": 81,
       "usage": {
         "input_tokens": 2444,
@@ -926,14 +926,28 @@
         "cache_creation_input_tokens": 566490
       },
       "peak_context_tokens": 264906
+    },
+    {
+      "index": 50,
+      "started": "2026-11-04T13:14:35.880Z",
+      "ended": "2026-11-04T13:14:35.836Z",
+      "turns": 3,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "eb3a10f68e2e33a8a7ff4c536c11e564c18cec0849eec40b4aff784d75adc631",
-    "bytes": 105278685,
-    "lines": 41250,
-    "gzip_bytes": 17955824,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/eb3a10f68e2e33a8a7ff4c536c11e564c18cec0849eec40b4aff784d75adc631.jsonl.gz"
+    "sha256": "9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c",
+    "bytes": 105409637,
+    "lines": 41275,
+    "gzip_bytes": 17992611,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1456,6 +1470,22 @@
       "summary": "A regression or property proof that covers no input says so: the statement is probed with its calls replaced by the assertion's failure, and a scope or assumption every input satisfies, or an array bound below what the scope asks, is reported as vacuous; examples 144 and 145 on a short-table scan of the lookupswitch search (verification pending)",
       "body": "A verified statement that skips inputs before the calls (an --unchanged-unless scope, a record whose constructor may reject an input, --before-arguments that may throw, or a prove --assume) can skip every input in the domain: a scope that is a tautology, or one over an array's length the bound on arrays never reaches, such as 'matches.length <= 8' at the default --max-array-length of 8. Before this change such a proof was printed as a plain tick. Now the harness generator also emits a probe, the same class with the two calls replaced by throw new AssertionError(), and after a verified verdict, whichever engine gave it, the tool's own checker proves or refutes the probe over the statement's own domain: a refutation is an input that reaches the calls, and a proof means no input does, which is reported on a line of its own, 'vacuously: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing'. The verdict stays verified and the exit code 0, as a TLC coverage verdict does; the Outcome gains a vacuous field and build.py reads the line into the result's coverage, so an example that is verified vacuously must say so in expected.vacuous, and gets a paragraph on its page. approach.maxArrayLength is a new example field passed as --max-array-length.\n\nExamples 144 and 145 construct the case on Mica's LookupSwitch#find, which gains a linear scan for tables of at most eight pairs: the developer declares the short tables as the intended change. At the default bound every table in the domain is among them and the proof is verified vacuously in 0.1 s (144, expected vacuous); with the bound raised to twelve the bisection is proved unchanged on every table of nine to twelve pairs and every key in 4 s, 89 paths (145). Their notes carry the proof of the scan itself under the sortedness scope of example 141 (1.1 s at eight, 3.1 s at twelve) and the unscoped witness find(matches=[20, 16], key=16). Mica's 71 tests pass with the patch.\n\nAlso tried this cycle and reverted before committing: putting the harness's failing branches off to one disjunctive solver call at the end of each path. It was sound and the tests passed, but example 142 at bound eight went from 7.6 s to 11.9 s, since the two merged final paths carried 171 and 135 deferred checks and the single proof over their disjunction cost more than the incremental per-element calls it replaced; small searches gained nothing.\n\nVerified by 116 unit tests (a harness test checks the probe throws before its call), the 50 integration tests (a tautological scope and an unsatisfiable assumption get the line, the real scope and assumption do not; one 64-bit fixture timed out under load and passed alone in 22 s), the measured outputs of examples 120 to 141 on the release build, which are unchanged and gain no vacuity line, and the proofs of 144 and 145 above. Jobs 20261104-124827-example-144 and 20261104-124833-example-145 are queued for the pipeline.",
       "log_sha256": "2d0fb4901663f0d4dcc340188d190fb2b7852269bc37cee31efbffdc1f14805e"
+    },
+    {
+      "change_id": "yvvxkxxkrruunqsrqlzllmysmzrlurnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The result schema takes what build.py writes for a boundary contract's new problems and a vacuous symbolic proof; examples 111-119 and 144 resubmitted (verification pending)",
+      "body": "The last verification run failed examples 111 to 119 on result.json validation: build.py writes newProblems (the `!` lines a regenerated B12 contract gains) and the schema did not list it. The schema also allowed coverage only in its TLC form, while build.py writes {vacuous, reason} for a regression or property proof the tool reports as vacuous, so example 144's pending job would have failed the same way. The schema now lists newProblems as an array of strings, and coverage as null, the TLC object, or {vacuous: true, reason}. Checked by validating all 105 committed result.json files against it (all valid) and synthetic B12 and vacuous B9 results (valid), with a missing reason and a non-array newProblems rejected.\n\nJobs resubmitted at this commit: 20261104-131020-example-111..117, 20261104-131021-example-118, -119 and -144 (the never-run 20261104-124827-example-144 job, pinned to the old schema, removed). The other failures in the run (example 036's patch no longer applying to Mica, example 109's replay of a static field) are not about the schema and are left.",
+      "log_sha256": "9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c"
+    },
+    {
+      "change_id": "pmqyrtsswpkukqztvlrywysolrwwvwrw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The Java contract verifier leaves another tool's contract alone, so Box Office's build passes again",
+      "body": "Box Office's contracts module applies both contract plugins: the behavioural/capability one (examples/tools/contracts) and the boundaries one (jvmcontract). Since that module gained a boundaries.contract for the wire types, the Java verifier read it as a behavioural contract, and :contracts:verifyContracts, and with it the app's check, failed with 'boundaries.contract: not a case: kind: boundaries'. An Opus 5.5 session noticed it on Nov 3 while measuring memory caps and left it open. The verifier now skips any .contract file whose first line is a kind: header (Contract.kind), a behavioural contract having none.",
+      "log_sha256": "9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c"
     }
   ],
   "logs": {
@@ -1669,6 +1699,12 @@
       "gzip_bytes": 14415767,
       "url": null
     },
+    "9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c": {
+      "bytes": 105409637,
+      "lines": 41275,
+      "gzip_bytes": 17992611,
+      "url": null
+    },
     "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07": {
       "bytes": 46480955,
       "lines": 15881,
@@ -1775,12 +1811,6 @@
       "bytes": 88425127,
       "lines": 33832,
       "gzip_bytes": 15049516,
-      "url": null
-    },
-    "eb3a10f68e2e33a8a7ff4c536c11e564c18cec0849eec40b4aff784d75adc631": {
-      "bytes": 105278685,
-      "lines": 41250,
-      "gzip_bytes": 17955824,
       "url": null
     },
     "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0": {
