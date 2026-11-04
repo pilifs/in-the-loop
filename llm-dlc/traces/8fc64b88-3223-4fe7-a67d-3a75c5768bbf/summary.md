@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (open) |
+| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (ended) |
 | When | 2026-11-04 04:45 UTC to 2026-11-04 04:49 UTC (4 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.318 |
@@ -26,7 +26,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### feature-loop.sh: a relational loop that improves relational verification, with examples
 
-change `tuykppwvxtqt` · [log `9e7bb127e4e4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/9e7bb127e4e46638ee245e83e14574c45a64042fdab1f40b1d1a8c5f2c62adfc.jsonl.gz)
+[`994fe3cbe3e5`](https://github.com/pilifs/in-the-loop/commit/994fe3cbe3e5290e6e8b62fde847131477a7b63c) · [log `9e7bb127e4e4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/9e7bb127e4e46638ee245e83e14574c45a64042fdab1f40b1d1a8c5f2c62adfc.jsonl.gz)
 
 llm-dlc/tools/feature-loop.sh relational [CYCLES] [UNTIL] repeats the user's instruction 'Enhance relational verification capabilities to be more efficient and accurate, adding examples where appropriate', like the features, tla and spring loops: the default session and model (360e8b8b, claude-fable-5-1 at high effort) unless FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL or FEATURE_LOOP_EFFORT say otherwise. The usage line, the header and llm-dlc/README.md list it. Verified with bash -n and the usage message; the loop was not started.
 
