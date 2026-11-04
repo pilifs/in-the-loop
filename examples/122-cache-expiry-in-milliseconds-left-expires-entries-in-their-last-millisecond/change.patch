@@ -1,0 +1,84 @@
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java
+@@ -1,7 +1,7 @@
+ package net.terminalvalue.crosscut.cache;
+ 
+ /**
+- * The expire-after-write test of a cache entry, with {@code Long.MAX_VALUE} as the time to live meaning "never", as
++ * The expire-after-write time left to a cache entry, with {@code Long.MAX_VALUE} as the time to live meaning "never", as
+  * Caffeine and Spring's cache abstraction treat it. The clock reading is passed in, so that the cache can be
+  * driven by a {@code Clock} in tests and by {@code System.nanoTime()} in production.
+  */
+@@ -11,11 +11,16 @@
+ 
+     public static final long FOREVER = Long.MAX_VALUE;
+ 
+-    /** Whether an entry written at {@code writtenAtNanos} with the given time to live has expired at {@code nowNanos}. */
+-    public static boolean isExpired(long writtenAtNanos, long ttlNanos, long nowNanos) {
++    /**
++     * How long an entry written at {@code writtenAtNanos} with the given time to live has left at {@code nowNanos},
++     * in milliseconds as the cache's metrics report it: zero or
++     * negative once it has expired, {@link #FOREVER} for an entry that never does, so that an eviction can be scheduled for
++     * when the entry expires and the cache's metrics can report the time left.
++     */
++    public static long remainingMillis(long writtenAtNanos, long ttlNanos, long nowNanos) {
+         if (ttlNanos == FOREVER) {
+-            return false;
++            return FOREVER;
+         }
+-        return nowNanos - writtenAtNanos >= ttlNanos;
++        return (ttlNanos - (nowNanos - writtenAtNanos)) / 1_000_000L;
+     }
+ }
+--- a/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/cache/ExpiryTest.java
++++ b/examples/apps/crosscut/src/test/java/net/terminalvalue/crosscut/cache/ExpiryTest.java
+@@ -1,7 +1,7 @@
+ package net.terminalvalue.crosscut.cache;
+ 
+ import static net.terminalvalue.crosscut.Tests.check;
+-import static net.terminalvalue.crosscut.cache.Expiry.isExpired;
++import static net.terminalvalue.crosscut.cache.Expiry.remainingMillis;
+ 
+ public final class ExpiryTest {
+ 
+@@ -10,12 +10,12 @@
+     private static final long SECOND = 1_000_000_000L;
+ 
+     public static void expiresWhenTheTimeToLiveHasPassed() {
+-        check(!isExpired(10 * SECOND, 5 * SECOND, 14 * SECOND), "one second to go");
+-        check(isExpired(10 * SECOND, 5 * SECOND, 15 * SECOND), "exactly expired");
+-        check(isExpired(10 * SECOND, 5 * SECOND, 60 * SECOND), "long expired");
++        check(remainingMillis(10 * SECOND, 5 * SECOND, 14 * SECOND) == 1_000, "one second to go");
++        check(remainingMillis(10 * SECOND, 5 * SECOND, 15 * SECOND) == 0, "exactly expired");
++        check(remainingMillis(10 * SECOND, 5 * SECOND, 60 * SECOND) == -45_000, "long expired");
+     }
+ 
+     public static void foreverNeverExpires() {
+-        check(!isExpired(10 * SECOND, Expiry.FOREVER, Long.MAX_VALUE), "forever");
++        check(remainingMillis(10 * SECOND, Expiry.FOREVER, Long.MAX_VALUE) == Expiry.FOREVER, "forever");
+     }
+ }
+--- a/examples/apps/crosscut/src/contract/api.contract
++++ b/examples/apps/crosscut/src/contract/api.contract
+@@ -32,7 +32,7 @@
+   public java.lang.String reason()
+ 
+ net.terminalvalue.crosscut.cache.Expiry: public final class
+-  public static boolean isExpired(long, long, long)
++  public static long remainingMillis(long, long, long)
+   public static final FOREVER: long
+ 
+ net.terminalvalue.crosscut.idempotency.IdempotentReceiver: public final class
+--- a/examples/apps/crosscut/src/contract/properties.contract
++++ b/examples/apps/crosscut/src/contract/properties.contract
+@@ -45,7 +45,7 @@
+   assume: batchStart >= 0 && batchStart <= 4611686018427387903L && batchSize > 0 && batchSize <= 100000 && failedIndex >= -1 && failedIndex < batchSize
+   assert: result >= batchStart && result <= batchStart + batchSize && (failedIndex == -1 ? result == batchStart + batchSize : result == batchStart + failedIndex)
+ 
+-# An entry expires exactly when its time to live has elapsed, and an entry that lives forever never does.
+-net.terminalvalue.crosscut.cache.Expiry#isExpired
++# An entry has no time left exactly when its time to live has elapsed, and an entry that lives forever always has.
++net.terminalvalue.crosscut.cache.Expiry#remainingMillis
+   assume: writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0
+-  assert: result == (ttlNanos != 9223372036854775807L && nowNanos - writtenAtNanos >= ttlNanos)
++  assert: (result <= 0) == (ttlNanos != 9223372036854775807L && nowNanos - writtenAtNanos >= ttlNanos)

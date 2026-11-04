@@ -62,7 +62,23 @@ pub struct Harness {
     /// The previous version's arguments as expressions over the parameters, when they are not the parameters
     /// themselves, for computing them again on a replayed counterexample.
     pub before_args: Option<Vec<CallArg>>,
+    /// The relation the two results must satisfy, when it is not equality, for checking it again on a replayed
+    /// counterexample.
+    pub relation: Option<Relation>,
 }
+
+/// The relation between the previous version's result and the new one's (`--results-agree-when`): a boolean
+/// expression over the new parameters, `previous` (the previous version's result, in the slot `previous`) and
+/// `result` (the new version's, in the slot `result`), which must hold whenever both versions return.
+#[derive(Debug, Clone)]
+pub struct Relation {
+    pub expr: Expr,
+    pub previous: u16,
+    pub result: u16,
+}
+
+/// The name of the previous version's result in a result relation.
+pub const PREVIOUS: &str = "previous";
 
 /// The previous version of the method, when it is not the target under the same name with the same parameters:
 /// a method renamed or moved, or whose parameters were reordered, added, removed or retyped. The arguments it
@@ -79,6 +95,11 @@ pub struct BeforeMethod {
     pub names: Vec<String>,
     /// The arguments as written, one per parameter, separated by commas.
     pub arguments: Option<String>,
+    /// The previous version's return type.
+    pub ret: Type,
+    /// The relation its result and the new one's must satisfy, as written, when it is not equality: a boolean
+    /// expression over the new parameters, `previous` and `result`.
+    pub relation: Option<String>,
 }
 
 impl BeforeMethod {
@@ -116,6 +137,37 @@ impl BeforeMethod {
             Expr::Call(_, args) => Ok(Some(args)),
             _ => Err(Error::new("the arguments must be a list of expressions separated by commas")),
         }
+    }
+
+    /// Parses the result relation, if one was given, over the new parameters, `previous` (the previous version's
+    /// result of type `self.ret`, in slot `previous`) and `result` (the new version's of type `ret`, in slot
+    /// `result`). Without one, the return types must be the same, and the results are compared for equality.
+    pub fn parse_relation(&self, params: &[Param], ret: &Type, previous: u16, result: u16, first_free_slot: u16) -> Result<Option<Relation>, Error> {
+        let Some(text) = &self.relation else {
+            if self.ret != *ret {
+                return Err(Error::new(format!(
+                    "the previous version returns {} and the new one {}; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result",
+                    self.ret.java_name(),
+                    ret.java_name()
+                )));
+            }
+            return Ok(None);
+        };
+        for (side, t) in [("previous", &self.ret), ("new", ret)] {
+            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() {
+                return Err(Error::new(format!("the {side} version returns {}; a relation can be given between integral, boolean and array results", t.java_name())));
+            }
+        }
+        for p in params {
+            if p.name == PREVIOUS || p.name == RESULT {
+                return Err(Error::new(format!("the parameter {} has the name the relation uses for a result", p.name)));
+            }
+        }
+        let mut names = params.to_vec();
+        names.push(Param { name: PREVIOUS.into(), ty: self.ret.clone(), slot: previous });
+        names.push(Param { name: RESULT.into(), ty: ret.clone(), slot: result });
+        let expr = expr::parse_in(text, &names, None, first_free_slot).map_err(|e| Error::new(format!("in the result relation: {e}")))?;
+        Ok(Some(Relation { expr, previous, result }))
     }
 }
 
@@ -189,8 +241,11 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         .collect();
     let is_void = *ret == Type::Void;
     let ret_kind = kind_of(ret);
+    // The previous version's result has its own type when a relation between the results is given.
+    let before_ret = before.map(|b| &b.ret).unwrap_or(ret);
+    let before_ret_kind = kind_of(before_ret);
     let a = arg_slots + copies.len() as u16;
-    let ea = a + if is_void { 0 } else { ret.slots() };
+    let ea = a + if is_void { 0 } else { before_ret.slots() };
     let b = ea + 1;
     let eb = b + if is_void { 0 } else { ret.slots() };
     let index = eb + 1;
@@ -203,6 +258,16 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
     let temps = index + 1;
     let before_args = match before {
         Some(b) => b.parse_arguments(params, temps + b.params.iter().map(Type::slots).sum::<u16>())?,
+        None => None,
+    };
+    let relation = match before {
+        Some(b) if is_void || b.ret == Type::Void => {
+            if b.relation.is_some() || b.ret != *ret {
+                return Err(Error::new(format!("the previous version returns {} and the new one {}; a regression proof relates the results of two methods that return", b.ret.java_name(), ret.java_name())));
+            }
+            None
+        }
+        Some(bm) => bm.parse_relation(params, ret, a, b, temps + bm.params.iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -307,15 +372,16 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
     };
     let before_owner = format!("before/{before_class}");
     for (owner, value_slot, flag_slot, on_copies) in [(before_owner.as_str(), a, ea, true), (class_internal, b, eb, false)] {
+        let value_kind = if on_copies { before_ret_kind } else { ret_kind };
         if !is_void {
-            match ret_kind {
+            match value_kind {
                 Kind::Int => code.iconst(0),
                 Kind::Long => code.op(0x09),
                 Kind::Float => code.op(0x0b),
                 Kind::Double => code.op(0x0e),
                 Kind::Ref => code.op(0x01),
             }
-            code.store(ret_kind, value_slot);
+            code.store(value_kind, value_slot);
         }
         code.iconst(0);
         code.store(Kind::Int, flag_slot);
@@ -340,7 +406,7 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         let target = if on_copies { writer.pool.method_ref(owner, before_method, &before_descriptor) } else { writer.pool.method_ref(owner, method, &descriptor) };
         code.op_u16(0xb8, target); // invokestatic
         if !is_void {
-            code.store(ret_kind, value_slot);
+            code.store(value_kind, value_slot);
         }
         code.bind(try_end);
         code.goto(join);
@@ -357,7 +423,9 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         code.bind(join);
     }
 
-    // The assertion: ea == eb && (ea != 0 || a == b) && each array parameter is left as its copy was.
+    // The assertion: ea == eb && (ea != 0 || a == b) && each array parameter is left as its copy was; with a
+    // relation between the results, it takes the place of a == b, and a relation that throws (a division by zero)
+    // does not hold.
     let fail = code.label();
     let ok = code.label();
     code.load(Kind::Int, ea);
@@ -367,7 +435,24 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         let arrays = code.label();
         code.load(Kind::Int, ea);
         code.if_zero(Cond::Ne, arrays);
+        if let Some(r) = &relation {
+            let relate_start = code.label();
+            let relate_end = code.label();
+            code.bind(relate_start);
+            expr::emit(&r.expr, &mut code, &mut writer.pool);
+            code.bind(relate_end);
+            code.if_zero(Cond::Eq, fail);
+            code.goto(arrays);
+            let handler = code.label();
+            code.bind(handler);
+            code.op(0x57); // pop the exception
+            code.goto(fail);
+            let throwable = writer.pool.class("java/lang/Throwable");
+            code.handler(relate_start, relate_end, handler, Some(throwable));
+            code.max_locals = code.max_locals.max(r.expr.slots_used());
+        }
         match ret {
+            _ if relation.is_some() => {}
             Type::Array(element) => {
                 let compare = code.label();
                 code.load(Kind::Ref, a);
@@ -413,7 +498,7 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
     let source = source(class_internal, method, params, ret, unchanged_unless, before);
-    Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec(), before_args })
+    Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec(), before_args, relation })
 }
 
 /// Emits a jump to `fail` unless the two values `push` loads (`push(code, 0)` the first, `push(code, 1)` the
@@ -502,12 +587,14 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
         None => (class.clone(), method),
     };
     let is_void = *ret == Type::Void;
-    let type_name = if ret.is_primitive() || matches!(ret, Type::Array(_)) { ret.java_name() } else { "Object".to_string() };
-    let zero = match ret {
+    let type_name = |t: &Type| if t.is_primitive() || matches!(t, Type::Array(_)) { t.java_name() } else { "Object".to_string() };
+    let zero = |t: &Type| match t {
         Type::Boolean => "false",
         t if t.is_primitive() => "0",
         _ => "null",
     };
+    let before_ret = before.map(|b| &b.ret).unwrap_or(ret);
+    let relation = before.and_then(|b| b.relation.as_deref());
     let mut s = String::new();
     s.push_str("/** Generated by jvmcontract: asserts that two versions of a method agree. The class file JBMC checks is generated directly; this is the same statement, for readers. */\n");
     s.push_str(&format!("public final class {CLASS} {{\n"));
@@ -523,9 +610,9 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
         s.push_str(&format!("        {}\n", mapping.join(" ")));
     }
     for (side, owner, callee, args) in [("before", format!("before.{before_class}"), before_method, &args_before), ("after", class.clone(), method, &args)] {
-        let var = if side == "before" { "a" } else { "b" };
+        let (var, t) = if side == "before" { ("a", before_ret) } else { ("b", ret) };
         if !is_void {
-            s.push_str(&format!("        {type_name} {var} = {zero};\n"));
+            s.push_str(&format!("        {} {var} = {};\n", type_name(t), zero(t)));
         }
         s.push_str(&format!("        int e{var} = 0;\n"));
         s.push_str(&format!("        try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
@@ -534,15 +621,20 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
         }
         s.push('\n');
     }
-    s.push_str("        assert ea == eb");
-    if !is_void {
-        let equal = match ret {
-            Type::Float | Type::Double => "a == b || (a != a && b != b)",
-            Type::Array(_) => "java.util.Arrays.equals(a, b)",
-            t if t.is_primitive() => "a == b",
-            _ => "java.util.Objects.equals(a, b)",
-        };
-        s.push_str(&format!(" && (ea != 0 || {equal})"));
+    if let Some(r) = relation {
+        s.push_str(&format!("        // The results agree when the stated relation holds: previous is the previous version's, result the new one's.\n        {} previous = a; {} result = b;\n", type_name(before_ret), type_name(ret)));
+        s.push_str(&format!("        assert ea == eb && (ea != 0 || ({r}))"));
+    } else {
+        s.push_str("        assert ea == eb");
+        if !is_void {
+            let equal = match ret {
+                Type::Float | Type::Double => "a == b || (a != a && b != b)",
+                Type::Array(_) => "java.util.Arrays.equals(a, b)",
+                t if t.is_primitive() => "a == b",
+                _ => "java.util.Objects.equals(a, b)",
+            };
+            s.push_str(&format!(" && (ea != 0 || {equal})"));
+        }
     }
     for p in params.iter().filter(|p| is_array(p)) {
         s.push_str(&format!(" && java.util.Arrays.equals({}, {}_before)", p.name, p.name));
@@ -1087,6 +1179,8 @@ mod tests {
             params: vec![Type::Long, Type::Short, Type::Long, Type::Short],
             names: vec!["a".into(), "na".into(), "b".into(), "nb".into()],
             arguments: Some("tsA, nodeA, tsB, nodeB + 1".into()),
+            ret: Type::Int,
+            relation: None,
         };
         let harness = generate("net/example/Writers", "winner", &params, &Type::Int, None, 8, Some(&before)).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
@@ -1122,6 +1216,60 @@ mod tests {
         assert!(problem.contains("takes (long, short, long, short) and the new one (long, long, int, int)"), "{problem}");
         let wrong = BeforeMethod { arguments: Some("tsA, nodeA, tsB".into()), ..before.clone() };
         assert!(generate("net/example/Writers", "winner", &params, &Type::Int, None, 8, Some(&wrong)).unwrap_err().to_string().contains("takes 4 arguments, 3 given"));
+    }
+
+    #[test]
+    fn generates_a_harness_relating_results_of_two_types() {
+        // The new version returns how long is left; the previous one returned whether it had expired.
+        let params = params(&["writtenAt".into(), "ttl".into(), "now".into()], &[Type::Long, Type::Long, Type::Long]);
+        let before = BeforeMethod {
+            owner: "net/example/Expiry".into(),
+            method: "isExpired".into(),
+            descriptor: "(JJJ)Z".into(),
+            params: vec![Type::Long, Type::Long, Type::Long],
+            names: vec!["writtenAt".into(), "ttl".into(), "now".into()],
+            arguments: None,
+            ret: Type::Boolean,
+            relation: Some("previous == (result <= 0)".into()),
+        };
+        let harness = generate("net/example/Expiry", "remainingNanos", &params, &Type::Long, None, 8, Some(&before)).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(JJJ)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        // The two versions' handlers, and the one around the relation.
+        assert_eq!(code.exception_table.len(), 2 * EXCEPTIONS.len() + 1);
+        // Slots: the three longs, a (a boolean, one slot), ea, b (a long, two), eb, the index.
+        let relation = harness.relation.as_ref().expect("relation");
+        assert_eq!((relation.previous, relation.result), (6, 8));
+        assert_eq!(code.max_locals, 12);
+        let insns = code.instructions().unwrap();
+        let calls: Vec<String> = insns
+            .iter()
+            .filter_map(|(_, i)| match i {
+                crate::classfile::Insn::InvokeStatic(index) => class.pool.member(*index).ok().map(|m| format!("{}.{}{}", m.owner, m.name, m.descriptor)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(calls, vec!["before/net/example/Expiry.isExpired(JJJ)Z".to_string(), "net/example/Expiry.remainingNanos(JJJ)J".to_string()]);
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        assert!(harness.source.contains("boolean a = false;"), "{}", harness.source);
+        assert!(harness.source.contains("long b = 0;"), "{}", harness.source);
+        assert!(harness.source.contains("boolean previous = a; long result = b;"), "{}", harness.source);
+        assert!(harness.source.contains("assert ea == eb && (ea != 0 || (previous == (result <= 0)));"), "{}", harness.source);
+        // Without a relation, the return types must be the same.
+        let unrelated = BeforeMethod { relation: None, ..before.clone() };
+        let problem = generate("net/example/Expiry", "remainingNanos", &params, &Type::Long, None, 8, Some(&unrelated)).unwrap_err().to_string();
+        assert!(problem.contains("returns boolean and the new one long; say how the results are related with --results-agree-when"), "{problem}");
+        // The relation is type-checked, and must be boolean.
+        let not_boolean = BeforeMethod { relation: Some("result + 1".into()), ..before.clone() };
+        assert!(generate("net/example/Expiry", "remainingNanos", &params, &Type::Long, None, 8, Some(&not_boolean)).unwrap_err().to_string().contains("in the result relation: the expression must be boolean"));
+        let mistyped = BeforeMethod { relation: Some("previous == result".into()), ..before.clone() };
+        assert!(generate("net/example/Expiry", "remainingNanos", &params, &Type::Long, None, 8, Some(&mistyped)).is_err());
     }
 
     #[test]

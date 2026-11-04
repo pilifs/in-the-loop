@@ -717,6 +717,8 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--before-target", example["change"]["previousSymbol"]]
     if example["change"].get("previousArguments"):
         command += ["--before-arguments", example["change"]["previousArguments"]]
+    if example["change"].get("resultsAgreeWhen"):
+        command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
     proc, output = tool(app, root, *command)
     write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
@@ -1597,6 +1599,15 @@ def render_example(folder, ex, res):
             "input, the new method agrees with the previous one called that way, or shows one on which it does not.",
             "",
         ]
+    if change.get("resultsAgreeWhen"):
+        previous = change.get("previousSymbol") or symbol
+        lines += [
+            "The result changed its type or its meaning, so the developer states how the two results are related, "
+            f"`previous` being the result of `{previous}` and `result` the new method's: `{change['resultsAgreeWhen']}`. "
+            "The verifier proves that the relation holds on every input where both versions return, and that they "
+            "throw alike where they throw, or shows an input on which they do not.",
+            "",
+        ]
     lines += [
         f"**Before** ([`{file_name}`]({source_link}), line {res['before']['startLine']}):",
         "",
@@ -1739,9 +1750,11 @@ def findings_equivalence(ex, res):
     if res["verdict"] == "unverifiable":
         return ["The verifier refused to produce a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
     previous = ex["change"].get("previousArguments")
+    relation = ex["change"].get("resultsAgreeWhen")
     return [
-        f"For every input{' where `' + intended + '` is false' if intended else ''}, the new code returns what the "
-        "old code returned, or throws what it threw"
+        f"For every input{' where `' + intended + '` is false' if intended else ''}, the new code returns "
+        + (f"a result related to the old code's by `{relation}`" if relation else "what the old code returned")
+        + ", or throws what it threw"
         + (f", the old code being called with the arguments `{previous}` computed from the new parameters" if previous else "")
         + ".",
         "",

@@ -64,7 +64,8 @@
         "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" },
         "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" },
         "previousSymbol": { "description": "For approach B9, when the method was renamed or moved: the previous version as `pkg.Class#method` (the tool's --before-target).", "type": "string" },
-        "previousArguments": { "description": "For approach B9, when the method's parameters were reordered, added, removed or retyped: the previous version's arguments as expressions over the new parameters, separated by commas, for example `tsA, nodeA, tsB, nodeB` (the tool's --before-arguments).", "type": "string" }
+        "previousArguments": { "description": "For approach B9, when the method's parameters were reordered, added, removed or retyped: the previous version's arguments as expressions over the new parameters, separated by commas, for example `tsA, nodeA, tsB, nodeB` (the tool's --before-arguments).", "type": "string" },
+        "resultsAgreeWhen": { "description": "For approach B9, when the result changed its type or meaning: the relation the two results satisfy, a boolean expression over the new parameters, `previous` (the previous version's result) and `result` (the new one's), for example `previous == (result <= 0)` (the tool's --results-agree-when).", "type": "string" }
       }
     },
     "risk": { "description": "What could go wrong in production if this change shipped unnoticed.", "type": "string" },

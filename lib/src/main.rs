@@ -233,6 +233,11 @@ struct EquivalenceArgs {
     /// `start, (int) (end - start), failed`. An array parameter is passed by name.
     #[arg(long = "before-arguments")]
     before_arguments: Option<String>,
+    /// How the two results are related when they are not equal: a boolean expression over the new parameters,
+    /// `previous` (the previous version's result) and `result` (the new one's), such as 'previous == (result <= 0)'
+    /// for a boolean that became a remaining time; required when the return types differ.
+    #[arg(long = "results-agree-when")]
+    results_agree_when: Option<String>,
     /// Further class path entries (PATH-separated or repeatable).
     #[arg(long = "classpath")]
     classpath: Vec<String>,
@@ -431,6 +436,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.shared_callees = !args.no_shared_callees;
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
+            options.results_agree_when = args.results_agree_when;
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));

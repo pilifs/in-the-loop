@@ -4758,6 +4758,86 @@
         "A rewrite that returned the first write only on a strictly positive order is found by the same proof: the library's test shows the counterexample as `winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`, before 0 and after 1."
       ],
       "source": null
+    },
+    {
+      "id": "122",
+      "path": "examples/122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond",
+      "title": "A cache expiry in milliseconds left expires entries in their last millisecond, found by the relation",
+      "summary": "The same rewrite as example 123, the expire-after-write boolean turned into the time an entry has left, but in milliseconds, as the cache's metrics report it; callers test `<= 0`. The developer states the relation to the previous version, `previous == (result <= 0)`, and the proof finds an entry with a fraction of a millisecond to go: not expired before, no millisecond left now, so expired. The integer division rounds the last fraction of a millisecond down to none.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingMillis",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "caching",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "low",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's test of the same shape finds `remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)` with JBMC in about a second, before `false` and after `0`, under the line `the results are not related by previous == (result <= 0)`; the measurement on this kernel is the pipeline's.",
+        "The tool's own checker (`--engine native`) finds the same difference in 0.1 s, but on a large input: it has no staged search of small values, and the shrinker's 4000 interpreter runs do not bring three 64-bit values down, so the witness it reports is the raw one. The example runs JBMC.",
+        "The scope excludes the inputs outside the module's precondition (a clock reading from before the write, a non-positive time to live, a write before the clock's zero), as in example 123; the counterexample is well inside it, and is found at the first stage of the search, which tries values up to 20."
+      ],
+      "source": null
+    },
+    {
+      "id": "123",
+      "path": "examples/123-cache-expiry-as-the-time-left-proved-expired-exactly-when-none-is-left",
+      "title": "A cache expiry turned from a boolean into the time left, proved expired exactly when none is left",
+      "summary": "A cache's expire-after-write test returned whether an entry had expired. A developer turns it into the time the entry has left, so that an eviction can be scheduled for the moment it expires and the metrics endpoint can report it, and callers test `<= 0`. A regression proof compares results of one type, and these are a boolean and a long. The developer states how they are related instead, `previous == (result <= 0)`, and the proof is of that relation between the new method and the previous one on every input the cache can pass.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingNanos",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "caching",
+          "clocks-and-time"
+        ],
+        "defect": [],
+        "technique": [
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's test of the same shape (the same `isExpired` turned into `remainingNanos`) proves in 0.4 s with JBMC and in 0.1 s with the tool's own checker; the measurement on this kernel is the pipeline's.",
+        "Without `resultsAgreeWhen`, the tool refuses: `the previous version returns boolean and the new one long; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result`. The relation may also be given when the types are the same and the meaning changed, `result == previous * 1000L` for seconds that became milliseconds.",
+        "The scope is the negation of the precondition in `properties.contract` (`writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0`), so that the proof line reads `where !(!(...))`: the relation holds wherever the module's own property is claimed. Without the scope the proof finds inputs outside it on which `ttlNanos - (nowNanos - writtenAtNanos)` overflows, a clock reading from before the write against a time to live near `Long.MAX_VALUE`, which the old comparison of differences survives; those are the inputs the precondition excludes, not a defect of the rewrite.",
+        "The relation is checked again on a replayed counterexample, in the interpreter, so that a counterexample from a method JBMC had no bytecode for is recognised as one that does not reproduce, as for an equality."
+      ],
+      "source": null
     }
   ]
 }

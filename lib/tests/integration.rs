@@ -503,6 +503,11 @@ fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
 }
 
 fn writers_run(before: &Path, after: &Path, target: &str, before_target: Option<&str>, before_arguments: Option<&str>, name: &str) -> equivalence::Outcome {
+    related_run(before, after, target, before_target, before_arguments, None, None, name)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn related_run(before: &Path, after: &Path, target: &str, before_target: Option<&str>, before_arguments: Option<&str>, relation: Option<&str>, scope: Option<&str>, name: &str) -> equivalence::Outcome {
     let mut options = equivalence::Options::new(before, after, target);
     let work = target_tmp().join(format!("equivalence-{name}"));
     let _ = std::fs::remove_dir_all(&work);
@@ -510,7 +515,94 @@ fn writers_run(before: &Path, after: &Path, target: &str, before_target: Option<
     options.timeout_seconds = 120;
     options.before_target = before_target.map(str::to_string);
     options.before_arguments = before_arguments.map(str::to_string);
+    options.results_agree_when = relation.map(str::to_string);
+    options.unchanged_unless = scope.map(str::to_string);
     equivalence::run(&options).unwrap()
+}
+
+/// A cache's expire-after-write test, as a boolean.
+const EXPIRY_BEFORE: &str = r#"package fixtures;
+public final class Expiry {
+    public static final long FOREVER = Long.MAX_VALUE;
+    public static boolean isExpired(long writtenAtNanos, long ttlNanos, long nowNanos) {
+        if (ttlNanos == FOREVER) { return false; }
+        return nowNanos - writtenAtNanos >= ttlNanos;
+    }
+}
+"#;
+
+/// The same test as the time left, expired when none is.
+const EXPIRY_REMAINING: &str = r#"package fixtures;
+public final class Expiry {
+    public static final long FOREVER = Long.MAX_VALUE;
+    public static long remainingNanos(long writtenAtNanos, long ttlNanos, long nowNanos) {
+        if (ttlNanos == FOREVER) { return FOREVER; }
+        return ttlNanos - (nowNanos - writtenAtNanos);
+    }
+}
+"#;
+
+/// The time left in milliseconds, which rounds the last fraction of a millisecond down to none.
+const EXPIRY_MILLIS: &str = r#"package fixtures;
+public final class Expiry {
+    public static final long FOREVER = Long.MAX_VALUE;
+    public static long remainingMillis(long writtenAtNanos, long ttlNanos, long nowNanos) {
+        if (ttlNanos == FOREVER) { return FOREVER; }
+        return (ttlNanos - (nowNanos - writtenAtNanos)) / 1_000_000L;
+    }
+}
+"#;
+
+/// The precondition the cache guarantees: a write at or after the clock's zero, read at or after the write, with
+/// a positive time to live; the relation between the versions is claimed on these inputs.
+const EXPIRY_SCOPE: &str = "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)";
+
+/// A result that changed its type or meaning is related to the previous one by a stated relation over both, which
+/// takes the place of equality: a boolean that became a remaining time is expired exactly when none is left.
+#[test]
+fn a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_writers("expiry-before", "Expiry", EXPIRY_BEFORE), compile_writers("expiry-remaining", "Expiry", EXPIRY_REMAINING)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Expiry#remainingNanos", Some("fixtures.Expiry#isExpired"), None, Some("previous == (result <= 0)"), Some(EXPIRY_SCOPE), "expiry-remaining");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.relation.as_deref(), Some("previous == (result <= 0)"));
+    assert!(
+        outcome.output.starts_with("✓ fixtures.Expiry#remainingNanos agrees with the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) on every input, the results related by previous == (result <= 0) where !(!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)) (JBMC"),
+        "{}",
+        outcome.output
+    );
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("boolean previous = a; long result = b;"), "{statement}");
+    assert!(statement.contains("assert ea == eb && (ea != 0 || (previous == (result <= 0)));"), "{statement}");
+}
+
+#[test]
+fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_the_relation() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_writers("expiry-before-m", "Expiry", EXPIRY_BEFORE), compile_writers("expiry-millis", "Expiry", EXPIRY_MILLIS)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Expiry#remainingMillis", Some("fixtures.Expiry#isExpired"), None, Some("previous == (result <= 0)"), Some(EXPIRY_SCOPE), "expiry-millis");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let c = outcome.counterexample.as_ref().expect("counterexample");
+    // Less than a millisecond to go: not expired, but no millisecond left.
+    assert_eq!(c.input, "remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)", "{}", outcome.output);
+    assert_eq!((c.before.as_str(), c.after.as_str()), ("false", "0"), "{}", outcome.output);
+    assert!(outcome.output.contains("✗ fixtures.Expiry#remainingMillis differs from the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) outside the intended inputs"), "{}", outcome.output);
+    assert!(outcome.output.contains("\n    the results are not related by previous == (result <= 0)\n"), "{}", outcome.output);
+}
+
+#[test]
+fn results_of_two_types_need_a_relation() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_writers("expiry-before-u", "Expiry", EXPIRY_BEFORE), compile_writers("expiry-unrelated", "Expiry", EXPIRY_REMAINING)) else { return };
+    let outcome = related_run(&before, &after, "fixtures.Expiry#remainingNanos", Some("fixtures.Expiry#isExpired"), None, None, None, "expiry-unrelated");
+    assert_eq!(outcome.verdict, Verdict::Unverifiable, "{}", outcome.output);
+    assert!(outcome.output.contains("the previous version returns boolean and the new one long; say how the results are related with --results-agree-when"), "{}", outcome.output);
 }
 
 /// A signature change is a relation between the versions, not a difference: the previous version's arguments

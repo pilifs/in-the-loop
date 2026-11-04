@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T06:14:46.663Z",
-  "duration_seconds": 308691,
+  "ended": "2026-11-04T06:32:46.737Z",
+  "duration_seconds": 309771,
   "stats": {
-    "turns": 214,
-    "api_calls": 2264,
-    "tool_calls": 2794,
+    "turns": 218,
+    "api_calls": 2300,
+    "tool_calls": 2829,
     "tool_errors": 55,
-    "compactions": 37,
+    "compactions": 38,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 67496,
-      "output_tokens": 4647474,
-      "cache_read_input_tokens": 405628670,
-      "cache_creation_input_tokens": 10171841
+      "input_tokens": 68618,
+      "output_tokens": 4722161,
+      "cache_read_input_tokens": 409133555,
+      "cache_creation_input_tokens": 10322845
     }
   },
   "tools": {
-    "Bash": 2294,
+    "Bash": 2329,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -748,24 +748,38 @@
     {
       "index": 37,
       "started": "2026-11-04T05:52:44.488Z",
-      "ended": "2026-11-04T06:14:46.663Z",
+      "ended": "2026-11-04T06:15:11.650Z",
       "turns": 4,
-      "api_calls": 69,
+      "api_calls": 70,
       "usage": {
-        "input_tokens": 2118,
-        "output_tokens": 88185,
-        "cache_read_input_tokens": 9564622,
-        "cache_creation_input_tokens": 204181
+        "input_tokens": 2150,
+        "output_tokens": 89240,
+        "cache_read_input_tokens": 9783716,
+        "cache_creation_input_tokens": 205661
       },
-      "peak_context_tokens": 219096
+      "peak_context_tokens": 220606
+    },
+    {
+      "index": 38,
+      "started": "2026-11-04T06:16:27.655Z",
+      "ended": "2026-11-04T06:32:46.737Z",
+      "turns": 4,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 1090,
+        "output_tokens": 73632,
+        "cache_read_input_tokens": 3285791,
+        "cache_creation_input_tokens": 149524
+      },
+      "peak_context_tokens": 164469
     }
   ],
   "log": {
-    "sha256": "3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141",
-    "bytes": 83286217,
-    "lines": 31602,
-    "gzip_bytes": 14179822,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141.jsonl.gz"
+    "sha256": "9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7",
+    "bytes": 84650095,
+    "lines": 32163,
+    "gzip_bytes": 14415767,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1184,6 +1198,14 @@
       "summary": "Regression proofs across a signature change: the previous version named and called with expressions over the new parameters (verification pending)",
       "body": "jvmcontract equivalence proved a method only against a previous version of the same name and parameters; a method renamed, moved, or whose parameters were reordered, added, removed or retyped could not be proved at all. Now --before-target names the previous method (pkg.Class#method) and --before-arguments gives its arguments as expressions over the new parameters (tsA, nodeA, tsB, nodeB; start, (int) (end - start), failed; an array by name), and the statement proved is new(x) agrees with old(f(x)). The harness (lib/src/harness/mod.rs, BeforeMethod) type-checks each expression against the parameter it is passed as with the expression language's call syntax, narrows for byte/short/char and widens for long, computes the arguments into locals inside a handler that skips an input the mapping throws on, and calls the relocated previous method; the Java rendering shows the mapping. equivalence.rs resolves the previous method in the old classes and refuses clearly when the class or method is missing, is not static, returns another type, or when the parameters differ with no mapping given; the proof line reads 'behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input', a counterexample is shown as both versions received it ('winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)'), the replay maps the arguments through the interpreter, and the JSON outcome carries the previous call. shared::plan takes both targets and uses the identical-bytecode shortcut only for the plain statement, since f(a, b) against f(b, a) on identical bytecode proves nothing. The tool's own checker handles the mapped harness unchanged.\n\nExample 121 (B9, Quorum): LastWriterWins#winner regrouped as (tsA, tsB, nodeA, nodeB) and written as a Long.compare/Integer.compare chain, with the test and the law in properties.contract updated in the patch; example.json carries change.previousArguments, which build.py passes to the tool (change.previousSymbol maps to --before-target; schema and page rendering extended); new technique tag signature-change. Job 20261104-061118-example-121-a-tie-break-s-parameters-reg is queued. Verified: 97 unit tests (one new, the harness with a mapping) and 37 integration tests (four new on a Writers fixture: a reordering proved, a moved and renamed method proved, a tie rewrite found with the mapped counterexample, a refusal without a mapping), clippy clean on the changed files, the patched Quorum tree compiles and its 58 tests pass, the mapped proof and counterexample reproduced under --engine native, release binary installed. Documented in lib/README.md, the plugin reference, examples/approaches.md, examples/README.md and Quorum's README.",
       "log_sha256": "3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141"
+    },
+    {
+      "change_id": "koppnxzrsuzzwtlsuwuqvxnlonrzwurr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs under a stated relation between the results: a result that changed its type or meaning is related to the previous one with --results-agree-when (verification pending)",
+      "body": "A regression proof compared what the two versions return, so a method whose return type changed, or whose result changed its meaning (a boolean that became the time left, nanoseconds that became milliseconds), could not be proved against its previous version. jvmcontract equivalence now takes --results-agree-when EXPR, a boolean expression over the new parameters, previous (the previous version's result) and result (the new one's), which takes the place of equality whenever both versions return; the versions must still throw alike, array parameters are still compared, and a relation that throws on a pair of results does not hold. The expression is type-checked against both return types, compiled into the generated harness (lib/src/harness/mod.rs, BeforeMethod::parse_relation, Harness.relation) and rendered in the Java statement written for readers. Differing return types are refused without a relation, with a message that names the flag. The identical-bytecode shortcut and the shared-callee plan are off under a relation, since identical code proves nothing about it. A counterexample is replayed in the interpreter and the relation evaluated on the replayed results (lib/src/equivalence.rs, Replays), so that a JBMC counterexample a missing model produced is still recognised as not reproducing; the report adds the line 'the results are not related by ...' under the two outcomes, and the JSON outcome carries the relation.\n\nExamples 122 and 123 on Crosscut's cache expiry: Expiry#isExpired, a boolean, turned into the time an entry has left, related by previousSymbol and resultsAgreeWhen 'previous == (result <= 0)' with the module's own precondition as the scope (outside it the new subtraction overflows). 123 (remainingNanos) is expected verified; 122 (remainingMillis) is expected to show an entry with a fraction of a millisecond to go reported expired, since the integer division rounds it to no millisecond. The example runner passes change.resultsAgreeWhen to the tool (examples/tools/build.py, examples/schema/example.schema.json), and the pages, lib/README.md, examples/approaches.md, the Crosscut README and the verify-bytecode skill reference describe the flag. Jobs 20261104-063213-example-122-a-cache-expiry-in-millisecon and 20261104-063213-example-123-a-cache-expiry-turned-from-a.",
+      "log_sha256": "9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7"
     }
   ],
   "logs": {
@@ -1336,6 +1358,12 @@
       "lines": 10661,
       "gzip_bytes": 5560311,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/99faa545a274a6e05f47eba45fb53da66f7deb1a7d296db350ac42feda8ae9d3.jsonl.gz"
+    },
+    "9c521616174cbda157cf4cc64fa4832c702a688043a59200b4e1ba302be2cce7": {
+      "bytes": 84650095,
+      "lines": 32163,
+      "gzip_bytes": 14415767,
+      "url": null
     },
     "9f10204443582c0b8d51846732c4959a3292a27c71164a45eda263bdbc1a4a07": {
       "bytes": 46480955,

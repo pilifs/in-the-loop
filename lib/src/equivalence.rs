@@ -24,7 +24,10 @@
 //! The previous version need not have the target's name or parameters: a method renamed or moved is named with
 //! [`Options::before_target`], and one whose parameters were reordered, added, removed or retyped is called with
 //! the arguments given by [`Options::before_arguments`], expressions over the new parameters, so that the statement
-//! proved is "new(x) agrees with old(f(x))" for the stated relation.
+//! proved is "new(x) agrees with old(f(x))" for the stated relation. A method whose result changed its type or
+//! meaning (a boolean that became a remaining time, nanoseconds that became milliseconds) is related to the previous
+//! one by [`Options::results_agree_when`], a boolean expression over the new parameters, `previous` and `result`,
+//! which takes the place of equality whenever both versions return.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -87,6 +90,10 @@ pub struct Options {
     /// parameters are not the new version's: reordered, added, removed or retyped. An array parameter is passed by
     /// name.
     pub before_arguments: Option<String>,
+    /// The relation the two results must satisfy, a boolean expression over the new parameters, `previous` (the
+    /// previous version's result) and `result` (the new one's), when it is not equality: the return type or the
+    /// meaning of the result changed.
+    pub results_agree_when: Option<String>,
 }
 
 impl Options {
@@ -114,6 +121,7 @@ impl Options {
             shared_callees: true,
             before_target: None,
             before_arguments: None,
+            results_agree_when: None,
         }
     }
 }
@@ -154,6 +162,9 @@ pub struct Outcome {
     /// The previous version's call, `pkg.Class#method(args)` or `method(args)`, when it is not the target's.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub previous: Option<String>,
+    /// The relation between the results the proof is of, when it is not equality.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub relation: Option<String>,
 }
 
 /// The parameter values as the harness's locals, with the arrays' elements by slot, for evaluating an expression
@@ -208,7 +219,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -247,7 +258,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // The previous version: the target under the same name with the same parameters, or the method named by
     // --before-target, called with the arguments --before-arguments gives.
     let before_target = options.before_target.clone().unwrap_or_else(|| options.target.clone());
-    let plain = options.before_target.is_none() && options.before_arguments.is_none();
+    let plain = options.before_target.is_none() && options.before_arguments.is_none() && options.results_agree_when.is_none();
     let (before_class_internal, before_method_name) = crate::verifier::parse_target(&before_target).ok_or_else(|| Error::new("--before-target must be <class>#<method>"))?;
     let mut before_cp = ClassPath::new();
     before_cp.add(&options.before)?;
@@ -267,8 +278,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, "the previous version is not a static method".into());
     }
     let before_descriptor = before_method.parsed_descriptor()?;
-    if before_descriptor.ret != descriptor.ret {
-        return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; a regression proof compares results of one type", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
+    if before_descriptor.ret != descriptor.ret && options.results_agree_when.is_none() {
+        return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
     }
     if plain && before_descriptor.params != descriptor.params {
         return refuse(&mut out, line, format!(
@@ -286,11 +297,14 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         params: before_descriptor.params.clone(),
         names: before_names.clone(),
         arguments: options.before_arguments.clone(),
+        ret: before_descriptor.ret.clone(),
+        relation: options.results_agree_when.clone(),
     });
     let previous_display = previous.as_ref().map(|b| b.display(&class_internal));
-    let relation = match &previous_display {
-        Some(p) => format!("behaves as the previous {p} on every input"),
-        None => "behaves as before on every input".to_string(),
+    let relation = match (&previous_display, &options.results_agree_when) {
+        (Some(p), Some(r)) => format!("agrees with the previous {p} on every input, the results related by {r}"),
+        (Some(p), None) => format!("behaves as the previous {p} on every input"),
+        (None, _) => "behaves as before on every input".to_string(),
     };
     let domain = params
         .iter()
@@ -341,7 +355,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -439,13 +453,44 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             })
             .collect()
     };
-    let replay_both = |arguments: &[Argument]| -> (String, String) {
-        let before = match map_arguments(arguments) {
-            Ok(mapped) => witness::replay(&replay_cp, &before_owner, &before_method_name, &before_method.descriptor, &before_descriptor, &mapped).with_leftovers(&before_params, &mapped),
-            Err(e) => format!("<could not replay: the previous version's arguments could not be computed: {e}>"),
-        };
+    // Both versions replayed on an input: what each did, and whether the two agree, which under a relation between
+    // the results is the relation holding when both return (with the arrays left the same), and otherwise the two
+    // outcomes reading the same; a replay that failed never agrees.
+    let replay_both = |arguments: &[Argument]| -> Replays {
         let after = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-        (before, after.with_leftovers(&params, arguments))
+        let after_text = after.with_leftovers(&params, arguments);
+        let (before, before_text) = match map_arguments(arguments) {
+            Ok(mapped) => {
+                let replayed = witness::replay(&replay_cp, &before_owner, &before_method_name, &before_method.descriptor, &before_descriptor, &mapped);
+                let text = replayed.with_leftovers(&before_params, &mapped);
+                (Some(replayed), text)
+            }
+            Err(e) => (None, format!("<could not replay: the previous version's arguments could not be computed: {e}>")),
+        };
+        let same = before_text == after_text && !before_text.starts_with("<could not replay");
+        let (agree, relation_note) = match (&harness.relation, &before) {
+            (Some(r), Some(b)) if b.returned.is_some() && after.returned.is_some() => {
+                let (mut locals, mut arrays) = locals_of(&params, arguments);
+                locals.resize(usize::from(r.previous.max(r.result)) + 2, Value::Int(0));
+                locals[usize::from(r.previous)] = b.returned.unwrap_or(Value::Null);
+                locals[usize::from(r.result)] = after.returned.unwrap_or(Value::Null);
+                if let Some(data) = &b.result_array {
+                    arrays.push((r.previous, data.clone()));
+                }
+                if let Some(data) = &after.result_array {
+                    arrays.push((r.result, data.clone()));
+                }
+                let text = options.results_agree_when.as_deref().unwrap_or_default();
+                let leftovers = |t: &str| t.find(", leaving").map(|i| t[i..].to_string()).unwrap_or_default();
+                match harness::expr::eval_with(&r.expr, &locals, &arrays) {
+                    Ok(Value::Int(1)) => (leftovers(&before_text) == leftovers(&after_text), None),
+                    Ok(_) => (false, Some(format!("the results are not related by {text}"))),
+                    Err(e) => (false, Some(format!("the relation {text} cannot be evaluated on these results: {e}"))),
+                }
+            }
+            _ => (same, None),
+        };
+        Replays { before: before_text, after: after_text, agree, relation_note }
     };
     // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
     // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
@@ -455,10 +500,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(cp) = &shared_classpath {
             if let Some(result) = run_stages(cp, "-shared")? {
                 let keep = match result.verdict {
-                    Verdict::Violation => {
-                        let (before_outcome, after_outcome) = replay_both(&result.arguments(&descriptor.params)?);
-                        before_outcome != after_outcome || before_outcome.starts_with("<could not replay")
-                    }
+                    Verdict::Violation => !replay_both(&result.arguments(&descriptor.params)?).agree,
                     _ => true,
                 };
                 if keep {
@@ -494,12 +536,13 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&descriptor.params)?;
-            let (before_outcome, after_outcome) = replay_both(&found);
+            let replays = replay_both(&found);
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
-            if before_outcome == after_outcome && !before_outcome.starts_with("<could not replay") {
+            if replays.agree {
                 let (rendered, _) = witness::call(&method_name, &params, &found);
-                let p = format!("JBMC's counterexample {rendered} does not reproduce: both versions give {before_outcome} in the interpreter. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                let both = if replays.before == replays.after { format!("both versions give {}", replays.before) } else { format!("the versions give {} and {}, which the relation relates,", replays.before, replays.after) };
+                let p = format!("JBMC's counterexample {rendered} does not reproduce: {both} in the interpreter. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
                 findings.push(Finding::new("unverifiable", message, uri.clone(), line));
@@ -508,7 +551,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone() });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone() });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -520,7 +563,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 arguments = shrunk.arguments;
             }
             let shrunk = arguments != found;
-            let (before_outcome, after_outcome) = if shrunk { replay_both(&arguments) } else { (before_outcome, after_outcome) };
+            let replays = if shrunk { replay_both(&arguments) } else { replays };
+            let Replays { before: before_outcome, after: after_outcome, relation_note, .. } = replays;
             let (mut rendered, witnesses) = witness::call(&method_name, &params, &arguments);
             let (rendered_found, _) = witness::call(&method_name, &params, &found);
             if harness.before_args.is_some() {
@@ -529,12 +573,13 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
             }
             let message = format!(
-                "{}{}:\n  {rendered}\n    before: {before_outcome}\n    after:  {after_outcome}",
+                "{}{}:\n  {rendered}\n    before: {before_outcome}\n    after:  {after_outcome}{}",
                 match &previous_display {
                     Some(p) => format!("{} differs from the previous {p}", options.target),
                     None => format!("Behaviour of {} changed", options.target),
                 },
-                options.unchanged_unless.as_deref().map(|s| format!(" outside the intended inputs ({s})")).unwrap_or_default()
+                options.unchanged_unless.as_deref().map(|s| format!(" outside the intended inputs ({s})")).unwrap_or_default(),
+                relation_note.map(|n| format!("\n    {n}")).unwrap_or_default()
             );
             let _ = writeln!(out, "✗ {message}");
             let stage = last.stage.as_deref().map(|s| format!(" searching inputs in {s}")).unwrap_or_default();
@@ -565,7 +610,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone() })
+}
+
+/// Both versions replayed on one input.
+struct Replays {
+    before: String,
+    after: String,
+    /// Whether the two outcomes agree: under a relation between the results, whether it holds.
+    agree: bool,
+    /// Why they do not, when a relation was given and both versions returned.
+    relation_note: Option<String>,
 }
 
 /// Copies the JDK classes in [`JDK_CLASSES`] out of the JDK image, for JBMC's class path.

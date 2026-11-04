@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "122",
+  "title": "A cache expiry in milliseconds left expires entries in their last millisecond, found by the relation",
+  "summary": "The same rewrite as example 123, the expire-after-write boolean turned into the time an entry has left, but in milliseconds, as the cache's metrics report it; callers test `<= 0`. The developer states the relation to the previous version, `previous == (result <= 0)`, and the proof finds an entry with a fraction of a millisecond to go: not expired before, no millisecond left now, so expired. The integer division rounds the last fraction of a millisecond down to none.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "caching",
+    "clocks-and-time",
+    "rounding",
+    "signature-change"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java",
+    "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingMillis"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace `isExpired(writtenAtNanos, ttlNanos, nowNanos)` with `remainingMillis(writtenAtNanos, ttlNanos, nowNanos)`: the time to live less the time since the write, divided by a million, `FOREVER` for an entry that never expires, so that an entry is expired exactly when the result is zero or negative. The four tests and the law in the properties file are rewritten for the milliseconds left; the API contract records the new signature.",
+    "patch": "change.patch",
+    "previousSymbol": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+    "resultsAgreeWhen": "previous == (result <= 0)",
+    "intendedInputs": "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)"
+  },
+  "risk": "An entry in the last fraction of a millisecond of its time to live is reported expired and evicted early. Harmless for a cache on its own, but the same kernel decides whether a cached idempotency record is still live, and an early eviction there lets a retry through as a first request. The four tests pass: they check whole seconds, and a second to go is a thousand milliseconds.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The relation `previous == (result <= 0)` is compiled into the harness in place of the equality of results, and the proof searches small values first: `remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)`, an entry written just now with a nanosecond to live. The previous version says not expired, the time since the write being less than the time to live; the new one returns `1 / 1_000_000`, which is zero, and zero is no time left. The report shows both results and that the relation does not hold between them. The developer's claim was that a millisecond count of zero means expired; the proof shows the count is zero for a whole millisecond before that.",
+  "resolution": "Keep the time left in nanoseconds (example 123) and convert where it is reported, or round the milliseconds up, `(remaining + 999_999) / 1_000_000`, so that an entry with any time left reports a millisecond. The module's own property, rewritten for the milliseconds the same way, refutes the change as well.",
+  "notes": [
+    "The library's test of the same shape finds `remainingMillis(writtenAtNanos=0, ttlNanos=1, nowNanos=0)` with JBMC in about a second, before `false` and after `0`, under the line `the results are not related by previous == (result <= 0)`; the measurement on this kernel is the pipeline's.",
+    "The tool's own checker (`--engine native`) finds the same difference in 0.1 s, but on a large input: it has no staged search of small values, and the shrinker's 4000 interpreter runs do not bring three 64-bit values down, so the witness it reports is the raw one. The example runs JBMC.",
+    "The scope excludes the inputs outside the module's precondition (a clock reading from before the write, a non-positive time to live, a write before the clock's zero), as in example 123; the counterexample is well inside it, and is found at the first stage of the search, which tries values up to 20."
+  ],
+  "provenance": "Constructed as the millisecond variant of example 123's rewrite, the unit a Spring cache's statistics and `Cache-Control` headers use. The technique is regression verification under a stated relation between the versions' results.",
+  "references": [
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    },
+    {
+      "title": "System.nanoTime (Java SE 21): compare two readings by their difference, never by magnitude",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#nanoTime()"
+    },
+    {
+      "title": "Caffeine: expireAfterWrite and the Expiry interface",
+      "url": "https://github.com/ben-manes/caffeine/wiki/Eviction#time-based"
+    }
+  ]
+}

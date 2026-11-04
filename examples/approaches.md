@@ -150,6 +150,10 @@ versions call unchanged is taken as one function in both, so the solver relates 
 A signature change is a relation between the versions rather than a difference: on Quorum, [121](121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering/README.md) proves a
 tie-break whose parameters were regrouped and whose body became a comparison chain equal to the previous version called with the arguments in their old order
 (`previousArguments`, the tool's `--before-arguments`; a method renamed or moved is named with `--before-target`).
+A result that changed its type or meaning is related to the previous one by a stated relation that takes the place of equality
+(`resultsAgreeWhen`, the tool's `--results-agree-when`): on Crosscut, [123](123-cache-expiry-as-the-time-left-proved-expired-exactly-when-none-is-left/README.md) proves a
+cache's expire-after-write boolean turned into the time left expired exactly when none is left, and [122](122-cache-expiry-in-milliseconds-left-expires-entries-in-their-last-millisecond/README.md)
+finds the same rewrite in milliseconds expiring entries that have a fraction of a millisecond to go.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

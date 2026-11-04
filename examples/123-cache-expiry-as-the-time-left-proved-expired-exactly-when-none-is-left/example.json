@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "123",
+  "title": "A cache expiry turned from a boolean into the time left, proved expired exactly when none is left",
+  "summary": "A cache's expire-after-write test returned whether an entry had expired. A developer turns it into the time the entry has left, so that an eviction can be scheduled for the moment it expires and the metrics endpoint can report it, and callers test `<= 0`. A regression proof compares results of one type, and these are a boolean and a long. The developer states how they are related instead, `previous == (result <= 0)`, and the proof is of that relation between the new method and the previous one on every input the cache can pass.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "caching",
+    "clocks-and-time",
+    "signature-change"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/cache/Expiry.java",
+    "symbol": "net.terminalvalue.crosscut.cache.Expiry#remainingNanos"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace `isExpired(writtenAtNanos, ttlNanos, nowNanos)` with `remainingNanos(writtenAtNanos, ttlNanos, nowNanos)`: the time to live less the time since the write, `FOREVER` for an entry that never expires, so that an entry is expired exactly when the result is zero or negative. The four tests and the law in the properties file are rewritten for the time left; the API contract records the new signature.",
+    "patch": "change.patch",
+    "previousSymbol": "net.terminalvalue.crosscut.cache.Expiry#isExpired",
+    "resultsAgreeWhen": "previous == (result <= 0)",
+    "intendedInputs": "!(writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0)"
+  },
+  "risk": "A regression proof usually stops here: the harness compares what the two versions return, and a boolean is never equal to a long. Without a proof the rewrite rests on four test cases and a reading of `ttlNanos - (nowNanos - writtenAtNanos)` against `nowNanos - writtenAtNanos >= ttlNanos`. A subtraction the other way round, a sentinel returned as zero, or an entry that lives forever handled after the arithmetic instead of before it would make every entry expire at once or never, and a test suite that checks a second to go, exactly expired and long expired would still pass for the sentinel mistake.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The developer names the previous method, `previousSymbol`, and states how the results are related, `resultsAgreeWhen`: `previous == (result <= 0)`, a boolean expression over the new parameters, `previous` (the previous version's result, a boolean) and `result` (the new one's, a long). The tool resolves the previous version in the old classes, type-checks the relation against both return types, and compiles it into the harness in place of the equality it would otherwise assert: on every input, both versions must throw alike, and when both return the relation must hold; a relation that throws on a pair of results does not hold. The proof is restricted to the inputs the cache can pass, the precondition the module's own properties file states: a write at or after the clock's zero, read at or after it, with a positive time to live. Outside it the new method's signed subtraction can overflow, for a reading from before the write against a time to live near the maximum, and the relation is not claimed. Within it the relation is proved over all 2^192 inputs in under a second. A counterexample would be shown as both results with the note that the relation does not hold between them; example 122 shows one.",
+  "resolution": "Merge. The relation and the precondition are what a reviewer approves: that expired means no time left, and that the cache never asks about a reading from before the write. The identical-bytecode shortcut is off under a relation, since identical code proves nothing about `previous == (result <= 0)`.",
+  "notes": [
+    "The library's test of the same shape (the same `isExpired` turned into `remainingNanos`) proves in 0.4 s with JBMC and in 0.1 s with the tool's own checker; the measurement on this kernel is the pipeline's.",
+    "Without `resultsAgreeWhen`, the tool refuses: `the previous version returns boolean and the new one long; say how the results are related with --results-agree-when, a boolean expression over the new parameters, previous and result`. The relation may also be given when the types are the same and the meaning changed, `result == previous * 1000L` for seconds that became milliseconds.",
+    "The scope is the negation of the precondition in `properties.contract` (`writtenAtNanos >= 0 && nowNanos >= writtenAtNanos && ttlNanos > 0`), so that the proof line reads `where !(!(...))`: the relation holds wherever the module's own property is claimed. Without the scope the proof finds inputs outside it on which `ttlNanos - (nowNanos - writtenAtNanos)` overflows, a clock reading from before the write against a time to live near `Long.MAX_VALUE`, which the old comparison of differences survives; those are the inputs the precondition excludes, not a defect of the rewrite.",
+    "The relation is checked again on a replayed counterexample, in the interpreter, so that a counterexample from a method JBMC had no bytecode for is recognised as one that does not reproduce, as for an equality."
+  ],
+  "provenance": "Constructed on the expire-after-write kernel of example 033, whose property proof holds the boolean to its law; the rewrite is the time-left form an eviction wheel and a metrics endpoint need. The technique is regression verification under a stated relation between the versions' results.",
+  "references": [
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    },
+    {
+      "title": "System.nanoTime (Java SE 21): compare two readings by their difference, never by magnitude",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#nanoTime()"
+    },
+    {
+      "title": "Caffeine: expireAfterWrite and the Expiry interface",
+      "url": "https://github.com/ben-manes/caffeine/wiki/Eviction#time-based"
+    }
+  ]
+}

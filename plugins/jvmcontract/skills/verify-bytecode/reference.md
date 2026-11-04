@@ -13,7 +13,7 @@ Exit code 0 is verified, 1 is a violation or an unverifiable target, 2 is a usag
 ```bash
 # Regression proof: new bytecode == old bytecode on every input, or the input where they differ.
 jvmcontract equivalence --before BASE_CLASSES --after HEAD_CLASSES --target T \
-    [--unchanged-unless 'EXPR'] [--before-target OLD_T] [--before-arguments 'EXPR, ...'] \
+    [--unchanged-unless 'EXPR'] [--before-target OLD_T] [--before-arguments 'EXPR, ...'] [--results-agree-when 'EXPR'] \
     [--classpath 'a.jar:b.jar'] [--max-array-length 8] [--unwind 16] \
     [--timeout 600] [--work DIR] [--report DIR] [--no-shrink] [--json]
 
@@ -58,7 +58,7 @@ jvmcontract inspect path/to/Class.class [--code]
 
 `equivalence` compares the two versions' bytecode before it runs JBMC: a target identical in both, with everything it reaches, is reported verified with "nothing to prove" and no solver, and a callee both versions call unchanged (a pure function of primitives: a helper with a division, `Math.multiplyExact`) is taken as one function in both versions, which the proof line says (`taken as one function in both`); a counterexample found that way is replayed as written and the proof rerun with the callees' bytecode when it does not reproduce (a `note:` line says so). `--no-shared-callees` turns both off, for a proof of the callees as written.
 
-A signature change is a relation, not a difference: when the method was renamed or moved, name the old one with `--before-target pkg.Old#name`; when its parameters were reordered, added, removed or retyped, give the old version's arguments as expressions over the new parameters with `--before-arguments 'tsA, nodeA, tsB, nodeB'` (an array parameter by name, a cast as `(int) (end - start)`), and the proof is of new(x) against old(f(x)). Without them, a target whose parameters differ between the versions is refused with the two parameter lists. A counterexample is shown as both versions received it (`winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`).
+A signature change is a relation, not a difference: when the method was renamed or moved, name the old one with `--before-target pkg.Old#name`; when its parameters were reordered, added, removed or retyped, give the old version's arguments as expressions over the new parameters with `--before-arguments 'tsA, nodeA, tsB, nodeB'` (an array parameter by name, a cast as `(int) (end - start)`), and the proof is of new(x) against old(f(x)). Without them, a target whose parameters differ between the versions is refused with the two parameter lists. A counterexample is shown as both versions received it (`winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`). When the result changed its type or meaning, relate the two with `--results-agree-when 'previous == (result <= 0)'`, a boolean expression over the new parameters, `previous` (the old result) and `result` (the new one), which takes the place of equality whenever both versions return; differing return types are refused without it, and a counterexample says `the results are not related by ...` under the two outcomes.
 
 Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`, 0 for no limit) and dies as *unverifiable* beyond it. A run counts as proved only if JBMC itself ends with `VERIFICATION SUCCESSFUL`: a solver that gives up prints `** 0 of N failed` too, and that is no proof.
 
