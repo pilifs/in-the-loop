@@ -89,6 +89,7 @@ import os
 import re
 import resource
 import shutil
+import signal
 import socket
 import string
 import subprocess
@@ -1866,6 +1867,220 @@ def cmd_unpublish(args: list[str]) -> int:
     return 0
 
 
+# --------------------------------------------------------------------------- the repository coordinator
+
+class Busy(Exception):
+    """Another operation holds the repository and did not finish within the wait asked for."""
+
+
+class Operation:
+    """One sync.py command that changes the repository, its trace files or the local state they
+    depend on, serialized with every other such command on this repository.
+
+    Its lock (flock, so the kernel releases it when the holder dies) is exclusive for commands that
+    write and shared for check and scan, which only read: they then never see a sync half done. A
+    command waits for the holder, saying which command that is; the commit hook waits at most
+    HOOK_LOCK_WAIT seconds and otherwise leaves its commit to the next sync, which stamps it anyway.
+
+    Its journal (journal, done) lists the steps under way that an interruption would leave half
+    done. It is written before each such step and cleared after, so it is empty whenever nothing is
+    under way, and one left by a holder that was killed is read, and its steps recovered or
+    reported, by the next exclusive operation (recover_step). The lock, the journal and the holder's
+    name are local, under STATE/locks, keyed by the repository's path."""
+
+    def __init__(self, command: str, exclusive: bool = True, wait: float | None = None) -> None:
+        base = STATE / "locks" / hashlib.sha256(str(REPO.resolve()).encode()).hexdigest()[:16]
+        self.lock_path, self.owner_path, self.journal_path = (base.with_name(base.name + s) for s in
+                                                              (".lock", ".owner", ".journal.json"))
+        self.command, self.exclusive, self.wait = command, exclusive, wait
+        self.steps: dict[str, dict] = {}
+        self.fd, self.outer, self.jj_op, self.serial, self.nested = None, None, None, 0, False
+        self.started = datetime.now().isoformat(timespec="seconds")
+
+    def holder(self) -> str:
+        try:
+            o = json.loads(self.owner_path.read_text())
+            os.kill(o["pid"], 0)
+            return f"`sync.py {o['command']}` (pid {o['pid']}, since {o['started']})"
+        except (OSError, ValueError, KeyError, TypeError):
+            return "a `sync.py check` or `scan`"
+
+    def __enter__(self) -> "Operation":
+        import fcntl
+        global operation
+        if operation is not None:  # this process holds it already: a second flock would wait for itself
+            self.nested = True
+            return operation
+        self.lock_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.fd = os.open(self.lock_path, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC, 0o600)
+        mode = fcntl.LOCK_EX if self.exclusive else fcntl.LOCK_SH
+        started = time.perf_counter()
+        try:
+            try:
+                fcntl.flock(self.fd, mode | fcntl.LOCK_NB)
+            except BlockingIOError:
+                holder = self.holder()
+                print(f"waiting for {holder} to finish with this repository", file=sys.stderr, flush=True)
+                deadline = None if self.wait is None else time.monotonic() + self.wait
+                while True:
+                    if deadline is None:
+                        fcntl.flock(self.fd, mode)
+                        break
+                    try:
+                        fcntl.flock(self.fd, mode | fcntl.LOCK_NB)
+                        break
+                    except BlockingIOError:
+                        if time.monotonic() > deadline:
+                            raise Busy(holder) from None
+                        time.sleep(0.05)
+        except BaseException:
+            os.close(self.fd)
+            self.fd = None
+            raise
+        perf.count("lock wait seconds", time.perf_counter() - started)
+        if self.exclusive:
+            atomic_write(self.owner_path, json.dumps({"command": self.command, "pid": os.getpid(),
+                                                      "started": self.started}), private=True)
+        self.outer, operation = operation, self
+        try:
+            self.recover()
+        except BaseException:
+            self.__exit__(*sys.exc_info())
+            raise
+        return self
+
+    def __exit__(self, *exc) -> None:
+        global operation
+        if self.nested:
+            return
+        operation = self.outer
+        try:
+            if self.exclusive:
+                if not self.steps:
+                    self.journal_path.unlink(missing_ok=True)
+                self.owner_path.unlink(missing_ok=True)
+        finally:
+            os.close(self.fd)  # and with it the lock
+            self.fd = None
+
+    def save(self) -> None:
+        if self.steps:
+            atomic_write(self.journal_path, json.dumps({"command": self.command, "pid": os.getpid(),
+                                                        "started": self.started, "jj_op": self.jj_op,
+                                                        "steps": self.steps}, indent=1), private=True)
+        else:
+            self.journal_path.unlink(missing_ok=True)
+
+    def recover(self) -> None:
+        try:
+            old = json.loads(self.journal_path.read_text())
+        except FileNotFoundError:
+            return
+        except ValueError:  # atomic writes make this a file someone else wrote
+            old = {"command": "?", "steps": {}}
+        if not self.exclusive:
+            print(f"warn: `sync.py {old.get('command')}` was interrupted (pid {old.get('pid')}, started "
+                  f"{old.get('started')}); the next sync, commit or push recovers what it left", file=sys.stderr)
+            return
+        lines = [f"`sync.py {old.get('command')}` (pid {old.get('pid')}, started {old.get('started')}) was "
+                 f"interrupted" + (f"; `jj op log` shows what it did after operation {old['jj_op']}" if old.get("jj_op") else "")]
+        lines += [f"  {recover_step(step)}" for step in old.get("steps", {}).values()]
+        print("\n".join(lines), file=sys.stderr)
+        log(" | ".join(lines))
+        self.journal_path.unlink(missing_ok=True)
+
+    def begin(self, kind: str, **data) -> str:
+        if self.jj_op is None and has_jj():
+            self.jj_op = jj("op", "log", "-n1", "--no-graph", "--ignore-working-copy", "-T", "id.short(12)").stdout.strip()
+        self.serial += 1
+        key = f"{self.serial}"
+        self.steps[key] = {"kind": kind, **data}
+        self.save()
+        return key
+
+    def update(self, key: str, **data) -> None:
+        self.steps[key].update(data)
+        self.save()
+
+    def end(self, key: str) -> None:
+        self.steps.pop(key, None)
+        self.save()
+
+
+operation: Operation | None = None  # the one this process holds, if any
+
+
+def journal(kind: str, **data) -> str | None:
+    """Record in the journal a step an interruption would leave half done; outside an operation (a
+    test, a library call) there is none."""
+    return operation.begin(kind, **data) if operation and operation.exclusive else None
+
+
+def journal_update(key: str | None, **data) -> None:
+    if key and operation:
+        operation.update(key, **data)
+
+
+def done(key: str | None) -> None:
+    if key and operation:
+        operation.end(key)
+
+
+@contextlib.contextmanager
+def journaled(kind: str, **data):
+    """A step that is done when its block ends normally, a return included. An exception leaves it
+    in the journal, to be reported by the next operation, as a kill does."""
+    key = journal(kind, **data)
+    yield key
+    done(key)
+
+
+def return_working_copy(step: dict) -> str:
+    """Undo hook-commit's switch of the working copy to the commit it records: if @ is still that
+    commit, edit the change it found as @ again, or start a new one where it had abandoned an empty
+    @. Anything else means someone moved @ since, and it is left where it is."""
+    at = jj_commits("@")
+    if not at or at[0]["change_id"] != step["edited"]:
+        return "the working copy had already left the commit the hook recorded; left where it is"
+    r = jj("edit", step["back"]) if step.get("back") else jj("new")
+    if r.returncode:
+        raise RuntimeError(f"could not return the working copy from {step['edited'][:12]}: {r.stderr.strip()}")
+    return (f"the working copy was left on the commit it recorded, {step['edited'][:12]}; "
+            + (f"returned it to {step['back'][:12]}" if step.get("back") else "started a new change above it"))
+
+
+def recover_step(step: dict) -> str:
+    """Recover or report one step a killed operation left in the journal."""
+    kind = step.get("kind")
+    if kind == "away":
+        return return_working_copy(step)
+    if kind == "sync":
+        write_index()
+        return ("a sync stopped part way: rebuilt the global files; sessions it did not reach are synced "
+                "by the next commit, which sees they changed")
+    if kind == "describe":
+        return (f"a commit described @ as {step.get('summary')!r} but did not finish (`jj new`); run "
+                "`sync.py commit` again to finish it, or `jj describe` to change the message")
+    if kind == "publish":
+        return (f"a push stopped at its {step.get('stage')} stage; run `sync.py push` again. Logs it verified "
+                "on the CDN are in the upload record, and a log it may have uploaded is looked for first")
+    return f"an unknown step was left: {kind}"
+
+
+HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook times out at 60)
+# How each command takes the repository lock; commands not listed take none: the Stop hook writes
+# only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
+LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
+           "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
+           "review": "exclusive", "init": "exclusive"}
+
+
+def _terminated(signum, frame) -> None:
+    """SIGTERM and SIGHUP (a hook's timeout, a closed terminal) unwind like Ctrl-C, so that the
+    finally blocks put the working copy back and the journal is current."""
+    raise SystemExit(128 + signum)
+
+
 # --------------------------------------------------------------------------- commands
 
 def process(transcript: Path, redact: Redactor, status: str, live: bool, current: bool,
@@ -2060,20 +2275,43 @@ def cmd_hook_commit() -> None:
             return
         if any(s == transcript.stem and sha for s, sha in session_trailers(parents[0]["description"])):
             return  # already recorded, for example by `sync.py commit`
-        changed = jj("diff", "--name-only").stdout.splitlines()
-        if any(trace_owned(p) for p in changed):
-            return  # rewriting the commit below would conflict; the next sync stamps it instead
-        jj("edit", parents[0]["change_id"])  # abandons @ if it is empty and has no message
         try:
-            redact = Redactor()
-            cache = transcript_cache(redact)
-            process(transcript, redact, "open", live=False, current=True, cache=cache)
-            cache.save()
-            write_index()
+            lock = Operation("hook-commit", wait=HOOK_LOCK_WAIT).__enter__()
+        except Busy as e:
+            log(f"hook-commit: {e} held the repository; the next sync records {parents[0]['change_id'][:12]}")
+            return
+        try:
+            hook_commit(transcript, at, parents[0])
         finally:
-            jj("edit", at["change_id"]) if changed or at["description"] else jj("new")
+            lock.__exit__(*sys.exc_info())
     except Exception:
         log(traceback.format_exc())
+
+
+def hook_commit(transcript: Path, at: dict, parent: dict) -> None:
+    """hook-commit's work, under the repository lock: @ and its parent are read again, since another
+    operation may have moved them while the hook waited."""
+    if [c["change_id"] for c in jj_commits("@")] != [at["change_id"]] or \
+            [c["change_id"] for c in jj_commits("parents(@)")] != [parent["change_id"]]:
+        log("hook-commit: the working copy moved while the hook waited; the next sync records the commit")
+        return
+    changed = jj("diff", "--name-only").stdout.splitlines()
+    if any(trace_owned(p) for p in changed):
+        return  # rewriting the commit below would conflict; the next sync stamps it instead
+    # Journaled before the switch: a kill after it (a hook's timeout) leaves @ on a finished commit,
+    # where the next edits would land, until the next operation puts it back.
+    step = {"edited": parent["change_id"], "back": at["change_id"] if changed or at["description"] else None}
+    key = journal("away", **step)
+    jj("edit", parent["change_id"])  # abandons @ if it is empty and has no message
+    try:
+        redact = Redactor()
+        cache = transcript_cache(redact)
+        process(transcript, redact, "open", live=False, current=True, cache=cache)
+        cache.save()
+        write_index()
+    finally:
+        return_working_copy(step)
+        done(key)
 
 
 def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None" = None) -> "Redactor":
@@ -2088,30 +2326,31 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
     me, index, unchanged = running_session(), commit_index(), 0
-    for p in paths:
-        live = time.time() - p.stat().st_mtime < LIVE_SECONDS
-        status, current = "open" if live else "ended", live or p.stem == me
-        if not named and not every and states.entries.get(p.stem) == session_state(p, status, current, index):
-            unchanged += 1
-            perf.count("sessions unchanged, not synced")
-            continue
-        state = session_state(p, status, current, None)  # its sources, before they are read
-        with perf.phase("process"):
-            m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
-        index = commit_index()  # process may have described changes
-        if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
-            states.entries.pop(p.stem, None)
-        else:
-            states.entries[p.stem] = {**session_state(p, status, current, index), "sources": state["sources"]}
-        s = m["stats"]
-        print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
-              f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
-    if unchanged:
-        print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
-    cache.save()
-    states.save()
-    with perf.phase("index"):
-        write_index()  # once, after every session: it reads all their manifests
+    with journaled("sync"):
+        for p in paths:
+            live = time.time() - p.stat().st_mtime < LIVE_SECONDS
+            status, current = "open" if live else "ended", live or p.stem == me
+            if not named and not every and states.entries.get(p.stem) == session_state(p, status, current, index):
+                unchanged += 1
+                perf.count("sessions unchanged, not synced")
+                continue
+            state = session_state(p, status, current, None)  # its sources, before they are read
+            with perf.phase("process"):
+                m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
+            index = commit_index()  # process may have described changes
+            if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
+                states.entries.pop(p.stem, None)
+            else:
+                states.entries[p.stem] = {**session_state(p, status, current, index), "sources": state["sources"]}
+            s = m["stats"]
+            print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
+                  f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
+        if unchanged:
+            print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
+        cache.save()
+        states.save()
+        with perf.phase("index"):
+            write_index()  # once, after every session: it reads all their manifests
     return redact
 
 
@@ -2729,14 +2968,15 @@ def cmd_commit(args: list[str]) -> int:
     message = "\n\n".join(a.strip() for a in args[1::2] if a.strip())
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
-    if jj("describe", "-r", "@", "-m", message).returncode:
-        print("jj describe failed", file=sys.stderr)
-        return 1
-    redact = cmd_sync([])
-    at = jj_commits("@")[0]
-    if jj("new").returncode:
-        print("jj new failed", file=sys.stderr)
-        return 1
+    with journaled("describe", summary=message.split("\n", 1)[0]):
+        if jj("describe", "-r", "@", "-m", message).returncode:
+            print("jj describe failed", file=sys.stderr)
+            return 1
+        redact = cmd_sync([])
+        at = jj_commits("@")[0]
+        if jj("new").returncode:
+            print("jj new failed", file=sys.stderr)
+            return 1
     print(f"committed {at['change_id'][:12]}")
     # The check that used to follow every commit, run here on what the commit left: the same one as
     # `sync.py check`, with its caches, so it rescans only what this commit added. The commit stands
@@ -2763,6 +3003,11 @@ def cmd_push(args: list[str]) -> int:
     if work := uncommitted_work():
         print("uncommitted work in @; commit it first with `sync.py commit`:\n  " + "\n  ".join(work), file=sys.stderr)
         return 1
+    with journaled("publish", stage="sync") as step:
+        return publish(args, step)
+
+
+def publish(args: list[str], step: str | None) -> int:
     original = jj_commits("@")[0]["description"]
     described = commit_summary(original) is not None
     if not described:
@@ -2773,9 +3018,11 @@ def cmd_push(args: list[str]) -> int:
     if cmd_check() != 0:  # before the upload: a log with a leak must not reach the CDN
         print("trace check failed; nothing uploaded", file=sys.stderr)
         return 1
+    journal_update(step, stage="upload")
     if cmd_upload(include_at=True) != 0:
         print("log upload failed; not pushing", file=sys.stderr)
         return 1
+    journal_update(step, stage="trace record")
     write_index()  # the overview counts uploads
     at = jj_commits("@")[0]["change_id"]
     if any(c["change_id"] == at for m in all_manifests().values() for c in m.get("commits", [])) or uploads() != uploaded:
@@ -2784,6 +3031,7 @@ def cmd_push(args: list[str]) -> int:
     else:  # only git SHAs changed: not worth a commit, which would have a new SHA of its own
         jj("restore")
         jj("describe", "-r", "@", "-m", original if described else "")
+    journal_update(step, stage="bookmark and push")
     for flag, name in zip(args, args[1:]):
         if flag in ("--bookmark", "-b") and jj("bookmark", "set", name, "-r", "@-").returncode:
             print(f"could not move bookmark {name} to @-", file=sys.stderr)
@@ -3149,9 +3397,14 @@ def log(msg: str) -> None:
 
 def main(argv: list[str]) -> int:
     cmd = argv[0] if argv else ""
+    for sig in (signal.SIGTERM, signal.SIGHUP):
+        signal.signal(sig, _terminated)
     try:
         with perf.phase(cmd or "help"):
-            return run(cmd, argv[1:])
+            if cmd not in LOCKING:
+                return run(cmd, argv[1:])
+            with Operation(cmd, exclusive=LOCKING[cmd] == "exclusive"):
+                return run(cmd, argv[1:])
     finally:
         # The hooks run after every tool call and turn; only the runs that did something are kept.
         if cmd != "perf" and not (cmd.startswith("hook") and perf.phases.get(cmd, [0, 0])[1] < 0.5):

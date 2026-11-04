@@ -1436,5 +1436,176 @@ class Perf(unittest.TestCase):
         self.assertEqual(record["phases"]["worker"]["calls"], 8)
 
 
+HOLDER = """
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import sync
+sync.STATE, sync.REPO = Path(sys.argv[2]), Path(sys.argv[3])
+with sync.Operation(sys.argv[4], exclusive=sys.argv[5] == "exclusive"):
+    print("held", flush=True)
+    sys.stdin.read()
+"""
+
+# hook-commit as the PostToolUse hook runs it, with `process` replaced by an interruption.
+HOOK = """
+import io, json, os, signal, sys, time
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import sync
+sync.STATE, sync.REPO = Path(sys.argv[2]), Path(sys.argv[3])
+how = sys.argv[4]
+def interrupted(*a, **k):
+    os.kill(os.getpid(), signal.SIGKILL if how == "kill" else signal.SIGTERM)
+    time.sleep(5)
+sync.process = interrupted
+sys.stdin = io.StringIO(json.dumps({"transcript_path": str(sync.STATE / "made-up.jsonl"),
+                                    "tool_input": {"command": "jj commit -m x"}}))
+sync.main(["hook-commit"])
+"""
+
+
+class Coordinator(unittest.TestCase):
+    """One lock per repository serializes the commands that change it, and a journal written before
+    each step an interruption would leave half done lets the next operation recover it."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.state, self.repo = Path(self.tmp.name) / "state", Path(self.tmp.name) / "repo"
+        self.repo.mkdir()
+        self.patches = [mock.patch.object(sync, "STATE", self.state), mock.patch.object(sync, "REPO", self.repo)]
+        for x in self.patches:
+            x.start()
+        self.children = []
+
+    def tearDown(self):
+        for c in self.children:
+            c.kill()
+            c.wait()
+            for f in (c.stdin, c.stdout):
+                f.close()
+        for x in self.patches:
+            x.stop()
+        self.tmp.cleanup()
+
+    def hold(self, command, mode="exclusive"):
+        import subprocess
+        child = subprocess.Popen([sys.executable, "-c", HOLDER, str(Path(sync.__file__).parent), str(self.state),
+                                  str(self.repo), command, mode], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        self.children.append(child)
+        self.assertEqual(child.stdout.readline().strip(), "held")
+        return child
+
+    def test_a_writer_waits_for_the_holder_and_names_it(self):
+        child = self.hold("sync")
+        with mock.patch("sys.stderr", io.StringIO()) as err, self.assertRaises(sync.Busy) as busy:
+            with sync.Operation("commit", wait=0.3):
+                pass
+        self.assertIn(f"`sync.py sync` (pid {child.pid}", str(busy.exception))
+        self.assertIn("waiting for `sync.py sync`", err.getvalue())
+        got = []
+
+        def wait():
+            with mock.patch("sys.stderr", io.StringIO()), sync.Operation("commit"):
+                got.append(time.monotonic())
+        t, released = threading.Thread(target=wait), None
+        t.start()
+        time.sleep(0.3)
+        self.assertEqual(got, [])
+        released = time.monotonic()
+        child.stdin.close()
+        t.join(10)
+        self.assertEqual(len(got), 1)
+        self.assertGreaterEqual(got[0], released)
+
+    def test_readers_share_and_exclude_writers(self):
+        self.hold("check", "shared")
+        with sync.Operation("scan", exclusive=False, wait=0.3):
+            pass
+        with mock.patch("sys.stderr", io.StringIO()) as err, self.assertRaises(sync.Busy):
+            with sync.Operation("sync", wait=0.3):
+                pass
+        self.assertIn("a `sync.py check` or `scan`", err.getvalue())
+
+    def test_a_lock_dies_with_its_holder(self):
+        child = self.hold("push")
+        child.kill()
+        child.wait()
+        with sync.Operation("commit", wait=0.5):
+            pass
+
+    def test_an_operation_in_progress_is_not_entered_twice(self):
+        with sync.Operation("push") as outer, sync.Operation("sync", wait=0.1) as inner:
+            self.assertIs(inner, outer)
+        self.assertIsNone(sync.operation)
+
+    def test_the_journal_is_empty_when_nothing_is_under_way(self):
+        self.assertIsNone(sync.journal("sync"))  # outside an operation there is none
+        with sync.Operation("commit") as op:
+            with sync.journaled("describe", summary="Made-up summary") as key:
+                self.assertEqual(json.loads(op.journal_path.read_text())["steps"][key]["kind"], "describe")
+            self.assertFalse(op.journal_path.exists())
+            with self.assertRaises(ZeroDivisionError), sync.journaled("sync"):
+                1 / 0
+            self.assertTrue(op.journal_path.exists())  # an exception leaves it, as a kill does
+            op.end("2")
+        self.assertFalse(op.journal_path.exists())
+
+    def test_the_next_operation_reports_an_interrupted_one(self):
+        with sync.Operation("commit") as op:
+            sync.journal("describe", summary="Made-up summary")
+            key = sync.journal("publish", stage="sync")
+            sync.journal_update(key, stage="upload")
+            op.steps.clear()  # as if killed: the journal on disk stays as it was
+        sync.Operation("commit").journal_path.write_text(json.dumps(
+            {"command": "push", "pid": 1, "started": "x", "jj_op": None, "steps": {
+                "1": {"kind": "describe", "summary": "Made-up summary"}, "2": {"kind": "publish", "stage": "upload"}}}))
+        with mock.patch("sys.stderr", io.StringIO()) as err, sync.Operation("scan", exclusive=False):
+            pass
+        self.assertIn("`sync.py push` was interrupted", err.getvalue())  # a reader only points at it
+        with mock.patch("sys.stderr", io.StringIO()) as err, sync.Operation("sync") as op:
+            self.assertFalse(op.journal_path.exists())
+        self.assertIn("described @ as 'Made-up summary'", err.getvalue())
+        self.assertIn("stopped at its upload stage", err.getvalue())
+
+    def jj_repo(self):
+        if not os.access(sync.JJ, os.X_OK):
+            self.skipTest("no jj")
+        env = {**os.environ, "JJ_USER": "Made Up", "JJ_EMAIL": "made-up@example.com"}
+        import subprocess
+        run = lambda *a: subprocess.run([sync.JJ, "--quiet", *a], cwd=self.repo, env=env, check=True,
+                                        capture_output=True, text=True).stdout
+        run("git", "init")
+        (self.repo / "feature.txt").write_text("made-up feature\n")
+        run("commit", "-m", "Made-up feature")
+        return run, env
+
+    def interrupt_hook(self, how, env):
+        import subprocess
+        return subprocess.run([sys.executable, "-c", HOOK, str(Path(sync.__file__).parent), str(self.state),
+                               str(self.repo), how], env=env, capture_output=True, text=True, timeout=60)
+
+    def test_a_killed_commit_hook_leaves_the_working_copy_to_be_put_back(self):
+        run, env = self.jj_repo()
+        at = lambda: run("log", "--no-graph", "-r", "@", "-T", "change_id ++ ' ' ++ description.first_line()").split()
+        committed = run("log", "--no-graph", "-r", "@-", "-T", "change_id")
+        self.interrupt_hook("kill", env)
+        self.assertEqual(at(), [committed, "Made-up", "feature"])  # the hazard: edits would land in it
+        with mock.patch.dict(os.environ, env), mock.patch("sys.stderr", io.StringIO()) as err, \
+                mock.patch.object(sync, "log"), sync.Operation("commit") as op:
+            self.assertFalse(op.journal_path.exists())
+        self.assertIn("started a new change above it", err.getvalue())
+        self.assertEqual(len(at()), 1)  # a new, empty change without a description
+        self.assertEqual(run("log", "--no-graph", "-r", "@-", "-T", "change_id"), committed)
+
+    def test_a_terminated_commit_hook_puts_the_working_copy_back_itself(self):
+        run, env = self.jj_repo()
+        committed = run("log", "--no-graph", "-r", "@-", "-T", "change_id")
+        r = self.interrupt_hook("term", env)
+        self.assertEqual(r.returncode, 143, r.stderr[-2000:])
+        self.assertEqual(run("log", "--no-graph", "-r", "@-", "-T", "change_id"), committed)
+        self.assertFalse(sync.Operation("x").journal_path.exists())
+
+
 if __name__ == "__main__":
     unittest.main()
