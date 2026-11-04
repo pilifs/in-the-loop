@@ -100,7 +100,7 @@ import urllib.parse
 import urllib.request
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import metrics  # llm-dlc/tools/metrics.py
@@ -1244,7 +1244,8 @@ def turn_spans(sid: str, n: int, turn: list[dict], m: dict) -> list[dict]:
         "langfuse.trace.tags": ["claude-code"],
         "langfuse.trace.metadata.turn": n,
         "langfuse.trace.metadata.manifest": str(manifest_path(sid).relative_to(REPO)),
-        "langfuse.trace.metadata.log_sha256": m["log"]["sha256"],
+        # None (left out) for a session no sync has stored a log of yet: its turns are sent all the same
+        "langfuse.trace.metadata.log_sha256": (m.get("log") or {}).get("sha256"),
     }))
     return spans
 
@@ -1782,9 +1783,11 @@ def langfuse_config() -> tuple[str, str, str] | None:
 
 
 def langfuse_todo() -> list[str]:
-    """Sessions with a stored log that has finished turns not yet sent to Langfuse, cheaply: a
-    session whose latest log was found fully sent is marked in its state file by that log's sha."""
-    todo = []
+    """Sessions that may have finished turns not yet sent to Langfuse, cheaply: those whose
+    end-of-turn hook did not finish a send (hook_unsent), and those with a stored log not marked as
+    fully sent. A session whose latest log was found fully sent, once it had ended, is marked in its
+    state file by that log's sha."""
+    todo = [sid for sid, _ in hook_unsent()]
     for sid, m in all_manifests().items():
         sha = (m.get("log") or {}).get("sha256")
         state_file = STATE / f"{sid}.json"
@@ -1792,32 +1795,80 @@ def langfuse_todo() -> list[str]:
             marked = json.loads(state_file.read_text()).get("complete") if state_file.exists() else None
         except ValueError:
             marked = None
-        if sha and marked != sha:
+        if sha and marked != sha and sid not in todo:
             todo.append(sid)
     return todo
 
 
+HOOK_GRACE = 120  # seconds: longer than the hooks' 60 s timeout, so a hook still running is not reported
+
+
+def hook_unsent(older_than: float = 0) -> list[tuple[str, str]]:
+    """(session, since) for each session whose end-of-turn hook started a send that did not finish:
+    Langfuse was down, or the hook failed, timed out or was killed. The mark is set before a hook
+    reads anything and cleared only after everything it found was sent, so a session without it has
+    had every finished turn sent. older_than: only marks set at least that many seconds ago."""
+    found = []
+    for f in sorted(STATE.glob("*-*-*-*-*.json")) if STATE.is_dir() else []:  # sessions', not the caches
+        if not re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", f.stem):
+            continue
+        try:
+            since = json.loads(f.read_text()).get("hook_unsent")
+        except (OSError, ValueError, AttributeError):
+            continue
+        try:
+            age = time.time() - datetime.fromisoformat(since).timestamp() if since else None
+        except (TypeError, ValueError):
+            age = older_than
+        if age is not None and age >= older_than:
+            found.append((f.stem, since))
+    return found
+
+
+def mark_hook_unsent(sid: str, unsent: bool) -> None:
+    """Set or clear the mark that hook_unsent reads, keeping the rest of the state."""
+    state = langfuse_state(sid)
+    if unsent:
+        state["hook_unsent"] = state.get("hook_unsent") or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    elif "hook_unsent" in state:
+        del state["hook_unsent"]
+    else:
+        return
+    save_langfuse_state(sid, state)
+
+
 def langfuse_send(sid: str, live: bool | None = None) -> None:
-    """Send one session's finished turns from its stored log. Every finished turn is sent and the log marked
-    done; a session still running keeps its last turn for the Stop hook."""
+    """Send one session's finished turns: from its transcript while that is on this machine, as the
+    Stop hook does, which covers turns no commit has stored yet; otherwise from its stored log. A
+    session still running (written in the last LIVE_SECONDS, or `live`) keeps its last turn for its
+    Stop hook, and its log is not marked done, so a later run looks at that turn again."""
     if langfuse_config() is None:  # nothing is sent, so nothing is complete
         raise OSError("no Langfuse configured (llm-dlc/infra/langfuse/.env)")
+    transcript = claude_project_dir() / f"{sid}.jsonl"
+    if transcript.exists():
+        if live is None:
+            live = time.time() - transcript.stat().st_mtime < LIVE_SECONDS
+        hook_export(transcript, Redactor(), live=live)
+        mark_hook_unsent(sid, False)
+        return
     m = load_manifest(sid)
     data = load_log(sid, m["log"]["sha256"]) if m.get("log") else None
     if data is None:
         return
     live = m.get("status") != "ended" if live is None else live
     export_langfuse(sid, read_jsonl(data), m, live=live)
-    state = langfuse_state(sid)
-    state["complete"] = m["log"]["sha256"]  # this log has nothing more to send (a live one keeps its last turn)
-    save_langfuse_state(sid, state)
+    if not live:  # a live log kept its last turn back: it is not done
+        state = langfuse_state(sid)
+        state["complete"] = m["log"]["sha256"]
+        save_langfuse_state(sid, state)
+        mark_hook_unsent(sid, False)
 
 
 def cmd_langfuse(args: list[str]) -> int:
-    """Send these sessions' finished turns to Langfuse from their stored, already redacted logs, by
-    hand: for sessions whose Stop hook ran while Langfuse was down. Commit and sync never contact
+    """Send these sessions' finished turns to Langfuse by hand, redacted as the Stop hook does them:
+    for sessions whose hook ran while Langfuse was down or failed (langfuse_send). Commit and sync never contact
     Langfuse. The first failure stops it, and only sent turns are recorded, so a rerun resumes.
-    --pending lists the sessions that have turns to send; --all sends for all of them."""
+    --pending lists the sessions that may have turns to send; --all sends for all of them."""
     if args == ["--pending"]:
         for sid in langfuse_todo():
             print(sid)
@@ -1848,7 +1899,7 @@ def lines_in(raw: bytes) -> int:
     return len(decoded(raw).splitlines())
 
 
-def hook_export(transcript: Path, redact: Redactor) -> int:
+def hook_export(transcript: Path, redact: Redactor, live: bool = False) -> int:
     """Send a transcript's finished turns, reading it from the hook's cursor: the start of the first
     turn not sent yet, or of the unfinished last line when every turn was sent. Turns before it are
     never sent again, so it is enough to redact and parse what follows it. The cursor is used only
@@ -1858,7 +1909,8 @@ def hook_export(transcript: Path, redact: Redactor) -> int:
     the turns after it are numbered and named by. Without a cursor, the log `sync` last made of the
     transcript is reused (redacted_incrementally; the cache is not saved). The cursor moves only
     after a send succeeds, and over whole lines of the transcript: one that the decoder or the
-    redactor splits in two (a carriage return, a raw U+2028) is read as the lines it gives."""
+    redactor splits in two (a carriage return, a raw U+2028) is read as the lines it gives.
+    live: the last turn may still be running, so it is not sent and the cursor stays before it."""
     sid, fingerprint = transcript.stem, sha256(f"{redact.fingerprint()}\0{tools_digest()}".encode())
     raw = transcript.read_bytes()
     state, start, turns_before, title = langfuse_state(sid), 0, 0, None
@@ -1890,7 +1942,7 @@ def hook_export(transcript: Path, redact: Redactor) -> int:
         if e.get("type") == "ai-title":
             title = e.get("aiTitle") or title
     m = {**load_manifest(sid), "title": title}
-    sent = export_langfuse(sid, entries, m, live=False, first_turn=turns_before + 1)
+    sent = export_langfuse(sid, entries, m, live=live, first_turn=turns_before + 1)
     done = set(langfuse_state(sid)["exported"])
     offset, title = start, cursor["title"] if start else None
     for raw_line, found in zip(raw_lines[:-1], lines):  # the last is unfinished, or empty
@@ -1914,7 +1966,12 @@ def cmd_hook() -> None:
         payload = json.load(sys.stdin)
         if langfuse_config() is None:  # before reading and redacting the whole transcript
             return
-        hook_export(Path(payload["transcript_path"]), Redactor())
+        transcript = Path(payload["transcript_path"])
+        # Marked before anything is read, cleared once all was sent: a hook that fails, times out
+        # or is killed leaves the mark, which `check` reports and `sync.py langfuse --all` acts on.
+        mark_hook_unsent(transcript.stem, True)
+        hook_export(transcript, Redactor())
+        mark_hook_unsent(transcript.stem, False)
     except OSError as e:  # Langfuse down: those turns are retried next time
         log(f"langfuse export deferred: {e}")
     except Exception:
@@ -3085,6 +3142,9 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     notes += found_notes
     with perf.phase("global files"):
         errors += check_global_files(manifests, redact)
+    for sid, since in hook_unsent(older_than=HOOK_GRACE):
+        warnings.append(f"{sid}: Langfuse may be missing turns: its end-of-turn hook has not finished a send "
+                        f"since {since}; with Langfuse up, run: python3 llm-dlc/tools/sync.py langfuse {sid}")
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():

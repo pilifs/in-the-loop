@@ -18,6 +18,7 @@ import tempfile
 import threading
 import time
 import unittest
+import uuid
 from collections import Counter
 from pathlib import Path
 from unittest import mock
@@ -1392,6 +1393,77 @@ class HookCursor(unittest.TestCase):
         self.assertIn("x", state["exported"])
         self.assertEqual(len(state["exported"]), 2)
         self.assertEqual(state["hook_cursor"]["turns"], 1)
+
+    def run_hook(self, transcript):
+        with mock.patch("sys.stdin", io.StringIO(json.dumps({"transcript_path": str(transcript)}))), \
+                mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stderr", io.StringIO()):
+            sync.cmd_hook()
+
+    def roots(self):
+        return {s["spanId"]: s for b in self.sent for s in b["resourceSpans"][0]["scopeSpans"][0]["spans"]
+                if "parentSpanId" not in s}
+
+    def test_a_failed_send_is_marked_until_one_succeeds(self):
+        """Langfuse down, or the hook killed after its POST but before it saved its state: the session
+        stays marked (check warns, langfuse --all retries), and a later hook sends every turn under the
+        same ids, so nothing is lost and a resend overwrites rather than duplicates."""
+        sid = str(uuid.UUID(int=7))
+        transcript = self.transcript.with_name(f"{sid}.jsonl")
+        rng = random.Random(5)
+        unix = lambda b: b.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        turns = [unix(self.turn(rng, n)) for n in range(3)]
+        real = sync.export_langfuse
+
+        def killed_after_post(*a, **k):
+            real(*a, **k)  # the POST went through...
+            raise SystemExit("killed")  # ...and the hook died before export_langfuse returned
+        with mock.patch.object(sync, "STATE", self.state_new):
+            transcript.write_bytes(turns[0])
+            self.run_hook(transcript)
+            self.assertEqual(sync.hook_unsent(), [])
+            transcript.write_bytes(b"".join(turns[:2]))
+            self.down = True
+            self.run_hook(transcript)
+            self.assertEqual([s for s, _ in sync.hook_unsent()], [sid])
+            self.assertEqual(sync.hook_unsent(older_than=sync.HOOK_GRACE), [])  # too recent for check
+            self.assertIn(sid, sync.langfuse_todo())
+            self.down = False
+            transcript.write_bytes(b"".join(turns))
+            with mock.patch.object(sync, "export_langfuse", killed_after_post):
+                with self.assertRaises(SystemExit):
+                    self.run_hook(transcript)
+            self.assertEqual([s for s, _ in sync.hook_unsent()], [sid])
+            before = len(self.roots())
+            self.run_hook(transcript)
+            self.assertEqual(sync.hook_unsent(), [])
+        names = sorted(s["name"] for s in self.roots().values())
+        self.assertEqual(names, ["turn 1", "turn 2", "turn 3"])
+        self.assertEqual(len(self.roots()), before)  # the retry resent turns 2-3 under the ids already sent
+
+    def test_a_manual_send_of_a_running_session_keeps_its_last_turn(self):
+        sid = str(uuid.UUID(int=8))
+        transcript = self.transcript.with_name(f"{sid}.jsonl")
+        rng = random.Random(6)
+        unix = lambda b: b.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        transcript.write_bytes(b"".join(unix(self.turn(rng, n)) for n in range(2)))
+        sync.save_manifest(sid, {"session_id": sid, "log": {"sha256": "0" * 64}})
+        with mock.patch.object(sync, "STATE", self.state_new), \
+                mock.patch.object(sync, "claude_project_dir", return_value=transcript.parent), \
+                mock.patch.object(sync, "Redactor", MadeUpRedactor):
+            self.assertEqual(sync.cmd_langfuse([f"{sid}:live"]), 0)
+            self.assertEqual(sorted(s["name"] for s in self.roots().values()), ["turn 1"])
+            self.assertIn(sid, sync.langfuse_todo())  # not marked done while its last turn is held back
+            os.utime(transcript, (time.time() - 3600,) * 2)
+            self.assertEqual(sync.cmd_langfuse([sid]), 0)  # written long enough ago: not live
+        self.assertEqual(sorted(s["name"] for s in self.roots().values()), ["turn 1", "turn 2"])
+
+    def test_check_warns_about_a_hook_that_did_not_finish(self):
+        sid = str(uuid.UUID(int=9))
+        self.state_new.mkdir()
+        (self.state_new / f"{sid}.json").write_text(json.dumps({"exported": [], "hook_unsent": "2026-11-01T00:00:00+00:00"}))
+        (self.state_new / "scan-cache.json").write_text(json.dumps({"hook_unsent": "not a session"}))
+        with mock.patch.object(sync, "STATE", self.state_new):
+            self.assertEqual(sync.hook_unsent(older_than=sync.HOOK_GRACE), [(sid, "2026-11-01T00:00:00+00:00")])
 
     def test_lines_in_counts_what_the_redactor_reads(self):
         rng = random.Random(4)
