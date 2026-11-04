@@ -19,7 +19,9 @@
 #
 # A brief is fixed for the run: each cycle tells the session to read it again in
 # full, so it outlives every compact, and a brief that changes while the loop
-# runs stops it. Without UNTIL, a brief's own "## Loop until" section is UNTIL,
+# runs stops it. Its "## Progress" section is the exception: the session keeps it
+# current, in the commit that does the work, and edits there don't count as a
+# change. Without UNTIL, a brief's own "## Loop until" section is UNTIL,
 # and with neither, nor CYCLES, the loop runs until the session decides the
 # brief is done.
 #
@@ -187,10 +189,14 @@ elif [[ ! -e "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/$(pwd | sed 's/[^A-Za
   FRESH=1
 fi
 
-brief_hash() { sha256sum "$BRIEF" | cut -d' ' -f1; }
+# The brief without its "## Progress" section, which the session updates as it goes.
+brief_hash() {
+  awk '/^## / { progress = ($0 ~ /^## +Progress[[:space:]]*$/) } !progress' "$BRIEF" |
+    sha256sum | cut -d' ' -f1
+}
 if [[ -n "$BRIEF" ]]; then
   BRIEF_HASH=$(brief_hash) || exit 1
-  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. Take the next piece of work it calls for that this run's earlier commits (\`jj log -r '$START..@-'\`) have not done, finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief; if it is wrong or out of date, say so in the commit message."
+  INSTRUCTION="Work on the brief in \`$BRIEF\`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you remember of it may be a summary. Take the next piece of work it calls for that this run's earlier commits (\`jj log -r '$START..@-'\`) have not done, finish it, verify it, and commit it as CLAUDE.md describes. Don't edit the brief outside its \`## Progress\` section; if it has one, update it in the same commit with what this piece did and what comes next. If the rest of the brief is wrong or out of date, say so in the commit message."
 fi
 {
   echo "# Feature loop: $PROMPT"

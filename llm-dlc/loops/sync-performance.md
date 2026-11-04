@@ -6,6 +6,11 @@ model set under [Loop settings](#loop-settings).
 The loop runs until the session judges, by [Loop until](#loop-until), that the rest is not
 worth another cycle.
 
+**Session: `5dfbc1bc-4bd7-4b48-a637-44ff84065b6b`.** All work on this brief so far was done in
+that session, and further work in this area resumes it (`claude --resume
+5dfbc1bc-4bd7-4b48-a637-44ff84065b6b`, or the loop, which reads it from
+[Loop settings](#loop-settings)) rather than starting a new one.
+
 `sync.py commit` and `check` have become the slowest part of the development loop: a commit
 took 35.5 s, the check after it 50.5 s, and a later combined commit and check 118.1 s. The
 review below, an outside review of `sync.py` at `d60616a` (2026-11-02), found why and proposes
@@ -39,14 +44,13 @@ an order of work. Carry it out.
   don't need it, behind a switch that is off where it must be, and end the commit message
   with a **Deferred for the user** paragraph: what is needed, why, and what it would unlock.
   Don't stop the loop over it while other work remains.
-- **Go is out of scope** for this loop. The third changeset ends with a measured
-  recommendation on whether a Go coordinator is worth it, not with a port.
+- **Go is out of scope**, and stays so by decision (see [Decisions](#decisions)): no port.
 
 ## Keep the loop running
 
 The loop should run for as many cycles as there is useful work. A cycle stops it only by
 ending without a commit, by a decision reply without a clear last line, or by an edit to this
-brief. So:
+brief outside [Progress](#progress). So:
 
 - **End every cycle with a commit.** If the planned piece is blocked, commit the largest part
   that isn't: the measurements, the tests, the groundwork behind a switch that is off. Record
@@ -70,14 +74,27 @@ brief. So:
   `sync.py allow propose ID --reason ...` and go on. A warning needs nothing from you.
 - **Long runs go in the background.** A full check, a stamp or a benchmark can take minutes:
   run it in the background and wait for it, rather than letting a tool timeout end the turn.
-- **Don't edit this brief during a run.** That stops the loop. Put corrections in the commit
-  message instead.
+- **Keep [Progress](#progress) current; leave the rest of the brief alone.** Update Progress
+  in the commit that does the work: what changed, the numbers, what comes next.
+  `feature-loop.sh` ignores edits to that section. An edit anywhere else stops the loop, so put
+  corrections to the rest in the commit message instead.
 - **In the decision turn,** end with exactly `LOOP: continue` or `LOOP: stop`, on its own last
   line. When in doubt, continue.
 
 ## Progress
 
-Each run counts only its own commits, so work done in earlier runs is listed here.
+Each run counts only its own commits, so work done in earlier runs is listed here. Numbers are
+from the commit messages, measured on this machine (8 cores) against the same state before and
+after. The full story of each step is in its commit message and in
+[`performance.md`](../performance.md).
+
+| Command | Before the brief | After step 3f |
+|---|---|---|
+| `commit` after a feature, its check included | 35–118 s | about 2–3 s |
+| `check`, warm | 105–126 s | about 1 s |
+| `check --full` (no caches) | 112 s | 18 s |
+| `scan --full` (no caches) | 160 s | 11.6 s |
+| Stop hook, one new turn on the 94 MB transcript | 41.8 s | 0.24 s |
 
 - **First changeset: done**, commit `rxowqurq` (2026-11-03). It added instrumentation
   (`sync.py perf`, `~/.local/state/llm-traces/perf.jsonl`, `LLM_TRACES_PERF=1`), the
@@ -87,10 +104,73 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   only when they change, took Langfuse out of commit and sync entirely, and added
   `stamp --equivalent`. Measured, old against new on the same state: check 126 s to 107 s
   (5.46 GB to 2.47 GB decompressed), sync 78 s to 62 s, push's work 230 s to 212 s. Scanning,
-  not decompression, is about 85% of check's CPU. That is the main target of the second
-  changeset (a scan cache keyed by content). The /tmp measurement drivers were not committed:
-  use `sync.py perf`.
-- **Next: the second changeset.**
+  not decompression, is about 85% of check's CPU.
+- **Second changeset: done** (2026-11-03), commits `zwzolxqo` to `xxspoytu`.
+  - **2a** `zwzolxqo`: a transcript cache (incremental redaction) and a scan cache (results by
+    content sha, ids and masks only) in `~/.local/state/llm-traces`. commit 62 s to 5 s, warm
+    check 105 s to 15 s.
+  - **2b** `qpqnrsym`: a check cache (snapshots verified once by their `.gz` bytes, prefix
+    digests, metrics by inputs); every trailer's manifest read by one `git cat-file --batch`.
+    Warm check 14.7 s to 0.9 s, identical output.
+  - **2c** `sqkxtqkv`: a sync cache of each session's state, so commit syncs only sessions
+    whose inputs or outputs changed; `CLAUDE_CODE_SESSION_ID` marks the running session as
+    current. Warm commit 5.1 s to 0.7 s. One question deferred (see below).
+  - **2d** `myxozvtm`: commit runs the check itself after `jj new` (an error fails the command,
+    the commit stands); CLAUDE.md, the README, the specification and the run-verification skill
+    no longer ask for a separate check. Warm commit with its check 2.2 s.
+  - **2e** `qylspmov`: push's publication gate verifies the exact revision it publishes (trace
+    files by blob id, a URL or withdrawal for every trailer it makes public) before
+    `jj git push`. 0.2 s. (Its message says 63 files hashed; it was 66.)
+  - **2f** `xysnulzx`: scan, review, stamp and allow read the caches, verifying every cached
+    value by id; `--full` bypasses them. review 150 s to 0.9 s, scan 147 s to 0.9 s.
+  - **2g** `xxspoytu`: the Stop hook keeps a cursor at the first turn not yet sent to
+    Langfuse. One new turn 41.8 s to 0.24 s on the 94 MB transcript, byte-identical requests.
+- **Third changeset: done** (2026-11-03), commits `pnstmxpx` to `pvuopzzv`.
+  - **3a** `pnstmxpx`: push uploads up to 4 logs at once (1 wrangler put at a time by
+    default; `LLM_TRACES_UPLOAD_JOBS`, `LLM_TRACES_PUT_JOBS`), reuses check's scans, and keeps
+    a durable `uploads.json` record (attempted, verified). Temporary files are written
+    atomically. Upload stage against stubs 45 s to 26.5 s, 10 s with 4 puts.
+  - **3b** `onlpmumx`: one lock per repository serializes the writing commands, and a journal
+    lets the next operation recover an interrupted one. 0.1 ms for the lock.
+  - **3c** `rsnlowwp`: the code that decides results moved to `llm-dlc/tools/redactor.py`,
+    so an edit to `sync.py` keeps the redaction, scan and snapshot caches. After a `sync.py`
+    edit: sync 70 s to 6.2 s, check 105 s to 3.4 s.
+  - **3d** `zumuuyqr`: the Go recommendation in [`performance.md`](../performance.md), with
+    the profiling harness `llm-dlc/tools/profile_rules.py`: don't port, fix the cold scan in
+    Python. Background preparation measured at 0.6 s at most: not done.
+  - **3e** `urolzzuy`: cold scans and redaction run in one process per CPU
+    (`LLM_TRACES_PROCESSES=1` for serial). check --full 112 s to 32.5 s, scan --full 160 s to
+    32 s, sync --full 71 s to 17.9 s, identical output.
+  - **3f** `pvuopzzv`: per-line gates in `redaction_rules.py` skip each rule on lines that
+    cannot hold its match; `stamp --equivalent` runs in a pool. check --full 32.5 s to 18 s,
+    scan --full 32 s to 11.6 s; the stamp kept its 2026-11-01 date (86,318 lines identical).
+- **The run ended** after 3f: the cold paths are below the 30 s that `performance.md` set for
+  looking further, and gains have flattened.
+
+**Waiting on the user:**
+
+- **Parallel wrangler puts or an R2 API token** (from 3a): the user will confirm. With
+  either, raise `LLM_TRACES_PUT_JOBS` (or add an S3-compatible client); the upload stage goes
+  from about 26 s to about 10 s.
+- **Which session a commit treats as current** (from 2c): any session whose transcript
+  changed in the last 10 minutes (`LIVE_SECONDS`) is treated as current, besides the one in
+  `CLAUDE_CODE_SESSION_ID`, so its trailer is stamped on `@`. Narrowing that to the committing
+  session changes which commits carry which sessions' traces, which is a change in what is
+  published.
+
+**What's left without the user:** small. The `env-secret` gate and rule (about 2.6 s and
+2.3 s of CPU on the largest log) and `long-token` (about 1.5 s), all on paths that run only
+after a rules edit.
+
+## Decisions
+
+- **No Go port** (user, 2026-11-03). `performance.md` measured that the cost was in the
+  Python's algorithms, not the language, and the fixed Python is under the threshold. Revisit
+  only if a profile shows a cost Python can't remove.
+- **No chunked storage** (user, 2026-11-03). Logs stay full `.jsonl.gz` snapshots; the
+  storage format and the download contract don't change. The idea is kept below, under
+  [The architecture to move toward](#the-architecture-to-move-toward), only as the review's
+  finding.
 
 ## What the evidence shows
 
@@ -276,12 +356,14 @@ An incremental preparation pipeline with one coordinator for repository changes.
   immutable preparation and uploads. Unique temporary files, atomic replacement and a small
   durable journal make interrupted operations recoverable. A repository lock and an operation
   context are enough at first; SQLite and a persistent worker when durable queues are needed.
-- **Full snapshots remain a long-term limit.** Each commit still creates and uploads a complete
-  `.jsonl.gz`. Immutable chunks plus a snapshot manifest of their ordered identities and a
+- **Full snapshots remain a long-term limit** (not pursued, by decision: see
+  [Decisions](#decisions)). Each commit still creates and uploads a complete `.jsonl.gz`. Immutable chunks plus a snapshot manifest of their ordered identities and a
   full-stream digest would let old chunks be reused, but that changes the storage format and
   download contract: a later migration, preserving every historically referenced object.
 
 ## On Go
+
+Decided (see [Decisions](#decisions)): no port. The review's reasoning follows.
 
 Optimize the Python first and let the profile decide how much to port. A direct translation
 keeps the historical scans, subprocess counts and serial network work. An incremental Go
@@ -332,6 +414,8 @@ metadata it affects, with little dependence on how many earlier sessions exist, 
 numbers in the commit messages show it.
 
 ## Loop settings
+
+The session is fixed: further work on this brief resumes it.
 
 - session: 5dfbc1bc-4bd7-4b48-a637-44ff84065b6b
 - model: claude-opus-5-5

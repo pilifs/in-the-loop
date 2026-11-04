@@ -7,6 +7,8 @@ stored snapshots (476 MB gzipped). Run-time numbers come from `sync.py perf`; th
 numbers from [`tools/profile_rules.py`](tools/profile_rules.py), which prints rule names and
 numbers only and can be run again.
 
+**Decided (user, 2026-11-03): no Go port.** The recommendation it rests on:
+
 **Recommendation: don't port to Go.** The common path is already short, and Go could shave about
 2 s from it at most. The slow path is a cold scan after a rules change, and Python can fix it with
 a cheap per-line gate and a process pool. Neither change touches the published format, so no
