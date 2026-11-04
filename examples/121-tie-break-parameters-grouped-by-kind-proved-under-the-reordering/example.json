@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "121",
+  "title": "A tie-break reordered to group its parameters by kind, proved equal under the stated reordering",
+  "summary": "The last-writer-wins tie-break took its two writes interleaved, `(tsA, nodeA, tsB, nodeB)`; a developer groups the parameters by kind, timestamps first, and writes the body as the comparison chain the javadoc describes. A regression proof needs the same signature in both versions, and this one changed. The developer states the relation instead, `winner(tsA, nodeA, tsB, nodeB)` from the new parameters, and the proof is of the new method against the previous one called that way, on every input.",
+  "origin": "constructed",
+  "categories": [
+    "functional",
+    "no-false-positive"
+  ],
+  "tags": [
+    "replicated-data",
+    "agreement",
+    "signature-change"
+  ],
+  "severity": "none",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java",
+    "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Group the parameters by kind, `winner(tsA, tsB, nodeA, nodeB)`, so that a call reads as the two keys it compares, timestamps then node ids, and write the body as that comparison chain: `Long.compare` on the timestamps, `Integer.compare` on the node ids when they tie, the first write winning on a non-negative order. The two tests and the law in the properties file are updated to the new order.",
+    "patch": "change.patch",
+    "previousArguments": "tsA, nodeA, tsB, nodeB"
+  },
+  "risk": "A signature change is where a regression proof usually stops: the harness calls both versions on the same arguments, and these versions do not take the same arguments. Without a proof, the rewrite rests on four test cases and a reading of `Long.compare` and `Integer.compare` against the two `if` statements they replace. A comparison chain that returned the first write on a strictly positive order, or compared the node ids in the wrong direction, would pass a test suite that never ties two writes exactly, and would make replicas that see the writes in different orders keep different values.",
+  "expected": {
+    "verdict": "verified"
+  },
+  "explanation": "The developer gives the previous version's arguments as expressions over the new parameters, `tsA, nodeA, tsB, nodeB`. The tool resolves the previous version in the old classes, checks that its return type is the new one's, type-checks each expression against the parameter it is passed as (an array would be passed by name, a cast written as `(int) (end - start)`), and compiles them into the harness: the statement proved is that on every `tsA`, `tsB`, `nodeA`, `nodeB`, the new `winner(tsA, tsB, nodeA, nodeB)` returns what the old `winner(tsA, nodeA, tsB, nodeB)` returned, or throws what it threw. The comparison chain is proved equal to the two `if` statements over all 2^192 inputs in about a second; the real bytecode of `Long.compare` and `Integer.compare`, from the JDK image, is in the proof. The report names the relation in the proof line, and a counterexample would be shown as both versions received it: the new parameters, and the previous version's arguments computed from them.",
+  "resolution": "Merge. The expression after `previousArguments` is what a reviewer approves: that the new parameter order maps onto the old one as stated, which is the one claim of the pull request the compiler cannot check, since every argument is a number.",
+  "notes": [
+    "The library's test of the same shape (a `(long, int, long, int)` tie-break regrouped as `(long, long, int, int)` and written as a comparison chain) proves in about a second with JBMC and in 0.1 s with the tool's own checker; the measurement on this kernel is the pipeline's.",
+    "Without `previousArguments`, the tool refuses: `the previous version takes (long, int, long, int) and the new one (long, long, int, int); give the previous version's arguments as expressions over the new parameters with --before-arguments`. A method renamed or moved is named with `previousSymbol` (`--before-target`) as well.",
+    "An input for which an argument expression throws, a division by zero say, is outside the relation and skipped, as an input in the declared scope is; the expressions here cannot throw.",
+    "A rewrite that returned the first write only on a strictly positive order is found by the same proof: the library's test shows the counterexample as `winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`, before 0 and after 1."
+  ],
+  "provenance": "Constructed on the last-writer-wins kernel of example 022, which the law in the properties file holds antisymmetric; the reordering is the one that makes the call read as the comparator it is. The technique is regression verification under a stated relation between the versions' inputs.",
+  "references": [
+    {
+      "title": "Shapiro, Preguiça, Baquero and Zawirski, A comprehensive study of Convergent and Commutative Replicated Data Types (LWW-Register, section 3.2.1)",
+      "url": "https://inria.hal.science/inria-00555588/document"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

@@ -310,7 +310,8 @@ pub struct Param {
     pub slot: u16,
 }
 
-fn ty_of(t: &Type) -> Option<Ty> {
+/// The expression type of a scalar parameter type, if the expression language has it: integral or boolean.
+pub fn ty_of(t: &Type) -> Option<Ty> {
     match t {
         Type::Boolean => Some(Ty::Boolean),
         Type::Byte | Type::Char | Type::Short | Type::Int => Some(Ty::Int),
@@ -1241,7 +1242,8 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
     }
 }
 
-fn emit_promoted(e: &Expr, target: Ty, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
+/// Emits the expression, widened to `target` when it is an `int` and the target is `long`.
+pub fn emit_promoted(e: &Expr, target: Ty, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
     emit(e, code, pool);
     if target == Ty::Long && e.ty() == Ty::Int {
         code.op(0x85); // i2l

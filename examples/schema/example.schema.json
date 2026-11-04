@@ -62,7 +62,9 @@
         "behaviourChangeIntended": { "description": "True if the developer meant to change behaviour, and so regenerates the contract.", "type": "boolean" },
         "description": { "description": "The change in the developer's words, and why it looked right.", "type": "string" },
         "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" },
-        "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" }
+        "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" },
+        "previousSymbol": { "description": "For approach B9, when the method was renamed or moved: the previous version as `pkg.Class#method` (the tool's --before-target).", "type": "string" },
+        "previousArguments": { "description": "For approach B9, when the method's parameters were reordered, added, removed or retyped: the previous version's arguments as expressions over the new parameters, separated by commas, for example `tsA, nodeA, tsB, nodeB` (the tool's --before-arguments).", "type": "string" }
       }
     },
     "risk": { "description": "What could go wrong in production if this change shipped unnoticed.", "type": "string" },

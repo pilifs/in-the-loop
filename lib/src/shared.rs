@@ -79,19 +79,22 @@ pub struct Plan {
     pub identical: Option<usize>,
 }
 
-/// Compares the two versions of `target` and chooses the callees to share. Both class paths need the JDK.
-pub fn plan(before: &ClassPath, after: &ClassPath, target: &MemberRef) -> Plan {
+/// Compares the two versions of the target (`before_target` in the old classes, `target` in the new) and chooses the
+/// callees to share. Both class paths need the JDK. `plain` says the statement is the usual one, the same arguments
+/// to both versions: only then is a target identical in both, with everything it reaches, verified without a proof
+/// (with the previous version's arguments mapped, `f(a, b)` against `f(b, a)` say, identical bytecode proves nothing).
+pub fn plan(before: &ClassPath, after: &ClassPath, before_target: &MemberRef, target: &MemberRef, plain: bool) -> Plan {
     let after_reach = reach(after, target);
-    let before_reach = reach(before, target);
+    let before_reach = reach(before, before_target);
     let mut plan = Plan::default();
-    if after_reach.closed && before_reach.closed && same_everywhere(before, &after_reach) {
+    if plain && before_target == target && after_reach.closed && before_reach.closed && same_everywhere(before, &after_reach) {
         plan.identical = Some(after_reach.methods.len());
         return plan;
     }
     let mut inside: HashSet<MemberRef> = HashSet::new();
     let mut candidates = Vec::new();
     for callee in after_reach.static_calls.intersection(&before_reach.static_calls) {
-        if *callee == *target {
+        if *callee == *target || *callee == *before_target {
             continue;
         }
         let Some(closure) = pure_closure(after, callee) else { continue };

@@ -12,24 +12,24 @@
     "claude-fable-5-1"
   ],
   "started": "2026-10-31T16:29:55.396Z",
-  "ended": "2026-11-04T05:50:50.446Z",
-  "duration_seconds": 307255,
+  "ended": "2026-11-04T06:14:46.663Z",
+  "duration_seconds": 308691,
   "stats": {
-    "turns": 210,
-    "api_calls": 2194,
-    "tool_calls": 2725,
-    "tool_errors": 54,
-    "compactions": 36,
+    "turns": 214,
+    "api_calls": 2264,
+    "tool_calls": 2794,
+    "tool_errors": 55,
+    "compactions": 37,
     "peak_context_tokens": 535846,
     "usage": {
-      "input_tokens": 65376,
-      "output_tokens": 4558353,
-      "cache_read_input_tokens": 395791156,
-      "cache_creation_input_tokens": 9965519
+      "input_tokens": 67496,
+      "output_tokens": 4647474,
+      "cache_read_input_tokens": 405628670,
+      "cache_creation_input_tokens": 10171841
     }
   },
   "tools": {
-    "Bash": 2225,
+    "Bash": 2294,
     "Edit": 199,
     "Write": 182,
     "Read": 62,
@@ -734,24 +734,38 @@
     {
       "index": 36,
       "started": "2026-11-03T08:02:51.555Z",
-      "ended": "2026-11-04T05:50:50.446Z",
+      "ended": "2026-11-04T05:51:13.955Z",
       "turns": 4,
-      "api_calls": 68,
+      "api_calls": 69,
       "usage": {
-        "input_tokens": 1996,
-        "output_tokens": 131067,
-        "cache_read_input_tokens": 12295437,
-        "cache_creation_input_tokens": 261626
+        "input_tokens": 1998,
+        "output_tokens": 132003,
+        "cache_read_input_tokens": 12568329,
+        "cache_creation_input_tokens": 263767
       },
-      "peak_context_tokens": 272894
+      "peak_context_tokens": 275035
+    },
+    {
+      "index": 37,
+      "started": "2026-11-04T05:52:44.488Z",
+      "ended": "2026-11-04T06:14:46.663Z",
+      "turns": 4,
+      "api_calls": 69,
+      "usage": {
+        "input_tokens": 2118,
+        "output_tokens": 88185,
+        "cache_read_input_tokens": 9564622,
+        "cache_creation_input_tokens": 204181
+      },
+      "peak_context_tokens": 219096
     }
   ],
   "log": {
-    "sha256": "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0",
-    "bytes": 81367388,
-    "lines": 30658,
-    "gzip_bytes": 13864072,
-    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0.jsonl.gz"
+    "sha256": "3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141",
+    "bytes": 83286217,
+    "lines": 31602,
+    "gzip_bytes": 14179822,
+    "path": "llm-dlc/traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/logs/3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1162,6 +1176,14 @@
       "summary": "Regression proofs share the callees both versions call unchanged, and skip a target whose bytecode is identical (verification pending)",
       "body": "jvmcontract equivalence now compares the two versions' bytecode before any solver runs (lib/src/shared.rs). A target identical in both versions, together with everything it reaches (instructions compared with their constant pool references resolved, exception tables, the static initializers and constant values of the classes whose statics it reads), is verified with nothing to prove and no JBMC run. A callee both versions call unchanged, that is a pure function of its primitive arguments (no fields, no arrays, nothing of the JDK beyond Math/StrictMath/Integer/Long/Short/Byte, string building and the exceptions it constructs), is taken as one function in both versions, the uninterpreted-function abstraction of regression verification: a generated stub class (SharedCallees, the class writer now writes static fields) keeps a memo table per callee, giving arguments seen before the outcome they got and new arguments an arbitrary result or one of the exceptions the callee can throw (its new'ed Throwables, plus ArithmeticException where it divides), and the invokestatic call sites of both versions are redirected to it by appending constant pool entries and rewriting the operands in place. The solver then relates how the versions use the callee and never its arithmetic. The abstraction is sound for a proof; a counterexample found with it is replayed through the real bytecode and, when it does not reproduce, the proof is run again with the callees as written, with a note. --no-shared-callees turns both off. The proof line names the callees taken as one function; Outcome gains a shared field.\n\nWhy: a 64-bit division in a helper both versions call was what turned a regression proof of a caller into a time-out, since each version carried its own copy for the solver to relate. Measured: a refactor of a caller around a division helper went from not finishing in 60 s to a proof in 0.2 s, and HoldPolicy-style pricing with Math.multiplyExact shared from 3.4 s to 0.4 s.\n\nExample 120 on Crosscut: a new kernel, ratelimit.RetryAfter#nanosUntilToken (the Retry-After of a refused request, from TokenBucket's refill helpers), with a test, a property proved in 1.7 s, and the API contract regenerated; the example's patch rewrites the wait as the period less the time since the credit, around the unchanged helpers. By hand: proved in 1.3 s with the helpers shared; without sharing the [-100000:100000] search stage had not finished after 60 s. New technique tag shared-callees. Job 20261104-054836-example-120-a-retry-after-rewrite-proved queued (build.py on the example). Docs: lib README (proof steps and limits), approaches.md B9, the Crosscut README, the plugin reference; build.py reads the 'nothing to prove' proof line.",
       "log_sha256": "f21d59acebd25087ce6627612af38677d31b556077ce4bf0b75472eeb710b0e0"
+    },
+    {
+      "change_id": "ykkmkpqpnwkvzsrrowvpnwqpxnryolum",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regression proofs across a signature change: the previous version named and called with expressions over the new parameters (verification pending)",
+      "body": "jvmcontract equivalence proved a method only against a previous version of the same name and parameters; a method renamed, moved, or whose parameters were reordered, added, removed or retyped could not be proved at all. Now --before-target names the previous method (pkg.Class#method) and --before-arguments gives its arguments as expressions over the new parameters (tsA, nodeA, tsB, nodeB; start, (int) (end - start), failed; an array by name), and the statement proved is new(x) agrees with old(f(x)). The harness (lib/src/harness/mod.rs, BeforeMethod) type-checks each expression against the parameter it is passed as with the expression language's call syntax, narrows for byte/short/char and widens for long, computes the arguments into locals inside a handler that skips an input the mapping throws on, and calls the relocated previous method; the Java rendering shows the mapping. equivalence.rs resolves the previous method in the old classes and refuses clearly when the class or method is missing, is not static, returns another type, or when the parameters differ with no mapping given; the proof line reads 'behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input', a counterexample is shown as both versions received it ('winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)'), the replay maps the arguments through the interpreter, and the JSON outcome carries the previous call. shared::plan takes both targets and uses the identical-bytecode shortcut only for the plain statement, since f(a, b) against f(b, a) on identical bytecode proves nothing. The tool's own checker handles the mapped harness unchanged.\n\nExample 121 (B9, Quorum): LastWriterWins#winner regrouped as (tsA, tsB, nodeA, nodeB) and written as a Long.compare/Integer.compare chain, with the test and the law in properties.contract updated in the patch; example.json carries change.previousArguments, which build.py passes to the tool (change.previousSymbol maps to --before-target; schema and page rendering extended); new technique tag signature-change. Job 20261104-061118-example-121-a-tie-break-s-parameters-reg is queued. Verified: 97 unit tests (one new, the harness with a mapping) and 37 integration tests (four new on a Writers fixture: a reordering proved, a moved and renamed method proved, a tie rewrite found with the mapped counterexample, a refusal without a mapping), clippy clean on the changed files, the patched Quorum tree compiles and its 58 tests pass, the mapped proof and counterexample reproduced under --engine native, release binary installed. Documented in lib/README.md, the plugin reference, examples/approaches.md, examples/README.md and Quorum's README.",
+      "log_sha256": "3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141"
     }
   ],
   "logs": {
@@ -1212,6 +1234,12 @@
       "lines": 17422,
       "gzip_bytes": 8602283,
       "url": "https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/38c54216b2a7f2edbe3df8f23d0ada2c0d657c09845794e4c9e00a51032de338.jsonl.gz"
+    },
+    "3988bdea09c347009046bc6d9e37193ba1406925d43f6a8c0818044b474a7141": {
+      "bytes": 83286217,
+      "lines": 31602,
+      "gzip_bytes": 14179822,
+      "url": null
     },
     "40223b5f7138a5cc18636775655e2613c0f3499e3e7367d94a009ecc9ab4cba2": {
       "bytes": 22203837,

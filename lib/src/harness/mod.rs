@@ -20,7 +20,7 @@ use crate::classfile::writer::{ClassWriter, CodeBuilder, Label, MethodWriter};
 use crate::classfile::{flags, Cond, Kind, Type};
 use crate::Error;
 
-pub use expr::{Callee, Expr, Param};
+pub use expr::{CallArg, Callee, Expr, Param};
 
 /// The harness class name (default package), and its method.
 pub const CLASS: &str = "EquivalenceHarness";
@@ -59,6 +59,88 @@ pub struct Harness {
     /// The parsed scope expression, if any, for checking replayed counterexamples.
     pub scope: Option<Expr>,
     pub params: Vec<Param>,
+    /// The previous version's arguments as expressions over the parameters, when they are not the parameters
+    /// themselves, for computing them again on a replayed counterexample.
+    pub before_args: Option<Vec<CallArg>>,
+}
+
+/// The previous version of the method, when it is not the target under the same name with the same parameters:
+/// a method renamed or moved, or whose parameters were reordered, added, removed or retyped. The arguments it
+/// is called with are expressions over the new version's parameters (`--before-arguments`); without them, the
+/// parameters must be the same and are passed through.
+#[derive(Debug, Clone)]
+pub struct BeforeMethod {
+    /// The internal name of the class as it was, before relocation (`net/example/Clock`).
+    pub owner: String,
+    pub method: String,
+    pub descriptor: String,
+    pub params: Vec<Type>,
+    /// The parameter names, for the report.
+    pub names: Vec<String>,
+    /// The arguments as written, one per parameter, separated by commas.
+    pub arguments: Option<String>,
+}
+
+impl BeforeMethod {
+    /// `pkg.Class#method(args)`, or `method(args)` when the class is `class_internal`.
+    pub fn display(&self, class_internal: &str) -> String {
+        let name = if self.owner == class_internal { self.method.clone() } else { format!("{}#{}", self.owner.replace('/', "."), self.method) };
+        match &self.arguments {
+            Some(a) => format!("{name}({a})"),
+            None => format!("{name}({})", self.names.join(", ")),
+        }
+    }
+
+    /// Parses the arguments against the new version's parameters: each must have the type of the parameter it is
+    /// passed as (an `int` expression for a `byte`, `short` or `char` parameter is narrowed as a cast is), and an
+    /// array parameter is passed by name. `first_free_slot` is for a quantifier's variable.
+    pub fn parse_arguments(&self, params: &[Param], first_free_slot: u16) -> Result<Option<Vec<CallArg>>, Error> {
+        let Some(text) = &self.arguments else {
+            let new: Vec<Type> = params.iter().map(|p| p.ty.clone()).collect();
+            if new != self.params {
+                return Err(Error::new(format!(
+                    "the previous version takes ({}) and the new one ({}); give the previous version's arguments as expressions over the new parameters with --before-arguments",
+                    self.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", "),
+                    new.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")
+                )));
+            }
+            return Ok(None);
+        };
+        for (name, t) in self.names.iter().zip(&self.params) {
+            if expr::ty_of(t).is_none() && expr::element_ty(t).is_none() {
+                return Err(Error::new(format!("the previous version's parameter {name} has type {}; an argument can be given for integral and boolean parameters, and for arrays of those", t.java_name())));
+            }
+        }
+        let callee = Callee { name: self.method.clone(), owner: self.owner.clone(), descriptor: self.descriptor.clone(), params: self.params.clone(), ret: expr::Ty::Int };
+        match expr::parse_value(&format!("{}({text})", self.method), params, Some(&callee), first_free_slot)? {
+            Expr::Call(_, args) => Ok(Some(args)),
+            _ => Err(Error::new("the arguments must be a list of expressions separated by commas")),
+        }
+    }
+}
+
+/// Splits an argument list at the commas outside parentheses and brackets.
+fn split_arguments(text: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut depth = 0i32;
+    let mut current = String::new();
+    for c in text.chars() {
+        match c {
+            '(' | '[' => depth += 1,
+            ')' | ']' => depth -= 1,
+            ',' if depth == 0 => {
+                out.push(current.trim().to_string());
+                current.clear();
+                continue;
+            }
+            _ => {}
+        }
+        current.push(c);
+    }
+    if !current.trim().is_empty() || !out.is_empty() {
+        out.push(current.trim().to_string());
+    }
+    out
 }
 
 /// Lays out the method's parameters in local-variable slots, as the static harness method receives them.
@@ -89,7 +171,7 @@ fn kind_of(t: &Type) -> Kind {
 /// Each array parameter is copied before the calls, exactly as long, so that the version before writes into the
 /// copy and the version after into the array itself, and the two are compared element by element afterwards;
 /// `max_array_length` bounds the copying and comparing loops. An array result is compared the same way.
-pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32) -> Result<Harness, Error> {
+pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32, before: Option<&BeforeMethod>) -> Result<Harness, Error> {
     let descriptor = format!("({}){}", params.iter().map(|p| p.ty.descriptor()).collect::<String>(), ret.descriptor());
     let check_descriptor = format!("({})V", params.iter().map(|p| p.ty.descriptor()).collect::<String>());
     let arg_slots: u16 = params.iter().map(|p| p.ty.slots()).sum();
@@ -114,6 +196,13 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
     let index = eb + 1;
     let scope = match unchanged_unless {
         Some(src) => Some(expr::parse_in(src, params, None, index)?),
+        None => None,
+    };
+    // The previous version's arguments, when they are expressions: computed into locals after the index, with a
+    // quantifier's variable after those.
+    let temps = index + 1;
+    let before_args = match before {
+        Some(b) => b.parse_arguments(params, temps + b.params.iter().map(Type::slots).sum::<u16>())?,
         None => None,
     };
     let bound = i32::try_from(max_array_length).unwrap_or(i32::MAX);
@@ -163,7 +252,60 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         code.bind(done);
     }
 
-    let before_owner = format!("before/{class_internal}");
+    // The previous version's arguments, from the new parameters; an input for which one cannot be computed (a
+    // division by zero in the expression) is outside the relation, and skipped as the scope skips an input.
+    let before_types: Vec<Type> = match before {
+        Some(b) => b.params.clone(),
+        None => params.iter().map(|p| p.ty.clone()).collect(),
+    };
+    if let Some(args) = &before_args {
+        let map_start = code.label();
+        let map_end = code.label();
+        let mapped = code.label();
+        code.bind(map_start);
+        let mut slot = temps;
+        for (arg, t) in args.iter().zip(&before_types) {
+            match arg {
+                CallArg::Value(e) => {
+                    expr::emit_promoted(e, expr::ty_of(t).unwrap_or(expr::Ty::Int), &mut code, &mut writer.pool);
+                    match t {
+                        Type::Byte => code.op(0x91),  // i2b
+                        Type::Char => code.op(0x92),  // i2c
+                        Type::Short => code.op(0x93), // i2s
+                        _ => {}
+                    }
+                    code.store(kind_of(t), slot);
+                }
+                CallArg::Array(_, from) => {
+                    let copy = copies.iter().find(|(s, _, _)| s == from).map(|(_, copy, _)| *copy).unwrap_or(*from);
+                    code.load(Kind::Ref, copy);
+                    code.store(Kind::Ref, slot);
+                }
+            }
+            slot += t.slots();
+        }
+        code.bind(map_end);
+        code.goto(mapped);
+        let handler = code.label();
+        code.bind(handler);
+        code.op(0x57); // pop the exception
+        code.return_(None);
+        let throwable = writer.pool.class("java/lang/Throwable");
+        code.handler(map_start, map_end, handler, Some(throwable));
+        code.bind(mapped);
+        code.max_locals = code.max_locals.max(slot);
+        for arg in args {
+            if let CallArg::Value(e) = arg {
+                code.max_locals = code.max_locals.max(e.slots_used());
+            }
+        }
+    }
+
+    let (before_class, before_method, before_descriptor) = match before {
+        Some(b) => (b.owner.as_str(), b.method.as_str(), b.descriptor.clone()),
+        None => (class_internal, method, descriptor.clone()),
+    };
+    let before_owner = format!("before/{before_class}");
     for (owner, value_slot, flag_slot, on_copies) in [(before_owner.as_str(), a, ea, true), (class_internal, b, eb, false)] {
         if !is_void {
             match ret_kind {
@@ -181,13 +323,21 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
         let try_end = code.label();
         let join = code.label();
         code.bind(try_start);
-        for p in params {
-            match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
-                Some((_, copy, _)) if on_copies => code.load(Kind::Ref, *copy),
-                _ => code.load(kind_of(&p.ty), p.slot),
+        if on_copies && before_args.is_some() {
+            let mut slot = temps;
+            for t in &before_types {
+                code.load(kind_of(t), slot);
+                slot += t.slots();
+            }
+        } else {
+            for p in params {
+                match copies.iter().find(|(slot, _, _)| *slot == p.slot) {
+                    Some((_, copy, _)) if on_copies => code.load(Kind::Ref, *copy),
+                    _ => code.load(kind_of(&p.ty), p.slot),
+                }
             }
         }
-        let target = writer.pool.method_ref(owner, method, &descriptor);
+        let target = if on_copies { writer.pool.method_ref(owner, before_method, &before_descriptor) } else { writer.pool.method_ref(owner, method, &descriptor) };
         code.op_u16(0xb8, target); // invokestatic
         if !is_void {
             code.store(ret_kind, value_slot);
@@ -262,8 +412,8 @@ pub fn generate(class_internal: &str, method: &str, params: &[Param], ret: &Type
     code.max_locals = code.max_locals.max(index + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
-    let source = source(class_internal, method, params, ret, unchanged_unless);
-    Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec() })
+    let source = source(class_internal, method, params, ret, unchanged_unless, before);
+    Ok(Harness { bytes: writer.to_bytes(), source, scope, params: params.to_vec(), before_args })
 }
 
 /// Emits a jump to `fail` unless the two values `push` loads (`push(code, 0)` the first, `push(code, 1)` the
@@ -324,12 +474,33 @@ fn compare_arrays(code: &mut CodeBuilder, x: u16, y: u16, element: &Type, bound:
 }
 
 /// The statement as Java source, for readers.
-pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>) -> String {
+pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, unchanged_unless: Option<&str>, before: Option<&BeforeMethod>) -> String {
     let class = class_internal.replace('/', ".");
     let param_list = params.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
     let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
     let args = params.iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
-    let args_before = params.iter().map(|p| if is_array(p) { format!("{}_before", p.name) } else { p.name.clone() }).collect::<Vec<_>>().join(", ");
+    let pass_through = params.iter().map(|p| if is_array(p) { format!("{}_before", p.name) } else { p.name.clone() }).collect::<Vec<_>>().join(", ");
+    // The previous version's arguments: computed into locals named after its parameters, from the expressions
+    // given, with an array parameter's copy where it is passed by name.
+    let mut mapping = Vec::new();
+    let args_before = match before.and_then(|b| b.arguments.as_deref().map(|a| (b, a))) {
+        Some((b, text)) => {
+            let names: Vec<String> = b.names.iter().map(|n| format!("{n}_")).collect();
+            for ((name, t), given) in names.iter().zip(&b.params).zip(split_arguments(text)) {
+                let value = match params.iter().find(|p| p.name == given && is_array(p)) {
+                    Some(p) => format!("{}_before", p.name),
+                    None => given,
+                };
+                mapping.push(format!("{} {name} = {value};", t.java_name()));
+            }
+            names.join(", ")
+        }
+        None => pass_through,
+    };
+    let (before_class, before_method) = match before {
+        Some(b) => (b.owner.replace('/', "."), b.method.as_str()),
+        None => (class.clone(), method),
+    };
     let is_void = *ret == Type::Void;
     let type_name = if ret.is_primitive() || matches!(ret, Type::Array(_)) { ret.java_name() } else { "Object".to_string() };
     let zero = match ret {
@@ -347,13 +518,17 @@ pub fn source(class_internal: &str, method: &str, params: &[Param], ret: &Type, 
     for p in params.iter().filter(|p| is_array(p)) {
         s.push_str(&format!("        {} {}_before = java.util.Arrays.copyOf({}, {}.length); // the version before writes into its own copy\n", p.ty.java_name(), p.name, p.name, p.name));
     }
-    for (side, owner, args) in [("before", format!("before.{class}"), &args_before), ("after", class.clone(), &args)] {
+    if !mapping.is_empty() {
+        s.push_str("        // The previous version's arguments, from the new parameters; an input for which one throws is outside the relation.\n");
+        s.push_str(&format!("        {}\n", mapping.join(" ")));
+    }
+    for (side, owner, callee, args) in [("before", format!("before.{before_class}"), before_method, &args_before), ("after", class.clone(), method, &args)] {
         let var = if side == "before" { "a" } else { "b" };
         if !is_void {
             s.push_str(&format!("        {type_name} {var} = {zero};\n"));
         }
         s.push_str(&format!("        int e{var} = 0;\n"));
-        s.push_str(&format!("        try {{ {}{owner}.{method}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
+        s.push_str(&format!("        try {{ {}{owner}.{callee}({args}); }}", if is_void { String::new() } else { format!("{var} = ") }));
         for (i, exception) in EXCEPTIONS.iter().enumerate() {
             s.push_str(&format!(" catch ({} t) {{ e{var} = {}; }}", exception.replace('/', "."), i + 1));
         }
@@ -880,7 +1055,7 @@ mod tests {
     #[test]
     fn generates_a_well_formed_harness() {
         let params = params(&["priceCents".into(), "seats".into()], &[Type::Long, Type::Int]);
-        let harness = generate("net/example/Pricing", "total", &params, &Type::Long, Some("seats >= 8"), 8).unwrap();
+        let harness = generate("net/example/Pricing", "total", &params, &Type::Long, Some("seats >= 8"), 8, None).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         assert_eq!(class.name, CLASS);
         let check = class.method(METHOD, "(JI)V").expect("check method");
@@ -902,9 +1077,57 @@ mod tests {
     }
 
     #[test]
+    fn generates_a_harness_against_a_previous_version_with_other_parameters() {
+        // The new version takes (tsA, tsB, nodeA, nodeB); the previous one took them interleaved, as a short node id.
+        let params = params(&["tsA".into(), "tsB".into(), "nodeA".into(), "nodeB".into()], &[Type::Long, Type::Long, Type::Int, Type::Int]);
+        let before = BeforeMethod {
+            owner: "net/example/Writes".into(),
+            method: "pick".into(),
+            descriptor: "(JSJS)I".into(),
+            params: vec![Type::Long, Type::Short, Type::Long, Type::Short],
+            names: vec!["a".into(), "na".into(), "b".into(), "nb".into()],
+            arguments: Some("tsA, nodeA, tsB, nodeB + 1".into()),
+        };
+        let harness = generate("net/example/Writers", "winner", &params, &Type::Int, None, 8, Some(&before)).unwrap();
+        let class = ClassFile::parse(&harness.bytes).unwrap();
+        let check = class.method(METHOD, "(JJII)V").expect("check method");
+        let code = check.code.as_ref().unwrap();
+        // The handler around the arguments' computation, and the two versions' handlers.
+        assert_eq!(code.exception_table.len(), 1 + 2 * EXCEPTIONS.len());
+        let insns = code.instructions().unwrap();
+        let calls: Vec<String> = insns
+            .iter()
+            .filter_map(|(_, i)| match i {
+                crate::classfile::Insn::InvokeStatic(index) => class.pool.member(*index).ok().map(|m| format!("{}.{}{}", m.owner, m.name, m.descriptor)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(calls, vec!["before/net/example/Writes.pick(JSJS)I".to_string(), "net/example/Writers.winner(JJII)I".to_string()]);
+        // The short parameters are narrowed as a cast narrows.
+        assert_eq!(insns.iter().filter(|(_, i)| matches!(i, crate::classfile::Insn::Convert(_, crate::classfile::Narrow::Short))).count(), 2, "{insns:?}");
+        assert_eq!(harness.before_args.as_ref().map(Vec::len), Some(4));
+        assert_eq!(before.display("net/example/Writers"), "net.example.Writes#pick(tsA, nodeA, tsB, nodeB + 1)");
+        assert!(harness.source.contains("long a_ = tsA; short na_ = nodeA; long b_ = tsB; short nb_ = nodeB + 1;"), "{}", harness.source);
+        assert!(harness.source.contains("a = before.net.example.Writes.pick(a_, na_, b_, nb_);"), "{}", harness.source);
+        assert!(harness.source.contains("b = net.example.Writers.winner(tsA, tsB, nodeA, nodeB);"), "{}", harness.source);
+        let pcs: std::collections::HashSet<u32> = insns.iter().map(|(pc, _)| *pc).collect();
+        for (_, insn) in &insns {
+            for t in insn.targets() {
+                assert!(pcs.contains(&t), "target {t} is not an instruction");
+            }
+        }
+        // Without arguments, the parameters must be the previous version's.
+        let same = BeforeMethod { arguments: None, ..before.clone() };
+        let problem = generate("net/example/Writers", "winner", &params, &Type::Int, None, 8, Some(&same)).unwrap_err().to_string();
+        assert!(problem.contains("takes (long, short, long, short) and the new one (long, long, int, int)"), "{problem}");
+        let wrong = BeforeMethod { arguments: Some("tsA, nodeA, tsB".into()), ..before.clone() };
+        assert!(generate("net/example/Writers", "winner", &params, &Type::Int, None, 8, Some(&wrong)).unwrap_err().to_string().contains("takes 4 arguments, 3 given"));
+    }
+
+    #[test]
     fn generates_an_equivalence_harness_over_arrays() {
         let params = params(&["chars".into(), "out".into()], &[Type::Array(Box::new(Type::Char)), Type::Array(Box::new(Type::Byte))]);
-        let harness = generate("net/example/Utf8", "encodeInto", &params, &Type::Int, None, 6).unwrap();
+        let harness = generate("net/example/Utf8", "encodeInto", &params, &Type::Int, None, 6, None).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();
         let check = class.method(METHOD, "([C[B)V").expect("check method");
         let code = check.code.as_ref().unwrap();
@@ -928,15 +1151,15 @@ mod tests {
 
         // An array result is compared element by element; a float result allows two NaNs.
         let one = super::params(&["a".into()], &[Type::Array(Box::new(Type::Int))]);
-        let returning = generate("net/example/Copies", "prefix", &one, &Type::Array(Box::new(Type::Int)), Some("\\exists int i; 0 <= i && i < a.length; a[i] < 0"), 8).unwrap();
+        let returning = generate("net/example/Copies", "prefix", &one, &Type::Array(Box::new(Type::Int)), Some("\\exists int i; 0 <= i && i < a.length; a[i] < 0"), 8, None).unwrap();
         assert!(returning.source.contains("(ea != 0 || java.util.Arrays.equals(a, b))"), "{}", returning.source);
         assert!(returning.source.contains("if (\\exists int i; 0 <= i && i < a.length; a[i] < 0) { return; }"), "{}", returning.source);
         let class = ClassFile::parse(&returning.bytes).unwrap();
         assert!(class.method(METHOD, "([I)V").unwrap().code.as_ref().unwrap().bytes.contains(&0xc6), "ifnull on the results");
         let scalar = super::params(&["x".into()], &[Type::Float]);
-        let floating = generate("net/example/Maths", "f", &scalar, &Type::Float, None, 8).unwrap();
+        let floating = generate("net/example/Maths", "f", &scalar, &Type::Float, None, 8, None).unwrap();
         assert!(floating.source.contains("(ea != 0 || a == b || (a != a && b != b))"), "{}", floating.source);
         assert_eq!(ClassFile::parse(&floating.bytes).unwrap().method(METHOD, "(F)V").unwrap().code.as_ref().unwrap().bytes.iter().filter(|b| **b == 0x95).count(), 3, "three fcmpl");
-        assert!(generate("net/example/Utf8", "encodeInto", &params, &Type::Int, Some("chars.length"), 6).unwrap_err().to_string().contains("boolean"));
+        assert!(generate("net/example/Utf8", "encodeInto", &params, &Type::Int, Some("chars.length"), 6, None).unwrap_err().to_string().contains("boolean"));
     }
 }

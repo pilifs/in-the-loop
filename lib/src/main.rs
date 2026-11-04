@@ -225,6 +225,14 @@ struct EquivalenceArgs {
     /// quantifiers may range over an array parameter.
     #[arg(long = "unchanged-unless")]
     unchanged_unless: Option<String>,
+    /// The previous version's method, `pkg.Class#method`, when it is not the target's: a method renamed or moved.
+    #[arg(long = "before-target")]
+    before_target: Option<String>,
+    /// The previous version's arguments as expressions over the new parameters, separated by commas, when its
+    /// parameters are not the new version's (reordered, added, removed or retyped): `tsA, nodeA, tsB, nodeB`, or
+    /// `start, (int) (end - start), failed`. An array parameter is passed by name.
+    #[arg(long = "before-arguments")]
+    before_arguments: Option<String>,
     /// Further class path entries (PATH-separated or repeatable).
     #[arg(long = "classpath")]
     classpath: Vec<String>,
@@ -421,6 +429,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             options.engine = args.engine.parse()?;
             options.shared_callees = !args.no_shared_callees;
+            options.before_target = args.before_target;
+            options.before_arguments = args.before_arguments;
             let outcome = equivalence::run(&options)?;
             if args.json {
                 println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));

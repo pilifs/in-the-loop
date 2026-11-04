@@ -13,7 +13,8 @@ Exit code 0 is verified, 1 is a violation or an unverifiable target, 2 is a usag
 ```bash
 # Regression proof: new bytecode == old bytecode on every input, or the input where they differ.
 jvmcontract equivalence --before BASE_CLASSES --after HEAD_CLASSES --target T \
-    [--unchanged-unless 'EXPR'] [--classpath 'a.jar:b.jar'] [--max-array-length 8] [--unwind 16] \
+    [--unchanged-unless 'EXPR'] [--before-target OLD_T] [--before-arguments 'EXPR, ...'] \
+    [--classpath 'a.jar:b.jar'] [--max-array-length 8] [--unwind 16] \
     [--timeout 600] [--work DIR] [--report DIR] [--no-shrink] [--json]
 
 # Property proof: the method satisfies a statement on every input, or the input where it does not.
@@ -56,6 +57,8 @@ jvmcontract inspect path/to/Class.class [--code]
 `--report DIR` writes SARIF (`equivalence.sarif`, `property.sarif`) if the user wants it for code scanning. `--work DIR` keeps the harness, the relocated classes, the statement as Java source and JBMC's logs; use one directory per proof under the pull request's working directory, so everything is reproducible.
 
 `equivalence` compares the two versions' bytecode before it runs JBMC: a target identical in both, with everything it reaches, is reported verified with "nothing to prove" and no solver, and a callee both versions call unchanged (a pure function of primitives: a helper with a division, `Math.multiplyExact`) is taken as one function in both versions, which the proof line says (`taken as one function in both`); a counterexample found that way is replayed as written and the proof rerun with the callees' bytecode when it does not reproduce (a `note:` line says so). `--no-shared-callees` turns both off, for a proof of the callees as written.
+
+A signature change is a relation, not a difference: when the method was renamed or moved, name the old one with `--before-target pkg.Old#name`; when its parameters were reordered, added, removed or retyped, give the old version's arguments as expressions over the new parameters with `--before-arguments 'tsA, nodeA, tsB, nodeB'` (an array parameter by name, a cast as `(int) (end - start)`), and the proof is of new(x) against old(f(x)). Without them, a target whose parameters differ between the versions is refused with the two parameter lists. A counterexample is shown as both versions received it (`winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`).
 
 Each JBMC run is limited to 3 GiB of address space (`JVMCONTRACT_JBMC_MEMORY_MB`, 0 for no limit) and dies as *unverifiable* beyond it. A run counts as proved only if JBMC itself ends with `VERIFICATION SUCCESSFUL`: a solver that gives up prints `** 0 of N failed` too, and that is no proof.
 

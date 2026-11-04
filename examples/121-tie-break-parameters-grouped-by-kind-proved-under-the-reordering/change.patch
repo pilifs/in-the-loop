@@ -1,0 +1,52 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/replication/LastWriterWins.java
+@@ -12,12 +12,14 @@
+     /**
+      * Which of two writes wins: {@code 0} for the first (timestamp {@code tsA} from node {@code nodeA}), {@code 1}
+      * for the second. Two replicas that see the writes in either order must agree, so for distinct writes
+-     * {@code winner(a, b) == 1 - winner(b, a)}.
++     * {@code winner(a, b) == 1 - winner(b, a)}. The order is the timestamps, then the node ids, as the parameters
++     * are grouped: the shape of {@code comparingLong(ts).thenComparingInt(node)}.
+      */
+-    public static int winner(long tsA, int nodeA, long tsB, int nodeB) {
+-        if (tsA != tsB) {
+-            return tsA > tsB ? 0 : 1;
++    public static int winner(long tsA, long tsB, int nodeA, int nodeB) {
++        int order = Long.compare(tsA, tsB);
++        if (order == 0) {
++            order = Integer.compare(nodeA, nodeB);
+         }
+-        return nodeA >= nodeB ? 0 : 1;
++        return order >= 0 ? 0 : 1;
+     }
+ }
+--- a/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/replication/LastWriterWinsTest.java
++++ b/examples/apps/quorum/src/test/java/net/terminalvalue/quorum/replication/LastWriterWinsTest.java
+@@ -8,12 +8,12 @@
+     private LastWriterWinsTest() {}
+ 
+     public static void theLaterTimestampWins() {
+-        equal(0, winner(200, 1, 100, 2));
+-        equal(1, winner(100, 1, 200, 2));
++        equal(0, winner(200, 100, 1, 2));
++        equal(1, winner(100, 200, 1, 2));
+     }
+ 
+     public static void equalTimestampsGoToTheHigherNode() {
+-        equal(1, winner(100, 1, 100, 2));
+-        equal(0, winner(100, 2, 100, 1));
++        equal(1, winner(100, 100, 1, 2));
++        equal(0, winner(100, 100, 2, 1));
+     }
+ }
+--- a/examples/apps/quorum/src/contract/properties.contract
++++ b/examples/apps/quorum/src/contract/properties.contract
+@@ -29,7 +29,7 @@
+ # Two replicas that see two distinct writes in either order pick the same winner.
+ net.terminalvalue.quorum.replication.LastWriterWins#winner
+   assume: tsA != tsB || nodeA != nodeB
+-  assert: result == 1 - winner(tsB, nodeB, tsA, nodeA)
++  assert: result == 1 - winner(tsB, tsA, nodeB, nodeA)
+ 
+ # The vote rule's arithmetic, which the election model takes as given: how the candidate's term, the voter's ballot
+ # and the two logs compare is computed here, and the rule proper is VoteRule#decide, whose contract the model uses.

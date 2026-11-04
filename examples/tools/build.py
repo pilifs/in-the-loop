@@ -713,6 +713,10 @@ def run_tool_equivalence(folder, example, root, module, result):
     intended = example["change"].get("intendedInputs")
     if intended:
         command += ["--unchanged-unless", intended]
+    if example["change"].get("previousSymbol"):
+        command += ["--before-target", example["change"]["previousSymbol"]]
+    if example["change"].get("previousArguments"):
+        command += ["--before-arguments", example["change"]["previousArguments"]]
     proc, output = tool(app, root, *command)
     write_evidence(folder, output, build / "build/reports/equivalence.sarif")
     result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
@@ -1585,6 +1589,14 @@ def render_example(folder, ex, res):
             "The verifier proves that every other input behaves as before, or shows one that does not.",
             "",
         ]
+    if change.get("previousSymbol") or change.get("previousArguments"):
+        previous = change.get("previousSymbol") or symbol
+        lines += [
+            "The method's signature changed, so the developer states how the previous version is called from the "
+            f"new parameters: `{previous}({change.get('previousArguments', '')})`. The verifier proves that on every "
+            "input, the new method agrees with the previous one called that way, or shows one on which it does not.",
+            "",
+        ]
     lines += [
         f"**Before** ([`{file_name}`]({source_link}), line {res['before']['startLine']}):",
         "",
@@ -1726,9 +1738,12 @@ def findings_equivalence(ex, res):
         return out
     if res["verdict"] == "unverifiable":
         return ["The verifier refused to produce a verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
+    previous = ex["change"].get("previousArguments")
     return [
         f"For every input{' where `' + intended + '` is false' if intended else ''}, the new code returns what the "
-        "old code returned, or throws what it threw.",
+        "old code returned, or throws what it threw"
+        + (f", the old code being called with the arguments `{previous}` computed from the new parameters" if previous else "")
+        + ".",
         "",
         f"This is a proof over the whole domain ({domain}), not a sample. JBMC turned the statement into a "
         "satisfiability problem over the bytecode of both versions and showed that it has no solution: no input "

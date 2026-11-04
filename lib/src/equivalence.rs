@@ -20,6 +20,11 @@
 //! versions call unchanged is taken as one function in both, so that the solver relates how the versions use it
 //! and never its arithmetic. A counterexample found that way is replayed through the bytecode as written, and the
 //! proof is run again with the callees as written when it does not reproduce.
+//!
+//! The previous version need not have the target's name or parameters: a method renamed or moved is named with
+//! [`Options::before_target`], and one whose parameters were reordered, added, removed or retyped is called with
+//! the arguments given by [`Options::before_arguments`], expressions over the new parameters, so that the statement
+//! proved is "new(x) agrees with old(f(x))" for the stated relation.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -29,7 +34,7 @@ use serde::Serialize;
 
 use crate::classfile::{MemberRef, Type};
 use crate::classpath::ClassPath;
-use crate::harness;
+use crate::harness::{self, CallArg};
 use crate::interp::Value;
 use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
 use crate::sarif::{self, Finding};
@@ -76,6 +81,12 @@ pub struct Options {
     /// Whether callees unchanged in both versions are taken as one function in both ([`crate::shared`]), and a
     /// target identical in both versions is verified without a proof. On by default.
     pub shared_callees: bool,
+    /// The previous version's method, `pkg.Class#method`, when it is not the target's: renamed or moved.
+    pub before_target: Option<String>,
+    /// The previous version's arguments as expressions over the new parameters, separated by commas, when its
+    /// parameters are not the new version's: reordered, added, removed or retyped. An array parameter is passed by
+    /// name.
+    pub before_arguments: Option<String>,
 }
 
 impl Options {
@@ -101,6 +112,8 @@ impl Options {
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
             shared_callees: true,
+            before_target: None,
+            before_arguments: None,
         }
     }
 }
@@ -138,6 +151,44 @@ pub struct Outcome {
     /// The callees taken as one function in both versions, as `Class.method`.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub shared: Vec<String>,
+    /// The previous version's call, `pkg.Class#method(args)` or `method(args)`, when it is not the target's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub previous: Option<String>,
+}
+
+/// The parameter values as the harness's locals, with the arrays' elements by slot, for evaluating an expression
+/// over the parameters on a counterexample.
+fn locals_of(params: &[harness::Param], arguments: &[Argument]) -> (Vec<Value>, Vec<(u16, Vec<Value>)>) {
+    let mut locals = Vec::new();
+    let mut arrays = Vec::new();
+    for (a, p) in arguments.iter().zip(params) {
+        match a {
+            Argument::Scalar(v) => {
+                locals.push(*v);
+                if v.is_wide() {
+                    locals.push(Value::Int(0));
+                }
+            }
+            Argument::Array(data) => {
+                locals.push(Value::Null);
+                arrays.push((p.slot, data.clone()));
+            }
+            Argument::Null => locals.push(Value::Null),
+        }
+    }
+    (locals, arrays)
+}
+
+/// The value an expression gives, as the parameter of type `t` receives it: widened to `long`, or narrowed as a
+/// cast narrows, as the harness does.
+fn as_parameter(v: Value, t: &Type) -> Value {
+    match (t, v) {
+        (Type::Long, Value::Int(i)) => Value::Long(i64::from(i)),
+        (Type::Byte, Value::Int(i)) => Value::Int(i32::from(i as i8)),
+        (Type::Short, Value::Int(i)) => Value::Int(i32::from(i as i16)),
+        (Type::Char, Value::Int(i)) => Value::Int(i32::from(i as u16)),
+        _ => v,
+    }
 }
 
 /// Runs the regression proof.
@@ -157,7 +208,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new() })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -192,6 +243,55 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let params = harness::params(&names, &descriptor.params);
     let has_arrays = params.iter().any(|p| matches!(p.ty, Type::Array(_)));
+
+    // The previous version: the target under the same name with the same parameters, or the method named by
+    // --before-target, called with the arguments --before-arguments gives.
+    let before_target = options.before_target.clone().unwrap_or_else(|| options.target.clone());
+    let plain = options.before_target.is_none() && options.before_arguments.is_none();
+    let (before_class_internal, before_method_name) = crate::verifier::parse_target(&before_target).ok_or_else(|| Error::new("--before-target must be <class>#<method>"))?;
+    let mut before_cp = ClassPath::new();
+    before_cp.add(&options.before)?;
+    for entry in &options.classpath {
+        if entry.exists() {
+            before_cp.add(entry)?;
+        }
+    }
+    let Some(before_class) = before_cp.application(&before_class_internal)? else {
+        return refuse(&mut out, line, format!("class not found in the previous version: {}", before_class_internal.replace('/', ".")));
+    };
+    let before_method = match crate::verifier::select_method(&before_class, &before_target) {
+        Ok(m) => m.clone(),
+        Err(problem) => return refuse(&mut out, line, format!("in the previous version, {problem}; name the method as it was with --before-target")),
+    };
+    if !before_method.is_static() {
+        return refuse(&mut out, line, "the previous version is not a static method".into());
+    }
+    let before_descriptor = before_method.parsed_descriptor()?;
+    if before_descriptor.ret != descriptor.ret {
+        return refuse(&mut out, line, format!("the previous version returns {} and the new one {}; a regression proof compares results of one type", before_descriptor.ret.java_name(), descriptor.ret.java_name()));
+    }
+    if plain && before_descriptor.params != descriptor.params {
+        return refuse(&mut out, line, format!(
+            "the previous version takes ({}) and the new one ({}); give the previous version's arguments as expressions over the new parameters with --before-arguments",
+            before_descriptor.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", "),
+            descriptor.params.iter().map(Type::java_name).collect::<Vec<_>>().join(", ")
+        ));
+    }
+    let before_names = before_method.parameter_names(&before_class.pool);
+    let before_params = harness::params(&before_names, &before_descriptor.params);
+    let previous = (!plain).then(|| harness::BeforeMethod {
+        owner: before_class_internal.clone(),
+        method: before_method_name.clone(),
+        descriptor: before_method.descriptor.clone(),
+        params: before_descriptor.params.clone(),
+        names: before_names.clone(),
+        arguments: options.before_arguments.clone(),
+    });
+    let previous_display = previous.as_ref().map(|b| b.display(&class_internal));
+    let relation = match &previous_display {
+        Some(p) => format!("behaves as the previous {p} on every input"),
+        None => "behaves as before on every input".to_string(),
+    };
     let domain = params
         .iter()
         .map(|p| match p.ty {
@@ -202,9 +302,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         .join(" × ");
 
     // 3. The statement, as a harness JBMC can check.
-    let harness = match harness::generate(&class_internal, &method_name, &params, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length) {
+    let harness = match harness::generate(&class_internal, &method_name, &params, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
         Ok(h) => h,
-        Err(e) => return refuse(&mut out, line, format!("the scope is not a boolean expression over the parameters: {e}")),
+        Err(e) => return refuse(&mut out, line, e.to_string()),
     };
     let harness_dir = work.join("harness");
     std::fs::create_dir_all(&harness_dir)?;
@@ -227,7 +327,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     };
     let shared_after_cp = with_jdk(&options.after)?;
     let plan = if options.shared_callees {
-        shared::plan(&with_jdk(&options.before)?, &shared_after_cp, &MemberRef::new(&class_internal, &method_name, &method.descriptor))
+        shared::plan(&with_jdk(&options.before)?, &shared_after_cp, &MemberRef::new(&before_class_internal, &before_method_name, &before_method.descriptor), &MemberRef::new(&class_internal, &method_name, &method.descriptor), plain)
     } else {
         shared::Plan::default()
     };
@@ -237,11 +337,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             1 => "its bytecode and that of the method it reaches are identical in both versions; nothing to prove".to_string(),
             n => format!("its bytecode and that of the {n} methods it reaches are identical in both versions; nothing to prove"),
         };
-        let _ = writeln!(out, "✓ {} behaves as before on every input{restriction} ({how})", options.target);
+        let _ = writeln!(out, "✓ {} {relation}{restriction} ({how})", options.target);
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new() });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -326,11 +426,26 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Ok(last)
     };
     let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
-    let before_owner = format!("before/{class_internal}");
+    let before_owner = format!("before/{before_class_internal}");
+    // The previous version's arguments on a counterexample: the new version's, or the expressions over them.
+    let map_arguments = |arguments: &[Argument]| -> Result<Vec<Argument>, Error> {
+        let Some(args) = &harness.before_args else { return Ok(arguments.to_vec()) };
+        let (locals, arrays) = locals_of(&params, arguments);
+        args.iter()
+            .zip(&before_descriptor.params)
+            .map(|(arg, t)| match arg {
+                CallArg::Value(e) => harness::expr::eval_with(e, &locals, &arrays).map(|v| Argument::Scalar(as_parameter(v, t))),
+                CallArg::Array(_, slot) => Ok(params.iter().zip(arguments).find(|(p, _)| p.slot == *slot).map(|(_, a)| a.clone()).unwrap_or(Argument::Null)),
+            })
+            .collect()
+    };
     let replay_both = |arguments: &[Argument]| -> (String, String) {
-        let before = witness::replay(&replay_cp, &before_owner, &method_name, &method.descriptor, &descriptor, arguments);
+        let before = match map_arguments(arguments) {
+            Ok(mapped) => witness::replay(&replay_cp, &before_owner, &before_method_name, &before_method.descriptor, &before_descriptor, &mapped).with_leftovers(&before_params, &mapped),
+            Err(e) => format!("<could not replay: the previous version's arguments could not be computed: {e}>"),
+        };
         let after = witness::replay(&replay_cp, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-        (before.with_leftovers(&params, arguments), after.with_leftovers(&params, arguments))
+        (before, after.with_leftovers(&params, arguments))
     };
     // With the shared callees first: a proof with them is a proof, and a counterexample with them is one when it
     // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
@@ -374,7 +489,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     match last.verdict {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
-            let _ = writeln!(out, "✓ {} behaves as before on every input{restriction} ({how})", options.target);
+            let _ = writeln!(out, "✓ {} {relation}{restriction} ({how})", options.target);
             proof = Some(how);
         }
         Verdict::Violation => {
@@ -393,7 +508,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone() });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -406,11 +521,19 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             }
             let shrunk = arguments != found;
             let (before_outcome, after_outcome) = if shrunk { replay_both(&arguments) } else { (before_outcome, after_outcome) };
-            let (rendered, witnesses) = witness::call(&method_name, &params, &arguments);
+            let (mut rendered, witnesses) = witness::call(&method_name, &params, &arguments);
             let (rendered_found, _) = witness::call(&method_name, &params, &found);
+            if harness.before_args.is_some() {
+                if let Ok(mapped) = map_arguments(&arguments) {
+                    rendered = format!("{rendered}, previously {}", witness::call(&before_method_name, &before_params, &mapped).0);
+                }
+            }
             let message = format!(
-                "Behaviour of {} changed{}:\n  {rendered}\n    before: {before_outcome}\n    after:  {after_outcome}",
-                options.target,
+                "{}{}:\n  {rendered}\n    before: {before_outcome}\n    after:  {after_outcome}",
+                match &previous_display {
+                    Some(p) => format!("{} differs from the previous {p}", options.target),
+                    None => format!("Behaviour of {} changed", options.target),
+                },
                 options.unchanged_unless.as_deref().map(|s| format!(" outside the intended inputs ({s})")).unwrap_or_default()
             );
             let _ = writeln!(out, "✗ {message}");
@@ -419,23 +542,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let how = format!("found by {} in {seconds:.1} s{stage}{shrinking}, replayed in the interpreter; domain {domain}{sharing}", last.version);
             let _ = writeln!(out, "  ({how})");
             if let Some(scope) = &harness.scope {
-                let mut locals = Vec::new();
-                let mut arrays = Vec::new();
-                for (a, p) in arguments.iter().zip(&params) {
-                    match a {
-                        Argument::Scalar(v) => {
-                            locals.push(*v);
-                            if v.is_wide() {
-                                locals.push(Value::Int(0));
-                            }
-                        }
-                        Argument::Array(data) => {
-                            locals.push(Value::Null);
-                            arrays.push((p.slot, data.clone()));
-                        }
-                        Argument::Null => locals.push(Value::Null),
-                    }
-                }
+                let (locals, arrays) = locals_of(&params, &arguments);
                 if let Ok(Value::Int(1)) = harness::expr::eval_with(scope, &locals, &arrays) {
                     let _ = writeln!(out, "  (note: the interpreter evaluates the scope expression as true on this input, which the harness should have skipped; check the expression)");
                 }
@@ -458,7 +565,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display })
 }
 
 /// Copies the JDK classes in [`JDK_CLASSES`] out of the JDK image, for JBMC's class path.

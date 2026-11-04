@@ -460,13 +460,115 @@ fn a_target_identical_in_both_versions_needs_no_proof() {
         cp.add(dir).unwrap();
         cp.with_default_jdk()
     };
-    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&after), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"));
+    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&after), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"), true);
     assert_eq!(plan.identical, Some(2));
     let changed = compile_shares("same-c", &SHARES_BEFORE.replace("+ fee;", "+ fee + 1;")).unwrap();
-    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&changed), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"));
+    let plan = jvmcontract::shared::plan(&classpath(&before), &classpath(&changed), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"), &jvmcontract::classfile::MemberRef::new("fixtures/Shares", "split", "(JII)J"), true);
     assert_eq!(plan.identical, None);
     assert_eq!(plan.callees.iter().map(|c| c.display()).collect::<Vec<_>>(), vec!["Shares.perSeat".to_string()]);
     assert_eq!(plan.callees[0].throws, vec!["java/lang/ArithmeticException".to_string(), "java/lang/IllegalArgumentException".to_string()]);
+}
+
+const WRITERS_BEFORE: &str = r#"package fixtures;
+public final class Writers {
+    public static int winner(long tsA, int nodeA, long tsB, int nodeB) {
+        if (tsA != tsB) {
+            return tsA > tsB ? 0 : 1;
+        }
+        return nodeA >= nodeB ? 0 : 1;
+    }
+}
+"#;
+
+/// The parameters grouped by kind, and the body a comparison chain.
+const WRITERS_REORDERED: &str = r#"package fixtures;
+public final class Writers {
+    public static int winner(long tsA, long tsB, int nodeA, int nodeB) {
+        int order = Long.compare(tsA, tsB);
+        if (order == 0) {
+            order = Integer.compare(nodeA, nodeB);
+        }
+        return order >= 0 ? 0 : 1;
+    }
+}
+"#;
+
+fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
+    let dir = target_tmp().join(format!("writers-{name}"));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join(format!("{class}.java"));
+    std::fs::write(&file, source).unwrap();
+    compile(&format!("writers-{name}"), &[file])
+}
+
+fn writers_run(before: &Path, after: &Path, target: &str, before_target: Option<&str>, before_arguments: Option<&str>, name: &str) -> equivalence::Outcome {
+    let mut options = equivalence::Options::new(before, after, target);
+    let work = target_tmp().join(format!("equivalence-{name}"));
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    options.timeout_seconds = 120;
+    options.before_target = before_target.map(str::to_string);
+    options.before_arguments = before_arguments.map(str::to_string);
+    equivalence::run(&options).unwrap()
+}
+
+/// A signature change is a relation between the versions, not a difference: the previous version's arguments
+/// are given as expressions over the new parameters, and the proof is of new(x) against old(f(x)).
+#[test]
+fn a_method_whose_parameters_were_reordered_is_proved_against_the_previous_order() {
+    if !has("jbmc") {
+        return;
+    }
+    let (Some(before), Some(after)) = (compile_writers("before-a", "Writers", WRITERS_BEFORE), compile_writers("reordered", "Writers", WRITERS_REORDERED)) else { return };
+    let outcome = writers_run(&before, &after, "fixtures.Writers#winner", None, Some("tsA, nodeA, tsB, nodeB"), "writers-reordered");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.previous.as_deref(), Some("winner(tsA, nodeA, tsB, nodeB)"));
+    assert!(outcome.output.starts_with("✓ fixtures.Writers#winner behaves as the previous winner(tsA, nodeA, tsB, nodeB) on every input (JBMC"), "{}", outcome.output);
+    let statement = std::fs::read_to_string(outcome.statement.unwrap()).unwrap();
+    assert!(statement.contains("long tsA_ = tsA; int nodeA_ = nodeA; long tsB_ = tsB; int nodeB_ = nodeB;"), "{statement}");
+    assert!(statement.contains("a = before.fixtures.Writers.winner(tsA_, nodeA_, tsB_, nodeB_);"), "{statement}");
+}
+
+#[test]
+fn a_method_moved_and_renamed_is_proved_against_its_previous_name() {
+    if !has("jbmc") {
+        return;
+    }
+    let moved = WRITERS_REORDERED.replace("class Writers", "class Resolver").replace("int winner(", "int pick(");
+    let (Some(before), Some(after)) = (compile_writers("before-b", "Writers", WRITERS_BEFORE), compile_writers("moved", "Resolver", &moved)) else { return };
+    let outcome = writers_run(&before, &after, "fixtures.Resolver#pick", Some("fixtures.Writers#winner"), Some("tsA, nodeA, tsB, nodeB"), "writers-moved");
+    assert_eq!(outcome.verdict, Verdict::Verified, "{}", outcome.output);
+    assert_eq!(outcome.previous.as_deref(), Some("fixtures.Writers#winner(tsA, nodeA, tsB, nodeB)"));
+    assert!(outcome.output.starts_with("✓ fixtures.Resolver#pick behaves as the previous fixtures.Writers#winner(tsA, nodeA, tsB, nodeB) on every input"), "{}", outcome.output);
+}
+
+/// The counterexample is shown as both versions received it: the new parameters, and the previous version's
+/// arguments computed from them.
+#[test]
+fn a_rewrite_under_a_reordering_that_changes_a_tie_is_found() {
+    if !has("jbmc") {
+        return;
+    }
+    let tie = WRITERS_REORDERED.replace("order >= 0 ? 0 : 1", "order > 0 ? 0 : 1");
+    let (Some(before), Some(after)) = (compile_writers("before-c", "Writers", WRITERS_BEFORE), compile_writers("tie", "Writers", &tie)) else { return };
+    let outcome = writers_run(&before, &after, "fixtures.Writers#winner", None, Some("tsA, nodeA, tsB, nodeB"), "writers-tie");
+    assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let witness = outcome.counterexample.unwrap();
+    assert_eq!(witness.input, "winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)", "{}", outcome.output);
+    assert_eq!((witness.before.as_str(), witness.after.as_str()), ("0", "1"));
+    assert!(outcome.output.contains("✗ fixtures.Writers#winner differs from the previous winner(tsA, nodeA, tsB, nodeB):"), "{}", outcome.output);
+}
+
+#[test]
+fn the_previous_versions_parameters_must_be_mapped_when_they_differ() {
+    let (Some(before), Some(after)) = (compile_writers("before-d", "Writers", WRITERS_BEFORE), compile_writers("unmapped", "Writers", WRITERS_REORDERED)) else { return };
+    let outcome = writers_run(&before, &after, "fixtures.Writers#winner", None, None, "writers-unmapped");
+    assert_eq!(outcome.verdict, Verdict::Unverifiable, "{}", outcome.output);
+    assert_eq!(outcome.problem.as_deref(), Some("the previous version takes (long, int, long, int) and the new one (long, long, int, int); give the previous version's arguments as expressions over the new parameters with --before-arguments"));
+    let renamed = writers_run(&before, &after, "fixtures.Writers#winner", Some("fixtures.Writers#pick"), None, "writers-unknown");
+    assert_eq!(renamed.verdict, Verdict::Unverifiable, "{}", renamed.output);
+    assert!(renamed.problem.as_deref().unwrap().starts_with("in the previous version, expected one method named pick, found 0"), "{}", renamed.output);
 }
 
 const BUFFERS_BEFORE: &str = r#"package fixtures;
@@ -517,7 +619,7 @@ fn arrays_are_compared_in_regression_proofs_as_left_by_each_version() {
     let _ = std::fs::remove_dir_all(&harness_dir);
     std::fs::create_dir_all(&harness_dir).unwrap();
     let params = jvmcontract::harness::params(&["a".into(), "n".into()], &[jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), jvmcontract::classfile::Type::Int]);
-    let harness = jvmcontract::harness::generate("fixtures/Buffers", "prefix", &params, &jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), None, 8).unwrap();
+    let harness = jvmcontract::harness::generate("fixtures/Buffers", "prefix", &params, &jvmcontract::classfile::Type::Array(Box::new(jvmcontract::classfile::Type::Int)), None, 8, None).unwrap();
     std::fs::write(harness_dir.join("EquivalenceHarness.class"), &harness.bytes).unwrap();
     let cp = jvmcontract::witness::classpath([harness_dir.as_path(), after.as_path(), relocated.as_path()]).unwrap();
     let mut m = jvmcontract::interp::Machine::new(&cp);

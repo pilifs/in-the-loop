@@ -4717,6 +4717,47 @@
         "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids."
       ],
       "source": null
+    },
+    {
+      "id": "121",
+      "path": "examples/121-tie-break-parameters-grouped-by-kind-proved-under-the-reordering",
+      "title": "A tie-break reordered to group its parameters by kind, proved equal under the stated reordering",
+      "summary": "The last-writer-wins tie-break took its two writes interleaved, `(tsA, nodeA, tsB, nodeB)`; a developer groups the parameters by kind, timestamps first, and writes the body as the comparison chain the javadoc describes. A regression proof needs the same signature in both versions, and this one changed. The developer states the relation instead, `winner(tsA, nodeA, tsB, nodeB)` from the new parameters, and the proof is of the new method against the previous one called that way, on every input.",
+      "origin": "constructed",
+      "system": "Quorum",
+      "symbol": "net.terminalvalue.quorum.replication.LastWriterWins#winner",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "replicated-data"
+        ],
+        "defect": [
+          "agreement"
+        ],
+        "technique": [
+          "signature-change"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The library's test of the same shape (a `(long, int, long, int)` tie-break regrouped as `(long, long, int, int)` and written as a comparison chain) proves in about a second with JBMC and in 0.1 s with the tool's own checker; the measurement on this kernel is the pipeline's.",
+        "Without `previousArguments`, the tool refuses: `the previous version takes (long, int, long, int) and the new one (long, long, int, int); give the previous version's arguments as expressions over the new parameters with --before-arguments`. A method renamed or moved is named with `previousSymbol` (`--before-target`) as well.",
+        "An input for which an argument expression throws, a division by zero say, is outside the relation and skipped, as an input in the declared scope is; the expressions here cannot throw.",
+        "A rewrite that returned the first write only on a strictly positive order is found by the same proof: the library's test shows the counterexample as `winner(tsA=0, tsB=0, nodeA=0, nodeB=0), previously winner(tsA=0, nodeA=0, tsB=0, nodeB=0)`, before 0 and after 1."
+      ],
+      "source": null
     }
   ]
 }
