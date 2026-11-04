@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (ended) |
+| Session | `8fc64b88-3223-4fe7-a67d-3a75c5768bbf` (open) |
 | When | 2026-11-04 04:45 UTC to 2026-11-04 07:12 UTC (147 min) |
 | Models | `claude-sonnet-5-5` |
 | Client | claude-code 2.1.318 |
@@ -93,6 +93,18 @@ A record result of other components than before, or a result that is a record in
 Examples 134 and 135 are regression proofs on a new kernel of Crosscut, ratelimit.Window, a fixed-window request counter whose counter is a record the method returns, across the record gaining a previousCount component for the sliding-window estimate: 134 advances the start by exactly one window instead of aligning it to the clock, found by JBMC in a fraction of a second within aligned starts as the scope (the witness a request two windows ahead of an empty counter); 135 keeps the alignment and is proved equal on the start and the count on every input by the tool's own checker in 12 s, where JBMC did not finish within a minute. Jobs 20261104-085102-example-134-a-window-counter-that-advanc and 20261104-085102-example-135-a-window-counter-with-the-pr are queued.
 
 Verified by a new unit test on the harness (the components' slots, the getfield reads, the Java statement), a new integration test cross-checking the verified, violated, became-a-record and refused cases with JBMC (4 s), the full suite (106 unit, 50 integration tests), the Crosscut app's 49 tests on the base tree and on both patched trees, both patches applying, and the four proof runs inline with both engines.
+
+### The tool's own checker leaves a multiplication to the solver under cheap facts and rewrites a quotient times its divisor as the dividend less the remainder; examples 138 and 139 on the window start as the window's index times its length (verification pending)
+
+change `xnxwvttrwrqk` · [log `8eca44ac5dc6`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/8eca44ac5dc6a6f96e7e9077f9c6335b764a4338d60ded492900c36653ac9c93.jsonl.gz)
+
+The own bounded model checker (lib/src/bmc) extends last cycle's lazy division to multiplication: a product of two non-constant values is fresh bits under what holds of every product modulo the width (a factor of zero gives zero, of one the other factor, of minus one its negation, a power of two shifts by its exponent, the low eight bits are exact), a model that gets a product wrong has the multiplier built and tied to the bits, and products of the same operands in either order are the same bits. A quotient times its divisor is rewritten exactly as the dividend less the remainder, (a / b) * b as a - a % b, which holds in two's complement for every pair including a division by zero and MIN_VALUE / -1, so the identity between a 64-bit division and multiplication that neither engine proved within a minute is the same bits on both sides. The log line now counts divisions and multiplications separately.
+
+Example 131's loop of delay *= multiplier, proved in 22 s with its 27 multipliers built, takes 4 s with none built (release build, 1.19M clauses down to 385k); 130 goes from 1.5 s to 1.1 s; the other own-checker examples (120, 124, 125, 128, 129, 132, 134 to 137) are unchanged. The divide-and-multiply form of the window alignment, out of reach of both engines last cycle, is proved in 0.1 s, and the credited-time rewrite that example 133's last note recorded as out of reach in 0.3 s; the notes of 120, 131, 133 and 137 say so.
+
+Example 138 is the window counter's start computed as the window's index times its length, long index = nowNanos / windowNanos; long start = index * windowNanos, proved equal to the remainder form on every input by the own checker in 0.1 s where JBMC does not finish within 60 s. Example 139 holds the index in an int: at a reading of 2^31 windows the cast wraps, the start is negative, and the record's constructor refuses it, so every request from then on throws; found in 3 s as counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1), JBMC >60 s. Pipeline jobs 20261104-094056-example-138-window-start-as-the-window-s and 20261104-094056-example-139-window-index-held-in-an-int.
+
+Verified with three new unit tests (the facts prove a product by zero, one and a power of two with no circuit, a wrong product of the same low bits is refined once, the quotient-times-divisor rewrite gives the same bits and holds at MIN_VALUE / -1, an engine run that is verified with 0 of 1 products built and one refuted with the real product), 112 unit and 50 integration tests passing, the Crosscut app's 48 tests on both patched trees, both patches applying, and the release binary installed.
 
 ## Conversation
 

@@ -5,8 +5,10 @@
 //! of a branch that model takes is known feasible and the solver is asked once per branch, about the other side,
 //! and not at all about a condition the path has taken before. That one question is given as long as the solver's
 //! calls so far took together, and a side undecided by then waits until the decided paths are done, so a violation
-//! is not held up by an infeasible side that is hard to refute. A division is left to the solver under what holds
-//! of every division and built as a circuit only where a model got it wrong ([`bits::Blaster::sdivrem_lazy`]).
+//! is not held up by an infeasible side that is hard to refute. A division or multiplication is left to the solver
+//! under what holds of every one and built as a circuit only where a model got it wrong
+//! ([`bits::Blaster::sdivrem_lazy`], [`bits::Blaster::mul_lazy`]); a quotient times its divisor is the dividend
+//! less the remainder, with no product.
 //! Loops are unwound up to a bound, as JBMC's are, and a path that needs more is no verdict.
 //!
 //! The fragment this engine handles is the one the proofs are mostly about: static methods over `int`, `long`,
@@ -68,10 +70,13 @@ pub struct Outcome {
     pub evaluating: f64,
     pub clauses: u64,
     pub variables: i32,
-    /// How many divisions were left to the solver under the cheap facts, and how many of them had their circuit
-    /// built because the solver got one wrong ([`bits::Blaster::sdivrem_lazy`]).
+    /// How many divisions and multiplications were left to the solver under the cheap facts, and how many of each
+    /// had their circuit built because the solver got one wrong ([`bits::Blaster::sdivrem_lazy`],
+    /// [`bits::Blaster::mul_lazy`]).
     pub divisions: u64,
     pub refined: u64,
+    pub multiplications: u64,
+    pub refined_multiplications: u64,
     pub seconds: f64,
     /// The solver, for the report.
     pub solver: String,
@@ -95,7 +100,7 @@ impl Outcome {
 
     /// One line on what the run did, for the log.
     pub fn summary(&self) -> String {
-        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+        format!("{:?}: {} paths, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
 }
 
@@ -262,8 +267,10 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         evaluating: engine.b.evaluating.as_secs_f64(),
         clauses: engine.b.clauses,
         variables: engine.b.variables(),
-        divisions: engine.b.divisions(),
-        refined: engine.b.refined,
+        divisions: engine.b.divisions().0,
+        refined: engine.b.divisions().1,
+        multiplications: engine.b.multiplications().0,
+        refined_multiplications: engine.b.multiplications().1,
         seconds: started.elapsed().as_secs_f64(),
         solver: solver.clone(),
     };
@@ -572,9 +579,9 @@ impl<'a> Engine<'a> {
             match self.b.solve_with(assumptions) {
                 None => return Ok(None),
                 Some(false) => return Ok(false).map(Some),
-                Some(true) => match self.b.wrong_division() {
+                Some(true) => match self.b.wrong_operation() {
                     None => return Ok(Some(true)),
-                    Some(i) => self.b.refine_division(i),
+                    Some(i) => self.b.refine_operation(i),
                 },
             }
         }
@@ -1353,7 +1360,7 @@ impl<'a> Engine<'a> {
         let r = match op {
             ArithOp::Add => self.b.add(&x, &y),
             ArithOp::Sub => self.b.sub(&x, &y),
-            ArithOp::Mul => self.b.mul(&x, &y),
+            ArithOp::Mul => self.b.mul_lazy(&x, &y),
             ArithOp::Div | ArithOp::Rem => {
                 let zero = self.b.is_zero(&y);
                 let (q, r) = self.b.sdivrem_lazy(&x, &y);
@@ -1827,7 +1834,70 @@ mod tests {
         let (x, y): (i32, i32) = (out.raw_inputs[&0].parse().unwrap(), out.raw_inputs[&1].parse().unwrap());
         assert_eq!(x.wrapping_div(y), 3, "{x} / {y}");
         assert!(out.refined <= 1, "{}", out.summary());
-        assert!(out.summary().contains(&format!("{} of 1 divisions built in full", out.refined)));
+        assert!(out.summary().contains(&format!("{} of 1 divisions and 0 of 0 multiplications built in full", out.refined)));
+    }
+
+    #[test]
+    fn a_multiplication_is_built_in_full_only_when_the_solver_gets_it_wrong() {
+        // x * y == x << 3 for y == 8: what holds of every product proves it, with no multiplier.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.iconst(8);
+            code.if_icmp(Cond::Ne, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x68); // imul
+            code.load(Kind::Int, 0);
+            code.iconst(3);
+            code.op(0x78); // ishl
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.multiplications, out.refined_multiplications), (1, 0), "{}", out.summary());
+
+        // (x / y) * y == x - x % y: the identity, the same bits on both sides, no product and no circuit.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 1);
+            code.if_zero(Cond::Eq, ok);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x6c); // idiv
+            code.load(Kind::Int, 1);
+            code.op(0x68); // imul
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x70); // irem
+            code.op(0x64); // isub
+            code.if_icmp(Cond::Ne, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Verified, "{:?}", out.problem);
+        assert_eq!((out.divisions, out.refined, out.multiplications), (1, 0, 0), "{}", out.summary());
+
+        // x * y == 150000 claimed impossible: refuted with factors whose real product is that, the circuit built
+        // if the solver's first guess was not a real product.
+        let cp = harness("(II)V", |code, _, fail| {
+            let ok = code.label();
+            code.load(Kind::Int, 0);
+            code.load(Kind::Int, 1);
+            code.op(0x68); // imul
+            code.iconst(30_000);
+            code.iconst(5);
+            code.op(0x68); // imul of constants, folded: 150000
+            code.if_icmp(Cond::Eq, fail);
+            code.bind(ok);
+        });
+        let out = run(&cp);
+        assert_eq!(out.verdict, Verdict::Violation, "{:?}", out.problem);
+        let (x, y): (i32, i32) = (out.raw_inputs[&0].parse().unwrap(), out.raw_inputs[&1].parse().unwrap());
+        assert_eq!(x.wrapping_mul(y), 150_000, "{x} * {y}");
+        assert!(out.refined_multiplications <= 1, "{}", out.summary());
     }
 
     #[test]

@@ -29,20 +29,45 @@ enum Def {
     Lazy(u32),
 }
 
-/// A division whose circuit is not built unless it is needed: its quotient and remainder are fresh bits that
-/// the solver chooses under the cheap facts of [`Blaster::division_facts`] (the remainder is smaller than the
-/// divisor and takes the dividend's sign, a division by one is the dividend, and so on), which every real division
-/// satisfies. A proof that goes through under the facts alone holds; a model the solver gives is checked against
-/// the real division of the values it chose, and when they differ the circuit is built and tied to the bits
-/// ([`Blaster::refine_division`]), so that the solver is never believed on a division it got wrong. A 64-bit
-/// division is a circuit of some ten thousand gates that a proof seldom needs in full: both versions of a method
-/// mostly use the same remainder, or compare it with something the facts decide.
+/// A division or multiplication whose circuit is not built unless it is needed: its result (quotient and
+/// remainder, or product) is fresh bits that the solver chooses under the cheap facts of
+/// [`Blaster::division_facts`] or [`Blaster::multiplication_facts`] (the remainder is smaller than the divisor and
+/// takes the dividend's sign, a division by one is the dividend, a product by a power of two is a shift, and so
+/// on), which every real operation satisfies. A proof that goes through under the facts alone holds; a model the
+/// solver gives is checked against the real operation on the values it chose, and when they differ the circuit is
+/// built and tied to the bits ([`Blaster::refine_operation`]), so that the solver is never believed on an
+/// operation it got wrong. A 64-bit division or multiplication is a circuit of some ten thousand gates that a
+/// proof seldom needs in full: both versions of a method mostly use the same remainder or product, or compare it
+/// with something the facts decide.
 struct Lazy {
+    op: Op,
     a: Bits,
     b: Bits,
+    /// The quotient, or the product.
     q: Bits,
+    /// The remainder; empty for a product.
     r: Bits,
     refined: bool,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum Op {
+    DivRem,
+    Mul,
+}
+
+/// The real result of an operation left to the solver on the values: the quotient and remainder, or the product
+/// and zero.
+fn real_operation(op: Op, width: usize, a: i64, b: i64) -> (i64, i64) {
+    match op {
+        Op::DivRem => real_division(width, a, b),
+        Op::Mul => (real_product(width, a, b), 0),
+    }
+}
+
+/// `imul`/`lmul`: the product modulo the width.
+fn real_product(width: usize, a: i64, b: i64) -> i64 {
+    if width == 32 { i64::from((a as i32).wrapping_mul(b as i32)) } else { a.wrapping_mul(b) }
 }
 
 /// `idiv`/`irem` and `ldiv`/`lrem` of two values of the width: the quotient truncates toward zero, the remainder
@@ -127,12 +152,11 @@ pub struct Blaster {
     /// variable: two copies of a circuit (the method's own multiplication and the harness's check of it, say)
     /// then fold to the same literals, and their comparison to a constant.
     gates: HashMap<(u8, Lit, Lit, Lit), Lit>,
-    /// The divisions left to the solver, and which one divides which operands, so that the same division of the
-    /// same values is the same bits.
+    /// The divisions and multiplications left to the solver, and which one is of which operands, so that the
+    /// same operation on the same values is the same bits (a product's operands in either order).
     lazy: Vec<Lazy>,
     divisions: HashMap<(Bits, Bits), usize>,
-    /// How many of them had their circuit built, for reporting.
-    pub refined: u64,
+    products: HashMap<(Bits, Bits), usize>,
     /// How many clauses have been added, for reporting.
     pub clauses: u64,
     /// How many times the solver was asked, for reporting, and the time it took.
@@ -161,7 +185,7 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), refined: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO };
+        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO };
         b.clause(&[TRUE]);
         b
     }
@@ -437,10 +461,88 @@ impl Blaster {
         let width = a.len();
         let q: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
         let r: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
-        self.lazy.push(Lazy { a: a.clone(), b: b.clone(), q: q.clone(), r: r.clone(), refined: false });
+        self.lazy.push(Lazy { op: Op::DivRem, a: a.clone(), b: b.clone(), q: q.clone(), r: r.clone(), refined: false });
         self.divisions.insert((a.clone(), b.clone()), i);
         self.division_facts(a, b, &q, &r);
         (q, r)
+    }
+
+    /// Multiplication left to the solver (see [`Lazy`]): fresh bits under the facts of
+    /// [`Blaster::multiplication_facts`], the circuit built by [`Blaster::refine_operation`] only when a model
+    /// needs it. A product with a constant operand is built as [`Blaster::mul`] builds it, which is small (one
+    /// adder per set bit). A quotient times its divisor is the dividend less the remainder, `a - a % b`, exactly:
+    /// the identity `a == (a / b) * b + a % b` holds for every pair, the division by zero and `MIN_VALUE / -1`
+    /// included, so `(a / b) * b` is that subtraction, with no product at all, and a method that aligns to a
+    /// multiple either way computes the same bits.
+    pub fn mul_lazy(&mut self, a: &Bits, b: &Bits) -> Bits {
+        if a.iter().all(|&l| is_const(l)) || b.iter().all(|&l| is_const(l)) {
+            return self.mul(a, b);
+        }
+        if let Some(l) = self.lazy.iter().find(|l| l.op == Op::DivRem && ((l.q == *a && l.b == *b) || (l.q == *b && l.b == *a))) {
+            let (dividend, remainder) = (l.a.clone(), l.r.clone());
+            return self.sub(&dividend, &remainder);
+        }
+        let key = if a <= b { (a.clone(), b.clone()) } else { (b.clone(), a.clone()) };
+        if let Some(&i) = self.products.get(&key) {
+            return self.lazy[i].q.clone();
+        }
+        let i = self.lazy.len();
+        let width = a.len();
+        let p: Bits = (0..width).map(|_| self.gate(Def::Lazy(i as u32))).collect();
+        self.lazy.push(Lazy { op: Op::Mul, a: a.clone(), b: b.clone(), q: p.clone(), r: Vec::new(), refined: false });
+        self.products.insert(key, i);
+        self.multiplication_facts(a, b, &p);
+        p
+    }
+
+    /// What holds of every product `p = a * b` modulo the width, in circuits of a few hundred gates each, with
+    /// one barrel shifter per operand: a factor of zero gives zero, of one the other factor, of minus one its
+    /// negation; a factor that is a power of two (`MIN_VALUE` included) shifts the other by its exponent; and the
+    /// low eight bits of the product are the low eight bits of the factors multiplied, which a small multiplier
+    /// gives exactly. Nothing is said of the sign, which overflow can flip.
+    fn multiplication_facts(&mut self, a: &Bits, b: &Bits, p: &Bits) {
+        let width = a.len();
+        let zero = self.constant(0, width);
+        let one = self.constant(1, width);
+        let minus_one = self.constant(-1, width);
+        let p_zero = self.eq(p, &zero);
+        let mut facts = Vec::new();
+        for (x, y) in [(a, b), (b, a)] {
+            let x_zero = self.eq(x, &zero);
+            facts.push(self.or(-x_zero, p_zero));
+            let x_one = self.eq(x, &one);
+            let p_is_y = self.eq(p, y);
+            facts.push(self.or(-x_one, p_is_y));
+            let x_minus_one = self.eq(x, &minus_one);
+            let ny = self.neg(y);
+            let p_is_minus_y = self.eq(p, &ny);
+            facts.push(self.or(-x_minus_one, p_is_minus_y));
+            let x_less = self.sub(x, &one);
+            let x_masked = self.and_bits(x, &x_less);
+            let single_bit = self.is_zero(&x_masked);
+            let power_of_two = self.and(single_bit, -x_zero);
+            let steps = width.trailing_zeros() as usize;
+            let exponent: Bits = (0..steps).map(|j| {
+                let mut acc = FALSE;
+                for (i, &bit) in x.iter().enumerate() {
+                    if (i >> j) & 1 == 1 {
+                        acc = self.or(acc, bit);
+                    }
+                }
+                acc
+            }).collect();
+            let shifted = self.shl(y, &exponent);
+            let p_shifted = self.eq(p, &shifted);
+            facts.push(self.or(-power_of_two, p_shifted));
+        }
+        let k = width.min(8);
+        let low = self.mul(&a[..k].to_vec(), &b[..k].to_vec());
+        for (&chosen, &real) in p[..k].iter().zip(&low) {
+            facts.push(-self.xor(chosen, real));
+        }
+        for f in facts {
+            self.clause(&[f]);
+        }
     }
 
     /// What holds of every division `a / b = q` with remainder `r` when `b` is not zero, in circuits of a few
@@ -499,36 +601,52 @@ impl Blaster {
         }
     }
 
-    /// The first division left to the solver whose quotient or remainder in the solver's last model is not the
-    /// real division of the operands' values there (a division by zero is never wrong: the JVM throws before the
-    /// values matter). `None` when the model is a real one, as a model of the circuits alone always is: the
-    /// first wrong division decides, since the operands of a later one may come from it.
-    pub fn wrong_division(&self) -> Option<usize> {
+    /// The first operation left to the solver whose result in the solver's last model is not the real operation
+    /// on the operands' values there (a division by zero is never wrong: the JVM throws before the values
+    /// matter). `None` when the model is a real one, as a model of the circuits alone always is: the first wrong
+    /// operation decides, since the operands of a later one may come from it.
+    pub fn wrong_operation(&self) -> Option<usize> {
         self.lazy.iter().enumerate().find(|(_, l)| {
             if l.refined {
                 return false;
             }
             let (a, b) = (self.eval(&l.a), self.eval(&l.b));
-            b != 0 && real_division(l.a.len(), a, b) != (self.eval(&l.q), self.eval(&l.r))
+            if l.op == Op::DivRem && b == 0 {
+                return false;
+            }
+            let r = if l.r.is_empty() { 0 } else { self.eval(&l.r) };
+            real_operation(l.op, l.a.len(), a, b) != (self.eval(&l.q), r)
         }).map(|(i, _)| i)
     }
 
-    /// Builds the circuit of division `i` and ties its bits to the ones the solver chooses.
-    pub fn refine_division(&mut self, i: usize) {
+    /// Builds the circuit of operation `i` and ties its bits to the ones the solver chooses.
+    pub fn refine_operation(&mut self, i: usize) {
         let (a, b) = (self.lazy[i].a.clone(), self.lazy[i].b.clone());
-        let (q, r) = self.sdivrem(&a, &b);
+        let (q, r) = match self.lazy[i].op {
+            Op::DivRem => self.sdivrem(&a, &b),
+            Op::Mul => (self.mul(&a, &b), Vec::new()),
+        };
         for (&chosen, &real) in self.lazy[i].q.iter().zip(&q).chain(self.lazy[i].r.iter().zip(&r)) {
             self.solver.add_clause([-chosen, real]);
             self.solver.add_clause([chosen, -real]);
             self.clauses += 2;
         }
         self.lazy[i].refined = true;
-        self.refined += 1;
     }
 
-    /// How many divisions were left to the solver.
-    pub fn divisions(&self) -> u64 {
-        self.lazy.len() as u64
+    /// How many divisions were left to the solver, and how many of them had their circuit built.
+    pub fn divisions(&self) -> (u64, u64) {
+        self.counted(Op::DivRem)
+    }
+
+    /// How many multiplications were left to the solver, and how many of them had their circuit built.
+    pub fn multiplications(&self) -> (u64, u64) {
+        self.counted(Op::Mul)
+    }
+
+    fn counted(&self, op: Op) -> (u64, u64) {
+        let of = self.lazy.iter().filter(|l| l.op == op);
+        (of.clone().count() as u64, of.filter(|l| l.refined).count() as u64)
     }
 
     /// Unsigned division and remainder by restoring division; the quotient of a division by zero is all ones and
@@ -698,7 +816,7 @@ impl Blaster {
                     }
                 }
                 Def::Lazy(i) => {
-                    // The real division of the operands' values, every bit of the quotient and remainder at once.
+                    // The real operation on the operands' values, every bit of the result at once.
                     let l = &self.lazy[i as usize];
                     let mut ready = true;
                     for &x in l.a.iter().chain(&l.b) {
@@ -706,7 +824,7 @@ impl Blaster {
                     }
                     if ready {
                         let (a, b) = (value_in(model, &l.a).expect("ready"), value_in(model, &l.b).expect("ready"));
-                        let (q, r) = real_division(l.a.len(), a, b);
+                        let (q, r) = real_operation(l.op, l.a.len(), a, b);
                         for (k, &bit) in l.q.iter().enumerate() {
                             model.set(bit as usize, (q >> k) & 1 == 1);
                         }
@@ -846,7 +964,7 @@ mod tests {
         let (q, r) = b.sdivrem_lazy(&x, &y);
         let (q2, r2) = b.sdivrem_lazy(&x, &y);
         assert_eq!((&q2, &r2), (&q, &r), "the same division of the same values is the same bits");
-        assert_eq!(b.divisions(), 1);
+        assert_eq!(b.divisions(), (1, 0));
         // What the facts decide needs no circuit: a remainder is smaller than a positive divisor, a division by
         // one is exact, a power of two masks a non-negative dividend.
         let zero = b.constant(0, 32);
@@ -864,7 +982,7 @@ mod tests {
         let low = b.and_bits(&x, &seven);
         let r_masked = b.eq(&r, &low);
         assert_eq!(b.solve_with(&[y_eight, x_nonneg, -r_masked]), Some(false), "x % 8 == x & 7 for x >= 0");
-        assert_eq!(b.refined, 0, "no circuit was built");
+        assert_eq!(b.divisions(), (1, 0), "no circuit was built");
         // A quotient the facts do not pin: the solver's guess is checked against the real division, and the
         // circuit built when it is wrong, after which the solver cannot be wrong again.
         let x_23 = b.eq(&x, &b.constant(23, 32).clone());
@@ -872,19 +990,97 @@ mod tests {
         let r_2 = b.eq(&r, &b.constant(2, 32).clone());
         assert_eq!(b.solve_with(&[x_23, y_7, -r_2]), Some(true), "the facts allow a wrong remainder");
         let mut rounds = 0;
-        while let Some(i) = b.wrong_division() {
-            b.refine_division(i);
+        while let Some(i) = b.wrong_operation() {
+            b.refine_operation(i);
             rounds += 1;
             assert_eq!(b.solve_with(&[x_23, y_7]), Some(true));
         }
         assert!(rounds <= 1, "one division, built at most once");
         assert_eq!((b.eval(&q), b.eval(&r)), (3, 2));
         assert_eq!(b.solve_with(&[x_23, y_7, -r_2]), Some(false), "23 % 7 is 2 once the circuit is there");
-        assert_eq!(b.refined, 1);
+        assert_eq!(b.divisions(), (1, 1));
         // A division by zero is never wrong: the JVM throws before its value matters.
         let y_zero = b.is_zero(&y);
         assert_eq!(b.solve_with(&[y_zero]), Some(true));
-        assert_eq!(b.wrong_division(), None);
+        assert_eq!(b.wrong_operation(), None);
+    }
+
+    #[test]
+    fn a_multiplication_left_to_the_solver_is_built_when_its_model_is_wrong_and_not_before() {
+        let mut b = Blaster::new();
+        let x = b.fresh(32);
+        let y = b.fresh(32);
+        let p = b.mul_lazy(&x, &y);
+        let p2 = b.mul_lazy(&y, &x);
+        assert_eq!(p2, p, "a product of the same values in either order is the same bits");
+        assert_eq!(b.multiplications(), (1, 0));
+        // What the facts decide needs no circuit: a factor of zero or one, a power of two as a shift, the low
+        // bits of the product.
+        let zero = b.constant(0, 32);
+        let one = b.constant(1, 32);
+        let eight = b.constant(8, 32);
+        let y_zero = b.eq(&y, &zero);
+        let p_nz = -b.is_zero(&p);
+        assert_eq!(b.solve_with(&[y_zero, p_nz]), Some(false), "x * 0 == 0");
+        let x_one = b.eq(&x, &one);
+        let p_is_y = b.eq(&p, &y);
+        assert_eq!(b.solve_with(&[x_one, -p_is_y]), Some(false), "1 * y == y");
+        let y_eight = b.eq(&y, &eight);
+        let three = b.constant(3, 32);
+        let x_shifted = b.shl(&x, &three);
+        let p_shifted = b.eq(&p, &x_shifted);
+        assert_eq!(b.solve_with(&[y_eight, -p_shifted]), Some(false), "x * 8 == x << 3");
+        let p_odd = p[0];
+        let x_even = -x[0];
+        assert_eq!(b.solve_with(&[x_even, p_odd]), Some(false), "an even factor gives an even product");
+        assert_eq!(b.multiplications(), (1, 0), "no circuit was built");
+        // A product the facts do not pin: the solver's guess is checked against the real product, and the
+        // circuit built when it is wrong, after which the solver cannot be wrong again.
+        let x_300 = b.eq(&x, &b.constant(300, 32).clone());
+        let y_500 = b.eq(&y, &b.constant(500, 32).clone());
+        let p_right = b.eq(&p, &b.constant(150_000, 32).clone());
+        let p_wrong = b.eq(&p, &b.constant(150_000 + 256, 32).clone());
+        assert_eq!(b.solve_with(&[x_300, y_500, p_wrong]), Some(true), "the facts allow a wrong product of the same low bits");
+        assert_eq!(b.wrong_operation(), Some(0));
+        b.refine_operation(0);
+        assert_eq!(b.solve_with(&[x_300, y_500, p_wrong]), Some(false), "300 * 500 is 150000 once the circuit is there");
+        assert_eq!(b.solve_with(&[x_300, y_500]), Some(true));
+        assert!(b.value(p_right));
+        assert_eq!(b.wrong_operation(), None);
+        assert_eq!(b.multiplications(), (1, 1));
+        // A product with a constant factor is built as it is, small.
+        let p3 = b.mul_lazy(&x, &three);
+        assert_eq!(b.multiplications(), (1, 1));
+        let p3_is = b.eq(&p3, &b.constant(900, 32).clone());
+        assert_eq!(b.solve_with(&[x_300, -p3_is]), Some(false));
+    }
+
+    #[test]
+    fn a_quotient_times_its_divisor_is_the_dividend_less_the_remainder() {
+        let mut b = Blaster::new();
+        let x = b.fresh(64);
+        let y = b.fresh(64);
+        let (q, r) = b.sdivrem_lazy(&x, &y);
+        let aligned = b.mul_lazy(&q, &y);
+        let aligned_too = b.mul_lazy(&y, &q);
+        let by_remainder = b.sub(&x, &r);
+        assert_eq!(aligned, by_remainder, "(x / y) * y is x - x % y, the same bits");
+        assert_eq!(aligned_too, by_remainder);
+        assert_eq!(b.multiplications(), (0, 0), "no product was left to the solver");
+        // The identity holds where the circuits are built too: a division by zero, MIN_VALUE / -1.
+        let min = b.constant(i64::MIN, 64);
+        let minus_one = b.constant(-1, 64);
+        let x_min = b.eq(&x, &min);
+        let y_minus_one = b.eq(&y, &minus_one);
+        assert_eq!(b.solve_with(&[x_min, y_minus_one]), Some(true));
+        while let Some(i) = b.wrong_operation() {
+            b.refine_operation(i);
+            assert_eq!(b.solve_with(&[x_min, y_minus_one]), Some(true));
+        }
+        assert_eq!((b.eval(&q), b.eval(&r), b.eval(&aligned)), (i64::MIN, 0, i64::MIN));
+        assert_eq!(real_product(64, i64::MIN, -1), i64::MIN);
+        assert_eq!(real_product(32, 65_536, 65_536), 0);
+        assert_eq!(real_product(64, 65_536, 65_536), 1 << 32);
     }
 
     #[test]
@@ -903,7 +1099,12 @@ mod tests {
         let r_is = b.eq(&r, &b.constant(-2, 64).clone());
         assert!(b.holds(&mut model, q_is));
         assert!(b.holds(&mut model, r_is));
-        assert_eq!(b.refined, 0);
+        assert_eq!(b.divisions(), (1, 0));
+        // A product likewise: the real -23 * 7, with no circuit.
+        let p = b.mul_lazy(&x, &y);
+        let p_is = b.eq(&p, &b.constant(-161, 64).clone());
+        assert!(b.holds(&mut model, p_is));
+        assert_eq!(b.multiplications(), (1, 0));
         assert_eq!(real_division(32, i64::from(i32::MIN), -1), (i64::from(i32::MIN), 0));
         assert_eq!(real_division(64, i64::MIN, -1), (i64::MIN, 0));
         assert_eq!(real_division(64, 5, 0), (-1, 5));

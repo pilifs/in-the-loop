@@ -1,0 +1,15 @@
+diff --git a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+index 8214e20..4ef4c34 100644
+--- a/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
++++ b/examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java
+@@ -26,7 +26,9 @@ public record Window(long startNanos, long count) {
+         if (windowNanos <= 0 || nowNanos < startNanos) {
+             throw new IllegalArgumentException("the window must be positive and time must not go back");
+         }
+-        long start = nowNanos - nowNanos % windowNanos;
++        // The window the reading falls in, counted from zero, and where it starts.
++        long index = nowNanos / windowNanos;
++        long start = index * windowNanos;
+         return start == startNanos ? new Window(startNanos, count + 1) : new Window(start, 1);
+     }
+ }

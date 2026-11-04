@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "139",
+  "title": "A window index held in an int refuses every request after two billion windows",
+  "summary": "The same rewrite of Crosscut's `Window` counter as example 138, the start computed as the window's index times its length, with the index held in an `int`: `(int) (nowNanos / windowNanos)`. Two billion windows into the clock's range the cast wraps, the start comes out negative, and the record's constructor refuses it: every request from then on throws out of the rate limiter. The regression proof finds it in 3 s, on a window of one nanosecond at a reading of 2^31, a case no test with a sensible window reaches.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "resilience",
+    "clocks-and-time",
+    "integer-overflow",
+    "record-components",
+    "own-checker"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Crosscut",
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/Window.java",
+    "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Compute the window's index, `int index = (int) (nowNanos / windowNanos)`, and its start as `index * windowNanos`, in place of `nowNanos - nowNanos % windowNanos`. The tests pass unchanged: their windows are a second long and their readings a few seconds in.",
+    "patch": "change.patch"
+  },
+  "risk": "Once the reading divided by the window passes 2^31, the `int` index wraps negative, the start `index * windowNanos` is negative, and `new Window(start, 1)` throws `IllegalArgumentException` from the constructor's check that a start is not negative: the rate limiter fails every request until the index wraps again, 2^31 windows later. `System.nanoTime` counts from an arbitrary origin, on Linux usually the boot: with the filter's millisecond windows the index passes 2^31 after 25 days of uptime, with a window of a hundred microseconds after two and a half. Between 2^32 and 2^32 + 2^31 windows the index is positive again but wrong, and the counter keeps a start in the wrong place.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The harness builds the counter from symbolic components, calls both versions on the same reading and window, and compares the result records component by component, or the exceptions by class. The tool's own checker finds `counted(this=Window[startNanos=0, count=0], nowNanos=2147483648, windowNanos=1)`: the old version answers `Window[startNanos=2147483648, count=1]`, the new one throws `IllegalArgumentException` from the constructor, since `(int) 2147483648L` is `-2147483648` and the start that times one. The division is left to the solver and settled by its facts (a division by one is the dividend), the product by the same (a factor of one gives the other), so the violation is an input where the cast changes the value, found in 3.0 s and shrunk by the interpreter in 1504 runs to the smallest reading that does. JBMC did not finish the same harness within 60 s.",
+  "resolution": "Keep the index a `long`, as example 138 does, or compute the start without naming the index. The proof of 138 covers the fix.",
+  "notes": [
+    "The violating input is not in JBMC's small search stages (readings in [0:20] and in [-100000:100000]), where the index fits an `int` and both versions agree: the checker proves those stages empty with the one division and the one product built in full after a model got them wrong, and finds the violation in the stage over the whole range, as `counted(this=Window[startNanos=100000, count=100000], nowNanos=4853170726443779744, windowNanos=2220810999)` before shrinking. The stages are reported as JBMC's, so the report reads the same whichever engine found it.",
+    "The product `index * windowNanos` is not the quotient times its divisor of example 138: the index is the quotient cast to an `int` and widened back, other bits, so the identity does not apply and the product is left to the solver under what holds of every product (a factor of one gives the other factor, which decides the witness). The log (`bmc.log` in the work directory) says `1 of 1 divisions and 1 of 1 multiplications built in full`: in the small stages the solver proposed a wrong product and a wrong quotient once each, and the circuits were built.",
+    "A test with a sensible window does not reach the defect: a second-long window wraps after 68 years of uptime, and the tests' readings are seconds in. The proof is over every reading, so the window of one nanosecond and the reading of 2^31 are the solver's, shrunk to the smallest reading that wraps; the risk above translates them to the filter's windows.",
+    "JBMC, with its default solver, did not finish the same harness within 60 s: the violation needs a reading past 2^31 windows, which its small stages do not hold, and the formula for the whole range has a 64-bit divider and a 64-bit multiplier in it. The own checker's 3.0 s is mostly the two small stages proved empty with the circuits built, since the facts alone let the solver guess a product the real one is not."
+  ],
+  "provenance": "Constructed as the defective form of example 138's rewrite, on the same kernel of Crosscut, to show a regression proof reaching a wrap that no test does, with the product left to the solver.",
+  "references": [
+    {
+      "title": "The Java Language Specification, 5.1.3: narrowing primitive conversion of long to int keeps the low 32 bits",
+      "url": "https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html#jls-5.1.3"
+    },
+    {
+      "title": "System.nanoTime: an arbitrary origin, not related to any wall clock",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#nanoTime()"
+    },
+    {
+      "title": "Cloudflare: How we built rate limiting capable of scaling to millions of domains (fixed windows aligned to the clock)",
+      "url": "https://blog.cloudflare.com/counting-things-a-lot-of-different-things/"
+    },
+    {
+      "title": "Godlin and Strichman, Regression verification: proving the equivalence of similar programs (2013)",
+      "url": "https://doi.org/10.1002/stvr.1472"
+    }
+  ]
+}

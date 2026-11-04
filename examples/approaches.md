@@ -195,6 +195,11 @@ wrong, and does not wait for the solver on a branch side it cannot decide in the
 aligned by a mask opening a window per request on a window of three, and proves the mask unchanged on power-of-two windows when that is the
 scope, and [137](137-a-window-start-aligned-by-a-mask-on-power-of-two-windows-and-by-the-remainder-elsewhere-proved-equal/README.md) proves the
 mask on power-of-two windows with the remainder elsewhere equal on every input in half a second, where JBMC does not finish in a minute.
+A multiplication is left to the solver the same way, and a quotient times its divisor is the dividend less the remainder, so
+[138](138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form/README.md) proves the start
+computed as the window's index times its length equal to the remainder form in a tenth of a second, the division identity neither engine
+proved in a minute before, and [139](139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows/README.md) finds
+the same index held in an `int` wrapping two billion windows in, where the record's constructor refuses the negative start.
 
 ### B10. Capability contracts (POC in [`tools/contracts`](tools/contracts/README.md#capability-contracts-what-a-module-can-do))
 

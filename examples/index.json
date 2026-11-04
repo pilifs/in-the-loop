@@ -4715,7 +4715,7 @@
         "The helpers are shared because both versions call them, their bytecode is identical in both (constant pool references resolved, so a renumbered pool does not count), and they are pure functions of primitives. A helper that reads a field, takes an array, or calls into the JDK beyond its arithmetic is proved as written, as before.",
         "The stub throws what the helper can throw, here `ArithmeticException` from the division, chosen arbitrarily per new arguments: a version that catches it where the other does not is still found to differ (the library's tests cover that case).",
         "A counterexample found on the stub is replayed through the real bytecode first. One that does not reproduce means the rewrite depends on the helpers' arithmetic; the tool says so in a `note:` line and proves the method again with the helpers as written, which for a 64-bit division may still be the time-out this example avoids.",
-        "Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls (0.3 s since the checker leaves a division to the solver under cheap facts and builds its circuit only where a model got it wrong: here never, `0 of 1 divisions built in full` in its log): in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker."
+        "Since this example was written, the tool's own checker (`--engine native`, examples 124 and 125) proves the change with the helpers as written, in 1.1 s over three paths and three solver calls (0.3 s since the checker leaves a division to the solver under cheap facts and builds its circuit only where a model got it wrong: here never, `0 of 1 divisions and 0 of 0 multiplications built in full` in its log): in it both versions' calls of a helper on the same arguments are the same gates, by the hashing that makes one circuit of one function of the same bits, so the solver never compares two division circuits, which is what the shared-callee stubs achieve for JBMC. That is the library's run of this shape (`--engine native --no-shared-callees`), not the pipeline's; examples 132 and 133 are regression proofs of the refill helper itself by the checker."
       ],
       "source": null
     },
@@ -5160,7 +5160,7 @@
       "vacuous": false,
       "existingTestsPassed": null,
       "notes": [
-        "The library's run of this shape took 16.7 s with JBMC: three stages, four properties (the assertion, the unwinding assertions of the two loops and of the shrinking copy), the loops unwound 32 times. Example 127's doubling took 5.9 s; the multiplication by a component is the difference. The measurement on this kernel is the pipeline's.",
+        "The library's run of this shape took 16.7 s with JBMC: three stages, four properties (the assertion, the unwinding assertions of the two loops and of the shrinking copy), the loops unwound 32 times. Example 127's doubling took 5.9 s; the multiplication by a component is the difference. The measurement on this kernel is the pipeline's. The tool's own checker (`--engine native`) proved the same harness in 22 s when this example was written, with the loop's 27 multiplications by the symbolic `multiplier` built as 64-bit circuits, and proves it in 4 s now that a product is left to the solver under what holds of every product: a multiplier of two, the scope, is a power of two, and the fact that a power of two shifts is what relates `delay *= multiplier` to the doubling, none of the 27 products built (`0 of 27 multiplications built in full` in `bmc.log`), 60 paths and 846 solver calls either way.",
         "The relation between the versions is the new one of this cycle: a record whose components changed is related to its previous version by building the previous record from the new components, with a constructor call first among the expressions of `previousArguments` (the tool's `--before-arguments`): `new Backoff(this.baseMillis, this.capMillis), attempt`. The harness takes the three components and the attempt as its symbolic inputs, builds the three-component record in the new version and the two-component one in the previous version (under `before/`), skips an input either constructor rejects, calls `delayMillis` on each, and asserts that the two outcomes agree wherever the scope `this.multiplier != 2` does not hold. The generated statement reads `before.net.terminalvalue.crosscut.retry.Backoff this_ = new before.net.terminalvalue.crosscut.retry.Backoff(this_baseMillis, this_capMillis); int attempt_ = attempt;` and `a = this_.delayMillis(attempt_)` against `b = this_after.delayMillis(attempt)`. Before this cycle a record of other components was refused (`the receiver's components changed`); the refusal now prints the constructor call to give.",
         "The scope is the declaration of the intended change: with a multiplier other than two the new policy is meant to wait differently, so `intendedInputs` (`--unchanged-unless`) is `this.multiplier != 2`, and the proof is over every three-component record with multiplier two against the two-component record of the same base and cap. The scope is written over the new record's components as the parameters are, `this.multiplier`.",
         "A test for the multiplier of three is in the patch; the proof says nothing about multipliers other than two, which are outside its scope, and the test is what covers them."
@@ -5248,7 +5248,7 @@
         "Checked by the tool's own bounded model checker (`approach.engine: native`, the tool's `--engine native`): five `long` parameters, a division, additions, comparisons, `Math.min`. The library's run of this shape took 0.5 s, nine paths and ten solver calls. Until this cycle every branch cost two solver calls, one per side; a path now carries a model of its condition, so the side the model takes needs no call and the other side one, and the same run took 22 calls before. The measurement on this kernel is the pipeline's, which runs the proof through JBMC as well.",
         "Without the scope the checker finds the versions differing in 0.8 s, on readings no stage of its search contains: `tokensAfter(tokens=-5764607523034183938, lastNanos=-3458764513820591871, nowNanos=0, periodNanos=-1, capacity=0)`, 0 before and 9223372036854775807 after, each side overflowing somewhere. A witness with no stage named is one near the type's range, as here; the scope says the module never gets there.",
         "The refill helper is proved on its own here, not through `RetryAfter` as in example 120. The checker proves that change too, with the helpers as written, in 1.1 s over three paths, where JBMC without the shared-callee stubs had not finished in 60 s: in the checker the two versions' calls of a helper on the same arguments are the same gates, so the solver never compares two division circuits, which is what the stubs achieve for JBMC.",
-        "A rewrite of `lastAfter` as `lastNanos + earned * periodNanos`, the credited time advanced by the periods earned, is the same function by Java's division identity (`d == (d / p) * p + d % p` for every `d` and `p`), but the checker did not prove it within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in this checker and in JBMC alike. The gate hashing shares what is computed the same way, not what is equal for a reason."
+        "A rewrite of `lastAfter` as `lastNanos + earned * periodNanos`, the credited time advanced by the periods earned, is the same function by Java's division identity (`d == (d / p) * p + d % p` for every `d` and `p`). When this example was written the checker did not prove it within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in this checker and in JBMC alike, and the gate hashing shares what is computed the same way, not what is equal for a reason. Since then the checker rewrites a quotient times its divisor as the dividend less the remainder, exactly, so `earned * periodNanos` is `(nowNanos - lastNanos) - (nowNanos - lastNanos) % periodNanos`, and the same proof takes 0.3 s with the division left to the solver (`0 of 1 divisions and 0 of 0 multiplications built in full`), within the module's precondition and without it; example 138 is the same identity on the window counter."
       ],
       "source": null
     },
@@ -5420,9 +5420,94 @@
       "existingTestsPassed": null,
       "notes": [
         "No scope: the proof covers every input, including windows that are not powers of two, where both versions take the remainder, and the inputs both versions refuse (a non-positive window, a reading before the start, a count that overflows into the constructor's check), where both throw `IllegalArgumentException`.",
-        "The tool's own checker leaves `nowNanos % windowNanos` to the solver as bits under what holds of every division: the remainder is smaller than the divisor and takes the dividend's sign, a division by one is exact, and a power of two divides a non-negative dividend with the remainder `dividend & (divisor - 1)`. On the masking path that last fact is what relates the old start to the new; on the other path both versions use the same remainder bits. The circuit of the division is built only when the solver's model of a branch side gets the remainder wrong, once here, and the log (`bmc.log` in the work directory) says `1 of 1 divisions built in full`. Before the facts, the checker took 12 s on 135's one remainder and did not finish 134's scoped harness in two minutes.",
+        "The tool's own checker leaves `nowNanos % windowNanos` to the solver as bits under what holds of every division: the remainder is smaller than the divisor and takes the dividend's sign, a division by one is exact, and a power of two divides a non-negative dividend with the remainder `dividend & (divisor - 1)`. On the masking path that last fact is what relates the old start to the new; on the other path both versions use the same remainder bits. The circuit of the division is built only when the solver's model of a branch side gets the remainder wrong, once here, and the log (`bmc.log` in the work directory) says `1 of 1 divisions and 0 of 0 multiplications built in full`. Before the facts, the checker took 12 s on 135's one remainder and did not finish 134's scoped harness in two minutes.",
         "The other side of a branch is asked of the solver only for as long as its calls so far took together, at least a second; a side it has not refuted by then is explored once the decided paths are done, with the time left. A proof with an infeasible side that is hard to refute (that a value is not a multiple of another) loses at most the probe's time; a violation on the feasible side is found without waiting, which is how JBMC's one formula finds 134's.",
-        "JBMC, with its default solver, did not finish the same harness within 60 s, nor 135's with its own arithmetic refinement (`--refine-arithmetic`); the mask and the remainder in one formula over 64-bit values are what it struggles with, where the checker's facts settle the mask side without the divider. A rewrite to `nowNanos / windowNanos * windowNanos`, the divide-and-multiply form of the same alignment, neither engine proves within a minute: it rests on the identity of a 64-bit division and multiplication (example 133's last note), which the facts do not include."
+        "JBMC, with its default solver, did not finish the same harness within 60 s, nor 135's with its own arithmetic refinement (`--refine-arithmetic`); the mask and the remainder in one formula over 64-bit values are what it struggles with, where the checker's facts settle the mask side without the divider. A rewrite to `nowNanos / windowNanos * windowNanos`, the divide-and-multiply form of the same alignment, neither engine proved within a minute when this example was written: it rests on the identity of a 64-bit division and multiplication, which the facts do not include. Since then the checker rewrites a quotient times its divisor as the dividend less the remainder, the identity itself, and proves that form in 0.1 s: example 138."
+      ],
+      "source": null
+    },
+    {
+      "id": "138",
+      "path": "examples/138-a-window-start-computed-as-the-window-s-index-times-its-length-proved-equal-to-the-remainder-form",
+      "title": "A window start computed as the window's index times its length proved equal to the remainder form",
+      "summary": "Crosscut's `Window` counter computes the start of the window a reading falls in as `nowNanos - nowNanos % windowNanos`. A rewrite names the window's index first, `nowNanos / windowNanos`, and multiplies it back: the form a reader expects, and the one that gives the index a name for a log line or a key. The two are equal by Java's division identity, `d == (d / p) * p + d % p` for every `d` and `p`, which no engine proved within a minute until the tool's own checker learned it: a quotient times its divisor is now the dividend less the remainder, the same bits the old version computes, and the proof over every counter, reading and window takes 0.1 s.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "record-components",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "no-false-positive"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "No scope: the proof covers every input, the negative readings included, where both versions truncate toward zero (`-1 / 2 * 2` is 0, and `-1 - -1 % 2` is 0 too), and the inputs both versions refuse (a non-positive window, a reading before the start, a count that overflows into the constructor's check), where both throw `IllegalArgumentException`.",
+        "The tool's own checker rewrites a quotient times its divisor as the dividend less the remainder, `(a / b) * b` as `a - a % b`, exactly: the identity holds in two's complement for every pair, the division by zero (which the JVM throws on before the value matters) and `MIN_VALUE / -1` included. Both versions then compute the same bits for the start, and the comparison of the results folds to true before the solver is asked. The log (`bmc.log` in the work directory) says `0 of 0 multiplications built in full`: no product was left to the solver. Before the rewrite the checker did not finish this harness in two minutes, and example 133's last note records the same identity out of reach on the token bucket's credited time.",
+        "A product the identity does not cover is left to the solver, like a division: fresh bits under what holds of every product modulo the width (a factor of zero gives zero, of one the other factor, of minus one its negation, a power of two shifts, and the low eight bits are exact), with the multiplier built only where a model got a product wrong. Example 131's loop of `delay *= multiplier` on a multiplier of two went from 22 s to 4 s this way, none of its 27 products built, and example 139 is a product the facts settle by a factor of one.",
+        "JBMC, with its default solver, did not finish the same harness within 60 s: the identity over a 64-bit division and multiplication is where a SAT solver's unsatisfiability proof is slow, in JBMC and in this checker's circuits alike, which is why the checker does not build them for it. The reading `nowNanos / windowNanos * windowNanos` in one expression gives the same bits, the quotient being the same lazy division."
+      ],
+      "source": null
+    },
+    {
+      "id": "139",
+      "path": "examples/139-a-window-index-held-in-an-int-refuses-every-request-after-two-billion-windows",
+      "title": "A window index held in an int refuses every request after two billion windows",
+      "summary": "The same rewrite of Crosscut's `Window` counter as example 138, the start computed as the window's index times its length, with the index held in an `int`: `(int) (nowNanos / windowNanos)`. Two billion windows into the clock's range the cast wraps, the start comes out negative, and the record's constructor refuses it: every request from then on throws out of the rate limiter. The regression proof finds it in 3 s, on a window of one nanosecond at a reading of 2^31, a case no test with a sensible window reaches.",
+      "origin": "constructed",
+      "system": "Crosscut",
+      "symbol": "net.terminalvalue.crosscut.ratelimit.Window#counted",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "resilience",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "record-components",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The violating input is not in JBMC's small search stages (readings in [0:20] and in [-100000:100000]), where the index fits an `int` and both versions agree: the checker proves those stages empty with the one division and the one product built in full after a model got them wrong, and finds the violation in the stage over the whole range, as `counted(this=Window[startNanos=100000, count=100000], nowNanos=4853170726443779744, windowNanos=2220810999)` before shrinking. The stages are reported as JBMC's, so the report reads the same whichever engine found it.",
+        "The product `index * windowNanos` is not the quotient times its divisor of example 138: the index is the quotient cast to an `int` and widened back, other bits, so the identity does not apply and the product is left to the solver under what holds of every product (a factor of one gives the other factor, which decides the witness). The log (`bmc.log` in the work directory) says `1 of 1 divisions and 1 of 1 multiplications built in full`: in the small stages the solver proposed a wrong product and a wrong quotient once each, and the circuits were built.",
+        "A test with a sensible window does not reach the defect: a second-long window wraps after 68 years of uptime, and the tests' readings are seconds in. The proof is over every reading, so the window of one nanosecond and the reading of 2^31 are the solver's, shrunk to the smallest reading that wraps; the risk above translates them to the filter's windows.",
+        "JBMC, with its default solver, did not finish the same harness within 60 s: the violation needs a reading past 2^31 windows, which its small stages do not hold, and the formula for the whole range has a 64-bit divider and a 64-bit multiplier in it. The own checker's 3.0 s is mostly the two small stages proved empty with the circuits built, since the facts alone let the solver guess a product the real one is not."
       ],
       "source": null
     }
