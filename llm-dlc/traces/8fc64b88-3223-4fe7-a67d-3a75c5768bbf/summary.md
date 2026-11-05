@@ -108,13 +108,13 @@ Verified with three new unit tests (the facts prove a product by zero, one and a
 
 ### Record verification results for 35 jobs: examples 111-120, 124, 125, 132, 133 pass; 21 B9 jobs fail on tool or patch mismatches, not verdicts
 
-change `tvqntmzozvuk` · [log `15ee459c4eb5`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/15ee459c4eb5bd7ae4e8017696472d097e5fa2fceefdb917cabcff35305520e1.jsonl.gz)
+[`12b6820b0960`](https://github.com/pilifs/in-the-loop/commit/12b6820b096026ddb91393b2c3fc062f6eedee7b) · [log `15ee459c4eb5`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/15ee459c4eb5bd7ae4e8017696472d097e5fa2fceefdb917cabcff35305520e1.jsonl.gz)
 
 The runner ran all 35 queued jobs (2 workers, 5 GiB). Passes: 120, 124, 125, 132, 133 (B9, own checker, seconds) and 111-119 (B12, about 1m40s each, resubmitted after the result schema fix; every verdict as expected). Their outputs were applied. 21 B9 jobs failed in 0.2-5 s with no proof attempted, so these are findings about the submitted commits, not about the changes under test: 121, 122, 130, 134 and 135 (and per their logs 123, 131) fail in the CLI: the jvmcontract built from lib/ at the job's commit rejects an argument build.py passes (e.g. --before-arguments, or a missing required --unchanged-unless). 128 and 129: the example's patch does not change BatchCommit.java. 126, 127, 136-145: the checker reports 'cannot be verified' (instance method on a record, char[]/int[] parameter outside the fragment), so the expected verdict is not reached. Each of those needs a resubmit at a commit where examples/tools/build.py and lib/ agree.
 
 ### The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending)
 
-change `lvtummxzmvux` · [log `c3606f9a7873`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)
+[`19f197bf9c16`](https://github.com/pilifs/in-the-loop/commit/19f197bf9c169ebf8fcbf030517e0faa4b3fc636) · [log `c3606f9a7873`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)
 
 Of the last run's 35 jobs, 21 B9 jobs failed with what looked like mismatches between build.py and lib/ (rejected flags, instance methods and arrays outside the fragment). The real cause: the pipeline builds jvmcontract in one CARGO_TARGET_DIR shared by all jobs, from a git archive extraction whose files are dated at their commit, older than the binary any earlier job left there, so cargo rebuilt nothing. Thirteen lib/ trees got one identical binary, built at 08:27, which did not know --before-arguments. The five B9 jobs that passed (120, 124, 125, 132, 133) ran on that stale binary as well, so their results, applied in the previous commit, are replaced when these jobs run. build_jvmcontract now dates lib/ at the build's start, so cargo rebuilds the crate, and refuses a binary older than the build. The poisoned cache under verification/.state/tools/jvmcontract was cleared. Reproduced in the scratchpad: lib/ at cf74bb4c then at 198d4317 in one target directory, the second build took 0.03 s and lacked --before-arguments; with the dating it rebuilt in 49 s and had it. verification/test_pipeline.py passes (15 tests).
 
@@ -124,31 +124,31 @@ Jobs resubmitted at this commit with estimates of 2m and 1G (4m for 142): 202611
 
 ### Record verification results for 26 resubmitted B9 jobs: 24 pass, 128 and 129 fail because the patch no longer applies to Tests.java
 
-change `trvoxwwqkvqk` · [log `c3606f9a7873`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)
+[`4c91be316dcf`](https://github.com/pilifs/in-the-loop/commit/4c91be316dcfcf3e9f114e863ec2bb428ab28200) · [log `c3606f9a7873`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)
 
 After the pipeline began building jvmcontract from each job's own lib/, the 26 B9 jobs resubmitted in 9325f7ee ran with 2 workers and 4 GiB. 24 passed in 4-19 s (peak under 440 MiB) with the verdict each example expects, and their outputs were applied: 120-127 and 130-145 (121-123 related proofs, 124/125/132/133/138/141/142/145 proved or refuted by the own checker), 134-137, 139, 140, 143, 144. 128 and 129 failed in 0.2 s: the example's patch no longer applies: its hunk in crosscut/Tests.java was cut before WindowTest was added to the class list, so git apply rejects it and build.py stops before any proof; that is the submitter's to fix.
 
 ### Examples 128 and 129's patches apply again: their Tests.java hunk rebased past WindowTest; both resubmitted (verification pending)
 
-change `qnulnzkutyqu` · [log `58607f2603f6`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/58607f2603f687f0034165d46c406d747c654a807b8c1d05ba5d83f35f9ecf2d.jsonl.gz)
+[`85bbf53bea94`](https://github.com/pilifs/in-the-loop/commit/85bbf53bea9466e67ceca568390170f62679b7bc) · [log `58607f2603f6`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/58607f2603f687f0034165d46c406d747c654a807b8c1d05ba5d83f35f9ecf2d.jsonl.gz)
 
 128 and 129 failed in the last run at git apply: their patch renames BatchCommitTest to BatchTest in Crosscut's test runner list, and the Window record kernel (examples 134/135) had since inserted WindowTest into that list, so the hunk's context no longer matched. The hunk now starts at line 24 with WindowTest as context, and its index line names the current blobs. Checked: git apply --check passes for both, and each patch applied to a copy of Crosscut compiles and passes the module's tests (48 and 49 tests, 0 failed). Every other example's patch still applies except 036's on Mica, a known separate drift.
 
 ### Example 036's patch regenerated on the current SwitchLowering.java, so it applies again (verification pending)
 
-change `rwluqkqqqvot` · [log `bb7c6d6c27a4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)
+[`2612810eee54`](https://github.com/pilifs/in-the-loop/commit/2612810eee54376afb766471730710228cb09c8c) · [log `bb7c6d6c27a4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)
 
 036 failed in the Mica rerun at git apply: the patch was written before commit lrptsmzx added two lines to the class comment and a sortPairs method after useTable, so its hunk started two lines early and its closing context assumed the class ended after useTable. The patch was regenerated by making the same edit on the current file (useTable's four cost variables narrowed from long to int); its removed and added lines are identical to the old patch's. Checked: git apply --check passes, and Mica with the patch compiles and passes its tests (71 tests, 0 failed). Every example's patch in the repo now applies to the current tree.
 
 ### Record verification results for 3 jobs: examples 128, 129 and 036 give their expected verdicts
 
-change `pswozyvqktuy` · [log `bb7c6d6c27a4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)
+[`68af56c271eb`](https://github.com/pilifs/in-the-loop/commit/68af56c271eb4237a11d83f247dc45e8c6ab8dd6) · [log `bb7c6d6c27a4`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)
 
 After their patches were rebased (128 and 129 past WindowTest in Tests.java, 036 onto the current SwitchLowering.java), the three B9 jobs each ran one step in about 4.5 s at under 90 MiB and printed 'as expected'. 128 is the expected violation (the failed-index check lost), 129 the expected proof with the check kept, 036 the expected violation (switch lowering costs narrowed from long to int). Outputs were applied; no conflicts. These close the open failures from the previous run.
 
 ### Brief for a feature loop that makes build.py a runner of claims, attempts and evidence
 
-change `uznmyxyxtvxy` · [log `a6b90297ddb8`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/a6b90297ddb8fc70845b861b105a2052104d57e9b31ed61b4827255a08550bbf.jsonl.gz)
+[`523ca2fc12f3`](https://github.com/pilifs/in-the-loop/commit/523ca2fc12f3b97bc45d4786cc6e48941fe6f059) · [log `a6b90297ddb8`](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/a6b90297ddb8fc70845b861b105a2052104d57e9b31ed61b4827255a08550bbf.jsonl.gz)
 
 Adds llm-dlc/loops/build-orchestration-review.md, an outside review of examples/tools/build.py at 4c279ba6 kept verbatim as the loop's fixed input. It finds that a crashed verifier counts as a counterexample, D1 can check an old contract against new bytecode, missing TLC coverage reads as none, and several properties collapse into one statement. It proposes a claim/attempt/conclusion/evidence format and four developer features: check this bug fix, JVM replay with a JUnit test, external artifacts as inputs, and proof experiments.
 
