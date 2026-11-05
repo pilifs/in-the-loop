@@ -196,6 +196,7 @@
       "required": ["configurations", "changedRows", "nullRows", "vacuous"],
       "additionalProperties": false,
       "properties": {
+        "status": { "description": "How much of what the verdict rests on is known: `complete` when every configuration that counts coverage finished and TLC's statistics list every operator the verdict depends on (those with an altered row that decides, or all of them), `unavailable` when none lists any, `partial` otherwise. Only complete coverage can make a verdict vacuous. Absent before 2026-11-05, when coverage that was not read counted as no row taken.", "enum": ["complete", "partial", "unavailable"] },
         "configurations": {
           "type": "array",
           "items": {
@@ -207,6 +208,12 @@
               "fromRuns": { "description": "The configuration explores runs from an initial state; false for an inductive step, which starts from every state the invariant admits.", "type": "boolean" },
               "finished": { "description": "The run explored the whole model; a run that stops at a counterexample has partial counts, which are left out.", "type": "boolean" },
               "counted": { "description": "The configuration counts coverage; false for one that cannot (the recorded runs: TLC attributes none to a next-state relation evaluated as an action property), which the page leaves out.", "type": "boolean" },
+              "verdict": { "description": "TLC's verdict on the configuration, or null when its run did not complete (absent before 2026-11-05).", "enum": ["violation", "verified", "unverifiable", null] },
+              "status": { "description": "How the configuration's run ended, as `execution.status` (absent before 2026-11-05).", "enum": ["completed", "timed-out", "killed", "invalid-output", "tool-error"] },
+              "reason": { "description": "Why the run did not complete, or null.", "type": ["string", "null"] },
+              "coverageStatus": { "description": "What is known of this configuration's coverage: `complete` when TLC's statistics list every generated operator, `partial` when some, `unavailable` when none, when the run did not finish, or when the configuration counts none.", "enum": ["complete", "partial", "unavailable"] },
+              "coverageReason": { "description": "Why the coverage is not complete, or null.", "type": ["string", "null"] },
+              "listed": { "description": "The operators TLC's statistics list under an action of this run: the only ones whose counts mean anything.", "type": "array", "items": { "type": "string" } },
               "operators": {
                 "type": "array",
                 "items": {
@@ -215,6 +222,7 @@
                   "additionalProperties": false,
                   "properties": {
                     "symbol": { "type": "string" },
+                    "listed": { "description": "TLC's statistics list the operator under an action; when false its counts are unknown, not zero (absent before 2026-11-05).", "type": "boolean" },
                     "reached": { "description": "Rows some step takes.", "type": "integer" },
                     "total": { "type": "integer" },
                     "never": { "description": "The rows no step takes, each as `case => outcome`.", "type": "array", "items": { "type": "string" } }
@@ -233,14 +241,16 @@
             "additionalProperties": false,
             "properties": {
               "case": { "type": "string" },
+              "symbol": { "description": "The operator the row belongs to (absent before 2026-11-05).", "type": ["string", "null"] },
               "before": { "type": ["string", "null"] },
               "after": { "type": "string" },
-              "takenUnder": { "type": "array", "items": { "type": "string" } }
+              "takenUnder": { "type": "array", "items": { "type": "string" } },
+              "unknownUnder": { "description": "The configurations whose run finished but whose coverage statistics do not list the row's operator: whether they take the row is not known (absent before 2026-11-05).", "type": "array", "items": { "type": "string" } }
             }
           }
         },
         "nullRows": { "description": "Rows with a null argument the change alters; the model leaves them out, since the protocol never passes null.", "type": "integer" },
-        "vacuous": { "description": "Every run finished and none from an initial state takes any row the change alters that decides (rows that throw are meant never to be taken): the verdict is about the model as it was.", "type": "boolean" }
+        "vacuous": { "description": "Every run finished, the coverage is complete, and no run from an initial state takes any row the change alters that decides (rows that throw are meant never to be taken): the verdict is about the model as it was.", "type": "boolean" }
       }
         }
       ]
@@ -364,6 +374,7 @@
           "cfg": { "description": "The configuration file, relative to the app.", "type": "string" },
           "verdict": { "description": "TLC's verdict on this configuration; `unverifiable` when the run did not complete, with the reason in `status` and `summary`.", "enum": ["violation", "verified", "unverifiable"] },
           "status": { "description": "How this configuration's run ended, as `execution.status` (absent before 2026-11-05).", "enum": ["completed", "timed-out", "killed", "invalid-output", "tool-error"] },
+          "reason": { "description": "Why this configuration's run did not complete, or null (absent before 2026-11-05).", "type": ["string", "null"] },
           "summary": { "description": "The run's one-line verdict, as the README's table shows it.", "type": "string" },
           "domain": { "description": "The configuration's constants.", "type": "string" },
           "invariant": { "type": ["string", "null"] },
@@ -383,6 +394,22 @@
             }
           },
           "forever": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "checkpoints": {
+      "description": "For model checking (D1) through the tool: where each configuration's TLC result came from. Each completed run is kept as soon as it completes, under the SHA-256 of everything it depends on (the model's modules and configurations, the generated operators and recorded runs among them, the standard modules, the command, jvmcontract, TLC's jar and Java), and is reused only when that fingerprint and its inputs match. Absent before 2026-11-05.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "cfg", "fingerprint", "reused"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string" },
+          "cfg": { "type": "string" },
+          "fingerprint": { "description": "The inputs' SHA-256, or null when the configuration could not be set up.", "type": ["string", "null"] },
+          "reused": { "description": "The result is an earlier run's with the same fingerprint, not one this run made.", "type": "boolean" },
+          "recordedAt": { "description": "When a reused result was recorded.", "type": ["string", "null"] }
         }
       }
     },

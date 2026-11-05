@@ -581,6 +581,10 @@ pub struct OperatorCoverage {
     pub symbol: String,
     /// The generated module.
     pub module: String,
+    /// TLC's statistics list the operator under an action of the model. When they do not (no statistics were
+    /// printed, or none of the actions evaluates the operator in a way the reader recognises), every row's count is
+    /// zero but nothing is known about the rows: a row no step takes is told apart from a row nobody counted.
+    pub listed: bool,
     pub rows: Vec<RowCoverage>,
 }
 
@@ -610,6 +614,9 @@ impl OperatorCoverage {
 
     /// The report, as the summary and the console output print it.
     pub fn report(&self) -> String {
+        if !self.listed {
+            return format!("Rows of {} a step of the model takes: unknown, TLC's coverage statistics do not list it under any action.\n", self.symbol);
+        }
         let mut s = format!("Rows of {} a step of the model takes: {} of {}", self.symbol, self.reached(), self.rows.len());
         let never = self.never();
         if never.is_empty() {
@@ -628,6 +635,7 @@ impl OperatorCoverage {
 }
 
 /// A generated operator module as found next to the specification: its arms, one per contract row.
+#[derive(Clone)]
 struct GeneratedOperator {
     module: String,
     symbol: String,
@@ -714,6 +722,7 @@ fn parse_coverage(output: &str, operators: &[GeneratedOperator]) -> Vec<Operator
     let action = HEADER.get_or_init(|| re(r"^<\w+ line \d+, col \d+ to line \d+, col \d+ of module \w+>(: \d+:\d+)?$"));
     let block = output.rsplit("The coverage statistics at ").next().unwrap_or("");
     let mut taken: Vec<Vec<u64>> = operators.iter().map(|o| vec![0; o.arms.len()]).collect();
+    let mut listed = vec![false; operators.len()];
     // The group being read: the operator, the depth of its CASE, and the guard counts by arm index.
     let mut group: Option<(usize, usize, Vec<Option<u64>>)> = None;
     let mut in_action = false;
@@ -742,6 +751,7 @@ fn parse_coverage(output: &str, operators: &[GeneratedOperator]) -> Vec<Operator
         let module = &m[6];
         if let Some(o) = operators.iter().position(|o| o.module == *module && o.arms.first().map(|a| a.0) == Some(l1) && c1 == 3 && o.arms.last().map(|a| a.0) == Some(l2)) {
             close(&mut group);
+            listed[o] = true;
             group = Some((o, depth, vec![None; operators[o].arms.len()]));
             continue;
         }
@@ -757,9 +767,11 @@ fn parse_coverage(output: &str, operators: &[GeneratedOperator]) -> Vec<Operator
     operators
         .iter()
         .zip(taken)
-        .map(|(o, taken)| OperatorCoverage {
+        .zip(listed)
+        .map(|((o, taken), listed)| OperatorCoverage {
             symbol: o.symbol.clone(),
             module: o.module.clone(),
+            listed,
             rows: o.arms.iter().zip(taken).map(|((_, case, outcome), taken)| RowCoverage { case: case.clone(), outcome: outcome.clone(), taken }).collect(),
         })
         .collect()
@@ -923,8 +935,9 @@ mod tests {
   ||line 11, col 3 to line 15, col 148 of module VoteRuleContract: 610\n\
   |||line 11, col 8 to line 11, col 94 of module VoteRuleContract: 610\n\
 End of statistics.\nFinished in 00s at (2026-11-02 01:09:36)\n";
-        let coverage = parse_coverage(output, &[operator]);
+        let coverage = parse_coverage(output, &[operator.clone()]);
         assert_eq!(coverage.len(), 1);
+        assert!(coverage[0].listed);
         let taken: Vec<u64> = coverage[0].rows.iter().map(|r| r.taken).collect();
         assert_eq!(taken, vec![0, 24, 76, 5, 0]);
         assert_eq!(coverage[0].reached(), 3);
@@ -935,6 +948,16 @@ End of statistics.\nFinished in 00s at (2026-11-02 01:09:36)\n";
         assert!(!stripped.contains("col 8 to"), "{stripped}");
         assert!(stripped.contains("No error has been found.\nRows of a.VoteRule#decide"), "{stripped}");
         assert!(stripped.ends_with("=> Unchanged\nFinished in 00s at (2026-11-02 01:09:36)\n"), "{stripped}");
+        // Without statistics, or with the operator evaluated only by an invariant, nothing is known about its rows:
+        // the counts are zero, but the operator is not listed, and the report does not call its rows never taken.
+        for output in ["Model checking completed. No error has been found.\nFinished in 00s\n",
+                       "The coverage statistics at 2026-11-02 01:09:36\n<KernelNeverThrows line 204, col 1 to line 204, col 17 of module RaftElection>\n\
+  ||line 11, col 3 to line 15, col 148 of module VoteRuleContract: 610\nEnd of statistics.\n"] {
+            let coverage = parse_coverage(output, &[operator.clone()]);
+            assert!(!coverage[0].listed, "{output}");
+            assert_eq!(coverage[0].reached(), 0);
+            assert_eq!(coverage[0].report(), "Rows of a.VoteRule#decide a step of the model takes: unknown, TLC's coverage statistics do not list it under any action.\n");
+        }
     }
 
     #[test]

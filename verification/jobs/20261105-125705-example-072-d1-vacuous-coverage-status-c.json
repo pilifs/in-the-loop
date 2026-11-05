@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-125705-example-072-d1-vacuous-coverage-status-c",
+  "title": "Example 072 (D1, vacuous): coverage status complete, still vacuous",
+  "description": "build.py now records whether TLC's coverage of each generated operator was read (coverage.status complete/partial/unavailable, listed operators per configuration, from jvmcontract tlc's new per-operator 'listed' flag), and only complete coverage can make a verdict vacuous. 072 changes two vote-rule rows no run takes and expects 'verified, vacuously': it must still get it, with coverage.status complete, and its result gains checkpoints (one per configuration, none reused on a first run) and each configuration's verdict, status and reason in coverage.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/tla.rs",
+      "examples/tools/build.py"
+    ],
+    "examples": [
+      "072"
+    ]
+  },
+  "expected": "example 072 gives its expected verdict, verified (vacuously): build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T12:57:05+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "example 072 (D1)",
+      "run": "python3 examples/tools/build.py 072",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice"
+  ]
+}

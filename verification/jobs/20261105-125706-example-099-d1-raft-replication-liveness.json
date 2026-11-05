@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-125706-example-099-d1-raft-replication-liveness",
+  "title": "Example 099 (D1, Raft replication liveness): per-configuration checkpoints on the largest model",
+  "description": "099 is a temporal violation under the replication model's fairness configuration. It checks per-configuration checkpoints and coverage status on the largest model (three generated operators, delayed replies needing the 2.5 GB TLC heap): the verdict must be unchanged, and checkpoints records one fingerprint per configuration.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/tla.rs",
+      "examples/tools/build.py"
+    ],
+    "examples": [
+      "099"
+    ]
+  },
+  "expected": "example 099 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T12:57:06+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "20m"
+  },
+  "steps": [
+    {
+      "name": "example 099 (D1)",
+      "run": "python3 examples/tools/build.py 099",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry"
+  ]
+}

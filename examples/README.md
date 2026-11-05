@@ -473,6 +473,20 @@ changes an operator's contract anyway is a violation whatever TLC found, with th
 A contract that cannot be derived from the patched classes leaves the run without a verdict (`tool-error`). Results
 recorded before 2026-11-05 have no `modelContracts`, and their pages render as before.
 
+What a D1 verdict rests on is read from TLC's coverage, and coverage that was not read is unknown, not zero.
+`coverage.status` is `complete` when every configuration that counts coverage finished and TLC's statistics list
+every operator the verdict depends on, `partial` when some do, and `unavailable` when none does. Only complete
+coverage can make a verdict vacuous. Each configuration records how its run ended (`verdict`, `status`, `reason`) and
+which operators its statistics list, and each altered row records the configurations that take it and those under
+which it was not counted (`unknownUnder`). The page says "no verdict" for a run that ended without one, not "stopped
+at the counterexample". Each configuration's TLC result is kept as soon as it completes, under the SHA-256 of
+everything it depends on: the model's modules and configurations (with the generated operators and recorded runs),
+the standard modules, the command, jvmcontract, TLC's jar and Java. It is reused only when that fingerprint and its
+inputs match, and `checkpoints` and the page say which results were reused. A configuration that can't be run is its
+own run without a verdict, and the ones before it keep their results. The results are kept in `$BUILD_CHECKPOINTS`
+(the pipeline's own state, so a job run again after a timeout picks up where it stopped), else in the git-ignored
+`examples/.checkpoints`. `BUILD_CHECKPOINTS=off` keeps none. A run that did not complete is never kept.
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence.

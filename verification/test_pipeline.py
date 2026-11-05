@@ -130,6 +130,21 @@ class PipelineTest(unittest.TestCase):
         self.assertIn("## Passed", self.repo.pipeline("report").stdout)
         self.assertIn("collected: 1", self.repo.pipeline("status", "--rev", "HEAD").stdout)
 
+    def test_build_py_keeps_its_tlc_checkpoints_in_the_pipelines_state(self):
+        # build.py reuses a TLC configuration's result only on identical inputs; across jobs they live in the state.
+        job_id = self.repo.submit("Show the checkpoint directory", "--output", "where.txt",
+                                  "--step", "show", 'echo "$BUILD_CHECKPOINTS" > where.txt')
+        self.repo.commit("job")
+        outer = os.environ.pop("BUILD_CHECKPOINTS", None)
+        try:
+            self.repo.pipeline("run", "--rev", "HEAD")
+        finally:
+            if outer is not None:
+                os.environ["BUILD_CHECKPOINTS"] = outer
+        self.repo.pipeline("collect")
+        self.assertEqual(self.repo.result(job_id)["status"], "passed")
+        self.assertEqual(Path((self.repo.dir / "where.txt").read_text().strip()), self.repo.dir / "verification/.state/checkpoints")
+
     def test_a_failing_step_skips_the_rest_and_its_outputs_are_kept_not_applied(self):
         (self.repo.dir / "o.txt").write_text("before\n")
         job_id = self.repo.submit("Fail the stub", "--output", "o.txt",

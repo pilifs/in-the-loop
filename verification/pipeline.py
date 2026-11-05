@@ -856,6 +856,9 @@ class Runner:
             exe = Path(result["jvmcontract"]["path"])
             env["JVMCONTRACT"] = str(exe)
             env["PATH"] = f"{exe.parent}:{env.get('PATH', '')}"
+        # build.py keeps each TLC configuration's result under the fingerprint of its inputs, so a job run again after
+        # a timeout or a failure picks up the configurations already done; a result is reused only on identical inputs.
+        env.setdefault("BUILD_CHECKPOINTS", str(self.state / "checkpoints"))
         env.update({"VERIFY_JOB_ID": job["id"], "VERIFY_CPUS": f"{result['limits']['cpus']:g}",
                     "VERIFY_MEMORY_LIMIT_MB": str(limit_mb), "VERIFY_WORKDIR": str(work),
                     "VERIFY_SOURCE_COMMIT": result["sourceCommit"]})

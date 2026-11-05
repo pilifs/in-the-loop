@@ -601,11 +601,8 @@ def changed_row(contract, case, outcome):
     raise AssertionError(f"no case {case}")
 
 
-class ModelContractTest(unittest.TestCase):
-    """D1 always connects the model's generated operators to the patched bytecode. A kernel the patch changed is checked
-    as it was built, whether or not the change was meant to alter behaviour; the flag decides only whether the
-    difference is allowed. The review's gap: a change not meant to alter behaviour, whose kernel changed anyway, used to
-    be checked against the committed contract and could pass."""
+class BreakerCase(unittest.TestCase):
+    """run_tool_tlc on the circuit breaker's model (two configurations), with the tool mocked."""
 
     def setUp(self):
         self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
@@ -619,22 +616,27 @@ class ModelContractTest(unittest.TestCase):
             (self.build / f).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(build.REPO / part / f, self.build / f)
         self.committed = (self.build / "src/contract/CircuitBreaker.decide.contract").read_text()
-        self.patch = mock.patch.object(build, "jvmcontract", return_value="jvmcontract")
-        self.patch.start()
+        self.patches = [mock.patch.object(build, "jvmcontract", return_value="jvmcontract"),
+                        mock.patch.dict(build.os.environ, {"BUILD_CHECKPOINTS": str(self.dir / "checkpoints")}),
+                        mock.patch.object(build, "tool_identity", return_value={"jvmcontract": "j", "tla2tools": "t", "java": "v"})]
+        for p in self.patches:
+            p.start()
 
     def tearDown(self):
-        self.patch.stop()
+        for p in self.patches:
+            p.stop()
         shutil.rmtree(self.dir)
 
     def run_tlc(self, candidate, intended=False, tlc=None, derive=0):
         """run_tool_tlc with the tool mocked: `derive` prints the candidate contract, `update` writes it, TLC answers
-        `tlc` (verified, by default). Records the contract each `tla` call saw and every command."""
-        self.calls, self.generated_from = [], []
+        `tlc` (verified, by default; a callable is given the command and returns the process). Records the contract
+        each `tla` call saw, every command, and the configurations TLC ran."""
+        self.calls, self.generated_from, self.tlc_runs = [], [], []
         contract = self.build / "src/contract/CircuitBreaker.decide.contract"
         contract.write_text(self.committed)  # each run starts from the committed contract, as a fresh copy does
         tlc = tlc or json.dumps({"verdict": "verified", "output": "Model checking completed. No error has been found.",
                                  "trace": [], "version": "TLC 2.19", "distinct_states": 102, "depth": 9, "seconds": 1,
-                                 "coverage": [{"symbol": BREAKER_SYMBOL, "rows": [
+                                 "coverage": [{"symbol": BREAKER_SYMBOL, "listed": True, "rows": [
                                      {"case": BREAKER_ROW, "outcome": "x", "taken": True}]}]})
         def fake(command, **kwargs):
             self.calls.append(command[1] if len(command) > 1 else command[0])
@@ -647,7 +649,8 @@ class ModelContractTest(unittest.TestCase):
                 self.generated_from.append(contract.read_text())
                 return proc(0)
             if command[1] == "tlc":
-                return proc(0, tlc)
+                self.tlc_runs.append(command[command.index("--config") + 1] if "--config" in command else "primary")
+                return tlc(command) if callable(tlc) else proc(0, tlc)
             return proc(0, "stateDiagram-v2\n")
         ex = example("D1", BREAKER_SYMBOL)
         ex["change"]["behaviourChangeIntended"] = intended
@@ -657,6 +660,13 @@ class ModelContractTest(unittest.TestCase):
             build.run_tool_tlc(self.folder, ex, self.root, "crosscut", result)
         build.finish(result, ex)
         return result
+
+
+class ModelContractTest(BreakerCase):
+    """D1 always connects the model's generated operators to the patched bytecode. A kernel the patch changed is checked
+    as it was built, whether or not the change was meant to alter behaviour; the flag decides only whether the
+    difference is allowed. The review's gap: a change not meant to alter behaviour, whose kernel changed anyway, used to
+    be checked against the committed contract and could pass."""
 
     def test_an_unchanged_kernel_is_the_committed_contract_verified(self):
         result = self.run_tlc(self.committed)
@@ -744,6 +754,176 @@ class ModelContractTest(unittest.TestCase):
         recorded = json.loads((source / "result.json").read_text())
         self.assertNotIn("modelContracts", recorded)
         self.assertNotIn("rules come from", "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()), recorded)))
+
+
+def tlc_verified(*coverage, states=102):
+    return json.dumps({"verdict": "verified", "output": "Model checking completed. No error has been found.", "trace": [],
+                       "version": "TLC 2.19", "distinct_states": states, "depth": 9, "seconds": 1, "coverage": list(coverage)})
+
+
+def breaker_coverage(taken, listed=True):
+    return {"symbol": BREAKER_SYMBOL, "listed": listed, "rows": [{"case": BREAKER_ROW, "outcome": "x", "taken": taken},
+                                                                 {"case": "decide(CLOSED, X[])", "outcome": "y", "taken": 3}]}
+
+
+class CoverageStatusTest(unittest.TestCase):
+    """TLC coverage that was not read is unknown, not zero: only complete coverage can make a verdict vacuous, and the
+    page says what is missing. The review found a verified run with no coverage read as no row taken, so vacuous."""
+
+    configurations = [{"label": "the model"}, {"label": "fairness"}]
+    before = {"c": {BREAKER_ROW: "Rejected"}}
+    after = {"c": {BREAKER_ROW: "Transition[next=HALF_OPEN, effects=[PERMIT]]"}}
+
+    def coverage(self, *runs):
+        return build.tlc_coverage(self.configurations[:len(runs)], list(runs), self.before, self.after, {"c": BREAKER_SYMBOL})
+
+    def verified(self, *operators):
+        return {"verdict": "verified", "execution": {"status": "completed", "reason": None}, "coverage": list(operators) or None}
+
+    def test_no_coverage_read_is_unavailable_and_not_vacuous(self):
+        cov = self.coverage(self.verified())
+        self.assertEqual((cov["status"], cov["vacuous"]), ("unavailable", False))
+        self.assertEqual(cov["changedRows"][0]["unknownUnder"], ["the model"])
+        self.assertEqual(cov["configurations"][0]["coverageStatus"], "unavailable")
+        text = "\n".join(build.coverage_lines({"coverage": cov}))
+        self.assertIn("What the verdict rests on is not known", text)
+        self.assertIn("not called vacuous", text)
+        self.assertIn("Whether a run takes the 1 row the change alters is not known", text)
+
+    def test_an_operator_the_statistics_do_not_list_is_not_counted(self):
+        # The library reads zero for every row of an operator its statistics do not list; zero means nothing then.
+        cov = self.coverage(self.verified(breaker_coverage(0)), self.verified(breaker_coverage(0, listed=False)))
+        self.assertEqual((cov["status"], cov["vacuous"]), ("partial", False))
+        self.assertEqual(cov["configurations"][1]["coverageStatus"], "unavailable")  # its one operator is not listed
+        self.assertEqual(cov["changedRows"][0]["unknownUnder"], ["fairness"])
+        text = "\n".join(build.coverage_lines({"coverage": cov}))
+        self.assertIn("| fairness | not counted |", text)
+        self.assertIn("not counted under fairness", text)
+        self.assertIn("**Some of it is not known.**", text)
+        self.assertNotIn("No run of the model takes any of them", text)
+
+    def test_complete_coverage_that_takes_no_altered_row_is_vacuous(self):
+        cov = self.coverage(self.verified(breaker_coverage(0)), self.verified(breaker_coverage(0)))
+        self.assertEqual((cov["status"], cov["vacuous"]), ("complete", True))
+        self.assertIn("No run of the model takes any of them", "\n".join(build.coverage_lines({"coverage": cov})))
+        taken = self.coverage(self.verified(breaker_coverage(4)), self.verified(breaker_coverage(0)))
+        self.assertEqual((taken["status"], taken["vacuous"], taken["changedRows"][0]["takenUnder"]), ("complete", False, ["the model"]))
+
+    def test_a_tool_without_the_listed_flag_gives_no_vacuous_verdict(self):
+        # A jvmcontract from before the flag cannot tell an operator it did not find from one no step took.
+        old = breaker_coverage(0)
+        del old["listed"]
+        self.assertEqual(self.coverage(self.verified(old))["status"], "unavailable")
+
+    def test_a_run_without_a_verdict_is_not_said_to_stop_at_a_counterexample(self):
+        late = {"verdict": "unverifiable", "execution": {"status": "timed-out", "reason": "TLC did not finish within 1800 s"},
+                "coverage": None}
+        cov = self.coverage(self.verified(breaker_coverage(0)), late)
+        fairness = cov["configurations"][1]
+        self.assertEqual((fairness["verdict"], fairness["status"], fairness["reason"]), (None, "timed-out", "TLC did not finish within 1800 s"))
+        self.assertEqual((cov["status"], cov["vacuous"]), ("partial", False))
+        text = "\n".join(build.coverage_lines({"coverage": cov}))
+        self.assertIn("| fairness | no verdict: timed out |", text)
+        self.assertNotIn("counterexample", text)
+        self.assertIn("ended without a verdict (TLC did not finish within 1800 s)", text)
+        violated = {"verdict": "violation", "execution": {"status": "completed", "reason": None}, "coverage": None}
+        text = "\n".join(build.coverage_lines({"coverage": self.coverage(self.verified(breaker_coverage(0)), violated)}))
+        self.assertIn("| fairness | stopped at the counterexample |", text)
+        self.assertIn("The run under fairness stopped at its counterexample", text)
+
+    def test_results_recorded_before_the_status_render_as_they_did(self):
+        # Every recorded D1 result renders, and those whose coverage has no status say nothing of missing coverage.
+        for path in sorted(build.EXAMPLES.glob("*/result.json")):
+            res = json.loads(path.read_text())
+            if res.get("coverage") and "changedRows" in res["coverage"] and "status" not in res["coverage"]:
+                text = "\n".join(build.coverage_lines(res))
+                self.assertNotIn("not known", text, path.parent.name)
+                self.assertNotIn("not counted", text, path.parent.name)
+
+
+class CheckpointTest(BreakerCase):
+    """Each configuration's TLC result is kept as soon as it completes and reused only when every input matches; an
+    error in a later configuration keeps the earlier ones. The review found the runs held in memory until the last."""
+
+    def setUp(self):
+        super().setUp()
+        self.store = self.dir / "checkpoints"
+
+    def test_a_later_configuration_that_fails_keeps_the_earlier_one(self):
+        def tlc(command):
+            if "--config" in command:
+                raise OSError("the tool could not be started")
+            return proc(0, tlc_verified(breaker_coverage(2)))
+        result = self.run_tlc(self.committed, tlc=tlc)
+        model, fairness = result["configurations"]
+        self.assertEqual((model["verdict"], model["status"]), ("verified", "completed"))
+        self.assertEqual((fairness["verdict"], fairness["status"]), ("unverifiable", "tool-error"))
+        self.assertIn("the tool could not be started", fairness["reason"])
+        self.assertIsNone(result["verdict"])  # the run as a whole has no verdict...
+        self.assertEqual(result["expectation"], "not-evaluable")
+        kept = list(self.store.glob("*.json"))  # ...but the configuration that completed is kept
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(json.loads(kept[0].read_text())["label"], "two calls in flight")
+        self.assertEqual([c["reused"] for c in result["checkpoints"]], [False, False])
+        # Run again with the fault gone: the kept configuration is reused, the other runs.
+        again = self.run_tlc(self.committed, tlc=lambda command: proc(0, tlc_verified(breaker_coverage(2))))
+        self.assertEqual(self.tlc_runs, ["spec/CircuitBreakerLive.cfg"])
+        self.assertEqual([c["reused"] for c in again["checkpoints"]], [True, False])
+        self.assertEqual(again["checkpoints"][0]["fingerprint"], result["checkpoints"][0]["fingerprint"])
+        self.assertEqual(again["verdict"], "verified")
+        self.assertEqual(len(list(self.store.glob("*.json"))), 2)
+        source = next(build.EXAMPLES.glob("076-*"))
+        recorded = json.loads((source / "result.json").read_text())
+        text = "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()),
+                                            {**recorded, **{k: v for k, v in again.items() if k != "after"}}))
+        self.assertIn("Under two calls in flight, TLC was not run again", text)
+        self.assertNotIn("Under fairness, TLC was not run again", text)
+        self.assertNotIn("Results reused", "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()), recorded)))
+
+    def test_a_run_without_a_verdict_is_not_kept(self):
+        late = json.dumps({"verdict": "unverifiable", "output": "Error: java did not finish within 1800 s", "trace": [],
+                           "version": "TLC 2.19", "coverage": []})
+        result = self.run_tlc(self.committed, tlc=late)
+        self.assertEqual(result["execution"]["status"], "timed-out")
+        self.assertEqual(list(self.store.glob("*.json")), [])
+        self.run_tlc(self.committed, tlc=late)
+        self.assertEqual(len(self.tlc_runs), 2)  # both configurations ran again
+
+    def test_any_changed_input_runs_again(self):
+        self.run_tlc(self.committed, tlc=tlc_verified(breaker_coverage(2)))
+        # The patched rule: the generated operator differs, so neither configuration's result is reused.
+        candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=HALF_OPEN, effects=[PERMIT]]")
+        def tla(command):
+            return proc(0, tlc_verified(breaker_coverage(2)))
+        original = build.tool
+        def tool(app, root, *args, **kwargs):
+            if args[0] == "tla":
+                (self.build / args[2]).write_text(f"---- generated from ----\n{(self.build / args[1]).read_text()}")
+            return original(app, root, *args, **kwargs)
+        with mock.patch.object(build, "tool", side_effect=tool):
+            result = self.run_tlc(candidate, tlc=tla)
+        self.assertEqual(len(self.tlc_runs), 2)
+        self.assertEqual([c["reused"] for c in result["checkpoints"]], [False, False])
+        # The same inputs and another tool: run again too.
+        with mock.patch.object(build, "tool_identity", return_value={"jvmcontract": "other", "tla2tools": "t", "java": "v"}), \
+                mock.patch.object(build, "tool", side_effect=tool):
+            self.run_tlc(candidate, tlc=tla)
+        self.assertEqual(len(self.tlc_runs), 2)
+
+    def test_a_kept_result_whose_inputs_differ_is_not_reused(self):
+        self.run_tlc(self.committed, tlc=tlc_verified(breaker_coverage(2)))
+        for path in self.store.glob("*.json"):  # a file whose name matches but whose inputs do not
+            kept = json.loads(path.read_text())
+            kept["inputs"]["cfg"] = "elsewhere.cfg"
+            path.write_text(json.dumps(kept))
+        self.run_tlc(self.committed, tlc=tlc_verified(breaker_coverage(2)))
+        self.assertEqual(len(self.tlc_runs), 2)
+
+    def test_checkpoints_off_keeps_nothing(self):
+        with mock.patch.dict(build.os.environ, {"BUILD_CHECKPOINTS": "off"}):
+            result = self.run_tlc(self.committed, tlc=tlc_verified(breaker_coverage(2)))
+        self.assertFalse(self.store.exists())
+        self.assertEqual(result["verdict"], "verified")
 
 
 class BoxOfficeModelContractTest(unittest.TestCase):

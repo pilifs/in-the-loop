@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 23, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-05 12:42 UTC |
-| Prompts | 624 |
-| Model calls | 5,460 |
-| Tool calls | 6,301 (162 failed) |
-| Compactions | 80 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-05 12:57 UTC |
+| Prompts | 629 |
+| Model calls | 5,524 |
+| Tool calls | 6,365 (162 failed) |
+| Compactions | 81 |
 | Subagents | 3 |
-| Tokens written | 8,865,329 |
-| Tokens read | 885,235,912 (97.5% from cache) |
-| Commits with a trace | 171 |
-| Log snapshots | 231 (799.9 MB gzipped, 223 uploaded) |
+| Tokens written | 8,922,679 |
+| Tokens read | 894,007,675 (97.5% from cache) |
+| Commits with a trace | 172 |
+| Log snapshots | 232 (801.8 MB gzipped, 223 uploaded) |
 
 ## Sessions
 
@@ -49,7 +49,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 04:45 UTC | [Verification pipeline queue](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | ended | 22 h 14 min | `claude-sonnet-5-5` | 13 | 47 | 37 | 6 | 0 | 117,591 | 19 |
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
-| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | open | 1 h 54 min | `claude-opus-5-5` | 32 | 317 | 327 | 4 | 5 | 188,727 | 10 |
+| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | open | 2 h 9 min | `claude-opus-5-5` | 37 | 381 | 391 | 4 | 6 | 192,582 | 11 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -81,18 +81,18 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 14,637 | 110 | 317,376 | 3,817,932 | 92.3% | 283 |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 260,371 | 648 | 852,277 | 37,321,260 | 97.8% | 147 |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 317,721 | 776 | 1,026,905 | 45,918,267 | 97.8% | 148 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 5,361 | 85.1% | 23 |
-| `Edit` | 368 | 5.8% | 11 |
+| `Bash` | 5,421 | 85.2% | 23 |
+| `Edit` | 369 | 5.8% | 11 |
 | `Write` | 267 | 4.2% | 10 |
-| `Read` | 172 | 2.7% | 14 |
+| `Read` | 174 | 2.7% | 14 |
 | `ToolSearch` | 52 | 0.8% | 12 |
-| `Monitor` | 30 | 0.5% | 4 |
+| `Monitor` | 31 | 0.5% | 5 |
 | `WebFetch` | 18 | 0.3% | 3 |
 | `TaskStop` | 12 | 0.2% | 3 |
 | `AskUserQuestion` | 7 | 0.1% | 4 |
@@ -279,6 +279,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 169 | change `wyxoyuwp` | build.py: regression proofs read from equivalence --json, and the page says where a witness was replayed (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963.jsonl.gz)) |
 | 170 | change `lsoynqpo` | build.py: every property of a target keeps its own result, read from prove --json (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d.jsonl.gz)) |
 | 171 | change `xyutmrpx` | build.py: every D1 model checks the rule that was built, and a contract changed unasked is a violation (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c.jsonl.gz)) |
+| 172 | change `zsxstxpw` | build.py: TLC coverage that was not read stays unknown, and each configuration's result is kept as it completes (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz)) |
 
 ## Logs
 
@@ -308,7 +309,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 11 | 10 | 1.7 MB | `f3f040d67314`, not uploaded |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 8 | 3.0 MB | `d1a3c3d6a157`, not uploaded |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 10 | 5 | 6.5 MB | `5f52b016f68d`, not uploaded |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 11 | 5 | 8.4 MB | `0453e3380571`, not uploaded |
 
 ## Session notes
 

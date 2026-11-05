@@ -224,6 +224,32 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Jobs `20261105-12413{3,4}-example-{146,090,104,076,012}-d1-…` cover Raft election, 2PC, Raft replication, the circuit
     breaker and Box Office. The fifteen earlier jobs had not run at the start of this cycle.
   - Next: [2b](#phase-2-the-model-checks-what-was-built), coverage status and per-configuration checkpoints.
+- **2b done** (2026-11-05). Coverage that was not read stays unknown, and each configuration's TLC result is kept as it
+  completes.
+  - The library's `OperatorCoverage` gains `listed`: TLC's statistics list the operator under an action. Before, an
+    output with no statistics gave every row a count of zero. The report now says "unknown" for an unlisted operator.
+  - `tlc_coverage()` records `status` (`complete`, `partial` or `unavailable`) over the operators the verdict depends on.
+    Each configuration gets its `verdict`, `status`, `reason`, `coverageStatus` and `listed` operators, and each altered
+    row gets its `symbol` and `unknownUnder`. Only complete coverage can make a verdict vacuous. A tool without the flag
+    gives `unavailable`.
+  - The page says "no verdict: timed out" (or killed) for an unfinished run without a verdict, and keeps "stopped at the
+    counterexample" for a violation. It says "not counted" for an unlisted operator, and adds a paragraph when coverage
+    is incomplete.
+  - `tlc_checkpointed_run()` keeps each completed configuration under the SHA-256 of its inputs. Those are every `.tla`
+    and `.cfg` in the model's directory, the standard modules, the command, and jvmcontract, TLC's jar and `java
+    -version`, but not the heap. A result is reused only when the fingerprint and the stored inputs match.
+    - A configuration that can't be run (its trace writer fails, the tool can't start) is its own `tool-error` run, and
+      the ones before it keep their results.
+    - `checkpoints` and the page say which results were reused.
+    - The checkpoint directory is `$BUILD_CHECKPOINTS`, which the pipeline points at `.state/checkpoints`, else the
+      git-ignored `examples/.checkpoints`. `off` keeps none.
+  - Box Office's own `run_tlc()` reads no coverage, and its `coverage` stays null.
+  - Tests: `test_build.py` has 80 tests, `test_pipeline.py` 17, and the library's coverage test checks the unlisted
+    case. No page moved under `--render-only`.
+  - Jobs `20261105-12570{5,6}-example-{072,074,083,093,099}-d1-…`. 072 and 074 must stay vacuous with `status`
+    complete. If one doesn't, TLC's statistics left an operator unlisted under some configuration, and that is the fix
+    working: record it here. The twenty earlier jobs had not run at the start of this cycle.
+  - Phase 2 is done. Next: [3a](#phase-3-one-plan-durable-evidence), a pure planning function.
 
 ## Open questions
 

@@ -12,28 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T12:42:50.288Z",
-  "duration_seconds": 6893,
+  "ended": "2026-11-05T12:57:53.608Z",
+  "duration_seconds": 7797,
   "stats": {
-    "turns": 32,
-    "api_calls": 317,
-    "tool_calls": 327,
+    "turns": 37,
+    "api_calls": 381,
+    "tool_calls": 391,
     "tool_errors": 4,
-    "compactions": 5,
-    "peak_context_tokens": 188727,
+    "compactions": 6,
+    "peak_context_tokens": 192582,
     "usage": {
-      "input_tokens": 648,
-      "output_tokens": 260371,
-      "cache_read_input_tokens": 37321260,
-      "cache_creation_input_tokens": 852277
+      "input_tokens": 776,
+      "output_tokens": 317721,
+      "cache_read_input_tokens": 45918267,
+      "cache_creation_input_tokens": 1026905
     }
   },
   "tools": {
-    "Bash": 299,
-    "Edit": 18,
+    "Bash": 359,
+    "Edit": 19,
+    "Read": 5,
     "Write": 4,
-    "Read": 3,
     "ToolSearch": 2,
+    "Monitor": 1,
     "WebFetch": 1
   },
   "files_touched": [
@@ -118,24 +119,38 @@
     {
       "index": 5,
       "started": "2026-11-05T12:30:52.061Z",
-      "ended": "2026-11-05T12:42:50.288Z",
-      "turns": 4,
-      "api_calls": 60,
+      "ended": "2026-11-05T12:43:22.699Z",
+      "turns": 5,
+      "api_calls": 63,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 56084,
-        "cache_read_input_tokens": 7821329,
-        "cache_creation_input_tokens": 175647
+        "input_tokens": 126,
+        "output_tokens": 57511,
+        "cache_read_input_tokens": 8390859,
+        "cache_creation_input_tokens": 179502
       },
-      "peak_context_tokens": 188727
+      "peak_context_tokens": 192582
+    },
+    {
+      "index": 6,
+      "started": "2026-11-05T12:43:58.820Z",
+      "ended": "2026-11-05T12:57:53.608Z",
+      "turns": 4,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 55923,
+        "cache_read_input_tokens": 8027477,
+        "cache_creation_input_tokens": 170773
+      },
+      "peak_context_tokens": 183853
     }
   ],
   "log": {
-    "sha256": "5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c",
-    "bytes": 9185340,
-    "lines": 3402,
-    "gzip_bytes": 1615834,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c.jsonl.gz"
+    "sha256": "0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82",
+    "bytes": 10938457,
+    "lines": 4063,
+    "gzip_bytes": 1931673,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -218,9 +233,23 @@
       "summary": "build.py: every D1 model checks the rule that was built, and a contract changed unasked is a violation (verification pending)",
       "body": "Step 2a of llm-dlc/loops/build-orchestration.md, from section 1B of the outside review: a D1 model was generated from the committed contract unless behaviourChangeIntended was true, so a kernel a refactor changed was checked as it was before the patch. The gap still held at this commit. run_tool_tlc() regenerated contracts only for an intended change, and jvmcontract tla reads whatever contract file it is given. Box Office's run_tlc() had the same condition.\n\nNow run_tool_tlc() derives the contract of every generated operator from the patched classes (jvmcontract derive) and generates the operator from that, and Box Office's run_tlc() runs :ticketing-domain:updateContracts on every run. The result records each operator in modelContracts: connection 'verified' when the derived contract is the committed one, 'derived' when it differs, with rowsChanged and allowed. behaviourChangeIntended decides only whether a difference is allowed. One that isn't is a violation whatever TLC found. Its diff goes in contractDiff and the SARIF report gets a contract-changed result, while TLC's own verdict and label stay in modelVerdict and modelSummary. A contract that can't be derived leaves the run without a verdict (tool-error), and TLC doesn't run. The page leads with an unapproved difference, or otherwise ends with where each rule comes from. The result schema, the example schema's behaviourChangeIntended, examples/README.md and approaches.md describe it.\n\nChoices, taken as the conservative option: a difference that changes only an outcome's reason counts as a changed contract, though the model doesn't read reasons. A violation from an unapproved difference keeps the model's coverage and vacuity as TLC's run gave them. TLC's violation stays the headline when both fail. For a change not meant to alter behaviour, contractDiff holds only the operators' contracts, not the rest of the module's.\n\nNew example 146 is example 060's patch (a leader's election-timeout case folded into the others as dead code) declared as a refactor, behaviourChangeIntended false. The old runner checked the committed rule there; the new one finds the unapproved case and TLC's LeadersNeverCampaign trace on the rule as built.\n\nVerified: test_build.py passes 69 tests, 10 of them new. They cover a kernel changed unasked (checked as built, then failed), an unchanged kernel, an intended change, a change to a reason alone, a contract that can't be derived, TLC's violation beside a changed contract, the page, the schema, and Box Office both ways. test_pipeline.py passes. --render-only over every example exits 0 and no page moved, because results recorded before this have no modelContracts. Deriving the operators inline for the non-intended examples 090, 091 and 094 gave the committed contracts byte for byte. For 146 it gave one RoleMachine case changed.\n\nJobs: 20261105-124133-example-146-d1-raft-election-a-kernel-ch, 20261105-124134-example-090-d1-2pc-trace-validation-with, 20261105-124134-example-104-d1-raft-replication-with-its, 20261105-124134-example-076-d1-circuit-breaker-with-its, 20261105-124134-example-012-d1-box-office-regenerates-th. The fifteen earlier jobs of this run had not run at the start of the cycle.",
       "log_sha256": "5f52b016f68d64732c817d7cbb802be52d059d938c4962b02d02adcb97583b1c"
+    },
+    {
+      "change_id": "zsxstxpwqkqwywwoxozspqzvtqqtsply",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: TLC coverage that was not read stays unknown, and each configuration's result is kept as it completes (verification pending)",
+      "body": "Step 2b of llm-dlc/loops/build-orchestration.md, from section 1D and 4 of the outside review. A verified D1 run whose coverage was missing used to count as one in which no step took any row, so a change could be labelled vacuous on no evidence. The gap was also in the library: jvmcontract tlc read an output with no coverage statistics, or an operator the statistics did not list, as zero counts for every row. OperatorCoverage now has 'listed', and the report says 'unknown' for an operator that is not listed. build.py's tlc_coverage() records coverage.status (complete, partial or unavailable) over the operators the verdict depends on. Each configuration records its verdict, status, reason, coverageStatus and listed operators, and each altered row records its operator and the configurations under which it was not counted (unknownUnder). Only complete coverage can make a verdict vacuous, and a jvmcontract without the flag gives unavailable. The page says 'no verdict: timed out' for an unfinished run that has no verdict, where it used to say 'stopped at the counterexample', and it says what is not known.\n\nEach configuration's TLC result is now kept as soon as it completes (tlc_checkpointed_run), under the SHA-256 of everything the run depends on: every .tla and .cfg in the model's directory (the generated operators and recorded runs among them), the standard modules, the command, jvmcontract, TLC's jar and java -version. A result is reused only when both the fingerprint and the stored inputs match, and a run that did not complete is never kept. A configuration that can't be run (its trace writer fails, the tool can't start) becomes its own tool-error run, so the earlier configurations keep their results. The result's 'checkpoints' and the page say which results were reused. Results are kept in $BUILD_CHECKPOINTS, else in the git-ignored examples/.checkpoints, and BUILD_CHECKPOINTS=off keeps none. The pipeline points the variable at .state/checkpoints, so a job submitted again after a timeout reruns only what had not completed.\n\nChoices made without the user, taking the conservative option: checkpoints are working state, not committed evidence (the durable evidence bundle is step 3b), and the heap TLC is given is not part of the fingerprint, since it decides whether a run completes, not what a completed run found. The brief names a single 'coverageStatus' on tlc_coverage(). The result has coverage.status overall and coverageStatus for each configuration, because one configuration's missing statistics should not hide what another's show. Box Office's own run_tlc() reads no coverage, and its coverage stays null as before.\n\nVerified: test_build.py has 80 tests, 11 of them new. They cover missing coverage, an unlisted operator, complete coverage both ways, an old tool, a timed-out configuration beside a violated one, recorded results rendering as before, a later configuration's error keeping the earlier one and the rerun reusing it, a run without a verdict not kept, changed inputs or tools running again, a stored result whose inputs differ, and checkpoints off. test_pipeline.py has 17 tests (one new, for the variable), and cargo test passes (166). --render-only over every example exits 0 and no page moved. Examples/README.md, approaches.md, verification/README.md and the schema describe the new fields.\n\nJobs: 20261105-125705-example-072-d1-vacuous-coverage-status-c, 20261105-125706-example-074-d1-vacuous-role-machine-row, 20261105-125706-example-083-d1-changed-rows-taken-only-u, 20261105-125706-example-093-d1-2pc-participant-crashes-c, 20261105-125706-example-099-d1-raft-replication-liveness. No B9, B11 or B12 job, since nothing they run changed. The twenty jobs of steps 1a to 2a had not run at the start of this cycle.",
+      "log_sha256": "0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82"
     }
   ],
   "logs": {
+    "0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82": {
+      "bytes": 10938457,
+      "lines": 4063,
+      "gzip_bytes": 1931673,
+      "url": null
+    },
     "0b8c9b27e3b55de95cf8f5990109ffd67d353d54fcf5832f91903a33de1a7adf": {
       "bytes": 1141358,
       "lines": 284,

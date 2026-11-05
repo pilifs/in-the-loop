@@ -177,6 +177,10 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
 - Inside the cap, the runner sets `JVMCONTRACT_JBMC_MEMORY_MB` to the limit less 512 MB, so that JBMC stops with
   "out of memory" instead of being killed, and `JVMCONTRACT_JAVA_OPTS` to a TLC heap of 60% of the limit (Java's
   default is a quarter of the machine, not of the cap). A job's `env` overrides both.
+- The runner points `BUILD_CHECKPOINTS` at `.state/checkpoints`, where `examples/tools/build.py` keeps each TLC
+  configuration's completed result under the fingerprint of its inputs. A job run again after a timeout or a failure
+  then reruns only the configurations that had not completed; a result is reused only on identical inputs, and the
+  example's result says which were. `BUILD_CHECKPOINTS=off` in the runner's environment or a job's `env` keeps none.
 - A job that requires `jvmcontract` gets one built from `lib/` at the job's commit, cached by the tree id of `lib/`,
   on `PATH` and in `$JVMCONTRACT`. The build is recorded as step 0 when it happens.
 - `link`: paths outside git that jobs need, linked into every export (none by default; the JDK models that once
