@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 23, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-05 11:06 UTC |
-| Prompts | 596 |
-| Model calls | 5,163 |
-| Tool calls | 5,998 (159 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-05 11:09 UTC |
+| Prompts | 597 |
+| Model calls | 5,167 |
+| Tool calls | 6,002 (159 failed) |
 | Compactions | 75 |
 | Subagents | 3 |
-| Tokens written | 8,625,430 |
-| Tokens read | 848,663,234 (97.5% from cache) |
-| Commits with a trace | 163 |
-| Log snapshots | 220 (775.3 MB gzipped, 208 uploaded) |
+| Tokens written | 8,629,321 |
+| Tokens read | 849,078,756 (97.5% from cache) |
+| Commits with a trace | 164 |
+| Log snapshots | 221 (775.5 MB gzipped, 208 uploaded) |
 
 ## Sessions
 
@@ -49,7 +49,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 04:45 UTC | [Verification pipeline queue](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | ended | 22 h 14 min | `claude-sonnet-5-5` | 13 | 47 | 37 | 6 | 0 | 117,591 | 18 |
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 8 |
-| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | open | 18 min | `claude-opus-5-5` | 4 | 20 | 24 | 1 | 0 | 100,863 | 2 |
+| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | open | 21 min | `claude-opus-5-5` | 5 | 24 | 28 | 1 | 0 | 106,336 | 3 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -81,24 +81,24 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 14,637 | 110 | 317,376 | 3,817,932 | 92.3% | 283 |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 20,472 | 44 | 72,250 | 1,529,213 | 95.5% | 78 |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 24,363 | 54 | 77,723 | 1,939,252 | 96.1% | 83 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 5,080 | 84.7% | 23 |
+| `Bash` | 5,083 | 84.7% | 23 |
 | `Edit` | 353 | 5.9% | 11 |
-| `Write` | 264 | 4.4% | 10 |
+| `Write` | 265 | 4.4% | 10 |
 | `Read` | 169 | 2.8% | 13 |
-| `ToolSearch` | 51 | 0.9% | 12 |
+| `ToolSearch` | 51 | 0.8% | 12 |
 | `Monitor` | 30 | 0.5% | 4 |
 | `WebFetch` | 18 | 0.3% | 3 |
 | `TaskStop` | 12 | 0.2% | 3 |
 | `AskUserQuestion` | 7 | 0.1% | 4 |
 | `Skill` | 5 | 0.1% | 2 |
-| `Agent` | 3 | 0.1% | 2 |
-| `SendMessage` | 3 | 0.1% | 2 |
+| `Agent` | 3 | 0.0% | 2 |
+| `SendMessage` | 3 | 0.0% | 2 |
 | `WebSearch` | 2 | 0.0% | 1 |
 | `bash` | 1 | 0.0% | 1 |
 
@@ -271,6 +271,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 161 | change `pswozyvq` | Record verification results for 3 jobs: examples 128, 129 and 036 give their expected verdicts | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)) |
 | 162 | change `uznmyxyx` | Brief for a feature loop that makes build.py a runner of claims, attempts and evidence | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/a6b90297ddb8fc70845b861b105a2052104d57e9b31ed61b4827255a08550bbf.jsonl.gz)), [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/6b38eda136ca1cf676b96463e269100b3679d1a57290977f480884fab8d38cc5.jsonl.gz)) |
 | 163 | change `qokkoqvo` | build-orchestration brief: Phase 4's developer features deferred | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/a23e36a207e0f352e030435cde81dabc044bf2377ca1d9f0f61e1982fcd0bebb.jsonl.gz)) |
+| 164 | change `lqysrvrx` | build-orchestration brief: Phase 5's proof experiments deferred | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0b8c9b27e3b55de95cf8f5990109ffd67d353d54fcf5832f91903a33de1a7adf.jsonl.gz)) |
 
 ## Logs
 
@@ -300,7 +301,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 10 | 5 | 1.5 MB | `a6b90297ddb8`, not uploaded |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 8 | 3 | 2.5 MB | `bcad8cac3663`, not uploaded |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 2 | 0 | 0.4 MB | `a23e36a207e0`, not uploaded |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 3 | 0 | 0.7 MB | `0b8c9b27e3b5`, not uploaded |
 
 ## Session notes
 

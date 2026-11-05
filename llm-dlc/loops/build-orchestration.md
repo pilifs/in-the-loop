@@ -31,6 +31,12 @@ then: a JUnit test or a JVM replay should be a new presentation of evidence the 
 already holds, not a change to it. Where a step has to choose, it chooses what serves the
 proof work.
 
+**Phase 5, the proof experiments, is [deferred](#deferred-phase-5-proof-experiments) too.**
+It will probably come before the developer features, but only after the structural work of
+Phases 1–3 is done and has been designed and planned further. This loop covers Phases 1–3:
+results that can be trusted, models tied to the code they check, and one plan with durable
+evidence. That structure should leave room for Phase 5 without building any of it.
+
 ## How to work through it
 
 - **One step of [the plan](#the-plan) per cycle**, in order, committed on its own. A step
@@ -132,15 +138,14 @@ in the commit that relies on it.
    `result.schema.json` version that replaces the flat result, or a block added next to it?
    *Default: added next to it.* The flat fields stay and are computed from the new block, so
    every existing page and tool keeps working. Retiring them is the user's decision.
-2. **Where the AI loop in step 5b lives.** *Default: the runner diagnoses and offers the next
-   attempts, and an agent session picks among them.* The runner never calls a model itself.
 
 ## The plan
 
 The review's own order (its section 5) is kept, with each phase cut into steps of about one
 cycle. Each step names its **acceptance criterion**: the step is done when that holds and is
-tested. Phase 4 is [deferred](#deferred-phase-4-developer-features): after Phase 3 comes
-Phase 5. The numbers stay the review's so the two can be read side by side.
+tested. Phases 4 and 5 are deferred ([5](#deferred-phase-5-proof-experiments),
+[4](#deferred-phase-4-developer-features)), so the plan ends with Phase 3. The numbers stay
+the review's so the two can be read side by side.
 
 ### Phase 1: results that can be trusted
 
@@ -232,7 +237,29 @@ Phase 5. The numbers stay the review's so the two can be read side by side.
   matters, and never reuse a proof on unchanged method text alone.
   *Acceptance: an interrupted job leaves its stage logs and workspace behind.*
 
-### Phase 5: proof experiments
+## Done when
+
+The review's acceptance criteria hold for Phases 1–3 (4 and 5 are deferred):
+
+| Phase | Criterion |
+|---|---|
+| 1 | A killed process, malformed output or a missing result can never count as an expected semantic violation, and every property keeps its own evidence |
+| 2 | Every generated operator has a recorded connection to candidate bytecode, and missing coverage stays unknown |
+| 3 | Pipeline requirements match the selected backend, and reports name exact inputs and can't silently mix attempts |
+
+The pipeline jobs submitted along the way are back with their expected verdicts, or their
+failures are explained under Progress.
+
+## Deferred: Phase 5, proof experiments
+
+**Not to be worked on in this loop**, by the user's decision (2026-11-05). It is likely the
+next thing after this brief, ahead of the developer features, but it gets its own design and
+planning first, informed by what Phases 1–3 settle. It is kept here as context, so Phases 1–3
+leave room for it: a claim with a stable id, attempts with their effective settings, a claim
+narrowed into a new one rather than replaced, and execution status and failure reasons as
+data, not text. A cycle that finds itself building toward profiles, diagnosis or resumption
+stops at that structure and notes the rest in its commit message. Step 2b's per-configuration
+checkpoints are a correctness fix for TLC runs and stay in scope.
 
 - **5a. Experiment profiles.** Named profiles over the library options the runner doesn't
   expose yet: engine, timeouts, SAT solver, string refinement, shared callees. Every attempt
@@ -243,28 +270,15 @@ Phase 5. The numbers stay the review's so the two can be read side by side.
   limit, incomplete exploration, vacuous claim, or other. The runner proposes next attempts
   from the review's table. A narrower claim is a separate proposal with its own id, never a
   silent replacement. Completed obligations are reused by fingerprint. Progress is reported
-  per fixed claim: time, compute, interventions, reasons for failure. The model-driven part
-  follows [open question 2](#open-questions). *Acceptance: a resumed experiment continues
+  per fixed claim: time, compute, interventions, reasons for failure. The model-driven part is
+  open then: whether the runner diagnoses and offers next attempts for an agent session to
+  pick among (the earlier default), or does more. *Acceptance: a resumed experiment continues
   from completed evidence, and the claim's report keeps the narrowed claims separate.*
-
-## Done when
-
-The review's acceptance criteria hold for every phase but the deferred Phase 4:
-
-| Phase | Criterion |
-|---|---|
-| 1 | A killed process, malformed output or a missing result can never count as an expected semantic violation, and every property keeps its own evidence |
-| 2 | Every generated operator has a recorded connection to candidate bytecode, and missing coverage stays unknown |
-| 3 | Pipeline requirements match the selected backend, and reports name exact inputs and can't silently mix attempts |
-| 5 | Several strategies can pursue a fixed claim, with resumable evidence and measurable progress |
-
-The pipeline jobs submitted along the way are back with their expected verdicts, or their
-failures are explained under Progress.
 
 ## Deferred: Phase 4, developer features
 
 **Not to be worked on in this loop**, by the user's decision (2026-11-05). These are the
-review's section 3 features. They are kept here as context, so the format of Phases 1–3 and 5
+review's section 3 features. They are kept here as context, so the format of Phases 1–3
 leaves room for them, and so the next brief can start from them. A cycle that finds itself
 needing one of them stops at the data structure or interface the feature would use, and
 notes the rest in its commit message. Step 1c's correction of the page wording about where a
@@ -311,7 +325,8 @@ The session is fixed: further work on this brief resumes it.
 Go on while a cycle can still realize a substantial part of the reasonably attainable value of
 this brief. The user prefers the loop to run as long as possible, so when in doubt, continue.
 Phases 1 and 2 fix results that can be wrong today, so don't stop before they are done unless
-they are blocked on the user. Stop when most of the rest has been realized: the remaining
+they are blocked on the user. The plan ends with Phase 3, so the deferred phases are never a
+reason to go on. Stop when most of the rest has been realized: the remaining
 steps are small or speculative next to what is done, or what is left needs the user's input
 (an open question, network access, an external service) and has been recorded as deferred.
 Don't go on to polish, and don't stop while a step of the plan that needs nothing from the
