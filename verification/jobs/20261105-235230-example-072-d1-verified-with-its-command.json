@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-235230-example-072-d1-verified-with-its-command",
+  "title": "Example 072 (D1, verified) with its commands run as logged stages",
+  "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc"
+  ],
+  "links": {
+    "examples": [
+      "072"
+    ]
+  },
+  "expected": "example 072 gives its expected verdict, verified vacuously: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+  "submitted": {
+    "at": "2026-11-05T23:52:30+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "TLC on the 2PC model, a few configurations"
+  },
+  "steps": [
+    {
+      "name": "example 072 (D1)",
+      "run": "python3 examples/tools/build.py 072",
+      "cwd": "."
+    },
+    {
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/072-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice"
+  ]
+}

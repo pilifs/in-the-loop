@@ -1714,6 +1714,131 @@ class SnapshotTest(unittest.TestCase):
         self.assertIn("## What the example expected", build.render_example(self.folder, self.example, old))
 
 
+class StagesTest(unittest.TestCase):
+    """Step 3d: every command of a run is a stage whose output streams into the attempt's logs as it runs, and a run
+    in a pipeline job keeps its workspace, so an interrupted job leaves its stage logs and workspace behind."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, self.dir)
+        self.source = next(build.EXAMPLES.glob("126-*"))
+        self.example = json.loads((self.source / "example.json").read_text())
+        self.addCleanup(build._SCRATCH.clear)
+
+    def python(self, code):
+        return [sys.executable, "-c", code]
+
+    def records(self, out):
+        return [json.loads(line) for line in (out / "logs/stages.jsonl").read_text().splitlines()]
+
+    def test_a_stage_streams_its_output_into_the_attempts_logs(self):
+        out = self.dir / "attempt"
+        with contextlib.redirect_stdout(io.StringIO()) as printed, build.stages(out) as ran:
+            proc = build.stage("say hello", self.python("import sys; print('out'); print('err', file=sys.stderr)"))
+            failed = build.stage("fail", self.python("raise SystemExit(3)"))
+            with self.assertRaises(subprocess.CalledProcessError):
+                build.stage("fail and check", self.python("raise SystemExit(4)"), check=True)
+        self.assertEqual((proc.returncode, proc.stdout, proc.stderr), (0, "out\n", "err\n"))
+        self.assertEqual(failed.returncode, 3)
+        self.assertEqual((out / "logs/01-say-hello.stdout").read_text(), "out\n")
+        self.assertEqual((out / "logs/01-say-hello.stderr").read_text(), "err\n")
+        self.assertEqual([(r["name"], r["status"], r["exitCode"]) for r in ran],
+                         [("say hello", "exited", 0), ("fail", "exited", 3), ("fail and check", "exited", 4)])
+        self.assertEqual([r["status"] for r in self.records(out)], ["running", "exited"] * 3)  # a line as it starts, one as it ends
+        self.assertIn("  · say hello\n  · say hello: exited 0,", printed.getvalue())
+        self.assertNotIn(str(self.dir), printed.getvalue())  # progress lines name stages, not paths
+        self.assertIsNone(build._STAGES["dir"])
+
+    def test_a_stage_that_times_out_leaves_what_it_wrote(self):
+        out = self.dir / "attempt"
+        with contextlib.redirect_stdout(io.StringIO()), build.stages(out) as ran:
+            with self.assertRaises(subprocess.TimeoutExpired) as stop:
+                build.stage("slow", self.python("import time; print('started', flush=True); time.sleep(30)"), timeout=1)
+        self.assertEqual(stop.exception.stdout, "started\n")
+        self.assertEqual((out / "logs/01-slow.stdout").read_text(), "started\n")
+        self.assertEqual((ran[0]["status"], ran[0]["exitCode"]), ("timed-out", None))
+
+    def test_a_signal_is_a_killed_stage(self):
+        out = self.dir / "attempt"
+        with contextlib.redirect_stdout(io.StringIO()), build.stages(out) as ran:
+            proc = build.stage("killed", self.python("import os, signal; os.kill(os.getpid(), signal.SIGKILL)"))
+        self.assertEqual((proc.returncode, ran[0]["status"]), (-9, "killed"))
+
+    def test_outside_an_attempt_the_output_is_captured_as_before(self):
+        proc = build.stage("anything", self.python("print('x')"))
+        self.assertEqual(proc.stdout, "x\n")
+        self.assertEqual(list(self.dir.iterdir()), [])
+
+    def run_126(self, runner, workdir=None):
+        """run() on 126's real patch and Crosscut's real sources in an attempt directory of the scratch directory
+        (under the kept workspace when `workdir` is the pipeline's), with the tests and tools mocked."""
+        env = {"VERIFY_WORKDIR": str(workdir)} if workdir else {}
+        with mock.patch.dict(build.RUNNERS["crosscut"], {"B9": runner}), \
+                mock.patch.object(build, "tool_tests", return_value={"task": "t", "passed": True, "failures": []}), \
+                mock.patch.object(build, "attempt_tools", return_value={"java": "openjdk 25"}), \
+                mock.patch.dict(build.os.environ, env, clear=False), mock.patch.object(build, "_SCRATCH", []), \
+                contextlib.redirect_stdout(io.StringIO()):
+            if not workdir:
+                build.os.environ.pop("VERIFY_WORKDIR", None)
+            out = build.attempt_directory(self.source)
+            self.addCleanup(shutil.rmtree, build.scratch(), True)
+            return out, build.run(self.source, self.example, out)
+
+    def test_an_interrupted_job_leaves_its_stage_logs_and_workspace_behind(self):
+        # The work directory is a repository, as a job's could be: the patch still applies to the copy inside it.
+        work = self.dir / "work"
+        work.mkdir()
+        subprocess.run(["git", "init", "-q", str(work)], check=True)
+        def runner(folder, ex, root, module, result):
+            build.stage("the verifier", self.python("print('half a proof', flush=True)"))
+            raise KeyboardInterrupt  # the job is stopped here, as by its timeout
+        with self.assertRaises(KeyboardInterrupt):
+            self.run_126(runner, work)
+        self.addCleanup(build._STAGES.update, {"dir": None})
+        attempt = next((work / ".build-py").glob("examples-*/attempts/126/attempt-*"))
+        self.assertTrue((attempt / "claim.json").exists())
+        patched = attempt / "copy" / self.example["subject"]["file"]
+        self.assertNotEqual(patched.read_text(), (build.REPO / self.example["subject"]["file"]).read_text())  # patched
+        records = self.records(attempt)
+        self.assertEqual([(r["name"], r["status"]) for r in records],
+                         [("apply the patch", "running"), ("apply the patch", "exited"),
+                          ("the verifier", "running"), ("the verifier", "exited")])
+        self.assertEqual((attempt / "logs/02-the-verifier.stdout").read_text(), "half a proof\n")
+
+    def test_a_pipeline_attempt_records_its_stages_and_workspace(self):
+        work = self.dir / "work"
+        work.mkdir()
+        def runner(folder, ex, root, module, result):
+            build.stage("the verifier", self.python("print('✓')"))
+            (folder / "verifier-output.txt").write_text("✓\n")
+            result.update({"execution": build.execution_status(0, "✓"), "verdict": "verified", "sarif": None})
+        out, result = self.run_126(runner, work)
+        attempt = result["attempt"]
+        self.assertEqual(attempt["workspace"], out.relative_to(work).as_posix())
+        self.assertTrue(attempt["workspace"].startswith(".build-py/examples-"))
+        self.assertEqual([s["name"] for s in attempt["stages"]], ["apply the patch", "the verifier"])
+        self.assertEqual(attempt["stages"][1]["stdout"], "logs/02-the-verifier.stdout")
+        self.assertTrue((out / "copy").is_dir())
+        self.assertEqual([a["path"] for a in result["bundle"]["artifacts"]], ["verifier-output.txt"])  # logs are not evidence
+
+    def test_outside_the_pipeline_the_copy_goes_when_the_run_ends(self):
+        def runner(folder, ex, root, module, result):
+            (folder / "verifier-output.txt").write_text("✓\n")
+            result.update({"execution": build.execution_status(0, "✓"), "verdict": "verified", "sarif": None})
+        out, result = self.run_126(runner)
+        self.assertIsNone(result["attempt"]["workspace"])
+        self.assertFalse((out / "copy").exists())
+        self.assertTrue((out / "logs/01-apply-the-patch.stdout").exists())
+
+    def test_the_unpatched_baseline_compiles_no_tests(self):
+        names = []
+        with mock.patch.object(build, "javac", side_effect=lambda out, sources, classpath=None, name="": names.append(name)), \
+                mock.patch.object(build, "scratch", return_value=self.dir), mock.patch.dict(build.BEFORE_CLASSES, clear=True):
+            build.tool_before_classes("crosscut")
+            build.tool_compile("crosscut", self.dir / "before-crosscut")
+        self.assertEqual(names, ["javac unpatched crosscut main", "javac patched crosscut main", "javac patched crosscut tests"])
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema

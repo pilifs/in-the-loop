@@ -596,6 +596,17 @@
             "properties": { "jobId": { "type": ["string", "null"] }, "sourceCommit": { "type": ["string", "null"] }, "workdir": { "type": ["string", "null"] } } }]
         },
         "execution": { "$ref": "#/properties/execution" },
+        "stages": {
+          "description": "Every command the attempt ran, in order: its name, how it ended (`exited`, `killed` by a signal, `timed-out`, or `not-started`), the exit code, the seconds, and where its stdout and stderr were streamed, relative to the attempt's directory (not published: kept with the workspace). Absent before stage logs were kept.",
+          "type": "array",
+          "items": { "type": "object", "required": ["name", "status", "exitCode", "seconds", "stdout", "stderr"], "additionalProperties": false,
+            "properties": { "name": { "type": "string" }, "status": { "enum": ["exited", "killed", "timed-out", "not-started"] },
+              "exitCode": { "type": ["integer", "null"] }, "seconds": { "type": "number" }, "stdout": { "type": "string" }, "stderr": { "type": "string" } } }
+        },
+        "workspace": {
+          "description": "Where the attempt's directory was kept, relative to the pipeline job's work directory (VERIFY_WORKDIR): its patched copy with the harnesses and the tools' work directories, its stage logs and stages.jsonl, and its evidence. The pipeline keeps the work directory of a job that does not pass. Null outside the pipeline, where nothing is kept.",
+          "type": ["string", "null"]
+        },
         "exploration": {
           "description": "B9 and B11 by jvmcontract: the loop unwinding and array bounds searched within, and whether the checker showed its exploration complete within them (true for a verified proof, which checks unwinding assertions; null when unknown: a violation needs no completeness, and an unresolved proof has none).",
           "type": "object",

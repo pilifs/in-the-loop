@@ -48,6 +48,7 @@ module jsonschema, without which no result is published. No Docker.
 """
 
 import atexit
+import contextlib
 import datetime
 import difflib
 import hashlib
@@ -88,12 +89,93 @@ BEFORE_CLASSES = {}
 _SCRATCH = []
 
 
+def kept_workspace():
+    """Where a run keeps its attempts, or None. In a pipeline job it is `$VERIFY_WORKDIR/.build-py`, inside the job's
+    work directory, which the pipeline keeps when the job fails (or is killed, or times out) and removes when it passes.
+    Each attempt there keeps its patched copy, with the harnesses and the tools' work directories, and its stage logs.
+    Outside the pipeline the scratch directory is removed at exit, and each patched copy as soon as its run ends."""
+    work = os.environ.get("VERIFY_WORKDIR")
+    return Path(work) / ".build-py" if work else None
+
+
 def scratch():
-    """The run's scratch directory, made on first use and removed at exit."""
+    """The run's scratch directory, made on first use: under the kept workspace, or a temporary one removed at exit."""
     if not _SCRATCH:
-        _SCRATCH.append(Path(tempfile.mkdtemp(prefix="examples-")))
-        atexit.register(shutil.rmtree, _SCRATCH[0], True)
+        kept = kept_workspace()
+        if kept:
+            kept.mkdir(parents=True, exist_ok=True)
+            _SCRATCH.append(Path(tempfile.mkdtemp(prefix="examples-", dir=kept)))
+        else:
+            _SCRATCH.append(Path(tempfile.mkdtemp(prefix="examples-")))
+            atexit.register(shutil.rmtree, _SCRATCH[0], True)
     return _SCRATCH[0]
+
+
+# Stages. Every command a run makes goes through stage(). While run() runs an attempt, each command's stdout and
+# stderr stream into the attempt's logs/ directory as it runs (NN-name.stdout, NN-name.stderr), logs/stages.jsonl
+# gets a line when the stage starts and another when it ends, and a short progress line is printed for each. So a
+# job interrupted at any point leaves every stage's output so far, and the pipeline's log shows which one was running.
+# Outside an attempt (the tests, tool identities asked before one) the output is captured as before.
+_STAGES = {"dir": None, "n": 0, "records": []}
+
+
+def stage_log(record):
+    with open(_STAGES["dir"] / "stages.jsonl", "a") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def stage(name, command, *, cwd=None, input=None, timeout=None, env=None, check=False):
+    """Runs one command of the run as the stage `name` and returns its CompletedProcess, with stdout and stderr as
+    text. `timeout` raises TimeoutExpired with the output so far, and `check` CalledProcessError, as subprocess.run."""
+    logs = _STAGES["dir"]
+    if logs is None:
+        proc = subprocess.run(command, cwd=cwd, input=input, timeout=timeout, env=env, text=True, capture_output=True)
+        if check and proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode, command, proc.stdout, proc.stderr)
+        return proc
+    _STAGES["n"] += 1
+    base = f"{_STAGES['n']:02d}-" + (re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:48] or "stage")
+    record = {"n": _STAGES["n"], "name": name, "command": [str(c) for c in command], "cwd": str(cwd) if cwd else None,
+              "stdout": f"logs/{base}.stdout", "stderr": f"logs/{base}.stderr",
+              "startedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "status": "running"}
+    stage_log(record)
+    print(f"  · {name}", flush=True)
+    clock, raised = time.monotonic(), None
+    with open(logs / f"{base}.stdout", "w") as out, open(logs / f"{base}.stderr", "w") as err:
+        try:
+            proc = subprocess.run(command, cwd=cwd, input=input, timeout=timeout, env=env, text=True, stdout=out, stderr=err)
+        except (subprocess.TimeoutExpired, OSError) as e:
+            proc, raised = None, e
+        if proc is not None and isinstance(proc.stdout, str):  # a process the tests made up: its output is the log
+            out.write(proc.stdout)
+            err.write(proc.stderr or "")
+    stdout, stderr = ((logs / f"{base}.{k}").read_text(errors="replace") for k in ("stdout", "stderr"))
+    seconds = round(time.monotonic() - clock, 1)
+    status = ("timed-out" if isinstance(raised, subprocess.TimeoutExpired) else "not-started" if raised
+              else "exited" if proc.returncode >= 0 else "killed")
+    record.update({"status": status, "exitCode": proc.returncode if proc else None, "seconds": seconds})
+    stage_log(record)
+    _STAGES["records"].append({k: record[k] for k in ("name", "status", "exitCode", "seconds", "stdout", "stderr")})
+    print(f"  · {name}: {status}{f' {proc.returncode}' if proc else ''}, {seconds} s", flush=True)
+    if isinstance(raised, subprocess.TimeoutExpired):
+        raise subprocess.TimeoutExpired(command, timeout, output=stdout, stderr=stderr)
+    if raised:
+        raise raised
+    proc = subprocess.CompletedProcess(command, proc.returncode, stdout, stderr)
+    if check and proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode, command, stdout, stderr)
+    return proc
+
+
+@contextlib.contextmanager
+def stages(out):
+    """The stages of one attempt, logged under `out`/logs."""
+    (Path(out) / "logs").mkdir(parents=True, exist_ok=True)
+    _STAGES.update({"dir": Path(out) / "logs", "n": 0, "records": []})
+    try:
+        yield _STAGES["records"]
+    finally:
+        _STAGES["dir"] = None
 
 
 def main(argv):
@@ -461,57 +543,68 @@ def run(folder, example, out):
     p = plan(example)
     app, module = p["app"], p["module"]
     out = Path(out)
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp = Path(tmp)
-        for part in p["build"]["copies"]:
-            shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
-        subprocess.run(["git", "apply", "-p1", "-"], input=patch, text=True, cwd=tmp, check=True)
-        claim = claim_record(example, p, patch, REPO, tmp)
-        (out / "claim.json").write_text(json.dumps(claim, indent=2, ensure_ascii=False) + "\n")
-        started = datetime.datetime.now(datetime.timezone.utc)
-        clock = time.monotonic()
+    # The patched copy is the attempt's own (out/copy): kept with its stage logs in a pipeline job, removed when the
+    # run ends otherwise.
+    tmp = out / "copy"
+    with stages(out) as ran:
+        try:
+            for part in p["build"]["copies"]:
+                shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
+            # Inside a repository's tree too, git apply takes the patch's paths relative to the copy (it prefixes them
+            # with the directory it runs in), so a copy kept in a work directory is patched like one in /tmp.
+            stage("apply the patch", ["git", "apply", "-p1", "-"], input=patch, cwd=tmp, check=True)
+            claim = claim_record(example, p, patch, REPO, tmp)
+            (out / "claim.json").write_text(json.dumps(claim, indent=2, ensure_ascii=False) + "\n")
+            started = datetime.datetime.now(datetime.timezone.utc)
+            clock = time.monotonic()
 
-        if app == "boxoffice":
-            build = tmp / BUILD_ROOT
-            tests = gradle(build, f":{module}:test", check=False, allow_empty=True)
-            existing_tests = {"task": f":{module}:test", "passed": tests.returncode == 0,
-                              "failures": failures(build / module / "build/test-results/test")}
-        else:
-            existing_tests = tool_tests(app, tmp)
+            if app == "boxoffice":
+                build = tmp / BUILD_ROOT
+                tests = gradle(build, f":{module}:test", check=False, allow_empty=True)
+                existing_tests = {"task": f":{module}:test", "passed": tests.returncode == 0,
+                                  "failures": failures(build / module / "build/test-results/test")}
+            else:
+                existing_tests = tool_tests(app, tmp)
 
-        result = {
-            "verdict": None,
-            "verdictLabel": None,
-            "execution": None,
-            "matchesExpected": None,
-            "expectation": None,
-            "existingTests": existing_tests,
-            "before": before,
-            "after": after,
-            "casesTotal": None,
-            "domain": None,
-            "counterexamples": [],
-            "purityViolations": [],
-            "trustedCalls": [],
-            "contractDiff": None,
-            "proof": None,
-            "problem": None,
-            "statement": None,
-            "trace": None,
-            "statesExplored": None,
-            "invariant": None,
-            "property": None,
-            "stateMachine": None,
-            "coverage": None,
-            "sarif": "result.sarif",
-            "output": "verifier-output.txt",
-        }
-        RUNNERS[app][p["approach"]](out, example, tmp, module, result)
-        finish(result, example)
-        built = tmp / (f"{BUILD_ROOT}/{module}/build/classes/java/main" if app == "boxoffice" else f"{p['build']['root']}/build/main")
-        baseline = BEFORE_CLASSES.get(module if app == "boxoffice" else app) if p["approach"] == "B9" else None
-        attempt = attempt_record(claim, p, started, time.monotonic() - clock, result,
-                                 built if built.is_dir() else None, baseline)
+            result = {
+                "verdict": None,
+                "verdictLabel": None,
+                "execution": None,
+                "matchesExpected": None,
+                "expectation": None,
+                "existingTests": existing_tests,
+                "before": before,
+                "after": after,
+                "casesTotal": None,
+                "domain": None,
+                "counterexamples": [],
+                "purityViolations": [],
+                "trustedCalls": [],
+                "contractDiff": None,
+                "proof": None,
+                "problem": None,
+                "statement": None,
+                "trace": None,
+                "statesExplored": None,
+                "invariant": None,
+                "property": None,
+                "stateMachine": None,
+                "coverage": None,
+                "sarif": "result.sarif",
+                "output": "verifier-output.txt",
+            }
+            RUNNERS[app][p["approach"]](out, example, tmp, module, result)
+            finish(result, example)
+            built = tmp / (f"{BUILD_ROOT}/{module}/build/classes/java/main" if app == "boxoffice" else f"{p['build']['root']}/build/main")
+            baseline = BEFORE_CLASSES.get(module if app == "boxoffice" else app) if p["approach"] == "B9" else None
+            attempt = attempt_record(claim, p, started, time.monotonic() - clock, result,
+                                     built if built.is_dir() else None, baseline)
+            attempt["stages"] = list(ran)
+            kept = kept_workspace()
+            attempt["workspace"] = out.relative_to(kept.parent).as_posix() if kept and out.is_relative_to(kept) else None
+        finally:
+            if not kept_workspace():
+                shutil.rmtree(tmp, ignore_errors=True)
     result.update({"claim": claim, "attempt": attempt, "conclusion": conclusion_record(claim, attempt, result),
                    "bundle": bundle_record(out)})
     return result
@@ -656,7 +749,7 @@ IDENTITY = {}
 def tool_version(command):
     """A tool's identity as it reports itself, or None when it cannot be asked."""
     try:
-        proc = subprocess.run(command, text=True, capture_output=True, timeout=60)
+        proc = stage(f"version of {Path(str(command[0])).name}", command, timeout=60)
     except (OSError, subprocess.SubprocessError):
         return None
     text = (proc.stdout + proc.stderr).strip()
@@ -874,9 +967,9 @@ def run_boundaries(folder, example, tmp, module, result):
     anchor = ["--sources", str(build / module / "src/main/java"), "--base", str(tmp), "--report", str(report)]
     if example["change"]["behaviourChangeIntended"]:
         old = {f.name: f.read_text() for f in contracts.glob("*.contract")}
-        proc = subprocess.run([jvmcontract(), "update", "--contracts", str(contracts), "--classes", str(classes),
-                               "--classpath", classpath, "--resources", str(resources),
-                               "--module", module, "--add", "boundaries"], text=True, capture_output=True)
+        proc = stage("jvmcontract update (boundaries)", [jvmcontract(), "update", "--contracts", str(contracts),
+                     "--classes", str(classes), "--classpath", classpath, "--resources", str(resources),
+                     "--module", module, "--add", "boundaries"])
         if proc.returncode != 0:
             sys.exit(f"jvmcontract update failed:\n{proc.stdout}{proc.stderr}")
         result["contractDiff"] = "".join(
@@ -888,9 +981,9 @@ def run_boundaries(folder, example, tmp, module, result):
         new_problems = [p for p in problem_lines((contracts / "boundaries.contract").read_text()) if p not in before]
     else:
         new_problems = []
-    proc = subprocess.run([jvmcontract(), "verify", "--contracts", str(contracts), "--classes", str(classes),
-                           "--classpath", classpath, "--resources", str(resources),
-                           "--module", module, *anchor], text=True, capture_output=True)
+    proc = stage("jvmcontract verify (boundaries)", [jvmcontract(), "verify", "--contracts", str(contracts),
+                 "--classes", str(classes), "--classpath", classpath, "--resources", str(resources),
+                 "--module", module, *anchor])
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
     if new_problems:
         output += "New `!` lines in the regenerated contract:\n" + "".join(f"  added {p}\n" for p in new_problems)
@@ -967,7 +1060,7 @@ def run_equivalence(folder, example, tmp, module, result):
     intended = example["change"].get("intendedInputs")
     if intended:
         command += ["--unchanged-unless", intended]
-    proc = subprocess.run(command, text=True, capture_output=True)
+    proc = stage("the Java verifier's equivalence proof", command)
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
     reported = write_evidence(folder, output, report / "equivalence.sarif", result)
     statement = work / "harness/EquivalenceHarness.java"
@@ -1047,14 +1140,14 @@ def run_tlc(folder, example, tmp, module, result):
         # Only the operator's contract is the model's concern; any other the regeneration rewrote is left out.
         result["contractDiff"] = contract_diff(f"{BUILD_ROOT}/{CONTRACT_FILE}", baseline, candidate) if not connection["allowed"] else None
     spec = build / SPEC
-    subprocess.run([sys.executable, str(EXAMPLES / "tools/tla/contract_to_tla.py"),
-                    str(build / CONTRACT_FILE), str(spec / "OrderLifecycleContract.tla")], check=True, capture_output=True)
+    stage("contract to TLA+", [sys.executable, str(EXAMPLES / "tools/tla/contract_to_tla.py"),
+                               str(build / CONTRACT_FILE), str(spec / "OrderLifecycleContract.tla")], check=True)
     library = EXAMPLES / "tools/tla/standard-modules"
     timeout = 1800
     try:
         # One worker, so that the trace TLC reports is the same on every run.
-        proc = subprocess.run(tlc(library) + ["-workers", "1", "-deadlock", "-cleanup", "BoxOffice.tla"],
-                              cwd=spec, text=True, capture_output=True, timeout=timeout)
+        proc = stage("TLC on BoxOffice.tla", tlc(library) + ["-workers", "1", "-deadlock", "-cleanup", "BoxOffice.tla"],
+                     cwd=spec, timeout=timeout)
         raw, returncode, timed_out = proc.stdout + proc.stderr, proc.returncode, None
     except subprocess.TimeoutExpired as e:
         raw = ((e.stdout or b"").decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")) \
@@ -1188,8 +1281,7 @@ def jvmcontract():
     if not os.environ.get("JVMCONTRACT"):
         cargo = shutil.which("cargo") or str(Path.home() / ".cargo/bin/cargo")
         if Path(cargo).exists():
-            proc = subprocess.run([cargo, "build", "--release", "--manifest-path", str(REPO / "lib/Cargo.toml")],
-                                  text=True, capture_output=True)
+            proc = stage("cargo build jvmcontract", [cargo, "build", "--release", "--manifest-path", str(REPO / "lib/Cargo.toml")])
             if proc.returncode != 0:
                 sys.exit(f"cargo build failed:\n{proc.stderr}")
     if not exe.exists():
@@ -1198,23 +1290,27 @@ def jvmcontract():
     return str(exe)
 
 
-def javac(out, sources, classpath=None):
+def javac(out, sources, classpath=None, name="javac"):
     out.mkdir(parents=True, exist_ok=True)
     command = [str(Path(java()).parent / "javac") if os.environ.get("JAVA_HOME") else "javac",
                "-parameters", "-g", "-proc:none", "-d", str(out)]
     if classpath:
         command += ["-cp", str(classpath)]
-    proc = subprocess.run(command + [str(s) for s in sources], text=True, capture_output=True)
+    proc = stage(name, command + [str(s) for s in sources])
     if proc.returncode != 0:
         sys.exit(f"javac failed:\n{proc.stderr}")
 
 
-def tool_compile(app, root):
-    """Compiles the app's module under root (a copy of the repo) into its build dir: main and test classes."""
+def tool_compile(app, root, tests=True, which="patched"):
+    """Compiles the app's module under root (a copy of the repo) into its build dir: the main classes, and the test
+    classes unless `tests` is False (the unpatched baseline a regression proof compares with needs none). Returns the
+    main and test directories (test None when not compiled)."""
     build = root / TOOL_APPS[app]["root"]
     main, test = build / "build/main", build / "build/test"
-    javac(main, sorted((build / "src/main/java").rglob("*.java")))
-    javac(test, sorted((build / "src/test/java").rglob("*.java")), classpath=main)
+    javac(main, sorted((build / "src/main/java").rglob("*.java")), name=f"javac {which} {app} main")
+    if not tests:
+        return main, None
+    javac(test, sorted((build / "src/test/java").rglob("*.java")), classpath=main, name=f"javac {which} {app} tests")
     return main, test
 
 
@@ -1222,7 +1318,7 @@ def tool_tests(app, root):
     """Runs the module's tests (plain static methods, no framework) and reports which failed."""
     main, test = tool_compile(app, root)
     runner = TOOL_APPS[app]["tests"]
-    proc = subprocess.run([java(), "-ea", "-cp", f"{main}{os.pathsep}{test}", runner], text=True, capture_output=True)
+    proc = stage(f"the {app} tests", [java(), "-ea", "-cp", f"{main}{os.pathsep}{test}", runner])
     failing = sorted(re.findall(r"^FAIL (\S+):", proc.stdout, re.M))
     if proc.returncode != 0 and not failing:
         sys.exit(f"the tests did not run:\n{proc.stdout}\n{proc.stderr}")
@@ -1235,7 +1331,7 @@ def tool_before_classes(app):
         root = scratch() / f"before-{app}"
         part = TOOL_APPS[app]["root"]
         shutil.copytree(REPO / part, root / part, ignore=IGNORE)
-        BEFORE_CLASSES[app] = tool_compile(app, root)[0]
+        BEFORE_CLASSES[app] = tool_compile(app, root, tests=False, which="unpatched")[0]
     return BEFORE_CLASSES[app]
 
 
@@ -1246,7 +1342,7 @@ def tool(app, root, *args, anchored=True, setup=True):
     returns whatever happened, for `conclude` to decide how it ended."""
     build = root / TOOL_APPS[app]["root"]
     anchor = ["--sources", str(build / "src/main/java"), "--base", str(root)] if anchored else []
-    proc = subprocess.run([jvmcontract(), *args, *anchor], text=True, capture_output=True, cwd=build)
+    proc = stage(f"jvmcontract {args[0]}", [jvmcontract(), *args, *anchor], cwd=build)
     output = (proc.stdout + proc.stderr).replace(str(root) + "/", "")
     if setup and proc.returncode not in (0, 1):
         sys.exit(f"jvmcontract {args[0]} failed with exit code {proc.returncode}:\n{output}")
@@ -1272,7 +1368,7 @@ def tool_traces(app, root, traces):
     patched classes, writes the recorded runs as a TLA+ module the trace specification extends."""
     build = root / TOOL_APPS[app]["root"]
     main, test = build / "build/main", build / "build/test"
-    proc = subprocess.run([java(), "-cp", f"{main}{os.pathsep}{test}", traces["writer"]], text=True, capture_output=True)
+    proc = stage("the trace writer", [java(), "-cp", f"{main}{os.pathsep}{test}", traces["writer"]])
     if proc.returncode != 0:
         sys.exit(f"the trace writer {traces['writer']} failed:\n{proc.stdout}\n{proc.stderr}")
     (build / traces["module"]).write_text(proc.stdout)
@@ -1281,14 +1377,12 @@ def tool_traces(app, root, traces):
 def tool_state_machine(app, root, symbol):
     """The state machine the patched code implements, as Mermaid, when the symbol's contract is one."""
     build = root / TOOL_APPS[app]["root"]
-    proc = subprocess.run([jvmcontract(), "derive", symbol, "--classes", str(build / "build/main")],
-                          text=True, capture_output=True)
+    proc = stage(f"jvmcontract derive {symbol.rsplit('.', 1)[-1]}", [jvmcontract(), "derive", symbol, "--classes", str(build / "build/main")])
     if proc.returncode != 0:
         return None
     contract = build / "build/derived.contract"
     contract.write_text(proc.stdout)
-    proc = subprocess.run([jvmcontract(), "statemachine", str(contract), "--format", "mermaid"],
-                          text=True, capture_output=True)
+    proc = stage("jvmcontract statemachine", [jvmcontract(), "statemachine", str(contract), "--format", "mermaid"])
     return proc.stdout if proc.returncode == 0 else None
 
 
@@ -2034,8 +2128,9 @@ def tlc_run(build, model_files, configuration, root):
     # TLC's coverage mode needs more heap than Java's default on a model with many actions (the replication model with
     # delayed replies fails at once with "out of memory" at the default); a cap costs a small model nothing.
     env = {"JVMCONTRACT_JAVA_OPTS": "-Xmx2500m", **os.environ}
-    proc = subprocess.run([jvmcontract(), "tlc", configuration.get("spec", model_files["spec"]), "--json", *coverage, *deadlock, *config,
-                           "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build, env=env)
+    proc = stage(f"jvmcontract tlc {Path(cfg).name}",
+                 [jvmcontract(), "tlc", configuration.get("spec", model_files["spec"]), "--json", *coverage, *deadlock, *config,
+                  "--library", str(EXAMPLES / "tools/tla/standard-modules")], cwd=build, env=env)
     run = tlc_run_result(proc)
     run["output"] = run["output"].replace(str(root) + "/", "").replace(str(REPO) + "/", "")
     text = (build / cfg).read_text()
@@ -2076,7 +2171,7 @@ def tool_identity():
     """What runs TLC, beyond the model: jvmcontract (which runs TLC and reads its coverage), TLC's jar, and Java."""
     if not TOOL_IDENTITY:
         jar = os.environ.get("TLA2TOOLS_JAR") or str(Path.home() / "tools/tla2tools.jar")
-        proc = subprocess.run([java(), "-version"], text=True, capture_output=True)
+        proc = stage("java -version", [java(), "-version"])
         TOOL_IDENTITY.update({"jvmcontract": file_digest(jvmcontract()), "tla2tools": file_digest(jar),
                               "java": (proc.stdout + proc.stderr).strip() or None})
     return TOOL_IDENTITY
@@ -2358,8 +2453,8 @@ def tool_model_contracts(app, root, example, generated, result):
         tool_update_contracts(app, root, result)
     connections, candidates, diffs = [], {}, []
     for g in generated:
-        proc = subprocess.run([jvmcontract(), "derive", g["symbol"], "--classes", str(build / "build/main")],
-                              text=True, capture_output=True)
+        proc = stage(f"jvmcontract derive {g['symbol'].rsplit('.', 1)[-1]}",
+                     [jvmcontract(), "derive", g["symbol"], "--classes", str(build / "build/main")])
         if proc.returncode != 0 or not contract_rows(proc.stdout):
             output = (proc.stdout + proc.stderr).replace(str(root) + "/", "")
             reason = f"jvmcontract derive could not derive the contract of {g['symbol']} from the patched classes" \
@@ -2498,7 +2593,7 @@ def before_classes(module):
         tmp = scratch() / f"before-{module}"
         for part in COPY:
             shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
-        gradle(tmp / BUILD_ROOT, f":{module}:compileJava")
+        gradle(tmp / BUILD_ROOT, f":{module}:compileJava")  # production classes only: compileJava compiles no tests
         BEFORE_CLASSES[module] = tmp / BUILD_ROOT / module / "build/classes/java/main"
     return BEFORE_CLASSES[module]
 
@@ -2518,7 +2613,7 @@ def java():
 
 
 def gradle(build, task, *extra, check=True, allow_empty=False):
-    proc = subprocess.run(["./gradlew", "-q", *extra, task], cwd=build, text=True, capture_output=True)
+    proc = stage(f"gradle {task}", ["./gradlew", "-q", *extra, task], cwd=build)
     if check and proc.returncode != 0:
         sys.exit(f"{task} failed:\n{proc.stdout}\n{proc.stderr}")
     if proc.returncode != 0 and not proc.stdout.strip() and not allow_empty:

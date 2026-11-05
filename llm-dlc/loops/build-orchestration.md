@@ -356,6 +356,39 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     If it renders as stale, the workdir fingerprints the sources differently from the run's copy. The thirty-eight
     earlier jobs had not run at the start of this cycle.
   - Next: [3d](#phase-3-one-plan-durable-evidence), stage logs, kept workspaces and split compilation.
+- **3d done** (2026-11-05): stage logs, kept workspaces and split compilation.
+  - Every command `build.py` makes goes through `stage(name, command)`. Inside an attempt (`stages(out)` in `run()`),
+    stdout and stderr stream into `logs/NN-name.stdout`/`.stderr` as the command runs, and `logs/stages.jsonl` gets a
+    line as a stage starts and another as it ends. A progress line is printed for each (`  · name`, then
+    `  · name: exited 0, 1.2 s`), naming no paths and matching none of the pipeline's signals. A timeout raises
+    `TimeoutExpired` with the output so far. Outside an attempt the output is captured as before, so the tests' mocked
+    processes still work, and a made-up process's output is written to the log too. `attempt.stages` records each stage's
+    name, end (`exited`, `killed`, `timed-out`, `not-started`), exit code, seconds and log paths.
+  - The patched copy is the attempt's own (`out/copy`). In a pipeline job, `scratch()` sits under
+    `$VERIFY_WORKDIR/.build-py`, and nothing there is removed. That holds each attempt's copy (harnesses, the tools'
+    work directories), logs and evidence, and `attempt.workspace` names it relative to the work directory. The pipeline
+    keeps a job's work directory unless it passes, and collects only declared outputs, so `.build-py` is never
+    collected. Outside the pipeline the copy goes when its run ends, as the temporary directory did. Logs are not in the
+    bundle. `pipeline.py` is unchanged.
+  - The unpatched baseline (`tool_before_classes()`) compiles no tests. Box Office's `before_classes()` already ran
+    `compileJava` only.
+  - Measured first: copying an app takes 0.01-0.05 s, compiling main 0.56-0.73 s and compiling tests 0.56-0.72 s (Quorum,
+    Crosscut, Mica). A content-addressed baseline cache across jobs would save under a second per job, so it is not
+    added. Box Office's Gradle builds were not timed inline (over a minute). `attempt.stages` will time them from the
+    jobs below, and the cache question can be reopened from those numbers.
+  - Checked and not needed: `git apply` inside a repository's tree patches the copy as it does in /tmp, because it
+    prefixes the patch's paths with its directory. A test runs the patch in a work directory that is a git repository.
+  - Tests: `test_build.py` has 123 tests, `test_pipeline.py` 20. `StagesTest` covers streamed logs and records, check,
+    a timeout keeping the partial output, a killed stage, capture outside an attempt, and an interrupted run (the
+    runner raising mid-way) that leaves claim.json, the patched copy and every stage's log in the kept workspace. It
+    also covers a pipeline attempt's stages and workspace, the copy removed outside the pipeline, and the baseline
+    compiled without tests. No page moved under `--render-only`.
+  - Jobs: `20261105-235230-example-{128-b9,130-b9,071-b11,110-b12,072-d1,025-b8}-…` must keep their verdicts and record
+    stages and a workspace under `.build-py/`. `20261105-235249-example-142-killed-mid-proof-leaves-its` kills
+    `build.py` after 5 s and checks that the claim, the copy and a `running` last stage with its stdout file remain. The
+    thirty-nine earlier jobs had not run at the start of this cycle.
+  - Phase 3 is done, and with it Phases 1-3 of the plan. What remains of [Done when](#done-when) is the pipeline jobs
+    coming back with their expected verdicts, or their failures explained here.
 
 ## Open questions
 

@@ -523,6 +523,17 @@ the example's folder. Evidence files from an earlier run that the bundle doesn't
 goes last. A file that no longer matches its bundle entry, or one the bundle doesn't list, is not this run's evidence.
 `bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks.
 
+Every command a run makes is a named **stage** (`stage()` in `build.py`). Its stdout and stderr stream into the attempt's
+`logs/NN-name.stdout` and `logs/NN-name.stderr` as it runs, and `logs/stages.jsonl` gets a line as each stage starts and
+another as it ends. A short progress line is printed for each (`  · jvmcontract equivalence: exited 1, 3.2 s`), so the
+pipeline's log shows which stage was running when a job stopped. The attempt records its `stages`: name, how each ended
+(`exited`, `killed`, `timed-out`, `not-started`), the exit code and the seconds. In a pipeline job the attempt is kept
+under `$VERIFY_WORKDIR/.build-py`, and `attempt.workspace` names it. That covers its patched copy (with the harnesses and
+the tools' work directories), its logs and its evidence. The pipeline keeps the work directory of a job that does not
+pass, so an interrupted job leaves all of it behind. Outside the pipeline, each patched copy is removed when its run
+ends, and the scratch directory at exit. Logs are not evidence: the bundle doesn't list them, and they are not
+published. The unpatched baseline a regression proof compares with is compiled without its tests.
+
 A page renders the result as it was recorded, and says whether it is still the result of the current files
 (`snapshot()` in `build.py`). Its claim is fingerprinted again from what the current files give: the plan's statement
 and scope, the patch, and the sources the patch applies to. Nothing is copied or patched for that, because the patched
