@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+  "status": "open",
+  "title": "Last feature loop results",
+  "first_prompt": "Summarize results of the last feature loop",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.318"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-05T23:34:29.367Z",
+  "ended": "2026-11-05T23:39:33.281Z",
+  "duration_seconds": 304,
+  "stats": {
+    "turns": 2,
+    "api_calls": 12,
+    "tool_calls": 11,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 74705,
+    "usage": {
+      "input_tokens": 26,
+      "output_tokens": 5243,
+      "cache_read_input_tokens": 724778,
+      "cache_creation_input_tokens": 45740
+    }
+  },
+  "tools": {
+    "Bash": 11
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-05T23:34:29.367Z",
+      "ended": "2026-11-05T23:39:33.281Z",
+      "turns": 2,
+      "api_calls": 12,
+      "usage": {
+        "input_tokens": 26,
+        "output_tokens": 5243,
+        "cache_read_input_tokens": 724778,
+        "cache_creation_input_tokens": 45740
+      },
+      "peak_context_tokens": 74705
+    }
+  ],
+  "log": {
+    "sha256": "ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4",
+    "bytes": 660761,
+    "lines": 145,
+    "gzip_bytes": 157489,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "nqplwkomlwounsvnnrourtmlyzltkuvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "jvmcontract and build.py: a counterexample keeps its witness as typed data, enough to rebuild the call (verification pending)",
+      "body": "Second half of step 3b of llm-dlc/loops/build-orchestration.md. In lib/, a counterexample from equivalence and prove keeps its witness as data next to its text (witness::Typed, witness::Call): the checker's inputs under the harness's names with their Java types and exact values (long as a decimal string, float/double as Java's toString, char as its code unit, arrays element by element), the inputs before shrinking, the patched version's call (class, class file, method, descriptor, static or not, receiver as a record of its components, each argument naming the input it comes from), and for regression proofs the previous version's call, where an argument under --before-arguments names the expression that computed it and a receiver built by new R(...) is a record of those values. build.py records it as counterexamples[].witness and properties[].counterexample, with each call's classFileSha256 from the classes the run built; the schema gains typedValue, typedCall and witness. Only fields were added: interpreter and JBMC results committed for existing examples are untouched.\n\nVerified: cargo test (118 unit, 50 integration; new assertions for a record receiver against a static previous version, a previous receiver built by an expression, the same record in both versions, a char witness and a native long witness), test_build.py 107 tests, test_pipeline.py 20 tests, no page moved under --render-only. The Java version string 25.0.4.1 that the tool identities record was read as a public IP by the redactor; the user approved it as a false positive in a separate commit.",
+      "log_sha256": "ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4"
+    }
+  ],
+  "logs": {
+    "ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4": {
+      "bytes": 660761,
+      "lines": 145,
+      "gzip_bytes": 157489,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

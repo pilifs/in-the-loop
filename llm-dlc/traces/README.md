@@ -9,17 +9,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 23, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-05 13:19 UTC |
-| Prompts | 641 |
-| Model calls | 5,625 |
-| Tool calls | 6,470 (162 failed) |
-| Compactions | 83 |
+| Sessions | 24, plus 1 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-05 23:39 UTC |
+| Prompts | 648 |
+| Model calls | 5,708 |
+| Tool calls | 6,554 (165 failed) |
+| Compactions | 84 |
 | Subagents | 3 |
-| Tokens written | 9,005,533 |
-| Tokens read | 905,986,257 (97.5% from cache) |
-| Commits with a trace | 174 |
-| Log snapshots | 234 (806.5 MB gzipped, 223 uploaded) |
+| Tokens written | 9,065,599 |
+| Tokens read | 916,909,233 (97.5% from cache) |
+| Commits with a trace | 176 |
+| Log snapshots | 236 (809.6 MB gzipped, 223 uploaded) |
 
 ## Sessions
 
@@ -49,7 +49,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 04:45 UTC | [Verification pipeline queue](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | ended | 22 h 14 min | `claude-sonnet-5-5` | 13 | 47 | 37 | 6 | 0 | 117,591 | 19 |
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
-| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | open | 2 h 31 min | `claude-opus-5-5` | 49 | 482 | 496 | 4 | 8 | 192,582 | 13 |
+| 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
+| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 5 min | `claude-opus-5-5` | 2 | 12 | 11 | 0 | 0 | 74,705 | 1 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -81,16 +82,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 14,637 | 110 | 317,376 | 3,817,932 | 92.3% | 283 |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 400,575 | 980 | 1,320,830 | 57,602,720 | 97.8% | 147 |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 5,243 | 26 | 45,740 | 724,778 | 94.1% | 147 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 5,516 | 85.3% | 23 |
-| `Edit` | 375 | 5.8% | 11 |
-| `Write` | 267 | 4.1% | 10 |
-| `Read` | 178 | 2.8% | 14 |
+| `Bash` | 5,594 | 85.4% | 24 |
+| `Edit` | 378 | 5.8% | 11 |
+| `Write` | 268 | 4.1% | 10 |
+| `Read` | 180 | 2.7% | 14 |
 | `ToolSearch` | 52 | 0.8% | 12 |
 | `Monitor` | 31 | 0.5% | 5 |
 | `WebFetch` | 18 | 0.3% | 3 |
@@ -282,6 +284,8 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 172 | change `zsxstxpw` | build.py: TLC coverage that was not read stays unknown, and each configuration's result is kept as it completes (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz)) |
 | 173 | change `koponxsz` | build.py: one plan of each run, which the pipeline's job requirements come from (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d.jsonl.gz)) |
 | 174 | change `mkomytyr` | build.py: each run is an attempt at a frozen claim, and publishes one checked bundle of evidence (verification pending) | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262.jsonl.gz)) |
+| 175 | change `wlusqsww` | Allow list: maintainer approved d7e63532 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) ([log](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz)) |
+| 176 | change `nqplwkom` | jvmcontract and build.py: a counterexample keeps its witness as typed data, enough to rebuild the call (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/ebba896385379de1f82d431df6fe6dd0da934eda6edc0b28be027689f39e76e4.jsonl.gz)) |
 
 ## Logs
 
@@ -311,7 +315,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 11 | 10 | 1.7 MB | `f3f040d67314`, not uploaded |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 8 | 3.0 MB | `d1a3c3d6a157`, not uploaded |
-| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 13 | 5 | 13.1 MB | `c8154da46c42`, not uploaded |
+| [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 5 | 16.0 MB | `c41e35f64d8f`, not uploaded |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1 | 0 | 0.2 MB | `ebba89638537`, not uploaded |
 
 ## Session notes
 

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-133040-example-130-b9-own-checker-violation-wit",
+  "title": "Example 130 (B9, own checker, violation) with the previous record built in its witness",
+  "description": "jvmcontract's equivalence and prove outcomes now keep each counterexample's witness as data (the second half of step 3b of llm-dlc/loops/build-orchestration.md): typed inputs with exact values (a long as a decimal string, a float or double as Java's toString), the patched version's call (class, class file, descriptor, static or not, the receiver as a record of its components, each argument naming the input it came from) and for a regression proof the previous version's call, whose arguments under previousArguments name the expression that computed them. build.py records it as counterexamples[].witness, with each class file's SHA-256 as built. The verdict and every other field must be unchanged; the counterexample must gain a witness that validates against the schema. 130 builds the previous version's Backoff record by a constructor call among previousArguments: previousCall.receiver must be a record of two components whose from are the expressions this.baseMillis and this.capMillis.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "own-checker"
+  ],
+  "links": {
+    "examples": [
+      "130"
+    ]
+  },
+  "expected": "example 130 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T13:30:40+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "the own checker, 9 s at most"
+  },
+  "steps": [
+    {
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap"
+  ]
+}

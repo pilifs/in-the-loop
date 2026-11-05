@@ -40,6 +40,48 @@
           "type": "string"
         }
       }
+    },
+    "typedValue": {
+      "description": "A witness value with its Java type, exact, from jvmcontract's `--json` outcome.",
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "The parameter's or component's name; among `inputs`, the harness's own name for the input (`this.baseMillis` for a component of the receiver)." },
+        "type": { "type": "string", "description": "The Java type: `int`, `long[]`, `net.example.retry.Backoff`." },
+        "value": { "description": "A boolean; a number for byte, short and int, and for char its UTF-16 code unit; a string for long (decimal, exact past 2^53) and for float and double (Java's toString of the value, which reads back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; or null. Absent for a record, whose components give it." },
+        "components": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "A record's components in declaration order: the arguments of its canonical constructor." },
+        "from": { "type": "string", "description": "In a call: the input the argument is, or for the previous version's arguments given by `previousArguments`, the expression over the inputs that computed it." }
+      }
+    },
+    "typedCall": {
+      "description": "A call of a method on a witness, as data: enough to make the call again without reading the text.",
+      "type": "object",
+      "required": ["class", "classFile", "classes", "method", "descriptor", "static", "arguments"],
+      "additionalProperties": false,
+      "properties": {
+        "class": { "type": "string", "description": "The class declaring the method, as Java names it, in that version's classes." },
+        "classFile": { "type": "string", "description": "The class file the method was read from, relative to the root of that version's classes." },
+        "classFileSha256": { "type": ["string", "null"], "description": "The SHA-256 of that class file as the run built it; null when the runner could not find it." },
+        "classes": { "enum": ["after", "before"], "description": "Which classes: the patched version (`after`) or the previous one (`before`)." },
+        "method": { "type": "string" },
+        "descriptor": { "type": "string", "description": "The method's descriptor, as in the class file." },
+        "static": { "type": "boolean" },
+        "receiver": { "$ref": "#/$defs/typedValue", "description": "An instance method's receiver: a record built by its canonical constructor from its components." },
+        "arguments": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The arguments, in parameter order." }
+      }
+    },
+    "witness": {
+      "description": "For a regression or property proof through jvmcontract: the counterexample as data, read from the outcome's typed fields. Absent in results written before 2026-11-05 and from tools that do not give it.",
+      "type": "object",
+      "required": ["inputs", "call"],
+      "additionalProperties": false,
+      "properties": {
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The symbolic inputs the checker chose, typed, in the harness's order: `input` is their rendering." },
+        "foundInputs": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The inputs as the checker found them, when `inputs` are the shrunk ones." },
+        "call": { "$ref": "#/$defs/typedCall", "description": "The patched version's call on the inputs." },
+        "previousCall": { "$ref": "#/$defs/typedCall", "description": "For a regression proof: the previous version's call, on the same arguments or those `previousArguments` computes from the inputs. Absent when they could not be computed." }
+      }
     }
   },
   "properties": {
@@ -158,7 +200,8 @@
             "description": "For a property proof with throws clauses: what the property requires on this input, when that is what the method failed to do (the exception a clause declares, or a result where no clause applies)."
           },
           "found": { "type": "string", "description": "For a regression or property proof through jvmcontract: the input as the checker found it, when `input` is the shrunk one." },
-          "shrinkRuns": { "type": "integer", "minimum": 0, "description": "For a regression or property proof through jvmcontract: how many smaller inputs the interpreter tried while shrinking the witness." }
+          "shrinkRuns": { "type": "integer", "minimum": 0, "description": "For a regression or property proof through jvmcontract: how many smaller inputs the interpreter tried while shrinking the witness." },
+          "witness": { "$ref": "#/$defs/witness" }
         }
       }
     },

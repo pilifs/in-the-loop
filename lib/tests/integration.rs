@@ -1278,6 +1278,11 @@ fn proofs_over_modelled_jdk_classes_are_decided_by_the_models() {
     assert!(witness.input.starts_with("hexDigit(ch="), "{}", witness.input);
     assert!(!witness.outcome.contains("could not replay"), "{}", witness.outcome);
     assert!(witness.values.iter().any(|v| !v.is_ascii()), "a digit beyond ASCII, such as the fullwidth zero: {:?}", witness.values);
+    // Typed, the char is its code unit, and the call names the method as in its class file.
+    assert_eq!(witness.inputs[0].ty, "char");
+    assert!(witness.inputs[0].value.as_ref().and_then(serde_json::Value::as_u64).is_some_and(|unit| unit >= 128), "{:?}", witness.inputs);
+    assert_eq!((witness.call.class.as_str(), witness.call.method.as_str(), witness.call.descriptor.as_str(), witness.call.is_static), ("fixtures.Models", "hexDigit", "(C)I", true));
+    assert_eq!(witness.call.arguments[0].value, witness.inputs[0].value);
     assert!(witness.outcome.contains("returns") || witness.outcome.chars().any(|c| c.is_ascii_digit()), "replayed on the model to its digit value: {}", witness.outcome);
     // Boxing: the JDK's Integer.valueOf reads the cache the tool models. Without the model JBMC indexes a
     // nondeterministic array, and the proof fails for a reason the interpreter cannot replay.
@@ -1387,6 +1392,13 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
     assert!(refuted.output.contains("found by jvmcontract's own checker"), "{}", refuted.output);
     let witness = refuted.counterexample.unwrap();
     assert_ne!(witness.before, witness.after);
+    // The witness typed: a long as an exact decimal string, an int as a number, both versions' calls of (JI)J.
+    let json = serde_json::to_value(&witness).unwrap();
+    assert_eq!(json["inputs"][0]["type"], "long");
+    assert!(json["inputs"][0]["value"].as_str().is_some_and(|v| v.parse::<i64>().is_ok()), "{json}");
+    assert!(json["inputs"][1]["value"].is_i64(), "{json}");
+    assert_eq!((json["call"]["descriptor"].as_str(), json["previous_call"]["descriptor"].as_str(), json["previous_call"]["classes"].as_str()), (Some("(JI)J"), Some("(JI)J"), Some("before")));
+    assert_eq!(json["call"]["arguments"][0]["value"], json["inputs"][0]["value"]);
     let proved = run(&tier, Some("seats >= 6"), Engine::Native, "tier");
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
     assert!(proved.vacuous.is_none() && !proved.output.contains("vacuously"), "{}", proved.output);
@@ -1766,6 +1778,16 @@ fn a_check_lost_in_the_move_to_a_record_is_found_on_the_components() {
     assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
     let witness = outcome.counterexample.unwrap();
     assert_eq!(witness.input, "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)", "{}", outcome.output);
+    // The witness as data: the new version's call on a record built from its components, and the previous
+    // version's on the values the expressions computed, each argument naming its expression.
+    let call = serde_json::to_value(&witness.call).unwrap();
+    assert_eq!(call["class"], "fixtures.Batch");
+    assert_eq!((call["descriptor"].as_str(), call["static"].as_bool(), call["classes"].as_str()), (Some("(I)J"), Some(false), Some("after")));
+    assert_eq!(call["receiver"]["components"], serde_json::json!([{"name": "start", "type": "long", "value": "0", "from": "this.start"}, {"name": "size", "type": "int", "value": 1, "from": "this.size"}]));
+    let previous = serde_json::to_value(witness.previous_call.as_ref().expect("the previous version's call")).unwrap();
+    assert_eq!((previous["class"].as_str(), previous["descriptor"].as_str(), previous["static"].as_bool(), previous["classes"].as_str()), (Some("fixtures.BatchCommit"), Some("(JII)J"), Some(true), Some("before")));
+    assert_eq!(previous["arguments"].as_array().unwrap().iter().map(|a| (a["name"].as_str().unwrap(), a["from"].as_str().unwrap())).collect::<Vec<_>>(), [("batchStart", "this.start"), ("batchSize", "this.size"), ("failedIndex", "failedIndex")]);
+    assert_eq!(witness.inputs.iter().map(|t| t.name.as_str()).collect::<Vec<_>>(), ["this.start", "this.size", "failedIndex"]);
     assert!(witness.before.starts_with("throws IllegalArgumentException"), "{}", outcome.output);
     assert_eq!(witness.after, "1", "{}", outcome.output);
 }
@@ -1868,6 +1890,13 @@ fn a_records_method_made_static_is_related_by_building_its_receiver() {
     assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
     let witness = outcome.counterexample.unwrap();
     assert_eq!(witness.input, "contains(lo=0, hi=0, x=0), previously contains(this=Window[lo=0, hi=0], x=0)", "{}", outcome.output);
+    // The previous version's receiver, built by the expression, is a record of the values it computed.
+    let previous = witness.previous_call.as_ref().expect("the previous version's call");
+    assert_eq!((previous.class.as_str(), previous.is_static), ("fixtures.Window", false));
+    let receiver = previous.receiver.as_ref().expect("the receiver built");
+    assert_eq!(receiver.ty, "fixtures.Window");
+    assert_eq!(receiver.components.as_ref().unwrap().iter().map(|c| c.from.as_deref().unwrap()).collect::<Vec<_>>(), ["lo", "hi"]);
+    assert!(witness.call.receiver.is_none() && witness.call.is_static);
     assert_eq!(witness.before, "false", "{}", outcome.output);
     assert_eq!(witness.after, "true", "{}", outcome.output);
 }
@@ -1904,6 +1933,11 @@ fn a_shift_that_overflows_is_found_on_the_records_components() {
     assert_ne!(witness.before, witness.after, "{}", outcome.output);
     assert_eq!(witness.values.len(), 3, "{:?}", witness.values);
     assert!(outcome.output.contains("✗ Behaviour of fixtures.Backoff#delayMillis changed:"), "{}", outcome.output);
+    // The same record in both versions: the previous version's call builds its own record from the same inputs.
+    let previous = witness.previous_call.as_ref().expect("the previous version's call");
+    assert_eq!((previous.classes.as_str(), previous.descriptor.as_str()), ("before", witness.call.descriptor.as_str()));
+    assert_eq!(previous.receiver, witness.call.receiver);
+    assert_eq!(witness.inputs.iter().map(|t| t.ty.as_str()).collect::<Vec<_>>(), ["long", "long", "int"]);
     // Below 63 attempts from a base of one millisecond, the shift stays within a long and agrees with the loop: a
     // scope names the receiver's components as the method does, or as this.component.
     let scoped = record_run(&before, &after, "fixtures.Backoff#delayMillis", Some("attempt < 0 || attempt > 62 || this.baseMillis != 1"), "backoff-shift-scoped");

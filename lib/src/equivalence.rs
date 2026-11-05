@@ -147,6 +147,17 @@ pub struct Counterexample {
     pub found: Option<String>,
     /// How many smaller inputs the interpreter tried while shrinking.
     pub shrink_runs: u32,
+    /// The inputs, typed and exact, under the harness's names (a record's components as `this.c`), in its order.
+    pub inputs: Vec<witness::Typed>,
+    /// The inputs as JBMC found them, when `inputs` are the shrunk ones.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub found_inputs: Option<Vec<witness::Typed>>,
+    /// The new version's call on the inputs.
+    pub call: witness::Call,
+    /// The previous version's call on them: the same arguments, or those `--before-arguments` computes from them.
+    /// Absent when they could not be computed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub previous_call: Option<witness::Call>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -870,7 +881,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             }
             findings.push(Finding::new("behaviour-changed", message, uri.clone(), line));
             proof = Some(how);
-            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
+            let after_target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
+            let before_target = witness::Target { class_internal: &before_class_internal, method: &before_method_name, descriptor: &before_method.descriptor, is_static: before_method.is_static(), classes: "before" };
+            let call = witness::typed_call(&after_target, &layout, &arguments, false, &[]);
+            let previous_call = if harness.before_args.is_some() {
+                let sources = previous.as_ref().map(harness::BeforeMethod::argument_sources).unwrap_or_default();
+                map_arguments(&arguments).ok().map(|mapped| witness::typed_call(&before_target, &before_layout, &mapped, true, &sources))
+            } else {
+                Some(witness::typed_call(&before_target, &layout, &arguments, true, &[]))
+            };
+            let inputs = witness::typed_inputs(params, &arguments);
+            let found_inputs = shrunk.then(|| witness::typed_inputs(params, &found));
+            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call, previous_call });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());

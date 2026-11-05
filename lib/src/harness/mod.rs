@@ -340,6 +340,27 @@ impl BeforeMethod {
         layout.before_descriptor_with(&self.params, &self.ret, &self.records)
     }
 
+    /// The expressions of `--before-arguments` as written, one per flat parameter of the previous version (a record
+    /// built by `new R(a, b)` as one per component, `a` and `b`), in the order [`Self::parse_arguments`] computes
+    /// them; empty without expressions.
+    pub fn argument_sources(&self) -> Vec<String> {
+        let Some(text) = &self.arguments else { return Vec::new() };
+        let mut out = Vec::new();
+        for piece in split_arguments(text) {
+            let inner = piece
+                .strip_prefix("new")
+                .filter(|rest| rest.starts_with(char::is_whitespace))
+                .and_then(|rest| rest.trim_end().strip_suffix(')'))
+                .and_then(|rest| rest.split_once('('))
+                .map(|(_, inner)| inner);
+            match inner {
+                Some(inner) => out.extend(split_arguments(inner)),
+                None => out.push(piece),
+            }
+        }
+        out
+    }
+
     /// Parses the arguments against the new version's parameters: each must have the type of the parameter it is
     /// passed as (an `int` expression for a `byte`, `short` or `char` parameter is narrowed as a cast is), and an
     /// array parameter is passed by name. `first_free_slot` is for a quantifier's variable.
@@ -1722,6 +1743,11 @@ mod tests {
             relation: None,
         };
         assert_eq!(previous.display("net/example/Windows"), "net.example.Window#clamp(x) on new Window(lo, hi)");
+        // What each flat argument of the previous version is computed from, the receiver's components first.
+        assert_eq!(previous.argument_sources(), ["lo", "hi", "x"]);
+        let nested = BeforeMethod { arguments: Some("new Window(Math.min(lo, hi), hi + 1), x * 2".into()), ..previous.clone() };
+        assert_eq!(nested.argument_sources(), ["Math.min(lo, hi)", "hi + 1", "x * 2"]);
+        assert!(BeforeMethod { arguments: None, ..previous.clone() }.argument_sources().is_empty());
         assert_eq!(previous.argument_types(), vec![Type::Object("net/example/Window".into()), Type::Int]);
         let harness = generate("net/example/Windows", "clamp", &layout, &Type::Int, None, 8, Some(&previous)).unwrap();
         let class = ClassFile::parse(&harness.bytes).unwrap();

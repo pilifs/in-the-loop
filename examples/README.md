@@ -524,6 +524,16 @@ goes last. A file that no longer matches its bundle entry, or one the bundle doe
 `bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks, and their
 pages render as before.
 
+A B9 or B11 counterexample from jvmcontract also keeps its `witness` as data, read from the outcome's typed fields, so
+that the call can be made again without parsing `input`. `inputs` are the values the checker chose, in the harness's
+order and under its names (`this.baseMillis` for a receiver's component). Each has its Java type and an exact value: a
+`long` is a decimal string, and a `float` or `double` is Java's `toString` of it, which reads back as the same value.
+`call` is the patched version's call: the class, the class file with its SHA-256 as built, the method's descriptor,
+whether it is static, the receiver as a record of its components, and the arguments. Each argument names the input it
+`from`. For a regression proof, `previousCall` is the previous version's call. Under `previousArguments` its arguments
+name the expression that computed them, and a record it is called on is built from those values. `foundInputs` are the
+inputs before shrinking. Counterexamples recorded before 2026-11-05 have no `witness`.
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence.

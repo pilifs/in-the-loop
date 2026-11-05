@@ -1490,6 +1490,113 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual(build.exploration_record(several), {"unwind": 16, "maxArrayLength": 8, "complete": None})
 
 
+def typed(name, type_, value=None, from_=None, components=None):
+    """A typed witness value as the library writes it."""
+    return {"name": name, "type": type_, **({"value": value} if components is None else {"components": components}),
+            **({"from": from_} if from_ else {})}
+
+
+def typed_call(class_internal, method, descriptor, static, classes, arguments, receiver=None):
+    """A typed call as the library writes it."""
+    return {"class": class_internal.replace("/", "."), "class_file": f"{class_internal}.class", "classes": classes,
+            "method": method, "descriptor": descriptor, "static": static,
+            **({"receiver": receiver} if receiver else {}), "arguments": arguments}
+
+
+# 128's shape: a record's method whose previous version was static, called by expressions over the components.
+BATCH_WITNESS = {
+    "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
+    "before": "throws IllegalArgumentException", "after": "1", "values": ["0", "1", "1"], "shrink_runs": 0,
+    "inputs": [typed("this.start", "long", "0"), typed("this.size", "int", 1), typed("failedIndex", "int", 1)],
+    "call": typed_call("a/Batch", "offsetToCommit", "(I)J", False, "after",
+                       [typed("failedIndex", "int", 1, "failedIndex")],
+                       receiver=typed("this", "a.Batch", components=[typed("start", "long", "0", "this.start"),
+                                                                     typed("size", "int", 1, "this.size")])),
+    "previous_call": typed_call("a/BatchCommit", "offsetToCommit", "(JII)J", True, "before",
+                                [typed("batchStart", "long", "0", "this.start"), typed("batchSize", "int", 1, "this.size"),
+                                 typed("failedIndex", "int", 1, "failedIndex")]),
+}
+
+
+class WitnessTest(RunnerCase):
+    """A counterexample keeps its witness as data: typed inputs, the calls of both versions with their descriptors
+    and argument mappings, and the class files' identities as built."""
+
+    def classes(self):
+        """The class files the run built: the patched one, and the previous version's."""
+        after = self.build / "build/main/a/Batch.class"
+        before = self.dir / "before/a/BatchCommit.class"
+        for f, content in ((after, b"\xca\xfe\xba\xbe after"), (before, b"\xca\xfe\xba\xbe before")):
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(content)
+        return after, before
+
+    def test_a_regression_witness_keeps_both_calls_typed_with_their_class_files(self):
+        after, before = self.classes()
+        out = equivalence_json(self.root, counterexample=BATCH_WITNESS)
+        result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(), report="equivalence.sarif")
+        self.assertEqual(result["verdict"], "violation")
+        [c] = result["counterexamples"]
+        self.assertEqual(c["input"], BATCH_WITNESS["input"])  # the text stays as it was
+        w = c["witness"]
+        self.assertEqual([i["name"] for i in w["inputs"]], ["this.start", "this.size", "failedIndex"])
+        self.assertEqual(w["inputs"][0], {"name": "this.start", "type": "long", "value": "0"})
+        self.assertEqual((w["call"]["class"], w["call"]["classFile"], w["call"]["descriptor"], w["call"]["static"]),
+                         ("a.Batch", "a/Batch.class", "(I)J", False))
+        self.assertEqual(w["call"]["classFileSha256"], build.file_digest(after))
+        self.assertEqual([x["from"] for x in w["call"]["receiver"]["components"]], ["this.start", "this.size"])
+        previous = w["previousCall"]
+        self.assertEqual((previous["classes"], previous["descriptor"], previous["static"]), ("before", "(JII)J", True))
+        self.assertEqual(previous["classFileSha256"], build.file_digest(before))
+        self.assertEqual([(a["name"], a["from"]) for a in previous["arguments"]],
+                         [("batchStart", "this.start"), ("batchSize", "this.size"), ("failedIndex", "failedIndex")])
+        self.assertNotIn("foundInputs", w)
+
+    def test_a_class_file_the_run_did_not_build_has_no_digest(self):
+        out = equivalence_json(self.root, counterexample=BATCH_WITNESS)
+        result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(), report="equivalence.sarif")
+        w = result["counterexamples"][0]["witness"]
+        self.assertEqual((w["call"]["classFileSha256"], w["previousCall"]["classFileSha256"]), (None, None))
+
+    def test_shrunk_inputs_keep_the_found_ones_and_an_untyped_tool_gives_no_witness(self):
+        shrunk = {**BATCH_WITNESS, "found": "offsetToCommit(...)", "found_inputs": [typed("this.start", "long", "9007199254740993")]}
+        result = self.run_runner(build.run_tool_equivalence, proc(1, equivalence_json(self.root, counterexample=shrunk)),
+                                 example(), report="equivalence.sarif")
+        self.assertEqual(result["counterexamples"][0]["witness"]["foundInputs"][0]["value"], "9007199254740993")
+        # A tool from before typed witnesses: the counterexample as it was, with no witness made up.
+        result = self.run_runner(build.run_tool_equivalence, proc(1, equivalence_json(self.root)), example(), report="equivalence.sarif")
+        self.assertNotIn("witness", result["counterexamples"][0])
+
+    def test_a_property_witness_keeps_its_call(self):
+        c = {"input": "m(x=-1)", "outcome": "-1", "values": ["-1"], "shrink_runs": 0,
+             "inputs": [typed("x", "int", -1)], "call": typed_call("a/B", "m", "(I)I", True, "after", [typed("x", "int", -1, "x")])}
+        out = property_outcome(self.root, counterexample=c)
+        result = self.run_runner(build.run_tool_property, proc(1, property_json(out)), example(approach="B11"), report="property.sarif")
+        w = result["properties"][0]["counterexample"]["witness"]
+        self.assertEqual((w["call"]["descriptor"], w["call"]["classes"], w["inputs"]), ("(I)I", "after", [typed("x", "int", -1)]))
+        self.assertNotIn("previousCall", w)
+        self.assertEqual(result["counterexamples"][0]["witness"], w)
+
+    def test_witnesses_validate_against_the_schema(self):
+        import jsonschema
+        self.classes()
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        source = next(build.EXAMPLES.glob("128-*"))
+        recorded = json.loads((source / "result.json").read_text())
+        out = equivalence_json(self.root, counterexample={**BATCH_WITNESS, "found_inputs": BATCH_WITNESS["inputs"]})
+        result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(), report="equivalence.sarif")
+        recorded["counterexamples"] = result["counterexamples"]
+        jsonschema.validate(recorded, schema)
+        bad = json.loads(json.dumps(recorded))
+        bad["counterexamples"][0]["witness"]["call"]["classes"] = "patched"
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(bad, schema)
+        bad = json.loads(json.dumps(recorded))
+        del bad["counterexamples"][0]["witness"]["call"]["descriptor"]
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(bad, schema)
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema

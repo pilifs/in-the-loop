@@ -307,6 +307,29 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     and value, exact for long, float and double. They also record the target's descriptor, how the arguments map onto
     the receiver's record components and the previous version's parameters, and the class files' identities. The
     result records them, enough to rebuild the call without the text. Then [3c](#phase-3-one-plan-durable-evidence).
+- **3b done** (2026-11-05): the second half, typed witnesses. In the library, a counterexample from `equivalence` and from
+  `prove` keeps its witness as data next to its text (`witness::Typed`, `witness::Call`).
+  - `inputs`: the values the checker chose, under the harness's names (`this.baseMillis`), each with its Java type and an
+    exact value. A `long` is a decimal string. A `float` or `double` is Java's `toString` of it, which reads back as the
+    same value. A `char` is its code unit, and an array lists its elements. `found_inputs` are the inputs before
+    shrinking.
+  - `call`: the patched version's class, class file, method, descriptor and whether it is static. It has the receiver
+    as a record of its components and the arguments, each naming the input it is `from`.
+  - `previous_call` (regression proofs): the previous version's call. Under `--before-arguments`, each argument names
+    the expression that computed it (`BeforeMethod::argument_sources`), and a receiver built by `new R(...)` is a record
+    of those values.
+  - `build.py` records it as `counterexamples[].witness` (and in `properties[].counterexample`), with each call's
+    `classFileSha256` from the classes the run built. The schema has `typedValue`, `typedCall` and `witness`. The
+    interpreter and JBMC results are untouched: only fields were added.
+  - Tests: `cargo test` passes, 118 unit and 50 integration. The new assertions cover a record receiver against a static
+    previous version, a previous receiver built by an expression, the same record in both versions, a char witness, and
+    a native long witness. `test_build.py` has 107 tests, `test_pipeline.py` 20. No page moved under `--render-only`.
+  - Jobs `20261105-133040-example-{128-b9,130-b9,132-b9,143-b9,050-b11}-…`: JBMC and the own checker, a record receiver,
+    a previous record built by expression, longs, a char array, and a property. The thirty-three earlier jobs had not
+    run at the start of this cycle.
+  - 3b's acceptance holds: a result names its exact inputs (claim fingerprints, attempt bytecode, the witness's class
+    files), and the bundle check refuses a mix of runs. Next: [3c](#phase-3-one-plan-durable-evidence), rendering from
+    the saved snapshot.
 
 ## Open questions
 

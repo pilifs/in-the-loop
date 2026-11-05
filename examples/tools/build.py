@@ -1327,14 +1327,39 @@ def json_outcomes(proc, root):
     return without_root(outcomes, root)
 
 
-def equivalence_counterexamples(outcome):
+def typed_call(call, classes):
+    """A call from the outcome as the result keeps it, with the SHA-256 of the class file it names in the classes
+    the run built (`classes` by `after` and `before`), or None when that file is not there."""
+    root = classes.get(call["classes"])
+    path = Path(root) / call["class_file"] if root else None
+    return {"class": call["class"], "classFile": call["class_file"],
+            "classFileSha256": file_digest(path) if path and path.is_file() else None, "classes": call["classes"],
+            "method": call["method"], "descriptor": call["descriptor"], "static": call["static"],
+            **({"receiver": call["receiver"]} if call.get("receiver") else {}), "arguments": call["arguments"]}
+
+
+def witness_record(c, classes):
+    """The counterexample as data, from the outcome's typed fields: the inputs (and those found before shrinking),
+    the patched version's call, and for a regression proof the previous version's. None from a tool that gives
+    no typed fields."""
+    if not c.get("call") or "inputs" not in c:
+        return None
+    return {"inputs": c["inputs"], **({"foundInputs": c["found_inputs"]} if c.get("found_inputs") else {}),
+            "call": typed_call(c["call"], classes),
+            **({"previousCall": typed_call(c["previous_call"], classes)} if c.get("previous_call") else {})}
+
+
+def equivalence_counterexamples(outcome, classes=None):
     """The outcome's witness as the result's counterexample: the input, what the version before did (`contract`)
-    and what the patched one does (`actual`), with the input the checker found before it was shrunk."""
+    and what the patched one does (`actual`), with the input the checker found before it was shrunk, and the
+    witness as data (`witness`) with the class files' digests from `classes`."""
     c = (outcome or {}).get("counterexample")
     if not c:
         return []
+    witness = witness_record(c, classes or {})
     return [{"input": c["input"], "contract": c["before"], "actual": c["after"],
-             **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0)}]
+             **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0),
+             **({"witness": witness} if witness else {})}]
 
 
 def search_record(outcome):
@@ -1359,7 +1384,8 @@ def run_tool_equivalence(folder, example, root, module, result):
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     work = build / "build/equivalence"
-    command = ["equivalence", "--before", str(tool_before_classes(app)), "--after", str(build / "build/main"),
+    classes = {"before": tool_before_classes(app), "after": build / "build/main"}
+    command = ["equivalence", "--before", str(classes["before"]), "--after", str(classes["after"]),
                "--target", example["subject"]["symbol"], "--work", str(work), "--report", str(build / "build/reports")]
     intended = example["change"].get("intendedInputs")
     if intended:
@@ -1376,7 +1402,7 @@ def run_tool_equivalence(folder, example, root, module, result):
     if outcome is not None:  # the console output is the outcome's own, with what went to standard error after it
         output = outcome["output"] + proc.stderr.replace(str(root) + "/", "")
     reported = write_evidence(folder, output, build / "build/reports/equivalence.sarif", result)
-    result["counterexamples"] = equivalence_counterexamples(outcome)
+    result["counterexamples"] = equivalence_counterexamples(outcome, classes)
     result["execution"], result["verdict"] = conclude_outcome(proc.returncode, output, outcome, result["counterexamples"], reported)
     completed = result["verdict"] is not None
     result["search"] = search_record(outcome) if completed else None
@@ -1402,16 +1428,18 @@ def property_headline(verdicts):
     return "verified" if all(v == "verified" for v in verdicts) else "unverifiable"
 
 
-def property_counterexample(outcome):
+def property_counterexample(outcome, classes=None):
     """A property outcome's witness as a result's counterexample: the input, the assertion it fails (`contract`;
     null for a property that is its throws clauses alone), what the method did (`actual`), what a throws clause
-    required instead, and the input the checker found before it was shrunk."""
+    required instead, the input the checker found before it was shrunk, and the witness as data."""
     c = outcome.get("counterexample")
     if not c:
         return None
+    witness = witness_record(c, classes or {})
     return {"input": c["input"], "contract": property_assertion(outcome), "actual": c["outcome"],
             **({"expected": c["expected"]} if c.get("expected") else {}),
-            **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0)}
+            **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0),
+            **({"witness": witness} if witness else {})}
 
 
 def property_assertion(outcome):
@@ -1421,14 +1449,14 @@ def property_assertion(outcome):
     return None if outcome.get("assert") == "true" and throws else outcome.get("assert")
 
 
-def property_record(outcome, harness, statement):
+def property_record(outcome, harness, statement, classes=None):
     """One property's outcome as the result keeps it: what it states, its verdict, and its own evidence."""
     throws = outcome.get("throws_checked") or outcome.get("throws") or []
     replay = outcome.get("replay")
     return {"harness": harness, "assert": property_assertion(outcome), "assume": outcome.get("assume"),
             **({"throws": throws} if throws else {}), "verdict": outcome["verdict"], "domain": outcome.get("domain"),
             "proof": outcome.get("proof"), "problem": outcome.get("problem"), "vacuous": outcome.get("vacuous"),
-            "counterexample": property_counterexample(outcome), "statement": statement,
+            "counterexample": property_counterexample(outcome, classes), "statement": statement,
             "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None}
 
 
@@ -1459,7 +1487,7 @@ def run_tool_property(folder, example, root, module, result):
             if several and o.get("statement") and (root / o["statement"]).exists():
                 name = f"statement-{n}.java"
                 shutil.copy(root / o["statement"], folder / name)
-            records.append(property_record(o, f"property-{n}" if several else None, name))
+            records.append(property_record(o, f"property-{n}" if several else None, name, {"after": build / "build/main"}))
         result["counterexamples"] = [r["counterexample"] for r in records if r["counterexample"]]
     # A violation needs every refuted property's witness.
     refuted = sum(r["verdict"] == "violation" for r in records)

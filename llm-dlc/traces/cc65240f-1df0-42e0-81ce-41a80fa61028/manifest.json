@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "cc65240f-1df0-42e0-81ce-41a80fa61028",
-  "status": "open",
+  "status": "ended",
   "title": "`build.py` orchestration feature loop",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T13:19:39.180Z",
-  "duration_seconds": 9102,
+  "ended": "2026-11-05T13:33:20.356Z",
+  "duration_seconds": 9924,
   "stats": {
-    "turns": 49,
-    "api_calls": 482,
-    "tool_calls": 496,
-    "tool_errors": 4,
-    "compactions": 8,
-    "peak_context_tokens": 192582,
+    "turns": 54,
+    "api_calls": 553,
+    "tool_calls": 569,
+    "tool_errors": 7,
+    "compactions": 9,
+    "peak_context_tokens": 203187,
     "usage": {
-      "input_tokens": 980,
-      "output_tokens": 400575,
-      "cache_read_input_tokens": 57602720,
-      "cache_creation_input_tokens": 1320830
+      "input_tokens": 1124,
+      "output_tokens": 455398,
+      "cache_read_input_tokens": 67559354,
+      "cache_creation_input_tokens": 1516484
     }
   },
   "tools": {
-    "Bash": 454,
-    "Edit": 25,
-    "Read": 9,
-    "Write": 4,
+    "Bash": 521,
+    "Edit": 28,
+    "Read": 11,
+    "Write": 5,
     "ToolSearch": 2,
     "Monitor": 1,
     "WebFetch": 1
@@ -42,7 +42,10 @@
     "examples/README.md",
     "examples/tools/build.py",
     "examples/tools/test_build.py",
+    "lib/src/harness/mod.rs",
+    "lib/src/witness.rs",
     "llm-dlc/loops/build-orchestration.md",
+    "~/.claude/projects/-home-user-code-java-formal-verification/memory/allowlist-proposal-blocks-commits.md",
     "~/.claude/projects/-home-user-code-java-formal-verification/memory/proof-work-over-dev-features.md"
   ],
   "context_windows": [
@@ -161,24 +164,38 @@
     {
       "index": 8,
       "started": "2026-11-05T13:10:03.501Z",
-      "ended": "2026-11-05T13:19:39.180Z",
-      "turns": 4,
-      "api_calls": 54,
+      "ended": "2026-11-05T13:20:55.324Z",
+      "turns": 5,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 108,
-        "output_tokens": 50609,
-        "cache_read_input_tokens": 6538578,
-        "cache_creation_input_tokens": 158527
+        "input_tokens": 124,
+        "output_tokens": 53332,
+        "cache_read_input_tokens": 7757100,
+        "cache_creation_input_tokens": 164074
       },
-      "peak_context_tokens": 171607
+      "peak_context_tokens": 177156
+    },
+    {
+      "index": 9,
+      "started": "2026-11-05T13:21:24.057Z",
+      "ended": "2026-11-05T13:33:20.356Z",
+      "turns": 4,
+      "api_calls": 64,
+      "usage": {
+        "input_tokens": 128,
+        "output_tokens": 52100,
+        "cache_read_input_tokens": 8738112,
+        "cache_creation_input_tokens": 190107
+      },
+      "peak_context_tokens": 203187
     }
   ],
   "log": {
-    "sha256": "c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262",
-    "bytes": 14012655,
-    "lines": 5178,
-    "gzip_bytes": 2502433,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262.jsonl.gz"
+    "sha256": "c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b",
+    "bytes": 16049364,
+    "lines": 5956,
+    "gzip_bytes": 2874443,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -285,6 +302,14 @@
       "summary": "build.py: each run is an attempt at a frozen claim, and publishes one checked bundle of evidence (verification pending)",
       "body": "Step 3b of llm-dlc/loops/build-orchestration.md, first half. Under open question 1's default, result.json gains four blocks next to the flat fields, which are unchanged. claim is frozen before anything is built and written into the attempt's own directory as claim.json. It holds the plan's statement of what is checked, the scope (array bound, and for B9 the intended inputs), and SHA-256 fingerprints of the patch, of the copied sources before and after it (build output left out; build files, contracts and models in), and for D1 of each model file. Its id is their digest: another input or scope is another claim, and the engine is not part of it. attempt records the engine and flags, each tool's identity (Java, javac and JBMC versions, the Gradle distribution, the SHA-256 of jvmcontract and of TLC's jar), the bytecode built, the pipeline job (VERIFY_JOB_ID, VERIFY_SOURCE_COMMIT, VERIFY_WORKDIR), the time and the execution. For jvmcontract proofs it also records exploration: complete only for a verified proof, which checks unwinding assertions, and otherwise unknown. conclusion gives established, refuted or unresolved for the claim and for each obligation (a B11 target's properties, a D1 model's configurations, each generated operator's contract as built). bundle lists each evidence file with its SHA-256 and size.\n\nRunners now write into the attempt's directory, never into the example's folder. check_result() validates the whole result against the schema and the bundle against the files before anything is published. publish() then renames each file in, removes evidence of an earlier run that the bundle does not list, and writes result.json last. bundle_problems() names any file that is not the run's: one changed, missing, or not listed. A missing jsonschema module now stops the run; it used to skip validation. The schema, examples/README.md and build.py's docstring describe the format.\n\nVerified: test_build.py has 102 tests (12 new, including run() itself on 126's real patch and Crosscut's sources with the runner mocked, main() refusing to publish a mismatched bundle, and a claim id that moves with the bound but not the engine), and test_pipeline.py's 20 pass. A real run of 025 (B8) in a temporary copy of examples/ gave the four blocks, flat fields identical to the committed result, and a folder matching its bundle. No page moved under --render-only, and no committed result was rewritten. The twenty-seven earlier jobs had not run at the start of this cycle.\n\nJobs 20261105-131902-example-014-b8-quorum-recorded-as-a-clai, 20261105-131902-example-062-d1-raft-election-several-con, 20261105-131902-example-071-b11-three-properties-recorde, 20261105-131902-example-111-b12-box-office-recorded-as-a, 20261105-131902-example-129-b9-jbmc-verified-recorded-as and 20261105-131902-example-133-b9-own-checker-verified-reco: one per approach.\n\nWhere the brief differs from what was built: it lists before/after bytecode and the pipeline's VERIFY_* among the claim's fingerprints. The bytecode is built after the claim is frozen, and a job id differs on every run, so the claim fingerprints the sources the bytecode is compiled from, and the attempt records the bytecode and the job. A different compiler on the same sources is therefore another attempt at the same claim. Publishing is not one atomic step: the files are renamed one by one and result.json goes last, so an interrupted publish leaves files that don't match their bundle, which bundle_problems() shows. Gradle's resolved library artifacts are not fingerprinted, only the build files that pin them (claim.inputs.dependencies says so), because fingerprinting them would take another Gradle run. Left for the second half of 3b: typed witness values with the target's descriptor, the argument mappings and the class files' identities, a library change.",
       "log_sha256": "c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262"
+    },
+    {
+      "change_id": "wlusqswwslxszlkwxxrqlmsrsvstxzrq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: maintainer approved d7e63532",
+      "body": "maintainer approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nd7e63532  public-ip  25…1: Not an address: the four-part Java version 25.0.4.1 (Temurin 25.0.4.1+1), printed by java -version and javac -version and recorded as a tool identity in build.py's attempt record; every occurrence is a JDK version string or path.",
+      "log_sha256": "c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b"
     }
   ],
   "logs": {
@@ -353,6 +378,12 @@
       "lines": 335,
       "gzip_bytes": 269172,
       "url": "https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/b7965f09e6fb00d5fba68bbd724e5630ecf847982fbcbdc5ae84a93379a7098b.jsonl.gz"
+    },
+    "c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b": {
+      "bytes": 16049364,
+      "lines": 5956,
+      "gzip_bytes": 2874443,
+      "url": null
     },
     "c8154da46c42da374f76cab756b014c830047f897a34721fdc32775c52766262": {
       "bytes": 14012655,

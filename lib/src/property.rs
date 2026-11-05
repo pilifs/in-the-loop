@@ -117,6 +117,13 @@ pub struct Counterexample {
     pub found: Option<String>,
     /// How many smaller inputs the interpreter tried while shrinking.
     pub shrink_runs: u32,
+    /// The inputs, typed and exact, in parameter order.
+    pub inputs: Vec<crate::witness::Typed>,
+    /// The inputs as JBMC found them, when `inputs` are the shrunk ones.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub found_inputs: Option<Vec<crate::witness::Typed>>,
+    /// The method's call on the inputs.
+    pub call: crate::witness::Call,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -499,7 +506,12 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
             replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable });
-            counterexample = Some(Counterexample { input: rendered, outcome, expected, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
+            let target = witness::Target { class_internal: &class_internal, method: &method_name, descriptor: &method.descriptor, is_static: method.is_static(), classes: "after" };
+            let names: Vec<String> = params.iter().map(|p| p.name.clone()).collect();
+            let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &arguments, false, &[]);
+            let inputs = witness::typed_inputs(&params, &arguments);
+            let found_inputs = shrunk.then(|| witness::typed_inputs(&params, &found));
+            counterexample = Some(Counterexample { input: rendered, outcome, expected, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());
