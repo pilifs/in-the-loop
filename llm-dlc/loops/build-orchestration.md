@@ -21,6 +21,16 @@ bundle. On top of that it proposes four developer-facing features. **Read the re
 before the first piece of work of every cycle.** It is the input, and this brief is the plan
 for carrying it out.
 
+**This brief is about the right data structures, interfaces and evaluations for deep formal
+proof work.** The review's developer features (its section 3, this plan's Phase 4) are
+[deferred](#deferred-phase-4-developer-features) by the user's decision and are not to be
+worked on. They would add considerations that are useful to developers but not novel, and
+make the proof experiments this project exists for harder to run. They will be revisited
+later, separately from the proof work. What this brief builds should make them easy to add
+then: a JUnit test or a JVM replay should be a new presentation of evidence the format
+already holds, not a change to it. Where a step has to choose, it chooses what serves the
+proof work.
+
 ## How to work through it
 
 - **One step of [the plan](#the-plan) per cycle**, in order, committed on its own. A step
@@ -124,18 +134,13 @@ in the commit that relies on it.
    every existing page and tool keeps working. Retiring them is the user's decision.
 2. **Where the AI loop in step 5b lives.** *Default: the runner diagnoses and offers the next
    attempts, and an agent session picks among them.* The runner never calls a model itself.
-3. **Generated JUnit tests (step 4b).** Are they committed next to the example, or only
-   written to the evidence bundle? *Default: the bundle only.* An example may copy one into
-   its app's tests in its own patch.
-4. **External projects (step 4c).** *Default: inputs already on disk only (classes, JARs, a
-   built project), no dependency download.* Maven and Gradle import that resolves
-   dependencies is deferred.
 
 ## The plan
 
 The review's own order (its section 5) is kept, with each phase cut into steps of about one
 cycle. Each step names its **acceptance criterion**: the step is done when that holds and is
-tested.
+tested. Phase 4 is [deferred](#deferred-phase-4-developer-features): after Phase 3 comes
+Phase 5. The numbers stay the review's so the two can be read side by side.
 
 ### Phase 1: results that can be trusted
 
@@ -207,7 +212,11 @@ tested.
   before anything is written, and a missing `jsonschema` is an error, not a silent skip.
   The bundle is published at once. Changing the timeout, solver or engine is a new attempt.
   Changing the inputs, the array bound or the assumptions is a new claim with its own id.
-  An unwind limit records whether the backend showed the exploration complete.
+  An unwind limit records whether the backend showed the exploration complete. A witness is
+  kept with typed values (a library change: `Counterexample` values are strings today),
+  target descriptors, argument mappings and artifact identities, enough to rebuild the call
+  without the text. That is what would later make a JVM replay or a JUnit test a mere
+  rendering.
   *Acceptance: a report names its exact inputs and can't mix attempts from different runs.*
 - **3c. Render from the saved snapshot.** `--render-only` renders from the bundle and shows
   whether it still matches the current inputs. "Why the verdict is right" separates the
@@ -222,36 +231,6 @@ tested.
   content-addressed baseline build cache across jobs. Add it only if the timings show it
   matters, and never reuse a proof on unchanged method text alone.
   *Acceptance: an interrupted job leaves its stage logs and workspace behind.*
-
-### Phase 4: developer features
-
-- **4a. "Check this bug fix."** One change review combines obligations. *Preserve*: outside
-  the declared boundary, old and new agree (B9 with `--unchanged-unless`). *Establish*:
-  inside it, the new behaviour is the intended one (a B11 property, or an explicit
-  expected-result relation). *Policies*: the boundary or contract checks that apply keep
-  holding (B12 `!` lines, contract rows). The allowed change is declared on its own in the
-  example, not inferred from `behaviourChangeIntended`. The runner prints a reviewable plan
-  of the obligations before it runs them, and a report after: what was meant to change,
-  what must stay the same, what was established, and what gaps remain. Add an example
-  pair, such as the review's "an exact expiry deadline counts as expired" on Crosscut's
-  expiry kernel (see 122/123), one where the fix holds and one where it leaks past its
-  boundary. *Acceptance: one run reports preservation, the intended behaviour and policies
-  as separate obligations, with one headline.*
-- **4b. Replay on the JVM, and a JUnit test.** Keep the witness arguments with their types
-  (a library change: `Counterexample` values are strings today), target descriptors,
-  argument mappings and artifact identities. Run the old and new versions in separate JVM
-  processes, record returns, exceptions and supported mutations, and evaluate the claim's
-  own relation. Write a JUnit regression test and a reproduction command into the bundle
-  ([open question 3](#open-questions)). Start with primitives, strings and arrays. A JVM
-  replay is a quick check, not a proof, and can run inline in tests. *Acceptance: a B9
-  violation's witness is reproduced on the JVM and exported as a test that fails on the
-  after-version.*
-- **4c. External artifacts as inputs.** An adapter takes two class/JAR sets and explicit
-  targets from a manifest. It produces classpaths, target methods with their source
-  locations, and claims, without a branch in `build.py` for each app. The four bundled apps
-  move onto it. A real-world example (105–109) becomes runnable where its built artifacts
-  are on disk ([open question 4](#open-questions)). *Acceptance: a before/after pair of JARs
-  gives preservation and intended-behaviour results and reproducible findings.*
 
 ### Phase 5: proof experiments
 
@@ -270,18 +249,54 @@ tested.
 
 ## Done when
 
-The review's acceptance criteria all hold:
+The review's acceptance criteria hold for every phase but the deferred Phase 4:
 
 | Phase | Criterion |
 |---|---|
 | 1 | A killed process, malformed output or a missing result can never count as an expected semantic violation, and every property keeps its own evidence |
 | 2 | Every generated operator has a recorded connection to candidate bytecode, and missing coverage stays unknown |
 | 3 | Pipeline requirements match the selected backend, and reports name exact inputs and can't silently mix attempts |
-| 4 | A real before/after Java change gives preservation results, intended-behaviour results and reproducible findings |
 | 5 | Several strategies can pursue a fixed claim, with resumable evidence and measurable progress |
 
 The pipeline jobs submitted along the way are back with their expected verdicts, or their
 failures are explained under Progress.
+
+## Deferred: Phase 4, developer features
+
+**Not to be worked on in this loop**, by the user's decision (2026-11-05). These are the
+review's section 3 features. They are kept here as context, so the format of Phases 1–3 and 5
+leaves room for them, and so the next brief can start from them. A cycle that finds itself
+needing one of them stops at the data structure or interface the feature would use, and
+notes the rest in its commit message. Step 1c's correction of the page wording about where a
+witness was replayed is a correctness fix, not this feature, and stays in scope.
+
+- **4a. "Check this bug fix."** One change review combines obligations. *Preserve*: outside
+  the declared boundary, old and new agree (B9 with `--unchanged-unless`). *Establish*:
+  inside it, the new behaviour is the intended one (a B11 property, or an explicit
+  expected-result relation). *Policies*: the boundary or contract checks that apply keep
+  holding (B12 `!` lines, contract rows). The allowed change is declared on its own in the
+  example, not inferred from `behaviourChangeIntended`. The runner prints a reviewable plan
+  of the obligations before it runs them, and a report after: what was meant to change,
+  what must stay the same, what was established, and what gaps remain. Add an example
+  pair, such as the review's "an exact expiry deadline counts as expired" on Crosscut's
+  expiry kernel (see 122/123), one where the fix holds and one where it leaks past its
+  boundary. *Acceptance: one run reports preservation, the intended behaviour and policies
+  as separate obligations, with one headline.*
+- **4b. Replay on the JVM, and a JUnit test.** Keep the witness arguments with their types
+  (a library change: `Counterexample` values are strings today), target descriptors,
+  argument mappings and artifact identities. Run the old and new versions in separate JVM
+  processes, record returns, exceptions and supported mutations, and evaluate the claim's
+  own relation. Write a JUnit regression test and a reproduction command into the bundle
+  (open then: commit it next to the example, or keep it in the bundle only?). Start with primitives, strings and arrays. A JVM
+  replay is a quick check, not a proof, and can run inline in tests. *Acceptance: a B9
+  violation's witness is reproduced on the JVM and exported as a test that fails on the
+  after-version.*
+- **4c. External artifacts as inputs.** An adapter takes two class/JAR sets and explicit
+  targets from a manifest. It produces classpaths, target methods with their source
+  locations, and claims, without a branch in `build.py` for each app. The four bundled apps
+  move onto it. A real-world example (105–109) becomes runnable where its built artifacts
+  are on disk (open then: whether dependencies may be downloaded). *Acceptance: a before/after pair of JARs
+  gives preservation and intended-behaviour results and reproducible findings.*
 
 ## Loop settings
 
