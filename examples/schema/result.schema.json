@@ -493,6 +493,104 @@
         "null"
       ]
     },
+    "claim": {
+      "description": "What the run checked, frozen before it ran (written to the attempt's directory as claim.json before anything was built). Another input or scope is another claim, with another id; another engine, timeout or tool is another attempt at the same one. Absent in results written before 2026-11-05 (step 3b of llm-dlc/loops/build-orchestration.md).",
+      "type": "object",
+      "required": ["id", "format", "example", "statement", "scope", "inputs"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "description": "The first 16 hex digits of the SHA-256 of the rest of the claim, canonical JSON.", "type": "string", "pattern": "^[0-9a-f]{16}$" },
+        "format": { "const": 1 },
+        "example": { "type": "string", "pattern": "^\\d{3}$" },
+        "statement": { "description": "What is checked, as build.py's plan() states it: the approach, the target and its file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, and result relation.", "type": "object" },
+        "scope": {
+          "description": "What a symbolic proof's statement is over (B9, B11): the array bound (null: the tool's default) and, for B9, the intended inputs the proof leaves out. Narrowing them is another claim.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxArrayLength": { "type": ["integer", "null"] },
+            "intendedInputs": { "type": ["string", "null"] }
+          }
+        },
+        "inputs": {
+          "description": "The inputs' fingerprints: the patch's SHA-256, the files the run copies before and after the patch (the app's sources, contracts, models and build files, and for Box Office the Java verifier; build output left out), how dependencies are pinned, and for D1 the model's specification and configurations as the patched copy has them.",
+          "type": "object",
+          "required": ["patch", "before", "after", "dependencies"],
+          "additionalProperties": false,
+          "properties": {
+            "patch": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "before": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] },
+            "after": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] },
+            "dependencies": { "description": "`the JDK` for the javac apps; `declared in the build files` for Box Office, whose libraries Gradle resolves by the versions its (fingerprinted) build files declare, the artifacts themselves not fingerprinted.", "enum": ["the JDK", "declared in the build files"] },
+            "model": { "description": "D1: each model file, repo-relative, with its SHA-256.", "type": "object", "additionalProperties": { "type": ["string", "null"] } }
+          }
+        }
+      }
+    },
+    "attempt": {
+      "description": "The run as one attempt at the claim. Absent before 2026-11-05.",
+      "type": "object",
+      "required": ["id", "claim", "startedAt", "seconds", "engine", "options", "tools", "bytecode", "pipeline", "execution"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "description": "When it started (UTC) and 8 random hex digits.", "type": "string", "pattern": "^\\d{8}T\\d{6}Z-[0-9a-f]{8}$" },
+        "claim": { "description": "The id of the claim it is an attempt at.", "type": "string" },
+        "startedAt": { "type": "string" },
+        "seconds": { "description": "From the claim being frozen to the result: the build, the tests and the verifier.", "type": "number" },
+        "engine": { "description": "The checker that decides a B9 or B11 verdict: `jbmc`, `native` or `auto`; null for the other approaches.", "type": ["string", "null"] },
+        "options": { "description": "The flags jvmcontract's proof was given (plan()'s options).", "type": "array", "items": { "type": "string" } },
+        "tools": { "description": "Each tool the plan names, by its identity: Java, javac and JBMC by the first line of their version, Gradle by the wrapper's distribution, jvmcontract and TLC by the SHA-256 of the executable or jar. Null for one that could not be asked.", "type": "object", "additionalProperties": { "type": ["string", "null"] } },
+        "bytecode": {
+          "description": "The classes the attempt built from the claim's sources, by content: `after`, the patched app's main classes; `before`, the unpatched ones a B9 run compares them with (null for the other approaches).",
+          "type": "object",
+          "required": ["before", "after"],
+          "additionalProperties": false,
+          "properties": { "before": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] }, "after": { "anyOf": [{ "type": "null" }, { "type": "object", "required": ["sha256", "files"], "additionalProperties": false, "properties": { "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "files": { "type": "integer", "minimum": 1 } } }] } }
+        },
+        "pipeline": {
+          "description": "The verification pipeline's job the attempt ran in (VERIFY_JOB_ID, VERIFY_SOURCE_COMMIT, VERIFY_WORKDIR); null when it ran outside the pipeline.",
+          "anyOf": [{ "type": "null" }, { "type": "object", "required": ["jobId", "sourceCommit", "workdir"], "additionalProperties": false,
+            "properties": { "jobId": { "type": ["string", "null"] }, "sourceCommit": { "type": ["string", "null"] }, "workdir": { "type": ["string", "null"] } } }]
+        },
+        "execution": { "$ref": "#/properties/execution" },
+        "exploration": {
+          "description": "B9 and B11 by jvmcontract: the loop unwinding and array bounds searched within, and whether the checker showed its exploration complete within them (true for a verified proof, which checks unwinding assertions; null when unknown: a violation needs no completeness, and an unresolved proof has none).",
+          "type": "object",
+          "required": ["unwind", "maxArrayLength", "complete"],
+          "additionalProperties": false,
+          "properties": { "unwind": { "type": ["integer", "null"] }, "maxArrayLength": { "type": ["integer", "null"] }, "complete": { "type": ["boolean", "null"] } }
+        }
+      }
+    },
+    "conclusion": {
+      "description": "What the attempt concluded about the claim, per obligation. Absent before 2026-11-05.",
+      "type": "object",
+      "required": ["claim", "attempt", "status", "vacuous", "expectation", "obligations"],
+      "additionalProperties": false,
+      "properties": {
+        "claim": { "type": "string" },
+        "attempt": { "type": "string" },
+        "status": { "description": "`established` (verified), `refuted` (violation) or `unresolved` (unverifiable); null when the run has no verdict.", "enum": ["established", "refuted", "unresolved", null] },
+        "vacuous": { "type": "boolean" },
+        "expectation": { "enum": ["yes", "no", "not-evaluable"] },
+        "obligations": {
+          "description": "Each obligation checked on its own: a B11 target's properties, a D1 model's configurations and its generated operators' contracts as built. Empty when the claim is one obligation.",
+          "type": "array",
+          "items": { "type": "object", "required": ["name", "statement", "status"], "additionalProperties": false,
+            "properties": { "name": { "type": "string" }, "statement": { "type": ["string", "null"] }, "status": { "enum": ["established", "refuted", "unresolved", null] } } }
+        }
+      }
+    },
+    "bundle": {
+      "description": "The evidence the attempt left, each file with its SHA-256 and size, published into the example's folder with result.json once both were checked; any other evidence file there is removed. A file that no longer matches its entry, or one the bundle does not list, is not this run's. Absent before 2026-11-05.",
+      "type": "object",
+      "required": ["artifacts"],
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": { "type": "array", "items": { "type": "object", "required": ["path", "sha256", "bytes"], "additionalProperties": false,
+          "properties": { "path": { "type": "string", "pattern": "^(result\\.sarif|verifier-output\\.txt|statement(-\\d+)?\\.java)$" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }, "bytes": { "type": "integer", "minimum": 0 } } } }
+      }
+    },
     "sarif": {
       "description": "File name of the SARIF report, relative to the example folder; null when the verifier wrote none, which is never made up.",
       "type": ["string", "null"]

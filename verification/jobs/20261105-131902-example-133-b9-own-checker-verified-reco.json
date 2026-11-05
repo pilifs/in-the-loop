@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-131902-example-133-b9-own-checker-verified-reco",
+  "title": "Example 133 (B9, own checker, verified) recorded as a claim, an attempt and a bundle",
+  "description": "build.py now records each run as an attempt at a frozen claim (step 3b of llm-dlc/loops/build-orchestration.md): result.json gains claim (what is checked, its scope, and SHA-256 fingerprints of the patch and the copied sources before and after it, and for D1 the model files), attempt (engine, flags, tool identities, the bytecode built, the pipeline job's VERIFY_JOB_ID/VERIFY_SOURCE_COMMIT/VERIFY_WORKDIR, how the run ended, and for jvmcontract proofs whether exploration was shown complete), conclusion (established/refuted/unresolved per obligation) and bundle (each evidence file with its SHA-256). The runner writes into its own attempt directory, and nothing is published into the example's folder until the result validates against the schema and the files match the bundle; evidence of an earlier run that the bundle does not list is removed. The verdict and every flat field must be unchanged; the new blocks must be present, attempt.pipeline must name this job, and the example's folder must hold exactly the files its bundle lists. 133 is proved by the tool's own checker within the module's precondition: claim.scope.intendedInputs must hold that precondition, attempt.engine must be native and attempt.tools must name no JBMC.",
+  "kind": "example",
+  "capabilities": [
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "133"
+    ]
+  },
+  "expected": "example 133 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T13:19:02+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "the own checker proves it in 0.5 s"
+  },
+  "steps": [
+    {
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+  ]
+}

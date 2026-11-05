@@ -16,6 +16,12 @@ It exits 1 if any verdict differs from the example's expected verdict, so the ex
 a requested example was not executed (a real-world one, or one no app or runner takes: a `not-executed` line says
 why). It exits 2, running nothing, on an argument that is not the id of an example.
 
+The runner writes its evidence into a directory of its own, one per attempt; the claim it checks (what, over which
+scope, against which inputs, fingerprinted) is written there as claim.json before anything is built. result.json
+records the claim, the attempt, the conclusion and the bundle of evidence files with their hashes (see claim_record()
+and below), and nothing is published into the example's folder until the result validates against the schema and
+the bundle against the files; evidence of an earlier run that the bundle does not list is then removed.
+
 Approaches (the ids are those of examples/approaches.md):
   B8   behavioural contracts: every input of a finite domain, executed      (verify)
   B9   regression verification: old and new bytecode compared symbolically  (equivalence; JBMC)
@@ -37,7 +43,8 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
 A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
 router knows of it. Every example's tags must come from examples/tags.json.
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
-cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps. No Docker.
+cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps; the Python
+module jsonschema, without which no result is published. No Docker.
 """
 
 import atexit
@@ -51,6 +58,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -143,9 +151,10 @@ def main(argv):
             unexecuted.append(folder.name)
             continue
         print(f"{folder.name}: running ({example['approach']['id']})", flush=True)
-        result = run(folder, example)
-        (folder / "result.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
-        validate(result, "result.schema.json", folder / "result.json")
+        out = attempt_directory(folder)
+        result = run(folder, example, out)
+        check_result(out, result)  # nothing is published from a run whose result or bundle does not check
+        publish(folder, out, result)
         (folder / "README.md").write_text(render_example(folder, example, result))
         expected = f"EXPECTED {example['expected']['verdict'].upper()}{' VACUOUSLY' if example['expected'].get('vacuous') else ''}"
         if result["verdict"] is None:
@@ -327,7 +336,9 @@ def validate(document, schema_name, path):
     try:
         import jsonschema
     except ImportError:
-        return  # optional: the schemas are still the documentation of the format
+        # A result that cannot be checked is not published: install it (pip install jsonschema, or the
+        # python3-jsonschema package).
+        sys.exit(f"{path}: cannot be validated against {schema_name}: the Python module jsonschema is not installed")
     schema = json.loads((EXAMPLES / "schema" / schema_name).read_text())
     try:
         jsonschema.validate(document, schema)
@@ -432,18 +443,27 @@ def expectation(result, expected):
 # Running
 
 
-def run(folder, example):
+def run(folder, example, out):
     """Applies the patch to a copy of the repo, runs the module's tests and the approach's verifier, and collects
-    everything into the result dictionary. The approach-specific part is the runner; the rest is shared."""
+    everything into the result dictionary. The approach-specific part is the runner; the rest is shared.
+
+    The run is one attempt, in its own directory `out`: the claim is fingerprinted and written there (claim.json)
+    before anything is built, the runner writes its evidence there and nowhere else, and the result ends with the
+    claim, the attempt, the conclusion and the bundle of that evidence. main() publishes it once it is checked."""
     patch = (folder / example["change"]["patch"]).read_text()
     before, after = excerpts(patch, example["subject"]["file"], example["subject"].get("symbol"))
     p = plan(example)
     app, module = p["app"], p["module"]
+    out = Path(out)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         for part in p["build"]["copies"]:
             shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
         subprocess.run(["git", "apply", "-p1", "-"], input=patch, text=True, cwd=tmp, check=True)
+        claim = claim_record(example, p, patch, REPO, tmp)
+        (out / "claim.json").write_text(json.dumps(claim, indent=2, ensure_ascii=False) + "\n")
+        started = datetime.datetime.now(datetime.timezone.utc)
+        clock = time.monotonic()
 
         if app == "boxoffice":
             build = tmp / BUILD_ROOT
@@ -480,8 +500,14 @@ def run(folder, example):
             "sarif": "result.sarif",
             "output": "verifier-output.txt",
         }
-        RUNNERS[app][p["approach"]](folder, example, tmp, module, result)
-    finish(result, example)
+        RUNNERS[app][p["approach"]](out, example, tmp, module, result)
+        finish(result, example)
+        built = tmp / (f"{BUILD_ROOT}/{module}/build/classes/java/main" if app == "boxoffice" else f"{p['build']['root']}/build/main")
+        baseline = BEFORE_CLASSES.get(module if app == "boxoffice" else app) if p["approach"] == "B9" else None
+        attempt = attempt_record(claim, p, started, time.monotonic() - clock, result,
+                                 built if built.is_dir() else None, baseline)
+    result.update({"claim": claim, "attempt": attempt, "conclusion": conclusion_record(claim, attempt, result),
+                   "bundle": bundle_record(out)})
     return result
 
 
@@ -498,6 +524,223 @@ def finish(result, example):
         result["verdictLabel"] = no_verdict_label(result["execution"])
     result["expectation"] = expectation(result, example["expected"])
     result["matchesExpected"] = result["expectation"] == "yes"
+
+
+# Claims, attempts, conclusions and the evidence bundle. A run checks one claim: what is checked, over which scope,
+# against which inputs, fingerprinted and frozen before anything runs. The run is one attempt at it: the engine,
+# options and tools it ran with, the bytecode it built, where it ran, and how it ended. Changing the engine, a
+# timeout or a tool is another attempt at the same claim; changing the inputs, the array bound or the assumptions
+# is another claim, with another id. The conclusion is what the attempt established, refuted or left unresolved,
+# per obligation. The bundle lists every file the attempt left as evidence with its hash, so a page can tell its
+# evidence from another run's. All four sit next to the flat fields the pages are rendered from (open question 1
+# of llm-dlc/loops/build-orchestration.md: the flat result stays until the user decides to retire it).
+
+CLAIM_FORMAT = 1
+CONCLUSION = {"verified": "established", "violation": "refuted", "unverifiable": "unresolved"}
+# Files a run leaves as its evidence, besides result.json; a published bundle replaces every one of them.
+EVIDENCE = re.compile(r"^(result\.sarif|verifier-output\.txt|statement(-\d+)?\.java)$")
+
+
+def canonical_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
+def tree_digest(base, parts, ignore=IGNORE):
+    """The content of the files under `parts` of `base` as a run copies them (IGNORE applied, unless `ignore` is
+    None: bytecode is all class files): a SHA-256 over every file's path and SHA-256, and the number of files. None
+    when none of the parts exists or holds a file."""
+    files = []
+    for part in parts:
+        top = Path(base) / part
+        if not top.exists():
+            continue
+        for directory, dirs, names in os.walk(top):
+            ignored = ignore(directory, dirs + names) if ignore else set()
+            dirs[:] = sorted(d for d in dirs if d not in ignored)
+            for name in sorted(n for n in names if n not in ignored):
+                path = Path(directory) / name
+                if path.is_file():
+                    files.append((path.relative_to(base).as_posix(), file_digest(path)))
+    if not files:
+        return None
+    return {"sha256": canonical_digest(sorted(files)), "files": len(files)}
+
+
+def claim_record(example, p, patch, before, after):
+    """The claim a run checks, frozen before it runs: the plan's statement of what is checked, its scope (the array
+    bound and assumptions a proof is over), and the fingerprints of its inputs: the patch, the sources before and
+    after it (the app and what the build copies, models, contracts and build files among them), and for D1 the
+    model's files. Its id is the digest of all of it, so another input or scope is another claim."""
+    scope = {}
+    if p["approach"] in ("B9", "B11"):
+        scope["maxArrayLength"] = example["approach"].get("maxArrayLength")  # None: the tool's default bound
+    if p["approach"] == "B9":
+        scope["intendedInputs"] = p["claim"].get("intendedInputs")
+    inputs = {"patch": hashlib.sha256(patch.encode()).hexdigest(),
+              "before": tree_digest(before, p["build"]["copies"]), "after": tree_digest(after, p["build"]["copies"]),
+              # Gradle resolves Box Office's libraries by the versions its build files (fingerprinted with the sources)
+              # declare; the artifacts themselves are not fingerprinted. The javac apps depend on the JDK alone.
+              "dependencies": "declared in the build files" if p["build"]["adapter"] == "gradle" else "the JDK"}
+    if p["model"]:
+        inputs["model"] = {f: file_digest(Path(after) / f)
+                           for f in [p["model"]["spec"], *(c["cfg"] for c in p["model"]["configurations"])]}
+    body = {"format": CLAIM_FORMAT, "example": example["id"], "statement": p["claim"], "scope": scope, "inputs": inputs}
+    return {"id": canonical_digest(body)[:16], **body}
+
+
+IDENTITY = {}
+
+
+def tool_version(command):
+    """A tool's identity as it reports itself, or None when it cannot be asked."""
+    try:
+        proc = subprocess.run(command, text=True, capture_output=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    text = (proc.stdout + proc.stderr).strip()
+    return text.splitlines()[0] if proc.returncode == 0 and text else None
+
+
+def attempt_tools(p):
+    """What the attempt ran with, by the tools its plan names: Java and javac, jvmcontract by the digest of its
+    executable, JBMC and Gradle by their versions, TLC by the digest of its jar. Asked once per process."""
+    names = ["java", *p["tools"]["required"], *p["tools"]["optional"]]
+    out = {}
+    for name in dict.fromkeys(names):
+        if name not in IDENTITY:
+            if name == "java":
+                IDENTITY[name] = tool_version([java(), "-version"])
+            elif name == "javac":
+                javac_exe = str(Path(java()).parent / "javac") if os.environ.get("JAVA_HOME") else "javac"
+                IDENTITY[name] = tool_version([javac_exe, "-version"])
+            elif name == "jvmcontract":
+                IDENTITY[name] = file_digest(jvmcontract())
+            elif name == "jbmc":
+                IDENTITY[name] = tool_version(["jbmc", "--version"])  # what jvmcontract runs
+            elif name == "tlc":
+                IDENTITY[name] = file_digest(os.environ.get("TLA2TOOLS_JAR") or str(Path.home() / "tools/tla2tools.jar"))
+            elif name == "gradle":
+                properties = REPO / BUILD_ROOT / "gradle/wrapper/gradle-wrapper.properties"
+                found = re.search(r"distributionUrl=.*/(gradle-[^/]+)\.zip", properties.read_text()) if properties.is_file() else None
+                IDENTITY[name] = found.group(1) if found else None
+        out[name] = IDENTITY[name]
+    return out
+
+
+def exploration_record(result):
+    """For a symbolic proof: the bounds it searched within, and whether the checker showed its exploration complete
+    within them. A verified jvmcontract proof checks unwinding assertions (an unwinding bound reached is no proof),
+    so it is complete within the array bound; a violation needs no completeness; anything else is unknown."""
+    search = result.get("search") or next((q["search"] for q in result.get("properties") or [] if q.get("search")), None) or {}
+    proofs = [result.get("proof")] + [q.get("proof") for q in result.get("properties") or []]
+    complete = None
+    if result.get("verdict") == "verified" and all(q and "with unwinding assertions" in q for q in proofs if q is not None) \
+            and any(proofs):
+        complete = True
+    return {"unwind": search.get("unwind"), "maxArrayLength": search.get("maxArrayLength"), "complete": complete}
+
+
+def attempt_record(claim, p, started, seconds, result, after_classes, before_classes):
+    """One attempt at the claim: the engine and options, the tools, the bytecode it built from the claim's sources,
+    the pipeline job it ran in (VERIFY_JOB_ID, VERIFY_SOURCE_COMMIT and VERIFY_WORKDIR, when it ran in one), when
+    and how long, and how it ended."""
+    job = {"jobId": os.environ.get("VERIFY_JOB_ID"), "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),
+           "workdir": os.environ.get("VERIFY_WORKDIR")}
+    record = {"id": f"{started:%Y%m%dT%H%M%SZ}-{os.urandom(4).hex()}", "claim": claim["id"],
+              "startedAt": started.isoformat(timespec="seconds"), "seconds": round(seconds, 1),
+              "engine": p["engine"], "options": p["options"], "tools": attempt_tools(p),
+              "bytecode": {"before": tree_digest(before_classes, ["."], None) if before_classes else None,
+                           "after": tree_digest(after_classes, ["."], None) if after_classes else None},
+              "pipeline": job if any(job.values()) else None, "execution": result["execution"]}
+    if p["approach"] in ("B9", "B11") and p["app"] != "boxoffice":
+        record["exploration"] = exploration_record(result)
+    return record
+
+
+def conclusion_record(claim, attempt, result):
+    """What the attempt concluded about the claim: established, refuted or unresolved (None without a verdict), and
+    the same for each obligation it checked: each property of a B11 target, each configuration of a D1 model, and
+    each generated operator's contract as built."""
+    status = CONCLUSION.get(result["verdict"]) if result["verdict"] else None
+    obligations = []
+    for i, q in enumerate(result.get("properties") or [], 1):
+        obligations.append({"name": q.get("harness") or f"property-{i}", "statement": q["assert"],
+                            "status": CONCLUSION.get(q["verdict"])})
+    for c in result.get("configurations") or []:
+        obligations.append({"name": c["label"], "statement": c["cfg"],
+                            "status": CONCLUSION.get(c["verdict"]) if c.get("status") == "completed" else None})
+    for m in result.get("modelContracts") or []:
+        obligations.append({"name": m["symbol"], "statement": "the contract the operator is generated from, as built",
+                            "status": "established" if m["connection"] == "verified" or m.get("allowed") else "refuted"})
+    return {"claim": claim["id"], "attempt": attempt["id"], "status": status,
+            "vacuous": bool((result.get("coverage") or {}).get("vacuous")), "expectation": result["expectation"],
+            "obligations": obligations}
+
+
+def referenced_files(result):
+    """The evidence files the result names."""
+    names = [result.get("sarif"), result.get("output"), result.get("statement")]
+    names += [q.get("statement") for q in result.get("properties") or []]
+    return sorted({n for n in names if n})
+
+
+def bundle_record(out):
+    """The attempt's evidence files in its directory, each with its SHA-256 and size."""
+    return {"artifacts": [{"path": f.name, "sha256": file_digest(f), "bytes": f.stat().st_size}
+                          for f in sorted(Path(out).iterdir()) if f.is_file() and EVIDENCE.match(f.name)]}
+
+
+def bundle_problems(directory, result):
+    """Why the evidence in `directory` is not the bundle the result lists, or an empty list: a file the result names
+    that the bundle does not list, a listed file missing or changed, or an evidence file of another run beside it."""
+    bundle = result.get("bundle")
+    if not bundle:
+        return ["the result lists no bundle"]
+    listed = {a["path"]: a for a in bundle["artifacts"]}
+    problems = [f"{name} is named by the result but not in its bundle" for name in referenced_files(result) if name not in listed]
+    for name, artifact in sorted(listed.items()):
+        digest = file_digest(Path(directory) / name)
+        if digest is None:
+            problems.append(f"{name} is missing")
+        elif digest != artifact["sha256"]:
+            problems.append(f"{name} is not the file the run left (its SHA-256 differs)")
+    for f in sorted(Path(directory).iterdir()):
+        if f.is_file() and EVIDENCE.match(f.name) and f.name not in listed:
+            problems.append(f"{f.name} is not in the bundle: it comes from another run")
+    return problems
+
+
+def check_result(out, result):
+    """The whole result validated before anything is published: the schema, then the bundle against the attempt's
+    directory. Exits on the first problem, leaving the example's folder as it was."""
+    validate(result, "result.schema.json", Path(out) / "result.json")
+    problems = bundle_problems(out, result)
+    if problems:
+        sys.exit(f"{out}: the run's evidence is not its bundle: " + "; ".join(problems))
+
+
+def attempt_directory(folder):
+    """A new, empty directory for one attempt at an example, in the run's scratch directory."""
+    out = scratch() / "attempts" / folder.name[:3]
+    out.mkdir(parents=True, exist_ok=True)
+    return Path(tempfile.mkdtemp(prefix="attempt-", dir=out))
+
+
+def publish(folder, out, result):
+    """Publishes a checked bundle into the example's folder: each listed file by an atomic rename, then every
+    evidence file of an earlier run that the bundle does not list is removed, and result.json goes last. A run
+    interrupted on the way leaves a result.json whose bundle the files do not match, which bundle_problems() shows."""
+    listed = [a["path"] for a in result["bundle"]["artifacts"]]
+    for name in listed:
+        staged = folder / f".{name}.publishing"
+        shutil.copyfile(Path(out) / name, staged)
+        staged.replace(folder / name)
+    for f in folder.iterdir():
+        if f.is_file() and EVIDENCE.match(f.name) and f.name not in listed:
+            f.unlink()
+    staged = folder / ".result.json.publishing"
+    staged.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    staged.replace(folder / "result.json")
 
 
 def update_contracts(build, module, result):

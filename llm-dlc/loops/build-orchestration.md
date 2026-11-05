@@ -272,6 +272,41 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Jobs `20261105-130853-example-{145-b9,113-b12}-…`. 145 is native with array bound 12, and 113 is a B12 run that
     now requires jvmcontract. The twenty-five earlier jobs had not run at the start of this cycle.
   - Next: [3b](#phase-3-one-plan-durable-evidence), the claim, attempt, conclusion and evidence bundle.
+- **3b, first half done** (2026-11-05): claim, attempt, conclusion and bundle in `build.py`. Typed witnesses are the
+  second half. Under open question 1's default, `result.json` gains four blocks next to the flat fields, which stay as
+  they were.
+  - `claim` is frozen before anything is built, and written into the attempt's directory as `claim.json`. It holds the
+    plan's statement and the scope (array bound, intended inputs). Its input fingerprints cover the patch, the copied
+    sources before and after it (build output left out; build files, contracts and models included), how dependencies
+    are pinned, and for D1 each model file. Its id is their digest, so another input or scope is another claim, while the
+    engine is not part of it.
+  - `attempt` holds the engine and flags, the tools' identities, the bytecode built (after, and for B9 before), the
+    pipeline job (`VERIFY_*`), the time, the execution, and for jvmcontract proofs `exploration` (`complete` only for a
+    verified proof, which checks unwinding assertions).
+  - `conclusion` holds the status per obligation: properties, configurations, and operators' contracts as built.
+  - `bundle` lists each evidence file with its SHA-256.
+  - Runners write into the attempt's directory. `check_result()` validates the schema and then the bundle against the
+    files before anything is published. `publish()` moves the files in, removes earlier evidence the bundle doesn't
+    list, and writes `result.json` last. `bundle_problems()` names a file that isn't the run's.
+  - A missing `jsonschema` now stops the run instead of skipping the check.
+  - The plan's statement, engine, flags and model files are recorded in `claim` and `attempt`. Its tool list is recorded
+    as identities.
+  - Tests: `test_build.py` has 102 tests, `test_pipeline.py` 20. The new ones cover:
+    - fingerprints that ignore build output;
+    - a claim id that moves with the patch, the sources, the bound and the scope, but not with the engine;
+    - a D1 model's files;
+    - a bundle mismatch, a stray file from another run, and a named file missing from the bundle;
+    - publishing, `main()` refusing to publish a mismatched bundle, and `jsonschema` missing;
+    - `run()` itself on 126's real patch, with its runner mocked;
+    - obligations, and exploration completeness.
+  - A real run of 025 in a temporary copy of `examples/` gave the four blocks, flat fields identical to the committed
+    result, and a bundle matching its folder. No page moved under `--render-only`, and no committed result was rewritten.
+  - Jobs `20261105-131902-example-{129-b9,133-b9,071-b11,111-b12,062-d1,014-b8}-…`. The twenty-seven earlier jobs had not
+    run at the start of this cycle.
+  - Next: 3b's second half, in `lib/`. Witnesses keep typed values instead of strings: each argument's name, Java type
+    and value, exact for long, float and double. They also record the target's descriptor, how the arguments map onto
+    the receiver's record components and the previous version's parameters, and the class files' identities. The
+    result records them, enough to rebuild the call without the text. Then [3c](#phase-3-one-plan-durable-evidence).
 
 ## Open questions
 

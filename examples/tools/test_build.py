@@ -202,6 +202,15 @@ class ExpectationTest(unittest.TestCase):
         self.assertGreater(checked, 100)
 
 
+def left_evidence(result, out, output="the verifier's output\n"):
+    """What a runner leaves in the attempt's directory, and the bundle run() lists of it: its console output, no
+    report."""
+    (Path(out) / "verifier-output.txt").write_text(output)
+    result["sarif"] = None
+    result["bundle"] = build.bundle_record(out)
+    return result
+
+
 class RunnerCase(unittest.TestCase):
     """A runner given the verifier's process: what it records, and what it leaves in the example's folder."""
 
@@ -993,11 +1002,11 @@ class MainTest(unittest.TestCase):
         dir = Path(tempfile.mkdtemp(prefix="build-test-"))
         self.addCleanup(shutil.rmtree, dir)
 
-        def run(f, ex):
+        def run(f, ex, out):
             result = empty_result()
             result["execution"] = build.execution_status(-9, "")
             build.finish(result, ex)
-            return result
+            return left_evidence(result, out)
 
         out = io.StringIO()
         with mock.patch.object(build, "run", side_effect=run), mock.patch.object(build, "EXAMPLES", dir), \
@@ -1026,13 +1035,13 @@ class SelectionTest(unittest.TestCase):
         self.ran = []
 
     def main(self, *argv):
-        def run(folder, ex):
+        def run(folder, ex, out):
             self.ran.append(folder.name[:3])
             result = empty_result()
             result["execution"] = build.execution_status(0, "VERIFICATION FAILED")
             result["verdict"] = ex["expected"]["verdict"]
             build.finish(result, ex)
-            return result
+            return left_evidence(result, out)
 
         out, err = io.StringIO(), io.StringIO()
         with mock.patch.object(build, "run", side_effect=run), mock.patch.object(build, "EXAMPLES", self.dir), \
@@ -1256,6 +1265,229 @@ class PlanTest(unittest.TestCase):
             q = build.plan(ex)
             self.assertEqual(parts["requires"], q["tools"]["required"] + q["tools"]["optional"], ex["id"])
             self.assertEqual(parts["capability"], q["approach"])
+
+
+class EvidenceTest(unittest.TestCase):
+    """Step 3b: the claim is fingerprinted and frozen before the run, the run is an attempt in its own directory, and
+    what is published is one checked bundle, so a report names its inputs and cannot mix runs."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, self.dir)
+        self.source = next(build.EXAMPLES.glob("126-*"))
+        self.example = json.loads((self.source / "example.json").read_text())
+        self.patch = (self.source / "change.patch").read_text()
+
+    def tree(self, name, files):
+        root = self.dir / name
+        for path, text in files.items():
+            (root / path).parent.mkdir(parents=True, exist_ok=True)
+            (root / path).write_text(text)
+        return root
+
+    def claim(self, example=None, patch=None, after=None):
+        example = example or self.example
+        q = build.plan(example)
+        part = q["build"]["copies"][0]
+        before = self.tree("before", {f"{part}/src/A.java": "class A {}"})
+        after = after or self.tree("after", {f"{part}/src/A.java": "class A { int x; }"})
+        return build.claim_record(example, q, patch or self.patch, before, after)
+
+    def test_the_sources_are_fingerprinted_without_build_output(self):
+        a = self.tree("a", {"app/src/A.java": "class A {}"})
+        b = self.tree("b", {"app/src/A.java": "class A {}", "app/build/main/A.class": "\xca\xfe", "app/src/A.class": "x"})
+        c = self.tree("c", {"app/src/A.java": "class A { }"})
+        self.assertEqual(build.tree_digest(a, ["app"]), build.tree_digest(b, ["app"]))
+        self.assertNotEqual(build.tree_digest(a, ["app"]), build.tree_digest(c, ["app"]))
+        self.assertEqual(build.tree_digest(a, ["app"])["files"], 1)
+        self.assertIsNone(build.tree_digest(a, ["missing"]))
+
+    def test_another_input_or_scope_is_another_claim_and_another_engine_is_not(self):
+        claim = self.claim()
+        self.assertRegex(claim["id"], r"^[0-9a-f]{16}$")
+        self.assertEqual(claim["id"], self.claim()["id"])
+        self.assertNotEqual(claim["inputs"]["before"], claim["inputs"]["after"])
+        bound = {**self.example, "approach": {**self.example["approach"], "maxArrayLength": 12}}
+        scoped = {**self.example, "change": {**self.example["change"], "intendedInputs": "attempt < 0"}}
+        native = {**self.example, "approach": {**self.example["approach"], "engine": "native"}}
+        self.assertNotEqual(self.claim(bound)["id"], claim["id"])
+        self.assertNotEqual(self.claim(scoped)["id"], claim["id"])
+        self.assertNotEqual(self.claim(patch=self.patch + "\n")["id"], claim["id"])
+        part = build.plan(self.example)["build"]["copies"][0]
+        other = self.tree("other", {f"{part}/src/A.java": "class A { long x; }"})
+        self.assertNotEqual(self.claim(after=other)["id"], claim["id"])
+        self.assertEqual(self.claim(native)["id"], claim["id"])  # the engine belongs to the attempt
+        self.assertEqual(claim["scope"], {"maxArrayLength": None, "intendedInputs": None})
+
+    def test_a_d1_claim_fingerprints_its_model(self):
+        ex = json.loads(next(build.EXAMPLES.glob("072-*")).joinpath("example.json").read_text())
+        q = build.plan(ex)
+        files = {q["model"]["spec"]: "---- MODULE M ----\n====", **{c["cfg"]: "INIT Init" for c in q["model"]["configurations"]}}
+        after = self.tree("model", files)
+        claim = build.claim_record(ex, q, "patch", after, after)
+        self.assertEqual(set(claim["inputs"]["model"]), set(files))
+        self.assertTrue(all(claim["inputs"]["model"].values()))
+        self.assertEqual(claim["scope"], {})
+
+    def bundle(self, files, **result):
+        out = self.dir / "attempt"
+        out.mkdir(exist_ok=True)
+        for name, text in files.items():
+            (out / name).write_text(text)
+        result = {"sarif": "result.sarif" if "result.sarif" in files else None, "output": "verifier-output.txt",
+                  "statement": "statement.java" if "statement.java" in files else None, **result}
+        result["bundle"] = build.bundle_record(out)
+        return out, result
+
+    def test_a_bundle_lists_the_evidence_and_shows_what_is_not_its(self):
+        out, result = self.bundle({"verifier-output.txt": "✗", "result.sarif": "{}", "statement.java": "class H {}", "claim.json": "{}"})
+        self.assertEqual([a["path"] for a in result["bundle"]["artifacts"]], ["result.sarif", "statement.java", "verifier-output.txt"])
+        self.assertEqual(build.bundle_problems(out, result), [])
+        (out / "statement.java").write_text("class Other {}")
+        (out / "statement-2.java").write_text("class FromAnotherRun {}")
+        problems = build.bundle_problems(out, result)
+        self.assertIn("statement.java is not the file the run left (its SHA-256 differs)", problems)
+        self.assertIn("statement-2.java is not in the bundle: it comes from another run", problems)
+        (out / "result.sarif").unlink()
+        self.assertIn("result.sarif is missing", build.bundle_problems(out, result))
+        self.assertEqual(build.bundle_problems(out, {"sarif": None}), ["the result lists no bundle"])
+
+    def test_a_file_the_result_names_must_be_in_the_bundle(self):
+        out, result = self.bundle({"verifier-output.txt": "✓"}, properties=[{"statement": "statement-1.java"}])
+        self.assertEqual(build.bundle_problems(out, result), ["statement-1.java is named by the result but not in its bundle"])
+        with self.assertRaises(SystemExit), mock.patch.object(build, "validate"):
+            build.check_result(out, result)
+
+    def test_publishing_replaces_every_earlier_evidence_file(self):
+        folder = self.tree("example", {"example.json": "{}", "change.patch": "", "README.md": "page",
+                                       "result.sarif": "old", "statement-3.java": "old", "verifier-output.txt": "old"})
+        out, result = self.bundle({"verifier-output.txt": "new", "statement.java": "class H {}"})
+        build.publish(folder, out, result)
+        self.assertEqual(sorted(f.name for f in folder.iterdir()),
+                         ["README.md", "change.patch", "example.json", "result.json", "statement.java", "verifier-output.txt"])
+        self.assertEqual((folder / "verifier-output.txt").read_text(), "new")
+        self.assertEqual(build.bundle_problems(folder, json.loads((folder / "result.json").read_text())), [])
+
+    def test_a_result_is_not_published_without_jsonschema(self):
+        with mock.patch.dict(sys.modules, {"jsonschema": None}), self.assertRaises(SystemExit) as stop:
+            build.validate({}, "result.schema.json", Path("result.json"))
+        self.assertIn("jsonschema is not installed", str(stop.exception))
+
+    def test_main_publishes_nothing_from_a_run_whose_evidence_is_not_its_bundle(self):
+        dir = self.dir / "examples"
+        shutil.copytree(self.source, dir / self.source.name)
+        shutil.copy(build.EXAMPLES / "tags.json", dir / "tags.json")
+        folder = dir / self.source.name
+        before = {f.name: f.read_bytes() for f in folder.iterdir()}
+
+        def run(f, ex, out):
+            result = empty_result()
+            build.finish(result, ex)
+            left_evidence(result, out)
+            (out / "statement.java").write_text("written after the bundle was listed")
+            return result
+
+        with mock.patch.object(build, "run", side_effect=run), mock.patch.object(build, "EXAMPLES", dir), \
+                mock.patch.object(build, "render_index"), mock.patch.object(build, "validate"), \
+                contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as stop:
+            build.main(["126"])
+        self.assertIn("statement.java is not in the bundle", str(stop.exception))
+        self.assertEqual({f.name: f.read_bytes() for f in folder.iterdir()}, before)
+
+    def test_main_publishes_the_bundle_and_removes_an_earlier_runs_statements(self):
+        dir = self.dir / "examples"
+        shutil.copytree(self.source, dir / self.source.name)
+        shutil.copy(build.EXAMPLES / "tags.json", dir / "tags.json")
+        folder = dir / self.source.name
+        (folder / "statement-2.java").write_text("class FromAnEarlierRun {}")
+        ran = []
+
+        def run(f, ex, out):
+            ran.append(out)
+            result = empty_result()
+            result["execution"] = build.execution_status(0, "VERIFICATION FAILED")
+            result["verdict"] = "violation"
+            build.finish(result, ex)
+            return left_evidence(result, out, "this run's output\n")
+
+        with mock.patch.object(build, "run", side_effect=run), mock.patch.object(build, "EXAMPLES", dir), \
+                mock.patch.object(build, "render_example", return_value="page"), mock.patch.object(build, "render_index"), \
+                mock.patch.object(build, "validate"), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(build.main(["126"]), 0)
+        self.assertNotEqual(ran[0], folder)
+        self.assertFalse((folder / "statement-2.java").exists())
+        self.assertFalse((folder / "statement.java").exists())  # this run left none
+        self.assertFalse((folder / "result.sarif").exists())
+        self.assertEqual((folder / "verifier-output.txt").read_text(), "this run's output\n")
+        self.assertEqual(build.bundle_problems(folder, json.loads((folder / "result.json").read_text())), [])
+
+    def test_a_run_freezes_its_claim_before_the_runner_and_records_the_attempt(self):
+        """run() itself, on 126's real patch and Crosscut's real sources, with the tests and the runner mocked."""
+        out = self.dir / "attempt"
+        out.mkdir()
+        seen = {}
+
+        def runner(folder, ex, root, module, result):
+            seen["folder"] = folder
+            seen["claim"] = json.loads((folder / "claim.json").read_text())
+            (root / build.TOOL_APPS["crosscut"]["root"] / "build/main/a").mkdir(parents=True)
+            (root / build.TOOL_APPS["crosscut"]["root"] / "build/main/a/B.class").write_bytes(b"\xca\xfe\xba\xbe")
+            (folder / "verifier-output.txt").write_text("✓\n")
+            (folder / "statement.java").write_text("class EquivalenceHarness {}\n")
+            result.update({"execution": build.execution_status(0, "✓"), "verdict": "verified", "verdictLabel": "✓ Verified",
+                           "sarif": None, "statement": "statement.java",
+                           "proof": "JBMC 6.11.0: 3 properties proved over x: int in 1.0 s; loops unwound 32 times with unwinding assertions",
+                           "search": {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 1.0, "properties": 3, "unwind": 32,
+                                      "maxArrayLength": 8, "stage": None}})
+
+        env = {"VERIFY_JOB_ID": "job-1", "VERIFY_SOURCE_COMMIT": "abc", "VERIFY_WORKDIR": "/w"}
+        with mock.patch.dict(build.RUNNERS["crosscut"], {"B9": runner}), \
+                mock.patch.object(build, "tool_tests", return_value={"task": "t", "passed": True, "failures": []}), \
+                mock.patch.object(build, "attempt_tools", return_value={"java": "openjdk 25"}), \
+                mock.patch.dict(build.os.environ, env):
+            result = build.run(self.source, self.example, out)
+        self.assertEqual(seen["folder"], out)
+        self.assertEqual(seen["claim"], result["claim"])
+        self.assertEqual(result["claim"]["statement"]["target"], self.example["subject"]["symbol"])
+        self.assertNotEqual(result["claim"]["inputs"]["before"], result["claim"]["inputs"]["after"])
+        attempt = result["attempt"]
+        self.assertEqual((attempt["claim"], attempt["pipeline"]), (result["claim"]["id"], {"jobId": "job-1", "sourceCommit": "abc", "workdir": "/w"}))
+        self.assertEqual(attempt["exploration"], {"unwind": 32, "maxArrayLength": 8, "complete": True})
+        self.assertEqual(attempt["bytecode"]["after"]["files"], 1)
+        self.assertEqual(attempt["options"], ["--unwind", "32"])
+        self.assertEqual(result["conclusion"], {"claim": result["claim"]["id"], "attempt": attempt["id"], "status": "established",
+                                                "vacuous": False, "expectation": "no", "obligations": []})
+        self.assertEqual([a["path"] for a in result["bundle"]["artifacts"]], ["statement.java", "verifier-output.txt"])
+        import jsonschema
+        jsonschema.validate(result, json.loads((build.EXAMPLES / "schema/result.schema.json").read_text()))
+        self.assertEqual(build.bundle_problems(out, result), [])
+
+    def test_a_conclusion_keeps_each_obligation(self):
+        claim, attempt = {"id": "c"}, {"id": "a"}
+        b11 = {"verdict": "violation", "expectation": "yes", "coverage": None, "properties": [
+            {"harness": "property-1", "assert": "result >= 0", "verdict": "verified"},
+            {"harness": "property-2", "assert": "result < 10", "verdict": "violation"},
+            {"harness": "property-3", "assert": "result != 3", "verdict": "unverifiable"}]}
+        conclusion = build.conclusion_record(claim, attempt, b11)
+        self.assertEqual(conclusion["status"], "refuted")
+        self.assertEqual([o["status"] for o in conclusion["obligations"]], ["established", "refuted", "unresolved"])
+        d1 = {"verdict": None, "expectation": "not-evaluable", "coverage": {"vacuous": False},
+              "configurations": [{"label": "the model", "cfg": "M.cfg", "verdict": "verified", "status": "completed"},
+                                 {"label": "inductive", "cfg": "I.cfg", "verdict": "unverifiable", "status": "timed-out"}],
+              "modelContracts": [{"symbol": "a.B#decide", "connection": "derived", "allowed": False}]}
+        conclusion = build.conclusion_record(claim, attempt, d1)
+        self.assertIsNone(conclusion["status"])
+        self.assertEqual([o["status"] for o in conclusion["obligations"]], ["established", None, "refuted"])
+
+    def test_exploration_is_complete_only_for_a_proof_with_unwinding_assertions(self):
+        proved = "JBMC 6.11.0: 3 properties proved over x: int in 1.0 s; loops unwound 16 times with unwinding assertions"
+        search = {"unwind": 16, "maxArrayLength": 8}
+        self.assertTrue(build.exploration_record({"verdict": "verified", "proof": proved, "search": search})["complete"])
+        self.assertIsNone(build.exploration_record({"verdict": "violation", "proof": "found by JBMC", "search": search})["complete"])
+        self.assertIsNone(build.exploration_record({"verdict": "unverifiable", "proof": None, "search": None})["complete"])
+        several = {"verdict": "verified", "proof": proved, "search": None,
+                   "properties": [{"proof": proved, "search": search}, {"proof": "proved somehow", "search": search}]}
+        self.assertEqual(build.exploration_record(several), {"unwind": 16, "maxArrayLength": 8, "complete": None})
 
 
 class SchemaTest(unittest.TestCase):

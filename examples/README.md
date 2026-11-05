@@ -496,6 +496,34 @@ own run without a verdict, and the ones before it keep their results. The result
 (the pipeline's own state, so a job run again after a timeout picks up where it stopped), else in the git-ignored
 `examples/.checkpoints`. `BUILD_CHECKPOINTS=off` keeps none. A run that did not complete is never kept.
 
+Each run checks one **claim**, and is one **attempt** at it. Since 2026-11-05 `result.json` records both next to the
+flat fields, with the **conclusion** and the **bundle** of evidence:
+
+- `claim` is frozen before anything is built, and written into the attempt's directory as `claim.json`. It holds what
+  is checked (the plan's claim), its scope (B9 and B11: the array bound, and for B9 the intended inputs), and the
+  fingerprints of its inputs: the patch, the files the run copies before and after it (the app's sources, contracts,
+  models and build files, leaving build output out), how dependencies are pinned, and for D1 each model file. Its `id`
+  is a digest of all of that, so another input or a narrower scope is another claim.
+- `attempt` is what this run did: the engine and flags, each tool's identity, the bytecode built from the claim's
+  sources (the patched classes, and for B9 the unpatched ones too), the pipeline job it ran in (`VERIFY_JOB_ID`,
+  `VERIFY_SOURCE_COMMIT`, `VERIFY_WORKDIR`), when it started, how long it took, and how it ended. Another engine, timeout
+  or tool is another attempt at the same claim. For B9 and B11 through jvmcontract, `exploration` records the unwinding
+  and array bounds, and whether the checker showed its exploration complete within them. A verified proof checks
+  unwinding assertions, so it is complete; otherwise completeness is unknown.
+- `conclusion` says what the attempt did with the claim: `established`, `refuted`, `unresolved`, or null without a
+  verdict. It does the same for each obligation: a B11 target's properties, a D1 model's configurations, and each generated
+  operator's contract as built.
+- `bundle` lists each evidence file the run left (`verifier-output.txt`, `result.sarif`, `statement.java`,
+  `statement-N.java`) with its SHA-256 and size.
+
+The runner writes its evidence into the attempt's own directory, never into the example's folder. The whole result is
+checked against the schema, and the bundle against that directory, before anything is published. A missing
+`jsonschema` module is an error: a result that can't be checked is not published. Only then are the files moved into
+the example's folder. Evidence files from an earlier run that the bundle doesn't list are removed, and `result.json`
+goes last. A file that no longer matches its bundle entry, or one the bundle doesn't list, is not this run's evidence.
+`bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks, and their
+pages render as before.
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence.
