@@ -72,7 +72,7 @@ Replace `(hash & 0x7fffffff) % numPartitions` with `Math.floorMod(hash, numParti
 
 ## What the verifier found
 
-The two versions disagree. The prover found this input, and the generator replayed it on the JVM against both versions:
+The two versions disagree. The prover found this input, and the verifier replayed it in jvmcontract's bytecode interpreter against both versions:
 
 | Input | Before | After |
 |---|---|---|

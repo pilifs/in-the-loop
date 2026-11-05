@@ -31,6 +31,28 @@ EQUIVALENCE_VIOLATION = """\
     after:  2
   (found by JBMC 6.11.0 in 1.0 s, replayed in the interpreter; domain x: int)
 """
+
+
+def equivalence_json(root, verdict="violation", **fields):
+    """What `jvmcontract equivalence --json` prints: the library's Outcome, its paths under the patched copy `root`."""
+    work = f"{root}/examples/apps/crosscut/build/equivalence"
+    outcome = {"verdict": verdict, "target": "a.B#m", "domain": "x: int", "counterexample": None, "proof": None,
+               "problem": None, "statement": f"{work}/harness/EquivalenceHarness.java", "findings": [],
+               "output": EQUIVALENCE_VIOLATION if verdict == "violation" else "✓ a.B#m is equivalent\n", "work": work,
+               "search": {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 1.04, "properties": 3, "unwind": 16,
+                          "max_array_length": 8, "stage": "[0:20]" if verdict == "violation" else None}}
+    if verdict == "violation":
+        outcome.update({
+            "counterexample": {"input": "m(x=1)", "before": "1", "after": "2", "values": ["1"], "found": "m(x=17)", "shrink_runs": 4},
+            "proof": f"found by JBMC 6.11.0 in 1.0 s searching inputs in [0:20] as m(x=17), shrunk to the input above in 4 "
+                     f"interpreter runs, replayed in the interpreter; domain x: int",
+            "replay": {"by": "interpreter", "reproduced": True}})
+    elif verdict == "verified":
+        outcome["proof"] = "JBMC 6.11.0: 3 properties proved over x: int in 1.0 s; loops unwound 16 times with unwinding assertions"
+    outcome.update(fields)
+    return json.dumps(outcome)
+
+
 PROPERTY_VIOLATION = """\
 ✗ a.B#m violated: `result >= 0`:
   m(x=-1)
@@ -201,12 +223,104 @@ class RunnerTest(unittest.TestCase):
         self.assertEqual(result["execution"]["status"], "tool-error")
         self.assertIn("no class a.B", result["execution"]["reason"])
 
+    def harness(self):
+        """The statement the library writes, which the runner copies into the example's folder."""
+        harness = self.build / "build/equivalence/harness"
+        harness.mkdir(parents=True, exist_ok=True)
+        (harness / "EquivalenceHarness.java").write_text("class EquivalenceHarness { /* this run's */ }")
+
     def test_equivalence_violation_with_its_witness_and_report(self):
-        result = self.run_runner(build.run_tool_equivalence, proc(1, EQUIVALENCE_VIOLATION), example(), report="equivalence.sarif")
+        self.harness()
+        result = self.run_runner(build.run_tool_equivalence, proc(1, equivalence_json(self.root)), example(), report="equivalence.sarif")
         self.assertEqual((result["execution"]["status"], result["verdict"]), ("completed", "violation"))
-        self.assertEqual(result["counterexamples"], [{"input": "m(x=1)", "contract": "1", "actual": "2"}])
+        self.assertEqual(result["counterexamples"], [{"input": "m(x=1)", "contract": "1", "actual": "2", "found": "m(x=17)", "shrinkRuns": 4}])
         self.assertTrue(result["matchesExpected"])
         self.assertTrue((self.folder / "result.sarif").exists())
+        self.assertEqual(result["replay"], {"by": "interpreter", "reproduced": True})
+        self.assertEqual(result["search"], {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 1.04, "properties": 3,
+                                            "unwind": 16, "maxArrayLength": 8, "stage": "[0:20]"})
+        self.assertEqual((result["domain"], result["problem"]), ("x: int", None))
+        self.assertTrue(result["proof"].startswith("found by JBMC 6.11.0 in 1.0 s searching inputs in [0:20]"))
+        self.assertIn("this run's", (self.folder / "statement.java").read_text())
+        # The console output is the outcome's text, as without --json, and not the JSON.
+        self.assertEqual((self.folder / "verifier-output.txt").read_text(), EQUIVALENCE_VIOLATION)
+
+    def test_equivalence_is_asked_for_its_json_outcome(self):
+        commands = []
+        def fake(command, **kwargs):
+            commands.append(command)
+            return proc(0, equivalence_json(self.root, "verified"))
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_equivalence(self.folder, example(verdict="verified"), self.root, "crosscut", empty_result())
+        self.assertIn("--json", commands[0])
+
+    def test_text_output_is_not_an_outcome(self):
+        """The text the tool prints without --json is no longer read as a verdict: the runner asked for JSON."""
+        result = self.run_runner(build.run_tool_equivalence, proc(1, EQUIVALENCE_VIOLATION), example(), report="equivalence.sarif")
+        self.assertEqual((result["execution"]["status"], result["verdict"], result["counterexamples"]), ("invalid-output", None, []))
+        self.assertIn("--json output is not an outcome", result["execution"]["reason"])
+        self.assertIsNone(result["search"])
+
+    def test_an_exit_code_that_disagrees_with_the_outcome_is_invalid(self):
+        for code, verdict in ((0, "violation"), (1, "verified"), (0, "unverifiable"), (1, "maybe")):
+            result = self.run_runner(build.run_tool_equivalence, proc(code, equivalence_json(self.root, verdict)), example(),
+                                     report="equivalence.sarif")
+            self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None), (code, verdict))
+            self.assertIsNone(result["replay"])
+
+    def test_a_violation_without_its_witness_or_report_is_invalid(self):
+        result = self.run_runner(build.run_tool_equivalence, proc(1, equivalence_json(self.root, counterexample=None)), example(),
+                                 report="equivalence.sarif")
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        (self.build / "build/reports/equivalence.sarif").unlink()
+        result = self.run_runner(build.run_tool_equivalence, proc(1, equivalence_json(self.root)), example())
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        self.assertIn("no SARIF report", result["execution"]["reason"])
+
+    def test_a_vacuous_proof_from_the_outcome(self):
+        reason = "no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless)"
+        out = equivalence_json(self.root, "verified", vacuous=reason)
+        result = self.run_runner(build.run_tool_equivalence, proc(0, out), example(verdict="verified", vacuous=True), report="equivalence.sarif")
+        self.assertEqual(result["coverage"], {"vacuous": True, "reason": reason})
+        self.assertEqual(result["verdictLabel"], "✓ Verified, vacuously: no input in the domain reaches the calls")
+        self.assertTrue(result["matchesExpected"])
+        self.assertIsNone(result["replay"])
+        self.assertIsNone(result["search"]["stage"])
+
+    def test_the_own_checkers_numbers_and_a_fallback(self):
+        native = {"paths": 733, "merges": 219, "solver_calls": 1204, "solving_seconds": 5.1, "gates_evaluated": 9,
+                  "evaluating_seconds": 0.2, "divisions": 0, "divisions_built": 0, "multiplications": 2,
+                  "multiplications_built": 1, "variables": 5000, "clauses": 20000, "seconds": 7.0}
+        out = equivalence_json(self.root, "verified", shared=["a.C.f"], search={
+            "engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 7.0, "properties": 1, "unwind": 8,
+            "max_array_length": 8, "stage": None, "native": native})
+        search = self.run_runner(build.run_tool_equivalence, proc(0, out), example(verdict="verified"), report="equivalence.sarif")["search"]
+        self.assertEqual((search["engine"], search["native"]["paths"], search["native"]["solverCalls"], search["native"]["multiplicationsBuilt"]),
+                         ("native", 733, 1204, 1))
+        self.assertEqual(search["sharedCallees"], ["a.C.f"])
+        out = equivalence_json(self.root, "verified", search={**json.loads(equivalence_json(self.root, "verified"))["search"],
+                                                               "fallback": "a float parameter"})
+        search = self.run_runner(build.run_tool_equivalence, proc(0, out), example(verdict="verified"), report="equivalence.sarif")["search"]
+        self.assertEqual((search["engine"], search["fallback"]), ("jbmc", "a float parameter"))
+        self.assertNotIn("native", search)
+
+    def test_a_witness_that_does_not_reproduce_is_unverifiable(self):
+        problem = "JBMC's counterexample m(x=3) does not reproduce: both versions give 1 in the interpreter. ..."
+        out = equivalence_json(self.root, "unverifiable", problem=problem, replay={"by": "interpreter", "reproduced": False},
+                               output=f"✗ a.B#m cannot be verified: {problem}\n")
+        result = self.run_runner(build.run_tool_equivalence, proc(1, out), example(verdict="violation"), report="equivalence.sarif")
+        self.assertEqual((result["verdict"], result["problem"], result["matchesExpected"]), ("unverifiable", problem, False))
+        self.assertEqual(result["replay"], {"by": "interpreter", "reproduced": False})
+        self.assertEqual(result["counterexamples"], [])
+
+    def test_the_patched_copys_root_is_taken_out_of_the_outcome(self):
+        out = equivalence_json(self.root, "verified", output=f"note: wrote {self.root}/examples/apps/crosscut/build/x\n✓ a.B#m\n",
+                               proof=f"JBMC 6.11.0: 3 properties proved over x: int in 1.0 s (see {self.root}/log)")
+        result = self.run_runner(build.run_tool_equivalence, proc(0, out, f"warning: {self.root}/y\n"), example(verdict="verified"),
+                                 report="equivalence.sarif")
+        self.assertNotIn(str(self.root), (self.folder / "verifier-output.txt").read_text())
+        self.assertIn("warning: y", (self.folder / "verifier-output.txt").read_text())
+        self.assertNotIn(str(self.root), result["proof"])
 
     def test_property_killed_and_violated(self):
         ex = example(approach="B11")
@@ -388,6 +502,42 @@ class SelectionTest(unittest.TestCase):
         self.assertEqual(self.main("--render-only", "126")[0], 0)
 
 
+class ReplayWordingTest(unittest.TestCase):
+    """The page says where a witness was replayed from what the result records, never from the approach."""
+
+    def page(self, **res):
+        ex = example()
+        return "\n".join(build.findings_equivalence(ex, {"verdict": "violation", "domain": "x: int", "proof": None,
+                                                         "counterexamples": [{"input": "m(x=1)", "contract": "1", "actual": "2"}], **res}))
+
+    def test_jvmcontract_replays_in_its_interpreter(self):
+        page = self.page(replay={"by": "interpreter", "reproduced": True})
+        self.assertIn("replayed it in jvmcontract's bytecode interpreter against both versions", page)
+        self.assertNotIn("JVM", page)
+
+    def test_a_result_recorded_before_the_replay_record_reads_its_proof_line(self):
+        page = self.page(proof="found by JBMC 6.11.0 in 1.0 s, replayed in the interpreter; domain x: int")
+        self.assertIn("in jvmcontract's bytecode interpreter", page)
+        page = self.page(proof="found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain x: int")
+        self.assertIn("replayed it on the JVM", page)
+
+    def test_nothing_recorded_claims_no_replay(self):
+        page = self.page()
+        self.assertNotIn("replayed", page)
+        self.assertIn("on which the two versions do this:", page)
+
+    def test_no_recorded_tool_example_is_said_to_be_replayed_on_the_jvm(self):
+        for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
+            ex = json.loads((folder / "example.json").read_text())
+            if ex.get("origin") != "constructed" or ex["approach"]["id"] != "B9" or (folder / "result.json").exists() is False:
+                continue
+            res = json.loads((folder / "result.json").read_text())
+            if res.get("verdict") != "violation":
+                continue
+            page = "\n".join(build.findings_equivalence(ex, res))
+            self.assertEqual("on the JVM" in page, build.app_of(ex) == "boxoffice", folder.name)
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema
@@ -399,6 +549,19 @@ class SchemaTest(unittest.TestCase):
         jsonschema.validate(result, schema)
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate({**result, "expectation": "maybe"}, schema)
+
+    def test_the_search_and_replay_records_validate(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        source = next(build.EXAMPLES.glob("126-*"))
+        result = json.loads((source / "result.json").read_text())
+        result["search"] = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 0.5, "properties": 1,
+                            "unwind": 32, "maxArrayLength": 8, "stage": None, "sharedCallees": ["a.C.f"], "native": {"paths": 3, "solverCalls": 4}}
+        result["replay"] = {"by": "interpreter", "reproduced": True}
+        result["counterexamples"][0].update({"found": "m(x=17)", "shrinkRuns": 120})
+        jsonschema.validate(result, schema)
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate({**result, "replay": {"by": "the JVM", "reproduced": True}}, schema)
 
 
 if __name__ == "__main__":

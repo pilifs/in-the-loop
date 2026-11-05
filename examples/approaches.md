@@ -137,7 +137,8 @@ The same contract idea for methods whose inputs are not finite, such as a `long`
 statement is "the new bytecode behaves as the old bytecode on every input, except the inputs the developer declared
 as changed", and it is proved with JBMC (B5) rather than by execution: both versions are compiled into one program,
 a generated harness asserts the statement, and the solver either proves it or produces an input on which the two
-versions differ, which the tool replays on the JVM. The developer's declaration (`seats >= 8`, say) is Java, so it is
+versions differ, which the tool replays on both versions: jvmcontract in its own bytecode interpreter, the Box
+Office Java verifier on the JVM. A result records which in its `replay` field, and how the checker ran in `search`. The developer's declaration (`seats >= 8`, say) is Java, so it is
 checked by the compiler and committed with the change as its scope. This is the "measure the patch" idea of the post:
 prove how few inputs a change touches. [Examples 006 to 008](README.md) show a rounding refactor refuted, a feature
 proved confined to its declared inputs, and a declared scope shown to be wrong; [027](027-switch-rewrite-of-the-retry-policy-drops-the-unlisted-5xx/README.md) refutes a switch

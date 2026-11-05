@@ -156,7 +156,9 @@
           "expected": {
             "type": "string",
             "description": "For a property proof with throws clauses: what the property requires on this input, when that is what the method failed to do (the exception a clause declares, or a result where no clause applies)."
-          }
+          },
+          "found": { "type": "string", "description": "For a regression proof through jvmcontract: the input as the checker found it, when `input` is the shrunk one." },
+          "shrinkRuns": { "type": "integer", "minimum": 0, "description": "For a regression proof through jvmcontract: how many smaller inputs the interpreter tried while shrinking the witness." }
         }
       }
     },
@@ -261,6 +263,38 @@
         "string",
         "null"
       ]
+    },
+    "search": {
+      "description": "For a regression proof through jvmcontract (B9 on Quorum, Crosscut and Mica): the checker run the verdict comes from, read from `equivalence --json`. Null when no checker ran (identical bytecode, a refusal before the search) or the run did not complete; absent in results written before 2026-11-05.",
+      "type": ["object", "null"],
+      "required": ["engine", "checker", "seconds", "properties", "unwind", "maxArrayLength", "stage"],
+      "additionalProperties": false,
+      "properties": {
+        "engine": { "description": "`jbmc`, or `native` for the tool's own bounded model checker.", "enum": ["jbmc", "native"] },
+        "checker": { "description": "The checker as the proof line names it: `JBMC 6.11.0`, or the own checker with its SAT solver.", "type": "string" },
+        "seconds": { "description": "From the first engine and input range tried to the verdict.", "type": "number" },
+        "properties": { "description": "The properties the checker proved or checked (JBMC's count; one for the own checker).", "type": "integer" },
+        "unwind": { "description": "The loop unwinding bound.", "type": "integer" },
+        "maxArrayLength": { "description": "The bound on the length of an array parameter.", "type": "integer" },
+        "stage": { "description": "The input range of the run the verdict comes from, as `[0:20]`; null for the whole range.", "type": ["string", "null"] },
+        "sharedCallees": { "description": "The callees taken as one function in both versions, as `Class.method`.", "type": "array", "items": { "type": "string" } },
+        "fallback": { "description": "Under `--engine auto`: why the own checker gave no verdict before JBMC was run.", "type": "string" },
+        "native": {
+          "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds).",
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "replay": {
+      "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
+      "type": ["object", "null"],
+      "required": ["by", "reproduced"],
+      "additionalProperties": false,
+      "properties": {
+        "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: the Box Office Java verifier, on the JVM.", "enum": ["interpreter", "jvm"] },
+        "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable.", "type": "boolean" }
+      }
     },
     "problem": {
       "description": "Why the verifier refused, when the verdict is unverifiable and it is not a purity violation.",

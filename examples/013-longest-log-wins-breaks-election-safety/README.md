@@ -67,7 +67,7 @@ Rewrite the up-to-date check so that it reads naturally: a candidate whose log i
 
 ## What the verifier found
 
-The two versions disagree. The prover found this input, and the generator replayed it on the JVM against both versions:
+The two versions disagree. The prover found this input, and the verifier replayed it in jvmcontract's bytecode interpreter against both versions:
 
 | Input | Before | After |
 |---|---|---|

@@ -176,6 +176,47 @@ pub struct Outcome {
     /// before them (among the intended inputs, rejected by a constructor, or without previous-version arguments).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vacuous: Option<String>,
+    /// The checker run the verdict comes from; none when no checker ran (identical bytecode, or a refusal before
+    /// the search).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search: Option<Search>,
+    /// How the checker's witness was replayed on both versions, when it found one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replay: Option<Replay>,
+}
+
+/// The checker run a verdict comes from, with the settings it ran under: what a report needs to say how the verdict
+/// was reached without reading the proof line.
+#[derive(Debug, Clone, Serialize)]
+pub struct Search {
+    /// `jbmc`, or `native` for the tool's own checker.
+    pub engine: String,
+    /// The checker as the proof line names it: `JBMC 6.11.0`, or the own checker with its solver.
+    pub checker: String,
+    /// From the first engine and input range tried to the verdict.
+    pub seconds: f64,
+    /// The properties the checker proved or checked (JBMC's count; one for the own checker).
+    pub properties: u32,
+    pub unwind: u32,
+    pub max_array_length: u32,
+    /// The input range of the run the verdict comes from, as `[0:20]`; none for the whole range.
+    pub stage: Option<String>,
+    /// Why the own checker gave no verdict before JBMC was run, under `--engine auto`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fallback: Option<String>,
+    /// The own checker's account of its search, when the verdict is its.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native: Option<crate::bmc::Stats>,
+}
+
+/// How a witness was replayed on both versions. The checker's input is run again on each version's bytecode, and
+/// its result kept as the counterexample only if the two still disagree.
+#[derive(Debug, Clone, Serialize)]
+pub struct Replay {
+    /// What ran the bytecode: `interpreter`, the tool's own bytecode interpreter (not a JVM).
+    pub by: String,
+    /// Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable.
+    pub reproduced: bool,
 }
 
 /// Whether a verified statement is vacuous: the probe (the harness with the calls replaced by the assertion's
@@ -270,7 +311,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -515,7 +556,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -557,6 +598,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
     // `auto`), or that is the answer (under `native`).
     let mut stages: &[Option<&str>] = STAGES;
+    let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work)?;
@@ -565,6 +607,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             last = Some(result);
         } else {
             let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
+            fallback = Some(result.problem.clone().unwrap_or_else(|| "no reason".into()));
         }
     }
     // An array parameter is never null, and is bounded in length: the copying and comparing loops, and the
@@ -716,6 +759,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
+    let search = Some(Search {
+        engine: if last.native.is_some() { "native" } else { "jbmc" }.into(),
+        checker: last.version.clone(),
+        seconds,
+        properties: last.properties,
+        unwind: options.unwind,
+        max_array_length: options.max_array_length,
+        stage: last.stage.clone(),
+        fallback,
+        native: last.native.clone(),
+    });
+    let mut replay = None;
     let sharing = match shared_used.len() {
         0 => String::new(),
         1 => format!("; {} unchanged in both versions and taken as one function in both", shared_used[0]),
@@ -757,6 +812,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Verdict::Violation => {
             let found = last.arguments(&flat_types)?;
             let replays = replay_both(&found);
+            replay = Some(Replay { by: "interpreter".into(), reproduced: !replays.agree });
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
             if replays.agree {
@@ -771,7 +827,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -830,7 +886,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous })
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay })
 }
 
 /// Both versions replayed on one input.

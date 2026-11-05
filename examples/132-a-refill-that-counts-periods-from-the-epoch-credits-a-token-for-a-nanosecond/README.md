@@ -76,7 +76,7 @@ index 16a165d..67bb7da 100644
 
 ## What the verifier found
 
-The two versions disagree. The prover found this input outside the declared change, and the generator replayed it on the JVM against both versions:
+The two versions disagree. The prover found this input outside the declared change, and the verifier replayed it in jvmcontract's bytecode interpreter against both versions:
 
 | Input | Before | After |
 |---|---|---|

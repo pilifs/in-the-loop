@@ -76,7 +76,7 @@ previous version, or a one-line property committed next to the code.
 | Approach | What is checked | How it is proved | Examples |
 |---|---|---|---|
 | [B8 Behavioural contracts](tools/contracts/README.md) | A method's outcome on every input of a finite domain | Purity proved from bytecode, then every input executed | [B8](#approach-b8) |
-| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC proves the statement or finds a counterexample, replayed on the JVM | [B9](#approach-b9) |
+| [B9 Regression verification](tools/contracts/README.md#regression-verification-methods-with-unbounded-inputs) | A method with unbounded inputs behaves as its previous version, outside the inputs the developer declared as changed | Both versions compiled into one program; JBMC or the tool's own checker proves the statement or finds a counterexample, replayed on both versions (by jvmcontract in its bytecode interpreter, by the Box Office Java verifier on the JVM) | [B9](#approach-b9) |
 | [B10 Capability contracts](tools/contracts/README.md#capability-contracts-what-a-module-can-do) | What a module's bytecode can reach: the clock, the network, randomness, reflection, class loading, threads | Closed-world inspection of every call site in the compiled classes | [B10](#approach-b10) |
 | [B11 Property proofs](../lib/README.md#how-a-property-proof-works) | A property the developer states about a method, on every input: a postcondition, a law, with JML quantifiers over arrays, a throws clause, `\old` | A generated harness assumes, calls and asserts; JBMC proves it or finds an input, which the tool shrinks and replays | [B11](#approach-b11) |
 | [B12 Boundary contracts](../lib/README.md#how-a-boundary-contract-is-checked) | Where Spring enters a module (routes, listeners, schedules, bean definitions, configuration keys), the advice on each bean (transactions, security, validation, caching, retries), and the places where an annotation does not do what it says: self-invocation, advice the proxy cannot intercept, a checked exception that commits, a lost `@Async` result, constraints never enforced, a GET with side effects; and under each entry point what it reaches (reads, writes, sends, calls, publishes) | The `RUNTIME` annotations read from the class files, with a closed-world walk over the module's own calls | [B12](#approach-b12) |
@@ -440,6 +440,15 @@ changed case, a trace or a new `!` line, and the verifier's report. Without thos
 the runner cannot read, not a counterexample. A run without a verdict has `verdict: null` and
 `expectation: not-evaluable`. It never matches the expected verdict, so `build.py` exits 1. A report the
 verifier didn't write is not made up, and nothing from an earlier run is left in the folder as this run's.
+
+A regression proof through jvmcontract (B9 on Quorum, Crosscut and Mica) is read from `equivalence --json`, the
+library's outcome, not from its console text, which is still kept as `verifier-output.txt`. Its verdict must agree
+with the exit code. The result then records how the checker ran, in `search`: the engine (`jbmc` or `native`), the
+checker, the seconds, the unwinding and array bounds, the input range the verdict came from, the callees taken as one
+function in both versions, and for the tool's own checker its paths, merges and solver calls. A violation's witness
+also has `found`, the input as the checker found it before shrinking, and `shrinkRuns`. Its `replay` says where the
+witness was run again on both versions: `interpreter`, jvmcontract's own bytecode interpreter, or `jvm` for the Box
+Office Java verifier. The page's wording comes from that record, and not from the approach.
 
 ## Add an example
 

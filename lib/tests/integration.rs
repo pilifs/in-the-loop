@@ -340,12 +340,22 @@ fn a_rounding_refactor_is_refuted_with_a_replayed_counterexample() {
     let (Some(before), Some(after)) = (compile_pricing("before-a", PRICING_BEFORE), compile_pricing("rounds", &after_source)) else { return };
     let outcome = equivalence_run(&before, &after, None, "rounds");
     assert_eq!(outcome.verdict, Verdict::Violation, "{}", outcome.output);
+    let json = serde_json::to_value(&outcome).unwrap();
     assert!(outcome.output.contains("✗ Behaviour of fixtures.Pricing#total changed:"), "{}", outcome.output);
     let witness = outcome.counterexample.unwrap();
     assert_ne!(witness.before, witness.after);
     assert!(witness.input.starts_with("total(priceCents="), "{}", witness.input);
     assert!(std::fs::read_to_string(outcome.work.join("report/equivalence.sarif")).unwrap().contains("behaviour-changed"));
     assert!(outcome.statement.unwrap().exists());
+    // How the verdict was reached is data as well as the proof line: JBMC's run, and the witness replayed in the
+    // tool's own interpreter (not on a JVM), where it reproduced.
+    let search = outcome.search.expect("the checker run");
+    assert_eq!((search.engine.as_str(), search.unwind, search.native.is_none()), ("jbmc", 16, true));
+    assert!(search.checker.starts_with("JBMC"), "{}", search.checker);
+    assert!(search.stage.is_some(), "a small witness is found in a bounded range first");
+    let replay = outcome.replay.expect("the witness's replay");
+    assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
+    assert_eq!((json["replay"]["by"].as_str(), json["search"]["engine"].as_str()), (Some("interpreter"), Some("jbmc")), "{json}");
 }
 
 #[test]
@@ -627,6 +637,12 @@ fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_th
     assert_eq!(n.input, c.input, "{}", native.output);
     assert!(native.output.contains("found by jvmcontract's own checker (CaDiCaL) in "), "{}", native.output);
     assert!(native.output.contains(" searching inputs in [0:20]"), "{}", native.output);
+    let search = native.search.as_ref().expect("the checker run");
+    assert_eq!((search.engine.as_str(), search.stage.as_deref(), search.fallback.as_deref()), ("native", Some("[0:20]"), None));
+    let stats = search.native.as_ref().expect("the own checker's numbers");
+    assert!(stats.paths > 0 && stats.solver_calls > 0, "{stats:?}");
+    assert_eq!(c.input, n.input);
+    assert!(native.replay.as_ref().is_some_and(|r| r.by == "interpreter" && r.reproduced));
 }
 
 #[test]

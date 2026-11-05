@@ -275,12 +275,37 @@ def conclude(returncode, output, evidence, reported=True, timed_out=None, known=
         return execution, "verified"
     if "cannot be verified" in output:
         return execution, "unverifiable"
+    return violation(execution, evidence, reported)
+
+
+def violation(execution, evidence, reported):
+    """A completed run that reports a violation: one, when the runner has read what shows it and the verifier wrote
+    its report; otherwise output the runner cannot read."""
     if evidence and reported:
         return execution, "violation"
     reason = ("the verifier reported a violation but wrote no SARIF report" if evidence else
-              f"the verifier exited with code {returncode}, but its output shows no violation the runner can read and "
-              "no reason it cannot be verified")
-    return {"status": "invalid-output", "exitCode": returncode, "reason": reason}, None
+              f"the verifier exited with code {execution['exitCode']}, but its output shows no violation the runner can "
+              "read and no reason it cannot be verified")
+    return {"status": "invalid-output", "exitCode": execution["exitCode"], "reason": reason}, None
+
+
+def conclude_outcome(returncode, output, outcome, evidence, reported):
+    """`conclude` for a run with `--json`, whose verdict is the outcome's: the exit code must agree with it (0 for
+    verified, 1 otherwise), and a violation needs its witness and the report as before. `outcome` is None when the
+    verifier's standard output is not one."""
+    execution = execution_status(returncode, output)
+    if execution["status"] != "completed":
+        return execution, None
+    if outcome is None:
+        return {"status": "invalid-output", "exitCode": returncode,
+                "reason": "the verifier's --json output is not an outcome the runner can read"}, None
+    verdict = outcome.get("verdict")
+    if verdict not in VERDICT_LABEL or (returncode == 0) != (verdict == "verified"):
+        return {"status": "invalid-output", "exitCode": returncode,
+                "reason": f"the verifier exited with code {returncode}, but its outcome's verdict is {verdict!r}"}, None
+    if verdict == "violation":
+        return violation(execution, evidence, reported)
+    return execution, verdict
 
 
 def no_verdict_label(execution):
@@ -554,6 +579,9 @@ def run_equivalence(folder, example, tmp, module, result):
     })
     if verdict is None:
         return
+    # The Java verifier replays its witness on the JVM, and says so on its proof line.
+    if verdict == "violation" and "replayed on the JVM" in (result["proof"] or ""):
+        result["replay"] = {"by": "jvm", "reproduced": True}
     result["verdictLabel"] = {
         "violation": f"{VERDICT_LABEL[verdict]}: counterexample found",
         "verified": f"{VERDICT_LABEL[verdict]}: equivalent on every input" + (" outside the declared change" if intended else ""),
@@ -879,28 +907,84 @@ def run_tool_contracts(folder, example, root, module, result):
     }[verdict]
 
 
-def finish_symbolic(folder, example, result, output, work, harness, verdict_labels):
-    """What B9 and B11 share: the statement, the domain, the proof line and the verdict label."""
-    statement = work / "harness" / harness
-    if statement.exists():
+def finish_symbolic(folder, result, statement, fields, verdict_labels):
+    """What B9 and B11 share: the statement, the domain, the proof line, the problem, the vacuity and the verdict
+    label. `statement` is the harness the verifier wrote, `fields` the rest as the verifier reported them."""
+    if statement is not None and statement.exists():
         shutil.copy(statement, folder / "statement.java")
         result["statement"] = "statement.java"
     else:
         (folder / "statement.java").unlink(missing_ok=True)  # an earlier run's statement is not this run's
-    m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
-             or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
-    result.update({"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output)})
+    result.update({"domain": fields["domain"], "proof": fields["proof"], "problem": fields["problem"]})
     if result["verdict"] is None:
         return
     result["verdictLabel"] = verdict_labels[result["verdict"]]
     # A verified statement that skips every input in the domain before the calls (a scope every input satisfies, a
     # bound on the arrays below what the scope asks, a constructor that rejects every input) is vacuous: the tool
-    # says so on a line of its own, and the example must expect it.
-    vacuous = re.search(r"^  vacuously: (.*)$", output, re.M)
-    if vacuous:
-        result["coverage"] = {"vacuous": True, "reason": vacuous.group(1)}
+    # says so, and the example must expect it.
+    if fields["vacuous"]:
+        result["coverage"] = {"vacuous": True, "reason": fields["vacuous"]}
         result["verdictLabel"] = f"{VERDICT_LABEL[result['verdict']]}, vacuously: no input in the domain reaches the calls"
+
+
+def symbolic_fields(output):
+    """The domain, proof line, problem and vacuity of a proof, from the verifier's text output (`prove` until it is
+    read from --json)."""
+    m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
+    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
+             or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
+    vacuous = re.search(r"^  vacuously: (.*)$", output, re.M)
+    return {"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output),
+            "vacuous": vacuous.group(1) if vacuous else None}
+
+
+def json_outcome(proc, root):
+    """The library's outcome from a run with `--json`, with the patched copy's root taken out of every string in it
+    as `tool()` does for text, or None when the standard output is not one."""
+    try:
+        outcome = json.loads(proc.stdout)
+    except ValueError:
+        return None
+    if not isinstance(outcome, dict) or not isinstance(outcome.get("output"), str):
+        return None
+    prefix = str(root) + "/"
+
+    def relative(value):
+        if isinstance(value, str):
+            return value.replace(prefix, "")
+        if isinstance(value, list):
+            return [relative(v) for v in value]
+        if isinstance(value, dict):
+            return {k: relative(v) for k, v in value.items()}
+        return value
+    return relative(outcome)
+
+
+def equivalence_counterexamples(outcome):
+    """The outcome's witness as the result's counterexample: the input, what the version before did (`contract`)
+    and what the patched one does (`actual`), with the input the checker found before it was shrunk."""
+    c = (outcome or {}).get("counterexample")
+    if not c:
+        return []
+    return [{"input": c["input"], "contract": c["before"], "actual": c["after"],
+             **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0)}]
+
+
+def search_record(outcome):
+    """The checker run a verdict comes from, from the outcome's `search`: the engine, the checker, its settings and
+    time, the input range the verdict was found in, and the own checker's numbers. None when no checker ran."""
+    s = (outcome or {}).get("search")
+    if not s:
+        return None
+    record = {"engine": s["engine"], "checker": s["checker"], "seconds": round(s["seconds"], 3), "properties": s["properties"],
+              "unwind": s["unwind"], "maxArrayLength": s["max_array_length"], "stage": s.get("stage")}
+    if outcome.get("shared"):
+        record["sharedCallees"] = outcome["shared"]
+    if s.get("fallback"):
+        record["fallback"] = s["fallback"]
+    if s.get("native"):
+        record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items()}
+    return record
 
 
 def run_tool_equivalence(folder, example, root, module, result):
@@ -924,11 +1008,20 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--unwind", str(example["approach"]["unwind"])]
     if example["approach"].get("maxArrayLength"):
         command += ["--max-array-length", str(example["approach"]["maxArrayLength"])]
-    proc, output = tool(app, root, *command, setup=False)
+    proc, output = tool(app, root, *command, "--json", setup=False)
+    outcome = json_outcome(proc, root)
+    if outcome is not None:  # the console output is the outcome's own, with what went to standard error after it
+        output = outcome["output"] + proc.stderr.replace(str(root) + "/", "")
     reported = write_evidence(folder, output, build / "build/reports/equivalence.sarif", result)
-    result["counterexamples"] = counterexamples(output)
-    result["execution"], result["verdict"] = conclude(proc.returncode, output, result["counterexamples"], reported)
-    finish_symbolic(folder, example, result, output, work, "EquivalenceHarness.java", {
+    result["counterexamples"] = equivalence_counterexamples(outcome)
+    result["execution"], result["verdict"] = conclude_outcome(proc.returncode, output, outcome, result["counterexamples"], reported)
+    completed = result["verdict"] is not None
+    result["search"] = search_record(outcome) if completed else None
+    replay = (outcome or {}).get("replay")
+    result["replay"] = {"by": replay["by"], "reproduced": replay["reproduced"]} if completed and replay else None
+    statement = outcome.get("statement") if outcome else None
+    fields = {k: (outcome or {}).get(k) for k in ("domain", "proof", "problem", "vacuous")}
+    finish_symbolic(folder, result, root / statement if statement else None, fields, {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
         "unverifiable": VERDICT_LABEL["unverifiable"],
@@ -960,7 +1053,7 @@ def run_tool_property(folder, example, root, module, result):
         result["counterexamples"] = [{"input": witness.group(1), "contract": m.group(1) if m else None, "actual": witness.group(2),
                                       **({"expected": witness.group(3)} if witness.group(3) else {})}]
     result["execution"], result["verdict"] = conclude(proc.returncode, output, result["counterexamples"], reported)
-    finish_symbolic(folder, example, result, output, work, "PropertyHarness.java", {
+    finish_symbolic(folder, result, work / "harness/PropertyHarness.java", symbolic_fields(output), {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: property holds on every input",
         "unverifiable": VERDICT_LABEL["unverifiable"],
@@ -2047,14 +2140,30 @@ def prover_text(res, whose):
             "and showed that it has no solution:")
 
 
+# Where a witness was replayed on both versions (a result's `replay.by`), as the page says it.
+REPLAYED = {"interpreter": "in jvmcontract's bytecode interpreter", "jvm": "on the JVM"}
+
+
+def replayed_where(res):
+    """Where the result's witness was replayed, from its `replay` record, or for a result recorded before there was
+    one, from its proof line; None when neither says."""
+    by = (res.get("replay") or {}).get("by")
+    if by is None:
+        proof = res.get("proof") or ""
+        by = "interpreter" if "replayed in the interpreter" in proof else "jvm" if "replayed on the JVM" in proof else None
+    return REPLAYED.get(by)
+
+
 def findings_equivalence(ex, res):
     intended = ex["change"].get("intendedInputs")
     domain = res.get("domain") or "all inputs"
     if res["verdict"] == "violation":
+        where = replayed_where(res)
         out = [
             "The two versions disagree. The prover found this input"
             + (" outside the declared change" if intended else "")
-            + ", and the generator replayed it on the JVM against both versions:",
+            + (f", and the verifier replayed it {where} against both versions:" if where else
+               ", on which the two versions do this:"),
             "",
             "| Input | Before | After |",
             "|---|---|---|",

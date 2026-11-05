@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T11:31:42.935Z",
-  "duration_seconds": 2626,
+  "ended": "2026-11-05T11:46:11.977Z",
+  "duration_seconds": 3495,
   "stats": {
-    "turns": 16,
-    "api_calls": 122,
-    "tool_calls": 133,
-    "tool_errors": 2,
-    "compactions": 2,
+    "turns": 21,
+    "api_calls": 185,
+    "tool_calls": 196,
+    "tool_errors": 3,
+    "compactions": 3,
     "peak_context_tokens": 179408,
     "usage": {
-      "input_tokens": 252,
-      "output_tokens": 104141,
-      "cache_read_input_tokens": 12872256,
-      "cache_creation_input_tokens": 342896
+      "input_tokens": 380,
+      "output_tokens": 152081,
+      "cache_read_input_tokens": 20334443,
+      "cache_creation_input_tokens": 504319
     }
   },
   "tools": {
-    "Bash": 113,
+    "Bash": 175,
     "Edit": 14,
     "Write": 3,
+    "ToolSearch": 2,
     "Read": 1,
-    "ToolSearch": 1,
     "WebFetch": 1
   },
   "files_touched": [
@@ -75,24 +75,38 @@
     {
       "index": 2,
       "started": "2026-11-05T11:25:31.092Z",
-      "ended": "2026-11-05T11:31:42.935Z",
-      "turns": 4,
-      "api_calls": 32,
+      "ended": "2026-11-05T11:32:13.182Z",
+      "turns": 5,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 64,
-        "output_tokens": 20844,
-        "cache_read_input_tokens": 2555881,
-        "cache_creation_input_tokens": 89540
+        "input_tokens": 68,
+        "output_tokens": 21972,
+        "cache_read_input_tokens": 2762590,
+        "cache_creation_input_tokens": 92708
       },
-      "peak_context_tokens": 102620
+      "peak_context_tokens": 105788
+    },
+    {
+      "index": 3,
+      "started": "2026-11-05T11:32:53.309Z",
+      "ended": "2026-11-05T11:46:11.977Z",
+      "turns": 4,
+      "api_calls": 61,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 46812,
+        "cache_read_input_tokens": 7255478,
+        "cache_creation_input_tokens": 158255
+      },
+      "peak_context_tokens": 171335
     }
   ],
   "log": {
-    "sha256": "3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04",
-    "bytes": 3970811,
-    "lines": 1355,
-    "gzip_bytes": 740792,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04.jsonl.gz"
+    "sha256": "435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963",
+    "bytes": 5664110,
+    "lines": 2023,
+    "gzip_bytes": 1027304,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -151,6 +165,14 @@
       "summary": "build.py: a requested example that doesn't run never exits 0 (verification pending)",
       "body": "Step 1b of the build-orchestration brief. Before this change, build.py silently did nothing for an unknown id or a real-world one and still exited 0. An app it didn't know, or an approach with no runner, made it sys.exit in load_example, which also broke rendering the router. Now an argument that is not the three-digit id of an example folder exits 2 before anything runs. That includes a folder name, an unknown flag, and --index-only with ids.\n\nA requested example that build.py can't run prints 'NNN-name: not-executed (why)' and fails the run with exit 1. That covers a real-world example (105-109), a subject file under no app, an approach the app has no runner for, and a D1 symbol no TLA+ model is built around. not_executable() gives the reason. app_of() returns None, and find_model() is model_of() without the exit. Running every example still means every constructed one, so the real-world ones are left out without failing. --render-only with an explicit id it can't render exits 1.\n\nChoice taken: nothing is written for an example that was not executed. An earlier result.json is evidence of its own run and stays. A result that no longer matches its inputs is step 3c's to show as stale, and I didn't overwrite evidence with a non-attempt. The pipeline gains an example:not-executed signal. submit --example now refuses a real-world id with a message, where it used to fail with a KeyError on expected. Every queued job runs build.py on one constructed id, so none of them changes. The pipeline README's sample submit used example 105, a real-world id since; it now uses the next free number, 146.\n\nVerified: examples/tools/test_build.py, 33 tests, 8 of them new (unknown id, a non-id argument, a real-world id alone and next to a constructed one, every example, an app nobody builds with its result.json left alone, the reasons, render-only); verification/test_pipeline.py, 16 tests, 1 new. By hand: 'build.py 999' and '108 017x' exit 2, and 'build.py 108' prints the not-executed line and exits 1. A full --render-only exits 0 and leaves every page and the router unchanged. No recorded result moved.\n\nVerification pending: job 20261105-113118-example-025-b8-under-build-py-s-strict-s (verification/jobs/) checks that an ordinary run of one constructed example still prints 'as expected' and exits 0. The six step-1a jobs (20261105-112331-*) had not run when this cycle started.",
       "log_sha256": "3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04"
+    },
+    {
+      "change_id": "wyxoyuwpmkmzlupysuuxpsyltmkvwkkq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: regression proofs read from equivalence --json, and the page says where a witness was replayed (verification pending)",
+      "body": "Step 1c of the build-orchestration brief. run_tool_equivalence() now runs jvmcontract equivalence with --json and reads the library's Outcome instead of parsing its console text. That covers the verdict, the witness, the domain, the proof line, the problem, the vacuity and the statement's path. The console text in the outcome is still written as verifier-output.txt. A new conclude_outcome() requires the exit code to agree with the outcome's verdict, and output that is not an outcome, the plain text included, is invalid-output rather than a verdict. A violation still needs its witness and the SARIF report.\n\nThe library's equivalence Outcome gains search and replay. search is the checker run the verdict comes from: the engine (jbmc or native), the checker, the seconds, the unwinding and array bounds, the input range, the reason the own checker gave no verdict under --engine auto, and the own checker's numbers. Those are bmc::Stats, carried on JbmcResult.native. replay records that the witness was run on both versions in jvmcontract's bytecode interpreter, and whether it reproduced. Results record both as search (with sharedCallees) and replay, and a violation's counterexample gains found (the input before shrinking) and shrinkRuns. The schema, examples/README.md, examples/approaches.md and lib/README.md describe them.\n\nThe page's replay sentence used to say 'on the JVM' for every B9 example. It now comes from replay, or for results recorded before it, from the proof line. A full --render-only exits 0. On 17 pages the sentence now reads 'in jvmcontract's bytecode interpreter', and the 2 Box Office pages, whose Java verifier does replay on the JVM (and records replay.by jvm), still say 'on the JVM'. Nothing else on any page moved, and no recorded result.json changed. B11 (prove) still parses text through symbolic_fields(), which is step 1d.\n\nVerified with examples/tools/test_build.py (46 tests, 13 new): JSON fixtures for a violation, a verified run and a vacuous one, an exit code that disagrees with the verdict, text where JSON was asked for, a witness that does not reproduce, the own checker's numbers, the patched copy's root removed from the outcome, the wording for every recorded B9 violation, and schema validation. Also cargo test --release in lib/ (two integration tests now check search and replay), and verification/test_pipeline.py (16 tests).\n\nJobs: 20261105-114501-example-128-b9-jbmc-read-from-equivalenc (a JBMC violation), 20261105-114501-example-120-b9-jbmc-shared-callees-read (JBMC with shared callees), 20261105-114501-example-143-b9-own-checker-read-from-equ (a native violation), 20261105-114502-example-144-b9-own-checker-vacuous-read (vacuous), and 20261105-114502-example-006-b9-box-office-java-verifier (Box Office). The seven jobs from 1a and 1b had not run at the start of this cycle.\n\nCorrections to the brief: the review's 'replayed it on the JVM' was right for the Box Office examples, whose Java verifier really replays on the JVM, and wrong only for jvmcontract's apps. The brief's 'summary line's numbers' are taken here as the proof line's numbers plus the own checker's statistics, which until now were only in bmc.log.",
+      "log_sha256": "435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963"
     }
   ],
   "logs": {
@@ -170,6 +192,12 @@
       "bytes": 3970811,
       "lines": 1355,
       "gzip_bytes": 740792,
+      "url": null
+    },
+    "435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963": {
+      "bytes": 5664110,
+      "lines": 2023,
+      "gzip_bytes": 1027304,
       "url": null
     },
     "6b38eda136ca1cf676b96463e269100b3679d1a57290977f480884fab8d38cc5": {

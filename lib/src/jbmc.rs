@@ -53,6 +53,8 @@ pub struct JbmcResult {
     pub problem: Option<String>,
     pub log: PathBuf,
     pub seconds: f64,
+    /// The tool's own checker's account of its search, when it gave the result rather than JBMC.
+    pub native: Option<crate::bmc::Stats>,
 }
 
 /// An argument of a counterexample: a primitive, an array of primitives, or `null`.
@@ -187,6 +189,7 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
             problem: Some(format!("jbmc is not installed ({} not found)", run.executable)),
             log: run.log.clone(),
             seconds: 0.0,
+            native: None,
         });
     }
     let started = std::time::Instant::now();
@@ -226,6 +229,7 @@ pub fn parse_output(output: &str, class: &str, function: &str, unwind: u32, stag
         problem,
         log: PathBuf::new(),
         seconds: 0.0,
+        native: None,
     };
     // A class path entry JBMC could not read makes every method in it a stub with an arbitrary result, and the
     // harness assertion then fails for no reason; that is no verdict.

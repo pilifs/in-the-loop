@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-114502-example-144-b9-own-checker-vacuous-read",
+  "title": "Example 144 (B9, own checker, vacuous) read from equivalence --json",
+  "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 144 is verified vacuously: coverage.vacuous must still be true with the same reason, now read from the outcome's vacuous field rather than the 'vacuously:' line, and the expectation still met.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "144"
+    ]
+  },
+  "expected": "example 144 gives its expected vacuous verification: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:45:02+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "a Mica B9 example with the own checker, 0.1 s plus the vacuity probe"
+  },
+  "steps": [
+    {
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
+  ]
+}

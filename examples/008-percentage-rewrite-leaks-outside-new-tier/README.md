@@ -113,7 +113,7 @@ The developer declares which inputs the change is meant to affect: `seats >= 8`.
 
 ## What the verifier found
 
-The two versions disagree. The prover found this input outside the declared change, and the generator replayed it on the JVM against both versions:
+The two versions disagree. The prover found this input outside the declared change, and the verifier replayed it on the JVM against both versions:
 
 | Input | Before | After |
 |---|---|---|

@@ -106,6 +106,7 @@ pub struct Outcome {
 impl Outcome {
     /// The outcome in the shape of a JBMC result, so that the proof drivers treat it as one.
     pub fn into_jbmc_result(self, log: std::path::PathBuf) -> crate::jbmc::JbmcResult {
+        let stats = self.stats();
         crate::jbmc::JbmcResult {
             verdict: self.verdict,
             version: format!("jvmcontract's own checker ({})", self.solver),
@@ -116,6 +117,26 @@ impl Outcome {
             problem: self.problem,
             log,
             seconds: self.seconds,
+            native: Some(stats),
+        }
+    }
+
+    /// The numbers of [`Outcome::summary`], for a structured report.
+    pub fn stats(&self) -> Stats {
+        Stats {
+            paths: self.paths,
+            merges: self.merges,
+            solver_calls: self.solves,
+            solving_seconds: self.solving,
+            gates_evaluated: self.evaluated,
+            evaluating_seconds: self.evaluating,
+            divisions: self.divisions,
+            divisions_built: self.refined,
+            multiplications: self.multiplications,
+            multiplications_built: self.refined_multiplications,
+            variables: self.variables,
+            clauses: self.clauses,
+            seconds: self.seconds,
         }
     }
 
@@ -123,6 +144,26 @@ impl Outcome {
     pub fn summary(&self) -> String {
         format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
+}
+
+/// What the engine's search took, as [`Outcome::summary`] prints it: the paths it explored and merged, the solver's
+/// calls and time, the gates evaluated in path models instead, the divisions and multiplications left to the solver
+/// and those whose circuit had to be built, and the size of the last formula.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct Stats {
+    pub paths: u64,
+    pub merges: u64,
+    pub solver_calls: u64,
+    pub solving_seconds: f64,
+    pub gates_evaluated: u64,
+    pub evaluating_seconds: f64,
+    pub divisions: u64,
+    pub divisions_built: u64,
+    pub multiplications: u64,
+    pub multiplications_built: u64,
+    pub variables: i32,
+    pub clauses: u64,
+    pub seconds: f64,
 }
 
 /// Why a parameter type is outside the fragment, if it is.

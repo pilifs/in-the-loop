@@ -160,6 +160,24 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Job `20261105-113118-example-025-b8-under-build-py-s-strict-s` checks that an ordinary run still exits 0. The six
     1a jobs had not run yet at the start of this cycle.
   - Next: [1c](#phase-1-results-that-can-be-trusted), equivalence from `--json`.
+- **1c done** (2026-11-05). `run_tool_equivalence()` runs `equivalence --json` and reads the library's `Outcome`: the
+  verdict, the witness (with `found` and `shrinkRuns`), the domain, the proof line, the problem, the vacuity and the
+  statement's path. `conclude_outcome()` requires the exit code to agree with the outcome's verdict. Output that is not an
+  outcome, the plain text included, is `invalid-output`.
+  - The library's `Outcome` gains `search` and `replay`. `search` holds the engine (`jbmc` or `native`), the checker,
+    the seconds, the unwinding and array bounds, the input range the verdict came from, the `--engine auto` fallback
+    reason, and the own checker's numbers (`bmc::Stats`, now on `JbmcResult.native`). `replay` records `by: interpreter`
+    and whether the witness reproduced. Results record both, as `search` (with `sharedCallees`) and `replay`.
+  - The Box Office Java verifier stays on text, and records `replay.by: jvm` from its proof line.
+  - The page's replay sentence comes from `replay`, or from the proof line for older results. 17 pages now say "in
+    jvmcontract's bytecode interpreter", 2 Box Office pages still say "on the JVM", and nothing else on any page moved.
+  - `prove` (B11) still parses text through `symbolic_fields()`, which is 1d's job.
+  - Tests: `test_build.py` has 46 tests, 13 of them new: JSON fixtures, a mismatched exit code, a vacuous outcome, the
+    own checker's numbers, a witness that does not reproduce, the patched copy's root, the wording, and the schema. Two
+    integration tests check `search` and `replay`. No recorded result moved.
+  - Jobs `20261105-11450{1,2}-example-{128,120,143,144,006}-…` cover a JBMC violation, JBMC with shared callees, a
+    native violation, the vacuous 144, and Box Office. The seven earlier jobs had not run at the start of this cycle.
+  - Next: [1d](#phase-1-results-that-can-be-trusted), one result per property from `prove --json`.
 
 ## Open questions
 
