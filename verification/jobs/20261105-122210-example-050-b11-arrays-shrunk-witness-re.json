@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-122210-example-050-b11-arrays-shrunk-witness-re",
+  "title": "Example 050 (B11, arrays, shrunk witness) read from prove --json",
+  "description": "build.py now runs jvmcontract prove with --json and keeps one outcome per property the module's properties.contract declares for the target (build-orchestration brief, step 1d), instead of reading one assertion, one witness and one proof line from the console text with regexes. The result gains properties: for each, its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search (engine, checker, seconds, bounds, input range) and replay (by interpreter, reproduced), and for several properties the work directory property-N and the harness copied as statement-N.java. The verdict is computed over them: a violation when any property is refuted, verified only when all hold, unverifiable otherwise. The library's property Outcome gains search, replay and throws_checked. Example 050 is a single refuted property over arrays with JML's \\sum, whose witness the interpreter shrinks: its verdict, counterexample input and outcome, domain, proof line and statement.java must be unchanged; the counterexample gains found and shrinkRuns.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "050"
+    ]
+  },
+  "expected": "example 050 gives its expected violation with the same shrunk witness: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T12:22:10+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "a Mica B11 example over arrays: javac build and a JBMC search"
+  },
+  "steps": [
+    {
+      "name": "example 050 (B11)",
+      "run": "python3 examples/tools/build.py 050",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/050-code-attribute-length-that-leaves-out-the-nested-attribute-headers"
+  ]
+}

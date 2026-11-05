@@ -157,8 +157,8 @@
             "type": "string",
             "description": "For a property proof with throws clauses: what the property requires on this input, when that is what the method failed to do (the exception a clause declares, or a result where no clause applies)."
           },
-          "found": { "type": "string", "description": "For a regression proof through jvmcontract: the input as the checker found it, when `input` is the shrunk one." },
-          "shrinkRuns": { "type": "integer", "minimum": 0, "description": "For a regression proof through jvmcontract: how many smaller inputs the interpreter tried while shrinking the witness." }
+          "found": { "type": "string", "description": "For a regression or property proof through jvmcontract: the input as the checker found it, when `input` is the shrunk one." },
+          "shrinkRuns": { "type": "integer", "minimum": 0, "description": "For a regression or property proof through jvmcontract: how many smaller inputs the interpreter tried while shrinking the witness." }
         }
       }
     },
@@ -265,7 +265,7 @@
       ]
     },
     "search": {
-      "description": "For a regression proof through jvmcontract (B9 on Quorum, Crosscut and Mica): the checker run the verdict comes from, read from `equivalence --json`. Null when no checker ran (identical bytecode, a refusal before the search) or the run did not complete; absent in results written before 2026-11-05.",
+      "description": "For a regression proof through jvmcontract (B9 on Quorum, Crosscut and Mica): the checker run the verdict comes from, read from `equivalence --json`; for a property proof, each property's own, under `properties`. Null when no checker ran (identical bytecode, a refusal before the search) or the run did not complete; absent in results written before 2026-11-05.",
       "type": ["object", "null"],
       "required": ["engine", "checker", "seconds", "properties", "unwind", "maxArrayLength", "stage"],
       "additionalProperties": false,
@@ -287,13 +287,13 @@
       }
     },
     "replay": {
-      "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
+      "description": "For a regression proof's violation: where the checker's witness was run again on both versions, which a page says rather than assumes; for a property proof, each refuted property's own, under `properties`, the witness run on the method. Null otherwise; absent in results written before 2026-11-05, whose proof line says where.",
       "type": ["object", "null"],
       "required": ["by", "reproduced"],
       "additionalProperties": false,
       "properties": {
         "by": { "description": "`interpreter`: jvmcontract's own bytecode interpreter, not a JVM. `jvm`: the Box Office Java verifier, on the JVM.", "enum": ["interpreter", "jvm"] },
-        "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable.", "type": "boolean" }
+        "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable. For a property, whether the interpreter's run showed the property failing: false too when the property calls the method under proof, which only the harness can evaluate, so that the violation is the checker's word.", "type": "boolean" }
       }
     },
     "problem": {
@@ -387,7 +387,7 @@
       }
     },
     "property": {
-      "description": "For a property proof (B11): the assumption (the inputs the property is about, or null), the assertion that was proved or refuted (null when the property is its throws clauses alone), and the throws clauses (`<exception> when <condition>`: the method throws that exception exactly where the condition holds).",
+      "description": "For a property proof (B11): the assumption (the inputs the property is about, or null), the assertion that was proved or refuted (null when the property is its throws clauses alone), and the throws clauses (`<exception> when <condition>`: the method throws that exception exactly where the condition holds). When the target has several properties, the headline one's (see `properties`).",
       "type": [
         "object",
         "null"
@@ -398,6 +398,30 @@
         "assume": { "type": ["string", "null"] },
         "assert": { "type": ["string", "null"] },
         "throws": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "properties": {
+      "description": "For a property proof (B11) through jvmcontract: every property the module declares for the target, in the order of its properties file, each with its own outcome and evidence, read from `prove --json`. Every one is required: the result's verdict is a violation when any is refuted, verified only when all are, and unverifiable otherwise. The flat `property`, `domain`, `proof`, `problem` and `statement` are the headline property's (the first refuted, else the first unresolved, else the first), and `counterexamples` holds every refuted property's witness. Null when the run did not complete; absent in results written before 2026-11-05, which kept one property's text.",
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "required": ["harness", "assert", "assume", "verdict", "domain", "proof", "problem", "vacuous", "counterexample", "statement", "search", "replay"],
+        "additionalProperties": false,
+        "properties": {
+          "harness": { "description": "The tool's work directory of this property (`property-N`, N its place among the target's properties), when the target has several; null for one, whose harness is the work directory's own.", "type": ["string", "null"] },
+          "assume": { "type": ["string", "null"] },
+          "assert": { "description": "The assertion as checked; null when the property is its throws clauses alone.", "type": ["string", "null"] },
+          "throws": { "description": "The throws clauses as checked, the exception named in full.", "type": "array", "items": { "type": "string" } },
+          "verdict": { "enum": ["violation", "verified", "unverifiable"] },
+          "domain": { "type": ["string", "null"] },
+          "proof": { "type": ["string", "null"] },
+          "problem": { "type": ["string", "null"] },
+          "vacuous": { "description": "Why the property's proof covers no input (the tool's `vacuously:` line), or null.", "type": ["string", "null"] },
+          "counterexample": { "description": "The refuted property's witness, as in `counterexamples`.", "anyOf": [{ "type": "null" }, { "$ref": "#/properties/counterexamples/items" }] },
+          "statement": { "description": "The file the property's harness was copied to, `statement-N.java`, when the target has several; null for one, whose harness is `statement`.", "type": ["string", "null"] },
+          "search": { "$ref": "#/properties/search" },
+          "replay": { "$ref": "#/properties/replay" }
+        }
       }
     },
     "stateMachine": {

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-122210-example-071-b11-three-properties-read-fr",
+  "title": "Example 071 (B11, three properties) read from prove --json",
+  "description": "build.py now runs jvmcontract prove with --json and keeps one outcome per property the module's properties.contract declares for the target (build-orchestration brief, step 1d), instead of reading one assertion, one witness and one proof line from the console text with regexes. The result gains properties: for each, its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search (engine, checker, seconds, bounds, input range) and replay (by interpreter, reproduced), and for several properties the work directory property-N and the harness copied as statement-N.java. The verdict is computed over them: a violation when any property is refuted, verified only when all hold, unverifiable otherwise. The library's property Outcome gains search, replay and throws_checked. Example 071 is the test case: VoteRule#grant has three properties, two of which hold and the third (the election restriction) is refuted. Its result recorded statement: null, because the runner looked for one harness where the tool wrote three. It must now record three outcomes in properties (verified, verified, violation), statement statement-3.java, and the label 'counterexample found to 1 of 3 properties', with the third property's witness unchanged.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "071"
+    ]
+  },
+  "expected": "example 071 gives its expected violation, with three property outcomes recorded: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T12:22:10+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "a Quorum B11 example: javac build and three JBMC proofs of under a second each"
+  },
+  "steps": [
+    {
+      "name": "example 071 (B11)",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse"
+  ]
+}

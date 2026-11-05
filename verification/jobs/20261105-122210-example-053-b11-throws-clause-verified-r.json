@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-122210-example-053-b11-throws-clause-verified-r",
+  "title": "Example 053 (B11, throws clause, verified) read from prove --json",
+  "description": "build.py now runs jvmcontract prove with --json and keeps one outcome per property the module's properties.contract declares for the target (build-orchestration brief, step 1d), instead of reading one assertion, one witness and one proof line from the console text with regexes. The result gains properties: for each, its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search (engine, checker, seconds, bounds, input range) and replay (by interpreter, reproduced), and for several properties the work directory property-N and the harness copied as statement-N.java. The verdict is computed over them: a violation when any property is refuted, verified only when all hold, unverifiable otherwise. The library's property Outcome gains search, replay and throws_checked. Example 053 is a single verified property with a throws clause (ArithmeticException when divisor == 0): its verdict, property (with the clause named in full, java.lang.ArithmeticException), domain, proof line and statement.java must be unchanged, with properties holding the one outcome.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "053"
+    ]
+  },
+  "expected": "example 053 is verified as expected: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T12:22:10+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "a Mica B11 example: javac build and one JBMC proof"
+  },
+  "steps": [
+    {
+      "name": "example 053 (B11)",
+      "run": "python3 examples/tools/build.py 053",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/053-idiv-that-leaves-division-by-zero-to-the-host"
+  ]
+}

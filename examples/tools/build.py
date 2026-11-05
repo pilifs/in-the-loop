@@ -927,37 +927,41 @@ def finish_symbolic(folder, result, statement, fields, verdict_labels):
         result["verdictLabel"] = f"{VERDICT_LABEL[result['verdict']]}, vacuously: no input in the domain reaches the calls"
 
 
-def symbolic_fields(output):
-    """The domain, proof line, problem and vacuity of a proof, from the verifier's text output (`prove` until it is
-    read from --json)."""
-    m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
-    proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
-             or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
-    vacuous = re.search(r"^  vacuously: (.*)$", output, re.M)
-    return {"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output),
-            "vacuous": vacuous.group(1) if vacuous else None}
+def without_root(value, root):
+    """`value` with the patched copy's root taken out of every string in it, as `tool()` does for text."""
+    if isinstance(value, str):
+        return value.replace(str(root) + "/", "")
+    if isinstance(value, list):
+        return [without_root(v, root) for v in value]
+    if isinstance(value, dict):
+        return {k: without_root(v, root) for k, v in value.items()}
+    return value
+
+
+def is_outcome(value):
+    return isinstance(value, dict) and isinstance(value.get("output"), str)
 
 
 def json_outcome(proc, root):
-    """The library's outcome from a run with `--json`, with the patched copy's root taken out of every string in it
-    as `tool()` does for text, or None when the standard output is not one."""
+    """The library's outcome from a run with `--json`, with the patched copy's root taken out, or None when the
+    standard output is not one."""
     try:
         outcome = json.loads(proc.stdout)
     except ValueError:
         return None
-    if not isinstance(outcome, dict) or not isinstance(outcome.get("output"), str):
-        return None
-    prefix = str(root) + "/"
+    return without_root(outcome, root) if is_outcome(outcome) else None
 
-    def relative(value):
-        if isinstance(value, str):
-            return value.replace(prefix, "")
-        if isinstance(value, list):
-            return [relative(v) for v in value]
-        if isinstance(value, dict):
-            return {k: relative(v) for k, v in value.items()}
-        return value
-    return relative(outcome)
+
+def json_outcomes(proc, root):
+    """The library's outcomes from `prove --json`, one per property of the target in the order the properties file
+    declares them, with the patched copy's root taken out; None when the standard output is not such a list."""
+    try:
+        outcomes = json.loads(proc.stdout)
+    except ValueError:
+        return None
+    if not isinstance(outcomes, list) or not outcomes or not all(map(is_outcome, outcomes)):
+        return None
+    return without_root(outcomes, root)
 
 
 def equivalence_counterexamples(outcome):
@@ -1034,30 +1038,110 @@ def engine_flag(example):
     return ["--engine", engine] if engine else []
 
 
+def property_headline(verdicts):
+    """The verdict over a target's properties, every one of them required: a violation when any is refuted (the
+    others, unresolved ones included, stay in the result beside it), verified only when every one is, and
+    unverifiable otherwise. None when a verdict is not one the runner knows."""
+    if not verdicts or any(v not in VERDICT_LABEL for v in verdicts):
+        return None
+    if "violation" in verdicts:
+        return "violation"
+    return "verified" if all(v == "verified" for v in verdicts) else "unverifiable"
+
+
+def property_counterexample(outcome):
+    """A property outcome's witness as a result's counterexample: the input, the assertion it fails (`contract`;
+    null for a property that is its throws clauses alone), what the method did (`actual`), what a throws clause
+    required instead, and the input the checker found before it was shrunk."""
+    c = outcome.get("counterexample")
+    if not c:
+        return None
+    return {"input": c["input"], "contract": property_assertion(outcome), "actual": c["outcome"],
+            **({"expected": c["expected"]} if c.get("expected") else {}),
+            **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0)}
+
+
+def property_assertion(outcome):
+    """The assertion as checked, or None for a property that is its throws clauses alone (the tool checks `true`
+    beside them: that the method returns where no clause applies)."""
+    throws = outcome.get("throws_checked") or outcome.get("throws") or []
+    return None if outcome.get("assert") == "true" and throws else outcome.get("assert")
+
+
+def property_record(outcome, harness, statement):
+    """One property's outcome as the result keeps it: what it states, its verdict, and its own evidence."""
+    throws = outcome.get("throws_checked") or outcome.get("throws") or []
+    replay = outcome.get("replay")
+    return {"harness": harness, "assert": property_assertion(outcome), "assume": outcome.get("assume"),
+            **({"throws": throws} if throws else {}), "verdict": outcome["verdict"], "domain": outcome.get("domain"),
+            "proof": outcome.get("proof"), "problem": outcome.get("problem"), "vacuous": outcome.get("vacuous"),
+            "counterexample": property_counterexample(outcome), "statement": statement,
+            "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None}
+
+
 def run_tool_property(folder, example, root, module, result):
-    """B11 on a javac app: `jvmcontract prove` of the symbol's property in the module's properties file."""
+    """B11 on a javac app: `jvmcontract prove --json` of every property the module's properties file declares for
+    the symbol. Each property keeps its own outcome and evidence under `properties` (the tool's work directory
+    `property-N` when there are several), and the result's verdict is the headline over them. The flat fields
+    (`property`, `domain`, `proof`, `problem`, `statement`) are the headline property's: the first refuted one, else
+    the first unresolved one, else the first; `counterexamples` are every refuted property's witness."""
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     work = build / "build/property"
     proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"),
-                        *engine_flag(example), setup=False)
+                        *engine_flag(example), "--json", setup=False)
+    outcomes = json_outcomes(proc, root)
+    if outcomes is not None:  # the console output is the outcomes' own, with what went to standard error after it
+        output = "".join(o["output"] for o in outcomes) + without_root(proc.stderr, root)
     reported = write_evidence(folder, output, build / "build/reports/property.sarif", result)
-    # A method may have several properties; the one that failed is the one to report, if any did.
-    m = (re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M)
-         or re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \((?:JBMC|jvmcontract)", output))
-    throws = [t for t in m.group(3).split(", and throws ") if t] if m else []
-    result["property"] = {"assert": m.group(1), "assume": m.group(2), **({"throws": throws} if throws else {})} if m else None
-    witness = re.search(r"^  (\S.*)\n    outcome: (.*)$(?:\n    expected: (.*)$)?", output, re.M)
-    if witness:
-        result["counterexamples"] = [{"input": witness.group(1), "contract": m.group(1) if m else None, "actual": witness.group(2),
-                                      **({"expected": witness.group(3)} if witness.group(3) else {})}]
-    result["execution"], result["verdict"] = conclude(proc.returncode, output, result["counterexamples"], reported)
-    finish_symbolic(folder, result, work / "harness/PropertyHarness.java", symbolic_fields(output), {
-        "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
-        "verified": f"{VERDICT_LABEL['verified']}: property holds on every input",
-        "unverifiable": VERDICT_LABEL["unverifiable"],
+    for stale in folder.glob("statement-*.java"):  # an earlier run's statements are not this run's
+        stale.unlink()
+    headline = property_headline([o.get("verdict") for o in outcomes]) if outcomes is not None else None
+    several = outcomes is not None and len(outcomes) > 1
+    records = []
+    if headline is not None:
+        for n, o in enumerate(outcomes, 1):
+            name = None
+            if several and o.get("statement") and (root / o["statement"]).exists():
+                name = f"statement-{n}.java"
+                shutil.copy(root / o["statement"], folder / name)
+            records.append(property_record(o, f"property-{n}" if several else None, name))
+        result["counterexamples"] = [r["counterexample"] for r in records if r["counterexample"]]
+    # A violation needs every refuted property's witness.
+    refuted = sum(r["verdict"] == "violation" for r in records)
+    evidence = result["counterexamples"] if all(r["counterexample"] for r in records if r["verdict"] == "violation") else []
+    result["execution"], result["verdict"] = conclude_outcome(
+        proc.returncode, output, {"verdict": headline} if outcomes is not None else None, evidence, reported)
+    if result["verdict"] is None:  # a run without a verdict leaves no property's evidence as this run's
+        records = []
+        for copied in folder.glob("statement-*.java"):
+            copied.unlink()
+    result["properties"] = records or None
+    lead = next((i for want in ("violation", "unverifiable", "verified") for i, r in enumerate(records) if r["verdict"] == want), None)
+    head, record = (outcomes[lead], records[lead]) if lead is not None else (None, None)
+    result["property"] = ({"assert": record["assert"], "assume": record["assume"],
+                           **({"throws": record["throws"]} if record.get("throws") else {})} if record else None)
+    # The statement of a single property is `statement.java`, as before; of several, each its own.
+    statement = root / head["statement"] if head and head.get("statement") and not several else None
+    fields = {k: (head or {}).get(k) for k in ("domain", "proof", "problem")}
+    # A verified headline rests on every property, so it is vacuous when any of them is; a refuted one is not.
+    vacuous = [(n, r["vacuous"]) for n, r in enumerate(records, 1) if r["vacuous"]] if result["verdict"] == "verified" else []
+    fields["vacuous"] = (vacuous[0][1] if not several else "; ".join(f"property {n}: {v}" for n, v in vacuous)) if vacuous else None
+    total, unresolved = len(records), sum(r["verdict"] == "unverifiable" for r in records)
+    finish_symbolic(folder, result, statement, fields, {
+        "violation": f"{VERDICT_LABEL['violation']}: counterexample found"
+                     + (f" to {refuted} of {total} properties" if several else "")
+                     + (f", {unresolved} unresolved" if unresolved else ""),
+        "verified": f"{VERDICT_LABEL['verified']}: " + (f"all {total} properties hold" if several else "property holds")
+                    + " on every input",
+        "unverifiable": VERDICT_LABEL["unverifiable"] + (f": {unresolved} of {total} properties unresolved" if several else ""),
     })
+    if several:
+        result["statement"] = record["statement"] if record else None
+        if vacuous:
+            result["verdictLabel"] = (f"{VERDICT_LABEL['verified']}, vacuously for {len(vacuous)} of {total} properties: "
+                                      "no input in the domain reaches the calls")
 
 
 TWOPC = {
@@ -2062,13 +2146,22 @@ def render_example(folder, ex, res):
             "The proof trusted these JDK APIs to be pure: " + ", ".join(f"`{c}`" for c in res["trustedCalls"]) + ".",
             "",
         ]
-    if res.get("proof"):
+    several = len(res.get("properties") or []) > 1
+    if several:
+        lines += ["How each verdict was reached:", ""] + [
+            f"- Property {n}: {r['proof'] or r['problem'] or 'the verifier says nothing'}." for n, r in enumerate(res["properties"], 1)] + [""]
+    elif res.get("proof"):
         lines += [f"How the verdict was reached: {res['proof']}.", ""]
     if (res.get("coverage") or {}).get("reason"):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())
-    if res.get("statement"):
+    if several:
+        for n, r in enumerate(res["properties"], 1):
+            if r.get("statement"):
+                lines += details(f"The statement the prover checked for property {n} (generated harness)", "java",
+                                 (folder / r["statement"]).read_text())
+    elif res.get("statement"):
         lines += details("The statement the prover checked (generated harness)", "java",
                          (folder / res["statement"]).read_text())
     if res.get("sarif"):
@@ -2245,7 +2338,55 @@ def findings_boundaries(ex, res):
     return out
 
 
+def property_states(prop):
+    """What a property says, as a phrase: that its assertion holds, or that the method returns, with its throws
+    clauses, on the inputs its assumption admits."""
+    assume, throws = prop.get("assume"), prop.get("throws") or []
+    holds = f"`{prop['assert']}` holds" if prop.get("assert") else "the method returns"
+    clauses = "".join(f", and throws `{t.split(' when ', 1)[0]}` exactly when `{t.split(' when ', 1)[1]}`" for t in throws)
+    return holds + (f" where `{assume}`" if assume else " on every input") + clauses
+
+
+PROPERTY_VERDICT = {"verified": "✓ holds", "violation": "✗ refuted", "unverifiable": "⚠ unresolved"}
+
+
+def findings_properties(ex, res):
+    """The findings of a target with several properties: each proved or refuted on its own, the change passing only
+    when every one holds."""
+    props = res["properties"]
+    out = [f"The module declares {len(props)} properties of `{ex['subject']['symbol'].split('.')[-1]}`, and the tool "
+           "proves each on its own, in its own harness. Every one is required: one refuted property fails the change, "
+           "and it passes only when all of them hold.", "",
+           "| | The property | Verdict |", "|---|---|---|"]
+    for n, r in enumerate(props, 1):
+        vacuous = ", vacuously" if r.get("vacuous") else ""
+        out.append(f"| {n} | That {property_states(r).replace('|', chr(92) + '|')} | {PROPERTY_VERDICT[r['verdict']]}{vacuous} |")
+    refuted = [(n, r) for n, r in enumerate(props, 1) if r["verdict"] == "violation"]
+    if refuted:
+        with_expected = any((r["counterexample"] or {}).get("expected") for _, r in refuted)
+        where = {REPLAYED.get((r.get("replay") or {}).get("by")) for _, r in refuted} - {None}
+        out += ["", "The prover found an input for each refuted property, and the tool replayed it on the method"
+                + (f" {where.pop()}" if len(where) == 1 else "") + " to show what it does:", "",
+                "| Property | Input | The method's outcome |" + (" What the property requires |" if with_expected else ""),
+                "|---|---|---|" + ("---|" if with_expected else "")]
+        for n, r in refuted:
+            c = r["counterexample"]
+            out.append(f"| {n} | {code(c['input'])} | {code(c['actual'])} |"
+                       + (f" {c.get('expected') or 'the assertion'} |" if with_expected else ""))
+    unresolved = [(n, r) for n, r in enumerate(props, 1) if r["verdict"] == "unverifiable"]
+    if unresolved:
+        out += ["", "The verifier gave no verdict on " + ("these properties" if len(unresolved) > 1 else "this property")
+                + ", which stay open whatever the others show:", ""]
+        out += [f"- Property {n}: {code(r['problem'] or 'unknown')}" for n, r in unresolved]
+    if res["verdict"] == "verified":
+        out += ["", f"Each is a proof over the whole domain ({res.get('domain') or 'all inputs'}), not a sample. "
+                + prover_text(res, "") + " no input violates any of them."]
+    return out
+
+
 def findings_property(ex, res):
+    if len(res.get("properties") or []) > 1:
+        return findings_properties(ex, res)
     prop = res.get("property") or {}
     assume = prop.get("assume")
     throws = prop.get("throws") or []

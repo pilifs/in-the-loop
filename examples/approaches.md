@@ -273,6 +273,11 @@ with the keys sorted, is an in-place sort proved a permutation that keeps each o
 sort whose comparison is a difference, on two keys just over 2^31 apart. The harness copies the arrays before the
 call, as long as the bound on them, and the block sets the unwinding bound a sort of four pairs needs (`unwind: 5`).
 
+A method may have several properties, as `VoteRule#grant` in 071 has three. Each is proved in its own harness and
+recorded with its own outcome and evidence, and the change passes only when every one holds: one refuted property
+fails it, and one the prover could not decide leaves it unverified, while the others' results stay on the page
+([`examples/README.md`](README.md#run-an-example)).
+
 A limit found while writing them: JBMC's SAT backend proves linear arithmetic, comparisons, shifts and a single
 division quickly, and gets stuck on identities between divisions and multiplications, such as "the parts of an
 amount split `n` ways add up to the amount" with `floorDiv` inside a loop, which did not finish in four minutes.

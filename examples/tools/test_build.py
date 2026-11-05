@@ -60,6 +60,38 @@ PROPERTY_VIOLATION = """\
 """
 
 
+def property_outcome(root, n=None, verdict="violation", assume=None, assert_="result >= 0", **fields):
+    """One element of what `jvmcontract prove --json` prints: the library's property Outcome, its paths under the
+    patched copy `root`, in the work directory `property-N` when the target has several properties (`n`)."""
+    work = f"{root}/examples/apps/crosscut/build/property" + (f"/property-{n}" if n else "")
+    where = f" where {assume}" if assume else ""
+    outcome = {"verdict": verdict, "target": "a.B#m", "domain": "x: int", "assume": assume, "assert": assert_, "throws": [],
+               "throws_checked": [], "counterexample": None, "proof": None, "problem": None,
+               "statement": f"{work}/harness/PropertyHarness.java", "findings": [], "work": work,
+               "search": {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 0.6, "properties": 2, "unwind": 16,
+                          "max_array_length": 8, "stage": None}}
+    if verdict == "violation":
+        outcome.update({
+            "counterexample": {"input": "m(x=-1)", "outcome": "-1", "values": ["-1"], "found": "m(x=-17)", "shrink_runs": 9},
+            "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as m(x=-17), shrunk to the input above in 9 "
+                     "interpreter runs, replayed in the interpreter; domain x: int",
+            "output": f"✗ Property of a.B#m violated: `{assert_}`{where}:\n  m(x=-1)\n    outcome: -1\n  (found by JBMC)\n",
+            "replay": {"by": "interpreter", "reproduced": True}})
+        outcome["search"]["stage"] = "[0:20]"
+    elif verdict == "verified":
+        outcome.update({"proof": "JBMC 6.11.0: 2 properties proved over x: int in 0.6 s; loops unwound 16 times with unwinding assertions",
+                        "output": f"✓ a.B#m satisfies `{assert_}` on every input{where} (JBMC 6.11.0)\n"})
+    else:
+        outcome.update({"problem": "JBMC gave no verdict within 60 s", "search": None,
+                        "output": "✗ a.B#m cannot be verified: JBMC gave no verdict within 60 s\n"})
+    outcome.update(fields)
+    return outcome
+
+
+def property_json(*outcomes):
+    return json.dumps(list(outcomes))
+
+
 def proc(returncode, stdout="", stderr=""):
     return subprocess.CompletedProcess([], returncode, stdout, stderr)
 
@@ -169,7 +201,7 @@ class ExpectationTest(unittest.TestCase):
         self.assertGreater(checked, 100)
 
 
-class RunnerTest(unittest.TestCase):
+class RunnerCase(unittest.TestCase):
     """A runner given the verifier's process: what it records, and what it leaves in the example's folder."""
 
     def setUp(self):
@@ -193,6 +225,8 @@ class RunnerTest(unittest.TestCase):
         shutil.rmtree(self.dir)
 
     def run_runner(self, runner, process, ex, report=None):
+        for stale in (self.build / "build/reports").glob("*"):  # a report an earlier call in the test wrote
+            stale.unlink()
         def fake(command, **kwargs):
             if report:
                 (self.build / "build/reports" / report).write_text(json.dumps({"version": "2.1.0", "runs": []}))
@@ -203,6 +237,8 @@ class RunnerTest(unittest.TestCase):
         build.finish(result, ex)
         return result
 
+
+class RunnerTest(RunnerCase):
     def test_equivalence_killed_by_a_signal_with_empty_output_is_no_counterexample(self):
         result = self.run_runner(build.run_tool_equivalence, proc(-9), example())
         self.assertEqual(result["execution"]["status"], "killed")
@@ -322,12 +358,6 @@ class RunnerTest(unittest.TestCase):
         self.assertIn("warning: y", (self.folder / "verifier-output.txt").read_text())
         self.assertNotIn(str(self.root), result["proof"])
 
-    def test_property_killed_and_violated(self):
-        ex = example(approach="B11")
-        result = self.run_runner(build.run_tool_property, proc(-9), ex)
-        self.assertEqual((result["execution"]["status"], result["verdict"], result["matchesExpected"]), ("killed", None, False))
-        result = self.run_runner(build.run_tool_property, proc(1, PROPERTY_VIOLATION), ex, report="property.sarif")
-        self.assertEqual((result["verdict"], result["matchesExpected"]), ("violation", True))
 
     def test_verify_with_an_unknown_exit_code(self):
         ex = example(approach="B8", verdict="violation")
@@ -350,6 +380,171 @@ class RunnerTest(unittest.TestCase):
         self.assertIn("did not complete (`killed`)", page)
         self.assertNotIn("SARIF report", page)
         self.assertNotIn("**missed**", build.tests_cell(result))
+
+
+class PropertyRunnerTest(RunnerCase):
+    """`prove --json`: every property of the target keeps its own outcome, and the verdict is computed over them."""
+
+    def harnesses(self, *ns):
+        """The statements the library writes, one per property's work directory (none for a single property)."""
+        for n in ns:
+            harness = self.build / "build/property" / (f"property-{n}" if n else "") / "harness"
+            harness.mkdir(parents=True, exist_ok=True)
+            (harness / "PropertyHarness.java").write_text(f"class PropertyHarness {{ /* property {n} */ }}")
+
+    def prove(self, returncode, *outcomes, report="property.sarif", **expected):
+        return self.run_runner(build.run_tool_property, proc(returncode, property_json(*outcomes)),
+                               example(approach="B11", **expected), report=report)
+
+    def test_a_killed_run_and_text_output_have_no_verdict(self):
+        ex = example(approach="B11")
+        result = self.run_runner(build.run_tool_property, proc(-9), ex)
+        self.assertEqual((result["execution"]["status"], result["verdict"], result["matchesExpected"]), ("killed", None, False))
+        self.assertIsNone(result.get("properties"))
+        result = self.run_runner(build.run_tool_property, proc(1, PROPERTY_VIOLATION), ex, report="property.sarif")
+        self.assertEqual((result["execution"]["status"], result["verdict"], result["counterexamples"]), ("invalid-output", None, []))
+        result = self.run_runner(build.run_tool_property, proc(1, "[]"), ex, report="property.sarif")
+        self.assertEqual(result["execution"]["status"], "invalid-output")
+
+    def test_prove_is_asked_for_its_json_outcomes(self):
+        commands = []
+        def fake(command, **kwargs):
+            commands.append(command)
+            return proc(0, property_json(property_outcome(self.root, verdict="verified")))
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_property(self.folder, example(approach="B11", verdict="verified"), self.root, "crosscut", empty_result())
+        self.assertIn("--json", commands[0])
+
+    def test_one_property_is_recorded_as_before(self):
+        self.harnesses(None)
+        result = self.prove(1, property_outcome(self.root))
+        self.assertEqual((result["execution"]["status"], result["verdict"], result["matchesExpected"]), ("completed", "violation", True))
+        self.assertEqual(result["verdictLabel"], "✗ Violation: counterexample found")
+        self.assertEqual(result["property"], {"assert": "result >= 0", "assume": None})
+        self.assertEqual(result["counterexamples"], [{"input": "m(x=-1)", "contract": "result >= 0", "actual": "-1",
+                                                      "found": "m(x=-17)", "shrinkRuns": 9}])
+        self.assertEqual(result["statement"], "statement.java")
+        self.assertIn("property None", (self.folder / "statement.java").read_text())
+        [record] = result["properties"]
+        self.assertEqual((record["harness"], record["statement"], record["verdict"]), (None, None, "violation"))
+        self.assertEqual(record["replay"], {"by": "interpreter", "reproduced": True})
+        self.assertEqual(record["search"]["stage"], "[0:20]")
+        self.assertTrue(result["proof"].startswith("found by JBMC 6.11.0"))
+        self.assertEqual((self.folder / "verifier-output.txt").read_text(), property_outcome(self.root)["output"])
+
+    def test_three_properties_one_refuted_like_071(self):
+        """071's shape: two properties hold and the third, the election restriction, is refuted."""
+        self.harnesses(1, 2, 3)
+        (self.folder / "statement-4.java").write_text("an earlier run's")
+        outcomes = [property_outcome(self.root, 1, "verified", assume="a == b"),
+                    property_outcome(self.root, 2, "verified", assume="a < b"),
+                    property_outcome(self.root, 3, "violation", assume="c < d || (c == d && e < f)", assert_="!result")]
+        result = self.prove(1, *outcomes)
+        self.assertEqual((result["verdict"], result["matchesExpected"]), ("violation", True))
+        self.assertEqual(result["verdictLabel"], "✗ Violation: counterexample found to 1 of 3 properties")
+        self.assertEqual([r["harness"] for r in result["properties"]], ["property-1", "property-2", "property-3"])
+        self.assertEqual([r["verdict"] for r in result["properties"]], ["verified", "verified", "violation"])
+        self.assertEqual([r["assume"] for r in result["properties"]], ["a == b", "a < b", "c < d || (c == d && e < f)"])
+        # The headline property is the refuted one, and its statement is the result's.
+        self.assertEqual(result["property"], {"assert": "!result", "assume": "c < d || (c == d && e < f)"})
+        self.assertEqual(result["statement"], "statement-3.java")
+        for n in (1, 2, 3):
+            self.assertIn(f"property {n}", (self.folder / f"statement-{n}.java").read_text())
+        self.assertFalse((self.folder / "statement.java").exists())
+        self.assertFalse((self.folder / "statement-4.java").exists())
+        self.assertEqual([c["contract"] for c in result["counterexamples"]], ["!result"])
+        self.assertEqual((self.folder / "verifier-output.txt").read_text(), "".join(o["output"] for o in outcomes))
+        # Each property's proof is its own, not the first one's.
+        self.assertTrue(result["properties"][0]["proof"].startswith("JBMC 6.11.0: 2 properties proved"))
+        self.assertTrue(result["proof"].startswith("found by"))
+        page = "\n".join(build.findings_property(example(approach="B11", symbol="a.B#m"), result))
+        self.assertIn("| 3 | That `!result` holds where `c < d \\|\\| (c == d && e < f)` | ✗ refuted |", page)
+        self.assertIn("| 1 | That `result >= 0` holds where `a == b` | ✓ holds |", page)
+        self.assertIn("| 3 | `m(x=-1)` | `-1` |", page)
+        self.assertIn("replayed it on the method in jvmcontract's bytecode interpreter to show", page)
+
+    def test_the_headline_over_mixed_outcomes(self):
+        cases = [(["verified", "verified"], "verified"), (["verified", "violation"], "violation"),
+                 (["violation", "unverifiable", "verified"], "violation"), (["verified", "unverifiable"], "unverifiable"),
+                 (["unverifiable"], "unverifiable"), (["verified", "maybe"], None), ([], None)]
+        for verdicts, headline in cases:
+            self.assertEqual(build.property_headline(verdicts), headline, verdicts)
+
+    def test_an_unresolved_property_stays_visible_beside_a_refuted_one(self):
+        result = self.prove(1, property_outcome(self.root, 1, "unverifiable"), property_outcome(self.root, 2, "violation"),
+                            property_outcome(self.root, 3, "verified"))
+        self.assertEqual(result["verdict"], "violation")
+        self.assertEqual(result["verdictLabel"], "✗ Violation: counterexample found to 1 of 3 properties, 1 unresolved")
+        self.assertEqual(result["properties"][0]["problem"], "JBMC gave no verdict within 60 s")
+        self.assertEqual(result["problem"], None)  # the headline property's, the refuted one
+        page = "\n".join(build.findings_property(example(approach="B11", symbol="a.B#m"), result))
+        self.assertIn("⚠ unresolved", page)
+        self.assertIn("- Property 1: `JBMC gave no verdict within 60 s`", page)
+
+    def test_one_unresolved_property_leaves_the_change_unverified(self):
+        result = self.prove(1, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "unverifiable"),
+                            verdict="verified")
+        self.assertEqual((result["verdict"], result["matchesExpected"]), ("unverifiable", False))
+        self.assertEqual(result["verdictLabel"], "⚠ Unverifiable: 1 of 2 properties unresolved")
+        self.assertEqual(result["problem"], "JBMC gave no verdict within 60 s")
+
+    def test_every_property_proved(self):
+        result = self.prove(0, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "verified"),
+                            verdict="verified")
+        self.assertEqual((result["verdict"], result["matchesExpected"]), ("verified", True))
+        self.assertEqual(result["verdictLabel"], "✓ Verified: all 2 properties hold on every input")
+        self.assertEqual(result["counterexamples"], [])
+
+    def test_an_exit_code_that_disagrees_with_the_headline_is_invalid(self):
+        result = self.prove(0, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "violation"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        self.harnesses(1, 2)
+        result = self.prove(1, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "verified"))
+        self.assertEqual(result["execution"]["status"], "invalid-output")
+        self.assertIsNone(result["properties"])
+        self.assertEqual(list(self.folder.glob("statement*.java")), [])
+
+    def test_a_refuted_property_needs_its_witness_and_the_report(self):
+        result = self.prove(1, property_outcome(self.root, 1, "violation"), property_outcome(self.root, 2, "violation", counterexample=None))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+        result = self.prove(1, property_outcome(self.root), report=None)
+        self.assertEqual(result["execution"]["status"], "invalid-output")
+        self.assertIn("no SARIF report", result["execution"]["reason"])
+
+    def test_an_unknown_verdict_among_the_properties_is_invalid(self):
+        result = self.prove(1, property_outcome(self.root, 1, "violation"), property_outcome(self.root, 2, "maybe"))
+        self.assertEqual((result["execution"]["status"], result["verdict"]), ("invalid-output", None))
+
+    def test_a_vacuous_property_makes_a_verified_headline_vacuous(self):
+        reason = "no input in the domain reaches the calls, every one failing the assumption (--assume)"
+        outcomes = [property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "verified", vacuous=reason)]
+        result = self.prove(0, *outcomes, verdict="verified")
+        self.assertEqual(result["coverage"], {"vacuous": True, "reason": f"property 2: {reason}"})
+        self.assertFalse(result["matchesExpected"])
+        self.assertEqual(result["verdictLabel"], "✓ Verified, vacuously for 1 of 2 properties: no input in the domain reaches the calls")
+        self.assertTrue(self.prove(0, *outcomes, verdict="verified", vacuous=True)["matchesExpected"])
+        # A refuted headline is not vacuous: the vacuous property is in its record.
+        result = self.prove(1, property_outcome(self.root, 1, "violation"), outcomes[1])
+        self.assertIsNone(result["coverage"])
+        self.assertEqual(result["properties"][1]["vacuous"], reason)
+
+    def test_throws_clauses_as_checked(self):
+        outcome = property_outcome(self.root, verdict="verified", assert_="true", throws=["ArithmeticException when b == 0"],
+                                   throws_checked=["java.lang.ArithmeticException when b == 0"])
+        result = self.prove(0, outcome, verdict="verified")
+        self.assertEqual(result["property"], {"assert": None, "assume": None, "throws": ["java.lang.ArithmeticException when b == 0"]})
+
+    def test_a_multi_property_result_validates(self):
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        self.harnesses(1, 2)
+        result = self.prove(1, property_outcome(self.root, 1, "verified"), property_outcome(self.root, 2, "violation"))
+        source = next(build.EXAMPLES.glob("071-*"))
+        recorded = json.loads((source / "result.json").read_text())
+        merged = {**recorded, **{k: v for k, v in result.items() if k != "after"}}
+        jsonschema.validate(merged, schema)
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate({**merged, "properties": [{**merged["properties"][0], "verdict": "maybe"}]}, schema)
 
 
 class TlcTest(unittest.TestCase):

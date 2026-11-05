@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T11:46:11.977Z",
-  "duration_seconds": 3495,
+  "ended": "2026-11-05T12:29:29.561Z",
+  "duration_seconds": 6093,
   "stats": {
-    "turns": 21,
-    "api_calls": 185,
-    "tool_calls": 196,
+    "turns": 27,
+    "api_calls": 255,
+    "tool_calls": 265,
     "tool_errors": 3,
-    "compactions": 3,
+    "compactions": 4,
     "peak_context_tokens": 179408,
     "usage": {
-      "input_tokens": 380,
-      "output_tokens": 152081,
-      "cache_read_input_tokens": 20334443,
-      "cache_creation_input_tokens": 504319
+      "input_tokens": 524,
+      "output_tokens": 203250,
+      "cache_read_input_tokens": 29143642,
+      "cache_creation_input_tokens": 673164
     }
   },
   "tools": {
-    "Bash": 175,
-    "Edit": 14,
+    "Bash": 243,
+    "Edit": 15,
     "Write": 3,
     "ToolSearch": 2,
     "Read": 1,
@@ -89,24 +89,38 @@
     {
       "index": 3,
       "started": "2026-11-05T11:32:53.309Z",
-      "ended": "2026-11-05T11:46:11.977Z",
-      "turns": 4,
-      "api_calls": 61,
+      "ended": "2026-11-05T12:10:33.909Z",
+      "turns": 6,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 124,
-        "output_tokens": 46812,
-        "cache_read_input_tokens": 7255478,
-        "cache_creation_input_tokens": 158255
+        "input_tokens": 134,
+        "output_tokens": 47967,
+        "cache_read_input_tokens": 7776338,
+        "cache_creation_input_tokens": 162912
       },
-      "peak_context_tokens": 171335
+      "peak_context_tokens": 175994
+    },
+    {
+      "index": 4,
+      "started": "2026-11-05T12:11:13.113Z",
+      "ended": "2026-11-05T12:29:29.561Z",
+      "turns": 4,
+      "api_calls": 67,
+      "usage": {
+        "input_tokens": 134,
+        "output_tokens": 50014,
+        "cache_read_input_tokens": 8288339,
+        "cache_creation_input_tokens": 164188
+      },
+      "peak_context_tokens": 177268
     }
   ],
   "log": {
-    "sha256": "435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963",
-    "bytes": 5664110,
-    "lines": 2023,
-    "gzip_bytes": 1027304,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963.jsonl.gz"
+    "sha256": "0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d",
+    "bytes": 7448448,
+    "lines": 2752,
+    "gzip_bytes": 1314585,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -173,6 +187,14 @@
       "summary": "build.py: regression proofs read from equivalence --json, and the page says where a witness was replayed (verification pending)",
       "body": "Step 1c of the build-orchestration brief. run_tool_equivalence() now runs jvmcontract equivalence with --json and reads the library's Outcome instead of parsing its console text. That covers the verdict, the witness, the domain, the proof line, the problem, the vacuity and the statement's path. The console text in the outcome is still written as verifier-output.txt. A new conclude_outcome() requires the exit code to agree with the outcome's verdict, and output that is not an outcome, the plain text included, is invalid-output rather than a verdict. A violation still needs its witness and the SARIF report.\n\nThe library's equivalence Outcome gains search and replay. search is the checker run the verdict comes from: the engine (jbmc or native), the checker, the seconds, the unwinding and array bounds, the input range, the reason the own checker gave no verdict under --engine auto, and the own checker's numbers. Those are bmc::Stats, carried on JbmcResult.native. replay records that the witness was run on both versions in jvmcontract's bytecode interpreter, and whether it reproduced. Results record both as search (with sharedCallees) and replay, and a violation's counterexample gains found (the input before shrinking) and shrinkRuns. The schema, examples/README.md, examples/approaches.md and lib/README.md describe them.\n\nThe page's replay sentence used to say 'on the JVM' for every B9 example. It now comes from replay, or for results recorded before it, from the proof line. A full --render-only exits 0. On 17 pages the sentence now reads 'in jvmcontract's bytecode interpreter', and the 2 Box Office pages, whose Java verifier does replay on the JVM (and records replay.by jvm), still say 'on the JVM'. Nothing else on any page moved, and no recorded result.json changed. B11 (prove) still parses text through symbolic_fields(), which is step 1d.\n\nVerified with examples/tools/test_build.py (46 tests, 13 new): JSON fixtures for a violation, a verified run and a vacuous one, an exit code that disagrees with the verdict, text where JSON was asked for, a witness that does not reproduce, the own checker's numbers, the patched copy's root removed from the outcome, the wording for every recorded B9 violation, and schema validation. Also cargo test --release in lib/ (two integration tests now check search and replay), and verification/test_pipeline.py (16 tests).\n\nJobs: 20261105-114501-example-128-b9-jbmc-read-from-equivalenc (a JBMC violation), 20261105-114501-example-120-b9-jbmc-shared-callees-read (JBMC with shared callees), 20261105-114501-example-143-b9-own-checker-read-from-equ (a native violation), 20261105-114502-example-144-b9-own-checker-vacuous-read (vacuous), and 20261105-114502-example-006-b9-box-office-java-verifier (Box Office). The seven jobs from 1a and 1b had not run at the start of this cycle.\n\nCorrections to the brief: the review's 'replayed it on the JVM' was right for the Box Office examples, whose Java verifier really replays on the JVM, and wrong only for jvmcontract's apps. The brief's 'summary line's numbers' are taken here as the proof line's numbers plus the own checker's statistics, which until now were only in bmc.log.",
       "log_sha256": "435edae71db7b291cf4155f66d2701d1f8e3946f856e669c6e368cce8092d963"
+    },
+    {
+      "change_id": "lsoynqpomlpzrzwvplpxymoyzwlluwtq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: every property of a target keeps its own result, read from prove --json (verification pending)",
+      "body": "Step 1d of the build-orchestration brief. run_tool_property() used to parse jvmcontract prove's console text with regexes, which picked one assertion, one witness and one proof line out of however many properties a method had, and looked for a single harness where the tool writes one per property (property-N). Example 071, whose VoteRule#grant has three properties, recorded statement: null as a result. It now runs prove --json and keeps every property in a new result field, properties: its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search and replay. With several properties, each entry also has its work directory and its harness, copied as statement-N.java.\n\nThe verdict is computed over the properties by property_headline(), every one of them required: a violation when any is refuted, verified only when all hold, unverifiable otherwise, with unresolved properties kept visible beside a refuted one. A violation needs every refuted property's witness and the SARIF report. The exit code must agree with the headline, and output that is not a list of outcomes (the plain text included) is invalid-output. A verified headline is vacuous when any of its properties is. A refuted one is not, but the property's own record keeps its vacuity. The label counts the properties ('counterexample found to 1 of 3 properties, 1 unresolved'). The flat property, domain, proof, problem and statement are the headline property's (the first refuted, else the first unresolved, else the first), so a single-property result has its old shape plus properties. The page gets a table of the properties, a witness for each refuted one (saying it was replayed in jvmcontract's bytecode interpreter), a proof line per property and a statement per property. Results recorded before this step have no properties and render as before: a full --render-only rewrote no page, and all 140 recorded results validate against the extended schema. symbolic_fields(), the last text parser of a proof, is gone.\n\nIn the library, property::Outcome gains search and replay, as equivalence's did in 1c, and throws_checked: the clauses with the exception named in full, which is the form the recorded results took from the text. replay.reproduced is false when the property calls the method under proof, since only the harness can evaluate that, so the violation rests on the checker's word. The choice is the conservative one: it claims no reproduction the interpreter did not show. lib/README.md documents prove --json, examples/README.md the result fields, and approaches.md the rule for several properties.\n\nVerified: test_build.py has 59 tests (14 new in PropertyRunnerTest, whose shared setup moved to a RunnerCase base class with no tests of its own). They cover the 071 shape, every mix of headlines, a refuted property without its witness, an unknown verdict, an exit code that disagrees, vacuity over several properties, throws clauses, stale statements removed and a schema check. cargo test --release: 116 unit tests pass and 49 of 50 integration tests pass in the full parallel run. The one failure was the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, whose own-checker regression proof of Pricing#total hit the solver's time limit, after the new property assertions in it had passed, in a run that took 630 s. Run again on its own with the other two touched tests, it passes (3 tests in 16 s). test_pipeline.py passes. No recorded result moved. Phase 1 of the brief is done, and 2a is next.\n\nJobs: 20261105-122210-example-071-b11-three-properties-read-fr (three outcomes, two verified and one refuted, with statement-3.java), 20261105-122210-example-053-b11-throws-clause-verified-r (one verified property with a throws clause, unchanged) and 20261105-122210-example-050-b11-arrays-shrunk-witness-re (one refuted property over arrays with a shrunk witness, unchanged). The twelve jobs from 1a to 1c had not run at the start of this cycle.",
+      "log_sha256": "0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d"
     }
   ],
   "logs": {
@@ -181,6 +203,12 @@
       "lines": 284,
       "gzip_bytes": 248027,
       "url": "https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/0b8c9b27e3b55de95cf8f5990109ffd67d353d54fcf5832f91903a33de1a7adf.jsonl.gz"
+    },
+    "0c7768b68f095ce031d02f2aa3455a2057d9d1707bda885e144f9689490fef8d": {
+      "bytes": 7448448,
+      "lines": 2752,
+      "gzip_bytes": 1314585,
+      "url": null
     },
     "34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1": {
       "bytes": 2945937,

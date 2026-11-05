@@ -871,6 +871,11 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     let proved = prove("fixtures.Laws#majority", Some("n > 0"), Some("2L * result > n && result <= n"), "majority").unwrap();
     assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
     assert!(proved.output.contains("✓ fixtures.Laws#majority satisfies `2L * result > n && result <= n` on every input where n > 0"), "{}", proved.output);
+    // The checker run is recorded with its settings; a proof replays nothing.
+    let search = proved.search.as_ref().unwrap();
+    assert_eq!((search.engine.as_str(), search.unwind, search.stage.as_deref()), ("jbmc", 16, None), "{search:?}");
+    assert!(search.checker.starts_with("JBMC "), "{search:?}");
+    assert!(proved.replay.is_none());
     assert!(proved.statement.unwrap().exists());
 
     let refuted = prove("fixtures.Laws#roundedHalf", Some("n > 0"), Some("2 * result > n"), "rounded-half").unwrap();
@@ -878,6 +883,10 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     let witness = refuted.counterexample.unwrap();
     assert_eq!(witness.input, "roundedHalf(n=2)", "the smallest even cluster");
     assert_eq!(witness.outcome, "1");
+    // The witness was replayed in the interpreter, where the property fails on it too.
+    let replay = refuted.replay.as_ref().unwrap();
+    assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
+    assert_eq!(refuted.search.as_ref().unwrap().stage.as_deref(), Some("[0:20]"), "{}", refuted.output);
     assert!(std::fs::read_to_string(refuted.work.join("report/property.sarif")).unwrap().contains("property-violated"));
 
     // Without the assumption, the exception on n <= 0 violates the property.
@@ -926,6 +935,9 @@ fn throws_clauses_prove_the_exceptional_path() {
     let Some(declared) = prove_throws("fixtures.Laws#majority", None, Some("2L * result > n && result <= n"), &["IllegalArgumentException when n <= 0"], "majority-declared", 8, true) else { return };
     assert_eq!(declared.verdict, Verdict::Verified, "{}", declared.output);
     assert!(declared.output.contains("satisfies `2L * result > n && result <= n` on every input, and throws java.lang.IllegalArgumentException when n <= 0 (JBMC"), "{}", declared.output);
+    // The clause as given, and as checked with the exception named in full.
+    assert_eq!(declared.throws, ["IllegalArgumentException when n <= 0"]);
+    assert_eq!(declared.throws_checked, ["java.lang.IllegalArgumentException when n <= 0"]);
     let statement = std::fs::read_to_string(declared.statement.unwrap()).unwrap();
     assert!(statement.contains("if (n <= 0) { expected = 1; } // java.lang.IllegalArgumentException"), "{statement}");
     assert!(statement.contains("catch (java.lang.IllegalArgumentException t) { e = -1; }"), "{statement}");
@@ -1325,6 +1337,9 @@ fn the_tools_own_checker_agrees_with_jbmc_on_integer_proofs() {
         assert_eq!(jbmc.verdict, *expected, "JBMC on {target}: {}", jbmc.output);
         assert!(native.output.contains("jvmcontract's own checker (CaDiCaL)"), "{}", native.output);
         assert!(native.work.join("bmc.log").exists());
+        assert_eq!(native.search.as_ref().map(|s| s.engine.as_str()), Some("native"), "{}", native.output);
+        assert!(native.search.as_ref().unwrap().native.is_some(), "the own checker's numbers are kept");
+        assert_eq!(jbmc.search.as_ref().map(|s| s.engine.as_str()), Some("jbmc"), "{}", jbmc.output);
         if *expected == Verdict::Violation {
             // Both witnesses are replayed and shrunk by the interpreter, so the shrunk inputs agree where the
             // smallest failing input is unique.

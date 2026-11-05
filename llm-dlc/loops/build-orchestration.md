@@ -178,6 +178,30 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Jobs `20261105-11450{1,2}-example-{128,120,143,144,006}-…` cover a JBMC violation, JBMC with shared callees, a
     native violation, the vacuous 144, and Box Office. The seven earlier jobs had not run at the start of this cycle.
   - Next: [1d](#phase-1-results-that-can-be-trusted), one result per property from `prove --json`.
+- **1d done** (2026-11-05). `run_tool_property()` runs `prove --json` and keeps every property the target has in
+  `properties`. Each entry has its assumption, assertion, throws clauses as checked, verdict, domain, proof line,
+  problem, vacuity, witness (with `found` and `shrinkRuns`), `search` and `replay`. With several properties, each entry
+  also has its work directory (`harness: property-N`) and its harness, copied as `statement-N.java`.
+  - `property_headline()` computes the verdict: a violation when any property is refuted, verified only when all of
+    them hold, unverifiable otherwise. A violation needs every refuted property's witness, and the exit code must
+    agree with the headline. A verified headline is vacuous when any of its properties is. The label counts the
+    properties (`counterexample found to 1 of 3 properties, 1 unresolved`).
+  - The flat `property`, `domain`, `proof`, `problem` and `statement` are the headline property's (the first refuted,
+    else the first unresolved, else the first), and `counterexamples` lists every refuted property's witness. With
+    one property, the result has the same shape as before plus `properties`.
+  - The page has a row per property, a witness per refuted one, a proof line per property and a statement per
+    property. Results recorded before this step render as before: no page moved.
+  - In the library, `property::Outcome` gains `search`, `replay` (`reproduced` is false when the property calls the
+    method under proof, which only the harness can evaluate) and `throws_checked` (the clauses with the exception named
+    in full, as results recorded them from the text). `symbolic_fields()` is gone: no runner parses a proof from text
+    any more.
+  - Tests: `test_build.py` has 59 tests. The new ones include the 071 shape, every mix of headlines, a refuted property
+    without its witness, an unknown verdict, a mismatched exit code, vacuity over several properties, throws clauses
+    and the schema. The integration tests check the new fields. No recorded result moved.
+  - Jobs `20261105-122210-example-{071,053,050}-b11-…`. 071 must record three outcomes (two verified, one refuted)
+    with `statement-3.java`, where it recorded `statement: null`. The twelve earlier jobs had not run at the start of
+    this cycle.
+  - Phase 1 is done. Next: [2a](#phase-2-the-model-checks-what-was-built), candidate contracts for D1.
 
 ## Open questions
 

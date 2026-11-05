@@ -130,6 +130,9 @@ pub struct Outcome {
     pub assert: Option<String>,
     /// The throws clauses, as given.
     pub throws: Vec<String>,
+    /// The throws clauses as checked, each exception named in full (`java.lang.ArithmeticException when b == 0`);
+    /// empty when the property was refused before they were resolved.
+    pub throws_checked: Vec<String>,
     pub counterexample: Option<Counterexample>,
     pub proof: Option<String>,
     pub problem: Option<String>,
@@ -140,6 +143,15 @@ pub struct Outcome {
     /// Why a verified property says nothing: the assumption admits no input in the domain.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub vacuous: Option<String>,
+    /// The checker run the verdict comes from; none when the property was refused before any checker ran.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search: Option<crate::equivalence::Search>,
+    /// How the checker's counterexample was replayed on the method, when it found one. `reproduced` is whether the
+    /// interpreter's run of the method showed the property failing on it: false when the replay showed it holding
+    /// (the verdict is then unverifiable), and false too when the property calls the method under proof and can be
+    /// evaluated only in the harness, so that the violation is the checker's word.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replay: Option<crate::equivalence::Replay>,
 }
 
 /// Runs the property proof.
@@ -166,6 +178,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             assume: options.assume.clone(),
             assert: options.assert.clone(),
             throws: options.throws.clone(),
+            throws_checked: Vec::new(),
             counterexample: None,
             proof: None,
             problem: Some(problem),
@@ -174,6 +187,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             output: out.clone(),
             work: work.clone(),
             vacuous: None,
+            search: None,
+            replay: None,
         })
     };
 
@@ -241,6 +256,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
     };
     let throws_text = signals.iter().map(Signal::render).collect::<Vec<_>>();
+    let throws_checked = signals.iter().map(|s| format!("{} when {}", s.java_name(), s.when)).collect::<Vec<_>>();
     let harness_dir = work.join("harness");
     std::fs::create_dir_all(&harness_dir)?;
     std::fs::write(harness_dir.join(format!("{}.class", harness::PROPERTY_CLASS)), &harness.bytes)?;
@@ -276,6 +292,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // The tool's own checker first, when asked: its verdict stands, and where it has none, JBMC's turn (under
     // `auto`), or that is the answer (under `native`).
     let mut stages: &[Option<&str>] = STAGES;
+    let mut fallback = None;
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &work)?;
@@ -284,6 +301,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             last = Some(result);
         } else {
             let _ = writeln!(out, "note: the tool's own checker gave no verdict ({}); JBMC", result.problem.as_deref().unwrap_or("no reason"));
+            fallback = Some(result.problem.clone().unwrap_or_else(|| "no reason".into()));
         }
     }
     // An array parameter is never null, and is bounded in length: a quantifier over it is a loop the unwinding
@@ -316,6 +334,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     }
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
+    let search = Some(crate::equivalence::Search {
+        engine: if last.native.is_some() { "native" } else { "jbmc" }.into(),
+        checker: last.version.clone(),
+        seconds,
+        properties: last.properties,
+        unwind: options.unwind,
+        max_array_length: options.max_array_length,
+        stage: last.stage.clone(),
+        fallback,
+        native: last.native.clone(),
+    });
+    let mut replay = None;
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
     let and_throws = if throws_text.is_empty() { String::new() } else { format!(", and {}", throws_text.join(", and ")) };
     // A property that is its throws clauses alone claims that the method returns elsewhere.
@@ -425,7 +455,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None });
+                let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, search, replay });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -467,6 +498,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let _ = writeln!(out, "  ({how})");
             findings.push(Finding::new("property-violated", message, uri.clone(), line));
             proof = Some(how);
+            replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: evaluable });
             counterexample = Some(Counterexample { input: rendered, outcome, expected, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs });
         }
         Verdict::Unverifiable => {
@@ -490,6 +522,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         assume: options.assume.clone(),
         assert: Some(assertion),
         throws: options.throws.clone(),
+        throws_checked,
         counterexample,
         proof,
         problem,
@@ -498,6 +531,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         output: out,
         work,
         vacuous,
+        search,
+        replay,
     })
 }
 

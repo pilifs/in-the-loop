@@ -450,6 +450,18 @@ also has `found`, the input as the checker found it before shrinking, and `shrin
 witness was run again on both versions: `interpreter`, jvmcontract's own bytecode interpreter, or `jvm` for the Box
 Office Java verifier. The page's wording comes from that record, and not from the approach.
 
+A property proof through jvmcontract (B11) is read from `prove --json`, one outcome for each property the module's
+`properties.contract` declares for the target. The result keeps each in `properties`, with its assumption, assertion,
+throws clauses, verdict, proof line, problem, vacuity, witness, `search` and `replay`, and, when the target has
+several, its work directory (`property-N`) and its harness, copied as `statement-N.java`. Every property is required.
+The verdict is a violation when any property is refuted, verified only when all of them hold, and unverifiable
+otherwise, and the label counts them (`counterexample found to 1 of 3 properties, 1 unresolved`). A violation needs
+every refuted property's witness. A verified result is vacuous when any of its properties is. The flat `property`,
+`proof`, `problem` and `statement` are the headline property's (the first refuted, else the first unresolved, else the
+first), and `counterexamples` lists every refuted property's witness. The page has a row for each property, a witness
+for each refuted one, and a statement for each. Results recorded before 2026-11-05 kept one property's text, and their
+pages render as before.
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence.
