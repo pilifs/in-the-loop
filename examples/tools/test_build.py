@@ -1130,6 +1130,134 @@ class ReplayWordingTest(unittest.TestCase):
             self.assertEqual("on the JVM" in page, build.app_of(ex) == "boxoffice", folder.name)
 
 
+class PlanTest(unittest.TestCase):
+    """plan(): what a run takes, resolved from example.json with no side effect, and the same for build.py and the
+    pipeline."""
+
+    def recorded(self):
+        for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
+            ex = json.loads((folder / "example.json").read_text())
+            if ex["origin"] == "constructed":
+                yield folder, ex
+
+    def test_planning_every_example_builds_copies_runs_and_makes_nothing(self):
+        def refuse(*args, **kwargs):
+            raise AssertionError(f"plan() had a side effect: {args!r}")
+        with mock.patch.object(build.subprocess, "run", side_effect=refuse), \
+                mock.patch.object(build.shutil, "copytree", side_effect=refuse), \
+                mock.patch.object(build.tempfile, "mkdtemp", side_effect=refuse), \
+                mock.patch.object(build.tempfile, "TemporaryDirectory", side_effect=refuse), \
+                mock.patch.object(build, "scratch", side_effect=refuse):
+            plans = [build.plan(ex) for _, ex in self.recorded()]
+        self.assertTrue(plans)
+        for q in plans:
+            self.assertTrue(q["executable"], q)
+            self.assertIn(q["approach"], build.RUNNERS[q["app"]])
+            self.assertEqual(q["runner"], build.RUNNERS[q["app"]][q["approach"]].__name__)
+
+    def test_importing_build_py_makes_no_directory(self):
+        code = (f"import sys, tempfile\n"
+                f"made = []\n"
+                f"real = tempfile.mkdtemp\n"
+                f"tempfile.mkdtemp = lambda *a, **k: made.append(a) or real(*a, **k)\n"
+                f"sys.path.insert(0, {str(HERE)!r})\n"
+                f"import build\n"
+                f"build.plan(build.load_example(next(build.EXAMPLES.glob('124-*'))))\n"
+                f"print(len(made))\n")
+        out = subprocess.run([sys.executable, "-c", code], text=True, capture_output=True, check=True).stdout
+        self.assertEqual(out.strip(), "0")
+
+    def test_the_tool_s_own_checker_needs_no_jbmc_and_auto_may(self):
+        ex = example()
+        self.assertEqual(build.plan(ex)["engine"], "jbmc")
+        self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract", "jbmc"], "optional": []})
+        ex["approach"]["engine"] = "native"
+        q = build.plan(ex)
+        self.assertEqual((q["engine"], q["options"]), ("native", ["--engine", "native"]))
+        self.assertEqual(q["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": []})
+        ex["approach"]["engine"] = "auto"
+        self.assertEqual(build.plan(ex)["tools"], {"required": ["java", "javac", "jvmcontract"], "optional": ["jbmc"]})
+        prop = example(approach="B11")
+        prop["approach"]["engine"] = "native"
+        self.assertNotIn("jbmc", build.plan(prop)["tools"]["required"])
+
+    def test_box_office_b12_calls_jvmcontract_and_b8_does_not(self):
+        b12 = next(ex for _, ex in self.recorded() if ex["approach"]["id"] == "B12")
+        self.assertEqual(build.plan(b12)["tools"]["required"], ["java", "javac", "gradle", "jvmcontract"])
+        b8 = next(ex for _, ex in self.recorded() if ex["approach"]["id"] == "B8" and build.app_of(ex) == "boxoffice")
+        self.assertEqual(build.plan(b8)["tools"]["required"], ["java", "javac", "gradle"])
+        b9 = next(ex for _, ex in self.recorded() if ex["approach"]["id"] == "B9" and build.app_of(ex) == "boxoffice")
+        q = build.plan(b9)
+        self.assertEqual((q["engine"], q["tools"]["required"]), ("jbmc", ["java", "javac", "gradle", "jbmc"]))
+
+    def test_every_recorded_native_example_plans_without_jbmc(self):
+        native = [build.plan(ex) for _, ex in self.recorded() if ex["approach"].get("engine") == "native"]
+        self.assertGreaterEqual(len(native), 15)
+        for q in native:
+            self.assertNotIn("jbmc", q["tools"]["required"] + q["tools"]["optional"], q["example"])
+
+    def test_a_d1_plan_names_the_model_and_every_configuration(self):
+        for folder, ex in self.recorded():
+            if ex["approach"]["id"] != "D1":
+                continue
+            q = build.plan(ex)
+            self.assertIn("tlc", q["tools"]["required"])
+            self.assertTrue((build.REPO / q["model"]["spec"]).exists(), q["model"]["spec"])
+            for c in q["model"]["configurations"]:
+                self.assertTrue((build.REPO / c["cfg"]).exists(), c["cfg"])
+            if q["app"] != "boxoffice":
+                files = build.find_model(ex)
+                self.assertEqual(len(q["model"]["configurations"]), len(build.tlc_configurations(files)))
+                self.assertIn(files["symbol"], q["model"]["operators"])
+
+    def test_the_runner_passes_the_plan_s_options(self):
+        ex = example(verdict="verified")
+        ex["approach"].update({"engine": "native", "unwind": 32, "maxArrayLength": 12})
+        options = build.plan(ex)["options"]
+        self.assertEqual(options, ["--engine", "native", "--unwind", "32", "--max-array-length", "12"])
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        commands = []
+        def fake(command, **kwargs):
+            commands.append(command)
+            return proc(0, equivalence_json(root, "verified"))
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_equivalence(root, ex, root, "crosscut", empty_result())
+        at = commands[0].index("--engine")
+        self.assertEqual(commands[0][at:at + len(options)], options)
+
+    def test_an_example_build_py_does_not_run_has_a_plan_that_says_why(self):
+        ex = example()
+        ex["subject"]["file"] = "src/main/java/A.java"
+        q = build.plan(ex)
+        self.assertFalse(q["executable"])
+        self.assertIn("no app builds it", q["notExecuted"])
+        self.assertNotIn("tools", q)
+
+    def test_plan_mode_prints_json_and_runs_nothing(self):
+        out = io.StringIO()
+        with mock.patch.object(build, "run", side_effect=AssertionError("ran")), mock.patch.object(build, "render_index"), \
+                contextlib.redirect_stdout(out):
+            code = build.main(["--plan", "124", "110"])
+        self.assertEqual(code, 0)
+        plans = json.loads(out.getvalue())
+        self.assertEqual([q["example"] for q in plans], ["110", "124"])
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            self.assertEqual(build.main(["--plan", "12x"]), 2)
+
+    def test_the_pipeline_requires_what_the_plan_says(self):
+        sys.path.insert(0, str(build.REPO / "verification"))
+        import pipeline
+        for _, ex in self.recorded():
+            parts = pipeline.example_job_parts(ex["id"])
+            q = build.plan(ex)
+            self.assertEqual(parts["requires"], q["tools"]["required"] + q["tools"]["optional"], ex["id"])
+            self.assertEqual(parts["capability"], q["approach"])
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema

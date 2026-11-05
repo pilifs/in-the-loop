@@ -420,9 +420,18 @@ python3 examples/tools/build.py 002              # run one constructed example, 
 python3 examples/tools/build.py                  # run every constructed example: the Quorum ones take about ten minutes
 python3 examples/tools/build.py --render-only    # rewrite every page and the router from the results there, running nothing
 python3 examples/tools/build.py --index-only     # rewrite only the router
+python3 examples/tools/build.py --plan 124       # what a run would take, as JSON, running nothing
 ```
 
-It needs Java 25, JBMC for B9 and B11, TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for
+`--plan` prints the run's plan, which `plan()` in `build.py` resolves from `example.json` alone, without building or
+running anything. The plan names the app and its build (Gradle or javac), the runner, the claim, and the engine with the
+flags the proof is given. It lists the tools the run calls: `required` ones, and `optional` ones it calls only in some
+cases (JBMC under `engine: auto`). For D1 it also names the model, every configuration and the generated operators, and
+it lists the files the run writes. `build.py` runs that plan, and the pipeline's `submit --example` takes a job's
+requirements from it. A proof by the tool's own checker (`engine: native`) requires no JBMC, and a Box Office B12 run
+requires jvmcontract.
+
+It needs Java 25, JBMC for B9 and B11 (unless the example names the tool's own checker), TLC (`~/tools/tla2tools.jar`, as [`setup`](setup/README.md) installs it) for
 D1, and `cargo` (or a built `lib/target/release/jvmcontract`, or `JVMCONTRACT` pointing at one) for Quorum, Crosscut
 and Mica; no Docker. A Box Office example takes from seconds to a minute, since its patch is applied to a copy of the
 Gradle build; a Quorum, Crosscut or Mica example takes seconds, and a model-checking one up to a few minutes. A

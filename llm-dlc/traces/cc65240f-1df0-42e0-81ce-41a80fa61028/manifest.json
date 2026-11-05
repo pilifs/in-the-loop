@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T12:57:53.608Z",
-  "duration_seconds": 7797,
+  "ended": "2026-11-05T13:09:17.086Z",
+  "duration_seconds": 8480,
   "stats": {
-    "turns": 37,
-    "api_calls": 381,
-    "tool_calls": 391,
+    "turns": 44,
+    "api_calls": 426,
+    "tool_calls": 438,
     "tool_errors": 4,
-    "compactions": 6,
+    "compactions": 7,
     "peak_context_tokens": 192582,
     "usage": {
-      "input_tokens": 776,
-      "output_tokens": 317721,
-      "cache_read_input_tokens": 45918267,
-      "cache_creation_input_tokens": 1026905
+      "input_tokens": 868,
+      "output_tokens": 348862,
+      "cache_read_input_tokens": 50783159,
+      "cache_creation_input_tokens": 1158407
     }
   },
   "tools": {
-    "Bash": 359,
-    "Edit": 19,
-    "Read": 5,
+    "Bash": 402,
+    "Edit": 22,
+    "Read": 6,
     "Write": 4,
     "ToolSearch": 2,
     "Monitor": 1,
@@ -133,24 +133,38 @@
     {
       "index": 6,
       "started": "2026-11-05T12:43:58.820Z",
-      "ended": "2026-11-05T12:57:53.608Z",
-      "turns": 4,
-      "api_calls": 61,
+      "ended": "2026-11-05T13:01:52.913Z",
+      "turns": 7,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 122,
-        "output_tokens": 55923,
-        "cache_read_input_tokens": 8027477,
-        "cache_creation_input_tokens": 170773
+        "input_tokens": 130,
+        "output_tokens": 57030,
+        "cache_read_input_tokens": 8585042,
+        "cache_creation_input_tokens": 176004
       },
-      "peak_context_tokens": 183853
+      "peak_context_tokens": 189084
+    },
+    {
+      "index": 7,
+      "started": "2026-11-05T13:02:31.281Z",
+      "ended": "2026-11-05T13:09:17.086Z",
+      "turns": 4,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 84,
+        "output_tokens": 30034,
+        "cache_read_input_tokens": 4307327,
+        "cache_creation_input_tokens": 126271
+      },
+      "peak_context_tokens": 139351
     }
   ],
   "log": {
-    "sha256": "0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82",
-    "bytes": 10938457,
-    "lines": 4063,
-    "gzip_bytes": 1931673,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82.jsonl.gz"
+    "sha256": "d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d",
+    "bytes": 12299716,
+    "lines": 4561,
+    "gzip_bytes": 2192126,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -241,6 +255,14 @@
       "summary": "build.py: TLC coverage that was not read stays unknown, and each configuration's result is kept as it completes (verification pending)",
       "body": "Step 2b of llm-dlc/loops/build-orchestration.md, from section 1D and 4 of the outside review. A verified D1 run whose coverage was missing used to count as one in which no step took any row, so a change could be labelled vacuous on no evidence. The gap was also in the library: jvmcontract tlc read an output with no coverage statistics, or an operator the statistics did not list, as zero counts for every row. OperatorCoverage now has 'listed', and the report says 'unknown' for an operator that is not listed. build.py's tlc_coverage() records coverage.status (complete, partial or unavailable) over the operators the verdict depends on. Each configuration records its verdict, status, reason, coverageStatus and listed operators, and each altered row records its operator and the configurations under which it was not counted (unknownUnder). Only complete coverage can make a verdict vacuous, and a jvmcontract without the flag gives unavailable. The page says 'no verdict: timed out' for an unfinished run that has no verdict, where it used to say 'stopped at the counterexample', and it says what is not known.\n\nEach configuration's TLC result is now kept as soon as it completes (tlc_checkpointed_run), under the SHA-256 of everything the run depends on: every .tla and .cfg in the model's directory (the generated operators and recorded runs among them), the standard modules, the command, jvmcontract, TLC's jar and java -version. A result is reused only when both the fingerprint and the stored inputs match, and a run that did not complete is never kept. A configuration that can't be run (its trace writer fails, the tool can't start) becomes its own tool-error run, so the earlier configurations keep their results. The result's 'checkpoints' and the page say which results were reused. Results are kept in $BUILD_CHECKPOINTS, else in the git-ignored examples/.checkpoints, and BUILD_CHECKPOINTS=off keeps none. The pipeline points the variable at .state/checkpoints, so a job submitted again after a timeout reruns only what had not completed.\n\nChoices made without the user, taking the conservative option: checkpoints are working state, not committed evidence (the durable evidence bundle is step 3b), and the heap TLC is given is not part of the fingerprint, since it decides whether a run completes, not what a completed run found. The brief names a single 'coverageStatus' on tlc_coverage(). The result has coverage.status overall and coverageStatus for each configuration, because one configuration's missing statistics should not hide what another's show. Box Office's own run_tlc() reads no coverage, and its coverage stays null as before.\n\nVerified: test_build.py has 80 tests, 11 of them new. They cover missing coverage, an unlisted operator, complete coverage both ways, an old tool, a timed-out configuration beside a violated one, recorded results rendering as before, a later configuration's error keeping the earlier one and the rerun reusing it, a run without a verdict not kept, changed inputs or tools running again, a stored result whose inputs differ, and checkpoints off. test_pipeline.py has 17 tests (one new, for the variable), and cargo test passes (166). --render-only over every example exits 0 and no page moved. Examples/README.md, approaches.md, verification/README.md and the schema describe the new fields.\n\nJobs: 20261105-125705-example-072-d1-vacuous-coverage-status-c, 20261105-125706-example-074-d1-vacuous-role-machine-row, 20261105-125706-example-083-d1-changed-rows-taken-only-u, 20261105-125706-example-093-d1-2pc-participant-crashes-c, 20261105-125706-example-099-d1-raft-replication-liveness. No B9, B11 or B12 job, since nothing they run changed. The twenty jobs of steps 1a to 2a had not run at the start of this cycle.",
       "log_sha256": "0453e338057158da9118c0a013e561b4f92d6bc2b8d999ec803def705c481f82"
+    },
+    {
+      "change_id": "koponxszyrolmluvknzqoywyzowyspms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: one plan of each run, which the pipeline's job requirements come from (verification pending)",
+      "body": "plan(example) in examples/tools/build.py resolves, from example.json alone and without side effects, what a run takes: app and module, the build adapter and what it copies, the runner, the claim (target, file, behaviourChangeIntended, and for B9 the intended inputs, previous symbol and arguments, result relation), the engine and the exact flags of the proof, the tools it calls (required, and optional: JBMC under engine auto), the D1 model with every configuration and generated operator, and the files it writes. run() executes the plan, the B9/B11 runners pass its flags (proof_options, replacing engine_flag), and build.py --plan [ID ...] prints plans as JSON. The scratch directory is made on first use, so importing build.py makes nothing.\n\nverification/pipeline.py's example_job_parts() imports build.py and requires the plan's tools. The 15 native-engine examples no longer require JBMC, Box Office B12 jobs require jvmcontract (verifier built at the job's commit, build memory reserved), and a constructed example build.py does not run is refused with the reason. The job format is unchanged; queued jobs run as before. Choice: optional tools are required too, the conservative reading, since a job that may call JBMC must run where JBMC is.\n\nVerified: test_build.py 90 tests (new: every recorded example planned with subprocess, copies, temp dirs and scratch refused; engines; Box Office B8/B9/B12; D1 model files exist; runner flags; --plan; pipeline requirements equal the plan's for every recorded example), test_pipeline.py 20 tests (new: native vs JBMC vs auto requirements, B12 requires jvmcontract and gets the build memory reservation, an unrunnable example is refused). --render-only over every example exits 0 and no page moved.\n\nJobs 20261105-130853-example-145-b9-own-checker-array-bound-1 (native, --max-array-length 12 from the plan) and 20261105-130853-example-113-b12-box-office-with-jvmcontr (B12 now requiring jvmcontract). The 25 earlier jobs had not run at the start of this cycle.\n\nBrief: Progress records 3a; next is 3b. The rest of the brief still holds.",
+      "log_sha256": "d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d"
     }
   ],
   "logs": {
@@ -309,6 +331,12 @@
       "lines": 335,
       "gzip_bytes": 269172,
       "url": "https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/b7965f09e6fb00d5fba68bbd724e5630ecf847982fbcbdc5ae84a93379a7098b.jsonl.gz"
+    },
+    "d5531984eeb437ab4e9e816b3d1c74f13da41522c1bfcb76756e81f6b6c5bc7d": {
+      "bytes": 12299716,
+      "lines": 4561,
+      "gzip_bytes": 2192126,
+      "url": null
     }
   },
   "redaction_policy": 4,

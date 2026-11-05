@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-130853-example-113-b12-box-office-with-jvmcontr",
+  "title": "Example 113 (B12, Box Office) with jvmcontract required from build.py's plan",
+  "description": "build.py's plan says a Box Office B12 run calls jvmcontract verify, so its pipeline job now requires jvmcontract: the pipeline builds the verifier at the job's commit and reserves its build memory, where before the run built it itself, outside the reservation. Example 113 should give its recorded verdict, a violation for the nested Billing record without @Valid, unchanged.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:verify",
+    "B12"
+  ],
+  "links": {
+    "examples": [
+      "113"
+    ]
+  },
+  "expected": "example 113 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T13:08:53+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "Gradle compile of ticketing-service plus jvmcontract verify; a cold jvmcontract build adds a few minutes"
+  },
+  "steps": [
+    {
+      "name": "example 113 (B12)",
+      "run": "python3 examples/tools/build.py 113",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/113-billing-constraints-without-valid-cascade"
+  ]
+}

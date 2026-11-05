@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-130853-example-145-b9-own-checker-array-bound-1",
+  "title": "Example 145 (B9, own checker, array bound 12) run from build.py's plan",
+  "description": "build.py now runs each example from plan(), a pure function of example.json that the pipeline also reads for a job's requirements. Example 145 asks for the tool's own checker and --max-array-length 12, so its flags now come from the plan's options, and its job no longer requires JBMC. It should give its recorded verdict, verified over table lengths 9-12, unchanged.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "145"
+    ]
+  },
+  "expected": "example 145 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T13:08:53+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "recorded 4.1 s and 85 MB for the proof; the rest is javac"
+  },
+  "steps": [
+    {
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+  ]
+}

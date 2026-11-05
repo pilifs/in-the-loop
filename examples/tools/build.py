@@ -31,6 +31,7 @@ plain javac, verified by the Rust tool in lib/ (jvmcontract). The app is chosen 
 
 Usage: python3 examples/tools/build.py [ID ...]          run constructed examples (all of them by default)
        python3 examples/tools/build.py --render-only [ID ...]  rewrite their pages from result.json, running nothing
+       python3 examples/tools/build.py --plan [ID ...]     print what each run would take (plan()), as JSON, running nothing
        python3 examples/tools/build.py --index-only        the router: examples/README.md's tables and examples/index.json
 
 A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
@@ -72,22 +73,37 @@ VERDICT_LABEL = {
     "unverifiable": "⚠ Unverifiable",
 }
 
-# Per-approach caches, filled on first use and removed at exit.
-SCRATCH = Path(tempfile.mkdtemp(prefix="examples-"))
-atexit.register(shutil.rmtree, SCRATCH, True)
+# Per-approach caches, filled on first use. The scratch directory they live in belongs to the execution, not to the
+# module: it is made on first use and removed at exit, so importing build.py (as the pipeline does, for plan()) makes
+# nothing.
 BEFORE_CLASSES = {}
+_SCRATCH = []
+
+
+def scratch():
+    """The run's scratch directory, made on first use and removed at exit."""
+    if not _SCRATCH:
+        _SCRATCH.append(Path(tempfile.mkdtemp(prefix="examples-")))
+        atexit.register(shutil.rmtree, _SCRATCH[0], True)
+    return _SCRATCH[0]
 
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
-    mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"]) else None
+    mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"], ["--plan"]) else None
     ids = argv[1:] if mode else argv
     problem = selection_problem(mode, ids, folders)
     if problem:
         print(f"build.py: {problem}", file=sys.stderr)
-        print("usage: build.py [ID ...] | --render-only [ID ...] | --index-only", file=sys.stderr)
+        print("usage: build.py [ID ...] | --render-only [ID ...] | --plan [ID ...] | --index-only", file=sys.stderr)
         return 2  # nothing has run
     wanted = set(ids)
+    if mode == "--plan":
+        # What each run would take, as JSON, running nothing: every constructed example's by default.
+        plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
+        print(json.dumps([q for q in plans if wanted or q["executable"] or "real-world" not in (q["notExecuted"] or "")],
+                         indent=2, ensure_ascii=False))
+        return 0
     if mode == "--index-only":
         render_index(folders)  # after the verification pipeline has brought results back (verification/README.md)
         return 0
@@ -176,6 +192,96 @@ def not_executable(example):
     if example["approach"]["id"] == "D1" and find_model(example) is None:
         return f"no TLA+ model of {app} is built around {example['subject']['symbol']}"
     return None
+
+
+# The tools a run calls, by app and approach. Box Office builds with Gradle, which also builds its Java verifier (B8,
+# B9, B10); that verifier proves B9 with JBMC; B12 is jvmcontract's `verify` on the Gradle build's classes; D1 is
+# TLC. The javac apps are compiled by javac and verified by jvmcontract, which calls JBMC for B9 and B11 unless the
+# example names the tool's own checker, and TLC for D1.
+PLAN_TOOLS = {
+    "boxoffice": {"B8": ["gradle"], "B9": ["gradle", "jbmc"], "B10": ["gradle"], "B12": ["gradle", "jvmcontract"],
+                  "D1": ["gradle", "tlc"]},
+    "javac": {"B8": ["jvmcontract"], "B9": ["jvmcontract"], "B10": ["jvmcontract"], "B11": ["jvmcontract"],
+              "D1": ["jvmcontract", "tlc"]},
+}
+# What every run writes into the example's folder, and what some runs write too.
+PLAN_OUTPUTS = ["result.json", "result.sarif", "verifier-output.txt", "README.md"]
+
+
+def plan(example):
+    """What running an example takes, resolved from its example.json alone, with no side effect: nothing is built,
+    copied or run, and no directory is made. build.py executes it (run()), and the verification pipeline takes a
+    job's tool needs from it (pipeline.py's example_job_parts()), so the two cannot disagree about what a run calls.
+
+    `executable` is False, with the reason in `notExecuted`, for an example build.py does not run. Otherwise:
+    `app` and `module`; `build`, the adapter (gradle or javac), the app's root and what is copied for the patched
+    copy; `runner`; `claim`, what is checked: the approach, the target and what the change declares about it;
+    `engine`, the checker that decides a B9 or B11 verdict (`jbmc`, `native` or `auto`; None for the others), and
+    `options`, the flags it is given; `tools`, `required` (the run cannot go without them) and `optional` (it calls
+    them only in some cases: JBMC under `auto`, when the tool's own checker has no verdict); `model`, for D1: the
+    specification, its configurations and the generated operators; `outputs`, the files the run writes into the
+    example's folder (`maybe`: only when the run produces them)."""
+    approach = example["approach"]["id"]
+    reason = not_executable(example)
+    p = {"example": example["id"], "approach": approach, "executable": reason is None, "notExecuted": reason}
+    if reason:
+        return p
+    app = app_of(example)
+    boxoffice = app == "boxoffice"
+    root = BUILD_ROOT if boxoffice else TOOL_APPS[app]["root"]
+    change = example["change"]
+    claim = {"approach": approach, "target": example["subject"]["symbol"], "file": example["subject"]["file"],
+             "behaviourChangeIntended": change["behaviourChangeIntended"]}
+    for key in ("intendedInputs", "previousSymbol", "previousArguments", "resultsAgreeWhen"):
+        if change.get(key) and approach == "B9":
+            claim[key] = change[key]
+    if approach == "B9" and boxoffice:
+        engine = "jbmc"  # the Java verifier knows no other
+    elif approach in ("B9", "B11"):
+        engine = example["approach"].get("engine") or "jbmc"
+    else:
+        engine = None
+    tools = ["java", "javac"] + PLAN_TOOLS["boxoffice" if boxoffice else "javac"][approach]
+    optional = []
+    if engine and not boxoffice:
+        if engine == "jbmc":
+            tools.append("jbmc")
+        elif engine == "auto":
+            optional.append("jbmc")
+    model = None
+    if approach == "D1":
+        files = find_model(example)
+        if boxoffice:
+            model = {"spec": f"{root}/{SPEC}/BoxOffice.tla",
+                     "configurations": [{"cfg": f"{root}/{SPEC}/BoxOffice.cfg", "label": "the model"}],
+                     "operators": [BOX_OFFICE_KERNEL]}
+        else:  # paths from the repo's root
+            model = {"spec": f"{root}/{files['spec']}",
+                     "configurations": [{"cfg": f"{root}/{c['cfg']}", "label": c["label"]} for c in tlc_configurations(files)],
+                     "operators": [g["symbol"] for g in [files, *files.get("operators", [])]]}
+    maybe = ["statement.java", "statement-N.java"] if approach == "B11" else ["statement.java"] if approach == "B9" and not boxoffice else []
+    return {**p, "app": app, "module": module_of(example["subject"]["file"]) if boxoffice else app,
+            "build": {"adapter": "gradle" if boxoffice else "javac", "root": root, "copies": COPY if boxoffice else [root]},
+            "runner": RUNNERS[app][approach].__name__, "claim": claim, "engine": engine,
+            "options": proof_options(example, approach) if not boxoffice else [],
+            "tools": {"required": tools, "optional": optional}, "model": model,
+            "outputs": {"always": PLAN_OUTPUTS, "maybe": maybe}}
+
+
+def proof_options(example, approach=None):
+    """The flags jvmcontract's proof is given for an example: the engine for B9 and B11, and the unwinding and array
+    bounds for B9. Its runners pass exactly these, so the plan names what runs."""
+    approach = approach or example["approach"]["id"]
+    if approach not in ("B9", "B11"):
+        return []
+    a = example["approach"]
+    flags = ["--engine", a["engine"]] if a.get("engine") else []
+    if approach == "B9":
+        if a.get("unwind"):
+            flags += ["--unwind", str(a["unwind"])]
+        if a.get("maxArrayLength"):
+            flags += ["--max-array-length", str(a["maxArrayLength"])]
+    return flags
 
 
 def load_example(folder):
@@ -331,11 +437,11 @@ def run(folder, example):
     everything into the result dictionary. The approach-specific part is the runner; the rest is shared."""
     patch = (folder / example["change"]["patch"]).read_text()
     before, after = excerpts(patch, example["subject"]["file"], example["subject"].get("symbol"))
-    app = app_of(example)
-    module = module_of(example["subject"]["file"]) if app == "boxoffice" else app
+    p = plan(example)
+    app, module = p["app"], p["module"]
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        for part in COPY if app == "boxoffice" else [TOOL_APPS[app]["root"]]:
+        for part in p["build"]["copies"]:
             shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
         subprocess.run(["git", "apply", "-p1", "-"], input=patch, text=True, cwd=tmp, check=True)
 
@@ -374,7 +480,7 @@ def run(folder, example):
             "sarif": "result.sarif",
             "output": "verifier-output.txt",
         }
-        RUNNERS[app][example["approach"]["id"]](folder, example, tmp, module, result)
+        RUNNERS[app][p["approach"]](folder, example, tmp, module, result)
     finish(result, example)
     return result
 
@@ -821,7 +927,7 @@ def tool_tests(app, root):
 def tool_before_classes(app):
     """The module's classes compiled from the unpatched repo, built once per run."""
     if app not in BEFORE_CLASSES:
-        root = SCRATCH / f"before-{app}"
+        root = scratch() / f"before-{app}"
         part = TOOL_APPS[app]["root"]
         shutil.copytree(REPO / part, root / part, ignore=IGNORE)
         BEFORE_CLASSES[app] = tool_compile(app, root)[0]
@@ -1021,11 +1127,7 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--before-arguments", example["change"]["previousArguments"]]
     if example["change"].get("resultsAgreeWhen"):
         command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
-    command += engine_flag(example)
-    if example["approach"].get("unwind"):
-        command += ["--unwind", str(example["approach"]["unwind"])]
-    if example["approach"].get("maxArrayLength"):
-        command += ["--max-array-length", str(example["approach"]["maxArrayLength"])]
+    command += proof_options(example)
     proc, output = tool(app, root, *command, "--json", setup=False)
     outcome = json_outcome(proc, root)
     if outcome is not None:  # the console output is the outcome's own, with what went to standard error after it
@@ -1044,12 +1146,6 @@ def run_tool_equivalence(folder, example, root, module, result):
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
         "unverifiable": VERDICT_LABEL["unverifiable"],
     })
-
-
-def engine_flag(example):
-    """`--engine` for an example that names the checker (`approach.engine`: jbmc, native or auto); JBMC otherwise."""
-    engine = example["approach"].get("engine")
-    return ["--engine", engine] if engine else []
 
 
 def property_headline(verdicts):
@@ -1104,7 +1200,7 @@ def run_tool_property(folder, example, root, module, result):
     work = build / "build/property"
     proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"),
-                        *engine_flag(example), "--json", setup=False)
+                        *proof_options(example), "--json", setup=False)
     outcomes = json_outcomes(proc, root)
     if outcomes is not None:  # the console output is the outcomes' own, with what went to standard error after it
         output = "".join(o["output"] for o in outcomes) + without_root(proc.stderr, root)
@@ -2066,7 +2162,7 @@ RUNNERS = {
 def before_classes(module):
     """The module's classes compiled from the unpatched repo, built once per run."""
     if module not in BEFORE_CLASSES:
-        tmp = SCRATCH / f"before-{module}"
+        tmp = scratch() / f"before-{module}"
         for part in COPY:
             shutil.copytree(REPO / part, tmp / part, ignore=IGNORE)
         gradle(tmp / BUILD_ROOT, f":{module}:compileJava")

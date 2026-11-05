@@ -53,7 +53,11 @@ integration tests in `lib/` that call JBMC and TLC, a real-world example's proof
 what you need in order to go on: compiling, unit tests, `cargo test` without the slow tests, `jvmcontract tla` (which
 only generates), a TLC run over a few hundred states while you write a model.
 
-A demo example, by id, fills in the step, the outputs, the requirements and the approach:
+A demo example, by id, fills in the step, the outputs, the requirements and the approach. The requirements are the
+tools `build.py`'s plan of the run says it calls (`python3 examples/tools/build.py --plan ID` shows them), optional ones
+included. A proof by jvmcontract's own checker doesn't require JBMC, and a Box Office B12 run requires `jvmcontract`, so it
+gets the verifier built at the job's commit and the build memory reserved. An example `build.py` doesn't run is refused,
+with the reason:
 
 ```bash
 python3 verification/pipeline.py submit --example 146 \

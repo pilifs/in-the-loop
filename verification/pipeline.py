@@ -24,6 +24,7 @@ import datetime as dt
 import difflib
 import fcntl
 import hashlib
+import importlib.util
 import json
 import os
 import platform
@@ -1318,8 +1319,24 @@ def new_id(title, at=None):
     return f"{at.astimezone(dt.timezone.utc):%Y%m%d-%H%M%S}-{slug(title)}"
 
 
+def example_plan(example):
+    """build.py's plan() of an example (examples/tools/build.py, imported without running anything): what the run
+    builds and which tools it calls. The pipeline asks build.py rather than guessing from the approach, so a job
+    requires what its run uses: no JBMC for a proof by the tool's own checker, jvmcontract (and its build memory) for
+    a B12 run on the Gradle app."""
+    path = ROOT / "examples/tools/build.py"
+    if not path.exists():
+        sys.exit(f"example {example['id']}: {path.relative_to(ROOT)} is missing, and the plan of a run comes from it")
+    spec = importlib.util.spec_from_file_location("examples_build", path)
+    build = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build)
+    return build.plan(example)
+
+
 def example_job_parts(example_id):
-    """The step, outputs, requirements and capability of a job that runs one demo example through build.py."""
+    """The step, outputs, requirements and capability of a job that runs one demo example through build.py. The
+    requirements are the tools build.py's plan says the run calls, its optional ones included: a job that may need a
+    tool runs where the tool is."""
     folders = sorted((ROOT / "examples").glob(f"{example_id}-*"))
     if len(folders) != 1:
         sys.exit(f"example {example_id}: expected one folder examples/{example_id}-*, found {len(folders)}")
@@ -1328,17 +1345,11 @@ def example_job_parts(example_id):
     if example.get("origin") != "constructed":
         sys.exit(f"example {example_id} is {example.get('origin')}: build.py does not run it (its report is its README.md); "
                  "describe its proof with --step and --kind real-world instead")
-    approach = example["approach"]["id"]
-    subject = example["subject"]["file"]
-    requires = ["java", "javac"]
-    if "/apps/boxoffice/" in subject:
-        requires.append("gradle")
-    else:
-        requires.append("jvmcontract")
-    if approach in ("B9", "B11"):
-        requires.append("jbmc")
-    if approach == "D1":
-        requires.append("tlc")
+    plan = example_plan(example)
+    if not plan["executable"]:
+        sys.exit(f"example {example_id}: build.py does not run it ({plan['notExecuted']})")
+    approach = plan["approach"]
+    requires = list(dict.fromkeys(plan["tools"]["required"] + plan["tools"]["optional"]))
     rel = folder.relative_to(ROOT).as_posix()
     return {"step": {"name": f"example {example_id} ({approach})", "run": f"python3 examples/tools/build.py {example_id}",
                      "cwd": "."},

@@ -250,6 +250,28 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     complete. If one doesn't, TLC's statistics left an operator unlisted under some configuration, and that is the fix
     working: record it here. The twenty earlier jobs had not run at the start of this cycle.
   - Phase 2 is done. Next: [3a](#phase-3-one-plan-durable-evidence), a pure planning function.
+- **3a done** (2026-11-05). `plan(example)` in `build.py` resolves a run from `example.json` alone, without side effects.
+  It names the app and module, the build adapter (gradle or javac) with what it copies, the runner, and the claim (target,
+  file, `behaviourChangeIntended`, and for B9 the intended inputs, previous symbol and arguments, and result relation). It
+  also names the engine and the exact flags the proof gets, the tools (`required`, and `optional`: JBMC under
+  `engine: auto`), and for D1 the model with every configuration and generated operator. Last, it lists the files the
+  run writes. A plan for an example `build.py` doesn't run says why.
+  - `run()` takes the app, module and copies from the plan, and the B9/B11 runners pass `proof_options()`, the plan's
+    flags (`engine_flag()` is gone). `build.py --plan [ID ...]` prints plans as JSON and runs nothing.
+  - The scratch directory is now made on first use (`scratch()`), so importing `build.py` makes nothing.
+  - `pipeline.py`'s `example_job_parts()` imports `build.py` and requires the plan's tools, optional ones included.
+    - The 15 native-engine examples no longer require JBMC.
+    - Box Office B12 jobs require jvmcontract, so they get the verifier built at the job's commit and the build memory
+      reserved.
+    - A constructed example that `build.py` doesn't run is refused with the reason.
+    - The job format is unchanged, and jobs already queued run as they are.
+  - Tests: `test_build.py` has 90 tests, `test_pipeline.py` 20. The new tests plan every recorded example with every
+    side effect refused, check the engine cases, Box Office B8/B9/B12, every D1 model's files, the runner's flags,
+    `--plan`, and that the pipeline's requirements equal the plan's for every recorded example. No page moved.
+  - Not done here, left for 3b: the plan is not yet recorded in `result.json`. The claim with input fingerprints is 3b's.
+  - Jobs `20261105-130853-example-{145-b9,113-b12}-…`. 145 is native with array bound 12, and 113 is a B12 run that
+    now requires jvmcontract. The twenty-five earlier jobs had not run at the start of this cycle.
+  - Next: [3b](#phase-3-one-plan-durable-evidence), the claim, attempt, conclusion and evidence bundle.
 
 ## Open questions
 

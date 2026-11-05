@@ -284,6 +284,49 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(list((self.repo.dir / "verification/jobs").glob("*.json")) if (self.repo.dir / "verification/jobs").exists() else [], [])
 
 
+    def add_example(self, example_id, approach, subject, **approach_fields):
+        """A constructed example in the stub repo, with build.py beside it to plan its run."""
+        tools = self.repo.dir / "examples/tools"
+        tools.mkdir(parents=True, exist_ok=True)
+        shutil.copy(HERE.parent / "examples/tools/build.py", tools / "build.py")
+        folder = self.repo.dir / f"examples/{example_id}-a-constructed-change"
+        folder.mkdir(parents=True)
+        (folder / "example.json").write_text(json.dumps({
+            "id": example_id, "origin": "constructed", "approach": {"id": approach, **approach_fields},
+            "subject": {"file": subject, "symbol": "a.B#m"}, "change": {"behaviourChangeIntended": False},
+            "expected": {"verdict": "verified"}}))
+
+    def submitted(self, example_id, approach):
+        job_id = self.repo.submit(f"Example {example_id}", "--capability", approach, "--example", example_id)
+        return json.loads(next((self.repo.dir / "verification/jobs").glob(f"{job_id}.json")).read_text())
+
+    def test_a_proof_by_the_tools_own_checker_does_not_require_jbmc(self):
+        crosscut = "examples/apps/crosscut/src/main/java/a/B.java"
+        self.add_example("124", "B9", crosscut, engine="native")
+        self.add_example("128", "B9", crosscut)
+        self.add_example("130", "B11", crosscut, engine="auto")
+        self.assertEqual(self.submitted("124", "B9")["requires"], ["java", "javac", "jvmcontract"])
+        self.assertEqual(self.submitted("128", "B9")["requires"], ["java", "javac", "jvmcontract", "jbmc"])
+        # Under auto, JBMC is called when the tool's own checker has no verdict: the job runs where JBMC is.
+        self.assertEqual(self.submitted("130", "B11")["requires"], ["java", "javac", "jvmcontract", "jbmc"])
+
+    def test_a_box_office_b12_job_requires_jvmcontract_and_its_build(self):
+        self.add_example("110", "B12", "examples/apps/boxoffice/ticketing-service/src/main/java/a/B.java")
+        job = self.submitted("110", "B12")
+        self.assertEqual(job["requires"], ["java", "javac", "gradle", "jvmcontract"])
+        runner = pipeline.Runner.__new__(pipeline.Runner)
+        runner.runner = {"build_memory": 6 * 1024 ** 3}
+        runner.jvmcontract_cached = lambda source: False
+        self.assertEqual(runner.reservation(job, {"memoryLimit": 1024 ** 3}, "HEAD"), 6 * 1024 ** 3)
+
+    def test_an_example_build_py_cannot_run_is_refused_with_the_reason(self):
+        self.add_example("150", "B9", "src/main/java/a/B.java")
+        proc = self.repo.pipeline("submit", "--title", "No app", "--description", "Should be refused.",
+                                  "--capability", "B9", "--example", "150", check=False)
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("no app builds it", proc.stderr)
+
+
 @unittest.skipUnless(SYSTEMD, "systemd-run --user --scope is not available here")
 class SystemdTest(unittest.TestCase):
     def setUp(self):
