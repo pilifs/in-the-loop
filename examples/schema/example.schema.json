@@ -62,7 +62,7 @@
       "type": "object", "required": ["kind"], "additionalProperties": false,
       "properties": {
         "kind": { "description": "What the developer thought they were doing.", "enum": ["refactor", "cleanup", "feature", "bug-fix", "logging", "dependency-upgrade", "configuration"] },
-        "behaviourChangeIntended": { "description": "True if the developer meant to change behaviour, and so regenerates the contract.", "type": "boolean" },
+        "behaviourChangeIntended": { "description": "True if the developer meant to change behaviour, and so regenerates the contract. For model checking (D1) it decides only whether a contract of the model's generated operators may differ from the committed one: the operators are generated from the contracts derived from the patched classes either way.", "type": "boolean" },
         "description": { "description": "The change in the developer's words, and why it looked right.", "type": "string" },
         "patch": { "description": "Unified diff against the repo, relative to this folder.", "type": "string" },
         "intendedInputs": { "description": "For approach B9: a Java boolean expression over the method's parameters that describes the inputs the developer means to change, for example `seats >= 8`. The verifier proves that every other input behaves as before.", "type": "string" },

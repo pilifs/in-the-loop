@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-124134-example-090-d1-2pc-trace-validation-with",
+  "title": "Example 090 (D1, 2PC trace validation) with its operators tied to the patched classes",
+  "description": "Step 2a of llm-dlc/loops/build-orchestration.md: every D1 run derives the contract of each generated operator (Coordinator, Recovery, Participant) from the patched classes and records it in modelContracts. 090 is not meant to change behaviour and patches CoordinatorNode, not a kernel, so all three must be 'verified' (the committed contract) and nothing else may move.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc",
+    "jvmcontract:derive"
+  ],
+  "links": {
+    "examples": [
+      "090"
+    ]
+  },
+  "expected": "build.py exits 0, 090 a violation as before (same trace); modelContracts lists three operators, each connection verified, rowsChanged 0, allowed true; contractDiff null; modelVerdict violation",
+  "submitted": {
+    "at": "2026-11-05T12:41:34+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "as the earlier 2PC D1 jobs"
+  },
+  "steps": [
+    {
+      "name": "example 090 (D1)",
+      "run": "python3 examples/tools/build.py 090",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run"
+  ]
+}

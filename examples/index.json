@@ -5764,6 +5764,48 @@
         "The `maxArrayLength` field of `approach` is new with this example: it is the tool's `--max-array-length`, as `unwind` is its `--unwind`, for an example whose statement needs a bound other than the default eight. The bounds of twelve in example 142 and 143's notes were measured by hand; this field makes a bound part of the page the pipeline runs."
       ],
       "source": null
+    },
+    {
+      "id": "146",
+      "path": "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built",
+      "title": "A timeout rule folded as dead code in a refactor is checked as built",
+      "summary": "The change of example 060, made as a refactor: a developer folds the leader's case of the election timeout into the follower's and candidate's, calls the leader's case dead code, and does not regenerate the role machine's contract, since nothing is meant to change. The tests pass. The election model is generated from the role machine's contract, and a runner that generated it from the committed contract unless a behaviour change was intended would check the old rule, and pass whatever the patch did. The runner derives the contract from the patched classes on every run instead: one case differs from the committed contract, which nobody approved, and the model, checked on the rule that was built, shows the leader deposing itself in four steps.",
+      "origin": "constructed",
+      "system": "Quorum",
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "approach": "D1",
+      "approaches": [
+        "D1"
+      ],
+      "tags": {
+        "domain": [
+          "consensus",
+          "leader-election"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "tla-action-property",
+          "generated-operator",
+          "multiple-configurations"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "high",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "not run",
+      "vacuous": false,
+      "existingTestsPassed": null,
+      "notes": [
+        "The patch is example 060's. 060 declares the change as intended, so its contract is regenerated and approved; here it is declared as a refactor, which is the case the outside review of build.py (llm-dlc/loops/build-orchestration-review.md, section 1B) found unchecked: the model was generated from the committed contract unless `behaviourChangeIntended` was true.",
+        "Since 2026-11-05 every D1 run derives the contract of each generated operator from the patched classes and records the connection in `modelContracts`. A difference the change does not intend is a violation of its own, with the diff in `contractDiff` and a `contract-changed` result in the SARIF report, and TLC's own verdict is kept in `modelVerdict`.",
+        "Under the earlier runner this example's model would have been generated from the committed contract, so TLC would have checked the code before the patch. It was added with the runner change, and its first result comes from the verification pipeline."
+      ],
+      "source": null
     }
   ]
 }

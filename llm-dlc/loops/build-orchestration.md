@@ -202,6 +202,28 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     with `statement-3.java`, where it recorded `statement: null`. The twelve earlier jobs had not run at the start of
     this cycle.
   - Phase 1 is done. Next: [2a](#phase-2-the-model-checks-what-was-built), candidate contracts for D1.
+- **2a done** (2026-11-05). Every D1 run ties each generated operator to the patched bytecode, whatever
+  `behaviourChangeIntended` says. `run_tool_tlc()` derives each operator's contract from the patched classes
+  (`jvmcontract derive`) and generates the operator from that. Box Office's `run_tlc()` runs `updateContracts` on every
+  run.
+  - `modelContracts` records each operator: `verified` when the derived contract is the committed one, `derived` when
+    it differs, with the number of changed cases and whether the difference is `allowed`.
+  - The flag now decides only whether a difference is allowed. A change not meant to alter behaviour that changes an
+    operator's contract anyway is a violation whatever TLC found. The diff goes in `contractDiff`, the SARIF report gets a
+    `contract-changed` result, and TLC's own verdict and label are kept in `modelVerdict` and `modelSummary`. A
+    contract that can't be derived leaves the run without a verdict (`tool-error`), and TLC doesn't run.
+  - The page leads with the unapproved difference, or ends with where each rule comes from. Results recorded before this
+    have no record and render as before: no page moved.
+  - A check of the five non-intended D1 examples found that 090, 091 and 094 derive their three 2PC operators exactly as
+    committed. 011 and 012 patch Box Office services, not `OrderLifecycle`, and their jobs will show the same.
+  - New example 146 is 060's patch declared as a refactor. The old runner checked the committed rule there, and the new
+    one checks the rule as built.
+  - Tests: `test_build.py` has 69 tests. The new ones cover the gap (an operator changed unasked, checked as built,
+    then failed), an unchanged kernel, an intended change, a change to a reason alone, a contract that can't be derived,
+    TLC's violation beside a changed contract, the page, the schema, and Box Office both ways.
+  - Jobs `20261105-12413{3,4}-example-{146,090,104,076,012}-d1-…` cover Raft election, 2PC, Raft replication, the circuit
+    breaker and Box Office. The fifteen earlier jobs had not run at the start of this cycle.
+  - Next: [2b](#phase-2-the-model-checks-what-was-built), coverage status and per-configuration checkpoints.
 
 ## Open questions
 

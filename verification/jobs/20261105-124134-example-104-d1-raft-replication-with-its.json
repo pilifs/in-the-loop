@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-124134-example-104-d1-raft-replication-with-its",
+  "title": "Example 104 (D1, Raft replication) with its operators tied to the patched classes",
+  "description": "Step 2a of llm-dlc/loops/build-orchestration.md: the D1 runner derives every generated operator's contract (AppendRule, CommitRule, ReplyRule) from the patched classes. 104 is an intended refactor of ReplyRule, verified; the regenerated contract must equal the derived one, and the verdict must not move.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc",
+    "jvmcontract:derive"
+  ],
+  "links": {
+    "examples": [
+      "104"
+    ]
+  },
+  "expected": "build.py exits 0, 104 verified as before; modelContracts lists three operators, each allowed true (ReplyRule derived or verified by whether its rows changed); modelVerdict verified",
+  "submitted": {
+    "at": "2026-11-05T12:41:34+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "20m",
+    "notes": "delayed-replies configuration needs the 2.5 GB TLC heap"
+  },
+  "steps": [
+    {
+      "name": "example 104 (D1)",
+      "run": "python3 examples/tools/build.py 104",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe"
+  ]
+}

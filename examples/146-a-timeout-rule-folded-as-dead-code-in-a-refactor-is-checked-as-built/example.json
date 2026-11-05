@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "146",
+  "title": "A timeout rule folded as dead code in a refactor is checked as built",
+  "summary": "The change of example 060, made as a refactor: a developer folds the leader's case of the election timeout into the follower's and candidate's, calls the leader's case dead code, and does not regenerate the role machine's contract, since nothing is meant to change. The tests pass. The election model is generated from the role machine's contract, and a runner that generated it from the committed contract unless a behaviour change was intended would check the old rule, and pass whatever the patch did. The runner derives the contract from the patched classes on every run instead: one case differs from the committed contract, which nobody approved, and the model, checked on the rule that was built, shows the leader deposing itself in four steps.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "consensus",
+    "leader-election",
+    "dropped-case",
+    "tla-action-property",
+    "generated-operator",
+    "multiple-configurations"
+  ],
+  "severity": "high",
+  "subject": {
+    "system": "Quorum",
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+    "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide"
+  },
+  "approach": {
+    "id": "D1",
+    "name": "Protocol model checking",
+    "tool": "examples/apps/quorum/spec"
+  },
+  "change": {
+    "kind": "refactor",
+    "behaviourChangeIntended": false,
+    "description": "Replace the switch on the role in the `ElectionTimeout` case with one transition, `CANDIDATE` with `INCREMENT_TERM`, `VOTE_FOR_SELF` and `REQUEST_VOTES`, for every role. The comment gives the reasoning: a leader's election timer is stopped when it wins, so the leader's case is unreachable, and one rule is clearer than two. Since dead code is all that goes, the developer means no behaviour to change and does not regenerate the contract; the tests pass, as none asks a leader about its timer. The patch is example 060's, where the same change is declared as intended and its contract diff approved.",
+    "patch": "change.patch"
+  },
+  "risk": "A model generated from a contract checks the contract, and the contract is a file. When the runner regenerates it only for a change declared as meant to alter behaviour, a change declared as a refactor is checked against the rule as it was before the patch: the model passes, the changed-row coverage sees the same contract before and after, and the page says the protocol is safe for code that no longer exists. The developer who believes a case is dead is exactly the one who declares no behaviour change, so the gap opens on the changes most likely to be wrong in the way the model exists to catch. Here the leader's case is not dead: the timer is stopped by code outside the role machine, and a leader whose timer fires under the patched rule resigns into a candidacy of the next term.",
+  "expected": {
+    "verdict": "violation"
+  },
+  "explanation": "The runner derives the role machine's contract from the patched classes (`jvmcontract derive`) before it generates the operator, whatever the change declares. The derived contract differs from the committed one in one case, `decide(LEADER, ElectionTimeout[])`, from unchanged to a transition to `CANDIDATE`; the change is not meant to alter behaviour, so the difference is not allowed, and `modelContracts` records the operator as `derived`, 1 case changed, not allowed. That alone makes the verdict a violation. The model, generated from the derived contract, fails as well, in the same way as example 060: under three servers TLC reports a four-step run in which s1 times out, wins term 1 with s2's vote, and times out again, and the generated rule makes the leader a candidate of term 2, which violates the action property `LeadersNeverCampaign`. TLC's verdict is the headline, and the contract difference is a second finding beside it. A runner that generated the operator from the committed contract would have checked the old rule, the code before the patch, and its coverage would have found no case changed.",
+  "resolution": "Revert, as in example 060: the leader's case is the rule that makes the timer irrelevant to a leader. A developer who believes a case is dead and wants it gone regenerates the contract all the same, so that the reviewer sees the one case that changed and the model checks it; the runner no longer lets a declaration stand in for that.",
+  "notes": [
+    "The patch is example 060's. 060 declares the change as intended, so its contract is regenerated and approved; here it is declared as a refactor, which is the case the outside review of build.py (llm-dlc/loops/build-orchestration-review.md, section 1B) found unchecked: the model was generated from the committed contract unless `behaviourChangeIntended` was true.",
+    "Since 2026-11-05 every D1 run derives the contract of each generated operator from the patched classes and records the connection in `modelContracts`. A difference the change does not intend is a violation of its own, with the diff in `contractDiff` and a `contract-changed` result in the SARIF report, and TLC's own verdict is kept in `modelVerdict`.",
+    "Under the earlier runner this example's model would have been generated from the committed contract, so TLC would have checked the code before the patch. It was added with the runner change, and its first result comes from the verification pipeline."
+  ],
+  "provenance": "Constructed from example 060's change, declared as a refactor with no behaviour change intended, to show the gap the outside review of build.py found in D1 (section 1B).",
+  "references": [
+    {
+      "title": "Ongaro and Ousterhout, In Search of an Understandable Consensus Algorithm (2014): section 5.2, leader election",
+      "url": "https://raft.github.io/raft.pdf"
+    }
+  ]
+}

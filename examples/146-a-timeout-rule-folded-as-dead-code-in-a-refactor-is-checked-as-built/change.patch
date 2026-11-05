@@ -1,0 +1,16 @@
+--- a/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
++++ b/examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java
+@@ -35,10 +35,9 @@
+ 
+     public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {
+         return switch (event) {
+-            case ElectionTimeout _ -> switch (role) {
+-                case FOLLOWER, CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
+-                case LEADER -> unchanged("a leader does not hold elections");
+-            };
++            // One rule for every role: a server whose election timer fires runs for office. A leader's timer is
++            // stopped when it wins, so the case for it was dead code.
++            case ElectionTimeout _ -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);
+             case VotesCounted votes -> switch (role) {
+                 case CANDIDATE -> votes.majority() ? transition(LEADER, SEND_HEARTBEATS) : unchanged("no majority yet");
+                 case FOLLOWER, LEADER -> unchanged("votes of an election this server is no longer in");

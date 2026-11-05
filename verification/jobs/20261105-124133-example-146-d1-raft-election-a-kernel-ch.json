@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-124133-example-146-d1-raft-election-a-kernel-ch",
+  "title": "Example 146 (D1, Raft election): a kernel changed in a refactor is checked as built",
+  "description": "New example 146: example 060's patch (the leader's election-timeout case folded into the others as dead code) declared as a refactor, behaviourChangeIntended false, so the contract is not regenerated. Since step 2a of llm-dlc/loops/build-orchestration.md, build.py derives each generated operator's contract from the patched classes on every D1 run (jvmcontract derive) and records the connection in modelContracts; a difference not intended is a violation of its own. The earlier runner generated the operator from the committed contract here and checked the code before the patch.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc",
+    "jvmcontract:derive"
+  ],
+  "links": {
+    "examples": [
+      "146"
+    ]
+  },
+  "expected": "build.py exits 0 with 146 a violation as expected: modelContracts has RoleMachine#decide connection derived, rowsChanged 1, allowed false, VoteRule#decide verified; contractDiff shows decide(LEADER, ElectionTimeout[]); TLC's own verdict (modelVerdict) is violation, LeadersNeverCampaign 4-step trace under three servers, as recorded for 060; the SARIF report has a contract-changed result beside the invariant-violated ones",
+  "submitted": {
+    "at": "2026-11-05T12:41:33+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "same patch and seven configurations as 060"
+  },
+  "steps": [
+    {
+      "name": "example 146 (D1)",
+      "run": "python3 examples/tools/build.py 146",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built"
+  ]
+}

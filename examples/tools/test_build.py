@@ -12,6 +12,7 @@ never count as a verdict, an expected violation least of all.
 import contextlib
 import io
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -584,6 +585,222 @@ class TlcTest(unittest.TestCase):
         execution, verdict = build.tlc_conclusion(255, "Error: TLC threw an unexpected exception.", None, False, None, None)
         self.assertEqual((execution["status"], verdict), ("tool-error", None))
         self.assertEqual(build.tlc_conclusion(0, "No error has been found", None, True, None, None)[1], "verified")
+
+
+BREAKER_SYMBOL = "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide"
+BREAKER_ROW = "decide(OPEN, CallRequested[waitElapsed=false])"
+
+
+def changed_row(contract, case, outcome):
+    """The contract with one case's outcome replaced: a kernel the patch changed."""
+    lines = contract.splitlines(True)
+    for i, line in enumerate(lines):
+        if line.startswith(case + " "):
+            lines[i] = line.split("=> ")[0] + "=> " + outcome + "\n"
+            return "".join(lines)
+    raise AssertionError(f"no case {case}")
+
+
+class ModelContractTest(unittest.TestCase):
+    """D1 always connects the model's generated operators to the patched bytecode. A kernel the patch changed is checked
+    as it was built, whether or not the change was meant to alter behaviour; the flag decides only whether the
+    difference is allowed. The review's gap: a change not meant to alter behaviour, whose kernel changed anyway, used to
+    be checked against the committed contract and could pass."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.folder = self.dir / "example"
+        self.folder.mkdir()
+        self.root = self.dir / "root"
+        part = build.TOOL_APPS["crosscut"]["root"]
+        self.build = self.root / part
+        (self.build / "build/main").mkdir(parents=True)  # where the compiled classes would be
+        for f in ("src/contract/CircuitBreaker.decide.contract", "spec/CircuitBreaker.cfg", "spec/CircuitBreakerLive.cfg"):
+            (self.build / f).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(build.REPO / part / f, self.build / f)
+        self.committed = (self.build / "src/contract/CircuitBreaker.decide.contract").read_text()
+        self.patch = mock.patch.object(build, "jvmcontract", return_value="jvmcontract")
+        self.patch.start()
+
+    def tearDown(self):
+        self.patch.stop()
+        shutil.rmtree(self.dir)
+
+    def run_tlc(self, candidate, intended=False, tlc=None, derive=0):
+        """run_tool_tlc with the tool mocked: `derive` prints the candidate contract, `update` writes it, TLC answers
+        `tlc` (verified, by default). Records the contract each `tla` call saw and every command."""
+        self.calls, self.generated_from = [], []
+        contract = self.build / "src/contract/CircuitBreaker.decide.contract"
+        contract.write_text(self.committed)  # each run starts from the committed contract, as a fresh copy does
+        tlc = tlc or json.dumps({"verdict": "verified", "output": "Model checking completed. No error has been found.",
+                                 "trace": [], "version": "TLC 2.19", "distinct_states": 102, "depth": 9, "seconds": 1,
+                                 "coverage": [{"symbol": BREAKER_SYMBOL, "rows": [
+                                     {"case": BREAKER_ROW, "outcome": "x", "taken": True}]}]})
+        def fake(command, **kwargs):
+            self.calls.append(command[1] if len(command) > 1 else command[0])
+            if command[1] == "derive":
+                return proc(derive, candidate if derive == 0 else "", "" if derive == 0 else "error: no method decide\n")
+            if command[1] == "update":
+                contract.write_text(candidate)
+                return proc(1, "updated 1 contract\n")
+            if command[1] == "tla":
+                self.generated_from.append(contract.read_text())
+                return proc(0)
+            if command[1] == "tlc":
+                return proc(0, tlc)
+            return proc(0, "stateDiagram-v2\n")
+        ex = example("D1", BREAKER_SYMBOL)
+        ex["change"]["behaviourChangeIntended"] = intended
+        result = empty_result()
+        result["contractDiff"] = None
+        with mock.patch.object(build.subprocess, "run", side_effect=fake):
+            build.run_tool_tlc(self.folder, ex, self.root, "crosscut", result)
+        build.finish(result, ex)
+        return result
+
+    def test_an_unchanged_kernel_is_the_committed_contract_verified(self):
+        result = self.run_tlc(self.committed)
+        self.assertEqual(result["modelContracts"], [{
+            "symbol": BREAKER_SYMBOL, "contract": "src/contract/CircuitBreaker.decide.contract",
+            "operator": "spec/CircuitBreakerContract.tla", "connection": "verified", "rowsChanged": 0, "allowed": True}])
+        self.assertNotIn("update", self.calls)  # nothing is regenerated for a change not meant to alter behaviour
+        self.assertEqual((result["verdict"], result["modelVerdict"], result["contractDiff"]), ("verified", "verified", None))
+        self.assertEqual(result["verdictLabel"], result["modelSummary"])
+
+    def test_a_kernel_changed_without_an_intended_change_is_checked_as_built_and_fails(self):
+        candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=HALF_OPEN, effects=[RESET_METRICS, PERMIT]]")
+        result = self.run_tlc(candidate)
+        # The model is generated from the rule that was built, not the committed one...
+        self.assertEqual(self.generated_from, [candidate])
+        self.assertEqual(result["coverage"]["changedRows"][0]["case"], BREAKER_ROW)
+        # ...and the difference nobody approved is a violation, though TLC found the model to hold on it.
+        (connection,) = result["modelContracts"]
+        self.assertEqual((connection["connection"], connection["rowsChanged"], connection["allowed"]), ("derived", 1, False))
+        self.assertEqual((result["verdict"], result["modelVerdict"], result["execution"]["status"]), ("violation", "verified", "completed"))
+        self.assertIn("no behaviour change intended", result["verdictLabel"])
+        self.assertRegex(result["contractDiff"], r"(?m)^\+" + re.escape(BREAKER_ROW) + r" +=> Transition\[next=HALF_OPEN")
+        sarif = json.loads((self.folder / "result.sarif").read_text())
+        self.assertEqual([r["ruleId"] for r in sarif["runs"][0]["results"]], ["contract-changed"])
+        self.assertEqual(result["expectation"], "yes")  # the example expects a violation
+
+    def test_an_intended_change_regenerates_the_contracts_and_is_allowed(self):
+        candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=HALF_OPEN, effects=[RESET_METRICS, PERMIT]]")
+        result = self.run_tlc(candidate, intended=True)
+        self.assertIn("update", self.calls)
+        (connection,) = result["modelContracts"]
+        self.assertEqual((connection["connection"], connection["rowsChanged"], connection["allowed"]), ("derived", 1, True))
+        self.assertEqual(result["verdict"], "verified")
+        self.assertEqual(self.generated_from[0], candidate)
+
+    def test_a_reason_alone_is_a_change_of_the_contract(self):
+        candidate = changed_row(self.committed, BREAKER_ROW, 'Rejected[reason="open"]')
+        result = self.run_tlc(candidate)
+        self.assertEqual(result["modelContracts"][0]["rowsChanged"], 1)
+        self.assertEqual(result["verdict"], "violation")
+        self.assertEqual(result["coverage"]["changedRows"], [])  # the model reads no reason: no row of it changed
+
+    def test_a_kernel_that_cannot_be_derived_gives_no_verdict_and_no_model_check(self):
+        result = self.run_tlc(self.committed, derive=1)
+        self.assertIsNone(result["verdict"])
+        self.assertEqual(result["execution"]["status"], "tool-error")
+        self.assertIn("could not derive the contract of " + BREAKER_SYMBOL, result["execution"]["reason"])
+        self.assertNotIn("tla", self.calls)
+        self.assertNotIn("tlc", self.calls)
+        self.assertFalse((self.folder / "result.sarif").exists())
+
+    def test_tlcs_violation_stays_the_headline_beside_a_changed_contract(self):
+        steps = [{"step": 1, "action": "Initial predicate", "changes": {"x": "0"}},
+                 {"step": 2, "action": "Request", "changes": {"x": "1"}}]
+        tlc = json.dumps({"verdict": "violation", "invariant": "NoCallBeforeTheWait", "kind": "invariant", "trace": steps,
+                          "output": "Error: Invariant NoCallBeforeTheWait is violated.", "version": "TLC 2.19",
+                          "distinct_states": 12, "coverage": None})
+        candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=OPEN, effects=[PERMIT]]")
+        result = self.run_tlc(candidate, tlc=tlc)
+        self.assertEqual((result["verdict"], result["modelVerdict"], result["invariant"]), ("violation", "violation", "NoCallBeforeTheWait"))
+        self.assertEqual(len(result["trace"]), 2)
+        self.assertIn("NoCallBeforeTheWait", result["verdictLabel"])
+        sarif = json.loads((self.folder / "result.sarif").read_text())
+        self.assertEqual(sorted(r["ruleId"] for r in sarif["runs"][0]["results"]), ["contract-changed", "invariant-violated", "invariant-violated"])
+
+    def test_the_page_leads_with_the_unapproved_change_and_the_result_validates(self):
+        import jsonschema
+        candidate = changed_row(self.committed, BREAKER_ROW, "Transition[next=HALF_OPEN, effects=[RESET_METRICS, PERMIT]]")
+        result = self.run_tlc(candidate)
+        source = next(build.EXAMPLES.glob("076-*"))
+        recorded = json.loads((source / "result.json").read_text())
+        merged = {**recorded, **{k: v for k, v in result.items() if k not in ("after",)}}
+        jsonschema.validate(merged, json.loads((build.EXAMPLES / "schema/result.schema.json").read_text()))
+        ex = {**json.loads((source / "example.json").read_text()), "change": {**json.loads((source / "example.json").read_text())["change"], "behaviourChangeIntended": False}}
+        text = "\n".join(build.findings_tlc(ex, merged))
+        self.assertLess(text.index("| fairness"), text.index("alters a rule it is not meant to"))
+        self.assertLess(text.index("alters a rule it is not meant to"), text.index("Every invariant holds"))
+        self.assertIn("TLC's verdict on the patched rule: ✓ Verified", text)
+        verified = self.run_tlc(self.committed)
+        text = "\n".join(build.findings_tlc(ex, {**recorded, **{k: v for k, v in verified.items() if k != "after"}}))
+        self.assertIn("the committed contract, which the patched classes still match", text)
+
+    def test_a_result_recorded_before_the_connection_renders_as_before(self):
+        source = next(build.EXAMPLES.glob("076-*"))
+        recorded = json.loads((source / "result.json").read_text())
+        self.assertNotIn("modelContracts", recorded)
+        self.assertNotIn("rules come from", "\n".join(build.findings_tlc(json.loads((source / "example.json").read_text()), recorded)))
+
+
+class BoxOfficeModelContractTest(unittest.TestCase):
+    """The Box Office model, whose order state machine is generated by the Gradle build's verifier: the contract is
+    regenerated on every run, and a change of it not meant is a violation."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.folder = self.dir / "example"
+        self.folder.mkdir()
+        self.tmp = self.dir / "tmp"
+        root = self.tmp / build.BUILD_ROOT
+        for f in (build.CONTRACT_FILE, f"{build.SPEC}/BoxOffice.cfg"):
+            (root / f).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(build.REPO / build.BUILD_ROOT / f, root / f)
+        self.contract = root / build.CONTRACT_FILE
+        self.committed = self.contract.read_text()
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def run_tlc(self, candidate, intended=False):
+        def gradle(build_dir, task, *extra, **kwargs):
+            self.assertEqual(task, ":ticketing-domain:updateContracts")
+            self.contract.write_text(candidate)
+            return proc(0)
+        def run(command, **kwargs):
+            if "contract_to_tla.py" in str(command[1]):
+                self.generated_from = self.contract.read_text()
+                return proc(0)
+            return proc(0, "TLC2 Version 2.19\nModel checking completed. No error has been found.\n"
+                           "1,234 states generated, 610 distinct states found, 0 states left on queue.\n")
+        ex = example("D1", "net.terminalvalue.boxoffice.ticketing.app.HoldService#releaseExpiredHolds", verdict="verified")
+        ex["subject"]["file"] = f"{build.BUILD_ROOT}/ticketing-service/src/main/java/HoldService.java"
+        ex["change"]["behaviourChangeIntended"] = intended
+        result = empty_result()
+        result["contractDiff"] = None
+        with mock.patch.object(build, "gradle", side_effect=gradle), \
+                mock.patch.object(build.subprocess, "run", side_effect=run), \
+                mock.patch.object(build, "tlc", return_value=["tlc"]):
+            build.run_tlc(self.folder, ex, self.tmp, "ticketing-service", result)
+        build.finish(result, ex)
+        return result
+
+    def test_an_unchanged_order_machine_is_verified_against_the_patched_build(self):
+        result = self.run_tlc(self.committed)
+        self.assertEqual(result["modelContracts"][0]["connection"], "verified")
+        self.assertEqual((result["verdict"], result["contractDiff"], result["expectation"]), ("verified", None, "yes"))
+
+    def test_an_order_machine_changed_unasked_is_checked_as_built_and_fails(self):
+        row = "decide(PENDING_PAYMENT, PaymentDeclined[])"
+        candidate = changed_row(self.committed, row, "Unchanged[reason=\"declined\"]")
+        result = self.run_tlc(candidate)
+        self.assertEqual(self.generated_from, candidate)
+        self.assertEqual((result["modelContracts"][0]["allowed"], result["verdict"], result["modelVerdict"]), (False, "violation", "verified"))
+        self.assertIn(row, result["contractDiff"])
+        self.assertEqual(result["expectation"], "no")  # the example expects the model to hold
 
 
 class MainTest(unittest.TestCase):

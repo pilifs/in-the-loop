@@ -591,6 +591,7 @@ def run_equivalence(folder, example, tmp, module, result):
 
 SPEC = "spec"  # the TLA+ model, inside BUILD_ROOT
 CONTRACT_FILE = "ticketing-domain/src/contract/OrderLifecycle.decide.contract"
+BOX_OFFICE_KERNEL = "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide"  # the rule the model's state machine is generated from
 
 # The Java operation each TLA+ action models, for the trace.
 ACTIONS = {
@@ -619,10 +620,19 @@ INVARIANTS = {
 
 def run_tlc(folder, example, tmp, module, result):
     """D1: the TLA+ model of the services, checked by TLC. The state machine in the model is generated from the
-    behavioural contract of the (patched) code, so a change to OrderLifecycle reaches the model through its proof."""
+    behavioural contract of the patched code, regenerated from its classes on every run, so a change to
+    OrderLifecycle reaches the model whether or not it was meant to; a change to the contract that was not meant
+    makes the verdict a violation whatever TLC found."""
     build = tmp / BUILD_ROOT
-    if example["change"]["behaviourChangeIntended"]:
-        update_contracts(build, "ticketing-domain", result)
+    intended = example["change"]["behaviourChangeIntended"]
+    baseline = (build / CONTRACT_FILE).read_text()
+    update_contracts(build, "ticketing-domain", result)
+    candidate = (build / CONTRACT_FILE).read_text()
+    connection = model_contract(BOX_OFFICE_KERNEL, CONTRACT_FILE, f"{SPEC}/OrderLifecycleContract.tla", baseline, candidate, intended)
+    result["modelContracts"] = [connection]
+    if not intended:
+        # Only the operator's contract is the model's concern; any other the regeneration rewrote is left out.
+        result["contractDiff"] = contract_diff(f"{BUILD_ROOT}/{CONTRACT_FILE}", baseline, candidate) if not connection["allowed"] else None
     spec = build / SPEC
     subprocess.run([sys.executable, str(EXAMPLES / "tools/tla/contract_to_tla.py"),
                     str(build / CONTRACT_FILE), str(spec / "OrderLifecycleContract.tla")], check=True, capture_output=True)
@@ -660,10 +670,12 @@ def run_tlc(folder, example, tmp, module, result):
                          "message": {"text": message},
                          "locations": [{"physicalLocation": {"artifactLocation": {"uri": example["subject"]["file"]},
                                                              "region": {"startLine": sarif_line}}}]})
+    findings += unauthorized_findings(result, example)
     sarif = {"version": "2.1.0", "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "runs": [{
         "tool": {"driver": {"name": "tlc", "rules": [
             {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant."}},
-            {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}}]}},
+            {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}},
+            CONTRACT_CHANGED_RULE]}},
         "results": findings}]}
     (folder / "result.sarif").write_text(json.dumps(sarif, indent=2, ensure_ascii=False) + "\n")
 
@@ -679,11 +691,11 @@ def run_tlc(folder, example, tmp, module, result):
                   f"{' in ' + seconds.group(1) + ' s' if seconds else ''}, for the model {model}") if states else None,
         "problem": None if verdict != "unverifiable" else output.strip().splitlines()[-1],
     })
-    result["verdictLabel"] = {
+    result["verdict"], result["verdictLabel"] = model_verdict(result, verdict, {
         "violation": f"{VERDICT_LABEL[verdict]}: {violated.group(1) if violated else ''}, {len(trace or [])}-step trace",
         "verified": f"{VERDICT_LABEL[verdict]}: all invariants hold in {int(states.group(2)):,} states" if states else VERDICT_LABEL[verdict],
         "unverifiable": VERDICT_LABEL[verdict],
-    }[verdict]
+    }[verdict])
 
 
 def tlc_conclusion(returncode, output, timed_out, verified, violated, trace):
@@ -1709,6 +1721,61 @@ def tlc_coverage(configurations, runs, before, after):
     return {"configurations": per_configuration, "changedRows": changed, "nullRows": nulls, "vacuous": vacuous}
 
 
+def model_contract(symbol, contract, operator, baseline, candidate, intended):
+    """How one generated operator is tied to the patched bytecode. The operator is always generated from the
+    candidate contract, the one derived from the patched classes in this run: `verified` when that is the committed
+    contract (the patched classes still behave as it says), `derived` when it differs. Whether a difference is
+    allowed is the example's to say, by `behaviourChangeIntended`; it no longer decides which contract the model
+    checks. A row that differs only in an outcome's reason counts: the contract changed, whether or not the model
+    reads the reason."""
+    before, after = contract_rows(baseline), contract_rows(candidate)
+    changed = sum(1 for case in set(before) | set(after) if before.get(case) != after.get(case))
+    return {"symbol": symbol, "contract": contract, "operator": operator,
+            "connection": "verified" if baseline == candidate else "derived",
+            "rowsChanged": changed, "allowed": changed == 0 or intended}
+
+
+def contract_diff(path, baseline, candidate):
+    return "".join(difflib.unified_diff(baseline.splitlines(True), candidate.splitlines(True), f"a/{path}", f"b/{path}"))
+
+
+def unauthorized(result):
+    """The generated operators whose contract the change altered though no behaviour change was intended."""
+    return [c for c in result.get("modelContracts") or [] if not c["allowed"]]
+
+
+def unauthorized_findings(result, example):
+    """A SARIF result for each operator the change altered without an intended behaviour change."""
+    return [{"ruleId": "contract-changed", "level": "error",
+             "message": {"text": f"The patched {c['symbol']} differs from {c['contract']} in {c['rowsChanged']} "
+                                 f"row{'s' if c['rowsChanged'] != 1 else ''}, and the change is not meant to alter behaviour; "
+                                 "the model was checked on the patched rule"},
+             "locations": [{"physicalLocation": {"artifactLocation": {"uri": example["subject"]["file"]},
+                                                 "region": {"startLine": result["after"]["startLine"]}}}]}
+            for c in unauthorized(result)]
+
+
+CONTRACT_CHANGED_RULE = {"id": "contract-changed", "shortDescription": {
+    "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the "
+            "change is not meant to alter behaviour."}}
+
+
+def model_verdict(result, verdict, label):
+    """The verdict of a D1 run, from TLC's on the patched operators and the operators' connection to the committed
+    contracts. A contract the change altered without an intended behaviour change is a refuted obligation of its own,
+    so the change fails whatever TLC found; TLC's verdict and label are kept beside it (`modelVerdict`,
+    `modelSummary`)."""
+    result["modelVerdict"], result["modelSummary"] = verdict, label
+    changed = unauthorized(result)
+    if verdict != "verified" or not changed:
+        return verdict, label
+    rows = sum(c["rowsChanged"] for c in changed)
+    names = ", ".join(f"`{c['symbol'].rsplit('.', 1)[-1]}`" for c in changed)
+    return "violation", (f"{VERDICT_LABEL['violation']}: the patched {names} change{'s' if len(changed) == 1 else ''} "
+                         f"{rows} row{'s' if rows != 1 else ''} of {'its' if len(changed) == 1 else 'their'} contract with "
+                         f"no behaviour change intended, though the model holds on {'it' if len(changed) == 1 else 'them'}")
+
+
 def tlc_configurations(model_files):
     """The configurations a model is checked under: the one of its `.cfg`, then any it lists under `configurations`."""
     # The Box Office model predates configurations: its one configuration is the spec's own .cfg.
@@ -1717,18 +1784,58 @@ def tlc_configurations(model_files):
     return [primary] + [{**c, "initial": c.get("initial", model_files["initial"])} for c in model_files.get("configurations", [])]
 
 
+def tool_model_contracts(app, root, example, generated, result):
+    """Ties every generated operator of the model to the patched bytecode: the contract of each operator's symbol is
+    derived from the patched classes (`jvmcontract derive`) and written where the operator is generated from, so the
+    model checks the rule that was built, whether or not the change was meant to alter it. For an intended change
+    the module's contracts are regenerated first, and their diff is the one a reviewer approves; for any other, the
+    diff of an operator's contract that changed is recorded as the unauthorized difference. Returns the baseline and
+    candidate contracts' rows, or None, with the run recorded as a tool error, when an operator's contract cannot be
+    derived: the model would then check a rule nobody showed the patched code to have."""
+    part = TOOL_APPS[app]["root"]
+    build = root / part
+    intended = example["change"]["behaviourChangeIntended"]
+    baseline = {g["contract"]: (build / g["contract"]).read_text() for g in generated}
+    if intended:
+        tool_update_contracts(app, root, result)
+    connections, candidates, diffs = [], {}, []
+    for g in generated:
+        proc = subprocess.run([jvmcontract(), "derive", g["symbol"], "--classes", str(build / "build/main")],
+                              text=True, capture_output=True)
+        if proc.returncode != 0 or not contract_rows(proc.stdout):
+            output = (proc.stdout + proc.stderr).replace(str(root) + "/", "")
+            reason = f"jvmcontract derive could not derive the contract of {g['symbol']} from the patched classes" \
+                     + (f": {last_line(output)}" if last_line(output) else "")
+            result.update({"verdict": None, "problem": reason, "sarif": None,
+                           "execution": {"status": "tool-error", "exitCode": proc.returncode, "reason": reason}})
+            return None, output
+        candidate = candidates[g["contract"]] = proc.stdout
+        (build / g["contract"]).write_text(candidate)
+        connection = model_contract(g["symbol"], g["contract"], g["operator"], baseline[g["contract"]], candidate, intended)
+        connections.append(connection)
+        if not connection["allowed"]:
+            diffs.append(contract_diff(f"{part}/{g['contract']}", baseline[g["contract"]], candidate))
+    result["modelContracts"] = connections
+    if not intended:
+        result["contractDiff"] = "".join(diffs) or None
+    return ({c: contract_rows(t) for c, t in baseline.items()}, {c: contract_rows(t) for c, t in candidates.items()}), None
+
+
 def run_tool_tlc(folder, example, root, module, result):
-    """D1 on a javac app: the operator regenerated from the (patched) contract, then TLC through the tool, once per
-    configuration of the model. The headline, which decides the verdict, is the first configuration that finds a
-    violation (or that TLC cannot check), else the first."""
+    """D1 on a javac app: each operator generated from the contract derived from the patched classes, then TLC through
+    the tool, once per configuration of the model. The headline, which decides TLC's verdict, is the first
+    configuration that finds a violation (or that TLC cannot check), else the first; a contract the change altered
+    though no behaviour change was intended makes the verdict a violation whatever TLC found."""
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     model_files = model_of(example)
     generated = [model_files, *model_files.get("operators", [])]
-    rows_before = {g["contract"]: contract_rows((build / g["contract"]).read_text()) for g in generated}
-    if example["change"]["behaviourChangeIntended"]:
-        tool_update_contracts(app, root, result)
-    rows_after = {g["contract"]: contract_rows((build / g["contract"]).read_text()) for g in generated}
+    rows, failed = tool_model_contracts(app, root, example, generated, result)
+    if rows is None:
+        (folder / "verifier-output.txt").write_text(failed.rstrip("\n") + "\n")
+        (folder / "result.sarif").unlink(missing_ok=True)
+        return
+    rows_before, rows_after = rows
     for g in generated:
         tool(app, root, "tla", g["contract"], g["operator"], anchored=False)
     configurations = tlc_configurations(model_files)
@@ -1773,10 +1880,12 @@ def run_tool_tlc(folder, example, root, module, result):
                          "message": {"text": message},
                          "locations": [{"physicalLocation": {"artifactLocation": {"uri": example["subject"]["file"]},
                                                              "region": {"startLine": result["after"]["startLine"]}}}]})
+    findings += unauthorized_findings(result, example)
     sarif = {"version": "2.1.0", "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "runs": [{
         "tool": {"driver": {"name": "jvmcontract tlc", "rules": [
             {"id": "invariant-violated", "shortDescription": {"text": "TLC found a behaviour of the model that violates an invariant or a temporal property, or ends in a deadlock."}},
-            {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}}]}},
+            {"id": "unverifiable", "shortDescription": {"text": "TLC could not check the model."}},
+            CONTRACT_CHANGED_RULE]}},
         "results": findings}]}
     (folder / "result.sarif").write_text(json.dumps(sarif, indent=2, ensure_ascii=False) + "\n")
     states = tlc_result.get("distinct_states")
@@ -1811,7 +1920,7 @@ def run_tool_tlc(folder, example, root, module, result):
         label += f" ({configuration['label']})"
     elif several and verdict == "verified":
         label += f", and under {len(runs) - 1} more configuration{'s' if len(runs) > 2 else ''}"
-    result["verdictLabel"] = label
+    result["verdict"], result["verdictLabel"] = model_verdict(result, verdict, label)
 
 
 TOOL_RUNNERS = {"B8": run_tool_contracts, "B9": run_tool_equivalence, "B10": run_tool_contracts,
@@ -2466,7 +2575,10 @@ def findings_tlc(ex, res):
             out.append(f"| {run['label']} (`{run['cfg']}`) | {configurations[run['label']]['what']} | {run['domain']} | {run['summary']} |")
         out.append("")
     under = f" under {configuration['label']}" if several else ""
-    if res["verdict"] == "violation":
+    changed = unauthorized(res)
+    if changed:
+        out += contract_connection_lines(res) + [""]
+    if res["verdict"] == "violation" and res.get("trace"):
         inv = res["invariant"]
         kind = res.get("violationKind")
         steps = len(res["trace"])
@@ -2510,11 +2622,12 @@ def findings_tlc(ex, res):
                     + (f" After the last step the system {run['forever']}." if run["forever"] else ""), ""]
             out += tlc_trace_lines(model, run["trace"], c["initial"], c.get("startsAnywhere", False), c.get("recorded", False))
             out += ["", "</details>"]
-        return out + coverage_lines(res)
+        return out + coverage_lines(res) + ([] if changed else contract_connection_lines(res, ""))
     if res["verdict"] == "unverifiable":
         return out + ["TLC produced no verdict:", "", f"- {code(res['problem'] or 'unknown')}"]
     checked = "Every invariant holds in every reachable state of the model"
-    if "then forever" in res["verdictLabel"] or " and properties " in res["verdictLabel"]:
+    summary = res.get("modelSummary") or res["verdictLabel"]  # TLC's own label, beside a contract changed unasked
+    if "then forever" in summary or " and properties " in summary:
         checked = ("Every invariant holds in every reachable state of the model, and every temporal property holds of every "
                    "behaviour, the infinite ones included")
     out += [
@@ -2526,7 +2639,39 @@ def findings_tlc(ex, res):
     if several:
         out += ["", "The other configurations hold too, as the table says: " + "; ".join(
             f"{run['label']}, {run['statesExplored']:,} states" for run in runs[1:] if run.get("statesExplored") is not None) + "."]
-    return out + coverage_lines(res)
+    return out + coverage_lines(res) + ([] if changed else contract_connection_lines(res, ""))
+
+
+def contract_connection_lines(res, lead=None):
+    """Where the model's generated operators come from: the contract each was generated from, derived from the patched
+    classes in the run, and how it stands to the committed one. Leads the findings when the change altered a contract
+    without an intended behaviour change, with the diff; follows them otherwise. A result recorded before the runner
+    tied every operator to the patched classes has no record, and nothing is said."""
+    connections = res.get("modelContracts")
+    if not connections:
+        return []
+    short = lambda symbol: "`" + symbol.rsplit(".", 1)[-1] + "`"
+    changed = unauthorized(res)
+    out = [] if lead is None else [lead]
+    if changed:
+        rows = sum(c["rowsChanged"] for c in changed)
+        out += [f"**The change alters a rule it is not meant to.** It is not meant to change behaviour, but the contract "
+                f"derived from the patched classes differs from the committed one in {rows} row{'s' if rows != 1 else ''} of "
+                + ", ".join(short(c["symbol"]) for c in changed) + ". The model was checked on the rule that was built, "
+                "and the difference is a finding on its own, whatever TLC found: a reviewer never saw it."]
+        if res.get("contractDiff"):
+            out += ["", "```diff", res["contractDiff"].rstrip("\n"), "```"]
+        if res.get("modelVerdict") == "verified":
+            out += ["", "TLC's verdict on the patched rule: " + res["modelSummary"] + "."]
+        return out
+    out += ["**Where the model's rules come from.** Each operator the model checks is generated from the contract derived "
+            "from the patched classes in this run:", ""]
+    for c in connections:
+        how = ("the committed contract, which the patched classes still match" if c["connection"] == "verified" else
+               f"the regenerated contract, {c['rowsChanged']} row{'s' if c['rowsChanged'] != 1 else ''} from the committed one, "
+               "as the change intends" if c["rowsChanged"] else "the regenerated contract, with the committed one's rows")
+        out.append(f"- {short(c['symbol'])} (`{c['operator']}`): {how}")
+    return out
 
 
 def coverage_lines(res):

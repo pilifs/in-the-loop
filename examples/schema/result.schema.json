@@ -251,7 +251,7 @@
       "items": { "type": "string" }
     },
     "contractDiff": {
-      "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves.",
+      "description": "For an intended change: the diff of the regenerated contract, which is what a reviewer approves. For model checking (D1) of a change that is not meant to alter behaviour: the diff of each generated operator's contract the patched code changed anyway (the unauthorized difference in `modelContracts`), or null when there is none.",
       "type": [
         "string",
         "null"
@@ -385,6 +385,41 @@
           "forever": { "type": ["string", "null"] }
         }
       }
+    },
+    "modelContracts": {
+      "description": "For model checking (D1): how each operator the model generates is tied to the patched bytecode. The operator is always generated from the contract derived from the patched classes in the run, and `behaviourChangeIntended` decides only whether a difference from the committed contract is allowed. A result recorded before this field existed generated the operator from the committed contract unless the change was intended.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "contract", "operator", "connection", "rowsChanged", "allowed"],
+        "additionalProperties": false,
+        "properties": {
+          "symbol": { "type": "string", "description": "The method the operator is generated from (`pkg.Class#method`)." },
+          "contract": { "type": "string", "description": "The contract file, relative to the app's root." },
+          "operator": { "type": "string", "description": "The TLA+ module the operator is written to." },
+          "connection": {
+            "enum": ["verified", "derived"],
+            "description": "`verified`: the contract derived from the patched classes is the committed one, so the patched code still behaves as the committed contract says. `derived`: it differs, and the operator comes from the derived one."
+          },
+          "rowsChanged": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The cases whose outcome differs between the committed and the derived contract, a new or removed case included. An outcome that differs only in its reason counts."
+          },
+          "allowed": {
+            "type": "boolean",
+            "description": "Whether the difference is allowed: no case changed, or the change is meant to alter behaviour. A case changed without that is a refuted obligation of its own, and the verdict is a violation whatever TLC found."
+          }
+        }
+      }
+    },
+    "modelVerdict": {
+      "description": "For model checking (D1): TLC's verdict on the patched operators. `verdict` is this, except that a contract changed without an intended behaviour change makes it a violation.",
+      "enum": ["violation", "verified", "unverifiable", null]
+    },
+    "modelSummary": {
+      "description": "For model checking (D1): TLC's own one-line verdict, the `verdictLabel` the run would have without `modelContracts`.",
+      "type": ["string", "null"]
     },
     "property": {
       "description": "For a property proof (B11): the assumption (the inputs the property is about, or null), the assertion that was proved or refuted (null when the property is its throws clauses alone), and the throws clauses (`<exception> when <condition>`: the method throws that exception exactly where the condition holds). When the target has several properties, the headline one's (see `properties`).",
