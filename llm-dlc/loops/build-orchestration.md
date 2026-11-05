@@ -5,8 +5,8 @@ A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh):
 the model set under [Loop settings](#loop-settings). The loop runs until the session judges,
 by [Loop until](#loop-until), that the rest is not worth another cycle.
 
-**Session: `f1a97af5-3203-42fb-a248-b47b8d44812f`.** The first cycle creates it. Later work on
-this brief resumes it (`claude --resume f1a97af5-3203-42fb-a248-b47b8d44812f`, or the loop,
+**Session: `cc65240f-1df0-42e0-81ce-41a80fa61028`.** The session that wrote this brief. Later work on
+this brief resumes it (`claude --resume cc65240f-1df0-42e0-81ce-41a80fa61028`, or the loop,
 which reads it from [Loop settings](#loop-settings)) rather than starting a new one.
 
 [`examples/tools/build.py`](../../examples/tools/build.py) runs every example: it builds the
@@ -316,7 +316,7 @@ witness was replayed is a correctness fix, not this feature, and stays in scope.
 
 The session is fixed: further work on this brief resumes it.
 
-- session: f1a97af5-3203-42fb-a248-b47b8d44812f
+- session: cc65240f-1df0-42e0-81ce-41a80fa61028
 - model: claude-opus-5-5
 - effort: high
 
