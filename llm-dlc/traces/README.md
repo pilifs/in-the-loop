@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 22, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-05 02:26 UTC |
-| Prompts | 590 |
-| Model calls | 5,136 |
-| Tool calls | 5,970 (157 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-05 02:55 UTC |
+| Prompts | 592 |
+| Model calls | 5,142 |
+| Tool calls | 5,974 (158 failed) |
 | Compactions | 75 |
 | Subagents | 3 |
-| Tokens written | 8,603,303 |
-| Tokens read | 846,183,258 (97.5% from cache) |
-| Commits with a trace | 160 |
-| Log snapshots | 216 (774.2 MB gzipped, 208 uploaded) |
+| Tokens written | 8,604,664 |
+| Tokens read | 846,944,136 (97.5% from cache) |
+| Commits with a trace | 161 |
+| Log snapshots | 217 (774.7 MB gzipped, 208 uploaded) |
 
 ## Sessions
 
@@ -46,9 +46,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-03 13:54 UTC | [Overnight Spring Boot feature loop commits](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | ended | 1 h 0 min | `claude-opus-5-5` | 7 | 65 | 59 | 2 | 0 | 168,562 | 5 |
 | 2026-11-03 14:52 UTC | [5dfbc1bc-4bd7-4b48-a637-44ff84065b6b](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | ended | 14 h 12 min | `claude-opus-5-5` | 93 | 766 | 754 | 11 | 14 | 315,353 | 25 |
 | 2026-11-03 23:49 UTC | [Langfuse sync background script](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | ended | 5 min | `claude-sonnet-5-5` | 5 | 13 | 13 | 3 | 0 | 71,852 | 3 |
-| 2026-11-04 04:45 UTC | [Verification pipeline queue](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | ended | 19 h 20 min | `claude-sonnet-5-5` | 11 | 41 | 33 | 5 | 0 | 112,235 | 15 |
+| 2026-11-04 04:45 UTC | [Verification pipeline queue](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | open | 22 h 10 min | `claude-sonnet-5-5` | 13 | 46 | 37 | 6 | 0 | 117,188 | 17 |
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
-| 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | open | 13 h 17 min | `claude-opus-5-5` | 6 | 96 | 95 | 1 | 0 | 182,209 | 8 |
+| 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 8 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -77,15 +77,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 56,701 | 142 | 135,090 | 7,767,223 | 98.3% | 139 |
 | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 788,760 | 1,596 | 2,374,861 | 92,821,447 | 97.5% | 121 |
 | [`4f570b0b`](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 10,055 | 26 | 44,209 | 756,270 | 94.5% | 80 |
-| [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 13,403 | 94 | 227,428 | 3,212,392 | 93.4% | 257 |
+| [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 14,343 | 108 | 316,973 | 3,700,746 | 92.1% | 280 |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
-| [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,162 | 204 | 441,340 | 11,342,729 | 96.3% | 245 |
+| [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 5,058 | 84.7% | 22 |
+| `Bash` | 5,062 | 84.7% | 22 |
 | `Edit` | 350 | 5.9% | 10 |
 | `Write` | 263 | 4.4% | 9 |
 | `Read` | 169 | 2.8% | 13 |
@@ -265,7 +265,8 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 157 | change `lvtummxz` | The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending) | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)), [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) ([log](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d.jsonl.gz)) |
 | 158 | change `trvoxwwq` | Record verification results for 26 resubmitted B9 jobs: 24 pass, 128 and 129 fail because the patch no longer applies to Tests.java | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/c3606f9a7873f92c061db07c0a29bf7e714e39f1eaf6693681f13f6ec6753e4e.jsonl.gz)), [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) ([log](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/12c73adf94c72ccd5c43c8fecd0e5335e65a2f9a9c5f42e8f24d257f9a1d6a51.jsonl.gz)) |
 | 159 | change `qnulnzku` | Examples 128 and 129's patches apply again: their Tests.java hunk rebased past WindowTest; both resubmitted (verification pending) | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/58607f2603f687f0034165d46c406d747c654a807b8c1d05ba5d83f35f9ecf2d.jsonl.gz)), [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) ([log](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/ffb9bb24142a1cf1e04c8a5e1ea6ecaacb43bf05cc96733713cf8c828cc624af.jsonl.gz)) |
-| 160 | change `rwluqkqq` | Example 036's patch regenerated on the current SwitchLowering.java, so it applies again (verification pending) | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) ([log](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/848c42f8dcf3b8c7641af54c7eb362c6b9e4ac3c52b42c785bf3ee8e83396fb6.jsonl.gz)) |
+| 160 | change `rwluqkqq` | Example 036's patch regenerated on the current SwitchLowering.java, so it applies again (verification pending) | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)), [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) ([log](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/848c42f8dcf3b8c7641af54c7eb362c6b9e4ac3c52b42c785bf3ee8e83396fb6.jsonl.gz)) |
+| 161 | change `pswozyvq` | Record verification results for 3 jobs: examples 128, 129 and 036 give their expected verdicts | [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) ([log](https://terminalvalue.net/raw-traces/8fc64b88-3223-4fe7-a67d-3a75c5768bbf/bb7c6d6c27a4cab615da3362b1fa0bcfe7fa9695efb859e1332895bd036d3460.jsonl.gz)) |
 
 ## Logs
 
@@ -292,9 +293,9 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`20803daf`](20803daf-7ba0-4214-a79c-415a27f48a7b/summary.md) | 5 | 5 | 25.2 MB | [`7651620c8fd1`](https://terminalvalue.net/raw-traces/20803daf-7ba0-4214-a79c-415a27f48a7b/7651620c8fd147305a7a1be099e0c4ba0843076dfeb154970ae5cbc793e510d2.jsonl.gz) |
 | [`5dfbc1bc`](5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/summary.md) | 25 | 25 | 61.0 MB | [`1e8b9b5441e1`](https://terminalvalue.net/raw-traces/5dfbc1bc-4bd7-4b48-a637-44ff84065b6b/1e8b9b5441e16a4d88fcf67eff2c0c2b96b463d95a3122c99affabaabec41da8.jsonl.gz) |
 | [`4f570b0b`](4f570b0b-cc13-4aa1-91b3-c89839f5286b/summary.md) | 3 | 3 | 0.4 MB | [`9609038f6c74`](https://terminalvalue.net/raw-traces/4f570b0b-cc13-4aa1-91b3-c89839f5286b/9609038f6c74b8f7935c73369bf6b9a3aa3ceb1c2a9ca4f10980fad4f7d0f6a2.jsonl.gz) |
-| [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 9 | 5 | 1.3 MB | `c33a988d439c`, not uploaded |
+| [`8fc64b88`](8fc64b88-3223-4fe7-a67d-3a75c5768bbf/summary.md) | 9 | 5 | 1.3 MB | `bb7c6d6c27a4`, not uploaded |
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
-| [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 7 | 3 | 2.1 MB | `848c42f8dcf3`, not uploaded |
+| [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 8 | 3 | 2.5 MB | `bcad8cac3663`, not uploaded |
 
 ## Session notes
 

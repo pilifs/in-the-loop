@@ -15,34 +15,32 @@ Tags: [jvm-internals](../README.md#tag-jvm-internals), [compilers](../README.md#
 
 Compute the four costs as `int`: `4 + (hi - lo + 1)`, `3`, `3 + 2 * labels` and `labels`, without the `(long)` casts. A switch has a handful of labels and the costs are tiny. The tests for dense and sparse labels, a single label and the argument checks all pass.
 
-**Before** ([`SwitchLowering.java`](../../examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java), line 20):
+**Before** ([`SwitchLowering.java`](../../examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java), line 22):
 
 ```java
-        if (labels < 1 || labels > 8190 || lo > hi) {
-            throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
-        }
-        long tableSpaceCost = 4 + ((long) hi - lo + 1); // words
-        long tableTimeCost = 3; // comparisons
-        long lookupSpaceCost = 3 + 2 * (long) labels;
-        long lookupTimeCost = labels;
-        return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
+    if (labels < 1 || labels > 8190 || lo > hi) {
+        throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
     }
+    long tableSpaceCost = 4 + ((long) hi - lo + 1); // words
+    long tableTimeCost = 3; // comparisons
+    long lookupSpaceCost = 3 + 2 * (long) labels;
+    long lookupTimeCost = labels;
+    return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
 }
 ```
 
 **After:**
 
 ```java
-        if (labels < 1 || labels > 8190 || lo > hi) {
-            throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
-        }
-        // The costs are a few words and comparisons: int is plenty, and reads better without the casts.
-        int tableSpaceCost = 4 + (hi - lo + 1); // words
-        int tableTimeCost = 3; // comparisons
-        int lookupSpaceCost = 3 + 2 * labels;
-        int lookupTimeCost = labels;
-        return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
+    if (labels < 1 || labels > 8190 || lo > hi) {
+        throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
     }
+    // The costs are a few words and comparisons: int is plenty, and reads better without the casts.
+    int tableSpaceCost = 4 + (hi - lo + 1); // words
+    int tableTimeCost = 3; // comparisons
+    int lookupSpaceCost = 3 + 2 * labels;
+    int lookupTimeCost = labels;
+    return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
 }
 ```
 
@@ -51,7 +49,7 @@ Compute the four costs as `int`: `4 + (hi - lo + 1)`, `3`, `3 + 2 * labels` and 
 ```diff
 --- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
 +++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
-@@ -20,10 +20,11 @@ public final class SwitchLowering {
+@@ -22,10 +22,11 @@ public final class SwitchLowering {
          if (labels < 1 || labels > 8190 || lo > hi) {
              throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
          }
@@ -66,7 +64,7 @@ Compute the four costs as `int`: `4 + (hi - lo + 1)`, `3`, `3 + 2 * labels` and 
 +        int lookupTimeCost = labels;
          return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
      }
- }
+ 
 ```
 
 </details>
@@ -77,7 +75,7 @@ The two versions disagree. The prover found this input, and the generator replay
 
 | Input | Before | After |
 |---|---|---|
-| `useTable(lo=-400031745, hi=1816133631, labels=4096)` | `false` | `true` |
+| `useTable(lo=-398473331, hi=1749010303, labels=1)` | `false` | `true` |
 
 One disagreeing input is enough to fail the build. The domain is `lo: int × hi: int × labels: int`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
@@ -99,16 +97,16 @@ Revert. The cast is the point: `hi - lo` is a difference of two ints and needs a
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 1.1 s, replayed in the interpreter; domain lo: int × hi: int × labels: int.
+How the verdict was reached: found by JBMC 6.11.0 in 0.3 s as useTable(lo=-402653181, hi=1749010303, labels=4866), shrunk to the input above in 562 interpreter runs, replayed in the interpreter; domain lo: int × hi: int × labels: int.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✗ Behaviour of net.terminalvalue.mica.asm.SwitchLowering#useTable changed:
-  useTable(lo=-400031745, hi=1816133631, labels=4096)
+  useTable(lo=-398473331, hi=1749010303, labels=1)
     before: false
     after:  true
-  (found by JBMC 6.11.0 in 1.1 s, replayed in the interpreter; domain lo: int × hi: int × labels: int)
+  (found by JBMC 6.11.0 in 0.3 s as useTable(lo=-402653181, hi=1749010303, labels=4866), shrunk to the input above in 562 interpreter runs, replayed in the interpreter; domain lo: int × hi: int × labels: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```
@@ -172,6 +170,12 @@ public final class EquivalenceHarness {
               }
             },
             {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
               "id": "property-violated",
               "shortDescription": {
                 "text": "An input exists on which the method violates its stated property."
@@ -191,7 +195,7 @@ public final class EquivalenceHarness {
           "ruleId": "behaviour-changed",
           "level": "error",
           "message": {
-            "text": "Behaviour of net.terminalvalue.mica.asm.SwitchLowering#useTable changed:\n  useTable(lo=-400031745, hi=1816133631, labels=4096)\n    before: false\n    after:  true"
+            "text": "Behaviour of net.terminalvalue.mica.asm.SwitchLowering#useTable changed:\n  useTable(lo=-398473331, hi=1749010303, labels=1)\n    before: false\n    after:  true"
           },
           "locations": [
             {
@@ -200,7 +204,7 @@ public final class EquivalenceHarness {
                   "uri": "examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java"
                 },
                 "region": {
-                  "startLine": 20
+                  "startLine": 22
                 }
               }
             }

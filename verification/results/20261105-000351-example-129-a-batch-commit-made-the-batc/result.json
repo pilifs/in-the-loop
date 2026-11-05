@@ -1,0 +1,217 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-000351-example-129-a-batch-commit-made-the-batc",
+  "title": "Example 129: a batch commit made the batch record's method with the check kept, proved equal on the components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.6s, peak 87.5 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-000351-example-129-a-batch-commit-made-the-batc.json",
+    "sha256": "6fee6fbe8ad8a1967196586dcef79f0aa707e626d1b4e054cb571fd14346a9ec",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-000351-example-129-a-batch-commit-made-the-batc",
+      "title": "Example 129: a batch commit made the batch record's method with the check kept, proved equal on the components",
+      "description": "Runs examples/tools/build.py 129: the same refactor as example 128, the Crosscut batch commit's static function made the method of a record Batch(start, size), with the check on the failed index kept in the method. The regression proof relates the record's method to the static function with --before-arguments 'this.start, this.size, failedIndex' over the record's components. Expected: verified, two properties; the library's inline run took 0.5 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression proof of a static method that became a record's method",
+        "previous version called with expressions over record components",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "129"
+        ]
+      },
+      "expected": "verified",
+      "submitted": {
+        "at": "2026-11-05T00:03:51+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 129 (B9)",
+          "run": "python3 examples/tools/build.py 129",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components"
+      ],
+      "supersedes": "20261104-140708-example-129-a-batch-commit-made-the-batc"
+    }
+  },
+  "sourceCommit": "85bbf53bea9466e67ceca568390170f62679b7bc",
+  "startedAt": "2026-11-05T02:55:26+00:00",
+  "finishedAt": "2026-11-05T02:55:34+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 491568,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 91791360,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 6.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.611,
+      "cpuSeconds": 6.491,
+      "cpuThrottledSeconds": 0.474,
+      "peakMemoryBytes": 91791360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-129-b9.log",
+        "lines": 2,
+        "bytes": 192,
+        "sha256": "ef76818c439bad1589aa09bf9ab64e3fc0959733594d76d1b1f100eeb1551086",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)",
+          "groups": [
+            "129",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: running (B9)",
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "change": "added",
+      "bytes": 21850,
+      "sha256": "9912c01489536799aa15620605b9e56f7a28477eb217587de8ab644461c3f6c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "change": "added",
+      "bytes": 3668,
+      "sha256": "099dce57463ca03d7193c093b891d69ad6c290c9572ce48209e7206e29ead19a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.sarif",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java",
+      "change": "added",
+      "bytes": 2903,
+      "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt",
+      "change": "added",
+      "bytes": 348,
+      "sha256": "f3f18191ba5927c5467fc14997e357261d1df3459300afc7def0c1f1ad5dd629",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-05T02:55:44+00:00",
+    "applied": [
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.sarif",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/statement.java",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

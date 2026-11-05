@@ -1,0 +1,217 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-000351-example-128-a-batch-commit-made-the-batc",
+  "title": "Example 128: a batch commit made the batch record's method, the failed-index check lost, refuted on the components",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 87.6 MiB (estimated 2m00s, 1.0 GiB); 5 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-000351-example-128-a-batch-commit-made-the-batc.json",
+    "sha256": "626fa32f5aa7ddcbc02fd129d9f6c7a158ab48e74768d177a2fed4cef4eb84f2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-000351-example-128-a-batch-commit-made-the-batc",
+      "title": "Example 128: a batch commit made the batch record's method, the failed-index check lost, refuted on the components",
+      "description": "Runs examples/tools/build.py 128: the Crosscut batch commit kernel's static function offsetToCommit(batchStart, batchSize, failedIndex) becomes the method of a new record Batch(start, size) with the guard moved into the compact constructor and the part about the failed index dropped. The regression proof relates the record's method to the static function with --before-target and --before-arguments 'this.start, this.size, failedIndex' over the record's components, a relation new this cycle. Expected: a violation, offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), the function throwing and the method returning 1; the library's inline run took 0.5 s.",
+      "kind": "example",
+      "capabilities": [
+        "regression proof of a static method that became a record's method",
+        "previous version called with expressions over record components",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/harness/mod.rs",
+          "lib/src/equivalence.rs"
+        ],
+        "examples": [
+          "128"
+        ]
+      },
+      "expected": "violation",
+      "submitted": {
+        "at": "2026-11-05T00:03:51+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+      },
+      "steps": [
+        {
+          "name": "example 128 (B9)",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check"
+      ],
+      "supersedes": "20261104-140708-example-128-a-batch-commit-made-the-batc"
+    }
+  },
+  "sourceCommit": "85bbf53bea9466e67ceca568390170f62679b7bc",
+  "startedAt": "2026-11-05T02:55:26+00:00",
+  "finishedAt": "2026-11-05T02:55:33+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 491568,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 4294967296
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "the last run used a stale jvmcontract; measured by the submitting sessions in seconds at under 200 MiB, except 142 at bound 8, 7 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 91856896,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410377216,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.412,
+      "cpuSeconds": 6.638,
+      "cpuThrottledSeconds": 0.681,
+      "peakMemoryBytes": 91856896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-128-b9.log",
+        "lines": 2,
+        "bytes": 175,
+        "sha256": "71efa5d9941d563abcbb92c03b2c24e8105c0fa29bfc8403622cc935441d98ce",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)",
+          "groups": [
+            "128",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "change": "added",
+      "bytes": 25233,
+      "sha256": "57848ee796b57ce2aed576a18a6f46d4f0204ea11dbc28c8816ba74b15226546",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "change": "added",
+      "bytes": 3927,
+      "sha256": "0d641ac5dbfcc7ea35b17a5096c273f645503b094d95fd7813c6852835498364",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.sarif",
+      "change": "added",
+      "bytes": 2848,
+      "sha256": "4fdc0482755f6e319cdee50faf452da106c6807e102c57277d6ecdcfff7d5b6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java",
+      "change": "added",
+      "bytes": 2903,
+      "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt",
+      "change": "added",
+      "bytes": 888,
+      "sha256": "9cd3c8ab2c9d1dfb0f8a2bdeb9511c66dab6cbeeadbcdb1cecf5afe7b9cf66be",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-05T02:55:44+00:00",
+    "applied": [
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.sarif",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/statement.java",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/java-formal-verification/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,37 @@
+{
+  "verdict": "verified",
+  "verdictLabel": "✓ Verified: equivalent on every input",
+  "matchesExpected": true,
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.crosscut.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}\n * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic final class BatchCommit {\n\n    private BatchCommit() {}\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    /**\n     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index\n     * within the batch of the record that failed, or {@link #NONE_FAILED}.\n     */\n    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {\n        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {\n            throw new IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\");\n        }\n        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java",
+    "startLine": 1,
+    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,\n * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a\n * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic record Batch(long start, int size) {\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    public Batch {\n        if (start < 0 || size <= 0) {\n            throw new IllegalArgumentException(\"start >= 0 and size > 0 are required\");\n        }\n    }\n\n    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */\n    public long offsetToCommit(int failedIndex) {\n        if (failedIndex < NONE_FAILED || failedIndex >= size) {\n            throw new IllegalArgumentException(\"-1 <= failedIndex < size is required\");\n        }\n        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "this: Batch(start: long, size: int) × failedIndex: int",
+  "counterexamples": [],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+  "problem": null,
+  "statement": "statement.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": null,
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt"
+}
