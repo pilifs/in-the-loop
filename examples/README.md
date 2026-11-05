@@ -427,6 +427,14 @@ and Mica; no Docker. A Box Office example takes from seconds to a minute, since 
 Gradle build; a Quorum, Crosscut or Mica example takes seconds, and a model-checking one up to a few minutes. A
 real-world example is rerun with the commands in its report.
 
+Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
+`execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the
+reason. Only a completed run has a verdict. A violation also needs what shows it, such as a counterexample, a
+changed case, a trace or a new `!` line, and the verifier's report. Without those, an exit code of 1 is output
+the runner cannot read, not a counterexample. A run without a verdict has `verdict: null` and
+`expectation: not-evaluable`. It never matches the expected verdict, so `build.py` exits 1. A report the
+verifier didn't write is not made up, and nothing from an earlier run is left in the folder as this run's.
+
 ## Add an example
 
 Take the next free number; constructed and real-world examples share the sequence.

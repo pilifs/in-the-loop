@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-112331-example-110-b12-under-build-py-s-executi",
+  "title": "Example 110 (B12) under build.py's execution status",
+  "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+  "kind": "example",
+  "capabilities": [
+    "B12"
+  ],
+  "links": {
+    "examples": [
+      "110"
+    ]
+  },
+  "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:23:31+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m"
+  },
+  "steps": [
+    {
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/110-idempotency-key-header-drops-request-validation"
+  ]
+}

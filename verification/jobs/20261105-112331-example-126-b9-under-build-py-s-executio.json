@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-112331-example-126-b9-under-build-py-s-executio",
+  "title": "Example 126 (B9) under build.py's execution status",
+  "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+  "kind": "example",
+  "capabilities": [
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "126"
+    ]
+  },
+  "expected": "example 126 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:23:31+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 126 (B9)",
+      "run": "python3 examples/tools/build.py 126",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/126-backoff-loop-replaced-by-a-shift-overflows-on-the-records-components"
+  ]
+}

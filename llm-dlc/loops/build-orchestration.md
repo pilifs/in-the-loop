@@ -127,7 +127,24 @@ to this brief outside [Progress](#progress). The review file is input too. Leave
 
 Each run counts only its own commits, so work done in earlier runs is listed here.
 
-- Nothing yet. The next step is [1a](#phase-1-results-that-can-be-trusted).
+- **1a done** (2026-11-05). `build.py` decides how each verifier run ended before it reads a verdict. The new
+  `execution_status`, `conclude` and `tlc_conclusion` record `completed`, `timed-out`, `killed`, `invalid-output`
+  or `tool-error`, with the exit code and the reason. Only a completed run has a verdict: otherwise `verdict` is
+  null, `verdictLabel` is `⚠ No verdict: ...` and `expectation` is `not-evaluable`.
+  - A violation needs the evidence the runner read and the verifier's SARIF report.
+  - The jvmcontract runs that give a verdict, and TLC through the tool, no longer stop the runner on exit code 2.
+    They are recorded instead, and each D1 configuration gets a `status`.
+  - `write_evidence()` makes up no report. A stale `result.sarif` or `statement.java` from an earlier run is
+    removed.
+  - The schema accepts the old shape: `execution` and `expectation` are optional, and all 140 recorded results
+    validate.
+  - `examples/tools/test_build.py` has 25 tests with mocked processes. Among them: recomputing every recorded
+    result's expectation gives what was recorded, and a run without a verdict prints a line the pipeline's
+    `example:unexpected` signal reads.
+  - No recorded verdict moved.
+  - Jobs `20261105-112331-example-{126-b9,132-b9,017-b11,110-b12,101-d1,003-b8}-…` check that the verdicts are
+    unchanged and that the results gain `execution`.
+  - Next: [1b](#phase-1-results-that-can-be-trusted), strict selection.
 
 ## Open questions
 

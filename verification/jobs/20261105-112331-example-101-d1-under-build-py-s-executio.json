@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-112331-example-101-d1-under-build-py-s-executio",
+  "title": "Example 101 (D1) under build.py's execution status",
+  "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+  "kind": "example",
+  "capabilities": [
+    "D1"
+  ],
+  "links": {
+    "examples": [
+      "101"
+    ]
+  },
+  "expected": "example 101 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:23:31+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "example 101 (D1)",
+      "run": "python3 examples/tools/build.py 101",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live"
+  ]
+}

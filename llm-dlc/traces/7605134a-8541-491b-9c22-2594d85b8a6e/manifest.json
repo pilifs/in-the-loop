@@ -57,11 +57,11 @@
     }
   ],
   "log": {
-    "sha256": "bcad8cac366339252070dfb81aa9687fb532d96b937e6f02e456dd160aac127f",
-    "bytes": 2376963,
-    "lines": 923,
-    "gzip_bytes": 418371,
-    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/bcad8cac366339252070dfb81aa9687fb532d96b937e6f02e456dd160aac127f.jsonl.gz"
+    "sha256": "d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3",
+    "bytes": 2380365,
+    "lines": 927,
+    "gzip_bytes": 418977,
+    "path": "llm-dlc/traces/7605134a-8541-491b-9c22-2594d85b8a6e/logs/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -92,7 +92,7 @@
     {
       "change_id": "tvqntmzozvukqopwovnzqkqtsotymlro",
       "commit_id": "12b6820b096026ddb91393b2c3fc062f6eedee7b",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 35 jobs: examples 111-120, 124, 125, 132, 133 pass; 21 B9 jobs fail on tool or patch mismatches, not verdicts",
       "body": "The runner ran all 35 queued jobs (2 workers, 5 GiB). Passes: 120, 124, 125, 132, 133 (B9, own checker, seconds) and 111-119 (B12, about 1m40s each, resubmitted after the result schema fix; every verdict as expected). Their outputs were applied. 21 B9 jobs failed in 0.2-5 s with no proof attempted, so these are findings about the submitted commits, not about the changes under test: 121, 122, 130, 134 and 135 (and per their logs 123, 131) fail in the CLI: the jvmcontract built from lib/ at the job's commit rejects an argument build.py passes (e.g. --before-arguments, or a missing required --unchanged-unless). 128 and 129: the example's patch does not change BatchCommit.java. 126, 127, 136-145: the checker reports 'cannot be verified' (instance method on a record, char[]/int[] parameter outside the fragment), so the expected verdict is not reached. Each of those needs a resubmit at a commit where examples/tools/build.py and lib/ agree.",
       "log_sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d"
@@ -100,7 +100,7 @@
     {
       "change_id": "lvtummxzmvuxpmyyturzxlnzlzvrulmo",
       "commit_id": "19f197bf9c169ebf8fcbf030517e0faa4b3fc636",
-      "immutable": false,
+      "immutable": true,
       "summary": "The pipeline builds jvmcontract from each job's own lib/ instead of reusing the last binary, and build.py takes the excerpt of a method moved out of a deleted file; 26 B9 jobs resubmitted (verification pending)",
       "body": "Of the last run's 35 jobs, 21 B9 jobs failed with what looked like mismatches between build.py and lib/ (rejected flags, instance methods and arrays outside the fragment). The real cause: the pipeline builds jvmcontract in one CARGO_TARGET_DIR shared by all jobs, from a git archive extraction whose files are dated at their commit, older than the binary any earlier job left there, so cargo rebuilt nothing. Thirteen lib/ trees got one identical binary, built at 08:27, which did not know --before-arguments. The five B9 jobs that passed (120, 124, 125, 132, 133) ran on that stale binary as well, so their results, applied in the previous commit, are replaced when these jobs run. build_jvmcontract now dates lib/ at the build's start, so cargo rebuilds the crate, and refuses a binary older than the build. The poisoned cache under verification/.state/tools/jvmcontract was cleared. Reproduced in the scratchpad: lib/ at cf74bb4c then at 198d4317 in one target directory, the second build took 0.03 s and lacked --before-arguments; with the dating it rebuilt in 49 s and had it. verification/test_pipeline.py passes (15 tests).\n\nExamples 128 and 129 failed separately: their patch deletes the subject file BatchCommit.java and moves the method into the new record Batch.java, and excerpts() in examples/tools/build.py read only '+++ b/' paths, so it found no hunk. It now reads the before side from the '--- a/' path and the after side from the '+++ b/' path, and when the patch deletes the subject file it takes the after side from the file of the symbol's class. Checked against the previous version on every example with a patch: 138 give identical excerpts, and 128 and 129 now give BatchCommit.java before and Batch.java after.\n\nJobs resubmitted at this commit with estimates of 2m and 1G (4m for 142): 20261104-140707-example-120 through -127, 20261104-140708-example-128 through -135, 20261104-140709-example-136 through -143 and -145, and 20261104-140717-example-144.",
       "log_sha256": "76edf24cb92020ad13433c377c32956697e356b17f6dfb87a1c507c75f78c78d"
@@ -108,7 +108,7 @@
     {
       "change_id": "trvoxwwqkvqkvtokulnpylrqunttknsp",
       "commit_id": "4c91be316dcfcf3e9f114e863ec2bb428ab28200",
-      "immutable": false,
+      "immutable": true,
       "summary": "Record verification results for 26 resubmitted B9 jobs: 24 pass, 128 and 129 fail because the patch no longer applies to Tests.java",
       "body": "After the pipeline began building jvmcontract from each job's own lib/, the 26 B9 jobs resubmitted in 9325f7ee ran with 2 workers and 4 GiB. 24 passed in 4-19 s (peak under 440 MiB) with the verdict each example expects, and their outputs were applied: 120-127 and 130-145 (121-123 related proofs, 124/125/132/133/138/141/142/145 proved or refuted by the own checker), 134-137, 139, 140, 143, 144. 128 and 129 failed in 0.2 s: the example's patch no longer applies: its hunk in crosscut/Tests.java was cut before WindowTest was added to the class list, so git apply rejects it and build.py stops before any proof; that is the submitter's to fix.",
       "log_sha256": "12c73adf94c72ccd5c43c8fecd0e5335e65a2f9a9c5f42e8f24d257f9a1d6a51"
@@ -116,7 +116,7 @@
     {
       "change_id": "qnulnzkutyqusnomtkzvtlqnurzzplrx",
       "commit_id": "85bbf53bea9466e67ceca568390170f62679b7bc",
-      "immutable": false,
+      "immutable": true,
       "summary": "Examples 128 and 129's patches apply again: their Tests.java hunk rebased past WindowTest; both resubmitted (verification pending)",
       "body": "128 and 129 failed in the last run at git apply: their patch renames BatchCommitTest to BatchTest in Crosscut's test runner list, and the Window record kernel (examples 134/135) had since inserted WindowTest into that list, so the hunk's context no longer matched. The hunk now starts at line 24 with WindowTest as context, and its index line names the current blobs. Checked: git apply --check passes for both, and each patch applied to a copy of Crosscut compiles and passes the module's tests (48 and 49 tests, 0 failed). Every other example's patch still applies except 036's on Mica, a known separate drift.",
       "log_sha256": "ffb9bb24142a1cf1e04c8a5e1ea6ecaacb43bf05cc96733713cf8c828cc624af"
@@ -124,7 +124,7 @@
     {
       "change_id": "rwluqkqqqvotumupuwswvlkrpnkmsqzw",
       "commit_id": "2612810eee54376afb766471730710228cb09c8c",
-      "immutable": false,
+      "immutable": true,
       "summary": "Example 036's patch regenerated on the current SwitchLowering.java, so it applies again (verification pending)",
       "body": "036 failed in the Mica rerun at git apply: the patch was written before commit lrptsmzx added two lines to the class comment and a sortPairs method after useTable, so its hunk started two lines early and its closing context assumed the class ended after useTable. The patch was regenerated by making the same edit on the current file (useTable's four cost variables narrowed from long to int); its removed and added lines are identical to the old patch's. Checked: git apply --check passes, and Mica with the patch compiles and passes its tests (71 tests, 0 failed). Every example's patch in the repo now applies to the current tree.",
       "log_sha256": "848c42f8dcf3b8c7641af54c7eb362c6b9e4ac3c52b42c785bf3ee8e83396fb6"
@@ -132,10 +132,18 @@
     {
       "change_id": "qvmnqlmwqzmrzvuwynkzxvkmmolzxntq",
       "commit_id": "9726f8ac2a51e85442fd9167c6e1634cde681308",
-      "immutable": false,
+      "immutable": true,
       "summary": "build-orchestration brief: the loop resumes the session that wrote it",
       "body": "Loop settings and the brief's header now name session cc65240f-1df0-42e0-81ce-41a80fa61028, the one that wrote the brief and its Phase 4 and 5 deferrals, so the loop starts with that context. Before, they named a new, unused id.\n\nVerified by reading the changed lines; no code changed.",
       "log_sha256": "bcad8cac366339252070dfb81aa9687fb532d96b937e6f02e456dd160aac127f"
+    },
+    {
+      "change_id": "wkmvopxzwnzrvlnnoosnzkywvrwnulrw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: how a verifier's run ended is decided before its verdict (verification pending)",
+      "body": "Step 1a of the build-orchestration brief. Before, build.py classified a jvmcontract or Java-verifier run as verified on exit 0, unverifiable when the output said 'cannot be verified', and violation otherwise. A verifier killed by signal 9 with empty output was recorded as 'Violation: counterexample found', with no counterexample, and matched an example that expected a violation. write_evidence() also wrote an empty SARIF report when the verifier wrote none. The review's findings were checked against the code at c4fa2f64 and all still held.\n\nNow execution_status() and conclude() (and tlc_conclusion() for TLC, run directly for Box Office or through jvmcontract tlc --json) first record result.execution: completed, timed-out, killed (a negative code or 128+N), invalid-output (nothing printed, malformed JSON, exit 1 with no evidence or no report) or tool-error (any other exit code; a TLC run that ended without a verdict). Only a completed run has a verdict. A violation needs the evidence the runner read (counterexamples, changed cases, capability or boundary changes, new ! lines, a trace) and the verifier's SARIF report. A run without a verdict records verdict null, the label '⚠ No verdict: <reason>' and expectation not-evaluable, and matchesExpected is false. build.py exits 1 and prints a line the pipeline's example:unexpected signal matches. The runs that give the verdict are recorded, not fatal, on exit code 2. Setup steps (update, tla, compile) still stop the runner, now also on a signal. A missing report is not made up, and a stale result.sarif or statement.java from an earlier run is removed, so a folder never shows another run's evidence. Each D1 configuration also records its status. The page of a run without a verdict says so in place of the findings.\n\nChoices: a run that did not complete gets verdict null, not 'unverifiable'. That is the option that reports less, and otherwise a crash would match example 003, which expects unverifiable. 'Why the verdict is right' still prints the authored explanation; separating it from the observed evidence is step 3c. The per-configuration termination reason beyond the status is step 2b.\n\nVerified: the new examples/tools/test_build.py (25 unittest cases, mocked processes) covers signal 9 with empty output, 137 and 134, exit codes 2/3/101, timeouts, empty output, exit 1 without evidence or report, malformed TLC JSON, TLC killed or late inside the tool, a violation without a trace, rendering and schema validation of a no-verdict result, and main()'s exit code and pipeline signal. Recomputing every recorded result's expectation under the new rule gives exactly what was recorded, and every recorded violation has its evidence. All 140 committed results validate against the extended schema, which accepts the old shape. verification/test_pipeline.py passes. build.py --render-only renders every page. Eight pages changed only because they had drifted from their committed results (timings, and a renderer sentence on 110); nothing in them comes from this change.\n\nVerification jobs, one per approach, check that the verdicts are unchanged and that result.json gains execution: 20261105-112331-example-126-b9-under-build-py-s-executio (B9 JBMC), 20261105-112331-example-132-b9-under-build-py-s-executio (B9 native), 20261105-112331-example-017-b11-under-build-py-s-executi (B11), 20261105-112331-example-110-b12-under-build-py-s-executi (B12), 20261105-112331-example-101-d1-under-build-py-s-executio (D1), 20261105-112331-example-003-b8-under-build-py-s-executio (B8 Box Office, expected unverifiable).",
+      "log_sha256": "d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3"
     }
   ],
   "logs": {
@@ -180,6 +188,12 @@
       "lines": 923,
       "gzip_bytes": 418371,
       "url": "https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/bcad8cac366339252070dfb81aa9687fb532d96b937e6f02e456dd160aac127f.jsonl.gz"
+    },
+    "d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3": {
+      "bytes": 2380365,
+      "lines": 927,
+      "gzip_bytes": 418977,
+      "url": null
     },
     "ffb9bb24142a1cf1e04c8a5e1ea6ecaacb43bf05cc96733713cf8c828cc624af": {
       "bytes": 2167823,

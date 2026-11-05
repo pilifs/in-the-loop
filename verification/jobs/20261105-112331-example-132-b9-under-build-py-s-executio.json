@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-112331-example-132-b9-under-build-py-s-executio",
+  "title": "Example 132 (B9) under build.py's execution status",
+  "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+  "kind": "example",
+  "capabilities": [
+    "B9"
+  ],
+  "links": {
+    "examples": [
+      "132"
+    ]
+  },
+  "expected": "example 132 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:23:31+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 132 (B9)",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond"
+  ]
+}

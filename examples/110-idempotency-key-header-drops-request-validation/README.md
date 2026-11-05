@@ -130,7 +130,7 @@ The module's boundaries differ from their contract in 2 lines:
 | `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request)` |
 | `net.terminalvalue.boxoffice.ticketing.api.OrderController` | `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)` | *(removed)* |
 
-A line is a route, listener, schedule, bean definition or configuration key, the advice on a member, or a `!` line where an annotation does not do what it says; a member's line changes with its signature and parameter annotations.
+A line is a route, listener, schedule, bean definition or configuration key, the advice on a member, a property of a wire type, or a `!` line where an annotation does not do what it says; a member's line changes with its signature and parameter annotations.
 
 ## Would the existing tests have caught it?
 

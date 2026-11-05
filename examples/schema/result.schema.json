@@ -44,11 +44,31 @@
   },
   "properties": {
     "verdict": {
+      "description": "What the verifier concluded about the change: it shows a violation, it verified the claim, or it cannot be verified (the tool's own 'cannot be verified', with the reason in `problem`). Null when the run did not complete (see `execution`): only a completed run has a verdict.",
       "enum": [
         "violation",
         "verified",
-        "unverifiable"
+        "unverifiable",
+        null
       ]
+    },
+    "execution": {
+      "description": "How the verifier's run ended, decided before anything in its output is read as a verdict. Absent in results written before 2026-11-05, every one of which completed. A violation needs a completed run and the evidence that shows it (a counterexample, a changed case, a capability or boundary change, a new `!` line, a model trace) and the verifier's report; an exit code of 1 without them is `invalid-output`.",
+      "type": "object",
+      "required": ["status", "exitCode", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "description": "`completed`: the verifier finished and said what it found. `timed-out`: it did not finish in the time allowed (the runner's, or TLC's within the tool). `killed`: a signal ended it (the out-of-memory killer's SIGKILL above all). `invalid-output`: it finished, but its output shows no verdict the runner can read (nothing printed, a violation with no counterexample, a missing report, JSON that is not a result). `tool-error`: the tool failed (an exit code it does not use for a verdict, a TLC run that ended without one).",
+          "enum": ["completed", "timed-out", "killed", "invalid-output", "tool-error"]
+        },
+        "exitCode": { "description": "The process's exit code; negative for a signal; null when the runner stopped it.", "type": ["integer", "null"] },
+        "reason": { "description": "Why the run did not complete, in a sentence; null when it did.", "type": ["string", "null"] }
+      }
+    },
+    "expectation": {
+      "description": "Whether the result is the one example.json expects: `yes`, `no`, or `not-evaluable` when the run did not complete and so has no verdict to compare. `matchesExpected` is true exactly when this is `yes`. Absent in results written before 2026-11-05.",
+      "enum": ["yes", "no", "not-evaluable"]
     },
     "verdictLabel": {
       "description": "The verdict with the approach's own measure of it, as shown in the tables: '✗ Violation: 2 of 36 cases changed', '✓ Verified: equivalent on every input'.",
@@ -308,7 +328,8 @@
         "properties": {
           "label": { "type": "string" },
           "cfg": { "description": "The configuration file, relative to the app.", "type": "string" },
-          "verdict": { "enum": ["violation", "verified", "unverifiable"] },
+          "verdict": { "description": "TLC's verdict on this configuration; `unverifiable` when the run did not complete, with the reason in `status` and `summary`.", "enum": ["violation", "verified", "unverifiable"] },
+          "status": { "description": "How this configuration's run ended, as `execution.status` (absent before 2026-11-05).", "enum": ["completed", "timed-out", "killed", "invalid-output", "tool-error"] },
           "summary": { "description": "The run's one-line verdict, as the README's table shows it.", "type": "string" },
           "domain": { "description": "The configuration's constants.", "type": "string" },
           "invariant": { "type": ["string", "null"] },
@@ -353,8 +374,8 @@
       ]
     },
     "sarif": {
-      "description": "File name of the SARIF report, relative to the example folder.",
-      "type": "string"
+      "description": "File name of the SARIF report, relative to the example folder; null when the verifier wrote none, which is never made up.",
+      "type": ["string", "null"]
     },
     "output": {
       "description": "File name of the verifier's console output.",

@@ -106,9 +106,13 @@ def main(argv):
         (folder / "result.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
         validate(result, "result.schema.json", folder / "result.json")
         (folder / "README.md").write_text(render_example(folder, example, result))
-        status = "as expected" if result["matchesExpected"] else \
-            f"EXPECTED {example['expected']['verdict'].upper()}{' VACUOUSLY' if example['expected'].get('vacuous') else ''}"
-        print(f"{folder.name}: {result['verdict']} ({status})")
+        expected = f"EXPECTED {example['expected']['verdict'].upper()}{' VACUOUSLY' if example['expected'].get('vacuous') else ''}"
+        if result["verdict"] is None:
+            # In the shape of an unexpected verdict, which the pipeline's `example:unexpected` signal reads.
+            print(f"{folder.name}: none ({expected}; the run did not complete, {result['execution']['status']}: "
+                  f"{result['execution']['reason']})")
+        else:
+            print(f"{folder.name}: {result['verdict']} ({'as expected' if result['matchesExpected'] else expected})")
         if not result["matchesExpected"]:
             failures.append(folder.name)
     render_index(folders)
@@ -173,6 +177,75 @@ def validate(document, schema_name, path):
         sys.exit(f"{path}: {e.message}")
 
 
+# How a verifier's run ended, decided before anything in its output is read as a verdict. Only a completed run has a
+# verdict; a run that was killed, timed out, failed in the tool or printed what the runner cannot read has none, and
+# can never match an example's expectation, a violation least of all.
+
+EXECUTION_STATUSES = ("completed", "timed-out", "killed", "invalid-output", "tool-error")
+
+
+def last_line(output):
+    lines = [line.strip() for line in (output or "").splitlines() if line.strip()]
+    return lines[-1] if lines else None
+
+
+def execution_status(returncode, output, timed_out=None, known=(0, 1)):
+    """How a verifier's process ended: {"status", "exitCode", "reason"}. `known` are the exit codes that mean the
+    verifier finished (0 verified, 1 violated or cannot be verified, for jvmcontract and the Java verifier); any
+    other is the tool's own failure. A negative code is a signal (Python's convention), and so is 128 + N from a shell
+    or a wrapper script. `timed_out` is the limit in seconds when the runner gave up waiting."""
+    if timed_out is not None:
+        return {"status": "timed-out", "exitCode": None, "reason": f"the verifier did not finish within {timed_out} s"}
+    if returncode < 0:
+        return {"status": "killed", "exitCode": returncode, "reason": f"the verifier was killed by signal {-returncode}"}
+    if 128 < returncode <= 128 + 64 and returncode not in known:
+        return {"status": "killed", "exitCode": returncode,
+                "reason": f"the verifier exited with code {returncode}, a shell's report of signal {returncode - 128}"}
+    if returncode not in known:
+        line = last_line(output)
+        return {"status": "tool-error", "exitCode": returncode,
+                "reason": f"the verifier failed with exit code {returncode}" + (f": {line}" if line else ", printing nothing")}
+    if not (output or "").strip():
+        return {"status": "invalid-output", "exitCode": returncode,
+                "reason": f"the verifier exited with code {returncode} and printed nothing"}
+    return {"status": "completed", "exitCode": returncode, "reason": None}
+
+
+def conclude(returncode, output, evidence, reported=True, timed_out=None, known=(0, 1)):
+    """The execution and the verdict of a verifier run that exits 0 when the claim holds and 1 when it does not or
+    cannot be checked (jvmcontract verify, equivalence and prove; the Java verifier). `evidence` is what the runner
+    read from the output to show a violation (counterexamples, changed cases, capability or boundary changes, new
+    problem lines), and `reported` whether the verifier wrote its SARIF report. A violation needs both: an exit
+    code of 1 with neither a reason it cannot be verified nor anything that shows the violation is output the
+    runner cannot read, not a counterexample. Returns (execution, verdict), the verdict None unless completed."""
+    execution = execution_status(returncode, output, timed_out, known)
+    if execution["status"] != "completed":
+        return execution, None
+    if returncode == 0:
+        return execution, "verified"
+    if "cannot be verified" in output:
+        return execution, "unverifiable"
+    if evidence and reported:
+        return execution, "violation"
+    reason = ("the verifier reported a violation but wrote no SARIF report" if evidence else
+              f"the verifier exited with code {returncode}, but its output shows no violation the runner can read and "
+              "no reason it cannot be verified")
+    return {"status": "invalid-output", "exitCode": returncode, "reason": reason}, None
+
+
+def no_verdict_label(execution):
+    return f"⚠ No verdict: {execution['reason']}"
+
+
+def expectation(result, expected):
+    """Whether the result is the one the example expects: 'yes', 'no', or 'not-evaluable' when the verifier did not
+    complete, so that there is no verdict to compare. The vacuity of a verdict is part of it."""
+    if (result.get("execution") or {}).get("status") != "completed" or result.get("verdict") is None:
+        return "not-evaluable"
+    vacuous = bool((result.get("coverage") or {}).get("vacuous"))
+    return "yes" if result["verdict"] == expected["verdict"] and vacuous == expected.get("vacuous", False) else "no"
+
+
 # Running
 
 
@@ -200,7 +273,9 @@ def run(folder, example):
         result = {
             "verdict": None,
             "verdictLabel": None,
+            "execution": None,
             "matchesExpected": None,
+            "expectation": None,
             "existingTests": existing_tests,
             "before": before,
             "after": after,
@@ -223,10 +298,23 @@ def run(folder, example):
             "output": "verifier-output.txt",
         }
         RUNNERS[app][example["approach"]["id"]](folder, example, tmp, module, result)
-    # A model-checking verdict that rests on no row the change alters is vacuous, which the example must expect too.
-    vacuous = bool((result.get("coverage") or {}).get("vacuous"))
-    result["matchesExpected"] = result["verdict"] == example["expected"]["verdict"] and vacuous == example["expected"].get("vacuous", False)
+    finish(result, example)
     return result
+
+
+def finish(result, example):
+    """What every runner's result ends with: a runner that recorded no execution did not run the verifier, and a
+    run without a verdict has the label that says why. A verdict that rests on no row or input the change reaches is
+    vacuous, which the example must expect too."""
+    if not result.get("execution"):
+        result["execution"] = {"status": "tool-error", "exitCode": None, "reason": "the runner recorded no run of the verifier"}
+        result["verdict"] = None
+    if result["execution"]["status"] != "completed":
+        result["verdict"] = None
+    if result["verdict"] is None:
+        result["verdictLabel"] = no_verdict_label(result["execution"])
+    result["expectation"] = expectation(result, example["expected"])
+    result["matchesExpected"] = result["expectation"] == "yes"
 
 
 def update_contracts(build, module, result):
@@ -251,19 +339,22 @@ def run_contracts(folder, example, tmp, module, result):
 
     proc = gradle(build, f":{module}:verifyContracts", check=False)
     output = proc.stdout.replace(str(tmp) + "/", "")
-    write_evidence(folder, output, build / module / "build/reports/contracts/contracts.sarif")
+    reported = write_evidence(folder, output, build / module / "build/reports/contracts/contracts.sarif", result)
 
-    verdict = "verified" if proc.returncode == 0 else (
-        "unverifiable" if "cannot be verified" in output else "violation")
     cases = cases_total(output)
     changes = capability_changes(output)
+    found = counterexamples(output) + changes
+    execution, verdict = conclude(proc.returncode, output, found + purity_violations(output), reported)
     result.update({
         "verdict": verdict,
+        "execution": execution,
         "casesTotal": cases,
-        "counterexamples": counterexamples(output) + changes,
+        "counterexamples": found,
         "purityViolations": purity_violations(output),
         "trustedCalls": trusted_calls(output),
     })
+    if verdict is None:
+        return
     if example["approach"]["id"] == "B10":
         m = re.search(r"\((\d+) classes, (\d+) methods, (\d+) capability uses, (\d+) libraries\)", output)
         result["domain"] = f"{m.group(1)} classes, {m.group(2)} methods" if m else None
@@ -313,15 +404,18 @@ def run_boundaries(folder, example, tmp, module, result):
                            "--classpath", classpath, "--resources", str(resources),
                            "--module", module, *anchor], text=True, capture_output=True)
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
-    if proc.returncode == 2:
-        sys.exit(f"jvmcontract failed:\n{output}")
     if new_problems:
         output += "New `!` lines in the regenerated contract:\n" + "".join(f"  added {p}\n" for p in new_problems)
-    write_evidence(folder, output, report / "contracts.sarif")
-    verdict = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+    reported = write_evidence(folder, output, report / "contracts.sarif", result)
+    changes = boundary_changes(output)
+    execution, verdict = conclude(proc.returncode, output, changes + new_problems, reported)
+    result["execution"] = execution
+    if verdict is None:
+        result.update({"verdict": None, "counterexamples": changes, "newProblems": new_problems})
+        return
+    # A `!` line the regenerated contract adds is a violation the reviewer would approve with the diff.
     if new_problems and verdict == "verified":
         verdict = "violation"
-    changes = boundary_changes(output)
     m = re.search(r"\((\d+) beans, (\d+) entry points, (\d+) advised methods, (\d+) configuration keys, (\d+) wire types, "
                   r"(?:(\d+) stored types, )?(\d+) problems\)", output)
     result.update({
@@ -387,24 +481,29 @@ def run_equivalence(folder, example, tmp, module, result):
         command += ["--unchanged-unless", intended]
     proc = subprocess.run(command, text=True, capture_output=True)
     output = (proc.stdout + proc.stderr).replace(str(tmp) + "/", "")
-    write_evidence(folder, output, report / "equivalence.sarif")
+    reported = write_evidence(folder, output, report / "equivalence.sarif", result)
     statement = work / "harness/EquivalenceHarness.java"
     if statement.exists():
         shutil.copy(statement, folder / "statement.java")
         result["statement"] = "statement.java"
+    else:
+        (folder / "statement.java").unlink(missing_ok=True)  # an earlier run's statement is not this run's
 
-    verdict = "verified" if proc.returncode == 0 else (
-        "unverifiable" if "cannot be verified" in output else "violation")
+    found = counterexamples(output)
+    execution, verdict = conclude(proc.returncode, output, found, reported)
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
     proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
              or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({
         "verdict": verdict,
+        "execution": execution,
         "domain": m.group(1) if m else None,
-        "counterexamples": counterexamples(output),
+        "counterexamples": found,
         "proof": proof.group(1) if proof else None,
         "problem": problem(output),
     })
+    if verdict is None:
+        return
     result["verdictLabel"] = {
         "violation": f"{VERDICT_LABEL[verdict]}: counterexample found",
         "verified": f"{VERDICT_LABEL[verdict]}: equivalent on every input" + (" outside the declared change" if intended else ""),
@@ -450,13 +549,16 @@ def run_tlc(folder, example, tmp, module, result):
     subprocess.run([sys.executable, str(EXAMPLES / "tools/tla/contract_to_tla.py"),
                     str(build / CONTRACT_FILE), str(spec / "OrderLifecycleContract.tla")], check=True, capture_output=True)
     library = EXAMPLES / "tools/tla/standard-modules"
+    timeout = 1800
     try:
         # One worker, so that the trace TLC reports is the same on every run.
         proc = subprocess.run(tlc(library) + ["-workers", "1", "-deadlock", "-cleanup", "BoxOffice.tla"],
-                              cwd=spec, text=True, capture_output=True, timeout=1800)
-        raw = proc.stdout + proc.stderr
-    except subprocess.TimeoutExpired:
-        raw = "Error: TLC did not finish within 30 minutes"
+                              cwd=spec, text=True, capture_output=True, timeout=timeout)
+        raw, returncode, timed_out = proc.stdout + proc.stderr, proc.returncode, None
+    except subprocess.TimeoutExpired as e:
+        raw = ((e.stdout or b"").decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")) \
+            + f"\nError: TLC did not finish within {timeout // 60} minutes"
+        returncode, timed_out = None, timeout
     output = "\n".join(l for l in raw.replace(str(tmp) + "/", "").replace(str(REPO) + "/", "").splitlines() if not l.startswith("Progress("))
     (folder / "verifier-output.txt").write_text(output + "\n")
 
@@ -464,13 +566,12 @@ def run_tlc(folder, example, tmp, module, result):
     states = re.search(r"(\d+) states generated, (\d+) distinct states found", output)
     depth = re.search(r"depth of the complete state graph search is (\d+)", output)
     seconds = re.search(r"Finished in (\d+)s", output)
-    if "No error has been found" in output:
-        verdict = "verified"
-    elif violated:
-        verdict = "violation"
-    else:
-        verdict = "unverifiable"
-    trace = parse_trace(output) if violated else None
+    trace = parse_trace(output) if violated and "The behavior up to this point is:" in output else None
+    execution, verdict = tlc_conclusion(returncode, output, timed_out, "No error has been found" in output, violated, trace)
+    if verdict is None:
+        (folder / "result.sarif").unlink(missing_ok=True)
+        result.update({"verdict": None, "execution": execution, "problem": execution["reason"], "sarif": None})
+        return
     model = ", ".join(re.findall(r"^\s+(\w+ = .+)$", (spec / "BoxOffice.cfg").read_text(), re.M))
     sarif_line = result["after"]["startLine"]
     findings = []
@@ -490,6 +591,7 @@ def run_tlc(folder, example, tmp, module, result):
 
     result.update({
         "verdict": verdict,
+        "execution": execution,
         "trace": trace,
         "statesExplored": int(states.group(2)) if states else None,
         "invariant": violated.group(1) if violated else None,
@@ -504,6 +606,36 @@ def run_tlc(folder, example, tmp, module, result):
         "verified": f"{VERDICT_LABEL[verdict]}: all invariants hold in {int(states.group(2)):,} states" if states else VERDICT_LABEL[verdict],
         "unverifiable": VERDICT_LABEL[verdict],
     }[verdict]
+
+
+def tlc_conclusion(returncode, output, timed_out, verified, violated, trace):
+    """The execution and the verdict of a TLC run, from TLC's own report: no error found, or a violation with the
+    behaviour that shows it. TLC has no verdict of "cannot be checked": a run that says neither was killed (by the
+    runner's timeout, by a signal, as the tool reports either), or failed (a parse error, a Java exception, running out
+    of memory). A violation without a trace the runner can read is output it cannot read, not a counterexample.
+    `returncode` is None when the runner's own timeout stopped TLC, or when the run went through the tool, which
+    reports the end of TLC in its output."""
+    if timed_out is not None:
+        return {"status": "timed-out", "exitCode": None, "reason": f"TLC did not finish within {timed_out} s"}, None
+    if returncode is not None and returncode < 0:
+        return {"status": "killed", "exitCode": returncode, "reason": f"TLC was killed by signal {-returncode}"}, None
+    killed = re.search(r"^Error: \S+ was killed by signal (\d+)$", output, re.M)
+    if killed:
+        return {"status": "killed", "exitCode": returncode, "reason": f"TLC was killed by signal {killed.group(1)}"}, None
+    late = re.search(r"^Error: \S+ did not finish within (\d+) s$", output, re.M)
+    if late:
+        return {"status": "timed-out", "exitCode": returncode, "reason": f"TLC did not finish within {late.group(1)} s"}, None
+    execution = {"status": "completed", "exitCode": returncode, "reason": None}
+    if verified and not violated:
+        return execution, "verified"
+    if violated and trace:
+        return execution, "violation"
+    if violated:
+        return {"status": "invalid-output", "exitCode": returncode,
+                "reason": "TLC reported a violation, but no behaviour the runner can read shows it"}, None
+    line = last_line(output)
+    return {"status": "tool-error", "exitCode": returncode,
+            "reason": "TLC produced no verdict" + (f": {line}" if line else ", printing nothing")}, None
 
 
 def tlc(library):
@@ -604,14 +736,17 @@ def tool_before_classes(app):
     return BEFORE_CLASSES[app]
 
 
-def tool(app, root, *args, anchored=True):
-    """Runs jvmcontract on the patched copy, with findings anchored relative to the copy's root."""
+def tool(app, root, *args, anchored=True, setup=True):
+    """Runs jvmcontract on the patched copy, with findings anchored relative to the copy's root. A step that sets
+    the run up (`update`, `tla`) stops the runner when the tool fails or is killed (an exit code other than 0 or 1:
+    `update` exits 1 for what it found, as `verify` does); the run that gives the verdict (`setup=False`)
+    returns whatever happened, for `conclude` to decide how it ended."""
     build = root / TOOL_APPS[app]["root"]
     anchor = ["--sources", str(build / "src/main/java"), "--base", str(root)] if anchored else []
     proc = subprocess.run([jvmcontract(), *args, *anchor], text=True, capture_output=True, cwd=build)
     output = (proc.stdout + proc.stderr).replace(str(root) + "/", "")
-    if proc.returncode == 2:
-        sys.exit(f"jvmcontract failed:\n{output}")
+    if setup and proc.returncode not in (0, 1):
+        sys.exit(f"jvmcontract {args[0]} failed with exit code {proc.returncode}:\n{output}")
     return proc, output
 
 
@@ -661,18 +796,22 @@ def run_tool_contracts(folder, example, root, module, result):
     if example["change"]["behaviourChangeIntended"]:
         tool_update_contracts(app, root, result)
     proc, output = tool(app, root, "verify", "--contracts", "src/contract", "--classes", str(build / "build/main"),
-                        "--module", module, "--report", str(build / "build/reports"))
-    write_evidence(folder, output, build / "build/reports/contracts.sarif")
-    verdict = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+                        "--module", module, "--report", str(build / "build/reports"), setup=False)
+    reported = write_evidence(folder, output, build / "build/reports/contracts.sarif", result)
     cases = cases_total(output, example["subject"]["symbol"])
     changes = capability_changes(output)
+    found = counterexamples(output) + changes
+    execution, verdict = conclude(proc.returncode, output, found + purity_violations(output), reported)
     result.update({
         "verdict": verdict,
+        "execution": execution,
         "casesTotal": cases,
-        "counterexamples": counterexamples(output) + changes,
+        "counterexamples": found,
         "purityViolations": purity_violations(output),
         "trustedCalls": trusted_calls(output),
     })
+    if verdict is None:
+        return
     if example["approach"]["id"] == "B10":
         m = re.search(r"\((\d+) classes, (\d+) methods, (\d+) capability uses, (\d+) libraries\)", output)
         result["domain"] = f"{m.group(1)} classes, {m.group(2)} methods" if m else None
@@ -696,10 +835,14 @@ def finish_symbolic(folder, example, result, output, work, harness, verdict_labe
     if statement.exists():
         shutil.copy(statement, folder / "statement.java")
         result["statement"] = "statement.java"
+    else:
+        (folder / "statement.java").unlink(missing_ok=True)  # an earlier run's statement is not this run's
     m = re.search(r"domain (.+?)\)$", output, re.M) or re.search(r"over (.+?) in [\d.]+ s", output)
     proof = (re.search(r"^  \((.*)\)$", output, re.M) or re.search(r"\(((?:JBMC|jvmcontract's own checker) .*)\)$", output, re.M)
              or re.search(r"\((its bytecode .*nothing to prove)\)$", output, re.M))
     result.update({"domain": m.group(1) if m else None, "proof": proof.group(1) if proof else None, "problem": problem(output)})
+    if result["verdict"] is None:
+        return
     result["verdictLabel"] = verdict_labels[result["verdict"]]
     # A verified statement that skips every input in the domain before the calls (a scope every input satisfies, a
     # bound on the arrays below what the scope asks, a constructor that rejects every input) is vacuous: the tool
@@ -731,10 +874,10 @@ def run_tool_equivalence(folder, example, root, module, result):
         command += ["--unwind", str(example["approach"]["unwind"])]
     if example["approach"].get("maxArrayLength"):
         command += ["--max-array-length", str(example["approach"]["maxArrayLength"])]
-    proc, output = tool(app, root, *command)
-    write_evidence(folder, output, build / "build/reports/equivalence.sarif")
-    result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+    proc, output = tool(app, root, *command, setup=False)
+    reported = write_evidence(folder, output, build / "build/reports/equivalence.sarif", result)
     result["counterexamples"] = counterexamples(output)
+    result["execution"], result["verdict"] = conclude(proc.returncode, output, result["counterexamples"], reported)
     finish_symbolic(folder, example, result, output, work, "EquivalenceHarness.java", {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: equivalent on every input" + (" outside the declared change" if intended else ""),
@@ -755,9 +898,8 @@ def run_tool_property(folder, example, root, module, result):
     work = build / "build/property"
     proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"),
-                        *engine_flag(example))
-    write_evidence(folder, output, build / "build/reports/property.sarif")
-    result["verdict"] = "verified" if proc.returncode == 0 else ("unverifiable" if "cannot be verified" in output else "violation")
+                        *engine_flag(example), setup=False)
+    reported = write_evidence(folder, output, build / "build/reports/property.sarif", result)
     # A method may have several properties; the one that failed is the one to report, if any did.
     m = (re.search(r"violated: (?:`(.*)`|returns)(?: where (.*?))?((?:, and throws .*?)*):$", output, re.M)
          or re.search(r"(?:satisfies `(.*)`|returns) on every input(?: where (.*?))?((?:, and throws .*?)*) \((?:JBMC|jvmcontract)", output))
@@ -767,6 +909,7 @@ def run_tool_property(folder, example, root, module, result):
     if witness:
         result["counterexamples"] = [{"input": witness.group(1), "contract": m.group(1) if m else None, "actual": witness.group(2),
                                       **({"expected": witness.group(3)} if witness.group(3) else {})}]
+    result["execution"], result["verdict"] = conclude(proc.returncode, output, result["counterexamples"], reported)
     finish_symbolic(folder, example, result, output, work, "PropertyHarness.java", {
         "violation": f"{VERDICT_LABEL['violation']}: counterexample found",
         "verified": f"{VERDICT_LABEL['verified']}: property holds on every input",
@@ -1216,9 +1359,7 @@ def tlc_run(build, model_files, configuration, root):
     env = {"JVMCONTRACT_JAVA_OPTS": "-Xmx2500m", **os.environ}
     proc = subprocess.run([jvmcontract(), "tlc", configuration.get("spec", model_files["spec"]), "--json", *coverage, *deadlock, *config,
                            "--library", str(EXAMPLES / "tools/tla/standard-modules")], text=True, capture_output=True, cwd=build, env=env)
-    if proc.returncode == 2:
-        sys.exit(f"jvmcontract tlc failed:\n{proc.stderr}")
-    run = json.loads(proc.stdout)
+    run = tlc_run_result(proc)
     run["output"] = run["output"].replace(str(root) + "/", "").replace(str(REPO) + "/", "")
     text = (build / cfg).read_text()
     run["domain"] = ", ".join(re.findall(r"^\s+(\w+ = .+)$", text, re.M))
@@ -1233,8 +1374,39 @@ def tlc_run(build, model_files, configuration, root):
     return run
 
 
+def tlc_run_result(proc):
+    """The tool's JSON for one TLC run, with how the run ended (`execution`). The tool exits 0 or 1 with its JSON
+    whatever TLC did, reporting a TLC that was killed or ran out of time in the output; a tool that failed, was
+    killed, or printed JSON it cannot have meant gives a run with no verdict, its output kept as the evidence."""
+    raw = (proc.stdout or "") + (proc.stderr or "")
+    execution = execution_status(proc.returncode, proc.stdout)
+    run = None
+    if execution["status"] == "completed":
+        try:
+            run = json.loads(proc.stdout)
+            if not isinstance(run, dict) or run.get("verdict") not in VERDICT_LABEL or not isinstance(run.get("output"), str):
+                raise ValueError("not a TLC result")
+        except ValueError:
+            run = None
+            execution = {"status": "invalid-output", "exitCode": proc.returncode,
+                         "reason": "jvmcontract tlc printed no TLC result the runner can read"}
+    if run is None:
+        return {"verdict": "unverifiable", "execution": execution, "problem": execution["reason"], "output": raw,
+                "trace": [], "coverage": None, "version": "TLC"}
+    trace = run.get("trace") or []
+    execution, verdict = tlc_conclusion(None, run["output"], None, run["verdict"] == "verified",
+                                        run["verdict"] == "violation", trace)
+    run["execution"] = {**execution, "exitCode": proc.returncode}
+    if verdict is None:
+        # The run has no verdict: kept as one TLC could not give, with the reason it did not.
+        run.update({"verdict": "unverifiable", "problem": execution["reason"]})
+    return run
+
+
 def tlc_label(run):
     """The one-line verdict of a TLC run, as the README's tables show it."""
+    if (run.get("execution") or {}).get("status", "completed") != "completed":
+        return no_verdict_label(run["execution"])
     verdict = run["verdict"]
     states = run.get("distinct_states")
     if verdict == "violation":
@@ -1340,7 +1512,9 @@ def run_tool_tlc(folder, example, root, module, result):
     else:
         output = tlc_result["output"]
     (folder / "verifier-output.txt").write_text(output.rstrip("\n") + "\n")
-    verdict = tlc_result["verdict"]
+    # The verdict is the headline run's, when TLC completed it; a run TLC could not finish has no verdict.
+    execution = tlc_result["execution"]
+    verdict = tlc_result["verdict"] if execution["status"] == "completed" else None
     kind = tlc_result.get("kind")
     trace = [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in tlc_result["trace"]] if verdict == "violation" else None
     findings = []
@@ -1374,6 +1548,7 @@ def run_tool_tlc(folder, example, root, module, result):
     states = tlc_result.get("distinct_states")
     result.update({
         "verdict": verdict,
+        "execution": execution,
         "trace": trace,
         "statesExplored": states,
         "invariant": tlc_result.get("invariant"),
@@ -1382,15 +1557,18 @@ def run_tool_tlc(folder, example, root, module, result):
         "domain": tlc_result["domain"],
         "stateMachine": tool_state_machine(app, root, example["subject"]["symbol"]),
         "proof": "; ".join(f"{c['label']}: {tlc_proof(r)}" for c, r in runs if tlc_proof(r)) if several else tlc_proof(tlc_result),
-        "problem": tlc_result.get("problem") if verdict == "unverifiable" else None,
+        "problem": tlc_result.get("problem") if verdict != "verified" and verdict != "violation" else None,
     })
     if several:
         result["configurations"] = [{
-            "label": c["label"], "cfg": c["cfg"], "verdict": r["verdict"], "summary": tlc_label(r), "domain": r["domain"],
+            "label": c["label"], "cfg": c["cfg"], "verdict": r["verdict"], "status": r["execution"]["status"],
+            "summary": tlc_label(r), "domain": r["domain"],
             "invariant": r.get("invariant"), "violationKind": r.get("kind"), "statesExplored": r.get("distinct_states"),
             "trace": [{"step": s["step"], "action": s["action"], "changes": s["changes"]} for s in r["trace"]] if r["verdict"] == "violation" else None,
             "forever": r["forever"],
         } for c, r in runs]
+    if verdict is None:
+        return
     label = tlc_label(tlc_result)
     changed = len(result["coverage"]["changedRows"])
     if verdict == "verified" and result["coverage"]["vacuous"]:
@@ -1444,11 +1622,22 @@ def gradle(build, task, *extra, check=True, allow_empty=False):
     return proc
 
 
-def write_evidence(folder, output, sarif_path):
-    """Writes the verifier's console output and its SARIF report, with the report's paths made repo-relative."""
+def write_evidence(folder, output, sarif_path, result):
+    """Writes the verifier's console output and its SARIF report, with the report's paths made repo-relative, and
+    returns whether there was a report. A missing report is not made up: an earlier run's report is removed, so that
+    the folder never shows evidence from another run, and the result records no report."""
     (folder / "verifier-output.txt").write_text(output)
-    sarif = json.loads(sarif_path.read_text()) if sarif_path.exists() else {
-        "version": "2.1.0", "runs": [{"tool": {"driver": {"name": "unknown"}}, "results": []}]}
+    if not sarif_path.exists():
+        (folder / "result.sarif").unlink(missing_ok=True)
+        result["sarif"] = None
+        return False
+    try:
+        sarif = json.loads(sarif_path.read_text())
+    except json.JSONDecodeError:
+        (folder / "result.sarif").unlink(missing_ok=True)
+        result["sarif"] = None
+        return False
+    result["sarif"] = "result.sarif"
     for run_ in sarif["runs"]:
         for res in run_["results"]:
             for loc in res.get("locations", []):
@@ -1456,6 +1645,7 @@ def write_evidence(folder, output, sarif_path):
                 if not art["uri"].startswith("examples/"):
                     art["uri"] = f"{BUILD_ROOT}/{art['uri']}"  # the Java tool anchors to the Gradle module
     (folder / "result.sarif").write_text(json.dumps(sarif, indent=2, ensure_ascii=False) + "\n")
+    return True
 
 
 def failures(results_dir):
@@ -1681,7 +1871,7 @@ def render_example(folder, ex, res):
         "## What the verifier found",
         "",
     ]
-    lines += FINDINGS[ex["approach"]["id"]](ex, res)
+    lines += no_verdict_findings(res) if res["verdict"] is None else FINDINGS[ex["approach"]["id"]](ex, res)
     if res.get("stateMachine"):
         lines += [
             "",
@@ -1731,8 +1921,9 @@ def render_example(folder, ex, res):
     if res.get("statement"):
         lines += details("The statement the prover checked (generated harness)", "java",
                          (folder / res["statement"]).read_text())
-    lines += details("SARIF report (as uploaded to GitHub code scanning or SonarQube)", "json",
-                     (folder / res["sarif"]).read_text())
+    if res.get("sarif"):
+        lines += details("SARIF report (as uploaded to GitHub code scanning or SonarQube)", "json",
+                         (folder / res["sarif"]).read_text())
     if ex.get("provenance"):
         lines += [f"**Provenance:** {ex['provenance']}", ""]
     for ref in ex.get("references", []):
@@ -1748,6 +1939,14 @@ def render_example(folder, ex, res):
         "",
     ]
     return "\n".join(lines)
+
+
+def no_verdict_findings(res):
+    """What a page says of a run that has no verdict: how the run ended, and that nothing is concluded from it."""
+    execution = res["execution"]
+    return [f"The verifier's run did not complete (`{execution['status']}`): {execution['reason']}. There is no verdict, "
+            "so nothing is concluded about the change, and the example's expectation is not evaluated. The output it left "
+            "is under Evidence."]
 
 
 def findings_contracts(ex, res):
@@ -2092,6 +2291,8 @@ FINDINGS = {"B8": findings_contracts, "B9": findings_equivalence, "B10": finding
 
 def tests_text(res):
     t = res["existingTests"]
+    if t["passed"] and res["verdict"] is None:
+        return f"Every existing unit test passes (`{t['task']}`, run against the patched code); with no verdict, whether they should is open."
     if t["passed"]:
         verdict = "No: every existing unit test passes" if res["verdict"] != "verified" else "Every existing unit test passes, as it should"
         return f"{verdict} (`{t['task']}`, run against the patched code)."
@@ -2102,6 +2303,8 @@ def tests_text(res):
 
 def tests_cell(res):
     t = res["existingTests"]
+    if res["verdict"] is None:
+        return "pass" if t["passed"] else "fail"
     if res["verdict"] == "verified":
         return "pass"
     return "caught" if not t["passed"] else "**missed**"
@@ -2127,7 +2330,7 @@ def render_index(folders):
     rows, index = [], []
     for folder, ex, res in examples:
         if ex["origin"] == "constructed":
-            verdict = res.get("verdictLabel", VERDICT_LABEL[res["verdict"]]) if res else "not run"
+            verdict = (res.get("verdictLabel") or VERDICT_LABEL.get(res["verdict"], "no verdict")) if res else "not run"
         else:
             verdict = ex["verdictLabel"]
         approaches = [ex["approach"]["id"], *ex["approach"].get("also", [])]
