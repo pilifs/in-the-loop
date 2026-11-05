@@ -1,6 +1,6 @@
 --- a/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
 +++ b/examples/apps/mica/src/main/java/net/terminalvalue/mica/asm/SwitchLowering.java
-@@ -20,10 +20,11 @@ public final class SwitchLowering {
+@@ -22,10 +22,11 @@ public final class SwitchLowering {
          if (labels < 1 || labels > 8190 || lo > hi) {
              throw new IllegalArgumentException("a switch needs a label, at most 8190 of them, and a range");
          }
@@ -15,4 +15,4 @@
 +        int lookupTimeCost = labels;
          return tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost;
      }
- }
+ 

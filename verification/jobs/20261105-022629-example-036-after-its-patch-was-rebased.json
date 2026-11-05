@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-022629-example-036-after-its-patch-was-rebased",
+  "title": "Example 036 after its patch was rebased: the switch lowering costs narrowed from long to int, refuted by a regression proof",
+  "description": "Example 036's patch no longer applied to Mica's SwitchLowering.java: a later commit added two lines to the class comment and a sortPairs method after useTable, so the hunk's position and closing context were stale. The patch was regenerated on the current file with the same changed lines (useTable's four cost variables narrowed from long to int, which overflows on wide label ranges). This job runs the example's regression proof again; it last failed at git apply in the Mica rerun 20261103-002843.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "036"
+    ]
+  },
+  "expected": "build.py 036 exits 0: verdict violation, matches expected",
+  "submitted": {
+    "at": "2026-11-05T02:26:29+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "notes": "the whole Mica rerun of 23 steps peaked at 150 MiB in 2m43s"
+  },
+  "steps": [
+    {
+      "name": "example 036 (B9)",
+      "run": "python3 examples/tools/build.py 036",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/036-switch-lowering-costs-in-int-overflow-on-wide-labels"
+  ]
+}
