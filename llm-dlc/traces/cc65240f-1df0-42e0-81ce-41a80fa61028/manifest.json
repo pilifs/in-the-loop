@@ -12,26 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T10:47:56.804Z",
-  "ended": "2026-11-05T11:24:10.266Z",
-  "duration_seconds": 2173,
+  "ended": "2026-11-05T11:31:42.935Z",
+  "duration_seconds": 2626,
   "stats": {
-    "turns": 11,
-    "api_calls": 88,
-    "tool_calls": 100,
+    "turns": 16,
+    "api_calls": 122,
+    "tool_calls": 133,
     "tool_errors": 2,
-    "compactions": 1,
-    "peak_context_tokens": 175632,
+    "compactions": 2,
+    "peak_context_tokens": 179408,
     "usage": {
-      "input_tokens": 184,
-      "output_tokens": 82234,
-      "cache_read_input_tokens": 9963221,
-      "cache_creation_input_tokens": 249580
+      "input_tokens": 252,
+      "output_tokens": 104141,
+      "cache_read_input_tokens": 12872256,
+      "cache_creation_input_tokens": 342896
     }
   },
   "tools": {
-    "Bash": 81,
+    "Bash": 113,
     "Edit": 14,
     "Write": 3,
+    "Read": 1,
     "ToolSearch": 1,
     "WebFetch": 1
   },
@@ -60,24 +61,38 @@
     {
       "index": 1,
       "started": "2026-11-05T11:13:27.074Z",
-      "ended": "2026-11-05T11:24:10.266Z",
-      "turns": 4,
-      "api_calls": 55,
+      "ended": "2026-11-05T11:24:46.510Z",
+      "turns": 5,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 110,
-        "output_tokens": 54611,
-        "cache_read_input_tokens": 7024424,
-        "cache_creation_input_tokens": 164364
+        "input_tokens": 114,
+        "output_tokens": 55674,
+        "cache_read_input_tokens": 7377578,
+        "cache_creation_input_tokens": 168140
       },
-      "peak_context_tokens": 175632
+      "peak_context_tokens": 179408
+    },
+    {
+      "index": 2,
+      "started": "2026-11-05T11:25:31.092Z",
+      "ended": "2026-11-05T11:31:42.935Z",
+      "turns": 4,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 64,
+        "output_tokens": 20844,
+        "cache_read_input_tokens": 2555881,
+        "cache_creation_input_tokens": 89540
+      },
+      "peak_context_tokens": 102620
     }
   ],
   "log": {
-    "sha256": "34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1",
-    "bytes": 2945937,
-    "lines": 982,
-    "gzip_bytes": 531427,
-    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1.jsonl.gz"
+    "sha256": "3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04",
+    "bytes": 3970811,
+    "lines": 1355,
+    "gzip_bytes": 740792,
+    "path": "llm-dlc/traces/cc65240f-1df0-42e0-81ce-41a80fa61028/logs/3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -128,6 +143,14 @@
       "summary": "build.py: how a verifier's run ended is decided before its verdict (verification pending)",
       "body": "Step 1a of the build-orchestration brief. Before, build.py classified a jvmcontract or Java-verifier run as verified on exit 0, unverifiable when the output said 'cannot be verified', and violation otherwise. A verifier killed by signal 9 with empty output was recorded as 'Violation: counterexample found', with no counterexample, and matched an example that expected a violation. write_evidence() also wrote an empty SARIF report when the verifier wrote none. The review's findings were checked against the code at c4fa2f64 and all still held.\n\nNow execution_status() and conclude() (and tlc_conclusion() for TLC, run directly for Box Office or through jvmcontract tlc --json) first record result.execution: completed, timed-out, killed (a negative code or 128+N), invalid-output (nothing printed, malformed JSON, exit 1 with no evidence or no report) or tool-error (any other exit code; a TLC run that ended without a verdict). Only a completed run has a verdict. A violation needs the evidence the runner read (counterexamples, changed cases, capability or boundary changes, new ! lines, a trace) and the verifier's SARIF report. A run without a verdict records verdict null, the label '⚠ No verdict: <reason>' and expectation not-evaluable, and matchesExpected is false. build.py exits 1 and prints a line the pipeline's example:unexpected signal matches. The runs that give the verdict are recorded, not fatal, on exit code 2. Setup steps (update, tla, compile) still stop the runner, now also on a signal. A missing report is not made up, and a stale result.sarif or statement.java from an earlier run is removed, so a folder never shows another run's evidence. Each D1 configuration also records its status. The page of a run without a verdict says so in place of the findings.\n\nChoices: a run that did not complete gets verdict null, not 'unverifiable'. That is the option that reports less, and otherwise a crash would match example 003, which expects unverifiable. 'Why the verdict is right' still prints the authored explanation; separating it from the observed evidence is step 3c. The per-configuration termination reason beyond the status is step 2b.\n\nVerified: the new examples/tools/test_build.py (25 unittest cases, mocked processes) covers signal 9 with empty output, 137 and 134, exit codes 2/3/101, timeouts, empty output, exit 1 without evidence or report, malformed TLC JSON, TLC killed or late inside the tool, a violation without a trace, rendering and schema validation of a no-verdict result, and main()'s exit code and pipeline signal. Recomputing every recorded result's expectation under the new rule gives exactly what was recorded, and every recorded violation has its evidence. All 140 committed results validate against the extended schema, which accepts the old shape. verification/test_pipeline.py passes. build.py --render-only renders every page. Eight pages changed only because they had drifted from their committed results (timings, and a renderer sentence on 110); nothing in them comes from this change.\n\nVerification jobs, one per approach, check that the verdicts are unchanged and that result.json gains execution: 20261105-112331-example-126-b9-under-build-py-s-executio (B9 JBMC), 20261105-112331-example-132-b9-under-build-py-s-executio (B9 native), 20261105-112331-example-017-b11-under-build-py-s-executi (B11), 20261105-112331-example-110-b12-under-build-py-s-executi (B12), 20261105-112331-example-101-d1-under-build-py-s-executio (D1), 20261105-112331-example-003-b8-under-build-py-s-executio (B8 Box Office, expected unverifiable).",
       "log_sha256": "34c41cff05f176b7682ec00e3ac04976f42ab8a791aed8b98cce1f58e60509b1"
+    },
+    {
+      "change_id": "pznwknnkmwtlxtnmmpnxqworwznkuruw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "build.py: a requested example that doesn't run never exits 0 (verification pending)",
+      "body": "Step 1b of the build-orchestration brief. Before this change, build.py silently did nothing for an unknown id or a real-world one and still exited 0. An app it didn't know, or an approach with no runner, made it sys.exit in load_example, which also broke rendering the router. Now an argument that is not the three-digit id of an example folder exits 2 before anything runs. That includes a folder name, an unknown flag, and --index-only with ids.\n\nA requested example that build.py can't run prints 'NNN-name: not-executed (why)' and fails the run with exit 1. That covers a real-world example (105-109), a subject file under no app, an approach the app has no runner for, and a D1 symbol no TLA+ model is built around. not_executable() gives the reason. app_of() returns None, and find_model() is model_of() without the exit. Running every example still means every constructed one, so the real-world ones are left out without failing. --render-only with an explicit id it can't render exits 1.\n\nChoice taken: nothing is written for an example that was not executed. An earlier result.json is evidence of its own run and stays. A result that no longer matches its inputs is step 3c's to show as stale, and I didn't overwrite evidence with a non-attempt. The pipeline gains an example:not-executed signal. submit --example now refuses a real-world id with a message, where it used to fail with a KeyError on expected. Every queued job runs build.py on one constructed id, so none of them changes. The pipeline README's sample submit used example 105, a real-world id since; it now uses the next free number, 146.\n\nVerified: examples/tools/test_build.py, 33 tests, 8 of them new (unknown id, a non-id argument, a real-world id alone and next to a constructed one, every example, an app nobody builds with its result.json left alone, the reasons, render-only); verification/test_pipeline.py, 16 tests, 1 new. By hand: 'build.py 999' and '108 017x' exit 2, and 'build.py 108' prints the not-executed line and exits 1. A full --render-only exits 0 and leaves every page and the router unchanged. No recorded result moved.\n\nVerification pending: job 20261105-113118-example-025-b8-under-build-py-s-strict-s (verification/jobs/) checks that an ordinary run of one constructed example still prints 'as expected' and exits 0. The six step-1a jobs (20261105-112331-*) had not run when this cycle started.",
+      "log_sha256": "3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04"
     }
   ],
   "logs": {
@@ -141,6 +164,12 @@
       "bytes": 2945937,
       "lines": 982,
       "gzip_bytes": 531427,
+      "url": null
+    },
+    "3f062394623e754bc82e45b0a8adda0e7aa997529baa9e3d34771c1ddda40c04": {
+      "bytes": 3970811,
+      "lines": 1355,
+      "gzip_bytes": 740792,
       "url": null
     },
     "6b38eda136ca1cf676b96463e269100b3679d1a57290977f480884fab8d38cc5": {

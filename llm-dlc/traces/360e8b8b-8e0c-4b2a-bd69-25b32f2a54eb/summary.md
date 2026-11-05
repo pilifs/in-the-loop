@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb` (ended) |
+| Session | `360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb` (open) |
 | When | 2026-10-31 16:29 UTC to 2026-11-04 13:14 UTC (5564 min) |
 | Models | `claude-fable-5-1` |
 | Client | claude-code 2.1.316 |
@@ -581,6 +581,20 @@ Jobs resubmitted at this commit: 20261104-131020-example-111..117, 20261104-1310
 [`72bdc20470cd`](https://github.com/pilifs/in-the-loop/commit/72bdc20470cdeba151c1ad151e0a73161b5a5562) · [log `9ccd10fbe3a5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz)
 
 Box Office's contracts module applies both contract plugins: the behavioural/capability one (examples/tools/contracts) and the boundaries one (jvmcontract). Since that module gained a boundaries.contract for the wire types, the Java verifier read it as a behavioural contract, and :contracts:verifyContracts, and with it the app's check, failed with 'boundaries.contract: not a case: kind: boundaries'. An Opus 5.5 session noticed it on Nov 3 while measuring memory caps and left it open. The verifier now skips any .contract file whose first line is a kind: header (Contract.kind), a behavioural contract having none.
+
+### build.py: a requested example that doesn't run never exits 0 (verification pending)
+
+change `pznwknnkmwtl` · [log `9ccd10fbe3a5`](https://terminalvalue.net/raw-traces/360e8b8b-8e0c-4b2a-bd69-25b32f2a54eb/9ccd10fbe3a5c951e239613a18524d2fc29bc32865d72604b4f36acb0f069d4c.jsonl.gz)
+
+Step 1b of the build-orchestration brief. Before this change, build.py silently did nothing for an unknown id or a real-world one and still exited 0. An app it didn't know, or an approach with no runner, made it sys.exit in load_example, which also broke rendering the router. Now an argument that is not the three-digit id of an example folder exits 2 before anything runs. That includes a folder name, an unknown flag, and --index-only with ids.
+
+A requested example that build.py can't run prints 'NNN-name: not-executed (why)' and fails the run with exit 1. That covers a real-world example (105-109), a subject file under no app, an approach the app has no runner for, and a D1 symbol no TLA+ model is built around. not_executable() gives the reason. app_of() returns None, and find_model() is model_of() without the exit. Running every example still means every constructed one, so the real-world ones are left out without failing. --render-only with an explicit id it can't render exits 1.
+
+Choice taken: nothing is written for an example that was not executed. An earlier result.json is evidence of its own run and stays. A result that no longer matches its inputs is step 3c's to show as stale, and I didn't overwrite evidence with a non-attempt. The pipeline gains an example:not-executed signal. submit --example now refuses a real-world id with a message, where it used to fail with a KeyError on expected. Every queued job runs build.py on one constructed id, so none of them changes. The pipeline README's sample submit used example 105, a real-world id since; it now uses the next free number, 146.
+
+Verified: examples/tools/test_build.py, 33 tests, 8 of them new (unknown id, a non-id argument, a real-world id alone and next to a constructed one, every example, an app nobody builds with its result.json left alone, the reasons, render-only); verification/test_pipeline.py, 16 tests, 1 new. By hand: 'build.py 999' and '108 017x' exit 2, and 'build.py 108' prints the not-executed line and exits 1. A full --render-only exits 0 and leaves every page and the router unchanged. No recorded result moved.
+
+Verification pending: job 20261105-113118-example-025-b8-under-build-py-s-strict-s (verification/jobs/) checks that an ordinary run of one constructed example still prints 'as expected' and exits 0. The six step-1a jobs (20261105-112331-*) had not run when this cycle started.
 
 ## Conversation
 

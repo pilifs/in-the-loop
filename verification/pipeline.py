@@ -86,6 +86,7 @@ SIGNALS = [
     ("example", "as-expected", r"^(\d{3})-\S+: (verified|violation|unverifiable) \(as expected\)"),
     ("example", "unexpected", r"^(\d{3})-\S+: (\w+) \((EXPECTED[^)]*)\)"),
     ("example", "differ", r"^Verdicts differ from expectations: (.*)"),
+    ("example", "not-executed", r"^(\d{3})-\S+: not-executed \((.*)\)$"),
     ("cargo", "tests", r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed"),
     ("memory", "out-of-memory", r"java\.lang\.OutOfMemoryError|ran out of memory|std::bad_alloc|Cannot allocate memory"),
 ]
@@ -1321,6 +1322,9 @@ def example_job_parts(example_id):
         sys.exit(f"example {example_id}: expected one folder examples/{example_id}-*, found {len(folders)}")
     folder = folders[0]
     example = json.loads((folder / "example.json").read_text())
+    if example.get("origin") != "constructed":
+        sys.exit(f"example {example_id} is {example.get('origin')}: build.py does not run it (its report is its README.md); "
+                 "describe its proof with --step and --kind real-world instead")
     approach = example["approach"]["id"]
     subject = example["subject"]["file"]
     requires = ["java", "javac"]

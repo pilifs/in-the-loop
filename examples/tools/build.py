@@ -12,7 +12,9 @@ example's approach, and writes what it produced next to them:
   README.md            the example, rendered for reading
 
 and then examples/README.md (the table of contents) and examples/index.json.
-It exits 1 if any verdict differs from the example's expected verdict, so the examples also test the verifiers.
+It exits 1 if any verdict differs from the example's expected verdict, so the examples also test the verifiers, or if
+a requested example was not executed (a real-world one, or one no app or runner takes: a `not-executed` line says
+why). It exits 2, running nothing, on an argument that is not the id of an example.
 
 Approaches (the ids are those of examples/approaches.md):
   B8   behavioural contracts: every input of a finite domain, executed      (verify)
@@ -31,7 +33,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py --render-only [ID ...]  rewrite their pages from result.json, running nothing
        python3 examples/tools/build.py --index-only        the router: examples/README.md's tables and examples/index.json
 
-A real-world example (origin "real-world") is not run: its report is its README.md, and its example.json is what the
+A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
 router knows of it. Every example's tags must come from examples/tags.json.
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
 cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps. No Docker.
@@ -76,30 +78,51 @@ BEFORE_CLASSES = {}
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
-    if argv == ["--index-only"]:
+    mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"]) else None
+    ids = argv[1:] if mode else argv
+    problem = selection_problem(mode, ids, folders)
+    if problem:
+        print(f"build.py: {problem}", file=sys.stderr)
+        print("usage: build.py [ID ...] | --render-only [ID ...] | --index-only", file=sys.stderr)
+        return 2  # nothing has run
+    wanted = set(ids)
+    if mode == "--index-only":
         render_index(folders)  # after the verification pipeline has brought results back (verification/README.md)
         return 0
-    if argv[:1] == ["--render-only"]:
-        wanted = set(argv[1:])
+    if mode == "--render-only":
+        unrendered = []
         for folder in folders:
+            if wanted and folder.name[:3] not in wanted:
+                continue
             example = load_example(folder)
-            if (wanted and folder.name[:3] not in wanted) or example["origin"] != "constructed":
+            if example["origin"] != "constructed":
+                if wanted:
+                    print(f"{folder.name}: not rendered (a real-world example: its page is written by hand)")
+                    unrendered.append(folder.name)
                 continue
             if not (folder / "result.json").exists():
                 print(f"{folder.name}: not run yet, no page")
+                if wanted:
+                    unrendered.append(folder.name)
                 continue
             (folder / "README.md").write_text(render_example(folder, example, json.loads((folder / "result.json").read_text())))
         render_index(folders)
+        if unrendered:
+            print("Not rendered: " + ", ".join(unrendered))
+            return 1
         return 0
-    wanted = set(argv)
-    failures = []
+    failures, unexecuted = [], []
     for folder in folders:
         if wanted and folder.name[:3] not in wanted:
             continue
         example = load_example(folder)
-        if example["origin"] != "constructed":
-            if wanted:
-                print(f"{folder.name}: a real-world example, not run here: its report is its README.md")
+        if example["origin"] != "constructed" and not wanted:
+            continue  # running every example means every constructed one
+        reason = not_executable(example)
+        if reason:
+            # Nothing ran, so nothing is written: an earlier result.json stays the record of its own run.
+            print(f"{folder.name}: not-executed ({reason})")
+            unexecuted.append(folder.name)
             continue
         print(f"{folder.name}: running ({example['approach']['id']})", flush=True)
         result = run(folder, example)
@@ -118,8 +141,39 @@ def main(argv):
     render_index(folders)
     if failures:
         print("Verdicts differ from expectations: " + ", ".join(failures))
-        return 1
-    return 0
+    if unexecuted:
+        print("Not executed: " + ", ".join(unexecuted))
+    return 1 if failures or unexecuted else 0
+
+
+def selection_problem(mode, ids, folders):
+    """Why the command line selects nothing it can act on, or None. An id is an example's three digits."""
+    if mode == "--index-only" and ids:
+        return f"--index-only takes no ids: {' '.join(ids)}"
+    bad = [a for a in ids if not re.fullmatch(r"\d{3}", a)]
+    if bad:
+        return f"not an example id (three digits, such as 017): {' '.join(bad)}"
+    known = {f.name[:3] for f in folders}
+    unknown = sorted(set(ids) - known)
+    if unknown:
+        return f"no example with id {', '.join(unknown)} in examples/"
+    return None
+
+
+def not_executable(example):
+    """Why build.py cannot run this example, or None when it can."""
+    if example["origin"] != "constructed":
+        return ("a real-world example: its report is its README.md, and build.py has no adapter for its "
+                "project's build")
+    app = app_of(example)
+    if app is None:
+        return (f"its subject file {example['subject']['file']} is not under {BUILD_ROOT} or "
+                + ", ".join(c["root"] for c in TOOL_APPS.values()) + ", so no app builds it")
+    if example["approach"]["id"] not in RUNNERS[app]:
+        return f"no runner for approach {example['approach']['id']} on {app}"
+    if example["approach"]["id"] == "D1" and find_model(example) is None:
+        return f"no TLA+ model of {app} is built around {example['subject']['symbol']}"
+    return None
 
 
 def load_example(folder):
@@ -130,11 +184,7 @@ def load_example(folder):
     unknown = [t for t in example["tags"] if t not in tag_vocabulary()]
     if unknown:
         sys.exit(f"{folder}: tags not in examples/tags.json: {', '.join(unknown)}")
-    if example["origin"] != "constructed":
-        return example
-    if example["approach"]["id"] not in RUNNERS[app_of(example)]:
-        sys.exit(f"{folder}: no runner for approach {example['approach']['id']} on {app_of(example)}")
-    return example
+    return example  # whether build.py can run it is not_executable()'s question
 
 
 _TAGS = {}
@@ -155,14 +205,14 @@ def tag_links(tags, base="../README.md"):
 
 
 def app_of(example):
-    """Which subject application the example changes: 'boxoffice' or a javac app, by its subject file."""
+    """Which subject application the example changes: 'boxoffice' or a javac app, by its subject file; None if none."""
     file = example["subject"]["file"]
     for app, config in TOOL_APPS.items():
         if file.startswith(config["root"] + "/"):
             return app
     if file.startswith(BUILD_ROOT + "/"):
         return "boxoffice"
-    sys.exit(f"{file}: not under {BUILD_ROOT} or " + ", ".join(c["root"] for c in TOOL_APPS.values()))
+    return None
 
 
 def validate(document, schema_name, path):
@@ -1335,14 +1385,21 @@ TOOL_MODELS = {"quorum": [TWOPC, RAFT, REPLICATION], "crosscut": [IDEMPOTENCY, B
 
 def model_of(example):
     """The model a D1 example is checked against: the one of its app built around the example's symbol."""
+    model = find_model(example)
+    if model is None:
+        sys.exit(f"{example['id']}: no TLA+ model of {app_of(example)} is built around {example['subject']['symbol']}")
+    return model
+
+
+def find_model(example):
     app = app_of(example)
     if app == "boxoffice":
         return MODELS["boxoffice"]
-    for model in TOOL_MODELS[app]:
+    for model in TOOL_MODELS.get(app, []):
         if example["subject"]["symbol"] in [model["symbol"]] + [o["symbol"] for o in model.get("operators", [])] \
                 + model.get("traced", []):
             return model
-    sys.exit(f"{example['id']}: no TLA+ model of {app} is built around {example['subject']['symbol']}")
+    return None
 
 
 def tlc_run(build, model_files, configuration, root):

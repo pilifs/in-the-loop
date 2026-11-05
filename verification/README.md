@@ -56,9 +56,9 @@ only generates), a TLC run over a few hundred states while you write a model.
 A demo example, by id, fills in the step, the outputs, the requirements and the approach:
 
 ```bash
-python3 verification/pipeline.py submit --example 105 \
-  --title "Example 105: a follower that truncates on a stale append, refuted" \
-  --description "The new example 105 changes AppendRule#decide to truncate on any mismatch, stale or not. TLC should find a run under RaftReplicationDelayed.cfg in which a committed entry is lost." \
+python3 verification/pipeline.py submit --example 146 \
+  --title "Example 146: a follower that truncates on a stale append, refuted" \
+  --description "The new example 146 changes AppendRule#decide to truncate on any mismatch, stale or not. TLC should find a run under RaftReplicationDelayed.cfg in which a committed entry is lost." \
   --capability jvmcontract:tlc --cpus 1 --memory 2G --duration 8m \
   --estimate-notes "example 104 took 6 min and 1.6 GB under the same configuration"
 ```
@@ -78,8 +78,8 @@ Then commit the job with the change, and say so in the message: end the summary 
 and name the job in a paragraph, so a reader of the history knows the change is not verified yet:
 
 ```bash
-python3 llm-dlc/tools/sync.py commit -m "Add example 105: a follower that truncates on a stale append (verification pending)" \
-  -m "What changed and why ..." -m "Verification pending: job 20261102-224918-example-105-a-follower-that-truncates (verification/jobs/). Compiled and the unit tests pass; the model check was not run."
+python3 llm-dlc/tools/sync.py commit -m "Add example 146: a follower that truncates on a stale append (verification pending)" \
+  -m "What changed and why ..." -m "Verification pending: job 20261102-224918-example-146-a-follower-that-truncates (verification/jobs/). Compiled and the unit tests pass; the model check was not run."
 ```
 
 Then carry on with the next thing. Don't wait for the result, and don't run the job yourself to see.
@@ -150,7 +150,7 @@ more than half, outputs not applied. A pass with nothing in `attention` is clean
 
 Each step also carries `signals`: the verdict lines lifted out of its log with their line numbers (JBMC's
 `VERIFICATION SUCCESSFUL`, `FAILED` and `ERROR`; TLC's "No error has been found", violated invariants and
-properties, deadlocks and state counts; jvmcontract's ✓, ✗ and ⚠ lines; build.py's "as expected" and "EXPECTED";
+properties, deadlocks and state counts; jvmcontract's ✓, ✗ and ⚠ lines; build.py's "as expected", "EXPECTED" and `not-executed`;
 `cargo test` totals; out-of-memory lines), counted in `signalCounts`. Only `VERIFICATION SUCCESSFUL` from JBMC is a
 proof, as everywhere in this repo: an exit of 0 with `jbmc:no-verdict` is not one.
 

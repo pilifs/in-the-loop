@@ -257,6 +257,18 @@ class PipelineTest(unittest.TestCase):
         self.assertIn("no-such-tool-anywhere", r["attention"][0])
 
 
+    def test_a_real_world_example_is_not_submitted_as_a_build_py_run(self):
+        folder = self.repo.dir / "examples/108-a-real-world-change"
+        folder.mkdir(parents=True)
+        (folder / "example.json").write_text(json.dumps({"id": "108", "origin": "real-world",
+                                                         "approach": {"id": "B9"}, "subject": {"file": "src/A.java"}}))
+        proc = self.repo.pipeline("submit", "--title", "A real-world one", "--description", "Should be refused.",
+                                  "--capability", "B9", "--example", "108", check=False)
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("build.py does not run it", proc.stderr)
+        self.assertEqual(list((self.repo.dir / "verification/jobs").glob("*.json")) if (self.repo.dir / "verification/jobs").exists() else [], [])
+
+
 @unittest.skipUnless(SYSTEMD, "systemd-run --user --scope is not available here")
 class SystemdTest(unittest.TestCase):
     def setUp(self):

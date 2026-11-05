@@ -427,6 +427,12 @@ and Mica; no Docker. A Box Office example takes from seconds to a minute, since 
 Gradle build; a Quorum, Crosscut or Mica example takes seconds, and a model-checking one up to a few minutes. A
 real-world example is rerun with the commands in its report.
 
+An id is an example's three digits. An argument that is not the id of an example exits 2 before anything runs. A
+requested example that `build.py` can't run is printed as `NNN-name: not-executed (why)`, and the run exits 1:
+a real-world example, or a constructed one whose subject file no app builds or whose approach no runner of its app
+takes. Nothing is written for it, so an earlier `result.json` stays the record of its own run. Running every
+example means every constructed one, so the real-world ones are left out without failing.
+
 Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
 `execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the
 reason. Only a completed run has a verdict. A violation also needs what shows it, such as a counterexample, a

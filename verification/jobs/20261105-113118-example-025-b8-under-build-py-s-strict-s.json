@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-113118-example-025-b8-under-build-py-s-strict-s",
+  "title": "Example 025 (B8) under build.py's strict selection",
+  "description": "build.py now refuses an argument that is not an example id (exit 2, nothing run) and reports a requested example it cannot run as not-executed with exit 1 (build-orchestration brief, step 1b). This job checks that an ordinary run of one constructed example is unaffected: example 025 gives its expected violation, build.py prints 'as expected' and exits 0, and result.json is unchanged apart from gaining execution and expectation (step 1a).",
+  "kind": "example",
+  "capabilities": [
+    "B8"
+  ],
+  "links": {
+    "examples": [
+      "025"
+    ]
+  },
+  "expected": "example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-05T11:31:18+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "a Crosscut B8 example builds with javac and runs jvmcontract verify in seconds"
+  },
+  "steps": [
+    {
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/025-transaction-that-commits-after-an-error"
+  ]
+}

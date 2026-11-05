@@ -145,6 +145,21 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Jobs `20261105-112331-example-{126-b9,132-b9,017-b11,110-b12,101-d1,003-b8}-…` check that the verdicts are
     unchanged and that the results gain `execution`.
   - Next: [1b](#phase-1-results-that-can-be-trusted), strict selection.
+- **1b done** (2026-11-05). `build.py` takes only example ids (three digits) that name an example folder. Anything else,
+  including `--index-only` with ids, exits 2 before anything runs.
+  - A requested example it can't run prints `NNN-name: not-executed (why)`, and the run exits 1. That covers a real-world
+    example, a subject file no app builds, an approach its app has no runner for, and a D1 symbol no model is built
+    around. `not_executable()` gives the reason; `app_of()` returns None instead of exiting, and `load_example()` no
+    longer exits over a missing runner.
+  - Nothing is written for an example that was not executed, so an earlier `result.json` stays as the record of its run.
+  - Running every example still means every constructed one, and the real-world ones are left out without failing.
+    `--render-only` with an explicit id it can't render exits 1.
+  - The pipeline gets an `example:not-executed` signal, and `submit --example` refuses a real-world id, which used to
+    fail with a KeyError. Every queued job runs `build.py NNN` on a constructed id, so none is affected.
+  - Tests: `test_build.py` has 33 tests, and `test_pipeline.py` has a new one. No recorded result moved.
+  - Job `20261105-113118-example-025-b8-under-build-py-s-strict-s` checks that an ordinary run still exits 0. The six
+    1a jobs had not run yet at the start of this cycle.
+  - Next: [1c](#phase-1-results-that-can-be-trusted), equivalence from `--json`.
 
 ## Open questions
 

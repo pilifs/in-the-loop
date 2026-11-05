@@ -43,7 +43,7 @@ def proc(returncode, stdout="", stderr=""):
 
 
 def example(approach="B9", symbol="net.terminalvalue.crosscut.retry.Backoff#delayMillis", verdict="violation", **expected):
-    return {"id": "999", "approach": {"id": approach}, "change": {"behaviourChangeIntended": False},
+    return {"id": "999", "origin": "constructed", "approach": {"id": approach}, "change": {"behaviourChangeIntended": False},
             "subject": {"file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
                         "symbol": symbol},
             "expected": {"verdict": verdict, **expected}}
@@ -302,6 +302,90 @@ class MainTest(unittest.TestCase):
             self.assertEqual(build.main([folder.name[:3]]), 1)
         self.assertTrue(any(unexpected.search(line) for line in out.getvalue().splitlines()), out.getvalue())
         self.assertIn("killed by signal 9", out.getvalue())
+
+
+class SelectionTest(unittest.TestCase):
+    """What build.py does with the ids it is given: run them, or say why not, and never exit 0 for nothing run."""
+
+    def setUp(self):
+        sys.path.insert(0, str(build.REPO / "verification"))
+        import pipeline
+        self.signals = {(source, key): pattern for source, key, pattern in pipeline.SIGNALS}
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, self.dir)
+        shutil.copy(build.EXAMPLES / "tags.json", self.dir / "tags.json")
+        for prefix in ("126-", "108-"):  # a constructed example and a real-world one
+            folder = next(build.EXAMPLES.glob(prefix + "*"))
+            shutil.copytree(folder, self.dir / folder.name)
+        self.ran = []
+
+    def main(self, *argv):
+        def run(folder, ex):
+            self.ran.append(folder.name[:3])
+            result = empty_result()
+            result["execution"] = build.execution_status(0, "VERIFICATION FAILED")
+            result["verdict"] = ex["expected"]["verdict"]
+            build.finish(result, ex)
+            return result
+
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.object(build, "run", side_effect=run), mock.patch.object(build, "EXAMPLES", self.dir), \
+                mock.patch.object(build, "render_example", return_value=""), mock.patch.object(build, "render_index"), \
+                mock.patch.object(build, "validate"), contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = build.main(list(argv))
+        return code, out.getvalue(), err.getvalue()
+
+    def test_an_unknown_id_exits_2_and_runs_nothing(self):
+        code, out, err = self.main("126", "999")
+        self.assertEqual((code, self.ran), (2, []))
+        self.assertIn("no example with id 999", err)
+
+    def test_an_argument_that_is_not_an_id_exits_2(self):
+        for argv in (["126-backoff"], ["--fast", "126"], ["--index-only", "126"], ["--render-only", "12"]):
+            with self.subTest(argv=argv):
+                code, out, err = self.main(*argv)
+                self.assertEqual((code, self.ran), (2, []))
+
+    def test_a_requested_real_world_example_is_not_executed_and_fails_the_run(self):
+        code, out, err = self.main("108")
+        self.assertEqual((code, self.ran), (1, []))
+        lines = out.splitlines()
+        self.assertTrue(any(self.signals[("example", "not-executed")].search(line) for line in lines), out)
+        self.assertFalse(any(self.signals[("example", "as-expected")].search(line) for line in lines), out)
+        self.assertIn("real-world", out)
+
+    def test_a_real_world_example_beside_a_constructed_one_still_fails_the_run(self):
+        code, out, err = self.main("126", "108")
+        self.assertEqual((code, self.ran), (1, ["126"]))
+        self.assertIn("Not executed: 108-", out)
+
+    def test_every_example_means_every_constructed_one(self):
+        code, out, err = self.main()
+        self.assertEqual((code, self.ran), (0, ["126"]))
+        self.assertNotIn("not-executed", out)
+
+    def test_an_example_no_app_builds_is_not_executed_and_its_result_is_left(self):
+        folder = next(self.dir.glob("126-*"))
+        before = (folder / "result.json").read_text()
+        ex = json.loads((folder / "example.json").read_text())
+        ex["subject"]["file"] = "examples/apps/nowhere/src/Backoff.java"
+        (folder / "example.json").write_text(json.dumps(ex))
+        code, out, err = self.main("126")
+        self.assertEqual((code, self.ran), (1, []))
+        self.assertIn("not-executed (its subject file examples/apps/nowhere/src/Backoff.java", out)
+        self.assertEqual((folder / "result.json").read_text(), before)
+
+    def test_reasons_for_not_executing(self):
+        self.assertIsNone(build.not_executable(example()))
+        self.assertIn("no runner for approach B12", build.not_executable(example(approach="B12")))
+        self.assertIn("no TLA+ model of crosscut", build.not_executable(example(approach="D1")))
+        self.assertIn("real-world", build.not_executable({**example(), "origin": "real-world"}))
+
+    def test_render_only_of_an_example_it_cannot_render_fails(self):
+        code, out, err = self.main("--render-only", "108")
+        self.assertEqual(code, 1)
+        self.assertIn("not rendered (a real-world example", out)
+        self.assertEqual(self.main("--render-only", "126")[0], 0)
 
 
 class SchemaTest(unittest.TestCase):
