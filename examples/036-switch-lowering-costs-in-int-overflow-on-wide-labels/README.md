@@ -99,6 +99,8 @@ Revert. The cast is the point: `hi - lo` is a difference of two ints and needs a
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s as useTable(lo=-402653181, hi=1749010303, labels=4866), shrunk to the input above in 562 interpreter runs, replayed in the interpreter; domain lo: int × hi: int × labels: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

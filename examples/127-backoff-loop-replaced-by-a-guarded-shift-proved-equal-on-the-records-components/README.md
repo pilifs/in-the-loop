@@ -113,6 +113,8 @@ Merge. The closed form is a line where the loop was five, and the proof is the r
 
 How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

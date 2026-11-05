@@ -110,6 +110,8 @@ Merge. The scope in the pull request is the module's precondition, and the proof
 
 How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long in 0.2 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

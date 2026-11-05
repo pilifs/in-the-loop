@@ -144,6 +144,8 @@ Merge. The proof is the review: the rewrite is accepted because it agrees with t
 
 How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 8 × key: int in 1.9 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

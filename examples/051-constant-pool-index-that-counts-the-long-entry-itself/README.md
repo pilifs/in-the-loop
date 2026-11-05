@@ -108,6 +108,8 @@ Revert the inclusive bound: the count runs over the entries before `entry`, as t
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed in the interpreter; domain tags: byte[] of length ≤ 8 × entry: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

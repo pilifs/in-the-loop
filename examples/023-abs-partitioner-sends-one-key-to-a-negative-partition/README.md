@@ -104,6 +104,8 @@ Keep the mask, or use `Math.floorMod(hash, numPartitions)`, which is defined for
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain hash: int × numPartitions: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

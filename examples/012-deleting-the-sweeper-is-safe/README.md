@@ -216,6 +216,8 @@ Safe to merge as far as correctness goes. Keep the sweeper if the seat list is r
 
 How the verdict was reached: TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

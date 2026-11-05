@@ -232,6 +232,8 @@ Keep the reopening: a failed probe is the half-open state's answer, and the wait
 
 How the verdict was reached: two calls in flight: TLC 2.19 explored 94 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 94 distinct states in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

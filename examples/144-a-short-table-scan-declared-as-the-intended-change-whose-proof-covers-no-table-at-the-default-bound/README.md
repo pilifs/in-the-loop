@@ -118,6 +118,8 @@ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties p
 
 **The proof is vacuous:** no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing. The tool found this by running the statement with the calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

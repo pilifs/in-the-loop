@@ -258,6 +258,8 @@ Nothing to fix. The example is the control for 128: the same refactor with the g
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

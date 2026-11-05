@@ -244,6 +244,8 @@ Merge. The proof is the review of the moved cap and of the new component.
 
 How the verdict was reached: JBMC 6.11.0: 4 properties proved over this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int in 15.1 s; loops unwound 32 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -99,6 +99,8 @@ Keep the remainder, or keep the credited time as a count of whole periods. The t
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as lastAfter(tokens=8, lastNanos=8, nowNanos=10, periodNanos=3, capacity=8), shrunk to the input above in 109 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

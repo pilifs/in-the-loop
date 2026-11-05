@@ -262,6 +262,8 @@ Put `@EnableCaching` on `TicketingApplication` (Boot then configures a `Concurre
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -274,6 +274,8 @@ Keep the start aligned to the clock, and carry the count only into the window ri
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as counted(this=Window[startNanos=0, count=0, previousCount=0], nowNanos=19, windowNanos=2), shrunk to the input above in 24 interpreter runs, replayed in the interpreter; domain this: Window(startNanos: long, count: long, previousCount: long) × nowNanos: long × windowNanos: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

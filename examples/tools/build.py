@@ -131,7 +131,13 @@ def main(argv):
                 if wanted:
                     unrendered.append(folder.name)
                 continue
-            (folder / "README.md").write_text(render_example(folder, example, json.loads((folder / "result.json").read_text())))
+            res = json.loads((folder / "result.json").read_text())
+            snap = snapshot(folder, example, res)
+            if snap["state"] == "stale":
+                print(f"{folder.name}: stale ({'; '.join(snap['reasons'])})")
+            if snap["evidence"]:
+                print(f"{folder.name}: evidence not the run's ({'; '.join(snap['evidence'])})")
+            (folder / "README.md").write_text(render_example(folder, example, res, snap))
         render_index(folders)
         if unrendered:
             print("Not rendered: " + ", ".join(unrendered))
@@ -571,11 +577,7 @@ def claim_record(example, p, patch, before, after):
     bound and assumptions a proof is over), and the fingerprints of its inputs: the patch, the sources before and
     after it (the app and what the build copies, models, contracts and build files among them), and for D1 the
     model's files. Its id is the digest of all of it, so another input or scope is another claim."""
-    scope = {}
-    if p["approach"] in ("B9", "B11"):
-        scope["maxArrayLength"] = example["approach"].get("maxArrayLength")  # None: the tool's default bound
-    if p["approach"] == "B9":
-        scope["intendedInputs"] = p["claim"].get("intendedInputs")
+    scope = claim_scope(example, p)
     inputs = {"patch": hashlib.sha256(patch.encode()).hexdigest(),
               "before": tree_digest(before, p["build"]["copies"]), "after": tree_digest(after, p["build"]["copies"]),
               # Gradle resolves Box Office's libraries by the versions its build files (fingerprinted with the sources)
@@ -586,6 +588,66 @@ def claim_record(example, p, patch, before, after):
                            for f in [p["model"]["spec"], *(c["cfg"] for c in p["model"]["configurations"])]}
     body = {"format": CLAIM_FORMAT, "example": example["id"], "statement": p["claim"], "scope": scope, "inputs": inputs}
     return {"id": canonical_digest(body)[:16], **body}
+
+
+def claim_scope(example, p):
+    """What a proof is over, besides its inputs: B9 and B11 the array bound, B9 the intended inputs."""
+    scope = {}
+    if p["approach"] in ("B9", "B11"):
+        scope["maxArrayLength"] = example["approach"].get("maxArrayLength")  # None: the tool's default bound
+    if p["approach"] == "B9":
+        scope["intendedInputs"] = p["claim"].get("intendedInputs")
+    return scope
+
+
+SOURCES = {}  # tree_digest of the repo's own copies, per tuple of parts: one walk per render, not per example
+
+
+def claim_changes(folder, example, claim, base=None):
+    """What changed since the claim was frozen, as reasons, or an empty list when it is still the claim the current
+    files make. The patched sources are the sources before the patch with the patch applied, and the model's files
+    are among them, so comparing the patch and the sources before it covers both: nothing is copied or patched."""
+    p = plan(example)
+    if not p["executable"]:
+        return [f"build.py no longer runs the example ({p['notExecuted']})"]
+    if claim.get("format") != CLAIM_FORMAT:
+        return [f"the claim is in format {claim.get('format')}, and build.py now writes format {CLAIM_FORMAT}"]
+    reasons = []
+    if claim.get("example") != example["id"]:
+        reasons.append(f"the claim is of example {claim.get('example')}")
+    statement = claim.get("statement") or {}
+    changed = sorted(k for k in set(statement) | set(p["claim"]) if statement.get(k) != p["claim"].get(k))
+    if changed:
+        reasons.append("what is checked changed (" + ", ".join(f"`{k}`" for k in changed) + ")")
+    scope = claim_scope(example, p)
+    changed = sorted(k for k in set(claim.get("scope") or {}) | set(scope) if (claim.get("scope") or {}).get(k) != scope.get(k))
+    if changed:
+        reasons.append("the scope changed (" + ", ".join(f"`{k}`" for k in changed) + ")")
+    inputs = claim.get("inputs") or {}
+    patch = (folder / example["change"]["patch"]).read_text()
+    if inputs.get("patch") != hashlib.sha256(patch.encode()).hexdigest():
+        reasons.append("the patch changed")
+    parts = tuple(p["build"]["copies"])
+    if base is None:
+        if parts not in SOURCES:
+            SOURCES[parts] = tree_digest(REPO, parts)
+        before = SOURCES[parts]
+    else:
+        before = tree_digest(base, parts)
+    if inputs.get("before") != before:
+        reasons.append("the sources the patch applies to changed (" + ", ".join(f"`{part}`" for part in parts) + ")")
+    return reasons
+
+
+def snapshot(folder, example, res):
+    """Whether a recorded result is still the result of the current files: `state` is `current` (its claim is the one
+    the current files make), `stale` (`reasons` says what changed), or `unknown` (recorded before runs fingerprinted
+    their inputs). `evidence` lists why the files beside it are not the run's bundle, whatever the state."""
+    evidence = bundle_problems(folder, res) if res.get("bundle") else []
+    if not res.get("claim"):
+        return {"state": "unknown", "reasons": [], "evidence": evidence}
+    reasons = claim_changes(folder, example, res["claim"])
+    return {"state": "stale" if reasons else "current", "reasons": reasons, "evidence": evidence}
 
 
 IDENTITY = {}
@@ -2627,7 +2689,11 @@ def dedent(lines):
 # Rendering
 
 
-def render_example(folder, ex, res):
+def render_example(folder, ex, res, snap=None):
+    """The example's page, from its result as recorded and the example's authored text. `snap` is the result's
+    snapshot() (computed when not given): a page whose result is stale, or whose evidence is not the run's, says so
+    before anything else, and the verdict's explanation is the author's only where the run gave the expected result."""
+    snap = snap or snapshot(folder, ex, res)
     file_name = Path(ex["subject"]["file"]).name
     source_link = f"../../{ex['subject']['file']}"
     symbol = ex["subject"]["symbol"].rsplit(".", 1)[-1]
@@ -2647,6 +2713,7 @@ def render_example(folder, ex, res):
         "",
         f"> {ex['summary']}",
         "",
+        *snapshot_banner(ex, snap),
         f"Tags: {tag_links(ex['tags'])}",
         "",
         "## The change",
@@ -2734,10 +2801,7 @@ def render_example(folder, ex, res):
         "",
         ex["risk"],
         "",
-        "## Why the verdict is right",
-        "",
-        ex["explanation"],
-        "",
+        *explanation_lines(ex, res),
         "## What to do",
         "",
         ex["resolution"],
@@ -2763,6 +2827,7 @@ def render_example(folder, ex, res):
     if (res.get("coverage") or {}).get("reason"):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
+    lines += snapshot_lines(ex, res, snap)
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())
     if several:
         for n, r in enumerate(res["properties"], 1):
@@ -2790,6 +2855,63 @@ def render_example(folder, ex, res):
         "",
     ]
     return "\n".join(lines)
+
+
+def observed_expectation(res):
+    """Whether the run gave the example's expected result: the result's `expectation`, or for a result recorded
+    before it had one, its `matchesExpected`."""
+    return res.get("expectation") or ("yes" if res.get("matchesExpected") else "no")
+
+
+def expected_label(ex):
+    expected = ex["expected"]
+    return VERDICT_LABEL[expected["verdict"]] + (", vacuously" if expected.get("vacuous") else "")
+
+
+def explanation_lines(ex, res):
+    """The author's explanation of the expected verdict. It is the reason for the verdict only when the run gave
+    that verdict; otherwise it is labelled as what the example expected, and the run's own result stands apart."""
+    if observed_expectation(res) == "yes":
+        return ["## Why the verdict is right", "", ex["explanation"], ""]
+    observed = ("the run has no verdict" if res["verdict"] is None
+                else f"the run's result is **{res['verdictLabel']}**")
+    return ["## What the example expected", "",
+            f"The example expects **{expected_label(ex)}**, and {observed}. The author's explanation below is of the "
+            "expected result, so it is not a reason for this one: what the run found is under "
+            "[What the verifier found](#what-the-verifier-found) and Evidence.", "",
+            *[f"> {line}" if line else ">" for line in ex["explanation"].split("\n")], ""]
+
+
+def snapshot_banner(ex, snap):
+    """The warning a page leads with when its result is no longer the current files' result, or its evidence is not
+    the run's: nothing for a current or unknown snapshot with its evidence intact."""
+    lines = []
+    if snap["state"] == "stale":
+        lines += [f"> ⚠ **Stale result:** {'; '.join(snap['reasons'])} since this run. The verdict on this page is "
+                  f"that run's, not a verdict on the current files. `python3 examples/tools/build.py {ex['id']}` runs it again.", ""]
+    if snap["evidence"]:
+        lines += [f"> ⚠ **The evidence is not the run's:** {'; '.join(snap['evidence'])}.", ""]
+    return lines
+
+
+def snapshot_lines(ex, res, snap):
+    """Under Evidence: which run the page renders, and whether its inputs still match the current files."""
+    if snap["state"] == "unknown":
+        return ["This result was recorded before runs fingerprinted their inputs, so whether it still matches the "
+                "current patch and sources is not known.", ""]
+    claim, attempt = res["claim"], res.get("attempt") or {}
+    run = f"attempt `{attempt.get('id')}` at claim `{claim['id']}`"
+    job = (attempt.get("pipeline") or {}).get("jobId")
+    if job:
+        run += f", in pipeline job `{job}`"
+    if snap["state"] == "current":
+        text = (f"This page renders {run}. Its claim is still the one the current files make: the patch, the sources it "
+                "applies to, what is checked and the scope are those the run fingerprinted.")
+    else:
+        text = f"This page renders {run}, which is stale: {'; '.join(snap['reasons'])}."
+    text += (" The files below are the run's bundle." if res.get("bundle") and not snap["evidence"]
+             else " The files below are not all the run's bundle." if snap["evidence"] else "")
+    return [text, ""]
 
 
 def no_verdict_findings(res):
@@ -3338,8 +3460,11 @@ def render_index(folders):
     vocabulary = tag_vocabulary()
     rows, index = [], []
     for folder, ex, res in examples:
+        snap = snapshot(folder, ex, res) if res else None
         if ex["origin"] == "constructed":
             verdict = (res.get("verdictLabel") or VERDICT_LABEL.get(res["verdict"], "no verdict")) if res else "not run"
+            if snap and (snap["state"] == "stale" or snap["evidence"]):
+                verdict += " (⚠ stale)" if snap["state"] == "stale" else " (⚠ evidence not the run's)"
         else:
             verdict = ex["verdictLabel"]
         approaches = [ex["approach"]["id"], *ex["approach"].get("also", [])]
@@ -3354,6 +3479,7 @@ def render_index(folders):
             "verdict": (res["verdict"] if res else None) if ex["origin"] == "constructed" else None,
             "verdictLabel": verdict,
             "vacuous": bool((res or {}).get("coverage") and res["coverage"].get("vacuous")),
+            "snapshot": snap["state"] if snap else None,
             "existingTestsPassed": res["existingTests"]["passed"] if res else None,
             "notes": ex.get("notes", []),
             "source": ex.get("source", {}).get("url"),

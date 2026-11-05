@@ -96,6 +96,8 @@ Merge. The named index reads better and the proof says it is the same window.
 
 How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long in 0.1 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -321,6 +321,8 @@ Merge. The second configuration and the coverage report are part of the build, s
 
 How the verdict was reached: the record never expires: TLC 2.19 explored 168 distinct states to depth 10 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 399 distinct states to depth 16 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

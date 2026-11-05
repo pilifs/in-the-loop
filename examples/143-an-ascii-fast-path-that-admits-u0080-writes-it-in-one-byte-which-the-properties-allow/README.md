@@ -106,6 +106,8 @@ Write the test as the general loop's first branch does, `(char) (chars[i] - 1) <
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

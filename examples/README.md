@@ -418,7 +418,7 @@ By hand:
 ```bash
 python3 examples/tools/build.py 002              # run one constructed example, rewrite its page and the router
 python3 examples/tools/build.py                  # run every constructed example: the Quorum ones take about ten minutes
-python3 examples/tools/build.py --render-only    # rewrite every page and the router from the results there, running nothing
+python3 examples/tools/build.py --render-only    # rewrite every page and the router from the results there, running nothing; says which are stale
 python3 examples/tools/build.py --index-only     # rewrite only the router
 python3 examples/tools/build.py --plan 124       # what a run would take, as JSON, running nothing
 ```
@@ -521,8 +521,28 @@ checked against the schema, and the bundle against that directory, before anythi
 `jsonschema` module is an error: a result that can't be checked is not published. Only then are the files moved into
 the example's folder. Evidence files from an earlier run that the bundle doesn't list are removed, and `result.json`
 goes last. A file that no longer matches its bundle entry, or one the bundle doesn't list, is not this run's evidence.
-`bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks, and their
-pages render as before.
+`bundle_problems()` in `build.py` says which. Results recorded before 2026-11-05 have none of these four blocks.
+
+A page renders the result as it was recorded, and says whether it is still the result of the current files
+(`snapshot()` in `build.py`). Its claim is fingerprinted again from what the current files give: the plan's statement
+and scope, the patch, and the sources the patch applies to. Nothing is copied or patched for that, because the patched
+sources, models among them, are those sources with that patch applied. The bundle is checked against the files beside
+`result.json` too.
+
+- **Current:** the claim is still the one the current files make. The page says which attempt and claim it renders,
+  and in which pipeline job.
+- **Stale:** something changed since the run (the patch, the sources, what is checked, the scope, or the claim's
+  format). The page leads with a warning naming what changed, the router's verdict cell says `(⚠ stale)`, and
+  `--render-only` prints `NNN-name: stale (why)`. Another engine is another attempt at the same claim, so it doesn't make
+  a result stale.
+- **Unknown:** the result was recorded before claims existed. The page says so under Evidence.
+
+Evidence that is not the bundle's gets a warning of its own, whatever the state. `index.json` records each example's
+`snapshot`. Rendering never rewrites a `result.json`: only a run makes a result current again.
+
+"Why the verdict is right" holds the author's explanation only when the run gave the expected result. Otherwise the
+section is "What the example expected". It names both results and quotes the explanation as the expected result's, not
+as the reason for the one the run gave.
 
 A B9 or B11 counterexample from jvmcontract also keeps its `witness` as data, read from the outcome's typed fields, so
 that the call can be made again without parsing `input`. `inputs` are the values the checker chose, in the harness's

@@ -109,6 +109,8 @@ Keep the loop, or keep the shift short of the sign bit (example 127): `attempt <
 
 How the verdict was reached: found by JBMC 6.11.0 in 1.0 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=62513, capMillis=65792], attempt=-65528), shrunk to the input above in 120 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long) × attempt: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

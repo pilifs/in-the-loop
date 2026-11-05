@@ -154,6 +154,8 @@ Keep the guard: `return low < matches.length && matches[low] == key ? low : -1`,
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as find(matches=[16], key=20), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain matches: int[] of length ≤ 8 × key: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

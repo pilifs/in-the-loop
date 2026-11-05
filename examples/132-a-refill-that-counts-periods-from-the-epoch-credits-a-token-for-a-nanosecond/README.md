@@ -112,6 +112,8 @@ Keep the difference: `System.nanoTime` readings are made to be subtracted, and t
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -94,6 +94,8 @@ Keep the guard, or write the cap test as the old code did (`base > cap >> attemp
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [-100000:100000] as delayMillis(attempt=99951, baseMillis=65536, capMillis=65536), shrunk to the input above in 58 interpreter runs, replayed in the interpreter; domain attempt: int × baseMillis: long × capMillis: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

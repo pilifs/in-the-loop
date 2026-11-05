@@ -113,6 +113,8 @@ Keep the query. The seat count at capture time is the one piece of information t
 
 How the verdict was reached: TLC 2.19 explored 423 distinct states to depth 9 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1, Sweeper = TRUE.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

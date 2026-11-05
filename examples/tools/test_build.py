@@ -1597,6 +1597,123 @@ class WitnessTest(RunnerCase):
             jsonschema.validate(bad, schema)
 
 
+class SnapshotTest(unittest.TestCase):
+    """Step 3c: a page renders the result as recorded and says whether it is still the current files' result: a stale
+    one is shown as stale, and an explanation is not printed as the reason for a result it does not explain."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, self.dir)
+        self.addCleanup(build.SOURCES.clear)
+        source = next(build.EXAMPLES.glob("126-*"))
+        self.examples = self.dir / "examples"
+        self.folder = self.examples / source.name
+        shutil.copytree(source, self.folder)
+        for name in ("tags.json", "README.md"):
+            shutil.copy(build.EXAMPLES / name, self.examples / name)
+        shutil.copytree(build.EXAMPLES / "schema", self.examples / "schema")
+        self.example = json.loads((self.folder / "example.json").read_text())
+        self.result = self.fingerprinted(self.example)
+
+    def fingerprinted(self, ex, before=None):
+        """The recorded result with a claim frozen over the repository's current files (or `before`), and the bundle
+        of the evidence beside it."""
+        result = json.loads((self.folder / "result.json").read_text())
+        patch = (self.folder / "change.patch").read_text()
+        result["claim"] = build.claim_record(ex, build.plan(ex), patch, before or build.REPO, before or build.REPO)
+        result["attempt"] = {"id": "20261105T000000Z-0a1b2c3d", "pipeline": {"jobId": "20261105-000000-example-126"}}
+        result["bundle"] = build.bundle_record(self.folder)
+        return result
+
+    def test_a_result_of_the_current_files_is_current(self):
+        snap = build.snapshot(self.folder, self.example, self.result)
+        self.assertEqual(snap, {"state": "current", "reasons": [], "evidence": []})
+        page = build.render_example(self.folder, self.example, self.result)
+        self.assertNotIn("Stale result", page)
+        self.assertIn("This page renders attempt `20261105T000000Z-0a1b2c3d` at claim "
+                      f"`{self.result['claim']['id']}`, in pipeline job `20261105-000000-example-126`. Its claim is still", page)
+        self.assertIn("The files below are the run's bundle.", page)
+
+    def test_a_changed_patch_makes_the_result_stale(self):
+        (self.folder / "change.patch").write_text((self.folder / "change.patch").read_text() + "\n")
+        snap = build.snapshot(self.folder, self.example, self.result)
+        self.assertEqual((snap["state"], snap["reasons"]), ("stale", ["the patch changed"]))
+        page = build.render_example(self.folder, self.example, self.result, snap)
+        self.assertIn("> ⚠ **Stale result:** the patch changed since this run. The verdict on this page is that run's", page)
+        self.assertLess(page.index("Stale result"), page.index("## The change"))
+        self.assertIn("which is stale: the patch changed.", page)
+
+    def test_a_changed_scope_or_statement_makes_the_result_stale(self):
+        bound = {**self.example, "approach": {**self.example["approach"], "maxArrayLength": 12}}
+        self.assertEqual(build.claim_changes(self.folder, bound, self.result["claim"]), ["the scope changed (`maxArrayLength`)"])
+        scoped = {**self.example, "change": {**self.example["change"], "intendedInputs": "attempt < 0"}}
+        self.assertEqual(build.claim_changes(self.folder, scoped, self.result["claim"]),
+                         ["what is checked changed (`intendedInputs`)", "the scope changed (`intendedInputs`)"])
+        native = {**self.example, "approach": {**self.example["approach"], "engine": "native"}}
+        self.assertEqual(build.claim_changes(self.folder, native, self.result["claim"]), [])  # another attempt, same claim
+        old = {**self.result["claim"], "format": 0}
+        self.assertIn("the claim is in format 0", build.claim_changes(self.folder, self.example, old)[0])
+
+    def test_changed_sources_make_the_result_stale(self):
+        part = build.plan(self.example)["build"]["copies"][0]
+        before = self.dir / "before"
+        (before / part / "src").mkdir(parents=True)
+        (before / part / "src/A.java").write_text("class A {}")
+        claim = self.fingerprinted(self.example, before)["claim"]
+        self.assertEqual(build.claim_changes(self.folder, self.example, claim, base=before), [])
+        (before / part / "src/A.java").write_text("class A { int x; }")
+        self.assertEqual(build.claim_changes(self.folder, self.example, claim, base=before),
+                         [f"the sources the patch applies to changed (`{part}`)"])
+        (before / part / "build").mkdir()
+        (before / part / "build/A.class").write_text("built")
+        (before / part / "src/A.java").write_text("class A {}")
+        self.assertEqual(build.claim_changes(self.folder, self.example, claim, base=before), [])  # build output is not a source
+
+    def test_evidence_that_is_not_the_bundle_is_shown(self):
+        (self.folder / "verifier-output.txt").write_text("another run's output\n")
+        snap = build.snapshot(self.folder, self.example, self.result)
+        self.assertEqual(snap["state"], "current")
+        self.assertEqual(snap["evidence"], ["verifier-output.txt is not the file the run left (its SHA-256 differs)"])
+        page = build.render_example(self.folder, self.example, self.result, snap)
+        self.assertIn("> ⚠ **The evidence is not the run's:** verifier-output.txt is not the file the run left", page)
+        self.assertIn("The files below are not all the run's bundle.", page)
+
+    def test_a_result_recorded_before_claims_is_unknown(self):
+        old = json.loads((self.folder / "result.json").read_text())
+        self.assertEqual(build.snapshot(self.folder, self.example, old), {"state": "unknown", "reasons": [], "evidence": []})
+        page = build.render_example(self.folder, self.example, old)
+        self.assertIn("recorded before runs fingerprinted their inputs, so whether it still matches", page)
+        self.assertNotIn("⚠", page.split("## The change")[0])
+
+    def test_render_only_shows_a_stale_fixture_as_stale(self):
+        (self.folder / "result.json").write_text(json.dumps(self.result))
+        (self.folder / "change.patch").write_text((self.folder / "change.patch").read_text() + "\n")
+        with mock.patch.object(build, "EXAMPLES", self.examples), contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(build.main(["--render-only", "126"]), 0)
+        self.assertIn(f"{self.folder.name}: stale (the patch changed)", out.getvalue())
+        self.assertIn("⚠ **Stale result:** the patch changed", (self.folder / "README.md").read_text())
+        row = next(line for line in (self.examples / "README.md").read_text().splitlines() if line.startswith("| 126 |"))
+        self.assertIn("(⚠ stale)", row)
+        entry = next(e for e in json.loads((self.examples / "index.json").read_text())["examples"] if e["id"] == "126")
+        self.assertEqual(entry["snapshot"], "stale")
+        self.assertEqual(json.loads((self.folder / "result.json").read_text()), self.result)  # rendering rewrites no result
+
+    def test_the_authors_explanation_is_the_reason_only_for_the_expected_result(self):
+        page = build.render_example(self.folder, self.example, self.result)
+        self.assertIn("## Why the verdict is right\n\n" + self.example["explanation"], page)
+        missed = {**self.result, "verdict": "verified", "verdictLabel": "✓ Verified", "expectation": "no", "matchesExpected": False}
+        page = build.render_example(self.folder, self.example, missed)
+        self.assertNotIn("## Why the verdict is right", page)
+        self.assertIn("## What the example expected\n\nThe example expects **✗ Violation**, and the run's result is "
+                      "**✓ Verified**. The author's explanation below is of the expected result, so it is not a reason", page)
+        self.assertIn("> " + self.example["explanation"].split("\n")[0], page)
+        none = {**missed, "verdict": None, "verdictLabel": "⚠ No verdict", "expectation": "not-evaluable",
+                "execution": {"status": "killed", "exitCode": -9, "reason": "killed by signal 9"}}
+        self.assertIn("and the run has no verdict.", build.render_example(self.folder, self.example, none))
+        old = {k: v for k, v in missed.items() if k != "expectation"}  # recorded before `expectation`
+        self.assertIn("## What the example expected", build.render_example(self.folder, self.example, old))
+
+
 class SchemaTest(unittest.TestCase):
     def test_a_result_without_a_verdict_validates(self):
         import jsonschema

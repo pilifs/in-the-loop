@@ -150,6 +150,8 @@ Revert. Step 3 is not an optimisation of the locking; it is the definition of a 
 
 How the verdict was reached: TLC 2.19 explored 49 distinct states to depth 5 in 0 s, for the model Threads = {t1, t2, t3}.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

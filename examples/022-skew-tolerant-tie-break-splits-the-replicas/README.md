@@ -114,6 +114,8 @@ Do not put the skew window in the resolution rule. If close timestamps should no
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed in the interpreter; domain tsA: long × nodeA: int × tsB: long × nodeB: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

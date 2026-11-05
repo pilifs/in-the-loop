@@ -149,6 +149,8 @@ Revert. The deadlock between classes is addressed where it arises: by breaking t
 
 How the verdict was reached: TLC 2.19 explored 7 distinct states to depth 3 in 0 s, for the model Threads = {t1, t2, t3}.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

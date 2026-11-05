@@ -116,6 +116,8 @@ Revert to the comparison, or make `compare` return `Integer.compare(a, b)`, and 
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.7 s searching inputs in [0:20] as sortPairs(keys=[1041, -2147483648, 1, 272], offsets=[-1091355143, -1091355143, -1944199553, -474718690]), shrunk to the input above in 389 interpreter runs, replayed in the interpreter; domain keys: int[] of length ≤ 4 × offsets: int[] of length ≤ 4.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -184,6 +184,8 @@ Revert, including the test. The encoder of a constant pool is not an encoder of 
 
 How the verdict was reached: found by JBMC 6.11.0 in 2.0 s searching inputs in [0:20] as encodeInto(chars=['\udbe4', '\udf88'], out=[0, 8, -114, 0, 8, -114]), shrunk to the input above in 358 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

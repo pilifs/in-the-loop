@@ -103,6 +103,8 @@ None needed. The example is a proof of a refactoring that holds: the fast path's
 
 How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8 in 6.4 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

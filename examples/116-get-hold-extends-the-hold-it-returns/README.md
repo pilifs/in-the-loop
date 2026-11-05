@@ -272,6 +272,8 @@ Make the keep-alive a request of its own: `POST /holds/{id}/extension` (or a `PA
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

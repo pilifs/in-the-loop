@@ -201,6 +201,8 @@ Keep the time left in nanoseconds (example 123) and convert where it is reported
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as remainingMillis(writtenAtNanos=0, ttlNanos=16, nowNanos=0), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain writtenAtNanos: long × ttlNanos: long × nowNanos: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

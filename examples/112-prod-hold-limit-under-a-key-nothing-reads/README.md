@@ -238,6 +238,8 @@ Write the key the code reads: `max-seats: 12` under `boxoffice.hold` in the `pro
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

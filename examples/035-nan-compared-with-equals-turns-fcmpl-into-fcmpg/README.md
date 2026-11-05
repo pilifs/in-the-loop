@@ -116,6 +116,8 @@ Revert, or write the check as `Float.isNaN(a) || Float.isNaN(b)` (which is `a !=
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain a: float × b: float × nanIsGreater: boolean.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

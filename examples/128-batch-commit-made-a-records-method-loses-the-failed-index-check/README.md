@@ -253,6 +253,8 @@ Keep the check on the index in the method (example 129), since the index is no c
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

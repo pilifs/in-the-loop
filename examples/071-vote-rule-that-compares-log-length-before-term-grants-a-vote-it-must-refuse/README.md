@@ -102,6 +102,8 @@ Restore the order: the term of the last entry first, and length only between equ
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

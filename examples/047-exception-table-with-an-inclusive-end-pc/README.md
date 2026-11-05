@@ -128,6 +128,8 @@ Revert. A virtual machine implements the class-file format as it is, mistakes in
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as handlerIndex(startPc=[-2147483648, 0, 0, 0, 0, 0, 0, 1], endPc=[0, 0, 0, 0, 0, 2, 67108864, 0], pc=2), shrunk to the input above in 88 interpreter runs, replayed in the interpreter; domain startPc: int[] of length ≤ 8 × endPc: int[] of length ≤ 8 × pc: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -113,6 +113,8 @@ Revert, or keep the mask only where the window is a power of two with the remain
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as counted(this=Window[startNanos=16, count=20], nowNanos=20, windowNanos=20), shrunk to the input above in 41 interpreter runs, replayed in the interpreter; domain this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

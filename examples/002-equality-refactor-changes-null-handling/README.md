@@ -105,6 +105,8 @@ Keep the switch, or write the refactor with `default ->` (example 004), which pr
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

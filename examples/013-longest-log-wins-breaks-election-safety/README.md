@@ -99,6 +99,8 @@ Keep term first. If the comparison must read differently, write it as a tuple co
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=0, lastLogIndex=12, candidate=20, candidateTerm=20, candidateLastLogTerm=17, candidateLastLogIndex=4), shrunk to the input above in 39 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

@@ -151,6 +151,8 @@ Move the jitter to the caller: the kernel returns the undithered delay, and the 
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.util.List.copyOf`, `java.util.List.of`.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

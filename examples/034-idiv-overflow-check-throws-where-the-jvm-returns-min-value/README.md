@@ -118,6 +118,8 @@ Revert, and keep the comment that says why: `idiv` and `ldiv` overflow silently 
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s, replayed in the interpreter; domain dividend: int × divisor: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

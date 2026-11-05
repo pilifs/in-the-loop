@@ -129,6 +129,8 @@ Merge. The throws clause stays as the kernel's specification of its exceptional 
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

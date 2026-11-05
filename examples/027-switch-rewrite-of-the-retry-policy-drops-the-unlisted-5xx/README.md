@@ -114,6 +114,8 @@ Keep the switch for the named statuses and add the range as its own arm: `defaul
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [-100000:100000] as shouldRetry(status=506, idempotent=true, attempt=-1, maxAttempts=0), shrunk to the input above in 22 interpreter runs, replayed in the interpreter; domain status: int × idempotent: boolean × attempt: int × maxAttempts: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

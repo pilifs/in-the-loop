@@ -133,6 +133,8 @@ Revert, and fix the cause: a worker that dies must release the key, which is the
 
 How the verdict was reached: the record never expires: TLC 2.19 explored 28 distinct states to depth 5 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = FALSE; expiring record: TLC 2.19 explored 29 distinct states to depth 5 in 0 s, for the model Attempts = {a1, a2, a3}, Expires = TRUE.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

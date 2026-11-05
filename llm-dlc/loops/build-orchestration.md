@@ -330,6 +330,32 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - 3b's acceptance holds: a result names its exact inputs (claim fingerprints, attempt bytecode, the witness's class
     files), and the bundle check refuses a mix of runs. Next: [3c](#phase-3-one-plan-durable-evidence), rendering from
     the saved snapshot.
+- **3c done** (2026-11-05): pages render from the saved result and say whether it is still the current files'
+  result. `snapshot()` in `build.py` gives `current`, `stale` with its reasons, or `unknown` (recorded before claims
+  existed). It also lists the evidence files that are not the run's bundle.
+  - `claim_changes()` fingerprints the claim again from the current files: the plan's statement, the scope (now
+    `claim_scope()`, shared with `claim_record()`), the patch, and the sources the patch applies to. Nothing is copied
+    or patched, because the patched sources, models among them, are those sources with that patch applied. The digest
+    of the repo's copies is computed once per render. Another engine is another attempt at the same claim, so it
+    doesn't make a result stale.
+  - A stale page leads with `⚠ Stale result: <what changed> since this run`. Evidence that isn't the bundle's gets its
+    own warning. Under Evidence, the page names the attempt, the claim and the pipeline job, and whether the claim is
+    still current. The router's verdict cell says `(⚠ stale)`, `index.json` records `snapshot`, and `--render-only`
+    prints `NNN-name: stale (why)`. Rendering rewrites no result.
+  - "Why the verdict is right" holds the author's explanation only when the run gave the expected result (`expectation`,
+    else `matchesExpected` for older results). Otherwise it is "What the example expected": it names both results and
+    quotes the explanation as the expected result's.
+  - Every page moved by one line: all 140 recorded results are `unknown`, and their pages now say so under Evidence. No
+    recorded result misses its expectation, so no explanation section moved. A full `--render-only` takes 2.6 s.
+  - Tests: `test_build.py` has 115 tests, `test_pipeline.py` 20. `SnapshotTest` covers a current result, and staleness
+    from the patch, the scope, the statement, the sources (build output left out) and the claim's format. It also
+    covers evidence that is not the bundle, an unknown result, `--render-only` showing a stale fixture as stale (page,
+    router row, `index.json`) without rewriting the result, and the explanation for a missed, an unevaluable and an
+    older result.
+  - Job `20261105-234448-example-133-b9-own-checker-renders-its-o`: a fresh pipeline run of 133 must render as current.
+    If it renders as stale, the workdir fingerprints the sources differently from the run's copy. The thirty-eight
+    earlier jobs had not run at the start of this cycle.
+  - Next: [3d](#phase-3-one-plan-durable-evidence), stage logs, kept workspaces and split compilation.
 
 ## Open questions
 

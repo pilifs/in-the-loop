@@ -86,6 +86,8 @@ Revert. What the review asked for is a policy decision about the size of the tol
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as valid(nowSeconds=5, notBefore=0, expiresAt=7, skewSeconds=16), shrunk to the input above in 20 interpreter runs, replayed in the interpreter; domain nowSeconds: long × notBefore: long × expiresAt: long × skewSeconds: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

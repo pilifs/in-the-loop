@@ -100,6 +100,8 @@ Keep the index a `long`, as example 138 does, or compute the start without namin
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 2.8 s as counted(this=Window[startNanos=100000, count=100000], nowNanos=4853170726443779744, windowNanos=2220810999), shrunk to the input above in 1504 interpreter runs, replayed in the interpreter; domain this: Window(startNanos: long, count: long) × nowNanos: long × windowNanos: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

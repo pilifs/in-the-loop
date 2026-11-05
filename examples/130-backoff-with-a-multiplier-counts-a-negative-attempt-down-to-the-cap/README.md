@@ -245,6 +245,8 @@ Count up as before, `for (int i = 0; i < attempt && delay < capMillis; i++)`, or
 
 How the verdict was reached: found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

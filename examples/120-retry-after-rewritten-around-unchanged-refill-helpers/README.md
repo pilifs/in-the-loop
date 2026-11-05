@@ -115,6 +115,8 @@ Merge. The proof line names the helpers it took as one function, which is what a
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

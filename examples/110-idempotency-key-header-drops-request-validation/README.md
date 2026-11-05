@@ -156,6 +156,8 @@ Put `@Valid` back on the body (`@Valid @RequestBody PlaceOrder request`), and re
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

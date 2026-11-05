@@ -102,6 +102,8 @@ Rename the parameter too (`@PathVariable String holdId`), or name the variable i
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

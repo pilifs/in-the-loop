@@ -361,6 +361,8 @@ Keep the outbox: the command is a document written in the order's transaction, a
 
 ## Evidence
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

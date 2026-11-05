@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261105-234448-example-133-b9-own-checker-renders-its-o",
+  "title": "Example 133 (B9, own checker) renders its own run as current",
+  "description": "Step 3c of llm-dlc/loops/build-orchestration.md: a page now says whether its result is still the result of the current files. build.py fingerprints the claim again from the patch, the sources the patch applies to, the plan's statement and the scope, and checks the bundle against the files beside result.json. A fresh run must render as current: the page names its attempt, claim and pipeline job and says the claim is still the one the current files make, with no stale warning. If it says stale, the pipeline's workdir fingerprints the sources differently from the run's own copy, and that is the bug to fix. The verdict (verified) and every recorded field must be unchanged apart from the run's new claim, attempt, conclusion and bundle.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "133"
+    ]
+  },
+  "expected": "example 133 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; its page says its claim is still the one the current files make, with no stale warning",
+  "submitted": {
+    "at": "2026-11-05T23:44:48+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "3m",
+    "notes": "the own checker proves 133 in about half a second"
+  },
+  "steps": [
+    {
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": "."
+    },
+    {
+      "name": "page renders as current",
+      "run": "grep -q 'Its claim is still the one the current files make' examples/133-*/README.md && ! grep -q 'Stale result' examples/133-*/README.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+  ]
+}

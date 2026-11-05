@@ -106,6 +106,8 @@ Merge. The `\sum` is the specification's formula and stays as the property; the 
 
 How the verdict was reached: JBMC 6.11.0: 5 properties proved over offsetDelta: int[] of length ≤ 8 × k: int in 71.9 s; loops unwound 16 times with unwinding assertions.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

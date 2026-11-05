@@ -107,6 +107,8 @@ Keep the mask, with a comment saying why it is not `floorMod` either: a partitio
 
 How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as partitionFor(hash=-100000, numPartitions=100000), shrunk to the input above in 85 interpreter runs, replayed in the interpreter; domain hash: int × numPartitions: int.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

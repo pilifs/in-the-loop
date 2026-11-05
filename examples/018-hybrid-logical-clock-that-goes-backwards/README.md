@@ -122,6 +122,8 @@ Keep the `max` of the two counters when the physical parts are equal, as example
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as receive(nowMillis=0, last=0, message=16), shrunk to the input above in 9 interpreter runs, replayed in the interpreter; domain nowMillis: long × last: long × message: long.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

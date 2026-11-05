@@ -137,6 +137,8 @@ Revert, and keep the sentence in the class comment that distinguishes the two le
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as attributeLength(codeLength=18, exceptionTableLength=0, nestedAttributeLength=[1527, 503, 0, 6136, 7680, 496, 0]), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text

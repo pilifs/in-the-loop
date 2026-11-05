@@ -123,6 +123,8 @@ Revert. A terminated copy for native code is a separate method, with a buffer it
 
 How the verdict was reached: found by JBMC 6.11.0 in 0.8 s searching inputs in [0:20] as encodeInto(chars=[], out=[16, 0, -71, -46]), shrunk to the input above in 23 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
 
+This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+
 <details><summary>Verifier output</summary>
 
 ```text
