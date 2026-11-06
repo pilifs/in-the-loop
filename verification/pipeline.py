@@ -44,6 +44,7 @@ ROOT = Path(os.environ.get("VERIFY_REPO") or Path(__file__).resolve().parents[1]
 HERE = "verification"
 JOBS = f"{HERE}/jobs"
 RESULTS = f"{HERE}/results"
+PRIORITIES = f"{HERE}/priorities.json"
 SCHEMAS = ROOT / HERE / "schema"
 JOB_SCHEMA = "verification-job/v1"
 RESULT_SCHEMA = "verification-result/v1"
@@ -267,6 +268,31 @@ def committed_jobs(rev):
         source = job.get("revision") or git("log", "-1", "--format=%H", rev, "--", path).stdout.strip()
         jobs.append((job, path, resolve(source)))
     return jobs
+
+
+def load_priorities(rev=None):
+    """The queue's priorities: {job id: {"priority": int, "reason": str}}, at the commit (as the jobs are read), or
+    in the working copy when rev is None. They are kept apart from the job files, which are committed with the change
+    they verify and not edited after, so a job can be moved up or down the queue later, with the reason recorded."""
+    data = show(rev, PRIORITIES) if rev else ((ROOT / PRIORITIES).read_bytes() if (ROOT / PRIORITIES).exists() else None)
+    if data is None:
+        return {}
+    try:
+        document = json.loads(data)
+    except ValueError as e:
+        print(f"warn  {PRIORITIES}: not JSON{f' at {rev[:12]}' if rev else ''}: {e}", file=sys.stderr)
+        return {}
+    return {k: v for k, v in (document.get("jobs") or {}).items() if isinstance(v, dict) and isinstance(v.get("priority"), int)}
+
+
+def priority_of(job, priorities):
+    """The queue's priority for a job, if it sets one, else the job's own (0 by default). Higher runs first."""
+    entry = priorities.get(job.get("id"))
+    return entry["priority"] if entry else int(job.get("priority", 0))
+
+
+def queue_order(priorities):
+    return lambda t: (-priority_of(t[0], priorities), (t[0].get("submitted") or {}).get("at", ""), t[0].get("id", ""))
 
 
 # Schemas
@@ -658,8 +684,9 @@ class Runner:
             done |= {p.name for p in tree.iterdir() if (p / "result.json").exists()}
         return done
 
-    def pending(self, rev, wanted=None):
+    def pending(self, rev, wanted=None, min_priority=None):
         done, claimed = self.done_ids(), {p.name for p in (self.state / "claims").iterdir()}
+        priorities = load_priorities(rev)
         out = []
         for job, path, source in committed_jobs(rev):
             job_id = job.get("id") or Path(path).stem
@@ -667,8 +694,10 @@ class Runner:
                 continue
             if wanted and job_id not in wanted:
                 continue
+            if min_priority is not None and priority_of(job, priorities) < min_priority:
+                continue
             out.append((job, path, source))
-        out.sort(key=lambda t: (-int(t[0].get("priority", 0)), (t[0].get("submitted") or {}).get("at", ""), t[0].get("id", "")))
+        out.sort(key=queue_order(priorities))
         return out
 
     def reservation(self, job, job_plan, source):
@@ -1042,7 +1071,7 @@ def cmd_run(args):
         if last_scan is None or (args.watch and time.monotonic() - last_scan > r["poll_seconds"]):
             rev = resolve(args.rev) if args.rev else default_rev()
             with runner.lock:
-                queue = runner.pending(rev, wanted)
+                queue = runner.pending(rev, wanted, args.min_priority)
             last_scan = time.monotonic()
         for job, path, source in list(queue):
             job_plan = plan(job, config)
@@ -1097,7 +1126,8 @@ def cmd_status(args):
     collected = sorted(p.name for p in (ROOT / RESULTS).iterdir() if (p / "result.json").exists()) if (ROOT / RESULTS).exists() else []
     rows = {"pending": [], "running": [], "finished, not collected": [], "collected": []}
     seen = set()
-    for job, path, source in committed_jobs(rev):
+    priorities = load_priorities(rev)
+    for job, path, source in sorted(committed_jobs(rev), key=queue_order(priorities)):
         job_id = job.get("id")
         seen.add(job_id)
         p = plan(job, config)
@@ -1112,7 +1142,10 @@ def cmd_status(args):
             rows["running"].append(f"{line}  (since {claims[job_id].get('at')}, pid {claims[job_id].get('pid')})")
         else:
             fit = "; cannot run here: " + "; ".join(p["cannotRun"]) if p["cannotRun"] else ""
-            rows["pending"].append(f"{line}  ({p['cpus']:g} CPU, {fmt_bytes(p['memoryEstimate'])}, ~{fmt_seconds(p['durationEstimate'])}"
+            level = priority_of(job, priorities)
+            why = (priorities.get(job_id) or {}).get("reason")
+            mark = f"[priority {level}{': ' + why if why else ''}]  " if level else ""
+            rows["pending"].append(f"{mark}{line}  ({p['cpus']:g} CPU, {fmt_bytes(p['memoryEstimate'])}, ~{fmt_seconds(p['durationEstimate'])}"
                                    f" at {source[:12]}){fit}")
     for job_id in finished:
         if job_id not in seen:
@@ -1131,6 +1164,37 @@ def cmd_status(args):
             print("  " + l)
     if not_committed:
         print(f"not committed, so not runnable yet: {', '.join(not_committed)}")
+    if load_priorities() != priorities:
+        print(f"{PRIORITIES} has uncommitted changes: the runner reads it from {rev[:12]}, so commit them first")
+    return 0
+
+
+def cmd_prioritize(args):
+    """Set, clear or list the queue's priorities in verification/priorities.json (committed, read by the runner at
+    the same commit as the jobs). A priority set here overrides the job's own."""
+    path = ROOT / PRIORITIES
+    document = json.loads(path.read_text()) if path.exists() else {}
+    jobs = document.setdefault("jobs", {})
+    if not args.ids:
+        for job_id, entry in sorted(jobs.items(), key=lambda kv: (-kv[1]["priority"], kv[0])):
+            print(f"{entry['priority']:>4}  {job_id}  {entry.get('reason', '')}")
+        return 0
+    known = {j.get("id") for j, _, _ in committed_jobs(default_rev())} | {p.stem for p in (ROOT / JOBS).glob("*.json")}
+    unknown = [i for i in args.ids if i not in known]
+    if unknown and not args.clear:
+        sys.exit(f"no such job: {', '.join(unknown)}")
+    for job_id in args.ids:
+        if args.clear:
+            jobs.pop(job_id, None)
+        else:
+            if args.priority is None or not args.reason:
+                sys.exit("give --priority N and --reason TEXT, or --clear")
+            jobs[job_id] = {"priority": args.priority, "reason": args.reason, "at": iso(now())}
+    document["jobs"] = dict(sorted(jobs.items()))
+    write_json(path, {"description": "The verification queue's priorities, by job id; higher runs first, and a "
+                      "priority here overrides the job's own. Set with: python3 verification/pipeline.py prioritize",
+                      "jobs": document["jobs"]})
+    print(f"{'cleared' if args.clear else 'set'} {len(args.ids)} job(s) in {PRIORITIES}; commit it so the runner sees it")
     return 0
 
 
@@ -1516,8 +1580,16 @@ def main(argv=None):
     budget(p)
     p.add_argument("--rev", help="the commit whose jobs to run (default: jj's @-, else HEAD)")
     p.add_argument("--watch", action="store_true", help="keep polling for newly committed jobs")
+    p.add_argument("--min-priority", type=int, help="only jobs at this priority or above (verification/priorities.json, else the job's own)")
     p.add_argument("ids", nargs="*", help="only these jobs")
     p.set_defaults(func=cmd_run)
+
+    p = sub.add_parser("prioritize", help="move jobs up or down the queue (verification/priorities.json); no ids lists it")
+    p.add_argument("ids", nargs="*")
+    p.add_argument("--priority", type=int, help="higher runs first; the default for every job is 0")
+    p.add_argument("--reason", help="why: what waits on these jobs, or why they can wait")
+    p.add_argument("--clear", action="store_true", help="drop these jobs' entries, back to their own priority")
+    p.set_defaults(func=cmd_prioritize)
 
     p = sub.add_parser("status", help="the queue")
     budget(p)

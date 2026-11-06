@@ -18,6 +18,8 @@ Everything goes through [`pipeline.py`](pipeline.py):
 python3 verification/pipeline.py submit ...      # write verification/jobs/ID.json
 python3 verification/pipeline.py status          # the queue
 python3 verification/pipeline.py run             # run what is pending, then stop; --watch keeps polling
+python3 verification/pipeline.py prioritize ID --priority 10 --reason "..."   # move jobs up the queue
+python3 verification/pipeline.py run --min-priority 10   # run only the jobs at that priority or above
 python3 verification/pipeline.py collect         # bring finished results into the repo
 python3 verification/pipeline.py report          # Markdown digest; --format json for agents
 python3 verification/pipeline.py resubmit ID --memory 8G
@@ -38,6 +40,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `results/ID/changes.diff` | the job's outputs against its commit | `collect` |
 | `results/ID/outputs/` | outputs that were not applied: the job did not pass, or the file changed since | `collect` |
 | `results/index.json` | one line per result, newest first | `collect` |
+| `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `pipeline.local.toml` (not committed) overrides them per machine | |
 | `.state/` (not committed) | the runner's claims, work directories, whole logs, results not yet collected, the jvmcontract cache | `run` |
 
@@ -172,6 +175,12 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
 - `workers`, `cpus`, `memory`: how many jobs at once, and the CPUs and memory shared out among them. A job starts
   when its CPUs and its memory limit fit in what is left, and when the machine has that much memory available. Jobs
   start in order of priority, then submission time; a job waiting for room is not overtaken.
+- **Priorities.** A job's own `priority` (`submit --priority`) is fixed when it is committed. To move a job later,
+  when work turns out to wait on its result or it was superseded, use `prioritize ID... --priority N --reason TEXT`
+  (`--clear` drops the entry, no ids lists them). It writes `priorities.json`, which overrides the job's own priority
+  and is read at the same commit as the jobs, so commit it before running; `status` says when it is not committed,
+  and lists the pending jobs in the order they would start, with their priorities. `run --min-priority N` runs only
+  the jobs at N or above and leaves the rest pending.
 - `job_memory_max`: no job's limit is above it. A bigger job is deferred, and stays pending for a bigger runner.
 - `isolation`: `systemd` runs each step in a transient user scope with `MemoryMax` (no swap, so the cap is exact),
   `OOMPolicy=continue` (so one killed process does not stop the rest) and `CPUQuota`, and reads its peak memory and

@@ -210,6 +210,30 @@ class PipelineTest(unittest.TestCase):
         first, second = sorted([rc, rd], key=lambda r: r["startedAt"])
         self.assertGreaterEqual(second["startedAt"], first["finishedAt"], "one at a time")
 
+    def test_priorities_set_later_reorder_the_queue_and_min_priority_runs_only_those(self):
+        a = self.repo.submit("First submitted", "--run", "true")
+        b = self.repo.submit("Second submitted", "--run", "true")
+        c = self.repo.submit("Third submitted", "--run", "true", "--priority", "1")
+        self.repo.commit("jobs")
+        self.repo.pipeline("prioritize", b, "--priority", "5", "--reason", "the parser's removal waits on it")
+        self.repo.pipeline("prioritize", a, "--priority", "-1", "--reason", "superseded")
+        self.assertIn("uncommitted changes", self.repo.pipeline("status", "--rev", "HEAD").stdout)
+        self.assertNotEqual(self.repo.pipeline("prioritize", "no-such-job", "--priority", "1", "--reason", "x",
+                                               check=False).returncode, 0)
+        self.repo.commit("priorities")
+        status = self.repo.pipeline("status", "--rev", "HEAD").stdout
+        self.assertNotIn("uncommitted changes", status)
+        order = [line for line in status.splitlines() if "submitted" in line]
+        self.assertEqual([next(i for i in (a, b, c) if i in line) for line in order], [b, c, a])  # file over job's own
+        self.assertIn("[priority 5: the parser's removal waits on it]", order[0])
+        out = self.repo.pipeline("run", "--rev", "HEAD", "--min-priority", "1", "--workers", "1").stdout
+        self.assertLess(out.index(f"{b}: started"), out.index(f"{c}: started"))
+        self.assertNotIn(a, out)
+        self.assertFalse((self.repo.dir / "verification/.state/results" / a).exists())
+        self.assertIn(f"{a}  ", self.repo.pipeline("status", "--rev", "HEAD").stdout.split("running:")[0])  # still pending
+        self.repo.pipeline("prioritize", b, "--clear")
+        self.assertNotIn(b, self.repo.pipeline("prioritize").stdout)
+
     def test_an_output_changed_since_the_jobs_commit_is_not_overwritten(self):
         (self.repo.dir / "o.txt").write_text("committed\n")
         job_id = self.repo.submit("Write o", "--output", "o.txt", "--run", "echo from-job > o.txt")
