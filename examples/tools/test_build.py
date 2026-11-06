@@ -1996,6 +1996,111 @@ class GapModeTest(unittest.TestCase):
         self.assertEqual(build.assumed_gaps({"search": build.search_record({"search": refused})}), [])
 
 
+class StatementTest(unittest.TestCase):
+    """Step 2a of llm-dlc/loops/sound-verdicts.md: the result records the statement a verdict is about as data, and
+    the page states it in one paragraph, so that two results that differ only in the domain, the observations, the
+    assumptions or the model bundle read differently, in the sentence about that part."""
+
+    # What `jvmcontract equivalence --json` gives as `stated` (from a run of the own checker on the conformance
+    # corpus's twoArrays, scoped).
+    STATED = {"kind": "regression",
+              "domain": {"parameters": [{"name": "a", "type": "int[]", "kind": "array", "null": False, "max_length": 8},
+                                        {"name": "b", "type": "int[]", "kind": "array", "null": False, "max_length": 8}],
+                         "shared_arrays": False,
+                         "text": "a: int[] of length ≤ 8, not null × b: int[] of length ≤ 8, not null; no two the same array"},
+              "assumptions": [{"kind": "intended-inputs", "text": "!(a.length == 0): the input is not among those the change is meant for", "basis": "stated"},
+                              {"kind": "initialization", "text": "every JDK class is initialized already, its static initializer having run and thrown nothing", "basis": "engine"}],
+              "observations": {"result": "the result, equal in both versions",
+                               "exceptions": "whether it throws, and which of 15 exception classes it throws, the same in both versions",
+                               "arrays": ["a", "b"]},
+              "bounds": {"unwind": 16, "max_array_length": 8, "complete": True},
+              "models": {"used": True, "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256", "classes": 10, "jdk": "25.0.4.1"},
+              "checker": {"engine": "native", "name": "jvmcontract's own checker (CaDiCaL)", "solver": "CaDiCaL 1.9.5 (bundled)", "fallback": None},
+              "gap_mode": "strict", "confirmation": None}
+
+    def recorded(self, stated=None):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        out = equivalence_json(root, "verified", stated=stated or self.STATED)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, example(verdict="verified"), root, "crosscut", result)
+        return result
+
+    def test_the_result_keeps_the_statement_in_the_schema_s_shape(self):
+        stated = self.recorded()["stated"]
+        self.assertEqual(stated["domain"]["sharedArrays"], False)
+        self.assertEqual(stated["domain"]["parameters"][0]["maxLength"], 8)
+        self.assertEqual((stated["bounds"]["maxArrayLength"], stated["gapMode"]), (8, "strict"))
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(stated, {**schema["$defs"]["statement"], "$defs": schema["$defs"]})
+        jsonschema.validate(None, {**schema["properties"]["stated"], "$defs": schema["$defs"]})
+        # A tool from before the statement was data: none, and the page says nothing of it.
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, equivalence_json(root, "verified"))):
+            result = empty_result()
+            build.run_tool_equivalence(root, example(verdict="verified"), root, "crosscut", result)
+        self.assertIsNone(result["stated"])
+        self.assertEqual(build.statement_lines(result), [])
+
+    def test_the_page_states_it_in_one_paragraph(self):
+        lines = build.statement_lines(self.recorded())
+        self.assertEqual(len(lines), 2)
+        paragraph = lines[0]
+        self.assertTrue(paragraph.startswith("**What the verdict is about.** For every input in `a: int[] of length ≤ 8"), paragraph)
+        for part in ("!(a.length == 0)", "(stated by the claim)", "(the checker's own semantics)",
+                     "the two versions agree on the result, equal in both versions", "what they leave in `a`, `b`",
+                     "unwound up to 16 times", "at most 8 long", "covered every execution",
+                     "SAT solver CaDiCaL 1.9.5 (bundled)", "under --gaps strict", "the tool's 10 models of JDK classes (`sha256:4836",
+                     "JDK 25.0.4.1"):
+            self.assertIn(part, paragraph)
+
+    def test_two_statements_that_differ_in_one_part_read_differently_there(self):
+        base = build.statement_paragraph(build.camel(self.STATED))
+        def varied(change):
+            s = json.loads(json.dumps(self.STATED))
+            change(s)
+            return build.statement_paragraph(build.camel(s))
+        def domain(s):
+            s["domain"]["text"] = s["domain"]["text"].replace("8", "4")
+            s["bounds"]["max_array_length"] = 4
+        def observations(s):
+            s["observations"]["arrays"] = ["a"]
+        def assumptions(s):
+            s["assumptions"].insert(1, {"kind": "gap", "text": "java.util.ArrayList.<init>(int) constructs the object and does nothing else",
+                                        "basis": "assumed", "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1"})
+        def models(s):
+            s["models"].update({"used": False, "digest": None, "classes": 0})
+        def confirmed(s):
+            s["confirmation"] = "confirmed"
+        for name, change, says in (("domain", domain, "`a: int[] of length ≤ 4"), ("observations", observations, "what they leave in `a`."),
+                                   ("assumptions", assumptions, "nothing to show for it, under --gaps assume, `jdk-constructor:"),
+                                   ("models", models, "It read none of the tool's models"),
+                                   ("confirmation", confirmed, "JBMC proved it again over every input")):
+            with self.subTest(part=name):
+                other = varied(change)
+                self.assertNotEqual(other, base)
+                self.assertIn(says, other)
+                self.assertNotIn(says, base)
+
+    def test_a_property_s_statement_is_its_own(self):
+        s = build.camel({**self.STATED, "kind": "property", "observations": {"result": "the result and the parameters, against result >= 0", "exceptions": "none may be thrown"}})
+        props = [{"stated": s}, {"stated": {**s, "assumptions": []}}]
+        lines = build.statement_lines({"properties": props})
+        self.assertEqual(lines[0], "What each verdict is about:")
+        self.assertTrue(lines[2].startswith("- Property 1: For every input") and "the method is checked on the result and the parameters" in lines[2], lines[2])
+        self.assertNotIn("assuming", lines[3])
+        self.assertTrue(build.statement_lines({"properties": [{"stated": s}]})[0].startswith("**What the verdict is about.**"))
+        record = build.property_record({"verdict": "verified", "assert": "result >= 0", "stated": self.STATED}, "PropertyHarness", None)
+        self.assertEqual(record["stated"]["bounds"]["maxArrayLength"], 8)
+
+
 class GapScanTest(unittest.TestCase):
     """Step 1a of llm-dlc/loops/sound-verdicts.md: the gap scan's note says what strict mode would cost an example,
     and replaces an earlier note rather than adding another."""

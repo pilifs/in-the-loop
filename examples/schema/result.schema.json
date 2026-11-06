@@ -82,6 +82,276 @@
         "call": { "$ref": "#/$defs/typedCall", "description": "The patched version's call on the inputs." },
         "previousCall": { "$ref": "#/$defs/typedCall", "description": "For a regression proof: the previous version's call, on the same arguments or those `previousArguments` computes from the inputs. Absent when they could not be computed." }
       }
+    },
+    "statement": {
+      "description": "The statement a verdict is about, as data (step 2a of llm-dlc/loops/sound-verdicts.md, lib/src/statement.rs): a regression proof's ∀x ∈ D, A(x) ⇒ Obs(old, x) = Obs(new, x), or a property proof's ∀x ∈ D, A(x) ⇒ P(Obs(x)), with what the verdict rests on besides.",
+      "type": "object",
+      "required": [
+        "kind",
+        "domain",
+        "assumptions",
+        "observations",
+        "bounds",
+        "models",
+        "checker",
+        "gapMode",
+        "confirmation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "description": "`regression` (two versions compared) or `property` (one version against an assertion).",
+          "enum": [
+            "regression",
+            "property"
+          ]
+        },
+        "domain": {
+          "description": "D: the target's receiver and parameters as it takes them, with nullability and aliasing.",
+          "type": "object",
+          "required": [
+            "parameters",
+            "sharedArrays",
+            "text"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "type",
+                  "kind",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "description": "The Java type.",
+                    "type": "string"
+                  },
+                  "kind": {
+                    "enum": [
+                      "primitive",
+                      "array",
+                      "record"
+                    ]
+                  },
+                  "null": {
+                    "description": "Whether null is among its values: never today (an array is a fresh array, a record one its constructor built).",
+                    "type": "boolean"
+                  },
+                  "maxLength": {
+                    "description": "The longest array it is given, for an array.",
+                    "type": "integer"
+                  },
+                  "components": {
+                    "description": "A record's components, `name: type`, the symbolic inputs it is built from.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "sharedArrays": {
+              "description": "Whether two array parameters may be one array: never today.",
+              "type": "boolean"
+            },
+            "text": {
+              "description": "The domain as the proof line writes it.",
+              "type": "string"
+            }
+          }
+        },
+        "assumptions": {
+          "description": "A: what an input must satisfy, or what the checker takes for granted, each with its basis.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "text",
+              "basis"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "intended-inputs",
+                  "precondition",
+                  "constructible",
+                  "previous-arguments",
+                  "initialization",
+                  "library",
+                  "gap"
+                ]
+              },
+              "text": {
+                "type": "string"
+              },
+              "basis": {
+                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, or a gap `assumed` under --gaps assume with nothing to show for it.",
+                "enum": [
+                  "stated",
+                  "harness",
+                  "engine",
+                  "assumed"
+                ]
+              },
+              "id": {
+                "description": "The gap's stable id, for a gap.",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "observations": {
+          "description": "Obs: what is compared or checked of a call.",
+          "type": "object",
+          "required": [
+            "result",
+            "exceptions"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "result": {
+              "type": "string"
+            },
+            "exceptions": {
+              "type": "string"
+            },
+            "arrays": {
+              "description": "The array parameters whose contents after the call are compared too.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "bounds": {
+          "type": "object",
+          "required": [
+            "unwind",
+            "maxArrayLength",
+            "complete"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "unwind": {
+              "description": "The loop unwinding bound, checked by unwinding assertions; null when no checker ran.",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "maxArrayLength": {
+              "description": "The longest array an array parameter is given; null without one.",
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "complete": {
+              "description": "Whether the search covered every execution of every input in the domain within the bounds: a proof's did.",
+              "type": "boolean"
+            }
+          }
+        },
+        "models": {
+          "type": "object",
+          "required": [
+            "used",
+            "digest",
+            "classes",
+            "jdk"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "used": {
+              "description": "Whether the tool's models of JDK classes (lib/models) were read.",
+              "type": "boolean"
+            },
+            "digest": {
+              "description": "`sha256:` and the digest of every model's name and class file; null when unused.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "classes": {
+              "type": "integer"
+            },
+            "jdk": {
+              "description": "The JDK's version, whose classes the checker read.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "checker": {
+          "type": "object",
+          "required": [
+            "engine",
+            "name",
+            "solver",
+            "fallback"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "engine": {
+              "enum": [
+                "native",
+                "jbmc",
+                "none"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "solver": {
+              "description": "The SAT solver: JBMC's --sat-solver, or the own checker's bundled CaDiCaL with its version.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fallback": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "gapMode": {
+          "description": "The gap mode of the checker the verdict comes from; null for JBMC.",
+          "enum": [
+            "strict",
+            "assume",
+            null
+          ]
+        },
+        "confirmation": {
+          "description": "What JBMC made of the own checker's proof under --confirm; null when not asked for.",
+          "enum": [
+            "confirmed",
+            "disagreed",
+            "no-verdict",
+            "not-asked",
+            null
+          ]
+        }
+      }
     }
   },
   "properties": {
@@ -367,6 +637,17 @@
         "reproduced": { "description": "Whether the replay showed the disagreement the checker found; when it did not, the verdict is unverifiable. For a property, whether the interpreter's run showed the property failing: false too when the property calls the method under proof, which only the harness can evaluate, so that the violation is the checker's word.", "type": "boolean" }
       }
     },
+    "stated": {
+      "description": "The statement the verdict is about, as data ($defs/statement). Null when the run built none or did not complete; absent in results written before 2026-11-06.",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/statement"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "problem": {
       "description": "Why the verifier refused, when the verdict is unverifiable and it is not a purity violation.",
       "type": [
@@ -543,7 +824,8 @@
           "counterexample": { "description": "The refuted property's witness, as in `counterexamples`.", "anyOf": [{ "type": "null" }, { "$ref": "#/properties/counterexamples/items" }] },
           "statement": { "description": "The file the property's harness was copied to, `statement-N.java`, when the target has several; null for one, whose harness is `statement`.", "type": ["string", "null"] },
           "search": { "$ref": "#/properties/search" },
-          "replay": { "$ref": "#/properties/replay" }
+          "replay": { "$ref": "#/properties/replay" },
+          "stated": { "$ref": "#/$defs/statement", "description": "The property's statement, as data; absent in results written before 2026-11-06." }
         }
       }
     },

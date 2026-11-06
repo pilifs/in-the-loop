@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-025930-example-144-b9-re-run-its-result-records",
+  "title": "Example 144 (B9) re-run: its result records the statement it proved, as data",
+  "description": "Step 2a of llm-dlc/loops/sound-verdicts.md: jvmcontract's --json outcome now carries 'stated', the statement a verdict is about (domain with nullability and aliasing, assumptions with their basis, observations, bounds and completeness, the model bundle's digest, the checker and SAT solver, gap mode, confirmation), which build.py records as result.stated and the page states in one paragraph. Example 144 is the LookupSwitch#find linear scan proved by the tool's own checker at the default array bound 8, vacuously; 145 is the same change at bound 12. Re-running both records two statements that differ only in the domain (array bound 8 vs 12), so the pages show the acceptance on real results. The verdicts should not move: 144 verified vacuously, 145 verified, both in the interim gap mode assume that build.py gives recorded examples.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/statement.rs"
+    ],
+    "examples": [
+      "144"
+    ]
+  },
+  "expected": "verified, vacuously (as before); result.json gains 'stated' with domain 'matches: int[] of length ≤ 8, not null × key: int' and the page a 'What the verdict is about' paragraph",
+  "submitted": {
+    "at": "2026-11-06T02:59:30+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
+  ]
+}

@@ -620,3 +620,107 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     assert!(!cli.status.success());
     assert!(String::from_utf8_lossy(&cli.stderr).contains("--confirm needs --engine auto"), "{}", String::from_utf8_lossy(&cli.stderr));
 }
+
+/// Step 2a of the brief: the statement a verdict is about is data, and two verdicts that differ only in their
+/// domain, observations, assumptions or models say so in that part and no other.
+#[test]
+fn the_statement_says_what_a_verdict_is_about() {
+    use jvmcontract::statement::{AssumptionKind, Basis, ParameterKind, Statement};
+    let Some(compiled) = compile() else { return };
+    let prove = |name: &str, method: &str, assert: &str, set: &dyn Fn(&mut property::Options)| {
+        let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#{method}"));
+        options.assert = Some(assert.to_string());
+        options.engine = Engine::Native;
+        set(&mut options);
+        let work = target_tmp().join(format!("stated-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let outcome = property::run(&options).unwrap();
+        assert_eq!(outcome.verdict, V, "{}", outcome.output);
+        outcome.stated.clone().expect("a statement")
+    };
+    // The parts of a statement other than the one named, for comparing two statements but for it.
+    let but = |s: &Statement, part: &str| {
+        let mut json = serde_json::to_value(s).unwrap();
+        json.as_object_mut().unwrap().remove(part);
+        if part == "domain" {
+            json["bounds"].as_object_mut().unwrap().remove("max_array_length");
+        }
+        json
+    };
+
+    let plain = prove("plain", "increment", "result == x + 1", &|_| {});
+    assert_eq!(plain.kind, "property");
+    assert_eq!(plain.domain.text, "x: int");
+    assert_eq!(plain.domain.parameters[0].kind, ParameterKind::Primitive);
+    assert_eq!(plain.observations.result, "the result and the parameters, against result == x + 1");
+    assert_eq!(plain.observations.exceptions, "none may be thrown");
+    assert_eq!((plain.checker.engine.as_str(), plain.gap_mode, plain.confirmation), ("native", Some(GapMode::Strict), None));
+    assert!(plain.checker.solver.as_deref().is_some_and(|s| s.starts_with("CaDiCaL ")), "{:?}", plain.checker);
+    assert!(plain.bounds.complete && plain.bounds.unwind == Some(16) && plain.bounds.max_array_length.is_none());
+    assert!(plain.models.used && plain.models.digest.as_deref().is_some_and(|d| d.starts_with("sha256:")));
+    assert_eq!(plain.assumptions.iter().map(|a| (a.kind, a.basis)).collect::<Vec<_>>(), [(AssumptionKind::Initialization, Basis::Engine)]);
+
+    // Assumptions: the claim's precondition is one of them, stated by the claim.
+    let assuming = prove("assume", "increment", "result > x", &|o| o.assume = Some("x < 100".into()));
+    assert_eq!((assuming.assumptions[0].kind, assuming.assumptions[0].basis, assuming.assumptions[0].text.as_str()), (AssumptionKind::Precondition, Basis::Stated, "x < 100"));
+    // Observations: what the result is checked against.
+    let other = prove("observed", "increment", "result != x", &|_| {});
+    assert_ne!(other.observations, plain.observations);
+    assert_eq!(but(&other, "observations"), but(&plain, "observations"));
+    // The model bundle: without the tool's models, no digest.
+    let unmodelled = prove("models", "increment", "result == x + 1", &|o| o.models = false);
+    assert_eq!((unmodelled.models.used, unmodelled.models.digest.as_deref()), (false, None));
+    assert_eq!(but(&unmodelled, "models"), but(&plain, "models"));
+    // The domain: the arrays' bound, which the bounds repeat.
+    let eight = prove("eight", "length", "result <= 8", &|_| {});
+    let four = prove("four", "length", "result <= 8", &|o| o.max_array_length = 4);
+    assert_eq!(eight.domain.text, "a: int[] of length ≤ 8, not null");
+    assert_eq!(four.domain.parameters[0].max_length, Some(4));
+    assert_eq!((four.domain.parameters[0].null, four.bounds.max_array_length), (false, Some(4)));
+    assert_eq!(but(&four, "domain"), but(&eight, "domain"));
+    // A gap assumed is an assumption with its id, on nothing but the approximation.
+    let gap = prove("gap", "capacity", "result == 1", &|o| o.gaps = GapMode::Assume);
+    let assumed = gap.assumptions.iter().find(|a| a.kind == AssumptionKind::Gap).expect("the gap");
+    assert_eq!(assumed.basis, Basis::Assumed);
+    assert!(assumed.id.as_deref().is_some_and(|id| id.starts_with("jdk-constructor:java.util.ArrayList.<init>(I)V")), "{assumed:?}");
+    assert_eq!(gap.gap_mode, Some(GapMode::Assume));
+
+    // A regression proof: two arrays, each its own, and what the versions leave in them observed.
+    let regress = |name: &str, method: &str, set: &dyn Fn(&mut jvmcontract::equivalence::Options)| {
+        let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#{method}"));
+        options.engine = Engine::Native;
+        options.shared_callees = false;
+        set(&mut options);
+        let work = target_tmp().join(format!("stated-{name}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let outcome = jvmcontract::equivalence::run(&options).unwrap();
+        assert_eq!(outcome.verdict, V, "{}", outcome.output);
+        outcome
+    };
+    let arrays = regress("arrays", "twoArrays", &|_| {}).stated.unwrap();
+    assert_eq!(arrays.kind, "regression");
+    assert_eq!(arrays.domain.text, "a: int[] of length ≤ 8, not null × b: int[] of length ≤ 8, not null; no two the same array");
+    assert!(!arrays.domain.shared_arrays);
+    assert_eq!(arrays.observations.arrays, ["a", "b"]);
+    assert_eq!(arrays.observations.result, "the result, equal in both versions");
+    assert!(arrays.observations.exceptions.contains("exception classes"), "{}", arrays.observations.exceptions);
+    // A scope and a relation between the results.
+    let scoped = regress("scoped", "increment", &|o| {
+        o.unchanged_unless = Some("x == 0".into());
+        o.results_agree_when = Some("previous == result".into());
+    })
+    .stated
+    .unwrap();
+    assert_eq!((scoped.assumptions[0].kind, scoped.assumptions[0].basis), (AssumptionKind::IntendedInputs, Basis::Stated));
+    assert!(scoped.assumptions[0].text.starts_with("!(x == 0)"), "{:?}", scoped.assumptions[0]);
+    assert_eq!(scoped.observations.result, "the results, related by previous == result whenever both versions return");
+    // Identical bytecode: no checker ran, and no model was read.
+    let identical = regress("identical", "increment", &|o| o.shared_callees = true);
+    let s = identical.stated.unwrap();
+    assert_eq!((s.checker.engine.as_str(), s.models.used, s.bounds.unwind, s.gap_mode), ("none", false, None, None));
+    let json = serde_json::to_value(regress("json", "twoArrays", &|_| {})).unwrap();
+    assert_eq!(json["stated"]["domain"]["parameters"][0]["kind"], "array");
+    assert_eq!(json["stated"]["assumptions"][0]["basis"], "engine");
+}

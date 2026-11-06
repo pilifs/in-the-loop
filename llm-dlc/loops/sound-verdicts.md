@@ -444,6 +444,42 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Seen, not fixed: a relative `--jbmc` path fails, because JBMC runs in the work directory.
   - Phase 1 is complete, apart from the two pipeline jobs.
   - Next: 2a, the statement as data.
+- **2a, the statement as data (2026-11-06).**
+  - Both drivers' outcomes carry `stated` ([`lib/src/statement.rs`](../../lib/src/statement.rs)) whenever a harness
+    was built, whatever the verdict. It holds:
+    - **D**: each parameter with its kind (`primitive`, `array`, or `record` with its components), whether `null`
+      is among its values, an array's longest length, and whether two arrays may be one (`shared_arrays`).
+    - **A**: each assumption with a kind and a `basis`. The basis is `stated` by the claim (`--unchanged-unless`,
+      `--assume`); made by the `harness` (a record's constructor rejecting an input, or `--before-arguments`
+      throwing, skips it); the checker's `engine` semantics; or a gap `assumed`, with its id. The own checker's
+      engine assumption is that every JDK class is initialized already. JBMC's is that a JDK method outside the
+      models and its six JDK classes is a stub: 4c makes those gaps. Phase 3's contracts get bases of their own.
+    - **Obs**: what is compared of the result (equality, a record by components, an array by elements, or the
+      `--results-agree-when` relation), of an exception (its class among the harness's 15, not its message or
+      state), and which arrays after the call. For a property, the assertion and the throws clauses.
+    - The unwinding bound, the array bound, and `complete` (true for a proof). The models: whether used, a
+      `sha256:` digest over every model's name and class file (a SHA-256 written out in `lib/src/digest.rs`,
+      since the build has no network), and the JDK's version. The checker with its SAT solver (the own checker's
+      bundled `CaDiCaL 1.9.5`) and fallback. The gap mode, and the `--confirm` status.
+  - Identical bytecode is a statement too, with checker `none` and no models or unwinding.
+  - `build.py` records it as `result.stated`, in camelCase, which format 2 stores in `evidence`. A property keeps its
+    own under `properties`. The schema has it as `$defs/statement`. A page states it in one paragraph, **What the
+    verdict is about**, after the proof line, or one per property.
+  - Acceptance, inline:
+    - `the_statement_says_what_a_verdict_is_about` (conformance.rs) runs the own checker on pairs of claims that
+      differ only in the domain (array bound 8 or 4), the observations, an assumption, or the models (on or off).
+      Each pair's statements differ in that part alone.
+    - `StatementTest` (test_build.py) renders pairs whose statements differ in the domain, observations,
+      assumptions, models or confirmation, and checks that each paragraph says the difference in its sentence.
+  - No recorded result has `stated` until it is re-run, so no page changed (`--render-only` of every example).
+    Pipeline jobs `20261106-025930-example-144-b9-re-run-its-result-records` and `...-145-...` re-run the pair that
+    differs only in the array bound (8, vacuous; 12, real), so two real pages show it.
+  - Not done:
+    - The console report doesn't print the statement; `--json` and the page do.
+    - `search` keeps its own copies of the bounds and gap mode, so as not to break its readers.
+    - JBMC's solver is recorded as asked (`cadical`), without the version JBMC bundles.
+    - Vacuity stays where it was, for 2b.
+  - Next: 2b, vacuity as a status.
 
 ## Loop settings
 

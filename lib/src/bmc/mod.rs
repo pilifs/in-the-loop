@@ -659,6 +659,15 @@ pub fn refused_gaps(gaps: &[GapRecord]) -> String {
     format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps strict): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" })
 }
 
+/// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
+pub fn solver_signature() -> String {
+    let signature = cadical::Solver::<cadical::Timeout>::new().signature().to_string();
+    match signature.strip_prefix("cadical-") {
+        Some(version) => format!("CaDiCaL {version} (bundled)"),
+        None => format!("{signature} (bundled)"),
+    }
+}
+
 /// Runs the engine on a harness for the proof drivers: the class path is the harness, the application classes
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.

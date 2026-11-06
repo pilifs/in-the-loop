@@ -1563,6 +1563,81 @@ def search_record(outcome):
     return record
 
 
+def camel(value):
+    """`value` with every key in it in camelCase, as the result keeps the library's snake_case fields."""
+    if isinstance(value, dict):
+        return {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): camel(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [camel(v) for v in value]
+    return value
+
+
+def stated_record(outcome):
+    """The statement the verdict is about, as data (step 2a of llm-dlc/loops/sound-verdicts.md), from the outcome's
+    `stated`: its domain, assumptions with their basis, observations, bounds, models, checker, gap mode and
+    confirmation. None from a run that built no statement, or a tool from before it said."""
+    s = (outcome or {}).get("stated")
+    return camel(s) if s else None
+
+
+# How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
+BASIS_WORDS = {"stated": "stated by the claim", "harness": "made by how the harness builds the statement",
+               "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume"}
+CONFIRMATION_WORDS = {"confirmed": "JBMC proved it again over every input (--confirm)",
+                      "disagreed": "JBMC refuted it, so neither checker's verdict stands (--confirm)",
+                      "no-verdict": "JBMC, asked to prove it again, gave no verdict, so the proof is the own checker's alone (--confirm)",
+                      "not-asked": "JBMC was not asked to prove it again, since it approximates the assumed calls too (--confirm)"}
+
+
+def statement_paragraph(s):
+    """The statement as one paragraph of a page: the domain, the assumptions with their basis, what is observed,
+    the bounds, the checker with its solver and gap mode, the models, and the confirmation. Two statements that
+    differ in any of these read differently in the sentence about it."""
+    d, o, b, m, c = s["domain"], s["observations"], s["bounds"], s["models"], s["checker"]
+    records = [p["name"] for p in d["parameters"] if p["kind"] == "record"]
+    text = [f"For every input in `{d['text']}`" + (f", each record ({', '.join(records)}) built from its components "
+                                                  "through its canonical constructor" if records else "")]
+    if s["assumptions"]:
+        text[0] += ", assuming " + "; ".join(f"{a['text']} ({BASIS_WORDS.get(a['basis'], a['basis'])}"
+                                             + (f", `{a['id']}`" if a.get("id") else "") + ")" for a in s["assumptions"])
+    if s["kind"] == "regression":
+        text[0] += f": the two versions agree on {o['result']}, and on exceptions: {o['exceptions']}"
+        if o.get("arrays"):
+            text[0] += f"; and on what they leave in {', '.join(f'`{a}`' for a in o['arrays'])}"
+    else:
+        text[0] += f": the method is checked on {o['result']}, and on exceptions: {o['exceptions']}"
+    text[0] += "."
+    if b["unwind"] is not None:
+        text.append(f"Loops are unwound up to {b['unwind']} times, every one shown to end within that"
+                    + (f", and an array parameter is at most {b['maxArrayLength']} long" if b.get("maxArrayLength") is not None else "")
+                    + ("; the search covered every execution of every input within these bounds." if b["complete"] else "."))
+    if c["engine"] == "none":
+        text.append(f"No checker ran ({c['name']}).")
+    else:
+        text.append(f"Checked by {c['name']}" + (f", SAT solver {c['solver']}" if c.get("solver") else "")
+                    + (f", after the tool's own checker gave no verdict ({c['fallback']})" if c.get("fallback") else "")
+                    + (f", under --gaps {s['gapMode']}" if s.get("gapMode") else "") + ".")
+        text.append((f"It read the tool's {m['classes']} models of JDK classes (`{m['digest']}`)" if m["used"]
+                     else "It read none of the tool's models of JDK classes")
+                    + (f" and the classes of JDK {m['jdk']}." if m.get("jdk") else "."))
+    if s.get("confirmation"):
+        text.append(CONFIRMATION_WORDS[s["confirmation"]][0].upper() + CONFIRMATION_WORDS[s["confirmation"]][1:] + ".")
+    return " ".join(text)
+
+
+def statement_lines(res):
+    """What the page says the verdict is about: the statement's paragraph, one per property of a B11 target; nothing
+    for a result recorded before the statement was data."""
+    props = res.get("properties") or []
+    if len(props) > 1:
+        stated = [(n, q["stated"]) for n, q in enumerate(props, 1) if q.get("stated")]
+        if not stated:
+            return []
+        return ["What each verdict is about:", ""] + [f"- Property {n}: {statement_paragraph(s)}" for n, s in stated] + [""]
+    s = res.get("stated") or (props[0].get("stated") if props else None)
+    return [f"**What the verdict is about.** {statement_paragraph(s)}", ""] if s else []
+
+
 def assumed_gaps(result):
     """The gaps the tool's own checker assumed for a verdict (`--gaps assume`), from the result's search and each
     property's, each once, in order."""
@@ -1602,6 +1677,7 @@ def run_tool_equivalence(folder, example, root, module, result):
     result["execution"], result["verdict"] = conclude_outcome(proc.returncode, output, outcome, result["counterexamples"], reported)
     completed = result["verdict"] is not None
     result["search"] = search_record(outcome) if completed else None
+    result["stated"] = stated_record(outcome) if completed else None
     replay = (outcome or {}).get("replay")
     result["replay"] = {"by": replay["by"], "reproduced": replay["reproduced"]} if completed and replay else None
     statement = outcome.get("statement") if outcome else None
@@ -1789,7 +1865,8 @@ def property_record(outcome, harness, statement, classes=None):
             **({"throws": throws} if throws else {}), "verdict": outcome["verdict"], "domain": outcome.get("domain"),
             "proof": outcome.get("proof"), "problem": outcome.get("problem"), "vacuous": outcome.get("vacuous"),
             "counterexample": property_counterexample(outcome, classes), "statement": statement,
-            "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None}
+            "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None,
+            **({"stated": stated_record(outcome)} if outcome.get("stated") else {})}
 
 
 def run_tool_property(folder, example, root, module, result):
@@ -3096,6 +3173,7 @@ def render_example(folder, ex, res, snap=None):
             f"- Property {n}: {r['proof'] or r['problem'] or 'the verifier says nothing'}." for n, r in enumerate(res["properties"], 1)] + [""]
     elif res.get("proof"):
         lines += [f"How the verdict was reached: {res['proof']}.", ""]
+    lines += statement_lines(res)
     if (res.get("coverage") or {}).get("reason"):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]

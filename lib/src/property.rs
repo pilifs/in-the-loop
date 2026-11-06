@@ -167,6 +167,10 @@ pub struct Outcome {
     /// evaluated only in the harness, so that the violation is the checker's word.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replay: Option<crate::equivalence::Replay>,
+    /// The statement the verdict is about, as data ([`crate::statement`]); none when the property was refused
+    /// before its harness was built.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stated: Option<crate::statement::Statement>,
 }
 
 /// Runs the property proof.
@@ -204,6 +208,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             vacuous: None,
             search: None,
             replay: None,
+            stated: None,
         })
     };
 
@@ -271,6 +276,24 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     let statement = harness_dir.join(format!("{}.java", harness::PROPERTY_CLASS));
     std::fs::write(&statement, &harness.source)?;
     let assertion = harness.assertion_text.clone();
+    let stated_domain = crate::statement::plain_domain(&params, options.max_array_length);
+    let observations = crate::statement::property_observations(&assertion, &throws_checked);
+    let stated = |last: &crate::jbmc::JbmcResult, search: Option<&crate::equivalence::Search>, complete: bool| crate::statement::Statement {
+        kind: "property".into(),
+        domain: stated_domain.clone(),
+        assumptions: options
+            .assume
+            .iter()
+            .map(|a| crate::statement::Assumption { kind: crate::statement::AssumptionKind::Precondition, text: a.clone(), basis: crate::statement::Basis::Stated, id: None })
+            .chain(crate::statement::checker_assumptions(Some(last)))
+            .collect(),
+        observations: observations.clone(),
+        bounds: crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete),
+        models: crate::statement::models(options.models),
+        checker: crate::statement::checker(search, options.sat_solver.as_deref()),
+        gap_mode: last.gap_mode,
+        confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
+    };
 
     // 3. The JDK bytecode JBMC needs beyond its own models, and the tool's models of the JDK classes it has none of.
     let jdk_dir = work.join("jdk");
@@ -422,7 +445,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let call = witness::typed_call(&target, &harness::Layout::plain(&names, &descriptor.params), &found, false, &[]);
         let counterexample = Some(Counterexample { input: rendered, outcome, expected: None, values, found: None, shrink_runs: 0, inputs: witness::typed_inputs(&params, &found), found_inputs: None, call });
         let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, search, replay });
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(&last, search.as_ref(), false)), search, replay });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -528,7 +551,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                     sarif::write(&report.join("property.sarif"), &findings)?;
                 }
                 let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, search, replay });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(&last, search.as_ref(), false)), search, replay });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -592,6 +615,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.{}", if signals.is_empty() { " If the method throws there by design, declare it with --throws." } else { "" });
     }
+    let stated = Some(stated(&last, search.as_ref(), verdict == Verdict::Verified));
     Ok(Outcome {
         verdict,
         target: options.target.clone(),
@@ -610,6 +634,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         vacuous,
         search,
         replay,
+        stated,
     })
 }
 

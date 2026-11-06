@@ -202,6 +202,11 @@ pub struct Outcome {
     /// How the checker's witness was replayed on both versions, when it found one.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub replay: Option<Replay>,
+    /// The statement the verdict is about, as data: its domain, assumptions and observations, with the bounds,
+    /// models, checker, gap mode and confirmation it rests on ([`crate::statement`]). None when the claim was
+    /// refused before a statement was built.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stated: Option<crate::statement::Statement>,
 }
 
 /// The checker run a verdict comes from, with the settings it ran under: what a report needs to say how the verdict
@@ -431,7 +436,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &findings)?;
         }
-        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None })
+        Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: None, counterexample: None, proof: None, problem: Some(problem), statement: None, findings, output: out.clone(), work: work.clone(), shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: None })
     };
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -619,6 +624,21 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         (None, _) => "behaves as before on every input".to_string(),
     };
     let domain = layout.domain(options.max_array_length);
+    // The statement as data: what holds of every verdict on this harness, and what the run it comes from adds.
+    let stated_domain = crate::statement::domain(&layout, options.max_array_length);
+    let observations = crate::statement::regression_observations(&layout, &descriptor.ret, options.results_agree_when.as_deref());
+    let claim_assumptions = crate::statement::regression_assumptions(&layout, options.unchanged_unless.as_deref(), options.before_arguments.as_deref());
+    let stated = |last: Option<&JbmcResult>, search: Option<&Search>, complete: bool| crate::statement::Statement {
+        kind: "regression".into(),
+        domain: stated_domain.clone(),
+        assumptions: claim_assumptions.iter().cloned().chain(crate::statement::checker_assumptions(last)).collect(),
+        observations: observations.clone(),
+        bounds: crate::statement::bounds(last.map(|_| options.unwind), &stated_domain, options.max_array_length, complete),
+        models: crate::statement::models(options.models && last.is_some()),
+        checker: crate::statement::checker(search, options.sat_solver.as_deref()),
+        gap_mode: last.and_then(|l| l.gap_mode),
+        confirmation: search.and_then(|s| s.confirmation.as_ref()).map(|c| c.status),
+    };
 
     // 3. The statement, as a harness JBMC can check.
     let harness = match harness::generate(&class_internal, &method_name, &layout, &descriptor.ret, options.unchanged_unless.as_deref(), options.max_array_length, previous.as_ref()) {
@@ -676,7 +696,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         if let Some(report) = &options.report {
             sarif::write(&report.join("equivalence.sarif"), &[])?;
         }
-        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None });
+        return Ok(Outcome { verdict: Verdict::Verified, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: Some(how), problem: None, statement: Some(statement), findings: Vec::new(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: None, search: None, replay: None, stated: Some(stated(None, None, true)) });
     }
     let shared_names = shared::names(&plan.callees);
 
@@ -971,7 +991,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         let inputs = witness::typed_inputs(params, &found);
         let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call });
         let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
-        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay });
+        let stated = Some(stated(Some(&last), search.as_ref(), false));
+        return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated });
     }
     match last.verdict {
         Verdict::Verified => {
@@ -1022,7 +1043,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 if let Some(report) = &options.report {
                     sarif::write(&report.join("equivalence.sarif"), &findings)?;
                 }
-                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay });
+                let stated = Some(stated(Some(&last), search.as_ref(), false));
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated });
             }
             // Shrink the witness: the harness class JBMC checked, run in the interpreter on smaller inputs.
             let mut shrink_runs = 0;
@@ -1092,7 +1114,8 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if verdict == Verdict::Violation {
         let _ = writeln!(out, "\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.");
     }
-    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay })
+    let stated = Some(stated(Some(&last), search.as_ref(), verdict == Verdict::Verified));
+    Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display, relation: options.results_agree_when.clone(), vacuous, search, replay, stated })
 }
 
 /// Both versions replayed on one input.

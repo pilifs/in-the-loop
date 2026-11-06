@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T02:43:56.756Z",
-  "duration_seconds": 11367,
+  "ended": "2026-11-06T03:04:36.555Z",
+  "duration_seconds": 12607,
   "stats": {
-    "turns": 34,
-    "api_calls": 474,
-    "tool_calls": 478,
+    "turns": 39,
+    "api_calls": 545,
+    "tool_calls": 550,
     "tool_errors": 2,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 968,
-      "output_tokens": 459583,
-      "cache_read_input_tokens": 80605256,
-      "cache_creation_input_tokens": 1399109
+      "input_tokens": 1110,
+      "output_tokens": 521357,
+      "cache_read_input_tokens": 92895424,
+      "cache_creation_input_tokens": 1635582
     }
   },
   "tools": {
-    "Bash": 435,
-    "Read": 21,
-    "Write": 11,
-    "Edit": 8,
+    "Bash": 499,
+    "Read": 26,
+    "Write": 13,
+    "Edit": 9,
     "WebFetch": 2,
     "ToolSearch": 1
   },
@@ -40,8 +40,10 @@
     "examples/tools/result_format.py",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
+    "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/property.rs",
+    "lib/src/statement.rs",
     "lib/tests/conformance.rs",
     "lib/tests/conformance/Runner.java",
     "lib/tests/conformance/conformance/Conformance.java",
@@ -123,24 +125,38 @@
     {
       "index": 5,
       "started": "2026-11-06T02:19:50.652Z",
-      "ended": "2026-11-06T02:43:56.756Z",
-      "turns": 4,
-      "api_calls": 53,
+      "ended": "2026-11-06T02:44:36.543Z",
+      "turns": 5,
+      "api_calls": 57,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 46402,
-        "cache_read_input_tokens": 7846504,
-        "cache_creation_input_tokens": 184505
+        "input_tokens": 114,
+        "output_tokens": 48782,
+        "cache_read_input_tokens": 8646300,
+        "cache_creation_input_tokens": 199809
       },
-      "peak_context_tokens": 197585
+      "peak_context_tokens": 212889
+    },
+    {
+      "index": 6,
+      "started": "2026-11-06T02:45:26.565Z",
+      "ended": "2026-11-06T03:04:36.555Z",
+      "turns": 4,
+      "api_calls": 67,
+      "usage": {
+        "input_tokens": 134,
+        "output_tokens": 59394,
+        "cache_read_input_tokens": 11490372,
+        "cache_creation_input_tokens": 221169
+      },
+      "peak_context_tokens": 234249
     }
   ],
   "log": {
-    "sha256": "5665eed8c6152a598f8eef83a67e44c3dd67fd360123a743db2b7b28b7c94485",
-    "bytes": 14029864,
-    "lines": 4907,
-    "gzip_bytes": 2516156,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/5665eed8c6152a598f8eef83a67e44c3dd67fd360123a743db2b7b28b7c94485.jsonl.gz"
+    "sha256": "2195f219454adb01a8871a0849086da998b0739928c7083c4f54b7d668b4bfda",
+    "bytes": 16224934,
+    "lines": 5637,
+    "gzip_bytes": 2935795,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/2195f219454adb01a8871a0849086da998b0739928c7083c4f54b7d668b4bfda.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -239,6 +255,14 @@
       "summary": "Confirming mode: --engine auto --confirm has JBMC prove again what the tool's own checker proved, and a disagreement is no verdict of either (verification pending)",
       "body": "Step 1e of llm-dlc/loops/sound-verdicts.md. Under --engine auto --confirm, for property and regression proofs, a statement the own checker proved goes to JBMC, which proves it again in one run over every input. That run uses the same harness and class path; the interval stages only find small witnesses sooner. The result's search.confirmation has a status (confirmed, disagreed, no-verdict, not-asked), the checker, its seconds and a reason, and a line under the ✓ says it in words. JBMC refuting the proof gives Unverifiable, 'the engines disagree' (finding engines-disagree), with JBMC's witness as the counterexample. The interpreter's run of the harness on that witness is shown but decides nothing, since it shares the own checker's models. A proof that assumed a JDK call under --gaps assume is not sent to JBMC, which would approximate the same call without naming it. An assumed class initializer is checked, since JBMC runs it. The option is opt-in, and the CLI refuses it under any engine but auto.\n\nDepartures from the brief: it says a disagreement is 'its own outcome, never either verdict'. Here that is Unverifiable plus the disagreed status, not a fourth Verdict, because every caller already treats Unverifiable as no verdict. A JBMC run with no verdict leaves the own checker's proof standing (exit 0), with the result saying it is not confirmed. build.py does not pass --confirm, so no recorded result changes. Seen, not fixed: a relative --jbmc path fails, because JBMC runs in the work directory.\n\nVerified: confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker (lib/tests/conformance.rs) uses a script standing in for JBMC, since JBMC is not run inline. It covers each status, both drivers, the single full-range command line, the JSON and the CLI refusal. The conformance corpus's native test still passes. cargo test --release: 119 unit tests and the conformance tests pass. The 53 integration tests passed on a second run in 55 s. On the first run, 625 s on a loaded machine, the own checker's regression proof of the Pricing rounding refactor (integration.rs:1391) did not come back a violation; the test passes alone in 17 s and in the full rerun, and --confirm is off there. The search's time-dependent budgets are the likely cause, so it is worth watching. Clippy is clean on the changed files.\n\nThe real JBMC runs the whole corpus under auto --confirm, strict and assume, in the new ignored test the_corpus_agrees_with_the_jvm_under_auto_confirm: pipeline job 20261106-024336-conformance-corpus-under-engine-auto-con. Phase 1 is complete apart from that job and 20261106-021741. Next: 2a, the statement as data.",
       "log_sha256": "5665eed8c6152a598f8eef83a67e44c3dd67fd360123a743db2b7b28b7c94485"
+    },
+    {
+      "change_id": "qrkrmwlmqxmouwoznvpsnzpzqmpknopl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The statement as data: every verdict of a regression or property proof carries what it is about, its domain, assumptions with their basis, observations, bounds, models, checker, gap mode and confirmation, and the page states it (verification pending)",
+      "body": "Step 2a of llm-dlc/loops/sound-verdicts.md. A proof line could read the same for two verdicts about different statements. Now jvmcontract's equivalence and prove outcomes carry 'stated' (lib/src/statement.rs) whenever a harness was built, whatever the verdict. It covers the domain D: each parameter's kind (primitive, array, or record with its components), whether null is among its values, an array's longest length, and whether two arrays may be one (never today). It covers the assumptions A, each with a kind and a basis: stated by the claim (--unchanged-unless, --assume), made by the harness (inputs a record's constructor rejects, or on which --before-arguments throws, are skipped), the checker's engine semantics (the own checker takes every JDK class as initialized; JBMC stubs a JDK method it has no bytecode for), or a gap assumed under --gaps assume, with its id. It covers the observations: what is compared of the result and of an exception (its class among the harness's 15, not its message), and which arrays are compared after the call. Then come the unwinding and array bounds, whether the search was complete, the model bundle's sha256 digest (a SHA-256 written out in lib/src/digest.rs, since the build has no network) with the JDK's version, the checker with its SAT solver (the own checker's bundled CaDiCaL 1.9.5) and any fallback, the gap mode, and the --confirm status.\n\nbuild.py records it as result.stated (camelCase, kept in format 2's evidence; a B11 property keeps its own). The result schema defines it as $defs/statement. A page states it in one paragraph, 'What the verdict is about', after the proof line. No recorded result has it until it is re-run, so --render-only of every example changed no page. Jobs 20261106-025930-example-144-b9-re-run-its-result-records and 20261106-025930-example-145-b9-re-run-its-result-records re-run the pair that differs only in the array bound (8, where the proof is vacuous, and 12), so two real pages show it. lib/README.md and the verify-bytecode skill's reference describe the field.\n\nVerified inline. The new conformance test the_statement_says_what_a_verdict_is_about runs the own checker on pairs of claims that differ only in the domain (array bound 8 or 4), the observations, an assumption, or the models (on or off), and finds each pair's statements different in that part alone. It also covers a regression proof's two unaliased arrays, scope and result relation, and identical bytecode (checker none). The new StatementTest in test_build.py renders pairs that differ in the domain, observations, assumptions, models or confirmation, and checks that each paragraph says the difference in the sentence about it, and that the recorded field validates against the schema. cargo test --release: 122 unit, 3 conformance (2 ignored, pipeline jobs), 53 integration, all pass. test_build.py: 140 pass. Clippy is clean on the changed files.\n\nWhere this departs from the brief: the console report doesn't print the statement (--json and the page do). The search record keeps its own copies of the bounds and gap mode so as not to break its readers. JBMC's solver is recorded as the one asked for (cadical), without the version JBMC bundles. Vacuity is left as it was, for 2b.",
+      "log_sha256": "2195f219454adb01a8871a0849086da998b0739928c7083c4f54b7d668b4bfda"
     }
   ],
   "logs": {
@@ -265,6 +289,12 @@
       "lines": 757,
       "gzip_bytes": 333224,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/1e8891d9d9b719d600577bff2449b20f9905075aabfe1f88fde402e21b77bc65.jsonl.gz"
+    },
+    "2195f219454adb01a8871a0849086da998b0739928c7083c4f54b7d668b4bfda": {
+      "bytes": 16224934,
+      "lines": 5637,
+      "gzip_bytes": 2935795,
+      "url": null
     },
     "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e": {
       "bytes": 5704475,
