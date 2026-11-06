@@ -1876,6 +1876,14 @@ impl<'a> Engine<'a> {
             }
             // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
             ("infeasible", []) => return Ok(Some(End::Infeasible)),
+            // Whether two objects are of one class, as `a.getClass() == b.getClass()` is on the JVM: a proof of a
+            // contract against the JDK's bytecode ([`crate::contract_proving`]) checks the exception's exact class.
+            ("sameClass", [Val::R(Some(a)), Val::R(Some(b))]) => {
+                let same = path.objects[*a].class == path.objects[*b].class;
+                let v = self.b.constant(i64::from(same), 32);
+                self.push(path, Val::I(v));
+            }
+            ("sameClass", [_, _]) => return self.raise(path, "java/lang/NullPointerException"),
             _ => return unsupported(format!("unknown intrinsic {name} of a contract")),
         }
         self.advance(path);

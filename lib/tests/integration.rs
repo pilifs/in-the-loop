@@ -2478,6 +2478,11 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         let o = prove("filled", "filled", "result == out.length", &[], &[&random, &fill], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(o.output.contains("relying on 2 contracts for gaps of the tool's own checker, 2 tested"), "{}", o.output);
+        // Neither is proved: each call has an object whose state the checker does not keep.
+        let json = serde_json::to_value(&o).unwrap();
+        for g in json["search"]["gaps"].as_array().unwrap() {
+            assert!(g["contract"]["unproved"].as_str().unwrap().starts_with("only a static method's contract is proved against the JDK's bytecode"), "{json}");
+        }
         assert!(o.output.contains(", each called on new java.util.Random(), none refuting it)"), "{}", o.output);
         // What the JVM shows of an array: a contract that leaves it out of `modifies:`, or asserts what the call
         // does not leave in it, is refuted.
@@ -2529,8 +2534,27 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         let exact = nlz("0 <= result && result <= 32 && (i == 0) == (result == 32) && (i < 0) == (result == 0)");
         let o = prove("bits", "bits", "result >= 0 && result <= 32", &[], &[&exact], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
-        assert!(o.output.contains("relying on 1 contract for gaps of the tool's own checker, 1 tested"), "{}", o.output);
         assert_eq!(contracts(&o), ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+        // The method is static, of primitives, and in the checker's fragment: its contract is proved against the
+        // JDK's own bytecode of java.lang.Integer, and tested on the JVM besides.
+        assert!(o.output.contains("relying on 1 contract for gaps of the tool's own checker, 1 proved (--gaps advised)"), "{}", o.output);
+        assert!(o.output.contains("proved on every input against the bytecode of java.lang.Integer in JDK ") && o.output.contains("; tested on "), "{}", o.output);
+        let stated = o.stated.as_ref().unwrap();
+        let a = stated.assumptions.iter().find(|a| a.kind == jvmcontract::statement::AssumptionKind::Contract).expect("the contract is an assumption");
+        assert_eq!(a.basis, jvmcontract::statement::Basis::Proved);
+        let json = serde_json::to_value(&o).unwrap();
+        let contract = &json["search"]["gaps"][0]["contract"];
+        assert_eq!(contract["evidence"], "proved", "{json}");
+        assert_eq!(contract["proof"]["class"], "java.lang.Integer", "{json}");
+        assert!(contract["proof"]["digest"].as_str().unwrap().starts_with("sha256:") && contract["proof"]["paths"].as_u64().unwrap() > 1, "{json}");
+        assert_eq!(contract["proof"]["unwind"], 16, "{json}");
+        assert!(contract["testing"]["inputs"].as_u64().unwrap() > 100 && contract.get("unproved").is_none(), "{json}");
+        // A contract wrong only where neither the boundary values nor the random ones look: the proof finds the
+        // input, and the JVM, run on it too, refutes the contract there.
+        let o = prove("bits-wrong-far", "bits", "result >= 0 && result <= 32", &[], &[&nlz("0 <= result && result <= 32 && (i != 777777 || result == 0)")], engine).unwrap();
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.starts_with("a JVM refutes it: on i=777777 the JVM's call returns 12, where the contract says it returns with "), "{}", o.output);
+        assert!(refused.contains("(1 of "), "the proof's witness alone refutes it: {}", o.output);
         // A violation through it, which the interpreter, running the JDK's own bytecode, reproduces.
         let o = prove("bits-violated", "bits", "result < 32", &[], &[&exact], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
@@ -2544,6 +2568,11 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         let o = prove("roll", "roll", "result >= 1 && result <= sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 <= result && result < bound")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(o.output.contains("relying on 2 contracts for gaps of the tool's own checker, 2 tested"), "{}", o.output);
+        // Neither is proved: each call has an object whose state the checker does not keep.
+        let json = serde_json::to_value(&o).unwrap();
+        for g in json["search"]["gaps"].as_array().unwrap() {
+            assert!(g["contract"]["unproved"].as_str().unwrap().starts_with("only a static method's contract is proved against the JDK's bytecode"), "{json}");
+        }
         assert!(o.output.contains("throws java.lang.IllegalArgumentException when bound <= 0; then 0 <= result && result < bound; modifies this (written by the test; tested on ") && o.output.contains(", each called on new java.util.Random(), none refuting it)"), "{}", o.output);
         // A witness through the contract is one the contract admits: the interpreter cannot run Random to show
         // the JVM's, so there is no verdict.

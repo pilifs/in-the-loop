@@ -256,12 +256,13 @@
                 "type": "string"
               },
               "basis": {
-                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that a JVM `tested` or that nothing has checked (`trusted`), under --gaps advised --contracts.",
+                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that the tool's own checker `proved` against the JDK's bytecode, that a JVM `tested`, or that nothing has checked (`trusted`), under --gaps advised --contracts.",
                 "enum": [
                   "stated",
                   "harness",
                   "engine",
                   "assumed",
+                  "proved",
                   "tested",
                   "trusted"
                 ]
@@ -692,14 +693,14 @@
               "approximation": { "description": "What the own checker takes it to do under `--gaps assume`.", "type": "string" },
               "treatment": { "description": "`refused` (the path ended there), `assumed` (its approximation taken), or closed by a `contract` (--contracts, applied at the call).", "enum": ["refused", "assumed", "contract"] },
               "contract": {
-                "description": "For a gap a contract closed: what it states, who wrote it, what backs it, and where it is. The evidence is `tested` when a JVM ran the JDK's call on boundary and seeded random inputs and none refutes it (step 3c of llm-dlc/loops/sound-verdicts.md), else `trusted`, with why the JVM could not test it.",
+                "description": "For a gap a contract closed: what it states, who wrote it, what backs it, and where it is. The evidence is `proved` when the tool's own checker proved it against the JDK's bytecode on every input it is about and a JVM test refutes none of it, `tested` when a JVM ran the JDK's call on boundary and seeded random inputs and none refutes it (step 3c of llm-dlc/loops/sound-verdicts.md), else `trusted`, with why the JVM could not test it.",
                 "type": "object",
                 "required": ["summary", "writtenBy", "evidence", "file", "line"],
                 "additionalProperties": false,
                 "properties": {
                   "summary": { "type": "string" },
                   "writtenBy": { "type": "string" },
-                  "evidence": { "enum": ["tested", "trusted"] },
+                  "evidence": { "enum": ["proved", "tested", "trusted"] },
                   "testing": {
                     "description": "What the JVM test found: the inputs inside `assume:` run to their end, how many returned and threw as each clause says, those outside `assume:`, those that ran out of the test's memory, the seed, the JDK, and the receiver an instance method was called on.",
                     "type": "object",
@@ -718,7 +719,23 @@
                       "refuting": { "type": "integer" }
                     }
                   },
-                  "untested": { "description": "Why the JVM could not test it, for a trusted contract.", "type": "string" },
+                  "untested": { "description": "Why the JVM could not test it.", "type": "string" },
+                  "proof": {
+                    "description": "For a proved contract: the class whose bytecode the tool's own checker ran, the JDK it came from, the class file's digest, the checker with its solver, how many times loops were unwound, the paths, and the seconds.",
+                    "type": "object",
+                    "required": ["class", "jdk", "digest", "checker", "unwind", "paths", "seconds"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "class": { "type": "string" },
+                      "jdk": { "type": "string" },
+                      "digest": { "type": "string" },
+                      "checker": { "type": "string" },
+                      "unwind": { "type": "integer" },
+                      "paths": { "type": "integer" },
+                      "seconds": { "type": "number" }
+                    }
+                  },
+                  "unproved": { "description": "Why it is not proved: the call is not one a proof against the JDK's bytecode is about (an instance method, arrays, an initializer), or the checker gave no proof.", "type": "string" },
                   "file": { "description": "The contracts file, as the tool was given it.", "type": "string" },
                   "line": { "type": "integer" }
                 }

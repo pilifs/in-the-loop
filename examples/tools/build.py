@@ -1617,6 +1617,7 @@ def stated_record(outcome):
 # How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
 BASIS_WORDS = {"stated": "stated by the claim", "harness": "made by how the harness builds the statement",
                "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume",
+               "proved": "a contract for a gap that the tool's own checker proved against the JDK's bytecode on every input it is about, under --gaps advised",
                "tested": "a contract for a gap that a JVM tested, the JDK's call on boundary and seeded random inputs, under --gaps advised",
                "trusted": "a contract for a gap that nothing has checked, under --gaps advised"}
 CONFIRMATION_WORDS = {"confirmed": "JBMC proved it again over every input (--confirm)",
@@ -1726,9 +1727,17 @@ def assumed_gaps(result, treatment="assumed"):
 
 
 def evidence_words(c):
-    """What backs a contract for a gap, in words (lib/src/gap_contracts.rs, Evidence and Testing): what a JVM test
-    of it found, or why it is trusted."""
+    """What backs a contract for a gap, in words (lib/src/gap_contracts.rs, Evidence, Proof and Testing): the proof
+    against the JDK's bytecode, what a JVM test of it found, or why it is trusted."""
     t = c.get("testing")
+    p = c.get("proof")
+    if c["evidence"] == "proved" and p:
+        n = p["paths"]
+        tested = (f"a JVM ran the JDK's call on {t['inputs']} input{'s' if t['inputs'] != 1 else ''} besides (seed {t['seed']}), none "
+                  "refuting it" if t else f"no JVM test, since {c.get('untested') or 'none ran'}")
+        return (f"proved: the tool's own checker ran the bytecode of `{p['class']}` from JDK {p['jdk']} (`{p['digest'][:19]}...`) "
+                f"on every input the contract is about, over {n} path{'s' if n != 1 else ''} with loops unwound {p['unwind']} "
+                f"times, and the contract holds of it; {tested}")
     if c["evidence"] == "tested" and t:
         n = t["inputs"]
         return (f"tested: a JVM ran the JDK's call on {n} input{'s' if n != 1 else ''} (boundary values and random ones, seed "

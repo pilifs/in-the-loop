@@ -47,9 +47,23 @@ const TIMEOUT: Duration = Duration::from_secs(60);
 pub const CLASS: &str = "GapContractTests";
 
 /// Tests each contract on a JVM, in `dir`, with `entries` on the class path (for an initializer's class): what the
-/// test found, or why the JVM cannot test it, in the order given.
-pub(crate) fn test(shapes: &[Shape], cp: &ClassPath, entries: &[PathBuf], dir: &Path) -> Vec<Result<Testing, String>> {
-    let plans: Vec<Result<Plan, String>> = shapes.iter().map(|s| plan(s, cp)).collect();
+/// test found, or why the JVM cannot test it, in the order given. `extra` holds, by contract, inputs to run besides
+/// the boundary and random ones: the witness of a proof against the JDK's bytecode that refutes it
+/// ([`crate::contract_proving`]), which only the JVM's run makes a counterexample.
+pub(crate) fn test(shapes: &[Shape], cp: &ClassPath, entries: &[PathBuf], dir: &Path, extra: &[Vec<Vec<Value>>]) -> Vec<Result<Testing, String>> {
+    let plans: Vec<Result<Plan, String>> = shapes
+        .iter()
+        .enumerate()
+        .map(|(i, s)| {
+            let mut plan = plan(s, cp)?;
+            for input in extra.get(i).into_iter().flatten() {
+                if !plan.inputs.contains(input) {
+                    plan.inputs.push(input.clone());
+                }
+            }
+            Ok(plan)
+        })
+        .collect();
     if plans.iter().all(Result::is_err) {
         return plans.into_iter().map(|p| Err(p.err().unwrap_or_default())).collect();
     }
@@ -67,7 +81,7 @@ pub(crate) fn test(shapes: &[Shape], cp: &ClassPath, entries: &[PathBuf], dir: &
 
 /// A value of a parameter.
 #[derive(Debug, Clone, PartialEq)]
-enum Value {
+pub(crate) enum Value {
     /// Of an integral type, `char` or `boolean` (0 or 1).
     Int(i64),
     Float(f64),
@@ -456,7 +470,7 @@ fn report(writer: &mut ClassWriter) -> MethodWriter {
     MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "r".into(), descriptor: "(III)V".into(), code: Some(code) }
 }
 
-fn kind_of(t: &Type) -> Kind {
+pub(crate) fn kind_of(t: &Type) -> Kind {
     match t {
         Type::Long => Kind::Long,
         Type::Float => Kind::Float,
@@ -868,7 +882,7 @@ fn judge<'a>(shape: &Shape, plan: &Plan, lines: impl Iterator<Item = &'a Line>) 
 }
 
 /// An input by the `call:` line's names: `capacity=-1, bytes=[0, 1]`.
-fn describe(shape: &Shape, input: &[Value]) -> String {
+pub(crate) fn describe(shape: &Shape, input: &[Value]) -> String {
     shape.names.iter().zip(&shape.descriptor.params).zip(input).map(|((n, t), v)| format!("{n}={}", show(v, t))).collect::<Vec<_>>().join(", ")
 }
 

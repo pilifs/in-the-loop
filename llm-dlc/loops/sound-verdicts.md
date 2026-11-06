@@ -756,6 +756,72 @@ Each run counts only its own commits, so work done in earlier runs is listed her
       the fragment (the `Integer` and `Long` bit operations, `Arrays.fill`), with `proved` ranked above `tested`.
     - Then the recorded example. 037's `tableSizeFor`, rewritten with `numberOfLeadingZeros`, is a candidate for a
       proved contract, and a `Random` or `ArrayList` call for a tested one.
+- **3c, last part: contracts proved against the JDK's bytecode (2026-11-06).**
+  - `proved` is the strongest evidence level, ranked above `tested` (`Evidence::Proved`, statement basis `proved`).
+    It is implemented in [`lib/src/contract_proving.rs`](../../lib/src/contract_proving.rs).
+  - **How a proof runs.** Before the JVM test, each contract for a static JDK method whose parameters are primitives
+    is proved by the tool's own checker against the JDK's own bytecode. The proof is generated as a class,
+    `GapContractProofs`, with one method per contract. That method calls the JDK method and checks the contract as
+    the JVM test does:
+    - inside `assume:`, the first throws clause that holds decides, and the class thrown must be exactly that one.
+      The class is compared through a new engine intrinsic, `sameClass`;
+    - otherwise the method returns, with `assert:` holding of its result.
+
+    The method's class is copied from the JDK image into a directory on the class path, so the checker runs its
+    bytecode rather than meeting the gap. The run is under `--gaps strict`, with loops unwound 16 times, 30 s per
+    contract, and no contracts applied inside it.
+  - **The JVM confirms what a proof refutes.** A proof's witness is added to the JVM's inputs, so only the JVM's run
+    makes it a counterexample.
+    - A witness the JVM does not reproduce is a disagreement with the JVM. The contract stays tested, and `unproved`
+      says so.
+    - With no JVM, a refuted contract is refused: it stays open, rather than being trusted.
+  - **What a proved contract records.** It is proved only if the JVM refutes nothing either, so it is also tested.
+    `proof` records the class, the JDK, the class file's `sha256:` digest, the checker, the unwinding, the paths and
+    the seconds. The contract line reads `proved on every input against the bytecode of java.lang.Integer in JDK
+    25.0.4.1 (sha256:...), by ... over 18 paths; tested on 166 inputs ...`. Every contract that is not proved says
+    why in `unproved`.
+  - **What a proof is about:** the JDK's bytecode, which HotSpot may run as an intrinsic with the same meaning, with
+    the JDK's classes taken as initialized, as in every proof the own checker makes.
+  - Acceptance, inline:
+    - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` (integration.rs):
+      - `bits`'s contract for `Integer.numberOfLeadingZeros` is now proved, on native and auto: basis `proved`, with
+        the `proof` record in the JSON.
+      - **A contract that is wrong only at `i = 777777`**, which neither the boundary values nor the 256 random
+        inputs reach, is found by the proof. The JVM then refutes it there: "on i=777777 the JVM's call returns 12".
+        Before this step it was tested.
+      - `roll`'s contracts (a constructor and an instance method) stay tested, each with its `unproved` reason.
+    - The unit test `a_contract_is_proved_against_the_jdk_bytecode_with_the_exception_class_exact`
+      (gap_contracts.rs):
+      - `Integer.divideUnsigned` with `throws: ArithmeticException when b == 0` is proved.
+      - With `RuntimeException` in that clause it is refuted at `b=0`, a superclass not being the class thrown.
+      - `result != 7` for `numberOfLeadingZeros` is refuted on an `i` in [2^24, 2^25).
+      - An instance method is unproved, with its reason.
+    - `ContractsTest` (test_build.py) checks the label `(1 proved, 1 tested)`, the page's words and the schema
+      (`proof`, `unproved`, `proved`). The conformance corpus is unchanged: its contracts are all for constructors,
+      `Random` or initializers, so they stay tested. All Rust tests and the 152 Python tests pass.
+  - Re-rendering every page changed none, and no job was needed.
+  - **This departs from the brief in two ways.**
+    - `Arrays.fill` is not proved. A proof covers arrays only up to its bound (8), while the call it is applied at
+      may be given a longer array (the engine makes constant-size arrays of up to 65536 elements), so a contract
+      over arrays stays tested. Making the contract apply only up to the proof's bound would close the gap for
+      fewer calls, so it is left undone.
+    - **Still no recorded example: the fifth step to defer it.** 3e's acceptance asks for exactly the example 3c
+      needs: one proof that closes only through agent-written contracts, one proved and one tested, with the page
+      showing both levels. One example, recorded once with both levels, serves both steps better than a 3c example
+      now and a 3e example later.
+  - Not done:
+    - A proof is run again on every run (milliseconds for these, but up to 30 s each); 3d's library checks a
+      contract once.
+    - Instance methods and constructors are not proved.
+    - A witness that goes through a contract is still not run on a JVM.
+  - Next: the recorded example, before 3d. A property proof under `--gaps advised`, on an app kernel, whose
+    contracts an agent writes:
+    - one for `Integer.numberOfLeadingZeros`, proved (for example, a capacity rounded up to a power of two);
+    - one for `new ArrayList<>(n)` or `Random.nextInt`, tested;
+    - and a wrong one the JVM refutes, shown in the advice.
+
+    It runs through the pipeline (`approach.gaps: advised`, `approach.contracts`), and its page shows both levels.
+    Tag: `advised-contracts`. Then 3d (the contract library and `--max-trust`) and 3e (the skill's loop).
 
 ## Loop settings
 

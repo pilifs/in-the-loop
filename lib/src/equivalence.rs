@@ -399,10 +399,15 @@ pub(crate) fn contract_levels(levels: impl Iterator<Item = crate::gap_contracts:
 
 /// What backs a contract, in words: what testing found, or why it is trusted.
 pub(crate) fn evidence_words(c: &crate::bmc::gaps::ContractUse) -> String {
-    match (&c.testing, &c.untested) {
+    let tested = match (&c.testing, &c.untested) {
         (Some(t), _) => t.words(),
+        (None, Some(why)) if c.proof.is_some() => format!("no JVM test, since {why}"),
         (None, Some(why)) => format!("trusted: no JVM test, since {why}"),
         (None, None) => "trusted: checked against neither the JDK's bytecode nor a JVM".into(),
+    };
+    match &c.proof {
+        Some(p) => format!("{}; {tested}", p.words()),
+        None => tested,
     }
 }
 

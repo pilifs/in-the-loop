@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T05:05:22.000Z",
-  "duration_seconds": 19853,
+  "ended": "2026-11-06T05:24:29.796Z",
+  "duration_seconds": 21000,
   "stats": {
-    "turns": 64,
-    "api_calls": 886,
-    "tool_calls": 896,
+    "turns": 69,
+    "api_calls": 945,
+    "tool_calls": 954,
     "tool_errors": 3,
-    "compactions": 11,
+    "compactions": 12,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 1792,
-      "output_tokens": 907309,
-      "cache_read_input_tokens": 160525558,
-      "cache_creation_input_tokens": 2967140
+      "input_tokens": 1912,
+      "output_tokens": 962767,
+      "cache_read_input_tokens": 170163137,
+      "cache_creation_input_tokens": 3198764
     }
   },
   "tools": {
-    "Bash": 801,
-    "Read": 65,
-    "Write": 16,
+    "Bash": 855,
+    "Read": 68,
+    "Write": 17,
     "Edit": 11,
     "WebFetch": 2,
     "ToolSearch": 1
@@ -41,6 +41,7 @@
     "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
+    "lib/src/contract_proving.rs",
     "lib/src/contract_testing.rs",
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
@@ -212,24 +213,38 @@
     {
       "index": 11,
       "started": "2026-11-06T04:36:42.640Z",
-      "ended": "2026-11-06T05:05:22.000Z",
-      "turns": 4,
-      "api_calls": 82,
+      "ended": "2026-11-06T05:05:56.119Z",
+      "turns": 5,
+      "api_calls": 84,
       "usage": {
-        "input_tokens": 164,
-        "output_tokens": 73509,
-        "cache_read_input_tokens": 18597028,
-        "cache_creation_input_tokens": 299318
+        "input_tokens": 170,
+        "output_tokens": 75023,
+        "cache_read_input_tokens": 19224468,
+        "cache_creation_input_tokens": 312749
       },
-      "peak_context_tokens": 312398
+      "peak_context_tokens": 325831
+    },
+    {
+      "index": 12,
+      "started": "2026-11-06T05:06:40.223Z",
+      "ended": "2026-11-06T05:24:29.796Z",
+      "turns": 4,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 114,
+        "output_tokens": 53944,
+        "cache_read_input_tokens": 9010139,
+        "cache_creation_input_tokens": 218193
+      },
+      "peak_context_tokens": 231273
     }
   ],
   "log": {
-    "sha256": "27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a",
-    "bytes": 27677771,
-    "lines": 9340,
-    "gzip_bytes": 5114540,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a.jsonl.gz"
+    "sha256": "6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4",
+    "bytes": 29659865,
+    "lines": 9999,
+    "gzip_bytes": 5494878,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -376,6 +391,14 @@
       "summary": "Calls whose value a proof reads are gaps: a JDK method returning a primitive and a static JDK method the tool's own checker does not model are named gaps with no assume form, which a contract closes by stating the result, tested on a real JVM",
       "body": "Step 3c, second part, of llm-dlc/loops/sound-verdicts.md. Two new gap kinds, jdk-primitive-method (Random.nextInt(bound)) and jdk-static-method (Integer.numberOfLeadingZeros, Arrays.fill), shared by the engine and the gap scan. Before, the engine refused both outright; now only a JDK method with floating point or an array result is. Neither has an assume form, since the engine could only make the value up: --gaps assume refuses them as strict does, and the reason says only a contract closes them. A contract states the value with assert: over result (0 <= result && result < bound); the contract's generated method takes any value from a new intrinsic, narrows it to the result's type and keeps what the assertion admits. The JVM test calls static methods too, and a refuted assertion says what the JVM returned (on i=0 the JVM's call returns 32).\n\nTwo behaviours change. A witness that goes through a contract and that the interpreter cannot run (it has no java.util.Random) is now no verdict rather than a violation, since a contract admits values the JDK's call may never give; 3b's firstByte case under a nextBytes contract is Unverifiable now. And --engine auto decides per gap whether to ask JBMC: still for a class initializer, and now also for a call into a JDK class JBMC is given the bytecode of (Math, StrictMath, Integer, Long, Short, Byte), which keeps today's fallback for Integer.numberOfLeadingZeros. A bug is fixed on the way: the JVM test ran java in its own directory, so a relative --work made every contract trusted.",
       "log_sha256": "27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a"
+    },
+    {
+      "change_id": "usrpuywyqsnwvuoprztlqtuuzpqsyxon",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Contracts proved against the JDK's bytecode: a contract for a static JDK method of primitives is proved by the tool's own checker running the JDK's own class, the strongest evidence level, and a proof that refutes one hands its input to the JVM test",
+      "body": "Step 3c's last part of llm-dlc/loops/sound-verdicts.md. Before a contract for a gap is tested on a JVM, lib/src/contract_proving.rs proves it where it can. A generated class, GapContractProofs, has one method per contract, which calls the JDK method and checks the contract as the JVM test does: inside assume:, the first throws clause that holds decides, and the class thrown must be exactly that one (a new engine intrinsic, sameClass, compares classes); otherwise the method returns with assert: holding of its result. The method's class is copied from the JDK image onto the class path as a directory's, so the tool's own checker runs its bytecode (the JDK's classes are still taken as initialized). The run is under --gaps strict, with loops unwound 16 times and 30 s per contract. A contract that is proved, and that the JVM does not refute either, gets evidence 'proved' (ranked above 'tested', statement basis 'proved'), with a proof record of the class, JDK, class file sha256, checker, unwinding and paths. The verdict counts it ('1 proved'), and its contract line says what it was proved against. A proof that refutes a contract adds its witness to the JVM's inputs, so only the JVM's run makes it a counterexample. A witness the JVM does not reproduce leaves the contract tested and says so, and with no JVM the refuted contract is refused. Every contract that is not proved says why in 'unproved'. build.py, the result schema, lib/README.md and the skill's reference describe the level.\n\nVerified: the integration test now proves the bits fixture's contract for Integer.numberOfLeadingZeros, on native and auto. A contract that is wrong only at i=777777, an input neither the boundary values nor the random ones reach, is found by the proof and refuted by the JVM there ('returns 12'); before this change it was 'tested'. Random's contracts stay tested, each with the reason it is not proved. A new unit test proves Integer.divideUnsigned with ArithmeticException when b == 0, and refutes the same contract with RuntimeException, since a superclass is not the exact class thrown. It also refutes result != 7 for numberOfLeadingZeros on an i in [2^24, 2^25). A new test_build.py test covers the label '(1 proved, 1 tested)', the page's words and the schema. All Rust tests (unit, conformance, integration) and the 152 Python tests pass, and re-rendering every page changed none, so no job was needed.\n\nWhere the brief is out of date: it names Arrays.fill as a method to prove, but a proof covers arrays only up to its bound, while the call it is applied at may get a longer array, so contracts over arrays stay tested. The brief also says each Phase 3 step ends with a recorded example; 3c's is deferred a fifth time, on purpose, because 3e's acceptance asks for exactly the same example (one proved and one tested contract). The Progress entry says why, and names that example as next.",
+      "log_sha256": "6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4"
     }
   ],
   "logs": {
@@ -443,6 +466,12 @@
       "bytes": 24974274,
       "lines": 8499,
       "gzip_bytes": 4594730,
+      "url": null
+    },
+    "6dbc259c73f788ff66c70539753baa9cc95d50f66bbfb2486d056757b08e38b4": {
+      "bytes": 29659865,
+      "lines": 9999,
+      "gzip_bytes": 5494878,
       "url": null
     },
     "6fc32a09f37bf1ee1b7853aa915fb8eb430ae8e4787c127a5892ec789b972324": {

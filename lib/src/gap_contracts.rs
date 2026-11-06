@@ -37,7 +37,10 @@
 //! checked on each. One the JVM refutes is refused, with the inputs that refute it, and its gap stays open, so the
 //! counterexample goes back to the agent with the advice. One no input refutes is `tested`, with the number of
 //! inputs; one the JVM cannot test (a parameter it cannot make values of, a receiver it cannot build, no JVM) is
-//! `trusted`, with the reason. The verdict says which contracts it rests on, at which level.
+//! `trusted`, with the reason. Before the test, a contract for a static JDK method of primitives is proved against
+//! the JDK's own bytecode where the method is in the checker's fragment ([`crate::contract_proving`]): such a
+//! contract the JVM does not refute either is `proved`, the strongest level, and the witness of a proof that
+//! refutes one is among the JVM's inputs. The verdict says which contracts it rests on, at which level.
 //!
 //! The engine applies a contract by calling a method of a class generated here, [`CLASS`], with the call's
 //! arguments (and its receiver, for a method that may return it): a branch per throws clause that throws, a
@@ -56,6 +59,7 @@ use crate::bmc::gaps::{self, Closing, Closure, ContractUse, Gap, GapKind, JdkCal
 use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
 use crate::classfile::{flags, Cond, Kind, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
+use crate::contract_proving::Proving;
 use crate::harness::expr::{self, Param};
 use crate::Error;
 
@@ -64,11 +68,13 @@ pub const CLASS: &str = "GapContracts";
 /// The class of the engine's intrinsics the generated methods call; it exists on no class path.
 pub const INTRINSICS: &str = "jvmcontract/GapIntrinsics";
 
-/// How a contract is backed: what checked it, strongest first. `proved` (against the JDK's bytecode) is the
-/// next step of 3c.
+/// How a contract is backed: what checked it, strongest first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Evidence {
+    /// The tool's own checker proved it against the JDK's bytecode, on every input inside `assume:`
+    /// ([`crate::contract_proving`]); a JVM test runs too, and refutes none of it.
+    Proved,
     /// A real JVM ran the JDK's call on the contract's boundary values and seeded random inputs, and none refutes
     /// it ([`crate::contract_testing`]).
     Tested,
@@ -79,6 +85,7 @@ pub enum Evidence {
 impl Evidence {
     pub fn name(self) -> &'static str {
         match self {
+            Evidence::Proved => "proved",
             Evidence::Tested => "tested",
             Evidence::Trusted => "trusted",
         }
@@ -131,6 +138,30 @@ impl Testing {
             out.push_str(", none refuting it");
         }
         out
+    }
+}
+
+/// What a proof of a contract against the JDK's bytecode was ([`crate::contract_proving`]).
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct Proof {
+    /// The class whose bytecode was run: `java.lang.Integer`.
+    pub class: String,
+    /// The JDK whose image it came from, and the class file's digest.
+    pub jdk: String,
+    pub digest: String,
+    /// The checker, with its SAT solver.
+    pub checker: String,
+    /// How many times a loop could be unwound: the proof is complete within it, or there is none.
+    pub unwind: u32,
+    pub paths: u64,
+    pub seconds: f64,
+}
+
+impl Proof {
+    /// In words: `proved on every input against the bytecode of java.lang.Integer in JDK 25.0.4.1 (sha256:...)`.
+    pub fn words(&self) -> String {
+        let short = self.digest.get(..19).unwrap_or(&self.digest);
+        format!("proved on every input against the bytecode of {} in JDK {} ({short}...), by {} over {} path{}", self.class, self.jdk, self.checker, self.paths, if self.paths == 1 { "" } else { "s" })
     }
 }
 
@@ -262,6 +293,12 @@ pub struct Accepted {
     /// Why it is trusted: what kept the JVM from testing it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub untested: Option<String>,
+    /// The proof against the JDK's bytecode, for a proved contract.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub proof: Option<Proof>,
+    /// Why it is not proved: the call is not one a proof is about, or the checker gave no proof.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unproved: Option<String>,
 }
 
 /// A contract the engine cannot apply, or a JVM refutes, and why: its gap stays open.
@@ -329,9 +366,9 @@ pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf],
                     continue;
                 }
                 let written_by = block.value("written-by").unwrap_or_default().to_string();
-                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, testing: None, untested: None, file: file.display().to_string(), line: block.line, index };
+                let contract = ContractUse { summary: summary.clone(), written_by: written_by.clone(), evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None, file: file.display().to_string(), line: block.line, index };
                 loaded.closed.insert(gap, Closure { how: closing, contract });
-                loaded.accepted.push(Accepted { id: block.id.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted, testing: None, untested: None });
+                loaded.accepted.push(Accepted { id: block.id.clone(), line: block.line, summary, written_by, evidence: Evidence::Trusted, testing: None, untested: None, proof: None, unproved: None });
                 shapes.push(shape);
             }
             Err(reason) => loaded.refused.push(Refused { id: block.id.clone(), line: block.line, reason, testing: None }),
@@ -341,30 +378,43 @@ pub fn load(file: &Path, cp: &ClassPath, jdk: Option<&str>, entries: &[PathBuf],
         loaded.class = Some(writer.to_bytes());
     }
 
-    // Each accepted contract on a real JVM, strongest evidence first.
-    let tested = crate::contract_testing::test(&shapes, cp, entries, &work.join("contract-tests"));
+    // Each accepted contract proved against the JDK's bytecode where it can be, then on a real JVM, with the
+    // witness of a proof that refutes it among the JVM's inputs: only the JVM's run makes it a counterexample.
+    let proofs = crate::contract_proving::prove(&shapes, cp, &work.join("contract-proofs"));
+    let extra: Vec<Vec<Vec<crate::contract_testing::Value>>> = proofs.iter().map(|p| if let Proving::Refuted { input, .. } = p { vec![input.clone()] } else { Vec::new() }).collect();
+    let tested = crate::contract_testing::test(&shapes, cp, entries, &work.join("contract-tests"), &extra);
     let mut kept = Vec::new();
-    for (accepted, result) in std::mem::take(&mut loaded.accepted).into_iter().zip(tested) {
+    for ((accepted, result), proving) in std::mem::take(&mut loaded.accepted).into_iter().zip(tested).zip(proofs) {
         let gap = gap_of(&accepted.id).map(|(g, _)| g).expect("an accepted contract's id is a gap's");
-        match result {
-            Ok(testing) if testing.refuting > 0 => {
-                loaded.closed.remove(&gap);
+        let refused = match (&result, &proving) {
+            (Ok(testing), _) if testing.refuting > 0 => {
                 let first = testing.counterexamples.first().map(Counterexample::line).unwrap_or_default();
-                let reason = format!("a JVM refutes it: {first} ({} of {} input{} refute it, on JDK {}, seed {})", testing.refuting, testing.inputs, if testing.inputs == 1 { "" } else { "s" }, testing.jdk, testing.seed);
-                loaded.refused.push(Refused { id: accepted.id, line: accepted.line, reason, testing: Some(testing) });
+                Some(format!("a JVM refutes it: {first} ({} of {} input{} refute it, on JDK {}, seed {})", testing.refuting, testing.inputs, if testing.inputs == 1 { "" } else { "s" }, testing.jdk, testing.seed))
             }
-            Ok(testing) => {
-                let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
-                closure.contract.evidence = Evidence::Tested;
-                closure.contract.testing = Some(testing.clone());
-                kept.push(Accepted { evidence: Evidence::Tested, testing: Some(testing), ..accepted });
-            }
-            Err(why) => {
-                let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
-                closure.contract.untested = Some(why.clone());
-                kept.push(Accepted { untested: Some(why), ..accepted });
-            }
+            (Err(why), Proving::Refuted { words, .. }) => Some(format!("the tool's own checker refutes it against the JDK's bytecode on {words}, which no JVM could confirm, since {why}")),
+            _ => None,
+        };
+        if let Some(reason) = refused {
+            loaded.closed.remove(&gap);
+            loaded.refused.push(Refused { id: accepted.id, line: accepted.line, reason, testing: result.ok() });
+            continue;
         }
+        let (evidence, proof, unproved) = match proving {
+            Proving::Proved(p) => (Evidence::Proved, Some(p), None),
+            Proving::Refuted { words, .. } => (Evidence::Tested, None, Some(format!("the tool's own checker refutes it against the JDK's bytecode on {words}, where the JVM's call does as the contract says: a disagreement with the JVM, which is a bug in jvmcontract"))),
+            Proving::Unproved(why) => (if result.is_ok() { Evidence::Tested } else { Evidence::Trusted }, None, Some(why)),
+        };
+        let (testing, untested) = match result {
+            Ok(t) => (Some(t), None),
+            Err(why) => (None, Some(why)),
+        };
+        let closure = loaded.closed.get_mut(&gap).expect("an accepted contract closes its gap");
+        closure.contract.evidence = evidence;
+        closure.contract.testing = testing.clone();
+        closure.contract.untested = untested.clone();
+        closure.contract.proof = proof.clone();
+        closure.contract.unproved = unproved.clone();
+        kept.push(Accepted { evidence, testing, untested, proof, unproved, ..accepted });
     }
     loaded.accepted = kept;
     loaded.refused.sort_by_key(|r| r.line);
@@ -878,5 +928,46 @@ mod tests {
         let (_, closing, _, shape) = accept(&block(next), &cp, Some("25"), 0, &mut writer).unwrap();
         assert!(matches!(&closing, Closing::Stub { descriptor, receiver: true, .. } if descriptor == "(Ljava/lang/Object;I)I"), "{closing:?}");
         assert_eq!(shape.result_slot, Some(2), "after the receiver and the bound");
+    }
+}
+
+#[cfg(test)]
+mod proving_tests {
+    use super::*;
+    use crate::contract_proving::{prove, Proving};
+
+    /// The shapes of contracts as `accept` makes them, for the proof alone (no JVM runs here).
+    fn proofs(blocks: &[&str]) -> Vec<Proving> {
+        let cp = ClassPath::new().with_default_jdk();
+        if !cp.has_jdk() {
+            return Vec::new();
+        }
+        let mut writer = ClassWriter::new(CLASS);
+        let shapes: Vec<Shape> = blocks.iter().enumerate().map(|(i, b)| accept(&parse(&format!("kind: gap-contracts\n{b}"), "t").unwrap().remove(0), &cp, Some("25"), i, &mut writer).unwrap().3).collect();
+        let dir = std::env::temp_dir().join(format!("jvmcontract-proving-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let out = prove(&shapes, &cp, &dir);
+        let _ = std::fs::remove_dir_all(&dir);
+        out
+    }
+
+    #[test]
+    fn a_contract_is_proved_against_the_jdk_bytecode_with_the_exception_class_exact() {
+        let divide = |throws: &str| format!("jdk-static-method:java.lang.Integer.divideUnsigned(II)I@jdk-25\n  call: java.lang.Integer.divideUnsigned(int a, int b) -> int\n  throws: {throws} when b == 0\n  assert: b != 1 || result == a\n  modifies: nothing\n  written-by: a test\n");
+        let nlz = |assert: &str| format!("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n  written-by: a test\n");
+        let random = "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25\n  call: java.util.Random.nextInt(int bound) -> int\n  modifies: this\n  written-by: a test\n";
+        let out = proofs(&[&divide("ArithmeticException"), &divide("RuntimeException"), &nlz("i <= 0 || result == 31 - (31 - result)"), &nlz("result != 7"), random]);
+        if out.is_empty() {
+            return; // no JDK
+        }
+        assert!(matches!(&out[0], Proving::Proved(p) if p.class == "java.lang.Integer" && p.digest.starts_with("sha256:")), "{:?}", out[0]);
+        // The JDK throws an ArithmeticException, a RuntimeException but not of that class.
+        assert!(matches!(&out[1], Proving::Refuted { words, .. } if words.ends_with("b=0")), "{:?}", out[1]);
+        assert!(matches!(&out[2], Proving::Proved(_)), "{:?}", out[2]);
+        // 7 leading zeros: any i in [2^24, 2^25).
+        let Proving::Refuted { input, .. } = &out[3] else { panic!("{:?}", out[3]) };
+        let crate::contract_testing::Value::Int(i) = input[0] else { panic!() };
+        assert!((1 << 24..1 << 25).contains(&i), "{i}");
+        assert!(matches!(&out[4], Proving::Unproved(why) if why.contains("only a static method's contract")), "{:?}", out[4]);
     }
 }

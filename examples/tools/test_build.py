@@ -2310,6 +2310,38 @@ class ContractsTest(unittest.TestCase):
                       "values of, so the verdict rests on whoever wrote it.", text)
         self.assertIn("tested", build.BASIS_WORDS)
 
+    def test_a_proved_contract_says_what_bytecode_it_was_proved_against(self):
+        root = Path(tempfile.mkdtemp(prefix="build-test-"))
+        self.addCleanup(shutil.rmtree, root)
+        (root / "gaps.contracts").write_text("kind: gap-contracts\n")
+        testing = {"inputs": 166, "returned": 166, "thrown": [], "outside": 0, "exhausted": 0, "seed": 1, "jdk": "25.0.4.1"}
+        proof = {"class": "java.lang.Integer", "jdk": "25.0.4.1", "digest": "sha256:4bda1092c3a1" + "0" * 52,
+                 "checker": "jvmcontract's own checker (CaDiCaL)", "unwind": 16, "paths": 18, "seconds": 0.02}
+        proved = {**self.GAP, "id": "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1",
+                  "kind": "jdk-static-method", "call": "java.lang.Integer.numberOfLeadingZeros(int)",
+                  "contract": {**self.GAP["contract"], "summary": "throws nothing; then 0 <= result && result <= 32; modifies nothing",
+                               "evidence": "proved", "testing": testing, "proof": proof}}
+        tested = {**self.GAP, "contract": {**self.GAP["contract"], "evidence": "tested", "testing": testing,
+                                           "unproved": "only a static method's contract is proved against the JDK's bytecode"}}
+        search = {"engine": "native", "checker": "jvmcontract's own checker (CaDiCaL)", "seconds": 0.1, "properties": 1,
+                  "unwind": 16, "max_array_length": 8, "stage": None, "gap_mode": "advised", "gaps": [proved, tested]}
+        out = equivalence_json(root, "verified", search=search)
+        with mock.patch.object(build, "jvmcontract", return_value="jvmcontract"), \
+                mock.patch.object(build, "tool_before_classes", return_value=root / "before"), \
+                mock.patch.object(build.subprocess, "run", return_value=proc(0, out)):
+            result = empty_result()
+            build.run_tool_equivalence(root, self.example(), root, "crosscut", result)
+        self.assertTrue(result["verdictLabel"].endswith(", relying on 2 contracts for gaps (1 proved, 1 tested)"), result["verdictLabel"])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(result["search"], {**schema["properties"]["search"], "definitions": schema.get("definitions", {})})
+        text = "\n".join(build.contract_lines(result))
+        self.assertIn("proved: the tool's own checker ran the bytecode of `java.lang.Integer` from JDK 25.0.4.1 "
+                      "(`sha256:4bda1092c3a1...`) on every input the contract is about, over 18 paths with loops unwound 16 "
+                      "times, and the contract holds of it; a JVM ran the JDK's call on 166 inputs besides (seed 1), none "
+                      "refuting it.", text)
+        self.assertIn("proved", build.BASIS_WORDS)
+
     def test_a_contract_a_jvm_refutes_goes_back_with_its_counterexamples(self):
         refused = ("a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException: Illegal "
                    "Capacity: -1, where the contract says it returns normally (83 of 128 inputs refute it, on JDK 25.0.4.1, "

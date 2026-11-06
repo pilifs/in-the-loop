@@ -291,9 +291,15 @@ pub struct ContractUse {
     /// What testing it on a real JVM found, when the JVM could test it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub testing: Option<crate::gap_contracts::Testing>,
-    /// Why it is trusted: what kept the JVM from testing it.
+    /// Why the JVM did not test it: what kept it from it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub untested: Option<String>,
+    /// The proof against the JDK's bytecode, for a proved contract ([`crate::contract_proving`]).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub proof: Option<crate::gap_contracts::Proof>,
+    /// Why it is not proved: the call is not one a proof is about, or the checker gave no proof.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub unproved: Option<String>,
     /// The contracts file, and the line of the contract's id.
     pub file: String,
     pub line: usize,

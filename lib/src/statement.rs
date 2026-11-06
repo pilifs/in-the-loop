@@ -197,6 +197,9 @@ pub enum Basis {
     Engine,
     /// An approximation the own checker took at a gap (`--gaps assume`), checked against nothing.
     Assumed,
+    /// A contract for a gap that the tool's own checker proved against the JDK's bytecode on every input it is
+    /// about, and a real JVM's test does not refute (`--contracts`).
+    Proved,
     /// A contract for a gap that a real JVM ran the JDK's call against, on boundary and seeded random inputs, none
     /// refuting it (`--contracts`): evidence, not a proof.
     Tested,
@@ -320,6 +323,7 @@ pub fn checker_assumptions(last: Option<&JbmcResult>) -> Vec<Assumption> {
         }
         if let (Some(GapTreatment::Contract), Some(c)) = (g.treatment, &g.contract) {
             let basis = match c.evidence {
+                crate::gap_contracts::Evidence::Proved => Basis::Proved,
                 crate::gap_contracts::Evidence::Tested => Basis::Tested,
                 crate::gap_contracts::Evidence::Trusted => Basis::Trusted,
             };
