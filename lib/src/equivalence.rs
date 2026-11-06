@@ -42,6 +42,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
+use crate::bmc::gaps::GapTreatment;
 use crate::classfile::{MemberRef, Type};
 use crate::classpath::ClassPath;
 use crate::harness::{self, CallArg};
@@ -92,6 +93,8 @@ pub struct Options {
     /// What the tool's own checker does at a gap ([`crate::bmc::gaps`]): refuses it (strict, the default) or
     /// assumes its approximation and names it in the verdict. It has no effect on JBMC.
     pub gaps: crate::bmc::gaps::GapMode,
+    /// Under advised, the contracts for the gaps (`--contracts`, [`crate::gap_contracts`]).
+    pub contracts: Option<PathBuf>,
     /// Under `--engine auto`, whether a proof of the tool's own checker is checked by JBMC too
     /// ([`crate::equivalence::Confirmation`]); off by default, since JBMC takes ten to a hundred times longer.
     pub confirm: bool,
@@ -133,6 +136,7 @@ impl Options {
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
+            contracts: None,
             confirm: false,
             shared_callees: true,
             before_target: None,
@@ -284,10 +288,17 @@ pub enum Confirmed {
 /// Asks JBMC to prove, over every input, the harness the own checker proved (`native`). `run` is JBMC's run of the
 /// same harness, on the same class path. Returns the confirmation, and JBMC's result when it refutes the statement.
 pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun) -> Result<(Confirmation, Option<JbmcResult>), Error> {
-    let approximated: Vec<&str> = native.gaps.iter().filter(|g| !g.kind.jbmc_implements()).map(|g| g.call.as_str()).collect();
-    if !approximated.is_empty() {
-        let reason = format!("the tool's own checker assumed {} (--gaps assume), which JBMC approximates too, without naming it", approximated.join(", "));
-        return Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }, None));
+    let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.kind.jbmc_implements() && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
+    let (assumed, contracted) = (approximated(false), approximated(true));
+    if !assumed.is_empty() || !contracted.is_empty() {
+        let mut reasons = Vec::new();
+        if !assumed.is_empty() {
+            reasons.push(format!("the tool's own checker assumed {} (--gaps assume), which JBMC approximates too, without naming it", assumed.join(", ")));
+        }
+        if !contracted.is_empty() {
+            reasons.push(format!("the tool's own checker applied a contract at {} (--contracts), which JBMC cannot apply and approximates instead", contracted.join(", ")));
+        }
+        return Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reasons.join("; ")) }, None));
     }
     let result = jbmc::run(run)?;
     let mut confirmation = Confirmation { status: Confirmed::Confirmed, checker: Some(result.version.clone()), seconds: result.seconds, reason: None };
@@ -323,8 +334,38 @@ pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
     result.gap_mode.is_some_and(crate::bmc::gaps::GapMode::refuses) && result.gaps.iter().any(|g| !g.kind.jbmc_implements())
 }
 
-/// The note `--engine auto` writes when the own checker refused a gap and JBMC is not asked.
-pub(crate) const NOT_JBMC: &str = "note: the tool's own checker refused a gap, so JBMC is not asked: it approximates a call it has no bytecode for too, without naming it";
+/// The note `--engine auto` writes when the own checker refused a gap, or applied a contract at one, and JBMC is
+/// not asked.
+pub(crate) const NOT_JBMC: &str = "note: the tool's own checker refused a gap or applied a contract at one, so JBMC is not asked: it approximates a call it has no bytecode for, without naming it";
+
+/// Why a checker's counterexample may not reproduce in the interpreter: a contract the own checker applied says
+/// what the JDK's call does not, or a method JBMC had no bytecode for returned an arbitrary value.
+pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
+    let applied: Vec<&str> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).map(|g| g.id.as_str()).collect();
+    if !applied.is_empty() {
+        return format!("The path to it goes through the contract{} for {}, which the interpreter does not apply: it runs the JDK's call, so a contract probably says what the call does not (--contracts)", if applied.len() == 1 { "" } else { "s" }, applied.join(", "));
+    }
+    "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
+}
+
+/// The verdict's words for the contracts a verified run rests on (`--contracts`), `, relying on 1 contract for a
+/// gap of the tool's own checker, trusted (--gaps advised)`, and a line for each; nothing when it applied none.
+pub(crate) fn relied_contracts(result: &JbmcResult) -> (String, String) {
+    let used: Vec<&crate::bmc::gaps::GapRecord> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).collect();
+    if used.is_empty() {
+        return (String::new(), String::new());
+    }
+    let n = used.len();
+    let words = format!(", relying on {n} contract{} for gaps of the tool's own checker, {n} trusted (--gaps advised)", if n == 1 { "" } else { "s" });
+    let lines = used
+        .iter()
+        .map(|g| match &g.contract {
+            Some(c) => format!("  contract: {} at {}: {} (written by {}; {}: checked against neither the JDK's bytecode nor a JVM)\n", g.id, g.sites.join(", "), c.summary, c.written_by, c.evidence.name()),
+            None => format!("  contract: {} at {}\n", g.id, g.sites.join(", ")),
+        })
+        .collect();
+    (words, lines)
+}
 
 /// The verdict's words for the gaps a verified run assumed, `, assuming 2 behaviours the tool's own checker does not
 /// implement`, and a line for each; nothing when it assumed none.
@@ -356,7 +397,7 @@ pub struct Replay {
 /// status with how it is known (non-vacuous with the probe's witness, vacuous, or unknown when the probe gave no
 /// verdict), each with its line under `✓`.
 #[allow(clippy::too_many_arguments)] // the settings of the proof it probes
-pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: crate::bmc::gaps::GapMode, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>) -> Result<(Option<String>, Vacuity), Error> {
+pub(crate) fn vacuity(out: &mut String, probe: &[u8], class: &str, entries: &[PathBuf], models: bool, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &crate::bmc::gaps::GapSetting, work: &Path, skipped_by: &str, render: &dyn Fn(&JbmcResult) -> Option<String>) -> Result<(Option<String>, Vacuity), Error> {
     let probe_dir = work.join("probe");
     std::fs::create_dir_all(&probe_dir)?;
     std::fs::write(probe_dir.join(format!("{class}.class")), probe)?;
@@ -460,6 +501,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 
     if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
         return Err(Error::new(crate::property::ADVISED_NEEDS_OWN_CHECKER));
+    }
+    if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
+        return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
     }
 
     // 1. Both versions in one program: the old one relocated into the package "before".
@@ -767,12 +811,16 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // `auto`), or that is the answer (under `native`).
     let mut stages: &[Option<&str>] = STAGES;
     let mut fallback = None;
+    let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, options.contracts.as_deref(), &entries, options.models, &work)?;
+        gap_setting = setting;
+        out.push_str(&notes);
         // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let claim = crate::advice::Claim { kind: "regression".into(), target: options.target.clone(), text: format!("{relation}{restriction}"), harness: statement.clone() };
-            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::CLASS, harness::METHOD, claim, &work)? {
+            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::CLASS, harness::METHOD, claim, &work, loaded.as_ref())? {
                 let p = advice.problem();
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
@@ -787,7 +835,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
             }
         }
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work)?;
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
                 let _ = writeln!(out, "{}", NOT_JBMC);
@@ -1045,8 +1093,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions{sharing}", last.version, last.properties, options.unwind);
             let (assuming, assumed) = assumed_gaps(&last);
-            let _ = writeln!(out, "✓ {} {relation}{restriction}{assuming} ({how})", options.target);
+            let (relying, relied) = relied_contracts(&last);
+            let _ = writeln!(out, "✓ {} {relation}{restriction}{assuming}{relying} ({how})", options.target);
             out.push_str(&assumed);
+            out.push_str(&relied);
             if let Some(c) = search.as_ref().and_then(|s| s.confirmation.as_ref()) {
                 out.push_str(&confirmation_line(c));
             }
@@ -1067,7 +1117,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = vec![options.after.clone(), before_dir.clone()];
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
-                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, &ways.join(" or "), &render)?;
+                let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work, &ways.join(" or "), &render)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {
@@ -1090,7 +1140,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             if replays.agree {
                 let (rendered, _) = witness::call_in(&method_name, &layout, &found);
                 let both = if replays.before == replays.after { format!("both versions give {}", replays.before) } else { format!("the versions give {} and {}, which the relation relates,", replays.before, replays.after) };
-                let p = format!("JBMC's counterexample {rendered} does not reproduce: {both} in the interpreter. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                let p = format!("{}'s counterexample {rendered} does not reproduce: {both} in the interpreter. {}", if last.native.is_some() { "The tool's own checker" } else { "JBMC" }, unreproduced_cause(&last));
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
                 findings.push(Finding::new("unverifiable", message, uri.clone(), line));

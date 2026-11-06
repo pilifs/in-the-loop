@@ -63,10 +63,12 @@
                   }
                 }
               },
-              "template": { "description": "The gap's block of the template.", "type": "string" }
+              "template": { "description": "The gap's block of the template.", "type": "string" },
+              "refusedContract": { "description": "Why the contract given for the gap (--contracts) was refused, with where it is.", "type": "string" }
             }
           }
         },
+        "closed": { "description": "The gaps the proof reaches that a contract given with --contracts closes, by id.", "type": "array", "items": { "type": "string" } },
         "outside": {
           "description": "What the engine refuses whatever the contracts say: each kind with its first member and site, and how many sites.",
           "type": "object",
@@ -245,19 +247,21 @@
                   "previous-arguments",
                   "initialization",
                   "library",
-                  "gap"
+                  "gap",
+                  "contract"
                 ]
               },
               "text": {
                 "type": "string"
               },
               "basis": {
-                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, or a gap `assumed` under --gaps assume with nothing to show for it.",
+                "description": "`stated` by the claim, made by how the `harness` builds the statement, the checker's (`engine`) semantics, a gap `assumed` under --gaps assume with nothing to show for it, or a contract for a gap that nothing has checked (`trusted`, under --gaps advised --contracts).",
                 "enum": [
                   "stated",
                   "harness",
                   "engine",
-                  "assumed"
+                  "assumed",
+                  "trusted"
                 ]
               },
               "id": {
@@ -684,7 +688,20 @@
               "call": { "description": "The member as Java writes it.", "type": "string" },
               "sites": { "description": "Where the run met it, `pkg.Class.method:line`.", "type": "array", "items": { "type": "string" } },
               "approximation": { "description": "What the own checker takes it to do under `--gaps assume`.", "type": "string" },
-              "treatment": { "enum": ["refused", "assumed"] }
+              "treatment": { "description": "`refused` (the path ended there), `assumed` (its approximation taken), or closed by a `contract` (--contracts, applied at the call).", "enum": ["refused", "assumed", "contract"] },
+              "contract": {
+                "description": "For a gap a contract closed: what it states, who wrote it, what backs it (only `trusted` before step 3c of llm-dlc/loops/sound-verdicts.md), and where it is.",
+                "type": "object",
+                "required": ["summary", "writtenBy", "evidence", "file", "line"],
+                "additionalProperties": false,
+                "properties": {
+                  "summary": { "type": "string" },
+                  "writtenBy": { "type": "string" },
+                  "evidence": { "enum": ["trusted"] },
+                  "file": { "description": "The contracts file, as the tool was given it.", "type": "string" },
+                  "line": { "type": "integer" }
+                }
+              }
             }
           }
         },

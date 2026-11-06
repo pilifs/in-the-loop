@@ -549,6 +549,82 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     engine does not model is still refused outright, not a gap, so the protocol does not reach it. 3b could make
     it a gap kind.
   - Next: 3b, the contract format, read with `--contracts FILE` and applied by the engine at the call.
+- **3b, the contract format (2026-11-06).**
+  - `--contracts FILE` under `--gaps advised` ([`lib/src/gap_contracts.rs`](../../lib/src/gap_contracts.rs)), for
+    property and regression proofs, reads 3a's template once it is filled in: `kind: gap-contracts`, then a block per gap
+    under its id, with these keys:
+    - `call:` names the parameters;
+    - `assume:` is the inputs the contract covers;
+    - `throws: X when c` may be repeated, and the first clause that holds decides, as in a property;
+    - `assert:` is what holds afterwards;
+    - `modifies:` is `nothing`, `this`, or an array parameter;
+    - `written-by:` says who wrote it.
+
+    The conditions are `prove`'s expressions, as the brief asks, over the primitive parameters and arrays of them.
+  - **The engine applies a contract by running bytecode.** Each accepted contract becomes a static method of a generated
+    class, `GapContracts`, written as the harness is, which the engine calls in place of the JDK call:
+    - a branch per throws clause, which throws;
+    - `havoc` gives an array the contract modifies fresh elements;
+    - the assertion becomes a condition, and `infeasible` ends a path it excludes;
+    - outside `assume:`, `open` meets the gap at the call, and it is refused there;
+    - a reference result is whichever object the contract names: `result == this`, `result == <parameter>`,
+      `result == null`, or `\fresh(result)`;
+    - an initializer whose contract throws nothing and modifies nothing is taken to have run.
+  - **A contract the engine cannot apply is refused with the reason, and its gap stays open.** The reasons: a `TODO`
+    left; a call that doesn't match the id; `this` or an object parameter in a condition; `result != null` alone,
+    which doesn't say which object; an initializer that throws or sets state; `\old`; a string conversion; a
+    contract for another JDK's version, or one that names none. The refusal is printed in a `note:` line and kept as
+    `refused_contract` in the gap's advice. The advice also lists `closed` gaps, and its template covers only the
+    gaps still open.
+  - **The verdict says what it rests on.** For example: `✓ ..., relying on 1 contract for gaps of the tool's own
+    checker, 1 trusted`, with a `contract:` line for each, giving what the contract states and who wrote it.
+    - `search.gaps` records each gap with the treatment `contract` and the contract.
+    - The statement gives it an assumption of kind `contract`, with basis `trusted`: nothing checks a contract
+      until 3c.
+    - Under auto, a run that applied a contract is not handed to JBMC, and `--confirm` doesn't ask JBMC either
+      (`not-asked`), since JBMC cannot apply a contract.
+    - The interpreter runs the JDK's real call. When it doesn't reproduce a witness found through a contract, the
+      result is no verdict, and the contracts are named as the likely cause. (A native witness that doesn't
+      reproduce is no longer called "JBMC's".)
+  - Acceptance, inline:
+    - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` (integration.rs), on native and auto:
+      - The review's `new ArrayList<>(n)`, with the contract that matches the JVM, is a violation on `capacity(n=-1)`.
+        The interpreter reproduces it with the JVM's own message.
+      - With a matching throws clause in the claim, it is Verified, relying on 1 trusted contract.
+      - With a contract that throws nothing, it is Verified and names that contract. Trusted, a wrong contract gives
+        a wrong verdict: this is 3c's case.
+      - Outside `assume:`, the gap is refused at the call.
+      - `Random.nextBytes` with `modifies: bytes` is a violation where the array is read back, and Verified on its
+        length.
+      - `StringBuilder.append` with `result == this` is Verified. With `\fresh(result)` the witness doesn't
+        reproduce, so there is no verdict.
+      - An initializer's contract is applied.
+      - A `TODO` contract goes back to the agent with its reason, and the regression driver behaves the same way.
+    - The conformance corpus has a fourth column, advised with contracts. An agent (this session) wrote the corpus's
+      contracts from the JVM's behaviour on its calls. They decide 6 of the 9 claims strict refuses for a gap, as the
+      JVM decides them: the four capacity constructors and `firstByte` are violations whose witnesses the JVM
+      reproduces, and `quiet` is Verified. The contract for `boom` throws, so it is refused. `inherited` and
+      `loadFactor` have none. The test fails on a Verified the JVM refutes.
+    - `ContractsTest` (test_build.py) covers these: `approach.contracts`, which is in the schema, a file in the
+      example's folder that the runner copies to `build/gap-contracts/` so the recorded path is the same on every
+      machine; the search record and the schema's contract object; the label `, relying on 1 contract for gaps (1
+      trusted)`; the page's paragraph; and the advice's refusal and closed gaps.
+  - **This departs from the brief in two ways.**
+    - No recorded example of its own. A page whose verdict rests on an unchecked contract shows only the format, so
+      3c's example (an ArrayList pre-sized by an overflowing sum) shows both steps, with evidence levels. No page
+      changed (`--render-only` of every example), and no job was needed.
+    - "The result, as an expression over the arguments" applies to no gap yet. Every gap kind's result is void or
+      an object, so `assert:` on a result only chooses which object it is. A JDK method with a primitive result, and
+      a static JDK method the engine doesn't model, are still refused outright rather than treated as gaps. Making
+      them gap kinds (with no assume form) is what would let a contract state a value; it is a candidate for 3c or 3d.
+  - Not done:
+    - `\old` in a contract.
+    - Contracts for a string conversion.
+    - JBMC applying contracts (4c).
+    - An application subclass that inherits the JDK method a contract is about.
+    - A trusted contract whose assertion constrains state the call does not change removes inputs, as any wrong
+      contract can. 3c's test on the JVM is what catches it.
+  - Next: 3c, checking each contract: proved against the JDK's bytecode, tested on a real JVM, or trusted.
 
 ## Loop settings
 

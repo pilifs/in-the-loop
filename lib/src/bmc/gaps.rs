@@ -222,7 +222,8 @@ pub struct Refusal {
 }
 
 /// One gap, as `--json` prints it: of a scan, or met by a run of the engine, with what it is taken to do under
-/// `--gaps assume` and, for a run, whether it was (`assumed`) or the path ended there (`refused`).
+/// `--gaps assume` and, for a run, whether it was (`assumed`), the path ended there (`refused`), or a contract
+/// closed it (`contract`, with the contract).
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct GapRecord {
     pub id: String,
@@ -232,6 +233,8 @@ pub struct GapRecord {
     pub approximation: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub treatment: Option<GapTreatment>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contract: Option<ContractUse>,
 }
 
 /// What a run did at a gap it met.
@@ -240,6 +243,54 @@ pub struct GapRecord {
 pub enum GapTreatment {
     Refused,
     Assumed,
+    /// A contract closed it (`--contracts`, [`crate::gap_contracts`]): the engine applied what it states.
+    Contract,
+}
+
+/// The contract a run applied at a gap: what it states, who wrote it, and what backs it.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ContractUse {
+    pub summary: String,
+    pub written_by: String,
+    pub evidence: crate::gap_contracts::Evidence,
+    /// The contracts file, and the line of the contract's id.
+    pub file: String,
+    pub line: usize,
+    /// Its number among the file's accepted contracts, which the generated method is named by.
+    #[serde(skip)]
+    pub index: usize,
+}
+
+/// How the engine applies a contract at its gap.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Closing {
+    /// By calling `method` of [`crate::gap_contracts::CLASS`] with the call's arguments, after the receiver when
+    /// `receiver`.
+    Stub { method: String, descriptor: String, receiver: bool },
+    /// The class is taken to be initialized: its initializer throws nothing and sets nothing the proof reads.
+    Initialised,
+}
+
+/// A gap a contract closes: how, and the contract.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Closure {
+    pub how: Closing,
+    pub contract: ContractUse,
+}
+
+/// What the engine does at a gap: the mode, and under advised the contracts that close some, with the directory
+/// of the class that applies them, which goes on the engine's class path.
+#[derive(Debug, Clone, Default)]
+pub struct GapSetting {
+    pub mode: GapMode,
+    pub contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
+    pub class_dir: Option<std::path::PathBuf>,
+}
+
+impl From<GapMode> for GapSetting {
+    fn from(mode: GapMode) -> GapSetting {
+        GapSetting { mode, ..GapSetting::default() }
+    }
 }
 
 impl GapRecord {
@@ -251,7 +302,16 @@ impl GapRecord {
 
 /// The records of gaps with the sites that meet them, under the JDK `jdk`, treated as `treatment` (none for a scan).
 pub fn records(gaps: &BTreeMap<Gap, BTreeSet<Site>>, jdk: Option<&str>, treatment: Option<GapTreatment>) -> Vec<GapRecord> {
-    gaps.iter().map(|(g, sites)| GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), treatment }).collect()
+    gaps.iter().map(|(g, sites)| GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), treatment, contract: None }).collect()
+}
+
+/// The records of the gaps contracts closed, with the sites where each was applied.
+pub fn contract_records(applied: &BTreeMap<Gap, BTreeSet<Site>>, contracts: &BTreeMap<Gap, Closure>, jdk: Option<&str>) -> Vec<GapRecord> {
+    let mut out = records(applied, jdk, Some(GapTreatment::Contract));
+    for (r, g) in out.iter_mut().zip(applied.keys()) {
+        r.contract = contracts.get(g).map(|c| c.contract.clone());
+    }
+    out
 }
 
 #[derive(Debug, Clone, Serialize)]

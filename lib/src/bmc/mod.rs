@@ -56,7 +56,12 @@
 //! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
 //! assumed ([`Outcome::gaps`]). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
 //! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
-//! engine meets one only where the scan did not see it.
+//! engine meets one only where the scan did not see it. A gap a contract closes (`--contracts`,
+//! [`crate::gap_contracts`], [`Options::contracts`]) is no gap: at a JDK call the engine runs the contract's method
+//! of the generated class [`crate::gap_contracts::CLASS`] in place of the call, whose intrinsics open the gap again
+//! on an input outside the contract's `assume:` (met at the call), give an array it modifies fresh elements, and
+//! end a path the contract's assertion excludes; an initializer whose contract throws nothing is taken to have run.
+//! The outcome names every gap a contract closed, with the contract (treatment `contract`).
 
 pub mod bits;
 pub mod gaps;
@@ -69,7 +74,7 @@ use crate::classfile::{ArithOp, ArrayKind, BootstrapArg, ClassFile, Cond, Except
 use crate::classpath::ClassPath;
 use crate::{Error, Verdict};
 use bits::{Bits, Blaster, Lit, Model, FALSE, TRUE};
-use gaps::{Gap, GapKind, GapMode, GapRecord, GapTreatment, JdkCall, Site};
+use gaps::{Closing, Closure, Gap, GapKind, GapMode, GapRecord, GapSetting, GapTreatment, JdkCall, Site};
 
 /// What the engine is allowed.
 #[derive(Debug, Clone)]
@@ -87,11 +92,14 @@ pub struct Options {
     pub merge_after: u64,
     /// What a gap does to the path that reaches it ([`gaps::GapMode`]): ends it (strict) or is assumed.
     pub gaps: GapMode,
+    /// Under advised, the contracts that close gaps (`--contracts`, [`crate::gap_contracts`]): the engine applies
+    /// each at its gap in place of refusing it.
+    pub contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, gaps: GapMode::Strict, contracts: Default::default() }
     }
 }
 
@@ -447,6 +455,9 @@ struct Engine<'a> {
     gap_mode: GapMode,
     /// The gaps met so far, with where.
     met: BTreeMap<Gap, std::collections::BTreeSet<Site>>,
+    /// The contracts that close gaps, and the gaps they closed so far, with where.
+    contracts: std::sync::Arc<BTreeMap<Gap, Closure>>,
+    applied: BTreeMap<Gap, std::collections::BTreeSet<Site>>,
     /// Whether an object of a class has a field that a subclass along its chain declares again, by class: only
     /// then does an access need the field's resolution to find its key ([`ClassPath::field_key`]).
     hides: HashMap<String, bool>,
@@ -504,6 +515,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         stage_lits: vec![None; STAGES.len()],
         gap_mode: options.gaps,
         met: BTreeMap::new(),
+        contracts: options.contracts.clone(),
+        applied: BTreeMap::new(),
         hides: HashMap::new(),
         initializers: HashMap::new(),
     };
@@ -529,7 +542,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         refined_multiplications: engine.b.multiplications().1,
         seconds: started.elapsed().as_secs_f64(),
         solver: solver.clone(),
-        gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })),
+        gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
     };
 
@@ -674,12 +687,17 @@ pub fn solver_signature() -> String {
 /// and their class path (not the JDK classes extracted for JBMC: a JDK method is modelled here, never run), with
 /// the tool's models; the result is in JBMC's shape, and a line goes to `work/bmc.log`.
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
-pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: GapMode, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    let cp = crate::witness::classpath(entries.iter().map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps, ..Options::default() })?;
+pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+    let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
+}
+
+/// Where a frame is: its method and the source line of its instruction.
+fn site(frame: &Frame) -> Site {
+    Site { class: frame.class.name.clone(), method: frame.method.clone(), line: frame.code.lines[frame.at] }
 }
 
 fn stop_text(stop: &Stop) -> String {
@@ -1650,6 +1668,9 @@ impl<'a> Engine<'a> {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let args = self.pop_args(path, descriptor.params.len())?;
+                if member.owner == crate::gap_contracts::INTRINSICS {
+                    return self.intrinsic(path, &member.name, args);
+                }
                 if self.cp.is_application(&member.owner) {
                     // The class that declares the method is initialized first (JVMS §5.5).
                     let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
@@ -1689,6 +1710,17 @@ impl<'a> Engine<'a> {
                 match gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) {
                     JdkCall::Exact => {}
                     JdkCall::Gap(kind) => {
+                        let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
+                        if let Some(Closure { how: Closing::Stub { method, descriptor: stub, receiver }, .. }) = self.contracts.get(&gap).cloned() {
+                            // A contract closes the gap: its method of the generated class runs in place of the call.
+                            self.apply(path, gap);
+                            let mut full = Vec::new();
+                            if receiver {
+                                full.push(Val::R(Some(o)));
+                            }
+                            full.extend(args);
+                            return self.call(path, crate::gap_contracts::CLASS, &method, &stub, full);
+                        }
                         if let Some(end) = self.meet(path, kind, &member.owner, &member.name, &member.descriptor) {
                             return Ok(Some(end));
                         }
@@ -1766,10 +1798,46 @@ impl<'a> Engine<'a> {
     /// The path reaches a gap: it is recorded with where, and under strict the path ends there (`Some(End::Gap)`);
     /// under assume the caller goes on with the approximation (`None`).
     fn meet(&mut self, path: &Path, kind: GapKind, owner: &str, name: &str, descriptor: &str) -> Option<End> {
-        let frame = path.frames.last().expect("a frame");
-        let site = Site { class: frame.class.name.clone(), method: frame.method.clone(), line: frame.code.lines[frame.at] };
+        let site = site(path.frames.last().expect("a frame"));
         self.met.entry(Gap { kind, owner: owner.to_string(), name: name.to_string(), descriptor: descriptor.to_string() }).or_default().insert(site);
         self.gap_mode.refuses().then_some(End::Gap)
+    }
+
+    /// The path reaches a gap a contract closes: recorded with where, for the verdict to say what it rests on.
+    fn apply(&mut self, path: &Path, gap: Gap) {
+        let site = site(path.frames.last().expect("a frame"));
+        self.applied.entry(gap).or_default().insert(site);
+    }
+
+    /// A call of [`crate::gap_contracts::INTRINSICS`] from a contract's method: what bytecode cannot say.
+    fn intrinsic(&mut self, path: &mut Path, name: &str, args: Vec<Val>) -> Step {
+        match (name, args.as_slice()) {
+            // The input is outside the contract's `assume:`: the gap is open, and met at the call the contract is
+            // for, in the frame below the contract's method.
+            ("open", [Val::I(index)]) => {
+                let index = self.b.constant_value(index).ok_or_else(|| Stop::Unsupported("a contract's number is not a constant".into()))? as usize;
+                let gap = self.contracts.iter().find(|(_, c)| c.contract.index == index).map(|(g, _)| g.clone()).ok_or_else(|| Stop::Unsupported(format!("no contract {index}")))?;
+                let caller = path.frames.len().checked_sub(2).map(|i| path.frames[i].clone()).ok_or_else(|| Stop::Unsupported("a contract's method called from nowhere".into()))?;
+                self.met.entry(gap).or_default().insert(site(&caller));
+                if self.gap_mode.refuses() {
+                    return Ok(Some(End::Gap));
+                }
+            }
+            // The array's elements become any values: what the call wrote, which the assertion that follows
+            // narrows. Its length is the length it had.
+            ("havoc", [Val::R(Some(o))]) => {
+                let Some(array) = path.objects[*o].array.as_ref() else { return unsupported("a contract modifies an object that is not an array") };
+                let width = cell_width(&array.element);
+                let cells: Vec<Bits> = (0..array.cells.len()).map(|_| self.b.fresh(width)).collect();
+                path.objects[*o].array.as_mut().expect("an array").cells = cells;
+            }
+            ("havoc", [Val::R(None)]) => return self.raise(path, "java/lang/NullPointerException"),
+            // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
+            ("infeasible", []) => return Ok(Some(End::Infeasible)),
+            _ => return unsupported(format!("unknown intrinsic {name} of a contract")),
+        }
+        self.advance(path);
+        Ok(None)
     }
 
     /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `invokestatic`): each
@@ -1791,6 +1859,11 @@ impl<'a> Engine<'a> {
         path.initialised.insert(class.to_string());
         path.initialised.extend(classes.iter().cloned());
         for c in &fresh {
+            let gap = Gap { kind: GapKind::ClassInitializer, owner: c.clone(), name: "<clinit>".into(), descriptor: "()V".into() };
+            if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
+                self.apply(path, gap);
+                continue;
+            }
             if let Some(end) = self.meet(path, GapKind::ClassInitializer, c, "<clinit>", "()V") {
                 return Some(end);
             }

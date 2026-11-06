@@ -18,11 +18,12 @@
 //! model, ...), since a contract does not bring those into its fragment. With no gap, the run goes on as under
 //! `--gaps strict`: advised is strict given no contracts, and the engine refuses a gap the scan did not see.
 //!
-//! The template is the format step 3b reads, built on the property syntax of `prove`: a block per gap headed by its
-//! id, with `assume:` (the inputs the contract is about), `assert:` (what holds after the call, over the arguments,
-//! `this` and `result`, with `\old`), `throws: <exception> when <condition>` (as in a property), `modifies:`
-//! (`nothing`, `this`, or an argument), and `written-by:`. This version writes the template and does not read
-//! contracts yet, so a run under advised that reaches a gap ends here.
+//! The template is the format `--contracts` reads ([`crate::gap_contracts`]), built on the property syntax of
+//! `prove`: a block per gap headed by its id, with `call:` (naming the parameters), `assume:` (the inputs the
+//! contract is about), `throws: <exception> when <condition>` (as in a property), `assert:` (what holds after the
+//! call: of the arrays it modifies, or which object it returns), `modifies:` (`nothing`, `this`, or a parameter),
+//! and `written-by:`. With `--contracts`, a gap whose contract the engine accepts no longer stops the run, and the
+//! advice lists the gaps still open, each with the reason its contract was refused if it was.
 //!
 //! The agent is whoever drives the tool. The library calls no model and holds no keys: it returns data and stops.
 
@@ -48,6 +49,9 @@ pub struct Advice {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub jdk: Option<String>,
     pub gaps: Vec<GapAdvice>,
+    /// The gaps the proof reaches that a contract closes (`--contracts`), by id.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub closed: Vec<String>,
     /// What the engine refuses whatever the contracts say, with the first member and site of each kind and how
     /// many sites: a contract does not bring these into its fragment.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
@@ -97,6 +101,9 @@ pub struct GapAdvice {
     pub must_state: Vec<Obligation>,
     /// The call's block of the template.
     pub template: String,
+    /// Why the contract the agent gave for the gap was refused (`--contracts`), with where it is.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refused_contract: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -133,22 +140,35 @@ pub enum Part {
 }
 
 /// Scans what the tool's own checker would run of the harness `class.method`, on the class path `entries` (the
-/// engine's, with the tool's models when `models`), and returns the advice when it reaches a gap; none when it
-/// reaches no gap and the proof can go on. The template is written to `work/contracts.template`.
-pub fn preflight(entries: &[PathBuf], models: bool, class: &str, method: &str, claim: Claim, work: &Path) -> Result<Option<Advice>, Error> {
+/// engine's, with the tool's models when `models`), and returns the advice when it reaches a gap that none of
+/// `contracts` closes; none when the proof can go on. The template, of the gaps still open, is written to
+/// `work/contracts.template`.
+pub fn preflight(entries: &[PathBuf], models: bool, class: &str, method: &str, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>) -> Result<Option<Advice>, Error> {
     let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(models);
     let harness = cp.application(class)?.ok_or_else(|| Error::new(format!("the harness class {class} is not on the class path")))?;
     let check = harness.methods.iter().find(|m| m.name == method).ok_or_else(|| Error::new(format!("the harness has no method {method}")))?;
     let scan = gaps::scan(&cp, &[MemberRef::new(class, method, &check.descriptor)])?;
-    if scan.gaps.is_empty() {
+    let jdk = scan.jdk.clone();
+    let is_closed = |g: &Gap| contracts.is_some_and(|c| c.closed.contains_key(g));
+    let closed: Vec<String> = scan.gaps.keys().filter(|g| is_closed(g)).map(|g| g.id(jdk.as_deref())).collect();
+    let open: Vec<(&Gap, &std::collections::BTreeSet<gaps::Site>)> = scan.gaps.iter().filter(|(g, _)| !is_closed(g)).collect();
+    if open.is_empty() {
         return Ok(None);
     }
-    let jdk = scan.jdk.clone();
-    let advised: Vec<GapAdvice> = scan.gaps.iter().map(|(gap, sites)| advise(&cp, gap, sites.iter().map(gaps::Site::display).collect(), jdk.as_deref())).collect();
+    let advised: Vec<GapAdvice> = open
+        .into_iter()
+        .map(|(gap, sites)| {
+            let mut a = advise(&cp, gap, sites.iter().map(gaps::Site::display).collect(), jdk.as_deref());
+            if let Some((r, c)) = contracts.and_then(|c| c.refusal(&a.id).map(|r| (r, c))) {
+                a.refused_contract = Some(format!("{} ({}:{})", r.reason, c.file.display(), r.line));
+            }
+            a
+        })
+        .collect();
     let template = template(&advised, jdk.as_deref());
     let template_file = work.join("contracts.template");
     std::fs::write(&template_file, &template)?;
-    Ok(Some(Advice { status: "contracts-needed".into(), claim, jdk, gaps: advised, outside: scan.refused.clone(), template, template_file }))
+    Ok(Some(Advice { status: "contracts-needed".into(), claim, jdk, gaps: advised, closed, outside: scan.refused.clone(), template, template_file }))
 }
 
 /// The advice for one gap.
@@ -172,6 +192,7 @@ pub fn advise(cp: &ClassPath, gap: &Gap, sites: Vec<String>, jdk: Option<&str>) 
         assumed: gap.kind.approximation().to_string(),
         must_state: obligations(gap.kind, &params),
         template: String::new(),
+        refused_contract: None,
     };
     advice.template = block(&advice);
     advice
@@ -290,6 +311,12 @@ impl Advice {
         for g in &self.gaps {
             let _ = writeln!(out, "  gap {}  {} at {}", g.id, g.call, g.sites.join(", "));
             let _ = writeln!(out, "    a contract states: {}", g.must_state.iter().map(|o| part_name(o.part)).collect::<Vec<_>>().join(", "));
+            if let Some(r) = &g.refused_contract {
+                let _ = writeln!(out, "    its contract is refused: {r}");
+            }
+        }
+        if !self.closed.is_empty() {
+            let _ = writeln!(out, "  closed by a contract: {}", self.closed.join(", "));
         }
         for (why, r) in &self.outside {
             let _ = writeln!(out, "  outside the fragment whatever the contracts: {why}: {} at {}{}", r.first, r.at, if r.sites > 1 { format!(", {} sites in all", r.sites) } else { String::new() });

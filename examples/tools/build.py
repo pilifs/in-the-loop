@@ -386,6 +386,21 @@ def gap_mode(example):
     return a.get("gaps") or RECORDED_GAP_MODE
 
 
+# Where a runner puts the example's contracts for the gaps (`approach.contracts`) in the module it builds, relative
+# to the module's root, where jvmcontract runs: so the path the tool records is the same on every machine.
+GAP_CONTRACTS_DIR = "build/gap-contracts"
+
+
+def stage_contracts(folder, example, build):
+    """Copies the example's contracts for the gaps (`approach.contracts`, a file in its folder) into the module it
+    builds, where proof_options() points jvmcontract at them."""
+    name = example["approach"].get("contracts")
+    if name and gap_mode(example) == "advised":
+        target = build / GAP_CONTRACTS_DIR / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(folder / name, target)
+
+
 def proof_options(example, approach=None):
     """The flags jvmcontract's proof is given for an example: the engine for B9 and B11 and, when the tool's own
     checker decides, its gap mode (gap_mode()), and the unwinding and array bounds for B9. Its runners pass exactly
@@ -397,6 +412,8 @@ def proof_options(example, approach=None):
     flags = ["--engine", a["engine"]] if a.get("engine") else []
     if gap_mode(example):
         flags += ["--gaps", gap_mode(example)]
+    if gap_mode(example) == "advised" and a.get("contracts"):
+        flags += ["--contracts", f"{GAP_CONTRACTS_DIR}/{a['contracts']}"]
     if approach == "B9":
         if a.get("unwind"):
             flags += ["--unwind", str(a["unwind"])]
@@ -1470,10 +1487,19 @@ def finish_symbolic(folder, result, statement, fields, verdict_labels):
 
 
 def label_assumptions(result):
-    """A verified label that rests on gaps the tool's own checker assumed (`--gaps assume`) says how many."""
-    assumed = assumed_gaps(result) if result["verdict"] == "verified" else []
+    """A verified label that rests on gaps the tool's own checker assumed (`--gaps assume`) says how many, and one
+    that rests on contracts for them (`--contracts`) how many, at each evidence level."""
+    assumed = assumed_gaps(result, "assumed") if result["verdict"] == "verified" else []
     if assumed:
         result["verdictLabel"] += f", assuming {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} the checker does not implement"
+    relied = assumed_gaps(result, "contract") if result["verdict"] == "verified" else []
+    if relied:
+        levels = {}
+        for g in relied:
+            level = g["contract"]["evidence"]
+            levels[level] = levels.get(level, 0) + 1
+        result["verdictLabel"] += (f", relying on {len(relied)} contract{'s' if len(relied) != 1 else ''} for gaps ("
+                                   + ", ".join(f"{k} {v}" for v, k in sorted(levels.items())) + ")")
 
 
 def without_root(value, root):
@@ -1566,7 +1592,8 @@ def search_record(outcome):
         record["gapMode"] = s["gap_mode"]
     if s.get("gaps"):
         record["gaps"] = [{"id": g["id"], "kind": g["kind"], "call": g["call"], "sites": g["sites"],
-                           "approximation": g["approximation"], "treatment": g["treatment"]} for g in s["gaps"]]
+                           "approximation": g["approximation"], "treatment": g["treatment"],
+                           **({"contract": camel(g["contract"])} if g.get("contract") else {})} for g in s["gaps"]]
     return record
 
 
@@ -1589,7 +1616,8 @@ def stated_record(outcome):
 
 # How each basis of an assumption reads on a page (lib/src/statement.rs, Basis).
 BASIS_WORDS = {"stated": "stated by the claim", "harness": "made by how the harness builds the statement",
-               "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume"}
+               "engine": "the checker's own semantics", "assumed": "a gap assumed with nothing to show for it, under --gaps assume",
+               "trusted": "a contract for a gap that nothing has checked, under --gaps advised"}
 CONFIRMATION_WORDS = {"confirmed": "JBMC proved it again over every input (--confirm)",
                       "disagreed": "JBMC refuted it, so neither checker's verdict stands (--confirm)",
                       "no-verdict": "JBMC, asked to prove it again, gave no verdict, so the proof is the own checker's alone (--confirm)",
@@ -1671,7 +1699,10 @@ def advice_lines(folder, res):
                   f"or refuted. For each, what a contract must state:", ""]
         lines += [f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: "
                   + ", ".join(PART_WORDS[o["part"]] for o in g["mustState"])
-                  + f". Under `--gaps assume` the checker would take it that it {g['assumed']}." for g in a["gaps"]] + [""]
+                  + f". Under `--gaps assume` the checker would take it that it {g['assumed']}."
+                  + (f" The contract given for it is refused: {g['refusedContract']}." if g.get("refusedContract") else "") for g in a["gaps"]] + [""]
+        if a.get("closed"):
+            lines += ["Closed by a contract given (`--contracts`): " + ", ".join(f"`{c}`" for c in a["closed"]) + ".", ""]
         for why, r in sorted((a.get("outside") or {}).items()):
             lines += [f"Outside the checker's fragment whatever the contracts: {why}, {r['first']} at {r['at']}.", ""]
         if (folder / a["templateFile"]).exists():
@@ -1679,16 +1710,37 @@ def advice_lines(folder, res):
     return lines
 
 
-def assumed_gaps(result):
-    """The gaps the tool's own checker assumed for a verdict (`--gaps assume`), from the result's search and each
-    property's, each once, in order."""
+def assumed_gaps(result, treatment="assumed"):
+    """The gaps the tool's own checker assumed for a verdict (`--gaps assume`), or closed with a contract
+    (`treatment` "contract"), from the result's search and each property's, each once, in order."""
     searches = [result.get("search")] + [q.get("search") for q in result.get("properties") or []]
     seen = {}
     for s in searches:
         for g in (s or {}).get("gaps") or []:
-            if g["treatment"] == "assumed":
+            if g["treatment"] == treatment:
                 seen.setdefault(g["id"], g)
     return list(seen.values())
+
+
+# How each evidence level of a contract for a gap reads on a page (lib/src/gap_contracts.rs, Evidence).
+EVIDENCE_WORDS = {"trusted": "trusted: checked against neither the JDK's bytecode nor a JVM, so the verdict rests on whoever wrote it"}
+
+
+def contract_lines(res):
+    """The page's account of the contracts a verified verdict rests on (`--contracts`): each gap with what its
+    contract states, who wrote it, and what backs it."""
+    relied = assumed_gaps(res, "contract") if res.get("verdict") == "verified" else []
+    if not relied:
+        return []
+    n = len(relied)
+    lines = [f"**The proof rests on {n} contract{'s' if n != 1 else ''} for gaps of the tool's own checker** (`--gaps advised "
+             "--contracts`): at each call below the checker applied what the contract states in place of the call, which it "
+             "does not implement.", ""]
+    for g in relied:
+        c = g["contract"]
+        lines.append(f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: {c['summary']}. Written by {c['writtenBy']} "
+                     f"(`{c['file'].rsplit('/', 1)[-1]}`, line {c['line']}); {EVIDENCE_WORDS.get(c['evidence'], c['evidence'])}.")
+    return lines + [""]
 
 
 def advice_record(outcome, folder, name):
@@ -1729,6 +1781,7 @@ def run_tool_equivalence(folder, example, root, module, result):
     if example["change"].get("resultsAgreeWhen"):
         command += ["--results-agree-when", example["change"]["resultsAgreeWhen"]]
     command += proof_options(example)
+    stage_contracts(folder, example, build)
     proc, output = tool(app, root, *command, "--json", setup=False)
     outcome = json_outcome(proc, root)
     if outcome is not None:  # the console output is the outcome's own, with what went to standard error after it
@@ -1947,6 +2000,7 @@ def run_tool_property(folder, example, root, module, result):
     app = app_of(example)
     build = root / TOOL_APPS[app]["root"]
     work = build / "build/property"
+    stage_contracts(folder, example, build)
     proc, output = tool(app, root, "prove", example["subject"]["symbol"], "--properties", "src/contract/properties.contract",
                         "--classes", str(build / "build/main"), "--work", str(work), "--report", str(build / "build/reports"),
                         *proof_options(example), "--json", setup=False)
@@ -3267,6 +3321,7 @@ def render_example(folder, ex, res, snap=None):
                   "implement** (`--gaps assume`): it holds of a JVM on which each of these does what is stated, which the JVM "
                   "need not do.", ""]
         lines += [f"- `{g['id']}`: {g['call']} {g['approximation']}, at {', '.join(g['sites'])}." for g in assumed] + [""]
+    lines += contract_lines(res)
     lines += snapshot_lines(ex, res, snap)
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())
     if several:

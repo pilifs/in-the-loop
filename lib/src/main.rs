@@ -308,6 +308,12 @@ struct EquivalenceArgs {
     /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
+    /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
+    /// (`kind: gap-contracts`, a block per gap under its id): the tool's own checker applies each at its call in
+    /// place of the gap, and refuses one it cannot apply, with the reason. The verdict counts the contracts it
+    /// rests on; none is checked yet, so each is trusted.
+    #[arg(long)]
+    contracts: Option<PathBuf>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
     /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
     /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
@@ -393,6 +399,12 @@ struct ProveArgs {
     /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
+    /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
+    /// (`kind: gap-contracts`, a block per gap under its id): the tool's own checker applies each at its call in
+    /// place of the gap, and refuses one it cannot apply, with the reason. The verdict counts the contracts it
+    /// rests on; none is checked yet, so each is trusted.
+    #[arg(long)]
+    contracts: Option<PathBuf>,
     /// With `--engine auto`, have JBMC prove again, over every input, a statement the tool's own checker proved.
     /// JBMC agreeing is a second implementation of the JVM's semantics agreeing; JBMC refuting it is neither
     /// verdict (unverifiable, with JBMC's witness); JBMC giving none leaves the proof unconfirmed. The result says
@@ -474,6 +486,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
             options.engine = args.engine.parse()?;
             options.gaps = args.gaps.parse()?;
+            options.contracts = args.contracts;
             options.confirm = confirm_option(args.confirm, options.engine)?;
             options.shared_callees = !args.no_shared_callees;
             options.before_target = args.before_target;
@@ -525,6 +538,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.sat_solver = Some(args.sat_solver.clone()).filter(|s| s != "default");
                 options.engine = args.engine.parse()?;
                 options.gaps = args.gaps.parse()?;
+                options.contracts = args.contracts.clone();
                 options.confirm = confirm_option(args.confirm, options.engine)?;
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());

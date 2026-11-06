@@ -76,6 +76,8 @@ pub struct Options {
     /// What the tool's own checker does at a gap ([`crate::bmc::gaps`]): refuses it (strict, the default) or
     /// assumes its approximation and names it in the verdict. It has no effect on JBMC.
     pub gaps: crate::bmc::gaps::GapMode,
+    /// Under advised, the contracts for the gaps (`--contracts`, [`crate::gap_contracts`]).
+    pub contracts: Option<PathBuf>,
     /// Under `--engine auto`, whether a proof of the tool's own checker is checked by JBMC too
     /// ([`crate::equivalence::Confirmation`]); off by default, since JBMC takes ten to a hundred times longer.
     pub confirm: bool,
@@ -105,6 +107,7 @@ impl Options {
             sat_solver: Some("cadical".into()),
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
+            contracts: None,
             confirm: false,
         }
     }
@@ -220,6 +223,9 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if options.gaps == crate::bmc::gaps::GapMode::Advised && options.engine == crate::Engine::Jbmc {
         return Err(Error::new(ADVISED_NEEDS_OWN_CHECKER));
     }
+    if options.contracts.is_some() && options.gaps != crate::bmc::gaps::GapMode::Advised {
+        return Err(Error::new(crate::gap_contracts::CONTRACTS_NEED_ADVISED));
+    }
 
     // 1. The method.
     let mut cp = ClassPath::new();
@@ -334,13 +340,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // `auto`), or that is the answer (under `native`).
     let mut stages: &[Option<&str>] = STAGES;
     let mut fallback = None;
+    let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     if options.engine != crate::Engine::Jbmc {
         let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, options.contracts.as_deref(), &entries, options.models, &work)?;
+        gap_setting = setting;
+        out.push_str(&notes);
         // Under advised, the gaps the harness reaches with no contract go to the agent before anything is solved.
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();
             let claim = crate::advice::Claim { kind: "property".into(), target: options.target.clone(), text: format!("satisfies `{assertion}` on every input{where_}"), harness: statement.clone() };
-            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, claim, &work)? {
+            if let Some(advice) = crate::advice::preflight(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, claim, &work, loaded.as_ref())? {
                 let p = advice.problem();
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
@@ -355,7 +365,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample: None, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, vacuous: None, search: None, replay: None, stated: Some(s), advice: Some(advice) });
             }
         }
-        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work)?;
+        let result = crate::bmc::run_for_proof(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work)?;
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
                 let _ = writeln!(out, "{}", crate::equivalence::NOT_JBMC);
@@ -481,8 +491,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Verdict::Verified => {
             let how = format!("{}: {} properties proved over {domain} in {seconds:.1} s; loops unwound {} times with unwinding assertions", last.version, last.properties, options.unwind);
             let (assuming, assumed) = crate::equivalence::assumed_gaps(&last);
-            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws}{assuming} ({how})", options.target);
+            let (relying, relied) = crate::equivalence::relied_contracts(&last);
+            let _ = writeln!(out, "✓ {} {claim} on every input{where_}{and_throws}{assuming}{relying} ({how})", options.target);
             out.push_str(&assumed);
+            out.push_str(&relied);
             if let Some(c) = search.as_ref().and_then(|s| s.confirmation.as_ref()) {
                 out.push_str(&crate::equivalence::confirmation_line(c));
             }
@@ -492,7 +504,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 let mut entries = options.classes.clone();
                 entries.extend(options.classpath.iter().cloned());
                 let render = |r: &JbmcResult| r.arguments(&descriptor.params).ok().map(|found| witness::call(&method_name, &params, &found).0);
-                let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), options.gaps, &work, "failing the assumption (--assume)", &render)?;
+                let (reason, status) = crate::equivalence::vacuity(&mut out, &harness.probe, harness::PROPERTY_CLASS, &entries, options.models, options.unwind, options.max_array_length, Duration::from_secs(options.timeout_seconds), &gap_setting, &work, "failing the assumption (--assume)", &render)?;
                 vacuous = reason;
                 vacuity_status = Some(status);
             } else {
@@ -573,7 +585,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             if evaluable && holds_on_found {
                 let (rendered, _) = witness::call(&method_name, &params, &found);
                 let did = if replayed.thrown.is_some() { replayed.outcome.clone() } else { format!("returns {}", replayed.outcome) };
-                let p = format!("JBMC's counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value");
+                let p = format!("{}'s counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. {}", if last.native.is_some() { "The tool's own checker" } else { "JBMC" }, crate::equivalence::unreproduced_cause(&last));
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
                 findings.push(Finding::new("unverifiable", message, uri.clone(), line));
