@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 27, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 18:11 UTC |
-| Prompts | 816 |
-| Model calls | 8,038 |
-| Tool calls | 8,894 (192 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 18:15 UTC |
+| Prompts | 817 |
+| Model calls | 8,052 |
+| Tool calls | 8,907 (193 failed) |
 | Compactions | 108 |
 | Subagents | 3 |
-| Tokens written | 11,179,906 |
-| Tokens read | 1,371,688,882 (97.8% from cache) |
-| Commits with a trace | 242 |
-| Log snapshots | 302 (966.2 MB gzipped, 297 uploaded) |
+| Tokens written | 11,192,033 |
+| Tokens read | 1,374,946,537 (97.9% from cache) |
+| Commits with a trace | 243 |
+| Log snapshots | 303 (966.6 MB gzipped, 297 uploaded) |
 
 ## Sessions
 
@@ -53,7 +53,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | ended | 10 h 56 min | `claude-opus-5-5` | 127 | 1,786 | 1,804 | 16 | 23 | 375,335 | 30 |
 | 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 5 h 14 min | `claude-opus-5-5` | 33 | 379 | 369 | 2 | 1 | 451,666 | 29 |
 | 2026-11-06 15:24 UTC | [setup-repo-on-ryzen-machine](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | open | 39 min | `claude-opus-5-5` | 3 | 34 | 36 | 5 | 0 | 103,564 | 2 |
-| 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | open | 1 h 17 min | `claude-opus-5-5` | 7 | 143 | 142 | 4 | 0 | 219,394 | 7 |
+| 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | open | 1 h 21 min | `claude-opus-5-5` | 8 | 157 | 155 | 5 | 0 | 245,658 | 8 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -89,15 +89,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,780,300 | 3,618 | 5,965,079 | 337,354,372 | 98.3% | 193 |
 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 230,657 | 810 | 576,427 | 90,758,079 | 99.4% | 396 |
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 23,386 | 68 | 72,506 | 2,701,932 | 97.4% | 119 |
-| [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 85,207 | 300 | 185,106 | 17,931,896 | 99.0% | 213 |
+| [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 97,334 | 330 | 211,322 | 21,163,305 | 99.0% | 220 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,715 | 86.7% | 27 |
+| `Bash` | 7,727 | 86.8% | 27 |
 | `Edit` | 408 | 4.6% | 14 |
-| `Read` | 304 | 3.4% | 16 |
+| `Read` | 305 | 3.4% | 17 |
 | `Write` | 301 | 3.4% | 13 |
 | `ToolSearch` | 61 | 0.7% | 14 |
 | `Monitor` | 31 | 0.3% | 5 |
@@ -358,6 +358,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 240 | change `nxxnuomv` | Record verification results for 60 jobs, the first run on the vm-1 VM | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865.jsonl.gz)) |
 | 241 | change `txmwvkmn` | The verification runner stops a step past its timeout only when it has stalled; the installer puts GNU coreutils first on Ubuntu 26.04 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd.jsonl.gz)) |
 | 242 | change `lwmqtwvz` | Rerun 39 verification jobs at this commit on vm-1 (verification pending) | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb.jsonl.gz)) |
+| 243 | change `xqllkuwk` | Setup for Ubuntu moves to examples/setup/ubuntu, with every difference between 24.04 and 26.04 decided in one place | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/4ebf10f3255a4a96a67de9b5e470acda1e4601b94f369723bfa712af51771732.jsonl.gz)) |
 
 ## Logs
 
@@ -391,7 +392,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 30 | 131.3 MB | [`77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz) |
 | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 28 | 28 | 23.4 MB | [`3303b94cf485`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/3303b94cf485ebca3cf4e2ebb1819958870161e91f19d13298c3fe62010089d9.jsonl.gz) |
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
-| [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 7 | 2 | 1.7 MB | `650833124696`, not uploaded |
+| [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 8 | 2 | 2.2 MB | `4ebf10f3255a`, not uploaded |
 
 ## Session notes
 

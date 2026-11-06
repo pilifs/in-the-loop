@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# Toolchain installer for Ubuntu 24.04 and 26.04 (native or WSL2), amd64 or arm64.
+# Toolchain installer for Ubuntu 24.04 and 26.04, amd64 or arm64, on a machine, a VM or WSL2.
 #
-#   examples/setup/ubuntu-wsl/install.sh                  # default components
-#   examples/setup/ubuntu-wsl/install.sh jvm provers      # just these
-#   examples/setup/ubuntu-wsl/install.sh all              # default + optional
+#   examples/setup/ubuntu/install.sh                  # default components
+#   examples/setup/ubuntu/install.sh jvm provers      # just these
+#   examples/setup/ubuntu/install.sh all              # default + optional
 #
 # Run as your normal user; the 'system' and 'acl2' components call sudo themselves.
 # Idempotent: re-run any time to repair or upgrade.
+#
+# What differs between the releases is decided in one place, release_profile below; every other step is the same on
+# both. WSL needs nothing of its own beyond the two warnings in preflight.
 set -euo pipefail
 
 DEFAULT_COMPONENTS=(system devtools jvm k8s verify provers)
@@ -47,20 +50,44 @@ link_bin() {   # link_bin <dir> <binary name>: symlink the first match found und
   [[ -n $found ]] || { warn "$2 not found under $1"; return 1; }
   ln -sf "$found" "$BIN/$2"
 }
-apt_pick() {   # apt_pick <package>...: the first one apt can install here (packages differ between releases)
-  local p c
-  for p in "$@"; do
-    c=$(apt-cache policy "$p" 2>/dev/null | awk '/Candidate:/{print $2}')
-    [[ -z $c || $c == "(none)" ]] || { echo "$p"; return; }
-  done
-}
 sdkman() { set +u; source "$HOME/.sdkman/bin/sdkman-init.sh"; "$@"; local rc=$?; set -u; return $rc; }
+
+# --------------------------------------------------------------------------- releases
+# Everything that differs between the supported Ubuntu releases, and only that:
+#   DOTNET_PACKAGE        the .NET SDK apt has (Dafny and Boogie are .NET tools)
+#   DOTNET_ROLL_FORWARD   launchers that let Dafny and Boogie, built for .NET 8, run on a newer runtime
+#   QEMU_PACKAGES         user-mode QEMU with static binaries and binfmt (for the RISC-V examples)
+#   CBMC_RELEASES         the Ubuntu releases whose CBMC .deb to try, in order (Diffblue lags behind Ubuntu)
+#   GNU_COREUTILS_FIRST   put GNU coreutils ahead of the release's default ones on PATH
+release_profile() {
+  . /etc/os-release
+  case ${VERSION_ID:-} in
+    24.04)
+      DOTNET_PACKAGE=dotnet-sdk-8.0
+      DOTNET_ROLL_FORWARD=false
+      QEMU_PACKAGES=(qemu-user-static)
+      CBMC_RELEASES=(24.04)
+      GNU_COREUTILS_FIRST=false
+      ;;
+    26.04)
+      DOTNET_PACKAGE=dotnet-sdk-10.0                 # 26.04 has no .NET 8
+      DOTNET_ROLL_FORWARD=true                       # Boogie refuses to start on .NET 10 without it
+      QEMU_PACKAGES=(qemu-user qemu-user-binfmt)     # qemu-user ships the static binaries; -static is gone
+      CBMC_RELEASES=(26.04 24.04)
+      GNU_COREUTILS_FIRST=true                       # the default coreutils are uutils (see install_gnu_coreutils)
+      ;;
+    *)
+      echo "Unsupported release: ${PRETTY_NAME:-unknown}. This installer knows Ubuntu 24.04 and 26.04;" \
+           "add a case to release_profile in $0 for another." >&2
+      exit 1
+      ;;
+  esac
+}
 
 # --------------------------------------------------------------------------- checks
 preflight() {
   [[ $EUID -ne 0 ]] || { echo "Run as your normal user, not root (sudo is used where needed)." >&2; exit 1; }
-  . /etc/os-release
-  [[ ${VERSION_ID:-} == 24.04 || ${VERSION_ID:-} == 26.04 ]] || warn "tested on Ubuntu 24.04 and 26.04; this is ${PRETTY_NAME:-unknown}"
+  release_profile
   if grep -qi microsoft /proc/version; then
     [[ $(ps -p 1 -o comm=) == systemd ]] || warn "WSL without systemd: add '[boot]\nsystemd=true' to /etc/wsl.conf, then 'wsl --shutdown'"
     [[ $(command -v docker || true) == /mnt/* ]] && warn "'docker' resolves to Docker Desktop's Windows shim; this installs native Docker Engine instead. Quit Docker Desktop (or disable its WSL integration) to avoid two daemons."
@@ -72,24 +99,16 @@ preflight() {
 install_system() {
   step "apt packages (sudo)"
   sudo apt-get update
-  # 24.04 has .NET 8 and qemu-user-static; 26.04 has only .NET 10, and its qemu-user ships the static binaries.
-  local dotnet qemu
-  dotnet=$(apt_pick dotnet-sdk-8.0 dotnet-sdk-10.0)
-  [[ -n $dotnet ]] || warn "no .NET SDK from apt; Dafny and Boogie will be skipped"
-  qemu=$(apt_pick qemu-user-static)
-  [[ -n $qemu ]] || qemu="qemu-user qemu-user-binfmt"
-  # shellcheck disable=SC2086  # $dotnet and $qemu are package lists
   sudo apt-get install -y \
     build-essential ca-certificates curl gnupg git jq zip unzip pkg-config zlib1g-dev \
     python3-venv python3-yaml python3-jsonschema tmux \
     z3 libz3-java graphviz \
-    $dotnet \
+    "$DOTNET_PACKAGE" \
     opam bubblewrap libgmp-dev \
     gcc-riscv64-linux-gnu musl-tools gdb-multiarch binutils-multiarch \
-    $qemu binfmt-support
+    "${QEMU_PACKAGES[@]}" binfmt-support
 
   step "Docker Engine (official repo)"
-  . /etc/os-release
   sudo install -m 0755 -d /etc/apt/keyrings
   sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
   sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -101,15 +120,15 @@ install_system() {
   sudo systemctl enable --now docker
 
   step "CBMC / JBMC (bounded model checking of C and Java bytecode)"
-  local suffix="" deb
+  local suffix="" deb="" r
   [[ $ARCH == arm64 ]] && suffix="-arm64"
-  # Diffblue publishes .debs for 22.04 and 24.04; a newer release takes the 24.04 one.
-  deb=$(gh_asset diffblue/cbmc "^ubuntu-${VERSION_ID}${suffix}-cbmc-.*-Linux\\.deb$" 2>/dev/null \
-        || gh_asset diffblue/cbmc "^ubuntu-24\\.04${suffix}-cbmc-.*-Linux\\.deb$") \
-    && curl -fsSLo /tmp/cbmc.deb "$deb" && sudo apt-get install -y /tmp/cbmc.deb && rm -f /tmp/cbmc.deb \
-    || warn "no CBMC .deb for Ubuntu $VERSION_ID/$ARCH"
+  for r in "${CBMC_RELEASES[@]}"; do
+    deb=$(gh_asset diffblue/cbmc "^ubuntu-${r//./\\.}${suffix}-cbmc-.*-Linux\\.deb$" 2>/dev/null) && break
+  done
+  [[ -n $deb ]] && curl -fsSLo /tmp/cbmc.deb "$deb" && sudo apt-get install -y /tmp/cbmc.deb && rm -f /tmp/cbmc.deb \
+    || warn "no CBMC .deb for Ubuntu ${CBMC_RELEASES[*]} on $ARCH"
 
-  install_gnu_coreutils
+  [[ $GNU_COREUTILS_FIRST == true ]] && install_gnu_coreutils
 
   step "kernel limits for kind (inotify)"
   printf 'fs.inotify.max_user_watches = 524288\nfs.inotify.max_user_instances = 512\n' \
@@ -148,7 +167,7 @@ install_devtools() {
   fetch_tar "$(gh_asset cli/cli "^gh_.*_linux_$ARCH\\.tar\\.gz$")" "$TOOLS/gh"
   link_bin "$TOOLS/gh" gh
 
-  step "Node.js $NODE_VERSION (for wrangler / Cloudflare; Windows' node under /mnt/c is not usable here)"
+  step "Node.js $NODE_VERSION (for wrangler / Cloudflare; on WSL, Windows' node under /mnt/c is not usable)"
   local node_arch=$([[ $ARCH == arm64 ]] && echo arm64 || echo x64)
   rm -rf "$TOOLS/node"; mkdir -p "$TOOLS/node"
   curl -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$node_arch.tar.xz" \
@@ -219,9 +238,9 @@ install_verify() {
     for t in dafny boogie; do
       dotnet tool update --global "$t" >/dev/null 2>&1 || dotnet tool install --global "$t"
     done
-    # Both are built for .NET 8; 26.04 has only .NET 10, where Boogie refuses to start. A launcher ahead
-    # of ~/.dotnet/tools on PATH lets them roll forward to the newest runtime when 8 is absent.
-    if ! dotnet --list-runtimes | grep -q "^Microsoft\\.NETCore\\.App 8\\."; then
+    # Both are built for .NET 8. Where the release has a newer runtime only, a launcher ahead of ~/.dotnet/tools on
+    # PATH lets them roll forward to it.
+    if [[ $DOTNET_ROLL_FORWARD == true ]]; then
       for t in dafny boogie; do
         printf '#!/usr/bin/env bash\nDOTNET_ROLL_FORWARD=Major exec %s "$@"\n' "$HOME/.dotnet/tools/$t" > "$BIN/$t"
         chmod +x "$BIN/$t"
@@ -287,9 +306,8 @@ GNU_COREUTILS="$HOME/.local/lib/gnu-coreutils"
 # Ubuntu 26.04 makes the Rust uutils its coreutils, which differ from GNU in ways jobs notice (timeout exits 124, not
 # 137, after -s KILL; tail rejects -15 before several files). build-essential depends on coreutils-from-uutils there,
 # so the switch is not made system-wide: GNU's own binaries (gnu-coreutils, as gnutimeout, gnutail, ...) are linked
-# under their plain names into one directory that the shell rc puts first on PATH.
+# under their plain names into one directory that the shell rc puts first on PATH. GNU_COREUTILS_FIRST says where.
 install_gnu_coreutils() {
-  timeout --version 2>/dev/null | head -n 1 | grep -q uutils || return 0
   step "GNU coreutils ahead of uutils on PATH ($GNU_COREUTILS)"
   sudo apt-get install -y gnu-coreutils
   mkdir -p "$GNU_COREUTILS"
@@ -301,7 +319,7 @@ install_gnu_coreutils() {
 
 install_gnu_coreutils_path() {   # after the toolchain block, so GNU's coreutils come before everything else
   local rc mark="# >>> GNU coreutils first >>>"
-  [[ -d $GNU_COREUTILS ]] || return 0
+  [[ $GNU_COREUTILS_FIRST == true && -d $GNU_COREUTILS ]] || return 0
   for rc in "$HOME/.bashrc" "$HOME/.profile" "$HOME/.zshrc"; do   # .profile: a non-interactive login shell stops early in .bashrc
     [[ $rc == *zshrc && ! -f $rc ]] && continue
     grep -qF "$mark" "$rc" 2>/dev/null && continue
@@ -362,7 +380,7 @@ main() {
   install_shellrc
   install_zshrc
   install_gnu_coreutils_path
-  step "Done. Open a new shell (docker group + PATH), then run examples/setup/ubuntu-wsl/doctor.sh"
+  step "Done. Open a new shell (docker group + PATH), then run examples/setup/ubuntu/doctor.sh"
 }
 
 main "$@"

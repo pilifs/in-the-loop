@@ -1,7 +1,7 @@
 # Verifying Java below the source: approaches
 
 Status: brainstorm / research plan. Each approach names the tools that
-[`setup/ubuntu-wsl/install.sh`](setup/ubuntu-wsl/install.sh) installs for it.
+[`setup/ubuntu/install.sh`](setup/ubuntu/install.sh) installs for it.
 
 ## Starting point
 
