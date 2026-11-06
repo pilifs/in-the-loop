@@ -41,8 +41,11 @@
 //! (with every override an application class declares, since the receiver's class picks one), and the static
 //! methods of the tool's models. It reads every instruction of each, so it may report a gap on a path no input
 //! takes. The harness itself, and the
-//! expressions of a property or relation compiled into it, are not walked. Step 1a of
-//! `llm-dlc/loops/sound-verdicts.md`: what strictness would cost each recorded example.
+//! expressions of a property or relation compiled into it, are not walked, nor are the initializers: a class that
+//! only another class's initializer initializes is not reached. Step 1a of
+//! `llm-dlc/loops/sound-verdicts.md`: what strictness would cost each recorded example. Each `class-initializer`
+//! gap's `<clinit>` is given a shape ([`initializer_shape`]), by which Phase 4b of
+//! `llm-dlc/loops/engine-priorities.md` counts them.
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::fmt::Write as _;
@@ -260,6 +263,8 @@ pub struct Scan {
     pub refused: BTreeMap<String, Refusal>,
     /// The JDK the gaps of JDK members are about, from its `release` file.
     pub jdk: Option<String>,
+    /// The shape of each `class-initializer` gap's `<clinit>` ([`initializer_shape`]), by class.
+    pub initializers: BTreeMap<String, Initializer>,
 }
 
 /// A kind of construct the engine refuses, as the scan met it: the first member or construct and where, and how
@@ -403,6 +408,9 @@ pub struct ScanRecord {
     pub gaps: Vec<GapRecord>,
     pub exact: BTreeMap<String, usize>,
     pub refused: BTreeMap<String, Refusal>,
+    /// The shape of each `class-initializer` gap's `<clinit>`.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub initializers: Vec<Initializer>,
 }
 
 impl Scan {
@@ -411,7 +419,7 @@ impl Scan {
     }
 
     pub fn record(&self, roots: &[String]) -> ScanRecord {
-        ScanRecord { roots: roots.to_vec(), methods: self.methods.len(), jdk: self.jdk.clone(), gaps: self.records(), exact: self.exact.clone(), refused: self.refused.clone() }
+        ScanRecord { roots: roots.to_vec(), methods: self.methods.len(), jdk: self.jdk.clone(), gaps: self.records(), exact: self.exact.clone(), refused: self.refused.clone(), initializers: self.initializers.values().cloned().collect() }
     }
 
     /// The report `jvmcontract gaps` prints.
@@ -424,6 +432,9 @@ impl Scan {
         }
         if !self.exact.is_empty() {
             let _ = writeln!(out, "  reproduced exactly: {}", self.exact.iter().map(|(c, k)| format!("{c} ×{k}")).collect::<Vec<_>>().join(", "));
+        }
+        for i in self.initializers.values() {
+            let _ = writeln!(out, "  initializer of {}: {} ({})", i.class, i.shape.name(), i.traits.iter().copied().collect::<Vec<_>>().join(", "));
         }
         for (why, r) in &self.refused {
             let _ = writeln!(out, "  outside the fragment: {why}: {} at {}{}", r.first, r.at, if r.sites > 1 { format!(", {} sites in all", r.sites) } else { String::new() });
@@ -575,6 +586,128 @@ fn initializers_of(cp: &ClassPath, class: &str, out: &mut Vec<String>, seen: &mu
     }
 }
 
+/// The shape of an application class's `<clinit>`, by which Phase 4b of `llm-dlc/loops/engine-priorities.md` counts
+/// the `class-initializer` gaps to choose what the engine runs. Read from the bytecode of the initializer and of the
+/// application methods it calls, transitively; the first that applies, in this order.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum InitializerShape {
+    /// An enum's: each constant made by the enum's constructor, which calls `Enum.<init>(String, int)`, and
+    /// `$VALUES`, an array of references.
+    Enum,
+    /// One that may throw: an `athrow` in it or in an application method it calls.
+    Throws,
+    /// One that reads or writes another class's static fields: the `$SwitchMap` class javac makes for a switch over
+    /// an enum reads the enum's constants.
+    OtherStatics,
+    /// One that only assigns its own static fields constants or literal tables (arrays filled with constants).
+    Constants,
+    /// Any other: one that calls methods or constructs objects to compute its fields.
+    Other,
+}
+
+impl InitializerShape {
+    pub fn name(self) -> &'static str {
+        match self {
+            InitializerShape::Enum => "enum",
+            InitializerShape::Throws => "throws",
+            InitializerShape::OtherStatics => "other-statics",
+            InitializerShape::Constants => "constants",
+            InitializerShape::Other => "other",
+        }
+    }
+}
+
+/// An application class's `<clinit>`, classified ([`initializer_shape`]): its shape, and what was found in it and
+/// in the application methods it calls (`athrow`, `reads-other-statics`, `writes-other-statics`,
+/// `calls-application`, `calls-jdk`, `constructs`, `arrays-of-references`, `handlers`, `switch-map`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Initializer {
+    pub class: String,
+    pub shape: InitializerShape,
+    pub traits: BTreeSet<&'static str>,
+}
+
+/// The shape of `class`'s `<clinit>`, or None when it has none (or is not an application class).
+pub fn initializer_shape(cp: &ClassPath, class: &str) -> Option<Initializer> {
+    let cf = cp.application(class).ok()??;
+    cf.method("<clinit>", "()V")?;
+    let mut traits = BTreeSet::new();
+    let mut only_constants = true;
+    let mut seen = BTreeSet::new();
+    let mut queue = VecDeque::from([(class.to_string(), "<clinit>".to_string(), "()V".to_string())]);
+    while let Some((owner, name, descriptor)) = queue.pop_front() {
+        if !seen.insert((owner.clone(), name.clone(), descriptor.clone())) {
+            continue;
+        }
+        let Some((mcf, m)) = cp.bytecode_method(&owner, &name, &descriptor) else { continue };
+        let Some(code) = m.code.as_ref() else { continue };
+        let Ok(insns) = code.instructions() else { continue };
+        let own = mcf.name == class && name == "<clinit>";
+        if !code.exception_table.is_empty() {
+            traits.insert("handlers");
+        }
+        for (_, insn) in insns {
+            match insn {
+                Insn::AThrow => {
+                    traits.insert("athrow");
+                }
+                Insn::GetStatic(i) | Insn::PutStatic(i) => {
+                    let Ok(f) = mcf.pool.member(i) else { continue };
+                    let put = matches!(insn, Insn::PutStatic(_));
+                    if f.owner != class {
+                        traits.insert(if put { "writes-other-statics" } else { "reads-other-statics" });
+                    }
+                    if f.name.starts_with("$SwitchMap$") {
+                        traits.insert("switch-map");
+                    }
+                    if own && (!put || f.owner != class) {
+                        only_constants = false;
+                    }
+                }
+                Insn::New(_) => {
+                    traits.insert("constructs");
+                    only_constants &= !own;
+                }
+                Insn::ANewArray(_) | Insn::MultiANewArray(..) => {
+                    traits.insert("arrays-of-references");
+                }
+                Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
+                    only_constants &= !own;
+                    let Ok(c) = mcf.pool.member(i) else { continue };
+                    match cp.bytecode_method(&c.owner, &c.name, &c.descriptor).filter(|(k, m)| cp.is_application(&k.name) && m.code.is_some()) {
+                        Some((k, _)) => {
+                            traits.insert("calls-application");
+                            queue.push_back((k.name.clone(), c.name.clone(), c.descriptor.clone()));
+                        }
+                        None => {
+                            traits.insert("calls-jdk");
+                        }
+                    }
+                }
+                Insn::InvokeDynamic(_) => {
+                    traits.insert("calls-jdk");
+                    only_constants &= !own;
+                }
+                Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_) | Insn::Ldc(_) | Insn::Dup | Insn::Pop | Insn::NewArray(_) | Insn::ArrayStore(_) | Insn::Return(None) => {}
+                _ => only_constants &= !own,
+            }
+        }
+    }
+    let shape = if cf.is_enum() && cf.super_class.as_deref() == Some("java/lang/Enum") {
+        InitializerShape::Enum
+    } else if traits.contains("athrow") {
+        InitializerShape::Throws
+    } else if traits.contains("reads-other-statics") || traits.contains("writes-other-statics") {
+        InitializerShape::OtherStatics
+    } else if only_constants {
+        InitializerShape::Constants
+    } else {
+        InitializerShape::Other
+    };
+    Some(Initializer { class: class.replace('/', "."), shape, traits })
+}
+
 struct Walker<'a> {
     cp: &'a ClassPath,
     scan: Scan,
@@ -620,6 +753,9 @@ impl Walker<'_> {
         for c in initializers(self.cp, class) {
             if self.initialised.insert(c.clone()) {
                 self.gap(GapKind::ClassInitializer, &c, "<clinit>", "()V", site.clone());
+                if let Some(shape) = initializer_shape(self.cp, &c) {
+                    self.scan.initializers.insert(c.clone(), shape);
+                }
             }
         }
     }

@@ -2172,6 +2172,57 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     }
 }
 
+const SHAPES: &str = r#"package fixtures;
+public class Shapes {
+    static class Table { static final int[] PRIMES = { 2, 3, 5 }; static final String NAME = new String("t"); }
+    static class Literal { static final int[] PRIMES = { 2, 3, 5 }; }
+    static class Boom { static final int[] TABLE = table(); static int[] table() { throw new IllegalStateException(); } }
+    static class Reader { static final int[] COPY = Literal.PRIMES; }
+    public static int light(Light l) { switch (l) { case RED: return 1; default: return 2; } }
+    public static int literal(int n) { return Literal.PRIMES[0] + n; }
+    public static int table(int n) { return Table.PRIMES[0] + n; }
+    public static int boom(int n) { return Boom.TABLE.length + n; }
+    public static int reader(int n) { return Reader.COPY.length + n; }
+}
+"#;
+
+/// Phase 4b of `llm-dlc/loops/engine-priorities.md`: the scan gives each `class-initializer` gap's `<clinit>` a
+/// shape, read from its bytecode and the application methods it calls: an enum's, javac's `$SwitchMap` class for a
+/// switch over an enum (which reads the enum's constants), one that only assigns a literal table, one that throws
+/// through a method it calls, one that reads another class's static field, and one that calls the JDK.
+#[test]
+fn the_gap_scan_gives_each_class_initializer_a_shape() {
+    let dir = target_tmp().join("shapes-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Shapes.java"), SHAPES).unwrap();
+    // In a file of its own, as in the apps: javac makes a `$SwitchMap` class for a switch over an enum of another
+    // compilation unit.
+    std::fs::write(dir.join("Light.java"), "package fixtures;\nenum Light { RED, GREEN }\n").unwrap();
+    let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java")]) else { return };
+    let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
+    let shapes = |method: &str| {
+        let targets = vec![format!("fixtures.Shapes#{method}")];
+        let roots = jvmcontract::bmc::gaps::roots(&cp, &targets).unwrap();
+        let s = jvmcontract::bmc::gaps::scan(&cp, &roots).unwrap();
+        s.initializers.values().map(|i| (i.class.clone(), i.shape.name(), i.traits.iter().copied().collect::<Vec<_>>())).collect::<Vec<_>>()
+    };
+    let light = shapes("light");
+    let names: Vec<_> = light.iter().map(|(c, s, _)| (c.as_str(), *s)).collect();
+    assert_eq!(names, [("fixtures.Light", "enum"), ("fixtures.Shapes$1", "other-statics")]);
+    assert!(light[1].2.contains(&"switch-map") && light[1].2.contains(&"handlers"), "{light:?}");
+    assert!(light[0].2.contains(&"arrays-of-references"), "{light:?}");
+    assert_eq!(shapes("literal"), [("fixtures.Shapes$Literal".to_string(), "constants", vec![])]);
+    assert_eq!(shapes("table"), [("fixtures.Shapes$Table".to_string(), "other", vec!["calls-jdk", "constructs"])]);
+    assert_eq!(shapes("boom")[0].1, "throws");
+    assert!(shapes("boom")[0].2.contains(&"athrow") && shapes("boom")[0].2.contains(&"calls-application"));
+    // The scan does not walk an initializer's body, so Literal, which Reader's initializer initializes, is not
+    // reached from it.
+    let reader = shapes("reader");
+    assert_eq!(reader.iter().map(|(c, s, _)| (c.as_str(), *s)).collect::<Vec<_>>(), [("fixtures.Shapes$Reader", "other-statics")]);
+    assert_eq!(reader[0].2, ["reads-other-statics"]);
+}
+
 /// Step 1b of llm-dlc/loops/sound-verdicts.md: the tool's own checker meets the gaps as it runs. Under `--gaps strict`
 /// (the default) a claim the JVM refutes through a JDK call the engine does not implement is never `Verified`: the
 /// constructor `new ArrayList<>(n)` (a review's reproducer, which throws for a negative `n`) and a `void` JDK mutator
