@@ -1,0 +1,328 @@
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md
+@@ -253,7 +253,7 @@
+ 
+ How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int.
+ 
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++This page renders attempt `20261106T171505Z-06554291` at claim `cb63cad56915b8db`, in pipeline job `20261105-235230-example-128-b9-violation-with-its-comman`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -23,7 +29,109 @@
+     {
+       "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
+       "contract": "throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\")",
+-      "actual": "1"
++      "actual": "1",
++      "found": "offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)",
++      "shrinkRuns": 19,
++      "witness": {
++        "inputs": [
++          {
++            "name": "this.start",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "this.size",
++            "type": "int",
++            "value": 1
++          },
++          {
++            "name": "failedIndex",
++            "type": "int",
++            "value": 1
++          }
++        ],
++        "foundInputs": [
++          {
++            "name": "this.start",
++            "type": "long",
++            "value": "15"
++          },
++          {
++            "name": "this.size",
++            "type": "int",
++            "value": 15
++          },
++          {
++            "name": "failedIndex",
++            "type": "int",
++            "value": 15
++          }
++        ],
++        "call": {
++          "class": "net.terminalvalue.crosscut.kafka.Batch",
++          "classFile": "net/terminalvalue/crosscut/kafka/Batch.class",
++          "classFileSha256": "7fe5bd5cc0e1fc5944ddfdf2d528c4fa9f06133d2627777d67e3433b4c463998",
++          "classes": "after",
++          "method": "offsetToCommit",
++          "descriptor": "(I)J",
++          "static": false,
++          "receiver": {
++            "name": "this",
++            "type": "net.terminalvalue.crosscut.kafka.Batch",
++            "components": [
++              {
++                "name": "start",
++                "type": "long",
++                "value": "0",
++                "from": "this.start"
++              },
++              {
++                "name": "size",
++                "type": "int",
++                "value": 1,
++                "from": "this.size"
++              }
++            ]
++          },
++          "arguments": [
++            {
++              "name": "failedIndex",
++              "type": "int",
++              "value": 1,
++              "from": "failedIndex"
++            }
++          ]
++        },
++        "previousCall": {
++          "class": "net.terminalvalue.crosscut.kafka.BatchCommit",
++          "classFile": "net/terminalvalue/crosscut/kafka/BatchCommit.class",
++          "classFileSha256": "358468dd14eaba6de309af4407d30bdba4644da700e5fac8b6dc0eaac63e7652",
++          "classes": "before",
++          "method": "offsetToCommit",
++          "descriptor": "(JII)J",
++          "static": true,
++          "arguments": [
++            {
++              "name": "batchStart",
++              "type": "long",
++              "value": "0",
++              "from": "this.start"
++            },
++            {
++              "name": "batchSize",
++              "type": "int",
++              "value": 1,
++              "from": "this.size"
++            },
++            {
++              "name": "failedIndex",
++              "type": "int",
++              "value": 1,
++              "from": "failedIndex"
++            }
++          ]
++        }
++      }
+     }
+   ],
+   "purityViolations": [],
+@@ -39,5 +147,188 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "jbmc",
++    "checker": "JBMC 6.11.0",
++    "seconds": 0.06,
++    "properties": 2,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": "[0:20]"
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  },
++  "claim": {
++    "id": "cb63cad56915b8db",
++    "format": 1,
++    "example": "128",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
++      "behaviourChangeIntended": false,
++      "previousSymbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
++      "previousArguments": "this.start, this.size, failedIndex"
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": "36ecdfcfa043e06d2d413e636afa0532025c1206e32a2371d955d1675c0b3b61",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "c5b2695f55abb7d1bb8666cc132376834068365be0a0bd0d4e7114d849ec4872",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171505Z-06554291",
++    "claim": "cb63cad56915b8db",
++    "startedAt": "2026-11-06T17:15:05+00:00",
++    "seconds": 4.6,
++    "engine": "jbmc",
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
++        "files": 39
++      },
++      "after": {
++        "sha256": "591af38b0dc5c739fcee290fb9b39be8c0e2d57a9991ec4f4eef7d621af15904",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-235230-example-128-b9-violation-with-its-comman",
++      "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-235230-example-128-b9-violation-with-its-comman"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.4,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.4,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "javac unpatched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.6,
++        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
++        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.1,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-version-of-jbmc.stdout",
++        "stderr": "logs/09-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-1g3csfb9/attempts/128/attempt-umlx82na"
++  },
++  "conclusion": {
++    "claim": "cb63cad56915b8db",
++    "attempt": "20261106T171505Z-06554291",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "4fdc0482755f6e319cdee50faf452da106c6807e102c57277d6ecdcfff7d5b6e",
++        "bytes": 2848
++      },
++      {
++        "path": "statement.java",
++        "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
++        "bytes": 2903
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "9cd3c8ab2c9d1dfb0f8a2bdeb9511c66dab6cbeeadbcdb1cecf5afe7b9cf66be",
++        "bytes": 888
++      }
++    ]
++  }
+ }

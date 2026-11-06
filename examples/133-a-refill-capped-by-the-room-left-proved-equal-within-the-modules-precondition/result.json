@@ -1,7 +1,13 @@
 {
   "verdict": "verified",
   "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.crosscut.Tests",
     "passed": true,
@@ -33,5 +39,126 @@
   "stateMachine": null,
   "coverage": null,
   "sarif": "result.sarif",
-  "output": "verifier-output.txt"
+  "output": "verifier-output.txt",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.19,
+    "properties": 1,
+    "unwind": 16,
+    "maxArrayLength": 8,
+    "stage": null,
+    "native": {
+      "paths": 9,
+      "merges": 0,
+      "solverCalls": 10,
+      "solvingSeconds": 0.164154658,
+      "gatesEvaluated": 3029,
+      "evaluatingSeconds": 4.5876e-05,
+      "divisions": 1,
+      "divisionsBuilt": 0,
+      "multiplications": 0,
+      "multiplicationsBuilt": 0,
+      "variables": 7369,
+      "clauses": 23526,
+      "seconds": 0.167936776
+    }
+  },
+  "replay": null,
+  "claim": {
+    "id": "0e64b4f98f709e23",
+    "format": 1,
+    "example": "133",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+      "behaviourChangeIntended": false,
+      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
+    },
+    "inputs": {
+      "patch": "1d1838432bdbd7409185ac64b679ec282773afcec5f08ee1333c7fa7dd5ffc2a",
+      "before": {
+        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+        "files": 54
+      },
+      "after": {
+        "sha256": "3d42aa8625df7e3341d7a6b785630e3c4e7a5eefa0291fbc6761ca98d2e48d00",
+        "files": 54
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261106T171447Z-dab010c5",
+    "claim": "0e64b4f98f709e23",
+    "startedAt": "2026-11-06T17:14:47+00:00",
+    "seconds": 6.3,
+    "engine": "native",
+    "options": [
+      "--engine",
+      "native"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+        "files": 39
+      },
+      "after": {
+        "sha256": "1c781053992cc859ec9f5eda43376f36541aeb65bc17377c491314beff2f03a7",
+        "files": 39
+      }
+    },
+    "pipeline": {
+      "jobId": "20261105-131902-example-133-b9-own-checker-verified-reco",
+      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-133-b9-own-checker-verified-reco"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "0e64b4f98f709e23",
+    "attempt": "20261106T171447Z-dab010c5",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": []
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+        "bytes": 1881
+      },
+      {
+        "path": "statement.java",
+        "sha256": "61d7099ec7d9928eea38f557ca02f7b6ab13263d5f5f325aafd4308e73a6a2b7",
+        "bytes": 2653
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "b0e5da6477c8a152c1c643c7a97724f4201009dd5d8e6cd1ff65861510b29521",
+        "bytes": 497
+      }
+    ]
+  }
 }

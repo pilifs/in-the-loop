@@ -1,0 +1,228 @@
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md
+@@ -163,6 +163,10 @@
+ 
+ </details>
+ 
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `CircuitBreaker#decide` (`spec/CircuitBreakerContract.tla`): the regenerated contract, 3 rows from the committed one, as the change intends
++
+ The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
+ 
+ ```mermaid
+@@ -229,7 +233,7 @@
+ ```text
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098644] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 46141] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -240,9 +244,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-03 23:55:12)
++Starting... (2026-11-06 17:14:01)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:12.
++Finished computing initial states: 2 distinct states generated at 2026-11-06 17:14:01.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -267,11 +271,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-03 23:55:12)
++Finished in 00s at (2026-11-06 17:14:01)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098738] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 46204] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -282,12 +286,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-03 23:55:13)
++Starting... (2026-11-06 17:14:02)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:13.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-03 23:55:13)
+-Finished checking temporal properties in 00s at 2026-11-03 23:55:13
++Finished computing initial states: 2 distinct states generated at 2026-11-06 17:14:02.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-06 17:14:02)
++Finished checking temporal properties in 00s at 2026-11-06 17:14:02
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -312,7 +316,7 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-03 23:55:13)
++Finished in 00s at (2026-11-06 17:14:02)
+ ```
+ 
+ </details>
+@@ -340,6 +344,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -22,7 +28,7 @@
+   "counterexamples": [],
+   "purityViolations": [],
+   "trustedCalls": [],
+-  "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n",
++  "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n--- a/examples/apps/crosscut/src/contract/api.contract\n+++ b/examples/apps/crosscut/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: crosscut, 34 public types, 125 members\n+module: crosscut, 36 public types, 140 members\n \n net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected\n   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)\n@@ -94,6 +94,15 @@\n   public static long lastAfter(long, long, long, long, long)\n   public static long tokensAfter(long, long, long, long, long)\n \n+net.terminalvalue.crosscut.ratelimit.Window: public final record\n+  public Window(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long count()\n+  public long startNanos()\n+  public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n+\n net.terminalvalue.crosscut.resilience.BreakerEffect: public final enum\n   public static final PERMIT: net.terminalvalue.crosscut.resilience.BreakerEffect\n   public static final RESET_METRICS: net.terminalvalue.crosscut.resilience.BreakerEffect\n@@ -128,6 +137,16 @@\n \n net.terminalvalue.crosscut.resilience.CircuitBreaker: public final class\n   public static net.terminalvalue.crosscut.Decision decide(net.terminalvalue.crosscut.resilience.BreakerState, net.terminalvalue.crosscut.resilience.BreakerEvent)\n+\n+net.terminalvalue.crosscut.retry.Backoff: public final record\n+  public Backoff(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long baseMillis()\n+  public long capMillis()\n+  public long delayMillis(int)\n+  public static final MAX_CAP_MILLIS: long\n \n net.terminalvalue.crosscut.retry.RetryPolicy: public final class\n   public static boolean shouldRetry(int, boolean, int, int)\n",
+   "proof": "two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+   "problem": null,
+   "statement": null,
+@@ -124,6 +130,16 @@
+   },
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt",
++  "modelContracts": [
++    {
++      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
++      "contract": "src/contract/CircuitBreaker.decide.contract",
++      "operator": "spec/CircuitBreakerContract.tla",
++      "connection": "derived",
++      "rowsChanged": 3,
++      "allowed": true
++    }
++  ],
+   "violationKind": null,
+   "forever": null,
+   "configurations": [
+@@ -131,6 +147,7 @@
+       "label": "two calls in flight",
+       "cfg": "spec/CircuitBreaker.cfg",
+       "verdict": "verified",
++      "status": "completed",
+       "summary": "✓ Verified: all invariants hold in 98 states",
+       "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+       "invariant": null,
+@@ -143,6 +160,7 @@
+       "label": "fairness",
+       "cfg": "spec/CircuitBreakerLive.cfg",
+       "verdict": "verified",
++      "status": "completed",
+       "summary": "✓ Verified: all invariants and properties hold in 98 states",
+       "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
+       "invariant": null,
+@@ -151,5 +169,7 @@
+       "trace": null,
+       "forever": null
+     }
+-  ]
++  ],
++  "modelVerdict": "verified",
++  "modelSummary": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration"
+ }
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.sarif
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.sarif
+@@ -18,6 +18,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
++++ b/examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == two calls in flight: spec/CircuitBreaker.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098644] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 46141] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -11,9 +11,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-03 23:55:12)
++Starting... (2026-11-06 17:14:01)
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:12.
++Finished computing initial states: 2 distinct states generated at 2026-11-06 17:14:01.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -38,11 +38,11 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-03 23:55:12)
++Finished in 00s at (2026-11-06 17:14:01)
+ 
+ == fairness: spec/CircuitBreakerLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1098738] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 1639MB heap and 64MB offheap memory [pid: 46204] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/crosscut/spec/CircuitBreaker.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -53,12 +53,12 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module CircuitBreakerContract
+ Semantic processing of module CircuitBreaker
+-Starting... (2026-11-03 23:55:13)
++Starting... (2026-11-06 17:14:02)
+ Implied-temporal checking--satisfiability problem has 2 branches.
+ Computing initial states...
+-Finished computing initial states: 2 distinct states generated at 2026-11-03 23:55:13.
+-Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-03 23:55:13)
+-Finished checking temporal properties in 00s at 2026-11-03 23:55:13
++Finished computing initial states: 2 distinct states generated at 2026-11-06 17:14:02.
++Checking 2 branches of temporal properties for the complete state space with 196 total distinct states at (2026-11-06 17:14:02)
++Finished checking temporal properties in 00s at 2026-11-06 17:14:02
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -83,4 +83,4 @@
+ 276 states generated, 98 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 19.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).
+-Finished in 00s at (2026-11-03 23:55:13)
++Finished in 00s at (2026-11-06 17:14:02)

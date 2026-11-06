@@ -111,13 +111,30 @@ Revert, or write the rule as Spring does, `instanceof RuntimeException || instan
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+This page renders attempt `20261106T171458Z-9a5140ff` at claim `35164c1aff042c68`, in pipeline job `20261105-235230-example-025-b8-violation-with-its-comman`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ module crosscut matches its capability contract (36 classes, 127 methods, 0 capability uses, 0 libraries)
-✓ module crosscut matches its API contract (33 public types, 124 members)
+✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
+✗ Public API of module crosscut differs from its contract:
+  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
+  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
+  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
+  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
+  added net.terminalvalue.crosscut.ratelimit.Window: public final record
+  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
+  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
+  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
+  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
+  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
+  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
+  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
+  added net.terminalvalue.crosscut.retry.Backoff: public final record
+  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
+  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
+  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
+  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
 ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
@@ -128,6 +145,8 @@ This result was recorded before runs fingerprinted their inputs, so whether it s
   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
 
 If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
+
+If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.
 ```
 
 </details>
@@ -170,6 +189,12 @@ If a change is intended, run `jvmcontract update` and commit the contract with t
               }
             },
             {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
               "id": "property-violated",
               "shortDescription": {
                 "text": "An input exists on which the method violates its stated property."
@@ -185,6 +210,13 @@ If a change is intended, run `jvmcontract update` and commit the contract with t
         }
       },
       "results": [
+        {
+          "ruleId": "api-changed",
+          "level": "error",
+          "message": {
+            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
+          }
+        },
         {
           "ruleId": "behaviour-changed",
           "level": "error",

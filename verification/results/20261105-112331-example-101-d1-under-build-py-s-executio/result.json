@@ -1,0 +1,196 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-112331-example-101-d1-under-build-py-s-executio",
+  "title": "Example 101 (D1) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m35s, peak 2.8 GiB (estimated 15m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-112331-example-101-d1-under-build-py-s-executio.json",
+    "sha256": "4be6a1b8f0e766dbda57f3d79fd403d2f2a8604c9c317eabfdd636710cb5d51b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-112331-example-101-d1-under-build-py-s-executio",
+      "title": "Example 101 (D1) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "D1"
+      ],
+      "links": {
+        "examples": [
+          "101"
+        ]
+      },
+      "expected": "example 101 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:23:31+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "example 101 (D1)",
+          "run": "python3 examples/tools/build.py 101",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live"
+      ]
+    }
+  },
+  "sourceCommit": "432ef36d6093761b21e71aeb06d96ca31fb3747e",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:17:22+00:00",
+  "wallSeconds": 216.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2999504896,
+    "wallSeconds": 215.3,
+    "cpuSeconds": 234.4,
+    "memoryOfEstimate": 0.93,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 101 (D1)",
+      "run": "python3 examples/tools/build.py 101",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 215.289,
+      "cpuSeconds": 234.442,
+      "cpuThrottledSeconds": 3.19,
+      "peakMemoryBytes": 2999504896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-101-d1.log",
+        "lines": 2,
+        "bytes": 208,
+        "sha256": "25606e8e8c25ce71113bc69e55bba4dbb072302a971b0461dcf8587b6eb46f80",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live: verified (as expected)",
+          "groups": [
+            "101",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live: running (D1)",
+        "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md",
+      "change": "modified",
+      "bytes": 52000,
+      "sha256": "42e863740ee53d221672efff22df2427ddfac0edf753d04ed99d310215070dec",
+      "sourceSha256": "70a762be833bd6888e501ab542de538571d72fba68ef0fbcfec690a7675bfd65"
+    },
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.json",
+      "change": "modified",
+      "bytes": 33188,
+      "sha256": "46af07b1bd9124aa1fae136ef464f1ae02668968eeda1757d1a29c01ac8a7c72",
+      "sourceSha256": "9a4de9089d54ac76db155ca4ff1d48e1d8a7b84dca4f3a72cf75adbe519c4959"
+    },
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/verifier-output.txt",
+      "change": "modified",
+      "bytes": 25741,
+      "sha256": "0bf0f64994b3174c00d34440e30673b3b49c1da80809c8b8de90ca12edca9b89",
+      "sourceSha256": "d56d4d82b77aca6397b1aabd6f6b9c74b806de80efeac9b19e975bc7adae8c61"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.json",
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

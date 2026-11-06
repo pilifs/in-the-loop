@@ -1,0 +1,99 @@
+--- /dev/null
++++ b/lib/target/jobs/4a-142/outcome.json
+@@ -0,0 +1,96 @@
++{
++  "verdict": "unverifiable",
++  "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
++  "domain": "chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array",
++  "counterexample": null,
++  "proof": null,
++  "problem": "JBMC ran out of memory (the limit is 4864 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
++  "statement": "lib/target/jobs/4a-142/work/harness/EquivalenceHarness.java",
++  "findings": [
++    {
++      "rule_id": "unverifiable",
++      "message": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto cannot be verified: JBMC ran out of memory (the limit is 4864 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
++      "uri": null,
++      "line": 48
++    }
++  ],
++  "output": "✗ net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto cannot be verified: JBMC ran out of memory (the limit is 4864 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)\n",
++  "work": "lib/target/jobs/4a-142/work",
++  "search": {
++    "engine": "jbmc",
++    "checker": "JBMC 6.11.0",
++    "seconds": 15.35314075,
++    "properties": 0,
++    "unwind": 16,
++    "max_array_length": 8,
++    "stage": null,
++    "deadline_seconds": 300.0,
++    "runs": [
++      {
++        "checker": "jbmc",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 299.993,
++        "seconds": 15.343,
++        "ended": "no-verdict"
++      }
++    ]
++  },
++  "stated": {
++    "kind": "regression",
++    "domain": {
++      "parameters": [
++        {
++          "name": "chars",
++          "type": "char[]",
++          "kind": "array",
++          "null": false,
++          "max_length": 8
++        },
++        {
++          "name": "out",
++          "type": "byte[]",
++          "kind": "array",
++          "null": false,
++          "max_length": 8
++        }
++      ],
++      "shared_arrays": false,
++      "text": "chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array"
++    },
++    "assumptions": [
++      {
++        "kind": "library",
++        "text": "a JDK method outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub: a void one does nothing and another returns any value of its type",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result, equal in both versions",
++      "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++      "arrays": [
++        "chars",
++        "out"
++      ]
++    },
++    "bounds": {
++      "unwind": 16,
++      "max_array_length": 8,
++      "complete": false
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++      "classes": 10,
++      "jdk": "25.0.5"
++    },
++    "checker": {
++      "engine": "jbmc",
++      "name": "JBMC 6.11.0",
++      "solver": "cadical",
++      "fallback": null
++    },
++    "gap_mode": null,
++    "confirmation": null
++  }
++}

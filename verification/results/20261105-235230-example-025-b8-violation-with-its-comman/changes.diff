@@ -1,0 +1,308 @@
+--- a/examples/025-transaction-that-commits-after-an-error/README.md
++++ b/examples/025-transaction-that-commits-after-an-error/README.md
+@@ -111,13 +111,30 @@
+ 
+ The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
+ 
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++This page renders attempt `20261106T171458Z-9a5140ff` at claim `35164c1aff042c68`, in pipeline job `20261105-235230-example-025-b8-violation-with-its-comman`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ module crosscut matches its capability contract (36 classes, 127 methods, 0 capability uses, 0 libraries)
+-✓ module crosscut matches its API contract (33 public types, 124 members)
++✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
++✗ Public API of module crosscut differs from its contract:
++  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
++  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
++  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
++  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
++  added net.terminalvalue.crosscut.ratelimit.Window: public final record
++  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
++  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
++  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
++  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
++  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
++  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
++  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
++  added net.terminalvalue.crosscut.retry.Backoff: public final record
++  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
++  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
++  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
++  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
+ ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
+@@ -128,6 +145,8 @@
+   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
+ 
+ If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
++
++If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.
+ ```
+ 
+ </details>
+@@ -170,6 +189,12 @@
+               }
+             },
+             {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
+               "id": "property-violated",
+               "shortDescription": {
+                 "text": "An input exists on which the method violates its stated property."
+@@ -185,6 +210,13 @@
+         }
+       },
+       "results": [
++        {
++          "ruleId": "api-changed",
++          "level": "error",
++          "message": {
++            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
++          }
++        },
+         {
+           "ruleId": "behaviour-changed",
+           "level": "error",
+--- a/examples/025-transaction-that-commits-after-an-error/result.json
++++ b/examples/025-transaction-that-commits-after-an-error/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: 1 of 22 cases changed",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -47,5 +53,156 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "claim": {
++    "id": "35164c1aff042c68",
++    "format": 1,
++    "example": "025",
++    "statement": {
++      "approach": "B8",
++      "target": "net.terminalvalue.crosscut.tx.TransactionBoundary#exit",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/tx/TransactionBoundary.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {},
++    "inputs": {
++      "patch": "57ff03d5128b313c75fa321b2580c2946d8d1c8d6b5034a9bdc74ccc2949350f",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "e988fed852a05001abe0431681ea41aacd10e7b8e32f38808fbbee3e4e93a4f3",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171458Z-9a5140ff",
++    "claim": "35164c1aff042c68",
++    "startedAt": "2026-11-06T17:14:58+00:00",
++    "seconds": 3.1,
++    "engine": null,
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "fc60cfc3effd12f5d14adf2a01ce7647e5168df0401eff024dc96fadd711fc38",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-235230-example-025-b8-violation-with-its-comman",
++      "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-235230-example-025-b8-violation-with-its-comman"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.4,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.5,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "jvmcontract verify",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 0.0,
++        "stdout": "logs/05-jvmcontract-verify.stdout",
++        "stderr": "logs/05-jvmcontract-verify.stderr"
++      },
++      {
++        "name": "jvmcontract derive TransactionBoundary#exit",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-jvmcontract-derive-transactionboundary-exit.stdout",
++        "stderr": "logs/06-jvmcontract-derive-transactionboundary-exit.stderr"
++      },
++      {
++        "name": "jvmcontract statemachine",
++        "status": "exited",
++        "exitCode": 2,
++        "seconds": 0.0,
++        "stdout": "logs/07-jvmcontract-statemachine.stdout",
++        "stderr": "logs/07-jvmcontract-statemachine.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-version-of-java.stdout",
++        "stderr": "logs/08-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/09-version-of-javac.stdout",
++        "stderr": "logs/09-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-o7p00q30/attempts/025/attempt-lvqyyir4"
++  },
++  "conclusion": {
++    "claim": "35164c1aff042c68",
++    "attempt": "20261106T171458Z-9a5140ff",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "9325aeb11434fc12ea13a001628184c6445728c169557b11f289cc45d14da9bf",
++        "bytes": 4258
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "7a030e25707e7aa9b03efbbfee9776acd243cbc46bc0b4ce857a2e54e2a1f210",
++        "bytes": 3193
++      }
++    ]
++  }
+ }
+--- a/examples/025-transaction-that-commits-after-an-error/result.sarif
++++ b/examples/025-transaction-that-commits-after-an-error/result.sarif
+@@ -33,6 +33,12 @@
+               }
+             },
+             {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
+               "id": "property-violated",
+               "shortDescription": {
+                 "text": "An input exists on which the method violates its stated property."
+@@ -48,6 +54,13 @@
+         }
+       },
+       "results": [
++        {
++          "ruleId": "api-changed",
++          "level": "error",
++          "message": {
++            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
++          }
++        },
+         {
+           "ruleId": "behaviour-changed",
+           "level": "error",
+--- a/examples/025-transaction-that-commits-after-an-error/verifier-output.txt
++++ b/examples/025-transaction-that-commits-after-an-error/verifier-output.txt
+@@ -1,5 +1,22 @@
+-✓ module crosscut matches its capability contract (36 classes, 127 methods, 0 capability uses, 0 libraries)
+-✓ module crosscut matches its API contract (33 public types, 124 members)
++✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
++✗ Public API of module crosscut differs from its contract:
++  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
++  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
++  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
++  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
++  added net.terminalvalue.crosscut.ratelimit.Window: public final record
++  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
++  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
++  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
++  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
++  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
++  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
++  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
++  added net.terminalvalue.crosscut.retry.Backoff: public final record
++  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
++  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
++  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
++  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
+ ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
+ ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
+@@ -10,3 +27,5 @@
+   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
+ 
+ If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
++
++If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.

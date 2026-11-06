@@ -1,0 +1,62 @@
+--- a/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
++++ b/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.mica.Tests",
+     "passed": true,
+@@ -23,7 +29,9 @@
+     {
+       "input": "encodeInto(chars=['\\u0080'], out=[0])",
+       "contract": "throws ArrayIndexOutOfBoundsException(\"Index 1 out of bounds for length 1\"), leaving out=[-62]",
+-      "actual": "1, leaving out=[-128]"
++      "actual": "1, leaving out=[-128]",
++      "found": "encodeInto(chars=['\\u0080'], out=[32])",
++      "shrinkRuns": 29
+     }
+   ],
+   "purityViolations": [],
+@@ -39,5 +47,33 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 1.034,
++    "properties": 1,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": "[-100000:100000]",
++    "native": {
++      "paths": 735,
++      "merges": 212,
++      "solverCalls": 2064,
++      "solvingSeconds": 0.8864051,
++      "gatesEvaluated": 378679,
++      "evaluatingSeconds": 0.006921296,
++      "divisions": 0,
++      "divisionsBuilt": 0,
++      "multiplications": 0,
++      "multiplicationsBuilt": 0,
++      "variables": 46220,
++      "clauses": 169370,
++      "seconds": 1.010343785
++    }
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  }
+ }

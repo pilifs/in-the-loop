@@ -1,7 +1,13 @@
 {
   "verdict": "violation",
   "verdictLabel": "✗ Violation: Atomicity, 8-step trace (participant crashes)",
+  "execution": {
+    "status": "completed",
+    "exitCode": 1,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
     "passed": true,
@@ -23,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/Participant.decide.contract\n+++ b/examples/apps/quorum/src/contract/Participant.decide.contract\n@@ -18,7 +18,7 @@\n decide(PREPARED, Learned[outcome=NONE])    => Unchanged[reason=\"no decision yet\"]\n decide(PREPARED, Learned[outcome=COMMIT])  => Transition[next=COMMITTED, effects=[]]\n decide(PREPARED, Learned[outcome=ABORT])   => Transition[next=ABORTED, effects=[]]\n-decide(PREPARED, Restarted[])              => Unchanged[reason=\"holds its locks until the decision\"]\n+decide(PREPARED, Restarted[])              => Transition[next=ABORTED, effects=[]]\n decide(PREPARED, null)                     => throws NullPointerException\n decide(COMMITTED, Prepare[able=false])     => Rejected[reason=\"already voted\"]\n decide(COMMITTED, Prepare[able=true])      => Rejected[reason=\"already voted\"]\n",
-  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 3,448 distinct states to depth 12 in 3 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 10,061 distinct states to depth 8 in 7 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,637 distinct states to depth 2 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 103 distinct states to depth 12 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 3,448 distinct states to depth 12 in 3 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 10,061 distinct states to depth 8 in 5 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,637 distinct states to depth 2 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 103 distinct states to depth 12 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
   "problem": null,
   "statement": null,
   "trace": [
@@ -108,15 +114,26 @@
   "property": null,
   "stateMachine": "stateDiagram-v2\n    ABORTED: ABORTED (terminal)\n    COMMITTED: COMMITTED (terminal)\n    WORKING: WORKING (no incoming transition)\n    PREPARED --> ABORTED: Learned[outcome=ABORT] → effects=[]\n    PREPARED --> ABORTED: Restarted[] → effects=[]\n    PREPARED --> COMMITTED: Learned[outcome=COMMIT] → effects=[]\n    WORKING --> ABORTED: Prepare[able=false] → effects=[VOTE_NO]\n    WORKING --> ABORTED: GiveUp[] → effects=[]\n    WORKING --> ABORTED: Learned[outcome=ABORT] → effects=[]\n    WORKING --> ABORTED: Restarted[] → effects=[]\n    WORKING --> COMMITTED: Learned[outcome=COMMIT] → effects=[]\n    WORKING --> PREPARED: Prepare[able=true] → effects=[VOTE_YES]\n    WORKING --> WORKING: Learned[outcome=NONE] (Unchanged)\n    PREPARED --> PREPARED: Prepare[able=false] (Rejected)\n    PREPARED --> PREPARED: Prepare[able=true] (Rejected)\n    PREPARED --> PREPARED: GiveUp[] (Rejected)\n    PREPARED --> PREPARED: Learned[outcome=NONE] (Unchanged)\n    COMMITTED --> COMMITTED: Prepare[able=false] (Rejected)\n    COMMITTED --> COMMITTED: Prepare[able=true] (Rejected)\n    COMMITTED --> COMMITTED: GiveUp[] (Rejected)\n    COMMITTED --> COMMITTED: Learned[outcome=NONE] (Unchanged)\n    COMMITTED --> COMMITTED: Learned[outcome=COMMIT] (Unchanged)\n    COMMITTED --> COMMITTED: Learned[outcome=ABORT] (Unchanged)\n    COMMITTED --> COMMITTED: Restarted[] (Unchanged)\n    ABORTED --> ABORTED: Prepare[able=false] (Rejected)\n    ABORTED --> ABORTED: Prepare[able=true] (Rejected)\n    ABORTED --> ABORTED: GiveUp[] (Rejected)\n    ABORTED --> ABORTED: Learned[outcome=NONE] (Unchanged)\n    ABORTED --> ABORTED: Learned[outcome=COMMIT] (Unchanged)\n    ABORTED --> ABORTED: Learned[outcome=ABORT] (Unchanged)\n    ABORTED --> ABORTED: Restarted[] (Unchanged)\n",
   "coverage": {
+    "status": "partial",
     "configurations": [
       {
         "label": "three participants",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "partial",
+        "coverageReason": "TLC's coverage statistics do not list `net.terminalvalue.quorum.twopc.Recovery#decide` under any action",
+        "listed": [
+          "net.terminalvalue.quorum.twopc.Coordinator#decide",
+          "net.terminalvalue.quorum.twopc.Participant#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "listed": true,
             "reached": 10,
             "total": 18,
             "never": [
@@ -132,16 +149,14 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "listed": false,
             "reached": 0,
             "total": 3,
-            "never": [
-              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
-              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
-              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
-            ]
+            "never": []
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "listed": true,
             "reached": 6,
             "total": 28,
             "never": [
@@ -175,10 +190,20 @@
         "label": "the inductive step",
         "fromRuns": false,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "partial",
+        "coverageReason": "TLC's coverage statistics do not list `net.terminalvalue.quorum.twopc.Recovery#decide` under any action",
+        "listed": [
+          "net.terminalvalue.quorum.twopc.Coordinator#decide",
+          "net.terminalvalue.quorum.twopc.Participant#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "listed": true,
             "reached": 10,
             "total": 18,
             "never": [
@@ -194,16 +219,14 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "listed": false,
             "reached": 0,
             "total": 3,
-            "never": [
-              "decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]",
-              "decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]",
-              "decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]"
-            ]
+            "never": []
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "listed": true,
             "reached": 6,
             "total": 28,
             "never": [
@@ -237,10 +260,21 @@
         "label": "crashes",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.twopc.Coordinator#decide",
+          "net.terminalvalue.quorum.twopc.Participant#decide",
+          "net.terminalvalue.quorum.twopc.Recovery#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "listed": true,
             "reached": 10,
             "total": 18,
             "never": [
@@ -256,12 +290,14 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "listed": true,
             "reached": 3,
             "total": 3,
             "never": []
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "listed": true,
             "reached": 6,
             "total": 28,
             "never": [
@@ -295,10 +331,21 @@
         "label": "the inductive step with crashes",
         "fromRuns": false,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.twopc.Coordinator#decide",
+          "net.terminalvalue.quorum.twopc.Participant#decide",
+          "net.terminalvalue.quorum.twopc.Recovery#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+            "listed": true,
             "reached": 10,
             "total": 18,
             "never": [
@@ -314,12 +361,14 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+            "listed": true,
             "reached": 3,
             "total": 3,
             "never": []
           },
           {
             "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+            "listed": true,
             "reached": 6,
             "total": 28,
             "never": [
@@ -353,30 +402,50 @@
         "label": "participant crashes",
         "fromRuns": true,
         "finished": false,
+        "verdict": "violation",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "unavailable",
+        "coverageReason": "the run stopped at a counterexample",
+        "listed": [],
         "operators": []
       },
       {
         "label": "the inductive step with participant crashes",
         "fromRuns": false,
         "finished": false,
+        "verdict": "violation",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "unavailable",
+        "coverageReason": "the run stopped at a counterexample",
+        "listed": [],
         "operators": []
       },
       {
         "label": "the recorded runs",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": false,
+        "coverageStatus": "unavailable",
+        "coverageReason": "TLC attributes no coverage to a next-state relation it evaluates as an action property",
+        "listed": [],
         "operators": []
       }
     ],
     "changedRows": [
       {
         "case": "decide(PREPARED, Restarted[])",
+        "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
         "before": "Unchanged[reason=\"holds its locks until the decision\"]",
         "after": "Transition[next=ABORTED, effects=[]]",
-        "takenUnder": []
+        "takenUnder": [],
+        "unknownUnder": []
       }
     ],
     "nullRows": 0,
@@ -384,6 +453,83 @@
   },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
+  "modelContracts": [
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "contract": "src/contract/Coordinator.decide.contract",
+      "operator": "spec/CoordinatorContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+      "contract": "src/contract/Recovery.decide.contract",
+      "operator": "spec/RecoveryContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+      "contract": "src/contract/Participant.decide.contract",
+      "operator": "spec/ParticipantContract.tla",
+      "connection": "derived",
+      "rowsChanged": 1,
+      "allowed": true
+    }
+  ],
+  "checkpoints": [
+    {
+      "label": "three participants",
+      "cfg": "spec/TwoPhaseCommit.cfg",
+      "fingerprint": "dbdfd0d141286c3c2578e5fab67909f65f2ad609f52a6fb969d824ef88df138b",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:32+00:00"
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/TwoPhaseCommitInductive.cfg",
+      "fingerprint": "c758de74ac4511a5d898c307a5e194ca1c569efb2a7fab8963b1032d1fcd6e68",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:34+00:00"
+    },
+    {
+      "label": "crashes",
+      "cfg": "spec/TwoPhaseCommitCrash.cfg",
+      "fingerprint": "0acaa2bfdcd0b3c54914752aa633fd74f7403d0c36f85c706a38cfb15b3102bd",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:38+00:00"
+    },
+    {
+      "label": "the inductive step with crashes",
+      "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
+      "fingerprint": "857b80ea7ba142b9b1e68abe30c5269a0d90dd904b0ae207446fa3cec8386cb0",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:39+00:00"
+    },
+    {
+      "label": "participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrash.cfg",
+      "fingerprint": "b8a9e4896e15302b59163c403f556f8a5c0b1df341e6cefb9bb4b16bfd0c53ae",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:45+00:00"
+    },
+    {
+      "label": "the inductive step with participant crashes",
+      "cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg",
+      "fingerprint": "465ed4df5e56f812908cd7cd3959312f1064351ba2c9b9b94b6f71ce57d25ec1",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:47+00:00"
+    },
+    {
+      "label": "the recorded runs",
+      "cfg": "spec/TwoPhaseCommitTrace.cfg",
+      "fingerprint": "a08c61978512a23a05489b1a59b6bd3974a5387083a7400faa926988a4e638fe",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:48+00:00"
+    }
+  ],
   "violationKind": "invariant",
   "forever": null,
   "configurations": [
@@ -391,6 +537,8 @@
       "label": "three participants",
       "cfg": "spec/TwoPhaseCommit.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 728 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -403,6 +551,8 @@
       "label": "the inductive step",
       "cfg": "spec/TwoPhaseCommitInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants hold in 736 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -415,6 +565,8 @@
       "label": "crashes",
       "cfg": "spec/TwoPhaseCommitCrash.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 3,448 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -427,6 +579,8 @@
       "label": "the inductive step with crashes",
       "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants hold in 2,728 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -439,6 +593,8 @@
       "label": "participant crashes",
       "cfg": "spec/TwoPhaseCommitParticipantCrash.cfg",
       "verdict": "violation",
+      "status": "completed",
+      "reason": null,
       "summary": "✗ Violation: Atomicity, 8-step trace",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
       "invariant": "Atomicity",
@@ -527,6 +683,8 @@
       "label": "the inductive step with participant crashes",
       "cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg",
       "verdict": "violation",
+      "status": "completed",
+      "reason": null,
       "summary": "✗ Violation: ParticipantsAgreeWithTheirVotes, 2-step trace",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
       "invariant": "ParticipantsAgreeWithTheirVotes",
@@ -563,6 +721,8 @@
       "label": "the recorded runs",
       "cfg": "spec/TwoPhaseCommitTrace.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 103 states",
       "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
       "invariant": null,
@@ -571,5 +731,7 @@
       "trace": null,
       "forever": null
     }
-  ]
+  ],
+  "modelVerdict": "violation",
+  "modelSummary": "✗ Violation: Atomicity, 8-step trace (participant crashes)"
 }

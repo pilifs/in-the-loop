@@ -33,6 +33,12 @@
               }
             },
             {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
+              }
+            },
+            {
               "id": "property-violated",
               "shortDescription": {
                 "text": "An input exists on which the method violates its stated property."
@@ -48,6 +54,13 @@
         }
       },
       "results": [
+        {
+          "ruleId": "api-changed",
+          "level": "error",
+          "message": {
+            "text": "Public API of module crosscut differs from its contract:\n  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.ratelimit.Window: public final record\n  added net.terminalvalue.crosscut.ratelimit.Window: public long count()\n  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()\n  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)\n  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)\n  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()\n  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()\n  added net.terminalvalue.crosscut.retry.Backoff: public final record\n  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()\n  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)\n  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long"
+          }
+        },
         {
           "ruleId": "behaviour-changed",
           "level": "error",

@@ -1,0 +1,252 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-235230-example-130-b9-violation-with-its-comman",
+  "title": "Example 130 (B9, violation) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 16.8s, peak 443.1 MiB (estimated 3m00s, 1.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "3 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-235230-example-130-b9-violation-with-its-comman.json",
+    "sha256": "f1a8b1b782e083f69088514a519ebe4f41109bb63ac57aadcf0cc7b1ecd8e9fc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-235230-example-130-b9-violation-with-its-comman",
+      "title": "Example 130 (B9, violation) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "130"
+        ]
+      },
+      "expected": "example 130 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-05T23:52:30+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "the own checker, about a second"
+      },
+      "steps": [
+        {
+          "name": "example 130 (B9)",
+          "run": "python3 examples/tools/build.py 130",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/130-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap"
+      ]
+    }
+  },
+  "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
+  "startedAt": "2026-11-06T17:15:08+00:00",
+  "finishedAt": "2026-11-06T17:15:25+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "the own checker, about a second"
+  },
+  "usage": {
+    "peakMemoryBytes": 464584704,
+    "wallSeconds": 16.8,
+    "cpuSeconds": 16.4,
+    "memoryOfEstimate": 0.43,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 130 (B9)",
+      "run": "python3 examples/tools/build.py 130",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 16.631,
+      "cpuSeconds": 16.399,
+      "cpuThrottledSeconds": 5.649,
+      "peakMemoryBytes": 464584704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-130-b9.log",
+        "lines": 20,
+        "bytes": 817,
+        "sha256": "8975634bb54429403b946f5c9f9fbabbb0d5f5c420291490df0cb53cb23d2123",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)",
+          "groups": [
+            "130",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.5 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.4 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.5 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 10.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/130-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.022,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5697536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 78,
+        "sha256": "e375389ccf387e0f01ff1e8f7f2f718200e7b35df80c741804b5170c69ecb5a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "9 stages; workspace .build-py/examples-szm3mhga/attempts/130/attempt-8top8muc"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "change": "modified",
+      "bytes": 24609,
+      "sha256": "4b830021eb4e2f522f8ec7dceee70fdd031e8ee2f59102299db2a28de79bf129",
+      "sourceSha256": "bf546b1b0b6987ccb14562d408ac5e2b84dbf6306d56b7192041cfcc6d584dae"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "change": "modified",
+      "bytes": 13878,
+      "sha256": "6eac975ada20041c10ac2ef1653b0ad26105011e46e3e7b2c158506cd2ef62f2",
+      "sourceSha256": "fa2d67d65173e33fbba26efd2d7895709713ca33f4ac234a9f9688d5b0679103"
+    },
+    {
+      "path": "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt",
+      "change": "modified",
+      "bytes": 892,
+      "sha256": "f9b76b7871c7a5b87a2cfa1a920782c8f3414b1ce9d833d747dd7f65e04f04a6",
+      "sourceSha256": "6a241add88e5a9f17cb115d48dd2b476969c349250f1b25b95dfc82516ba8091"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json",
+      "examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,216 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-025930-example-145-b9-re-run-its-result-records",
+  "title": "Example 145 (B9) re-run: its result records the statement it proved, as data",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.0s, peak 109.5 MiB (estimated 3m00s, 1.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 145 (B9)) was held back 5.4s by its 1-CPU quota in 10.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-025930-example-145-b9-re-run-its-result-records.json",
+    "sha256": "93798e2a7c63dcc3ba6df7ff99d2eea0cc96789ac6e6b111226650357d560e67",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-025930-example-145-b9-re-run-its-result-records",
+      "title": "Example 145 (B9) re-run: its result records the statement it proved, as data",
+      "description": "Step 2a of llm-dlc/loops/sound-verdicts.md: as for example 144's job, re-run so that its result records 'stated'. Example 145 is LookupSwitch#find's linear scan proved by the tool's own checker at array bound 12 (approach.maxArrayLength), over lengths 9-12 for real, where 144 at bound 8 is vacuous. The two statements should differ only in the domain and the bounds' array length, and the pages say so.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/statement.rs"
+        ],
+        "examples": [
+          "145"
+        ]
+      },
+      "expected": "verified (as before, about 4 s); result.json gains 'stated' with the array bound 12 in the domain and bounds",
+      "submitted": {
+        "at": "2026-11-06T02:59:30+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 145 (B9)",
+          "run": "python3 examples/tools/build.py 145",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+      ]
+    }
+  },
+  "sourceCommit": "cf09496e1587f56b4bfa5ba17c5da91b3d8c3071",
+  "startedAt": "2026-11-06T17:15:48+00:00",
+  "finishedAt": "2026-11-06T17:15:59+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114851840,
+    "wallSeconds": 10.0,
+    "cpuSeconds": 9.9,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 10.02,
+      "cpuSeconds": 9.861,
+      "cpuThrottledSeconds": 5.425,
+      "peakMemoryBytes": 114851840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-145-b9.log",
+        "lines": 18,
+        "bytes": 786,
+        "sha256": "35344a3b2c2290d2850a4acb256d8e37e24f1a9efde9d2c082574654ac96eb46",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)",
+          "groups": [
+            "145",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 1.2 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 1.6 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.2 s",
+        "  · javac unpatched mica main",
+        "  · javac unpatched mica main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 3.7 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "change": "modified",
+      "bytes": 14995,
+      "sha256": "fbdebd9a434780d9ea1e29a9bc2076bd20fa2e5df3fbbe4395eba75f1068f768",
+      "sourceSha256": "f01365392f123587ab4f7603b0ab955577dee74fe256abcb715c615a4e1fa7f0"
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "change": "modified",
+      "bytes": 9675,
+      "sha256": "e71c713e66a2d25b11bb8226e2d19c6afb7eaca1c54c92e4986ad65119c6697c",
+      "sourceSha256": "afa830c844134526ec29370d847a82e11517cc2442d543375f560b9146563c8f"
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt",
+      "change": "modified",
+      "bytes": 291,
+      "sha256": "182343ca43eb69fdf93f46537df9e303a67268492e6a8d048a184e23941868e9",
+      "sourceSha256": "866c85ea46cefd67d35390db3fe1de278b9df2979967d52716f3de0a7f618527"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md"
+    ],
+    "conflicts": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d0da326fc59aebcd3fdb2409f17b483449a6e432",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0da326fc59aebcd3fdb2409f17b483449a6e432/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,66 @@
+--- a/examples/006-per-seat-discount-rounds-differently/README.md
++++ b/examples/006-per-seat-discount-rounds-differently/README.md
+@@ -113,7 +113,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
++How the verdict was reached: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -122,7 +122,7 @@
+   totalCents(priceCents=17, seats=6)
+     before: 92
+     after:  96
+-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/006-per-seat-discount-rounds-differently/result.json
++++ b/examples/006-per-seat-discount-rounds-differently/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": ":ticketing-domain:test",
+     "passed": true,
+@@ -29,7 +35,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
++  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -39,5 +45,9 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "replay": {
++    "by": "jvm",
++    "reproduced": true
++  }
+ }
+--- a/examples/006-per-seat-discount-rounds-differently/verifier-output.txt
++++ b/examples/006-per-seat-discount-rounds-differently/verifier-output.txt
+@@ -2,6 +2,6 @@
+   totalCents(priceCents=17, seats=6)
+     before: 92
+     after:  96
+-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20], replayed on the JVM; domain priceCents: long × seats: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

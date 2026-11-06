@@ -1,7 +1,13 @@
 {
   "verdict": "verified",
   "verdictLabel": "✓ Verified: equivalent on every input",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.crosscut.Tests",
     "passed": true,
@@ -23,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": null,
-  "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+  "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.2 s; loops unwound 16 times with unwinding assertions",
   "problem": null,
   "statement": "statement.java",
   "trace": null,
@@ -33,5 +39,110 @@
   "stateMachine": null,
   "coverage": null,
   "sarif": "result.sarif",
-  "output": "verifier-output.txt"
+  "output": "verifier-output.txt",
+  "search": {
+    "engine": "jbmc",
+    "checker": "JBMC 6.11.0",
+    "seconds": 0.169,
+    "properties": 2,
+    "unwind": 16,
+    "maxArrayLength": 8,
+    "stage": null
+  },
+  "replay": null,
+  "claim": {
+    "id": "cbd6a2297f9727b5",
+    "format": 1,
+    "example": "129",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+      "behaviourChangeIntended": false,
+      "previousSymbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+      "previousArguments": "this.start, this.size, failedIndex"
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": "f58e0df25f2d2dad471bfac3e955ca06616492416324bc39b385be2fedcad6c6",
+      "before": {
+        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+        "files": 54
+      },
+      "after": {
+        "sha256": "50c0bf3424c2f03753c29055d20c50c61aa0a5091777cc8f7895d72d57c70667",
+        "files": 54
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261106T171444Z-0d35521d",
+    "claim": "cbd6a2297f9727b5",
+    "startedAt": "2026-11-06T17:14:44+00:00",
+    "seconds": 3.3,
+    "engine": "jbmc",
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4",
+      "jbmc": "6.11.0 (cbmc-6.11.0)"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+        "files": 39
+      },
+      "after": {
+        "sha256": "937853d5faac0cbddcf57328b6a5bcdf96d7c401fb800bd8088ef3a4f80ff63a",
+        "files": 39
+      }
+    },
+    "pipeline": {
+      "jobId": "20261105-131902-example-129-b9-jbmc-verified-recorded-as",
+      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-129-b9-jbmc-verified-recorded-as"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "cbd6a2297f9727b5",
+    "attempt": "20261106T171444Z-0d35521d",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": []
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+        "bytes": 1881
+      },
+      {
+        "path": "statement.java",
+        "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+        "bytes": 2903
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "0a5595acaa3dc571133e38c59bf3d5aa23a0f12e6d658c8c983a9983d773f280",
+        "bytes": 348
+      }
+    ]
+  }
 }

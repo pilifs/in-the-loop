@@ -87,7 +87,7 @@ public static int find(int[] matches, int key) {
 
 For every input where `matches.length <= 8` is false, the new code returns what the old code returned, or throws what it threw.
 
-This is a proof over the whole domain (matches: int[] of length ≤ 12 × key: int), not a sample. The tool's own checker ran the harness symbolically, path by path, with its bundled SAT solver deciding at each branch which sides are feasible, and no feasible path reaches the assertion: no input exists on which they differ.
+This is a proof over the whole domain (matches: int[] of length ≤ 12, not null × key: int), not a sample. The tool's own checker ran the harness symbolically, path by path, with its bundled SAT solver deciding at each branch which sides are feasible, and no feasible path reaches the assertion: no input exists on which they differ.
 
 ## Would the existing tests have caught it?
 
@@ -114,14 +114,16 @@ Merge, as far as the bisection goes: it is unchanged on every table the declarat
 
 ## Evidence
 
-How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions.
+How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.6 s; loops unwound 16 times with unwinding assertions.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `matches: int[] of length ≤ 12, not null × key: int`, assuming !(matches.length <= 8): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `matches`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 12 long; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps assume. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261106T171549Z-7358b3ef` at claim `b5d7a490a979c1c6`, in pipeline job `20261106-025930-example-145-b9-re-run-its-result-records`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions)
+✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.6 s; loops unwound 16 times with unwinding assertions)
 ```
 
 </details>

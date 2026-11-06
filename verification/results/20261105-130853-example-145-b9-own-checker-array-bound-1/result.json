@@ -1,0 +1,199 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-130853-example-145-b9-own-checker-array-bound-1",
+  "title": "Example 145 (B9, own checker, array bound 12) run from build.py's plan",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.4s, peak 106.7 MiB (estimated 5m00s, 1.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 145 (B9)) was held back 6.7s by its 1-CPU quota in 10.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-130853-example-145-b9-own-checker-array-bound-1.json",
+    "sha256": "b10498f9cb2c55337692707647ee6c263d53347be1f76e63c3323b982537fe41",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-130853-example-145-b9-own-checker-array-bound-1",
+      "title": "Example 145 (B9, own checker, array bound 12) run from build.py's plan",
+      "description": "build.py now runs each example from plan(), a pure function of example.json that the pipeline also reads for a job's requirements. Example 145 asks for the tool's own checker and --max-array-length 12, so its flags now come from the plan's options, and its job no longer requires JBMC. It should give its recorded verdict, verified over table lengths 9-12, unchanged.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "145"
+        ]
+      },
+      "expected": "example 145 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T13:08:53+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "recorded 4.1 s and 85 MB for the proof; the rest is javac"
+      },
+      "steps": [
+        {
+          "name": "example 145 (B9)",
+          "run": "python3 examples/tools/build.py 145",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits"
+      ]
+    }
+  },
+  "sourceCommit": "f3d011a1f6138ce309bbd9033897b5e066c2b2c6",
+  "startedAt": "2026-11-06T17:14:33+00:00",
+  "finishedAt": "2026-11-06T17:14:44+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "recorded 4.1 s and 85 MB for the proof; the rest is javac"
+  },
+  "usage": {
+    "peakMemoryBytes": 111927296,
+    "wallSeconds": 10.4,
+    "cpuSeconds": 10.3,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 145 (B9)",
+      "run": "python3 examples/tools/build.py 145",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 10.419,
+      "cpuSeconds": 10.34,
+      "cpuThrottledSeconds": 6.681,
+      "peakMemoryBytes": 111927296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-145-b9.log",
+        "lines": 2,
+        "bytes": 244,
+        "sha256": "c630615fe495e4a1cbc598f23bb13b20cd8ecf68a58fd1ef02a56f07646f9f6a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)",
+          "groups": [
+            "145",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: running (B9)",
+        "145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md",
+      "change": "modified",
+      "bytes": 13167,
+      "sha256": "3b408d2f6350bb87c0fd12d69e7ec22de3652b91918c68508fa0d714a7adb212",
+      "sourceSha256": "b032d4d508521181cac64c641622090c14170c26349cf1da54dfebd4c8f9217d"
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "change": "modified",
+      "bytes": 2760,
+      "sha256": "831153ba5d7d4af1c0b723e2831d229a5ae15b2379cfaf8e58754cd36ac50326",
+      "sourceSha256": "afa830c844134526ec29370d847a82e11517cc2442d543375f560b9146563c8f"
+    },
+    {
+      "path": "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt",
+      "change": "modified",
+      "bytes": 281,
+      "sha256": "9caa5b07aa719c3b9162bcac47a8eab628ed7879416ac9854105ff1de64cd20f",
+      "sourceSha256": "866c85ea46cefd67d35390db3fe1de278b9df2979967d52716f3de0a7f618527"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json",
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

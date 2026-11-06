@@ -1,0 +1,161 @@
+--- a/examples/110-idempotency-key-header-drops-request-validation/README.md
++++ b/examples/110-idempotency-key-header-drops-request-validation/README.md
+@@ -5,7 +5,7 @@
+ 
+ | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
+ |---|---|---|---|---|---|
+-| **✗ Violation: 2 boundary changes** | security, functional | medium | feature, behaviour change not intended | [`OrderController#place`](../../examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java) | [B12: Boundary contracts](../../lib/README.md) |
++| **✗ Violation: 9 boundary changes** | security, functional | medium | feature, behaviour change not intended | [`OrderController#place`](../../examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java) | [B12: Boundary contracts](../../lib/README.md) |
+ 
+ > Clients already send an `Idempotency-Key` on `POST /concerts/{id}/holds`, so a developer makes `POST /orders` accept the same header, writing the handler's new parameter list by hand. The `@Valid` on the request body does not survive the edit. Every test passes: they post well-formed orders. The module's boundary contract, the routes and the advice on each read from the compiled classes, shows the `POST /orders` line changing from a validated body to an unvalidated one, next to the header that was added.
+ 
+@@ -123,12 +123,19 @@
+ 
+ ## What the verifier found
+ 
+-The module's boundaries differ from their contract in 2 lines:
++The module's boundaries differ from their contract in 9 lines:
+ 
+ | Bean | The contract has | The bytecode now has |
+ |---|---|---|
+ | `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request)` |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request` |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument` |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)` |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | *(nothing)* | `POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry` |
+ | `net.terminalvalue.boxoffice.ticketing.api.OrderController` | `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)` | *(removed)* |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument` | *(removed)* |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)` | *(removed)* |
++| `net.terminalvalue.boxoffice.ticketing.api.OrderController` | `POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry` | *(removed)* |
+ 
+ A line is a route, listener, schedule, bean definition or configuration key, the advice on a member, a property of a wire type, or a `!` line where an annotation does not do what it says; a member's line changes with its signature and parameter annotations.
+ 
+@@ -161,8 +168,15 @@
+ ```text
+ ✗ Boundaries of module ticketing-service differ from their contract:
+   added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request)
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
+   removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)
+-  (19 beans, 13 entry points, 0 advised methods, 0 problems)
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
++  (16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems)
+ ```
+ 
+ </details>
+@@ -230,7 +244,7 @@
+           "ruleId": "boundaries-changed",
+           "level": "error",
+           "message": {
+-            "text": "Boundaries of module ticketing-service differ from their contract:\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)"
++            "text": "Boundaries of module ticketing-service differ from their contract:\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+           },
+           "locations": [
+             {
+--- a/examples/110-idempotency-key-header-drops-request-validation/result.json
++++ b/examples/110-idempotency-key-header-drops-request-validation/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+-  "verdictLabel": "✗ Violation: 2 boundary changes",
++  "verdictLabel": "✗ Violation: 9 boundary changes",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": ":ticketing-service:test",
+     "passed": true,
+@@ -18,7 +24,7 @@
+     "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestHeader;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /**\n     * Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. Clients\n     * send an {@code Idempotency-Key} on every POST, as they do for holds; an order is already idempotent per hold, so\n     * the key is accepted and not needed.\n     */\n    @PostMapping\n    ResponseEntity<Order> place(\n            @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey,\n            @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
+   },
+   "casesTotal": null,
+-  "domain": "19 beans, 13 entry points, 0 advised methods, 0 problems",
++  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
+   "counterexamples": [
+     {
+       "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+@@ -27,7 +33,42 @@
+     },
+     {
+       "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": null,
++      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request"
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": null,
++      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument"
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": null,
++      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": null,
++      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+       "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)",
++      "actual": null
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument",
++      "actual": null
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)",
++      "actual": null
++    },
++    {
++      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry",
+       "actual": null
+     }
+   ],
+@@ -44,5 +85,6 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "newProblems": []
+ }
+--- a/examples/110-idempotency-key-header-drops-request-validation/result.sarif
++++ b/examples/110-idempotency-key-header-drops-request-validation/result.sarif
+@@ -58,7 +58,7 @@
+           "ruleId": "boundaries-changed",
+           "level": "error",
+           "message": {
+-            "text": "Boundaries of module ticketing-service differ from their contract:\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)"
++            "text": "Boundaries of module ticketing-service differ from their contract:\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)\n  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+           },
+           "locations": [
+             {
+--- a/examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt
++++ b/examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt
+@@ -1,4 +1,11 @@
+ ✗ Boundaries of module ticketing-service differ from their contract:
+   added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request)
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
++  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
+   removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)
+-  (19 beans, 13 entry points, 0 advised methods, 0 problems)
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
++  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
++  (16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems)

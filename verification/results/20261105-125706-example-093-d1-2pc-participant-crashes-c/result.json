@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-125706-example-093-d1-2pc-participant-crashes-c",
+  "title": "Example 093 (D1, 2PC participant crashes): coverage status over three generated operators and inductive steps",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 123.2 MiB (estimated 20m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-125706-example-093-d1-2pc-participant-crashes-c.json",
+    "sha256": "29674820efcdfacbcc12c35270356da4529a706eedab2436cb370e6b4ea804cd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-125706-example-093-d1-2pc-participant-crashes-c",
+      "title": "Example 093 (D1, 2PC participant crashes): coverage status over three generated operators and inductive steps",
+      "description": "The 2PC model generates three operators (coordinator, recovery, participant) and has inductive configurations and a recorded-runs configuration that counts no coverage. 093 is a violation found under participant crashes; its result must keep the verdict, record each configuration's verdict, status and reason, say 'stopped at the counterexample' only for the run that found one, and write a checkpoint for each configuration that completed.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "093"
+        ]
+      },
+      "expected": "example 093 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T12:57:06+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "example 093 (D1)",
+          "run": "python3 examples/tools/build.py 093",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed"
+      ]
+    }
+  },
+  "sourceCommit": "b27c8ddc5a17c21d7bd95850250d39fb2a135abc",
+  "startedAt": "2026-11-06T17:14:30+00:00",
+  "finishedAt": "2026-11-06T17:14:34+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 129179648,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 093 (D1)",
+      "run": "python3 examples/tools/build.py 093",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.808,
+      "cpuSeconds": 5.683,
+      "cpuThrottledSeconds": 0.765,
+      "peakMemoryBytes": 129179648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-093-d1.log",
+        "lines": 2,
+        "bytes": 215,
+        "sha256": "94a4528239a5bc13279b62cd5e96a687320d8ec2076a0388a99a0aef6e371e42",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed: violation (as expected)",
+          "groups": [
+            "093",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed: running (D1)",
+        "093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md",
+      "change": "modified",
+      "bytes": 61781,
+      "sha256": "f6d7bc8e280c28837cf27ce2a768d648d7eae6c6447970839d88a235c18b3f0a",
+      "sourceSha256": "cae4a0f27cf3cdc0787ba6ba1f32551b9fab642de195d0292e341e9676dc198e"
+    },
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.json",
+      "change": "modified",
+      "bytes": 32688,
+      "sha256": "e3c30186ea81e288e9a2a338bef1295912c1424945fd1e03169e0796aead57ba",
+      "sourceSha256": "ed98414712c304dc6678a942f2df18decbbfe6b9db9bbf05b8696fb47f917c7b"
+    },
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.sarif",
+      "change": "modified",
+      "bytes": 2251,
+      "sha256": "a0c518faf57dd4216eb4771c197afb6bc5f01fc8fa8757d062adfd5e0602bc26",
+      "sourceSha256": "b0412272a053c746485363975d730c2cc02587298546d981ecdcc77dd95e2c86"
+    },
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/verifier-output.txt",
+      "change": "modified",
+      "bytes": 31643,
+      "sha256": "d77b8f7a44a21c47f74601aa90d0886832d2ca23a50c4577b8996c30d63df0a7",
+      "sourceSha256": "f6dfa759f43f28ee3ae32eea8d4fa3fb7d64711ec7ff3d9ca02b3db5ce55b1b2"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.json",
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.sarif",
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

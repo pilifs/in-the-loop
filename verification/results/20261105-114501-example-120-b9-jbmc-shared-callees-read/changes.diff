@@ -1,0 +1,68 @@
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
+@@ -113,12 +113,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+ ```
+ 
+ </details>
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: equivalent on every input",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -23,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
++  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -33,5 +39,19 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "jbmc",
++    "checker": "JBMC 6.11.0",
++    "seconds": 1.219,
++    "properties": 2,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": null,
++    "sharedCallees": [
++      "TokenBucket.lastAfter",
++      "TokenBucket.tokensAfter"
++    ]
++  },
++  "replay": null
+ }
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)

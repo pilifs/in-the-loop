@@ -1,5 +1,22 @@
-✓ module crosscut matches its capability contract (36 classes, 127 methods, 0 capability uses, 0 libraries)
-✓ module crosscut matches its API contract (33 public types, 124 members)
+✓ module crosscut matches its capability contract (39 classes, 143 methods, 0 capability uses, 0 libraries)
+✗ Public API of module crosscut differs from its contract:
+  added net.terminalvalue.crosscut.ratelimit.Window: public Window(long, long)
+  added net.terminalvalue.crosscut.ratelimit.Window: public final boolean equals(java.lang.Object)
+  added net.terminalvalue.crosscut.ratelimit.Window: public final int hashCode()
+  added net.terminalvalue.crosscut.ratelimit.Window: public final java.lang.String toString()
+  added net.terminalvalue.crosscut.ratelimit.Window: public final record
+  added net.terminalvalue.crosscut.ratelimit.Window: public long count()
+  added net.terminalvalue.crosscut.ratelimit.Window: public long startNanos()
+  added net.terminalvalue.crosscut.ratelimit.Window: public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)
+  added net.terminalvalue.crosscut.retry.Backoff: public Backoff(long, long)
+  added net.terminalvalue.crosscut.retry.Backoff: public final boolean equals(java.lang.Object)
+  added net.terminalvalue.crosscut.retry.Backoff: public final int hashCode()
+  added net.terminalvalue.crosscut.retry.Backoff: public final java.lang.String toString()
+  added net.terminalvalue.crosscut.retry.Backoff: public final record
+  added net.terminalvalue.crosscut.retry.Backoff: public long baseMillis()
+  added net.terminalvalue.crosscut.retry.Backoff: public long capMillis()
+  added net.terminalvalue.crosscut.retry.Backoff: public long delayMillis(int)
+  added net.terminalvalue.crosscut.retry.Backoff: public static final MAX_CAP_MILLIS: long
 ✓ net.terminalvalue.crosscut.idempotency.IdempotentReceiver#decide matches its contract (24 cases, 8 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ✓ net.terminalvalue.crosscut.resilience.CircuitBreaker#decide matches its contract (44 cases, 11 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.Record.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.List.copyOf, java.util.List.of, java.util.Objects.requireNonNull)
 ✓ net.terminalvalue.crosscut.tx.TransactionBoundary#enter matches its contract (16 cases, 1 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.IllegalStateException.<init>, java.lang.MatchException.<init>)
@@ -10,3 +27,5 @@
   (22 cases, 4 methods proven pure, trusting java.lang.Enum.ordinal, java.lang.MatchException.<init>, java.lang.runtime.SwitchBootstraps.typeSwitch, java.util.Objects.requireNonNull)
 
 If a change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff then shows reviewers exactly which behaviour changed.
+
+If the API change is intended, run `jvmcontract update` and commit the contract with the code. The contract diff is the API change, for reviewers.

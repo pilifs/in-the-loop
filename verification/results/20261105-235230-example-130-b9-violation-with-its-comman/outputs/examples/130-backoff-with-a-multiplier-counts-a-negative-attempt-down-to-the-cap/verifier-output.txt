@@ -1,0 +1,7 @@
+✗ net.terminalvalue.crosscut.retry.Backoff#delayMillis differs from the previous delayMillis(attempt) on new Backoff(this.baseMillis, this.capMillis) outside the intended inputs (this.multiplier != 2):
+  delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
+    before: 1
+    after:  2
+  (found by JBMC 6.11.0 in 10.1 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

@@ -1,0 +1,207 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-124134-example-076-d1-circuit-breaker-with-its",
+  "title": "Example 076 (D1, circuit breaker) with its operator tied to the patched classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.0s, peak 131.8 MiB (estimated 10m00s, 2.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-124134-example-076-d1-circuit-breaker-with-its.json",
+    "sha256": "05d683b713e0c165ef3670913ea235e4aa1696b2c34e638f4d7e8917c1603eb7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-124134-example-076-d1-circuit-breaker-with-its",
+      "title": "Example 076 (D1, circuit breaker) with its operator tied to the patched classes",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: the D1 runner derives CircuitBreaker#decide's contract from the patched classes on every run. 076 is an intended feature, verified under both configurations; the connection must be 'derived', allowed, and the verdict unchanged.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc",
+        "jvmcontract:derive"
+      ],
+      "links": {
+        "examples": [
+          "076"
+        ]
+      },
+      "expected": "build.py exits 0, 076 verified as before; modelContracts has CircuitBreaker#decide connection derived, allowed true; modelVerdict verified",
+      "submitted": {
+        "at": "2026-11-05T12:41:34+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "notes": "102 states per configuration"
+      },
+      "steps": [
+        {
+          "name": "example 076 (D1)",
+          "run": "python3 examples/tools/build.py 076",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live"
+      ]
+    }
+  },
+  "sourceCommit": "88372924fc0ea4bfae1968717cebfe6a87127157",
+  "startedAt": "2026-11-06T17:13:59+00:00",
+  "finishedAt": "2026-11-06T17:14:04+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "102 states per configuration"
+  },
+  "usage": {
+    "peakMemoryBytes": 138227712,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 6.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 076 (D1)",
+      "run": "python3 examples/tools/build.py 076",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.012,
+      "cpuSeconds": 6.886,
+      "cpuThrottledSeconds": 0.952,
+      "peakMemoryBytes": 138227712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-076-d1.log",
+        "lines": 2,
+        "bytes": 200,
+        "sha256": "17c69ec3948b2ac348ea2d7f4ecd54e2f413d33fffbbafe994c3d2320806cc32",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)",
+          "groups": [
+            "076",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: running (D1)",
+        "076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md",
+      "change": "modified",
+      "bytes": 28790,
+      "sha256": "8604bd52be9ffea933e0130a50fc723060b4ea0a4f6366b6cce15c8b5a289419",
+      "sourceSha256": "34f130caa6033cc6559e9cd9abb7eaac8ef31d9096831b624f16427e1a33478c"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "change": "modified",
+      "bytes": 17973,
+      "sha256": "b50bfa9a4de1487ac27196558549595547da1ce2bf235aeaf9c82da4cf6068d0",
+      "sourceSha256": "84a7156eea168cee3a177624cfea3585506b48b8b2c37cd89b450c9d39c2e0d7"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.sarif",
+      "change": "modified",
+      "bytes": 983,
+      "sha256": "643a57b8da8c795e23f1e5172ff173a3cdb0ec87613e9a2ab1c4ac1392d2cddb",
+      "sourceSha256": "ad0339481e9f3f875b6bb2af074afb39087ed880596828f280499e3cf82ae8b5"
+    },
+    {
+      "path": "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt",
+      "change": "modified",
+      "bytes": 6946,
+      "sha256": "0cc50401232cbe1b1b7de1c32fe2e6d6db57e4daf0f6ab4e3ecb8030b3b305cb",
+      "sourceSha256": "2f5e00374d95d58756167d8998c6020322525e547b4a41c31dd3b3c820b4fdcf"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.json",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/result.sarif",
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/076-half-open-breaker-that-judges-its-probes-as-a-window-is-proved-safe-and-live/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,79 @@
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md
+@@ -113,12 +113,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.mica.Tests",
+     "passed": true,
+@@ -23,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions",
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -33,5 +39,30 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 3.122,
++    "properties": 1,
++    "unwind": 16,
++    "maxArrayLength": 12,
++    "stage": null,
++    "native": {
++      "paths": 89,
++      "merges": 0,
++      "solverCalls": 548,
++      "solvingSeconds": 2.952806548,
++      "gatesEvaluated": 181366,
++      "evaluatingSeconds": 0.004022145,
++      "divisions": 0,
++      "divisionsBuilt": 0,
++      "multiplications": 0,
++      "multiplicationsBuilt": 0,
++      "variables": 39019,
++      "clauses": 137000,
++      "seconds": 3.103517649
++    }
++  },
++  "replay": null
+ }
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.7 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions)

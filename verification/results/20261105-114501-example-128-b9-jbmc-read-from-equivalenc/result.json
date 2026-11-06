@@ -1,0 +1,179 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-114501-example-128-b9-jbmc-read-from-equivalenc",
+  "title": "Example 128 (B9, JBMC) read from equivalence --json",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 104.3 MiB (estimated 5m00s, 2.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-114501-example-128-b9-jbmc-read-from-equivalenc.json",
+    "sha256": "2d40f644b5fa45296bbc9b3efe73027b1d8eb4528f8bce92ca456658cac63210",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-114501-example-128-b9-jbmc-read-from-equivalenc",
+      "title": "Example 128 (B9, JBMC) read from equivalence --json",
+      "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 128 is a JBMC violation on a record method related with --before-arguments, with a shrunk witness: its verdict, counterexample input/contract/actual, domain and proof line must be unchanged, with search.engine jbmc and replay.by interpreter added.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "128"
+        ]
+      },
+      "expected": "example 128 gives its expected violation with the same witness as before: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:45:01+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a Crosscut B9 example: javac build and a JBMC proof that took 0.5 s"
+      },
+      "steps": [
+        {
+          "name": "example 128 (B9)",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check"
+      ]
+    }
+  },
+  "sourceCommit": "3e76cd1954e71968b17a8ba6a3fc0c2ce5262652",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:52+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a Crosscut B9 example: javac build and a JBMC proof that took 0.5 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 109408256,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 8.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.211,
+      "cpuSeconds": 8.131,
+      "cpuThrottledSeconds": 1.156,
+      "peakMemoryBytes": 109408256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-128-b9.log",
+        "lines": 2,
+        "bytes": 175,
+        "sha256": "71efa5d9941d563abcbb92c03b2c24e8105c0fa29bfc8403622cc935441d98ce",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)",
+          "groups": [
+            "128",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "change": "modified",
+      "bytes": 4387,
+      "sha256": "be26550bc25a25f2595b241755d64af6e440f2cabfb7fb906503ab224fdea5a0",
+      "sourceSha256": "0d641ac5dbfcc7ea35b17a5096c273f645503b094d95fd7813c6852835498364"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "577a6103b51e49b429952b17f39bb63930b672e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/577a6103b51e49b429952b17f39bb63930b672e5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,7 +1,13 @@
 {
   "verdict": "violation",
   "verdictLabel": "✗ Violation: EveryStepIsOneOfTheModel, 4-step trace (the recorded runs)",
+  "execution": {
+    "status": "completed",
+    "exitCode": 1,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
     "passed": true,
@@ -23,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": null,
-  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 3,448 distinct states to depth 12 in 3 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 12,754 distinct states to depth 12 in 10 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,636 distinct states to depth 1 in 2 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 40 distinct states to depth 4 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
+  "proof": "three participants: TLC 2.19 explored 728 distinct states to depth 11 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; the inductive step: TLC 2.19 explored 736 distinct states to depth 1 in 0 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0; crashes: TLC 2.19 explored 3,448 distinct states to depth 12 in 2 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0; the inductive step with crashes: TLC 2.19 explored 2,728 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0; participant crashes: TLC 2.19 explored 12,754 distinct states to depth 12 in 7 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the inductive step with participant crashes: TLC 2.19 explored 18,636 distinct states to depth 1 in 1 s, for the model Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1; the recorded runs: TLC 2.19 explored 40 distinct states to depth 4 in 0 s, for the model Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
   "problem": null,
   "statement": null,
   "trace": [
@@ -442,6 +448,32 @@
   },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
+  "modelContracts": [
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Coordinator#decide",
+      "contract": "src/contract/Coordinator.decide.contract",
+      "operator": "spec/CoordinatorContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Recovery#decide",
+      "contract": "src/contract/Recovery.decide.contract",
+      "operator": "spec/RecoveryContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.twopc.Participant#decide",
+      "contract": "src/contract/Participant.decide.contract",
+      "operator": "spec/ParticipantContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    }
+  ],
   "violationKind": "action",
   "forever": null,
   "configurations": [
@@ -449,6 +481,7 @@
       "label": "three participants",
       "cfg": "spec/TwoPhaseCommit.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 728 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -461,6 +494,7 @@
       "label": "the inductive step",
       "cfg": "spec/TwoPhaseCommitInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants hold in 736 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 0, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -473,6 +507,7 @@
       "label": "crashes",
       "cfg": "spec/TwoPhaseCommitCrash.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 3,448 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 2, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -485,6 +520,7 @@
       "label": "the inductive step with crashes",
       "cfg": "spec/TwoPhaseCommitCrashInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants hold in 2,728 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 0",
       "invariant": null,
@@ -497,6 +533,7 @@
       "label": "participant crashes",
       "cfg": "spec/TwoPhaseCommitParticipantCrash.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 12,754 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
       "invariant": null,
@@ -509,6 +546,7 @@
       "label": "the inductive step with participant crashes",
       "cfg": "spec/TwoPhaseCommitParticipantCrashInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants hold in 18,636 states",
       "domain": "Participants = {p1, p2, p3}, MaxCrashes = 1, MaxParticipantCrashes = 1",
       "invariant": null,
@@ -521,6 +559,7 @@
       "label": "the recorded runs",
       "cfg": "spec/TwoPhaseCommitTrace.cfg",
       "verdict": "violation",
+      "status": "completed",
       "summary": "✗ Violation: EveryStepIsOneOfTheModel, 4-step trace",
       "domain": "Participants = {\"p1\", \"p2\", \"p3\"}, MaxCrashes = 2, MaxParticipantCrashes = 2",
       "invariant": "EveryStepIsOneOfTheModel",
@@ -576,5 +615,7 @@
       ],
       "forever": null
     }
-  ]
+  ],
+  "modelVerdict": "violation",
+  "modelSummary": "✗ Violation: EveryStepIsOneOfTheModel, 4-step trace (the recorded runs)"
 }

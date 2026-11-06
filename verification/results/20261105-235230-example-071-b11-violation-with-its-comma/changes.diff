@@ -1,0 +1,768 @@
+--- a/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md
+@@ -5,7 +5,7 @@
+ 
+ | Verdict | Categories | Severity if shipped | Change | Verified unit | Approach |
+ |---|---|---|---|---|---|
+-| **✗ Violation: counterexample found** | functional | critical | refactor, behaviour change not intended | [`VoteRule#grant`](../../examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | [B11: Property proofs](../../lib/README.md) |
++| **✗ Violation: counterexample found to 1 of 3 properties** | functional | critical | refactor, behaviour change not intended | [`VoteRule#grant`](../../examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java) | [B11: Property proofs](../../lib/README.md) |
+ 
+ > The election model checks the vote rule's decision kernel, generated from its contract, and repeats the arithmetic around it: how the candidate's term and log compare with the voter's own is computed in `grant`, outside the model's reach. A developer reorders that comparison so that the longer log wins and the term of the last entry breaks ties between logs of one length, reading "up to date" as "further along". The kernel's contract does not change and the election model verifies it under every configuration, logs included, since the model does its own comparing. The property that states the election restriction over `grant` itself, that a candidate whose last entry is of an older term is refused however long its log, fails: JBMC shows a voter whose last entry is of a later term granting a candidate whose log is longer but ends in an earlier one, the log a deposed leader left behind. Example 013 catches the same rewrite as a regression against the previous version of the method; this one needs no previous version, only the rule.
+ 
+@@ -69,13 +69,19 @@
+ 
+ ## What the verifier found
+ 
+-The property `!result` does not hold on every input where `candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)` holds. The prover found this input, and the tool replayed it on the method to show what it does:
+-
+-| Input | The method's outcome |
+-|---|---|
+-| `grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)` | `true` |
+-
+-One input is enough to fail the build. The domain is `currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long`; the search tries small values first so that the witness is readable, and would have covered all of it.
++The module declares 3 properties of `VoteRule#grant`, and the tool proves each on its own, in its own harness. Every one is required: one refuted property fails the change, and it passes only when all of them hold.
++
++| | The property | Verdict |
++|---|---|---|
++| 1 | That `!result` holds where `candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate` | ✓ holds |
++| 2 | That `!result` holds where `candidateTerm < currentTerm` | ✓ holds |
++| 3 | That `!result` holds where `candidateLastLogTerm < lastLogTerm \|\| (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)` | ✗ refuted |
++
++The prover found an input for each refuted property, and the tool replayed it on the method in jvmcontract's bytecode interpreter to show what it does:
++
++| Property | Input | The method's outcome |
++|---|---|---|
++| 3 | `grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)` | `true` |
+ 
+ ## Would the existing tests have caught it?
+ 
+@@ -100,21 +106,76 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How each verdict was reached:
++
++- Property 1: JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.4 s; loops unwound 16 times with unwinding assertions.
++- Property 2: JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.5 s; loops unwound 16 times with unwinding assertions.
++- Property 3: found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long.
++
++This page renders attempt `20261106T171500Z-a81c44ae` at claim `56047d29f030a33b`, in pipeline job `20261105-235230-example-071-b11-violation-with-its-comma`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.6 s; loops unwound 16 times with unwinding assertions)
+-✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm < currentTerm (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.7 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.4 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm < currentTerm (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.5 s; loops unwound 16 times with unwinding assertions)
+ ✗ Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):
+   grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)
+     outcome: true
+-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
++```
++
++</details>
++
++<details><summary>The statement the prover checked for property 1 (generated harness)</summary>
++
++```java
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
++```
++
++</details>
++
++<details><summary>The statement the prover checked for property 2 (generated harness)</summary>
++
++```java
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateTerm < currentTerm)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
++```
++
++</details>
++
++<details><summary>The statement the prover checked for property 3 (generated harness)</summary>
++
++```java
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex))) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
+ ```
+ 
+ </details>
+--- a/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+-  "verdictLabel": "✗ Violation: counterexample found",
++  "verdictLabel": "✗ Violation: counterexample found to 1 of 3 properties",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.quorum.Tests",
+     "passed": true,
+@@ -23,15 +29,162 @@
+     {
+       "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)",
+       "contract": "!result",
+-      "actual": "true"
++      "actual": "true",
++      "found": "grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20)",
++      "shrinkRuns": 44,
++      "witness": {
++        "inputs": [
++          {
++            "name": "currentTerm",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "votedFor",
++            "type": "int",
++            "value": 0
++          },
++          {
++            "name": "lastLogTerm",
++            "type": "long",
++            "value": "1"
++          },
++          {
++            "name": "lastLogIndex",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "candidate",
++            "type": "int",
++            "value": 0
++          },
++          {
++            "name": "candidateTerm",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "candidateLastLogTerm",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "candidateLastLogIndex",
++            "type": "long",
++            "value": "1"
++          }
++        ],
++        "foundInputs": [
++          {
++            "name": "currentTerm",
++            "type": "long",
++            "value": "11"
++          },
++          {
++            "name": "votedFor",
++            "type": "int",
++            "value": 20
++          },
++          {
++            "name": "lastLogTerm",
++            "type": "long",
++            "value": "17"
++          },
++          {
++            "name": "lastLogIndex",
++            "type": "long",
++            "value": "1"
++          },
++          {
++            "name": "candidate",
++            "type": "int",
++            "value": 20
++          },
++          {
++            "name": "candidateTerm",
++            "type": "long",
++            "value": "20"
++          },
++          {
++            "name": "candidateLastLogTerm",
++            "type": "long",
++            "value": "16"
++          },
++          {
++            "name": "candidateLastLogIndex",
++            "type": "long",
++            "value": "20"
++          }
++        ],
++        "call": {
++          "class": "net.terminalvalue.quorum.raft.VoteRule",
++          "classFile": "net/terminalvalue/quorum/raft/VoteRule.class",
++          "classFileSha256": "a3545827e658834a44e814c8a732be9974614d4d6abfa2ba1be3b74c86092e2b",
++          "classes": "after",
++          "method": "grant",
++          "descriptor": "(JIJJIJJJ)Z",
++          "static": true,
++          "arguments": [
++            {
++              "name": "currentTerm",
++              "type": "long",
++              "value": "0",
++              "from": "currentTerm"
++            },
++            {
++              "name": "votedFor",
++              "type": "int",
++              "value": 0,
++              "from": "votedFor"
++            },
++            {
++              "name": "lastLogTerm",
++              "type": "long",
++              "value": "1",
++              "from": "lastLogTerm"
++            },
++            {
++              "name": "lastLogIndex",
++              "type": "long",
++              "value": "0",
++              "from": "lastLogIndex"
++            },
++            {
++              "name": "candidate",
++              "type": "int",
++              "value": 0,
++              "from": "candidate"
++            },
++            {
++              "name": "candidateTerm",
++              "type": "long",
++              "value": "0",
++              "from": "candidateTerm"
++            },
++            {
++              "name": "candidateLastLogTerm",
++              "type": "long",
++              "value": "0",
++              "from": "candidateLastLogTerm"
++            },
++            {
++              "name": "candidateLastLogIndex",
++              "type": "long",
++              "value": "1",
++              "from": "candidateLastLogIndex"
++            }
++          ]
++        }
++      }
+     }
+   ],
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
++  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+   "problem": null,
+-  "statement": null,
++  "statement": "statement-3.java",
+   "trace": null,
+   "statesExplored": null,
+   "invariant": null,
+@@ -42,5 +195,409 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "properties": [
++    {
++      "harness": "property-1",
++      "assert": "!result",
++      "assume": "candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate",
++      "verdict": "verified",
++      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
++      "proof": "JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.4 s; loops unwound 16 times with unwinding assertions",
++      "problem": null,
++      "vacuous": null,
++      "counterexample": null,
++      "statement": "statement-1.java",
++      "search": {
++        "engine": "jbmc",
++        "checker": "JBMC 6.11.0",
++        "seconds": 0.362,
++        "properties": 2,
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "stage": null
++      },
++      "replay": null
++    },
++    {
++      "harness": "property-2",
++      "assert": "!result",
++      "assume": "candidateTerm < currentTerm",
++      "verdict": "verified",
++      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
++      "proof": "JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.5 s; loops unwound 16 times with unwinding assertions",
++      "problem": null,
++      "vacuous": null,
++      "counterexample": null,
++      "statement": "statement-2.java",
++      "search": {
++        "engine": "jbmc",
++        "checker": "JBMC 6.11.0",
++        "seconds": 0.464,
++        "properties": 2,
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "stage": null
++      },
++      "replay": null
++    },
++    {
++      "harness": "property-3",
++      "assert": "!result",
++      "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)",
++      "verdict": "violation",
++      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
++      "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
++      "problem": null,
++      "vacuous": null,
++      "counterexample": {
++        "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)",
++        "contract": "!result",
++        "actual": "true",
++        "found": "grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20)",
++        "shrinkRuns": 44,
++        "witness": {
++          "inputs": [
++            {
++              "name": "currentTerm",
++              "type": "long",
++              "value": "0"
++            },
++            {
++              "name": "votedFor",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "lastLogTerm",
++              "type": "long",
++              "value": "1"
++            },
++            {
++              "name": "lastLogIndex",
++              "type": "long",
++              "value": "0"
++            },
++            {
++              "name": "candidate",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "candidateTerm",
++              "type": "long",
++              "value": "0"
++            },
++            {
++              "name": "candidateLastLogTerm",
++              "type": "long",
++              "value": "0"
++            },
++            {
++              "name": "candidateLastLogIndex",
++              "type": "long",
++              "value": "1"
++            }
++          ],
++          "foundInputs": [
++            {
++              "name": "currentTerm",
++              "type": "long",
++              "value": "11"
++            },
++            {
++              "name": "votedFor",
++              "type": "int",
++              "value": 20
++            },
++            {
++              "name": "lastLogTerm",
++              "type": "long",
++              "value": "17"
++            },
++            {
++              "name": "lastLogIndex",
++              "type": "long",
++              "value": "1"
++            },
++            {
++              "name": "candidate",
++              "type": "int",
++              "value": 20
++            },
++            {
++              "name": "candidateTerm",
++              "type": "long",
++              "value": "20"
++            },
++            {
++              "name": "candidateLastLogTerm",
++              "type": "long",
++              "value": "16"
++            },
++            {
++              "name": "candidateLastLogIndex",
++              "type": "long",
++              "value": "20"
++            }
++          ],
++          "call": {
++            "class": "net.terminalvalue.quorum.raft.VoteRule",
++            "classFile": "net/terminalvalue/quorum/raft/VoteRule.class",
++            "classFileSha256": "a3545827e658834a44e814c8a732be9974614d4d6abfa2ba1be3b74c86092e2b",
++            "classes": "after",
++            "method": "grant",
++            "descriptor": "(JIJJIJJJ)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "currentTerm",
++                "type": "long",
++                "value": "0",
++                "from": "currentTerm"
++              },
++              {
++                "name": "votedFor",
++                "type": "int",
++                "value": 0,
++                "from": "votedFor"
++              },
++              {
++                "name": "lastLogTerm",
++                "type": "long",
++                "value": "1",
++                "from": "lastLogTerm"
++              },
++              {
++                "name": "lastLogIndex",
++                "type": "long",
++                "value": "0",
++                "from": "lastLogIndex"
++              },
++              {
++                "name": "candidate",
++                "type": "int",
++                "value": 0,
++                "from": "candidate"
++              },
++              {
++                "name": "candidateTerm",
++                "type": "long",
++                "value": "0",
++                "from": "candidateTerm"
++              },
++              {
++                "name": "candidateLastLogTerm",
++                "type": "long",
++                "value": "0",
++                "from": "candidateLastLogTerm"
++              },
++              {
++                "name": "candidateLastLogIndex",
++                "type": "long",
++                "value": "1",
++                "from": "candidateLastLogIndex"
++              }
++            ]
++          }
++        }
++      },
++      "statement": "statement-3.java",
++      "search": {
++        "engine": "jbmc",
++        "checker": "JBMC 6.11.0",
++        "seconds": 0.105,
++        "properties": 2,
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "stage": "[0:20]"
++      },
++      "replay": {
++        "by": "interpreter",
++        "reproduced": true
++      }
++    }
++  ],
++  "claim": {
++    "id": "56047d29f030a33b",
++    "format": 1,
++    "example": "071",
++    "statement": {
++      "approach": "B11",
++      "target": "net.terminalvalue.quorum.raft.VoteRule#grant",
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null
++    },
++    "inputs": {
++      "patch": "9cdf953e0c4125bb7a3f7532ef7afd5c9926e54b1395f65eac7fb4f8745ecb70",
++      "before": {
++        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
++        "files": 110
++      },
++      "after": {
++        "sha256": "92bbf57f81e77376de58162c718d3176a2f67d739f48ac68e8f6f34adad89df7",
++        "files": 110
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171500Z-a81c44ae",
++    "claim": "56047d29f030a33b",
++    "startedAt": "2026-11-06T17:15:00+00:00",
++    "seconds": 5.2,
++    "engine": "jbmc",
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "ba0728472a8045349372e080f012377e6ff17e6df87dc521431dcaf90a2dc787",
++        "files": 70
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-235230-example-071-b11-violation-with-its-comma",
++      "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-235230-example-071-b11-violation-with-its-comma"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched quorum main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.9,
++        "stdout": "logs/02-javac-patched-quorum-main.stdout",
++        "stderr": "logs/02-javac-patched-quorum-main.stderr"
++      },
++      {
++        "name": "javac patched quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 2.1,
++        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
++        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
++      },
++      {
++        "name": "the quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/04-the-quorum-tests.stdout",
++        "stderr": "logs/04-the-quorum-tests.stderr"
++      },
++      {
++        "name": "jvmcontract prove",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 1.0,
++        "stdout": "logs/05-jvmcontract-prove.stdout",
++        "stderr": "logs/05-jvmcontract-prove.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-version-of-jbmc.stdout",
++        "stderr": "logs/08-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-eb8erxps/attempts/071/attempt-mudq7svl"
++  },
++  "conclusion": {
++    "claim": "56047d29f030a33b",
++    "attempt": "20261106T171500Z-a81c44ae",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "name": "property-1",
++        "statement": "!result",
++        "status": "established"
++      },
++      {
++        "name": "property-2",
++        "statement": "!result",
++        "status": "established"
++      },
++      {
++        "name": "property-3",
++        "statement": "!result",
++        "status": "refuted"
++      }
++    ]
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "4c10bdc41607fd0cbd24b3501e56e5c56e0f42642a82a75e84cb98d322c99cf8",
++        "bytes": 2760
++      },
++      {
++        "path": "statement-1.java",
++        "sha256": "2e2b92de67718fad2deeaf9b243bf281a968b8765c397329cc6a65f65a4a7a3a",
++        "bytes": 1679
++      },
++      {
++        "path": "statement-2.java",
++        "sha256": "deffebb3a067782215ff522393e3778fa292fc9c8a15ddd73d8b3a563a4da8e3",
++        "bytes": 1635
++      },
++      {
++        "path": "statement-3.java",
++        "sha256": "9cf6513087a99b415a46cf7f449a40eb0fa826b28f386ed0e0f1d45b0d68cb09",
++        "bytes": 1723
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "14d159063f9c108bdb1b4a5904ca6f5c4fba4b222f056a16db045093755b5613",
++        "bytes": 1931
++      }
++    ]
++  }
+ }
+--- /dev/null
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-1.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-2.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateTerm < currentTerm)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-3.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(long currentTerm, int votedFor, long lastLogTerm, long lastLogIndex, int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {
++        if (!(candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex))) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = net.terminalvalue.quorum.raft.VoteRule.grant(currentTerm, votedFor, lastLogTerm, lastLogIndex, candidate, candidateTerm, candidateLastLogTerm, candidateLastLogIndex); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (!result); // no exception, and the property
++    }
++}
+--- a/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt
++++ b/examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt
+@@ -1,8 +1,8 @@
+-✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.6 s; loops unwound 16 times with unwinding assertions)
+-✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm < currentTerm (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.7 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.4 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.raft.VoteRule#grant satisfies `!result` on every input where candidateTerm < currentTerm (JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.5 s; loops unwound 16 times with unwinding assertions)
+ ✗ Property of net.terminalvalue.quorum.raft.VoteRule#grant violated: `!result` where candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex):
+   grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)
+     outcome: true
+-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
++  (found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+ 
+ The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

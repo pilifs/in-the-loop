@@ -1,0 +1,196 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-112331-example-132-b9-under-build-py-s-executio",
+  "title": "Example 132 (B9) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.4s, peak 96.3 MiB (estimated 3m00s, 1.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-112331-example-132-b9-under-build-py-s-executio.json",
+    "sha256": "5c966c7a5803498455883f4216b1ac92dc342b0802b65e8cd81717a4402fa195",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-112331-example-132-b9-under-build-py-s-executio",
+      "title": "Example 132 (B9) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "132"
+        ]
+      },
+      "expected": "example 132 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:23:31+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 132 (B9)",
+          "run": "python3 examples/tools/build.py 132",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond"
+      ]
+    }
+  },
+  "sourceCommit": "432ef36d6093761b21e71aeb06d96ca31fb3747e",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:52+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101023744,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 8.3,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 132 (B9)",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.411,
+      "cpuSeconds": 8.306,
+      "cpuThrottledSeconds": 0.843,
+      "peakMemoryBytes": 101023744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-132-b9.log",
+        "lines": 2,
+        "bytes": 201,
+        "sha256": "2f44ee57c6070152d4c99e455b6a32b930a8f5a0d5412916f98a0fd50302f342",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)",
+          "groups": [
+            "132",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: running (B9)",
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "change": "modified",
+      "bytes": 18151,
+      "sha256": "0b8f37d8d7bf2ef226ef0773edb074a0524d0d39dc482622380054a1b36d8a1b",
+      "sourceSha256": "ac33b708a8d4524b2fa96bd356dce81a1f36b4b42c18eb70da3a45e0f23190ca"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "change": "modified",
+      "bytes": 2550,
+      "sha256": "bd799ee1563b22765b42c68ef26298381855e97dec08fde1655a3026a9d672ae",
+      "sourceSha256": "6d40b78a6994605b2567df3401656a2707c6cf07e1c4b4c0408dc3edb1700641"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt",
+      "change": "modified",
+      "bytes": 911,
+      "sha256": "ade01bee66ed7854b5b05f8d0bed089561ed6b73f0a7b5966198d78b2a0e18cd",
+      "sourceSha256": "ed5b543bd30c2934fd54d55f7c60995f1ad64a3b5762c8558d192b59c8579de6"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,133 @@
+--- a/examples/012-deleting-the-sweeper-is-safe/README.md
++++ b/examples/012-deleting-the-sweeper-is-safe/README.md
+@@ -192,6 +192,10 @@
+ 
+ The order state machine inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the services really make.
+ 
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `OrderLifecycle#decide` (`spec/OrderLifecycleContract.tla`): the committed contract, which the patched classes still match
++
+ ## Would the existing tests have caught it?
+ 
+ Every existing unit test passes, as it should (`:ticketing-service:test`, run against the patched code).
+@@ -220,7 +224,7 @@
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 67 and seed 3394227475015576580 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 47914] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -231,9 +235,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-11-02 21:27:09)
++Starting... (2026-11-06 17:14:22)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:22.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -241,7 +245,7 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 21:27:10)
++Finished in 00s at (2026-11-06 17:14:23)
+ ```
+ 
+ </details>
+@@ -269,6 +273,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/012-deleting-the-sweeper-is-safe/result.json
++++ b/examples/012-deleting-the-sweeper-is-safe/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: all invariants hold in 3,604 states",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": ":ticketing-service:test",
+     "passed": true,
+@@ -33,5 +39,17 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "modelContracts": [
++    {
++      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
++      "contract": "ticketing-domain/src/contract/OrderLifecycle.decide.contract",
++      "operator": "spec/OrderLifecycleContract.tla",
++      "connection": "verified",
++      "rowsChanged": 0,
++      "allowed": true
++    }
++  ],
++  "modelVerdict": "verified",
++  "modelSummary": "✓ Verified: all invariants hold in 3,604 states"
+ }
+--- a/examples/012-deleting-the-sweeper-is-safe/result.sarif
++++ b/examples/012-deleting-the-sweeper-is-safe/result.sarif
+@@ -18,6 +18,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
++++ b/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 67 and seed 3394227475015576580 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 47914] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-11-02 21:27:09)
++Starting... (2026-11-06 17:14:22)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:22.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -20,4 +20,4 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 21:27:10)
++Finished in 00s at (2026-11-06 17:14:23)

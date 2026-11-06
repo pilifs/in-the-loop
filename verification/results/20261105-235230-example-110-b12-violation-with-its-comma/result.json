@@ -1,0 +1,257 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-235230-example-110-b12-violation-with-its-comma",
+  "title": "Example 110 (B12, violation) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 10.4s, peak 541.9 MiB (estimated 10m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-235230-example-110-b12-violation-with-its-comma.json",
+    "sha256": "b2a1acb9963d83a028afbd4eb0b9ca5d3357831e47bbf7ca9eb71673a48429e8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-235230-example-110-b12-violation-with-its-comma",
+      "title": "Example 110 (B12, violation) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "examples": [
+          "110"
+        ]
+      },
+      "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-05T23:52:30+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jvmcontract"
+      ],
+      "resources": {
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "Box Office Gradle build and boundary contracts"
+      },
+      "steps": [
+        {
+          "name": "example 110 (B12)",
+          "run": "python3 examples/tools/build.py 110",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/110-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/110-idempotency-key-header-drops-request-validation"
+      ]
+    }
+  },
+  "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
+  "startedAt": "2026-11-06T17:15:04+00:00",
+  "finishedAt": "2026-11-06T17:15:15+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "Box Office Gradle build and boundary contracts"
+  },
+  "usage": {
+    "peakMemoryBytes": 568193024,
+    "wallSeconds": 10.4,
+    "cpuSeconds": 6.2,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 10.22,
+      "cpuSeconds": 6.178,
+      "cpuThrottledSeconds": 3.26,
+      "peakMemoryBytes": 568193024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-110-b12.log",
+        "lines": 16,
+        "bytes": 729,
+        "sha256": "eb2ba071c935b6c31951fbdaf95f219d32d5eec8314d07d87c0491b8ead02c16",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 16,
+          "text": "110-idempotency-key-header-drops-request-validation: violation (as expected)",
+          "groups": [
+            "110",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "110-idempotency-key-header-drops-request-validation: running (B12)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · gradle :ticketing-service:test",
+        "  · gradle :ticketing-service:test: exited 0, 3.8 s",
+        "  · gradle :ticketing-service:compileJava",
+        "  · gradle :ticketing-service:compileJava: exited 0, 1.5 s",
+        "  · gradle :ticketing-service:printRuntimeClasspath",
+        "  · gradle :ticketing-service:printRuntimeClasspath: exited 0, 1.8 s",
+        "  · jvmcontract verify (boundaries)",
+        "  · jvmcontract verify (boundaries): exited 1, 1.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "110-idempotency-key-header-drops-request-validation: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/110-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.027,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5476352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 78,
+        "sha256": "470e67c74400af66054f9c25935c06bdfd84928edb3b243eaef9aa7a52c46690",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "7 stages; workspace .build-py/examples-tg3x6e9g/attempts/110/attempt-c0cc4rwp"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "change": "modified",
+      "bytes": 21011,
+      "sha256": "ffdc53441c798595703b0e342f8993d708ca4bd7e044b940fbab4d6d687c44aa",
+      "sourceSha256": "2412f66451894d7cfbe93d82a7e804f2e7fb10eeddbbc15a04d2355f4b52873b"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.json",
+      "change": "modified",
+      "bytes": 10691,
+      "sha256": "d63d286c3beef32c99b5c07f924366bc701a9627ee47b60a82565b28ae919195",
+      "sourceSha256": "de0a892f67245f6ad745fa373feea33664972789171be1ea0b3481f4e0d4b520"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.sarif",
+      "change": "modified",
+      "bytes": 4761,
+      "sha256": "341aa4ef6bf08ecd8c6f10fed53098c90e3d7aeacb1877a52afc53438dfd880c",
+      "sourceSha256": "d7d6dd9acaa94247628c2d98fd461af41a7defabbf1f71a280d461cc6ac8db04"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt",
+      "change": "modified",
+      "bytes": 2424,
+      "sha256": "1387de4f20656f8c6f3979599d54a96607dd020d26b19db152a093aabd83b17b",
+      "sourceSha256": "80dfe3f1649afa7bb0553bd176d0410124c69deb38ac3f769d417b929f57be5b"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "examples/110-idempotency-key-header-drops-request-validation/result.sarif",
+      "examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/110-idempotency-key-header-drops-request-validation/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

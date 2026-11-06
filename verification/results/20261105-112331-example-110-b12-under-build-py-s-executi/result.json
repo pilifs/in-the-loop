@@ -1,0 +1,198 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-112331-example-110-b12-under-build-py-s-executi",
+  "title": "Example 110 (B12) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m17s, peak 1.6 GiB (estimated 10m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-112331-example-110-b12-under-build-py-s-executi.json",
+    "sha256": "d0155e3ddd8bffe44bd77e8ea4f28c2ad0861f16822dd9155f971c7ebe0567ba",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-112331-example-110-b12-under-build-py-s-executi",
+      "title": "Example 110 (B12) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "B12"
+      ],
+      "links": {
+        "examples": [
+          "110"
+        ]
+      },
+      "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:23:31+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m"
+      },
+      "steps": [
+        {
+          "name": "example 110 (B12)",
+          "run": "python3 examples/tools/build.py 110",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/110-idempotency-key-header-drops-request-validation"
+      ]
+    }
+  },
+  "sourceCommit": "432ef36d6093761b21e71aeb06d96ca31fb3747e",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:16:05+00:00",
+  "wallSeconds": 139.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1701879808,
+    "wallSeconds": 137.9,
+    "cpuSeconds": 197.4,
+    "memoryOfEstimate": 0.53,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 137.883,
+      "cpuSeconds": 197.393,
+      "cpuThrottledSeconds": 62.215,
+      "peakMemoryBytes": 1701879808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-110-b12.log",
+        "lines": 2,
+        "bytes": 144,
+        "sha256": "ace223548ed66c3f3288071078ede079fdc6eea6ee880c180b4da6578db57530",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "110-idempotency-key-header-drops-request-validation: violation (as expected)",
+          "groups": [
+            "110",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "110-idempotency-key-header-drops-request-validation: running (B12)",
+        "110-idempotency-key-header-drops-request-validation: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "change": "modified",
+      "bytes": 20661,
+      "sha256": "0ec1ebd8a7fd76a91b1f68a78bc9bc9e4a3cb489603505c9189a4aa7f3464459",
+      "sourceSha256": "c744184cb7b53b52cfe6e7099a6c85b51237e46a999da008a362952f6c0a97c6"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.json",
+      "change": "modified",
+      "bytes": 6334,
+      "sha256": "b9fbd1ef7b07c6cfd67920978cec909a244bdf8bf99d333e4aac013da979a26c",
+      "sourceSha256": "de0a892f67245f6ad745fa373feea33664972789171be1ea0b3481f4e0d4b520"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.sarif",
+      "change": "modified",
+      "bytes": 4761,
+      "sha256": "341aa4ef6bf08ecd8c6f10fed53098c90e3d7aeacb1877a52afc53438dfd880c",
+      "sourceSha256": "d7d6dd9acaa94247628c2d98fd461af41a7defabbf1f71a280d461cc6ac8db04"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt",
+      "change": "modified",
+      "bytes": 2424,
+      "sha256": "1387de4f20656f8c6f3979599d54a96607dd020d26b19db152a093aabd83b17b",
+      "sourceSha256": "80dfe3f1649afa7bb0553bd176d0410124c69deb38ac3f769d417b929f57be5b"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/110-idempotency-key-header-drops-request-validation/result.json",
+      "examples/110-idempotency-key-header-drops-request-validation/result.sarif",
+      "examples/110-idempotency-key-header-drops-request-validation/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/110-idempotency-key-header-drops-request-validation/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

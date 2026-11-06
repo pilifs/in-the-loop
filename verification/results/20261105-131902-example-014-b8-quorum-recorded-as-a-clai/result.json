@@ -1,0 +1,180 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-131902-example-014-b8-quorum-recorded-as-a-clai",
+  "title": "Example 014 (B8, Quorum) recorded as a claim, an attempt and a bundle",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.6s, peak 106.0 MiB (estimated 5m00s, 1.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 014 (B8)) was held back 5.0s by its 1-CPU quota in 5.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-131902-example-014-b8-quorum-recorded-as-a-clai.json",
+    "sha256": "f217aa02a09c055661c1fd61cc77ded57eced2cbcbd3b64670ae4176e6fbdbbb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-131902-example-014-b8-quorum-recorded-as-a-clai",
+      "title": "Example 014 (B8, Quorum) recorded as a claim, an attempt and a bundle",
+      "description": "build.py now records each run as an attempt at a frozen claim (step 3b of llm-dlc/loops/build-orchestration.md): result.json gains claim (what is checked, its scope, and SHA-256 fingerprints of the patch and the copied sources before and after it, and for D1 the model files), attempt (engine, flags, tool identities, the bytecode built, the pipeline job's VERIFY_JOB_ID/VERIFY_SOURCE_COMMIT/VERIFY_WORKDIR, how the run ended, and for jvmcontract proofs whether exploration was shown complete), conclusion (established/refuted/unresolved per obligation) and bundle (each evidence file with its SHA-256). The runner writes into its own attempt directory, and nothing is published into the example's folder until the result validates against the schema and the files match the bundle; evidence of an earlier run that the bundle does not list is removed. The verdict and every flat field must be unchanged; the new blocks must be present, attempt.pipeline must name this job, and the example's folder must hold exactly the files its bundle lists. 014 is a behavioural contract checked by jvmcontract verify: the bundle must hold verifier-output.txt and result.sarif and nothing else.",
+      "kind": "example",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {
+        "examples": [
+          "014"
+        ]
+      },
+      "expected": "example 014 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T13:19:02+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "jvmcontract verify in the interpreter, seconds"
+      },
+      "steps": [
+        {
+          "name": "example 014 (B8)",
+          "run": "python3 examples/tools/build.py 014",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/014-leader-that-ignores-newer-terms-in-replies"
+      ]
+    }
+  },
+  "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+  "startedAt": "2026-11-06T17:14:35+00:00",
+  "finishedAt": "2026-11-06T17:14:41+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "jvmcontract verify in the interpreter, seconds"
+  },
+  "usage": {
+    "peakMemoryBytes": 111157248,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 5.6,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 014 (B8)",
+      "run": "python3 examples/tools/build.py 014",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.611,
+      "cpuSeconds": 5.565,
+      "cpuThrottledSeconds": 4.974,
+      "peakMemoryBytes": 111157248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-014-b8.log",
+        "lines": 2,
+        "bytes": 133,
+        "sha256": "13dc9c801e6588088591ded5a99a9030a469c0c654eb59f95405462b239f8e3c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "014-leader-that-ignores-newer-terms-in-replies: violation (as expected)",
+          "groups": [
+            "014",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "014-leader-that-ignores-newer-terms-in-replies: running (B8)",
+        "014-leader-that-ignores-newer-terms-in-replies: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/014-leader-that-ignores-newer-terms-in-replies/result.json",
+      "change": "modified",
+      "bytes": 7207,
+      "sha256": "ebebfbc0b4d7a3fc0bb9aee935a634c42234c7d779f43bb113625392f0c1a87e",
+      "sourceSha256": "0140d1b2805fd822bbf2eef5a4988cbe17cdd8b38b0ac49b0e3117dd18eaa7d2"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/014-leader-that-ignores-newer-terms-in-replies/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

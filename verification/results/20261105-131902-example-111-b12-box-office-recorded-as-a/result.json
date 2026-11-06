@@ -1,0 +1,179 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-131902-example-111-b12-box-office-recorded-as-a",
+  "title": "Example 111 (B12, Box Office) recorded as a claim, an attempt and a bundle",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.4s, peak 840.7 MiB (estimated 10m00s, 3.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-131902-example-111-b12-box-office-recorded-as-a.json",
+    "sha256": "0fee0030bc5b69853dacd7814cb0fd5b9f3238e1788ad546fd71920773d4fb4c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-131902-example-111-b12-box-office-recorded-as-a",
+      "title": "Example 111 (B12, Box Office) recorded as a claim, an attempt and a bundle",
+      "description": "build.py now records each run as an attempt at a frozen claim (step 3b of llm-dlc/loops/build-orchestration.md): result.json gains claim (what is checked, its scope, and SHA-256 fingerprints of the patch and the copied sources before and after it, and for D1 the model files), attempt (engine, flags, tool identities, the bytecode built, the pipeline job's VERIFY_JOB_ID/VERIFY_SOURCE_COMMIT/VERIFY_WORKDIR, how the run ended, and for jvmcontract proofs whether exploration was shown complete), conclusion (established/refuted/unresolved per obligation) and bundle (each evidence file with its SHA-256). The runner writes into its own attempt directory, and nothing is published into the example's folder until the result validates against the schema and the files match the bundle; evidence of an earlier run that the bundle does not list is removed. The verdict and every flat field must be unchanged; the new blocks must be present, attempt.pipeline must name this job, and the example's folder must hold exactly the files its bundle lists. 111 is a Box Office boundary contract: claim.inputs.dependencies must say the libraries are declared in the build files, and attempt.tools must name Gradle and jvmcontract.",
+      "kind": "example",
+      "capabilities": [
+        "B12"
+      ],
+      "links": {
+        "examples": [
+          "111"
+        ]
+      },
+      "expected": "example 111 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T13:19:02+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a Gradle build of the patched copy and jvmcontract verify"
+      },
+      "steps": [
+        {
+          "name": "example 111 (B12)",
+          "run": "python3 examples/tools/build.py 111",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/111-new-payment-event-missing-from-json-subtypes"
+      ]
+    }
+  },
+  "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+  "startedAt": "2026-11-06T17:14:41+00:00",
+  "finishedAt": "2026-11-06T17:15:02+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a Gradle build of the patched copy and jvmcontract verify"
+  },
+  "usage": {
+    "peakMemoryBytes": 881516544,
+    "wallSeconds": 20.4,
+    "cpuSeconds": 33.6,
+    "memoryOfEstimate": 0.27,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 111 (B12)",
+      "run": "python3 examples/tools/build.py 111",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 20.439,
+      "cpuSeconds": 33.57,
+      "cpuThrottledSeconds": 4.366,
+      "peakMemoryBytes": 881516544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-111-b12.log",
+        "lines": 2,
+        "bytes": 138,
+        "sha256": "973fb0b54bcdbde72e7f69479642a2c99e82bac24ecdbf15604c7eb9f916136b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "111-new-payment-event-missing-from-json-subtypes: violation (as expected)",
+          "groups": [
+            "111",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "111-new-payment-event-missing-from-json-subtypes: running (B12)",
+        "111-new-payment-event-missing-from-json-subtypes: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/111-new-payment-event-missing-from-json-subtypes/result.json",
+      "change": "modified",
+      "bytes": 6579,
+      "sha256": "1b1642f0575dd1a40dbb171c5fd19fa53e957068430a4c32f7057485de054f8d",
+      "sourceSha256": "c489c3047fce12513b46be14b5bc25847e005fa63952e4739c6600b5f4954e98"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/111-new-payment-event-missing-from-json-subtypes/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

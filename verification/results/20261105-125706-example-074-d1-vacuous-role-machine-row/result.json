@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-125706-example-074-d1-vacuous-role-machine-row",
+  "title": "Example 074 (D1, vacuous role-machine row): coverage status complete, still vacuous",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.6s, peak 121.8 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-125706-example-074-d1-vacuous-role-machine-row.json",
+    "sha256": "0afec9d2b96307e92887dd3eb1c90deea64984e01bb3305eb606ea7081617206",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-125706-example-074-d1-vacuous-role-machine-row",
+      "title": "Example 074 (D1, vacuous role-machine row): coverage status complete, still vacuous",
+      "description": "As for 072, on the role machine: 074 changes a row no run takes (a follower counting a late majority) and expects 'verified, vacuously'. The verdict must be unchanged with coverage.status complete; the result gains checkpoints and per-configuration termination reasons.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "074"
+        ]
+      },
+      "expected": "example 074 gives its expected verdict, verified (vacuously): build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T12:57:06+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "example 074 (D1)",
+          "run": "python3 examples/tools/build.py 074",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late"
+      ]
+    }
+  },
+  "sourceCommit": "b27c8ddc5a17c21d7bd95850250d39fb2a135abc",
+  "startedAt": "2026-11-06T17:14:27+00:00",
+  "finishedAt": "2026-11-06T17:14:31+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 127688704,
+    "wallSeconds": 3.6,
+    "cpuSeconds": 5.2,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 074 (D1)",
+      "run": "python3 examples/tools/build.py 074",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.608,
+      "cpuSeconds": 5.241,
+      "cpuThrottledSeconds": 0.746,
+      "peakMemoryBytes": 127688704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-074-d1.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "1a908711c363a544ac7080a9ab155dff23f95bdce5a2c3a9bcdb7b838ba6e3f9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late: verified (as expected)",
+          "groups": [
+            "074",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late: running (D1)",
+        "074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md",
+      "change": "modified",
+      "bytes": 58418,
+      "sha256": "2a9786459484c3ae97cdbfee62bd075e0167e09907f33edab53a66b3a46ec944",
+      "sourceSha256": "af45f93e76ba22a7f563d5b787312f83c24f4b983b03fdd6d508b487c9a56631"
+    },
+    {
+      "path": "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.json",
+      "change": "modified",
+      "bytes": 40302,
+      "sha256": "69ac80ac56adcc2c5c863552b9b7c6226f9eb099d0b3f898d51dc94c9a8c81f7",
+      "sourceSha256": "98c6523c6b0a276bd934e4deb62d2eba2e8ae833ea557bdaaf732f2396b7431c"
+    },
+    {
+      "path": "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.sarif",
+      "change": "modified",
+      "bytes": 983,
+      "sha256": "643a57b8da8c795e23f1e5172ff173a3cdb0ec87613e9a2ab1c4ac1392d2cddb",
+      "sourceSha256": "ad0339481e9f3f875b6bb2af074afb39087ed880596828f280499e3cf82ae8b5"
+    },
+    {
+      "path": "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/verifier-output.txt",
+      "change": "modified",
+      "bytes": 31515,
+      "sha256": "4ccd42eda3705b2c45f25242e83b27eec9165ba7a05155b35ea4b440211bfdd5",
+      "sourceSha256": "5593f19afa3e7ca545ba3a4eb6909d407fffe4a98391f76ebb1bdbcddab23d6b"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.json",
+      "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.sarif",
+      "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

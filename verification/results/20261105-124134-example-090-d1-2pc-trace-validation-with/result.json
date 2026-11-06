@@ -1,0 +1,207 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-124134-example-090-d1-2pc-trace-validation-with",
+  "title": "Example 090 (D1, 2PC trace validation) with its operators tied to the patched classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 21.6s, peak 1.0 GiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-124134-example-090-d1-2pc-trace-validation-with.json",
+    "sha256": "4118f53add52e816e2cbc4dab245348942dfe5ec2bb55d8f1e59708af9919805",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-124134-example-090-d1-2pc-trace-validation-with",
+      "title": "Example 090 (D1, 2PC trace validation) with its operators tied to the patched classes",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: every D1 run derives the contract of each generated operator (Coordinator, Recovery, Participant) from the patched classes and records it in modelContracts. 090 is not meant to change behaviour and patches CoordinatorNode, not a kernel, so all three must be 'verified' (the committed contract) and nothing else may move.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc",
+        "jvmcontract:derive"
+      ],
+      "links": {
+        "examples": [
+          "090"
+        ]
+      },
+      "expected": "build.py exits 0, 090 a violation as before (same trace); modelContracts lists three operators, each connection verified, rowsChanged 0, allowed true; contractDiff null; modelVerdict violation",
+      "submitted": {
+        "at": "2026-11-05T12:41:34+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "as the earlier 2PC D1 jobs"
+      },
+      "steps": [
+        {
+          "name": "example 090 (D1)",
+          "run": "python3 examples/tools/build.py 090",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run"
+      ]
+    }
+  },
+  "sourceCommit": "88372924fc0ea4bfae1968717cebfe6a87127157",
+  "startedAt": "2026-11-06T17:14:05+00:00",
+  "finishedAt": "2026-11-06T17:14:27+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "as the earlier 2PC D1 jobs"
+  },
+  "usage": {
+    "peakMemoryBytes": 1075757056,
+    "wallSeconds": 21.6,
+    "cpuSeconds": 31.0,
+    "memoryOfEstimate": 0.33,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 090 (D1)",
+      "run": "python3 examples/tools/build.py 090",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 21.642,
+      "cpuSeconds": 30.973,
+      "cpuThrottledSeconds": 3.28,
+      "peakMemoryBytes": 1075757056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-090-d1.log",
+        "lines": 2,
+        "bytes": 205,
+        "sha256": "4d1126d39fc6cd9fa3d8338871d38cb90699605239b895d6453fced69dc63fc8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run: violation (as expected)",
+          "groups": [
+            "090",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run: running (D1)",
+        "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md",
+      "change": "modified",
+      "bytes": 52280,
+      "sha256": "eef7b59b18f877d556909c66f4d47b9ba1a9b0f438234c9947d7f1476eafa6dc",
+      "sourceSha256": "82a05318a5b7c613812f82d48cb0e34ce48ac74d36dcd5c5a9d8bc020c3615de"
+    },
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.json",
+      "change": "modified",
+      "bytes": 28087,
+      "sha256": "118132c6a7e7a8af8d39f9d9a59ef5705239795a8f97507b37c72129dfd8d7c4",
+      "sourceSha256": "3dc00154b487c0b7b4097254f9af7e05a32b637b09bef276c3b3b936a765f1a1"
+    },
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.sarif",
+      "change": "modified",
+      "bytes": 1620,
+      "sha256": "44d1a9b5427cd566b548d80cca9702ff90cddf4b83bd7c11eccf34a40f69e5e7",
+      "sourceSha256": "6a27b4057dbffef90e3940da7b15686bba1ca2e1d614e83f3885abc59f19e769"
+    },
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/verifier-output.txt",
+      "change": "modified",
+      "bytes": 29386,
+      "sha256": "00c40bb38db2f8058b8c525706a93d49f29333e1070691e1f55a5ded1ab9ea15",
+      "sourceSha256": "5861297a63c92125dc547fc803644db4babe16e3ec5f6fa8f131ad09e402d0d1"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.json",
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.sarif",
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

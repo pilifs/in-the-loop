@@ -1,0 +1,296 @@
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -23,7 +29,147 @@
+     {
+       "input": "tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)",
+       "contract": "0",
+-      "actual": "1"
++      "actual": "1",
++      "found": "tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6)",
++      "shrinkRuns": 63,
++      "witness": {
++        "inputs": [
++          {
++            "name": "tokens",
++            "type": "long",
++            "value": "0"
++          },
++          {
++            "name": "lastNanos",
++            "type": "long",
++            "value": "1"
++          },
++          {
++            "name": "nowNanos",
++            "type": "long",
++            "value": "18"
++          },
++          {
++            "name": "periodNanos",
++            "type": "long",
++            "value": "18"
++          },
++          {
++            "name": "capacity",
++            "type": "long",
++            "value": "1"
++          }
++        ],
++        "foundInputs": [
++          {
++            "name": "tokens",
++            "type": "long",
++            "value": "5"
++          },
++          {
++            "name": "lastNanos",
++            "type": "long",
++            "value": "16"
++          },
++          {
++            "name": "nowNanos",
++            "type": "long",
++            "value": "20"
++          },
++          {
++            "name": "periodNanos",
++            "type": "long",
++            "value": "18"
++          },
++          {
++            "name": "capacity",
++            "type": "long",
++            "value": "6"
++          }
++        ],
++        "call": {
++          "class": "net.terminalvalue.crosscut.ratelimit.TokenBucket",
++          "classFile": "net/terminalvalue/crosscut/ratelimit/TokenBucket.class",
++          "classFileSha256": "bfdfc1f72d5a32b5d146fcf29b8b718f3356e5571f2d9a37538a820e7769731b",
++          "classes": "after",
++          "method": "tokensAfter",
++          "descriptor": "(JJJJJ)J",
++          "static": true,
++          "arguments": [
++            {
++              "name": "tokens",
++              "type": "long",
++              "value": "0",
++              "from": "tokens"
++            },
++            {
++              "name": "lastNanos",
++              "type": "long",
++              "value": "1",
++              "from": "lastNanos"
++            },
++            {
++              "name": "nowNanos",
++              "type": "long",
++              "value": "18",
++              "from": "nowNanos"
++            },
++            {
++              "name": "periodNanos",
++              "type": "long",
++              "value": "18",
++              "from": "periodNanos"
++            },
++            {
++              "name": "capacity",
++              "type": "long",
++              "value": "1",
++              "from": "capacity"
++            }
++          ]
++        },
++        "previousCall": {
++          "class": "net.terminalvalue.crosscut.ratelimit.TokenBucket",
++          "classFile": "net/terminalvalue/crosscut/ratelimit/TokenBucket.class",
++          "classFileSha256": "16a98cd4d91700d654d7db5488365285f0906998e27d7d5ddb0cb4e7344eb9d5",
++          "classes": "before",
++          "method": "tokensAfter",
++          "descriptor": "(JJJJJ)J",
++          "static": true,
++          "arguments": [
++            {
++              "name": "tokens",
++              "type": "long",
++              "value": "0",
++              "from": "tokens"
++            },
++            {
++              "name": "lastNanos",
++              "type": "long",
++              "value": "1",
++              "from": "lastNanos"
++            },
++            {
++              "name": "nowNanos",
++              "type": "long",
++              "value": "18",
++              "from": "nowNanos"
++            },
++            {
++              "name": "periodNanos",
++              "type": "long",
++              "value": "18",
++              "from": "periodNanos"
++            },
++            {
++              "name": "capacity",
++              "type": "long",
++              "value": "1",
++              "from": "capacity"
++            }
++          ]
++        }
++      }
+     }
+   ],
+   "purityViolations": [],
+@@ -39,5 +185,129 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 0.273,
++    "properties": 1,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": "[0:20]",
++    "native": {
++      "paths": 1,
++      "merges": 0,
++      "solverCalls": 14,
++      "solvingSeconds": 0.206071631,
++      "gatesEvaluated": 3031,
++      "evaluatingSeconds": 5.1456e-05,
++      "divisions": 3,
++      "divisionsBuilt": 2,
++      "multiplications": 0,
++      "multiplicationsBuilt": 0,
++      "variables": 62779,
++      "clauses": 217128,
++      "seconds": 0.243940852
++    }
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  },
++  "claim": {
++    "id": "b45ee83e7f2a5292",
++    "format": 1,
++    "example": "132",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
++      "behaviourChangeIntended": false,
++      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": "!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)"
++    },
++    "inputs": {
++      "patch": "92fb3cb2738234696662d90cfa52cbb3aec0d554f7d3249dc5441e840f4add76",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "0d06dfef45f01329907238e442e711561c6ac4b00d1b8ee0b93a427dfaddd33b",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171451Z-d8892f93",
++    "claim": "b45ee83e7f2a5292",
++    "startedAt": "2026-11-06T17:14:51+00:00",
++    "seconds": 6.3,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
++        "files": 39
++      },
++      "after": {
++        "sha256": "70d2f422b0a32401c327b47c460d766fa568173f2885d54c775c0c5f2f66e4ca",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-133040-example-132-b9-own-checker-violation-wit",
++      "sourceCommit": "4ed55f07fe144babb5f8e5c0a0287deda7dcd9ac",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-133040-example-132-b9-own-checker-violation-wit"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "b45ee83e7f2a5292",
++    "attempt": "20261106T171451Z-d8892f93",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "9c0d9201a8656002686c830fcbb606e83d6559ab8f25023d4a78ea567f766855",
++        "bytes": 2807
++      },
++      {
++        "path": "statement.java",
++        "sha256": "61d7099ec7d9928eea38f557ca02f7b6ab13263d5f5f325aafd4308e73a6a2b7",
++        "bytes": 2653
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "ed5b543bd30c2934fd54d55f7c60995f1ad64a3b5762c8558d192b59c8579de6",
++        "bytes": 911
++      }
++    ]
++  }
+ }

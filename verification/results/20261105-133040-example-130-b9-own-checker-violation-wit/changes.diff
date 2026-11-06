@@ -1,0 +1,304 @@
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/README.md
+@@ -243,7 +243,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
++How the verdict was reached: found by JBMC 6.11.0 in 9.8 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -252,7 +252,7 @@
+   delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
+     before: 1
+     after:  2
+-  (found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
++  (found by JBMC 6.11.0 in 9.8 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -23,13 +29,137 @@
+     {
+       "input": "delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)",
+       "contract": "1",
+-      "actual": "2"
++      "actual": "2",
++      "found": "delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583)",
++      "shrinkRuns": 110,
++      "witness": {
++        "inputs": [
++          {
++            "name": "this.baseMillis",
++            "type": "long",
++            "value": "1"
++          },
++          {
++            "name": "this.capMillis",
++            "type": "long",
++            "value": "2"
++          },
++          {
++            "name": "this.multiplier",
++            "type": "int",
++            "value": 2
++          },
++          {
++            "name": "attempt",
++            "type": "int",
++            "value": -1
++          }
++        ],
++        "foundInputs": [
++          {
++            "name": "this.baseMillis",
++            "type": "long",
++            "value": "544"
++          },
++          {
++            "name": "this.capMillis",
++            "type": "long",
++            "value": "1886"
++          },
++          {
++            "name": "this.multiplier",
++            "type": "int",
++            "value": 2
++          },
++          {
++            "name": "attempt",
++            "type": "int",
++            "value": -99583
++          }
++        ],
++        "call": {
++          "class": "net.terminalvalue.crosscut.retry.Backoff",
++          "classFile": "net/terminalvalue/crosscut/retry/Backoff.class",
++          "classFileSha256": "8ed90bfbd4122952d9bebb405f62192b306367805e19f78b6a14d7fa0b84f760",
++          "classes": "after",
++          "method": "delayMillis",
++          "descriptor": "(I)J",
++          "static": false,
++          "receiver": {
++            "name": "this",
++            "type": "net.terminalvalue.crosscut.retry.Backoff",
++            "components": [
++              {
++                "name": "baseMillis",
++                "type": "long",
++                "value": "1",
++                "from": "this.baseMillis"
++              },
++              {
++                "name": "capMillis",
++                "type": "long",
++                "value": "2",
++                "from": "this.capMillis"
++              },
++              {
++                "name": "multiplier",
++                "type": "int",
++                "value": 2,
++                "from": "this.multiplier"
++              }
++            ]
++          },
++          "arguments": [
++            {
++              "name": "attempt",
++              "type": "int",
++              "value": -1,
++              "from": "attempt"
++            }
++          ]
++        },
++        "previousCall": {
++          "class": "net.terminalvalue.crosscut.retry.Backoff",
++          "classFile": "net/terminalvalue/crosscut/retry/Backoff.class",
++          "classFileSha256": "ada91fa0fe5936105e6e42b8a01eb73e095900f2d771bd2230631f0b2482e708",
++          "classes": "before",
++          "method": "delayMillis",
++          "descriptor": "(I)J",
++          "static": false,
++          "receiver": {
++            "name": "this",
++            "type": "net.terminalvalue.crosscut.retry.Backoff",
++            "components": [
++              {
++                "name": "baseMillis",
++                "type": "long",
++                "value": "1",
++                "from": "this.baseMillis"
++              },
++              {
++                "name": "capMillis",
++                "type": "long",
++                "value": "2",
++                "from": "this.capMillis"
++              }
++            ]
++          },
++          "arguments": [
++            {
++              "name": "attempt",
++              "type": "int",
++              "value": -1,
++              "from": "attempt"
++            }
++          ]
++        }
++      }
+     }
+   ],
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
++  "proof": "found by JBMC 6.11.0 in 9.8 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -39,5 +169,116 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "jbmc",
++    "checker": "JBMC 6.11.0",
++    "seconds": 9.791,
++    "properties": 4,
++    "unwind": 32,
++    "maxArrayLength": 8,
++    "stage": "[-100000:100000]"
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  },
++  "claim": {
++    "id": "59efb61448e02a72",
++    "format": 1,
++    "example": "130",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
++      "behaviourChangeIntended": true,
++      "intendedInputs": "this.multiplier != 2",
++      "previousArguments": "new Backoff(this.baseMillis, this.capMillis), attempt"
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": "this.multiplier != 2"
++    },
++    "inputs": {
++      "patch": "8d8b34a956301dfe6c8ab3d1f731ee03a0590a96ef27a83f313de4d023eded56",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "601ed8ffef7c5335dca2e565b92c4b56226c5b9fb1454598ab7bd666c763c640",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171451Z-f5933b6b",
++    "claim": "59efb61448e02a72",
++    "startedAt": "2026-11-06T17:14:51+00:00",
++    "seconds": 15.8,
++    "engine": "jbmc",
++    "options": [
++      "--unwind",
++      "32"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
++        "files": 39
++      },
++      "after": {
++        "sha256": "bca9e574b179fd9e49427bd1356dc4b5d3b5a6944221db5fa3094f5c0b1cca19",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-133040-example-130-b9-own-checker-violation-wit",
++      "sourceCommit": "4ed55f07fe144babb5f8e5c0a0287deda7dcd9ac",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-133040-example-130-b9-own-checker-violation-wit"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 32,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "59efb61448e02a72",
++    "attempt": "20261106T171451Z-f5933b6b",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "0b2e08f49763555142824638a6d5bb2060612c6e97feecfe9a2348e12eebe86a",
++        "bytes": 2788
++      },
++      {
++        "path": "statement.java",
++        "sha256": "15be4d0029c4a439aad5ffc7a278add8306f121f1a9da63064606a6724a42036",
++        "bytes": 3042
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "19b0710c881302ad6e2b8d1915c1c4a345ba75d3fe7c6d04338125d0a703ccd0",
++        "bytes": 891
++      }
++    ]
++  }
+ }
+--- a/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt
++++ b/examples/130-backoff-with-a-multiplier-counts-a-negative-attempt-down-to-the-cap/verifier-output.txt
+@@ -2,6 +2,6 @@
+   delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
+     before: 1
+     after:  2
+-  (found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
++  (found by JBMC 6.11.0 in 9.8 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

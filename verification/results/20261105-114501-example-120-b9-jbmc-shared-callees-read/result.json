@@ -1,0 +1,198 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-114501-example-120-b9-jbmc-shared-callees-read",
+  "title": "Example 120 (B9, JBMC, shared callees) read from equivalence --json",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.4s, peak 107.4 MiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-114501-example-120-b9-jbmc-shared-callees-read.json",
+    "sha256": "ad3b880c713ce62595bce17531bb5a6729b27c86bb48081bb391dc609f6814e2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-114501-example-120-b9-jbmc-shared-callees-read",
+      "title": "Example 120 (B9, JBMC, shared callees) read from equivalence --json",
+      "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 120 is a JBMC proof with two shared callees: its verdict, domain and proof line must be unchanged, with search.sharedCallees naming the two refill helpers.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "120"
+        ]
+      },
+      "expected": "example 120 gives its expected verification: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:45:01+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a Crosscut B9 example: javac build and a JBMC proof that took 1.1 s"
+      },
+      "steps": [
+        {
+          "name": "example 120 (B9)",
+          "run": "python3 examples/tools/build.py 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/120-retry-after-rewritten-around-unchanged-refill-helpers"
+      ]
+    }
+  },
+  "sourceCommit": "3e76cd1954e71968b17a8ba6a3fc0c2ce5262652",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:53+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a Crosscut B9 example: javac build and a JBMC proof that took 1.1 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 112566272,
+    "wallSeconds": 6.4,
+    "cpuSeconds": 9.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 120 (B9)",
+      "run": "python3 examples/tools/build.py 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.411,
+      "cpuSeconds": 9.324,
+      "cpuThrottledSeconds": 1.284,
+      "peakMemoryBytes": 112566272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-120-b9.log",
+        "lines": 2,
+        "bytes": 154,
+        "sha256": "5b66ba83bf2c1418bc8ec57841fef4022f171ad2a6270716b9dc1fd7b9e6d082",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)",
+          "groups": [
+            "120",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: running (B9)",
+        "120-retry-after-rewritten-around-unchanged-refill-helpers: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md",
+      "change": "modified",
+      "bytes": 15485,
+      "sha256": "0d8b029c78e2335df15ec7f7afb02af2db0d5c9dfcbabae1a7a48d2b19527292",
+      "sourceSha256": "a92f321551a12a1da2e29d0d3e7ce189271e7c0c5402ca1dba0438669dd55d9c"
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "change": "modified",
+      "bytes": 3216,
+      "sha256": "e1d79c6e0db86223d0c08073cbe29936769e055d00e8a0b013a8043874d211a3",
+      "sourceSha256": "a37806cdd0a2f7c7d38ff25501408bb0b1db9d78a41f27b465f6d780bdcdc33c"
+    },
+    {
+      "path": "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt",
+      "change": "modified",
+      "bytes": 409,
+      "sha256": "75aa15db1be35151b95ac29fd509a489401fcaae42f871b1de99e755f09ba5e5",
+      "sourceSha256": "82c527b8af3b7ea33531ebb2b2b17990779d4e304ade3e8c37a42157ec71c14d"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json",
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "577a6103b51e49b429952b17f39bb63930b672e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/577a6103b51e49b429952b17f39bb63930b672e5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

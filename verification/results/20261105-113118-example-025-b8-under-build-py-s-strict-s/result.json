@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-113118-example-025-b8-under-build-py-s-strict-s",
+  "title": "Example 025 (B8) under build.py's strict selection",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.0s, peak 95.2 MiB (estimated 5m00s, 1.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 025 (B8)) was held back 3.7s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-113118-example-025-b8-under-build-py-s-strict-s.json",
+    "sha256": "f33ddcb720a77b33b385115aae0f10800f809cee425b7c5d606e28de7afa9aa2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-113118-example-025-b8-under-build-py-s-strict-s",
+      "title": "Example 025 (B8) under build.py's strict selection",
+      "description": "build.py now refuses an argument that is not an example id (exit 2, nothing run) and reports a requested example it cannot run as not-executed with exit 1 (build-orchestration brief, step 1b). This job checks that an ordinary run of one constructed example is unaffected: example 025 gives its expected violation, build.py prints 'as expected' and exits 0, and result.json is unchanged apart from gaining execution and expectation (step 1a).",
+      "kind": "example",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {
+        "examples": [
+          "025"
+        ]
+      },
+      "expected": "example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:31:18+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "a Crosscut B8 example builds with javac and runs jvmcontract verify in seconds"
+      },
+      "steps": [
+        {
+          "name": "example 025 (B8)",
+          "run": "python3 examples/tools/build.py 025",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/025-transaction-that-commits-after-an-error"
+      ]
+    }
+  },
+  "sourceCommit": "ab9aeb38f3b57911d8cf8e6988122359534c98e1",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:52+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "a Crosscut B8 example builds with javac and runs jvmcontract verify in seconds"
+  },
+  "usage": {
+    "peakMemoryBytes": 99844096,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 4.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.008,
+      "cpuSeconds": 4.847,
+      "cpuThrottledSeconds": 3.684,
+      "peakMemoryBytes": 99844096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-025-b8.log",
+        "lines": 2,
+        "bytes": 127,
+        "sha256": "68a733e22efb4ab01d45429b61672034ad5c89653de93ec06b0da4566ad936a4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "025-transaction-that-commits-after-an-error: violation (as expected)",
+          "groups": [
+            "025",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "025-transaction-that-commits-after-an-error: running (B8)",
+        "025-transaction-that-commits-after-an-error: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/README.md",
+      "change": "modified",
+      "bytes": 14759,
+      "sha256": "184c676e499582d3435646717d2c9333c5e4d603dcbcffcabaf77da901f4fd43",
+      "sourceSha256": "64afc29bf50e69bae6cd9f810dbdedee2d4e7a813e53e59ccccfa25bf8b58682"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.json",
+      "change": "modified",
+      "bytes": 2542,
+      "sha256": "cb839e2a5b21a80ace391370754883f2ac2c1a848917988cfa2f5615e65ed124",
+      "sourceSha256": "118b4b6950f0d04a482746e84a7bf4ef40db2a695970bfd5f220cc8ca9435d79"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.sarif",
+      "change": "modified",
+      "bytes": 4258,
+      "sha256": "9325aeb11434fc12ea13a001628184c6445728c169557b11f289cc45d14da9bf",
+      "sourceSha256": "dc508c68ccd329e706cd56d04425523d516644a0532430341356d686de890292"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/verifier-output.txt",
+      "change": "modified",
+      "bytes": 3193,
+      "sha256": "7a030e25707e7aa9b03efbbfee9776acd243cbc46bc0b4ce857a2e54e2a1f210",
+      "sourceSha256": "21ebe4ea6046d107d4277c9f4a328148c4ffde07a82e7047c25e1e954996e9f6"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/025-transaction-that-commits-after-an-error/result.json",
+      "examples/025-transaction-that-commits-after-an-error/result.sarif",
+      "examples/025-transaction-that-commits-after-an-error/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/025-transaction-that-commits-after-an-error/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

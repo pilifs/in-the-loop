@@ -1,0 +1,171 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-112331-example-003-b8-under-build-py-s-executio",
+  "title": "Example 003 (B8) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23.7s, peak 746.1 MiB (estimated 10m00s, 3.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-112331-example-003-b8-under-build-py-s-executio.json",
+    "sha256": "8e393c46261a09baa8a1fc84b11a0e10367a09253791f69e5bdd9e1430fc774a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-112331-example-003-b8-under-build-py-s-executio",
+      "title": "Example 003 (B8) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {
+        "examples": [
+          "003"
+        ]
+      },
+      "expected": "example 003 gives its expected verdict, unverifiable: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:23:31+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m"
+      },
+      "steps": [
+        {
+          "name": "example 003 (B8)",
+          "run": "python3 examples/tools/build.py 003",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/003-timestamp-makes-decision-nondeterministic"
+      ]
+    }
+  },
+  "sourceCommit": "432ef36d6093761b21e71aeb06d96ca31fb3747e",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:14:11+00:00",
+  "wallSeconds": 25.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 782299136,
+    "wallSeconds": 23.7,
+    "cpuSeconds": 31.6,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 003 (B8)",
+      "run": "python3 examples/tools/build.py 003",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 23.651,
+      "cpuSeconds": 31.613,
+      "cpuThrottledSeconds": 3.614,
+      "peakMemoryBytes": 782299136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-003-b8.log",
+        "lines": 2,
+        "bytes": 134,
+        "sha256": "33ba83ccacddc51f6ba902dd534f05f0090f2d7b256b6ae957cdf019b8ef64c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "003-timestamp-makes-decision-nondeterministic: unverifiable (as expected)",
+          "groups": [
+            "003",
+            "unverifiable"
+          ]
+        }
+      ],
+      "tail": [
+        "003-timestamp-makes-decision-nondeterministic: running (B8)",
+        "003-timestamp-makes-decision-nondeterministic: unverifiable (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/003-timestamp-makes-decision-nondeterministic/result.json",
+      "change": "modified",
+      "bytes": 1979,
+      "sha256": "c13ea00a263c5bd8c091a7fb87d49cc047c8561031ef5976602a9e1c4781b8e1",
+      "sourceSha256": "550e36f59fa483559fc4074e95d9995315408b93b442200b2425fa6698d654ec"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/003-timestamp-makes-decision-nondeterministic/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

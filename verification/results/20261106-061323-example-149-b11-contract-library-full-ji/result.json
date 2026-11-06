@@ -1,0 +1,161 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-061323-example-149-b11-contract-library-full-ji",
+  "title": "Example 149 (B11, contract library): full jitter proved on the contract library's contracts alone, applied on the records of their checks under --max-trust 0",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 28.4 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (example 149 (B11)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-061323-example-149-b11-contract-library-full-ji.json",
+    "sha256": "b194047248152e9dbc063258e8c3bdfd5b0ecb5a9c16c6e14d12ed0fa2b30b59",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-061323-example-149-b11-contract-library-full-ji",
+      "title": "Example 149 (B11, contract library): full jitter proved on the contract library's contracts alone, applied on the records of their checks under --max-trust 0",
+      "description": "New example for step 3d of llm-dlc/loops/sound-verdicts.md (contracts kept and reused). The Crosscut change of examples 147/148 (Jitter#fullJitterMillis) with no contracts file of the agent's: under --engine native --gaps advised --max-trust 0 the tool's built-in contract library (lib/models/contracts) closes the three gaps (Integer.numberOfLeadingZeros, Random(long), Random.nextInt(int)), each applied on its record in checked.json (proved against java.lang.Integer's bytecode, or tested on the JVM, on JDK 25.0.4.1) without a proof or JVM test in the run, and the property (result in [0, capMillis), IllegalArgumentException for an invalid policy) is proved on every input. The page should name the library's files and say each contract was checked once.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "149"
+        ],
+        "paths": [
+          "lib/src/contract_library.rs",
+          "lib/models/contracts"
+        ]
+      },
+      "expected": "verdict verified, relying on 3 contracts for gaps of the tool's own checker, 1 proved, 2 tested; each contract in result.search.gaps has file lib/models/contracts/<class>.contracts and recorded 'checked once, on JDK 25.0.4.1 ...'; the label says (1 proved, 2 tested)",
+      "submitted": {
+        "at": "2026-11-06T06:13:23+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m",
+        "notes": "checked inline on the patched module: about 0.08 s for the proof, no contract checks; the build and the module's tests take most of the time"
+      },
+      "steps": [
+        {
+          "name": "example 149 (B11)",
+          "run": "python3 examples/tools/build.py 149",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run"
+      ]
+    }
+  },
+  "sourceCommit": "8ea88f97e4470e6c27ec256151a7994820d8e3cd",
+  "startedAt": "2026-11-06T17:15:50+00:00",
+  "finishedAt": "2026-11-06T17:15:51+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": "checked inline on the patched module: about 0.08 s for the proof, no contract checks; the build and the module's tests take most of the time"
+  },
+  "usage": {
+    "peakMemoryBytes": 29741056,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.1,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 149 (B11)",
+      "run": "python3 examples/tools/build.py 149",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.125,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 29741056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-149-b11.log",
+        "lines": 2,
+        "bytes": 243,
+        "sha256": "36742aa1cbae678ed160050300f79803c966ef7284f9303647db391a3a0ccb02",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "149-full-jitter-proved-on-the-contract-library-s-contracts-alone-checked-once-and-not-again-by-the-run: running (B11)",
+        "the patch does not change the subject file examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Jitter.java"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "591a819fba0a8e1dabd6f11e29624b4aeba925e0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/591a819fba0a8e1dabd6f11e29624b4aeba925e0/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-061323-example-149-b11-contract-library-full-ji"
+}

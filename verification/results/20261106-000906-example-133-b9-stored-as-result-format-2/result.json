@@ -1,0 +1,242 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-000906-example-133-b9-stored-as-result-format-2",
+  "title": "Example 133 (B9) stored as result format 2",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 6.6s, peak 96.4 MiB (estimated 3m00s, 1.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 133 (B9)) was held back 5.7s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-000906-example-133-b9-stored-as-result-format-2.json",
+    "sha256": "98869eeff8b8d1b12ecb49e5b2c76eced354206110ca0c44f9854250f08a9f40",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-000906-example-133-b9-stored-as-result-format-2",
+      "title": "Example 133 (B9) stored as result format 2",
+      "description": "Option B of open question 1 in llm-dlc/loops/build-orchestration.md, settled by the user on 2026-11-05: result.json is now stored as format 2 (examples/tools/result_format.py, examples/schema/stored-result.schema.json). Each fact is stored once: the verdict as conclusion.status, the execution in attempt.execution, each obligation (B11 property, D1 configuration, generated operator's contract) with its own evidence, and everything else under evidence. Pages read it through the flat view, so they render as before. Before publishing, build.py checks that the result stored and read back is the same result; a run whose result would not store whole exits without publishing. The verdict must be as expected, the stored result must have format 2 with obligations of the expected kinds (none), and its flat view must carry the claim and attempt.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "133"
+        ]
+      },
+      "expected": "example 133 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; result.json has format 2 with obligations of kinds: none",
+      "submitted": {
+        "at": "2026-11-06T00:09:06+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "the own checker proves 133 in about half a second"
+      },
+      "steps": [
+        {
+          "name": "example 133 (B9)",
+          "run": "python3 examples/tools/build.py 133",
+          "cwd": "."
+        },
+        {
+          "name": "stored as format 2",
+          "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/133-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted(''.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+      ]
+    }
+  },
+  "sourceCommit": "693bf2776483e92b245de2c620820a33d5c7380f",
+  "startedAt": "2026-11-06T17:15:20+00:00",
+  "finishedAt": "2026-11-06T17:15:27+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "the own checker proves 133 in about half a second"
+  },
+  "usage": {
+    "peakMemoryBytes": 101122048,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.418,
+      "cpuSeconds": 6.315,
+      "cpuThrottledSeconds": 5.718,
+      "peakMemoryBytes": 101122048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-133-b9.log",
+        "lines": 18,
+        "bytes": 776,
+        "sha256": "9792a0e2e5c98bdf215bc3b87abf82da9581c4501c1a9662a58d3e9904d76f9c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)",
+          "groups": [
+            "133",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 1.5 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 1.4 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "stored as format 2",
+      "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/133-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted(''.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.034,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6225920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-stored-as-format-2.log",
+        "lines": 1,
+        "bytes": 36,
+        "sha256": "ff3d9366e8f4ad3e9590dc7ddb9dfd75eeaed323425b51adbeba5d418442478a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "format 2; verified 0 obligations []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "change": "modified",
+      "bytes": 16061,
+      "sha256": "03b433aa801e46a9d4db9c5169e122d3024bc88eb402ec2900ebf53d0aa4b9ed",
+      "sourceSha256": "64d37aa603bb7477e5e7c8dd57fe7ad4e1ca66b660193b01523a16952fa1addb"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "change": "modified",
+      "bytes": 8124,
+      "sha256": "7163af6c7be40642df5065146581d68615186106a878d021a5d088449e82c63a",
+      "sourceSha256": "591d36b07b4db45eed8cbddb4222cc0a950dc84dd18b4e3859221464a9c4a122"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

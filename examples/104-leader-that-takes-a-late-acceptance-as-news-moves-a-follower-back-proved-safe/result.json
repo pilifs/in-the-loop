@@ -1,7 +1,13 @@
 {
   "verdict": "verified",
   "verdictLabel": "✓ Verified: all invariants and properties hold in 20,253 states, and under 3 more configurations",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
     "passed": true,
@@ -23,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/ReplyRule.decide.contract\n+++ b/examples/apps/quorum/src/contract/ReplyRule.decide.contract\n@@ -8,7 +8,7 @@\n decide(AWAITED, AppendReply[accepted=true])   => Transition[next=ANSWERED, effects=[ADVANCE]]\n decide(AWAITED, null)                         => throws NullPointerException\n decide(ANSWERED, AppendReply[accepted=false]) => Unchanged[reason=\"a refusal the leader has moved on from\"]\n-decide(ANSWERED, AppendReply[accepted=true])  => Unchanged[reason=\"holds what the leader has recorded already\"]\n+decide(ANSWERED, AppendReply[accepted=true])  => Transition[next=ANSWERED, effects=[ADVANCE]]\n decide(ANSWERED, null)                        => throws NullPointerException\n decide(null, AppendReply[accepted=false])     => throws NullPointerException\n decide(null, AppendReply[accepted=true])      => throws NullPointerException\n",
-  "proof": "three terms, two entries: TLC 2.19 explored 20,253 distinct states to depth 20 in 13 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 8,838 distinct states to depth 18 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,388 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 605,428 distinct states to depth 26, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+  "proof": "three terms, two entries: TLC 2.19 explored 20,253 distinct states to depth 20 in 10 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 8,838 distinct states to depth 18 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,388 distinct states to depth 16 in 53 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 605,428 distinct states to depth 26, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -404,6 +410,48 @@
   },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
+  "modelContracts": [
+    {
+      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "contract": "src/contract/AppendRule.decide.contract",
+      "operator": "spec/AppendRuleContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+      "contract": "src/contract/ReplyRule.decide.contract",
+      "operator": "spec/ReplyRuleContract.tla",
+      "connection": "derived",
+      "rowsChanged": 1,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+      "contract": "src/contract/CommitRule.decide.contract",
+      "operator": "spec/CommitRuleContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "contract": "src/contract/RoleMachine.decide.contract",
+      "operator": "spec/RoleMachineContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "contract": "src/contract/VoteRule.decide.contract",
+      "operator": "spec/VoteRuleContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    }
+  ],
   "violationKind": null,
   "forever": null,
   "configurations": [
@@ -411,6 +459,7 @@
       "label": "three terms, two entries",
       "cfg": "spec/RaftReplication.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 20,253 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE",
       "invariant": null,
@@ -423,6 +472,7 @@
       "label": "figure 8",
       "cfg": "spec/RaftReplicationFigureEight.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 8,838 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE",
       "invariant": null,
@@ -435,6 +485,7 @@
       "label": "fairness",
       "cfg": "spec/RaftReplicationLive.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 14,388 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
       "invariant": null,
@@ -447,6 +498,7 @@
       "label": "delayed replies",
       "cfg": "spec/RaftReplicationDelayed.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 605,428 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
       "invariant": null,
@@ -455,5 +507,7 @@
       "trace": null,
       "forever": null
     }
-  ]
+  ],
+  "modelVerdict": "verified",
+  "modelSummary": "✓ Verified: all invariants and properties hold in 20,253 states, and under 3 more configurations"
 }

@@ -1,7 +1,13 @@
 {
   "verdict": "verified",
   "verdictLabel": "✓ Verified, vacuously: no run takes the 1 row the change alters",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.quorum.Tests",
     "passed": true,
@@ -23,7 +29,7 @@
   "purityViolations": [],
   "trustedCalls": [],
   "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -5,8 +5,8 @@\n domain: Role (4) × RoleEvent (13) = 52 cases\n \n decide(FOLLOWER, ElectionTimeout[])             => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n-decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"votes of an election this server is no longer in\"]\n-decide(FOLLOWER, VotesCounted[majority=true])   => Unchanged[reason=\"votes of an election this server is no longer in\"]\n+decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"no majority yet\"]\n+decide(FOLLOWER, VotesCounted[majority=true])   => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(FOLLOWER, AppendEntries[term=OLDER])     => Rejected[reason=\"stale leader\"]\n decide(FOLLOWER, AppendEntries[term=CURRENT])   => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]\n decide(FOLLOWER, AppendEntries[term=NEWER])     => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]\n",
-  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
   "problem": null,
   "statement": null,
   "trace": null,
@@ -32,15 +38,26 @@
   "property": null,
   "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
   "coverage": {
+    "status": "complete",
     "configurations": [
       {
         "label": "three servers",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -57,6 +74,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 4,
             "total": 27,
             "never": [
@@ -91,10 +109,20 @@
         "label": "the inductive step",
         "fromRuns": false,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -111,6 +139,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 6,
             "total": 27,
             "never": [
@@ -143,10 +172,20 @@
         "label": "four servers",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -163,6 +202,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 4,
             "total": 27,
             "never": [
@@ -197,10 +237,20 @@
         "label": "fairness",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -217,6 +267,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 4,
             "total": 27,
             "never": [
@@ -251,10 +302,20 @@
         "label": "a server left behind",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -271,6 +332,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 12,
             "total": 27,
             "never": [
@@ -297,10 +359,20 @@
         "label": "delayed replies",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 33,
             "total": 36,
             "never": [
@@ -311,6 +383,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 4,
             "total": 27,
             "never": [
@@ -345,10 +418,20 @@
         "label": "history",
         "fromRuns": true,
         "finished": true,
+        "verdict": "verified",
+        "status": "completed",
+        "reason": null,
         "counted": true,
+        "coverageStatus": "complete",
+        "coverageReason": null,
+        "listed": [
+          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "net.terminalvalue.quorum.raft.VoteRule#decide"
+        ],
         "operators": [
           {
             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "listed": true,
             "reached": 27,
             "total": 36,
             "never": [
@@ -365,6 +448,7 @@
           },
           {
             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+            "listed": true,
             "reached": 4,
             "total": 27,
             "never": [
@@ -399,9 +483,11 @@
     "changedRows": [
       {
         "case": "decide(FOLLOWER, VotesCounted[majority=true])",
+        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
         "before": "Unchanged[reason=\"votes of an election this server is no longer in\"]",
         "after": "Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
-        "takenUnder": []
+        "takenUnder": [],
+        "unknownUnder": []
       }
     ],
     "nullRows": 0,
@@ -409,6 +495,75 @@
   },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
+  "modelContracts": [
+    {
+      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+      "contract": "src/contract/RoleMachine.decide.contract",
+      "operator": "spec/RoleMachineContract.tla",
+      "connection": "derived",
+      "rowsChanged": 2,
+      "allowed": true
+    },
+    {
+      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+      "contract": "src/contract/VoteRule.decide.contract",
+      "operator": "spec/VoteRuleContract.tla",
+      "connection": "verified",
+      "rowsChanged": 0,
+      "allowed": true
+    }
+  ],
+  "checkpoints": [
+    {
+      "label": "three servers",
+      "cfg": "spec/RaftElection.cfg",
+      "fingerprint": "26376513fc1e67f860293b8f2739f9bb382d9133c4288026fe3ac4660d434504",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:05+00:00"
+    },
+    {
+      "label": "the inductive step",
+      "cfg": "spec/RaftElectionInductive.cfg",
+      "fingerprint": "77fd51e20a66f2b40fa26721592b9c9bd41d360c72448dc3b6716dadc334b5af",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:12+00:00"
+    },
+    {
+      "label": "four servers",
+      "cfg": "spec/RaftElectionFour.cfg",
+      "fingerprint": "8f797d8783f7aa16efb33b951fd15761fa988ba7ad37bf6be81225ade454a133",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:14+00:00"
+    },
+    {
+      "label": "fairness",
+      "cfg": "spec/RaftElectionLive.cfg",
+      "fingerprint": "3d025c2064b8f0000792a7a448c5ef520d934ef6af35b11c82770a7cdb4f635f",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:17+00:00"
+    },
+    {
+      "label": "a server left behind",
+      "cfg": "spec/RaftElectionLogs.cfg",
+      "fingerprint": "a39c9633f7b01cb45b4052225106bf1bd20528e9d8ad4adca611b60f33486310",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:19+00:00"
+    },
+    {
+      "label": "delayed replies",
+      "cfg": "spec/RaftElectionDelayed.cfg",
+      "fingerprint": "9258f16ac26a095367e6150c8b787690e43be6f69febde4d13ae4bdf790c16e6",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:25+00:00"
+    },
+    {
+      "label": "history",
+      "cfg": "spec/RaftElectionHistory.cfg",
+      "fingerprint": "f0ec87c4f43624716acee8f2116d20322a7cc4a9a8b880c920427c9018d2ceec",
+      "reused": true,
+      "recordedAt": "2026-11-06T17:05:28+00:00"
+    }
+  ],
   "violationKind": null,
   "forever": null,
   "configurations": [
@@ -416,6 +571,8 @@
       "label": "three servers",
       "cfg": "spec/RaftElection.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 610 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
@@ -428,6 +585,8 @@
       "label": "the inductive step",
       "cfg": "spec/RaftElectionInductive.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
@@ -440,6 +599,8 @@
       "label": "four servers",
       "cfg": "spec/RaftElectionFour.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 829 states",
       "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
@@ -452,6 +613,8 @@
       "label": "fairness",
       "cfg": "spec/RaftElectionLive.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 610 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
@@ -464,6 +627,8 @@
       "label": "a server left behind",
       "cfg": "spec/RaftElectionLogs.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 461 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
       "invariant": null,
@@ -476,6 +641,8 @@
       "label": "delayed replies",
       "cfg": "spec/RaftElectionDelayed.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants and properties hold in 20,351 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
       "invariant": null,
@@ -488,6 +655,8 @@
       "label": "history",
       "cfg": "spec/RaftElectionHistory.cfg",
       "verdict": "verified",
+      "status": "completed",
+      "reason": null,
       "summary": "✓ Verified: all invariants hold in 4,798 states",
       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
       "invariant": null,
@@ -496,5 +665,7 @@
       "trace": null,
       "forever": null
     }
-  ]
+  ],
+  "modelVerdict": "verified",
+  "modelSummary": "✓ Verified, vacuously: no run takes the 1 row the change alters"
 }

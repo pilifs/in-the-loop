@@ -1,0 +1,167 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-235249-example-142-killed-mid-proof-leaves-its",
+  "title": "Example 142 killed mid-proof leaves its stage logs and workspace behind",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.2s, peak 100.2 MiB (estimated 1m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (kill build.py mid-proof and inspect what it left) exited 1, expected 0",
+    "step 1 (kill build.py mid-proof and inspect what it left) was held back 5.7s by its 1-CPU quota in 5.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-235249-example-142-killed-mid-proof-leaves-its.json",
+    "sha256": "c19f4b1742723fe4342fb7a36313d69fdb0615858dbe2a6f0a870c53bd4c7535",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-235249-example-142-killed-mid-proof-leaves-its",
+      "title": "Example 142 killed mid-proof leaves its stage logs and workspace behind",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md, its acceptance: an interrupted job leaves its stage logs and workspace behind. build.py runs example 142 (the own checker's ASCII fast-path proof, about 7 s of solving after a few seconds of building) and is killed by SIGKILL after 5 s, when the proof should be running. Afterwards the kept workspace under .build-py must hold the attempt's claim.json, its patched copy, and logs/stages.jsonl whose last stage is still marked running, with that stage's partial stdout file present. The step fails if build.py finished before the kill (exit other than 137) or if any of these is missing; the timing assumption is part of what is checked.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "142"
+        ]
+      },
+      "expected": "build.py is killed (exit 137) during a stage; the attempt's claim.json, patched copy and stages.jsonl remain, the last stage marked running with its stdout file present",
+      "submitted": {
+        "at": "2026-11-05T23:52:49+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "notes": "killed after 5 s by design"
+      },
+      "steps": [
+        {
+          "name": "kill build.py mid-proof and inspect what it left",
+          "run": "timeout -s KILL 5 python3 examples/tools/build.py 142; code=$?; test $code = 137 || { echo \"build.py exited $code before the kill\"; exit 1; }; a=$(ls -d .build-py/examples-*/attempts/142/attempt-* | head -1); test -f $a/claim.json && test -d $a/copy/examples/apps/mica && tail -1 $a/logs/stages.jsonl | grep -q '\"status\": \"running\"' && n=$(tail -1 $a/logs/stages.jsonl | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"stdout\"])') && test -f $a/$n && echo \"left: $(tail -1 $a/logs/stages.jsonl)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
+  "startedAt": "2026-11-06T17:15:08+00:00",
+  "finishedAt": "2026-11-06T17:15:14+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": "killed after 5 s by design"
+  },
+  "usage": {
+    "peakMemoryBytes": 105082880,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 5.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "kill build.py mid-proof and inspect what it left",
+      "run": "timeout -s KILL 5 python3 examples/tools/build.py 142; code=$?; test $code = 137 || { echo \"build.py exited $code before the kill\"; exit 1; }; a=$(ls -d .build-py/examples-*/attempts/142/attempt-* | head -1); test -f $a/claim.json && test -d $a/copy/examples/apps/mica && tail -1 $a/logs/stages.jsonl | grep -q '\"status\": \"running\"' && n=$(tail -1 $a/logs/stages.jsonl | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"stdout\"])') && test -f $a/$n && echo \"left: $(tail -1 $a/logs/stages.jsonl)\"",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 5.21,
+      "cpuSeconds": 5.009,
+      "cpuThrottledSeconds": 5.698,
+      "peakMemoryBytes": 105082880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-kill-build-py-mid-proof-and-in.log",
+        "lines": 13,
+        "bytes": 531,
+        "sha256": "38cc98f9be6bfee48aa83853f836d7d6a7e2ccd170c8820a2b23ddb123289ca8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "142-an-ascii-fast-path-for-the-constant-pool-encoder-proved-equal-to-the-previous-version-at-bound-eight: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 1.3 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 1.5 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.1 s",
+        "  · javac unpatched mica main",
+        "  · javac unpatched mica main: exited 0, 1.4 s",
+        "  · jvmcontract equivalence",
+        "build.py exited 124 before the kill"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-235249-example-142-killed-mid-proof-leaves-its"
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-125706-example-099-d1-raft-replication-liveness",
+  "title": "Example 099 (D1, Raft replication liveness): per-configuration checkpoints on the largest model",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 123.7 MiB (estimated 20m00s, 4.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-125706-example-099-d1-raft-replication-liveness.json",
+    "sha256": "a047520f49ea2f5747a17d9870926237bf6b051817913c1de3315b0b69af301f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-125706-example-099-d1-raft-replication-liveness",
+      "title": "Example 099 (D1, Raft replication liveness): per-configuration checkpoints on the largest model",
+      "description": "099 is a temporal violation under the replication model's fairness configuration. It checks per-configuration checkpoints and coverage status on the largest model (three generated operators, delayed replies needing the 2.5 GB TLC heap): the verdict must be unchanged, and checkpoints records one fingerprint per configuration.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "099"
+        ]
+      },
+      "expected": "example 099 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T12:57:06+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "example 099 (D1)",
+          "run": "python3 examples/tools/build.py 099",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry"
+      ]
+    }
+  },
+  "sourceCommit": "b27c8ddc5a17c21d7bd95850250d39fb2a135abc",
+  "startedAt": "2026-11-06T17:14:31+00:00",
+  "finishedAt": "2026-11-06T17:14:35+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 129744896,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 099 (D1)",
+      "run": "python3 examples/tools/build.py 099",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 5.69,
+      "cpuThrottledSeconds": 0.928,
+      "peakMemoryBytes": 129744896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-099-d1.log",
+        "lines": 2,
+        "bytes": 223,
+        "sha256": "207b753e80e9564929fd2d8190f6b9614f516b715dcf610b52e8401a319cbe04",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry: violation (as expected)",
+          "groups": [
+            "099",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry: running (D1)",
+        "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md",
+      "change": "modified",
+      "bytes": 264466,
+      "sha256": "35ae78e184927429c9a221a65b6500c5963610209a77167ac091516e6c25ed82",
+      "sourceSha256": "d30159afc12505c8dff04394e2fcffd60da3dd0cc547102d6da9ca82571b653b"
+    },
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.json",
+      "change": "modified",
+      "bytes": 39643,
+      "sha256": "94659312be2c204aed040b646eae8476be552cb6cfd4c388347fcaaabff17a87",
+      "sourceSha256": "a39abf85205029f0845e3ba09d132a7655d39438ef645ad8a2418bedc9068a06"
+    },
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.sarif",
+      "change": "modified",
+      "bytes": 1645,
+      "sha256": "3f69b46ed27867f34146607535e9bb7283c5bc73214a1df5fccd2ab34b240c50",
+      "sourceSha256": "e22268c13814a5eacc34266bfda2a4deef4c633b958e9fe00453a61587b25a15"
+    },
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/verifier-output.txt",
+      "change": "modified",
+      "bytes": 230699,
+      "sha256": "6da7fb696c2a7c6ac207fdb7cff13940557819a0a5c2f7aa8830088c3a483768",
+      "sourceSha256": "1cffdccc1f989f6183826fd16284858259b00fd24d3de9042eea5f7c07e23593"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.json",
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.sarif",
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

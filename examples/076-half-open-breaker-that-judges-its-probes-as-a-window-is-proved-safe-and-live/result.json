@@ -1,7 +1,13 @@
 {
   "verdict": "verified",
   "verdictLabel": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": "java -ea net.terminalvalue.crosscut.Tests",
     "passed": true,
@@ -22,7 +28,7 @@
   "counterexamples": [],
   "purityViolations": [],
   "trustedCalls": [],
-  "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n",
+  "contractDiff": "--- a/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n+++ b/examples/apps/crosscut/src/contract/CircuitBreaker.decide.contract\n@@ -32,9 +32,9 @@\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=false, thresholdExceeded=true])  => Unchanged[reason=\"more probes to go\"]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=false])  => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=false, windowComplete=true, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Transition[next=OPEN, effects=[START_WAIT]]\n-decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=OPEN, effects=[START_WAIT]]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=false])  => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=false, thresholdExceeded=true])   => Unchanged[reason=\"more probes to go\"]\n+decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=false])   => Transition[next=CLOSED, effects=[RESET_METRICS]]\n decide(HALF_OPEN, CallCompleted[failed=true, windowComplete=true, thresholdExceeded=true])    => Transition[next=OPEN, effects=[START_WAIT]]\n decide(HALF_OPEN, null)                                                                       => throws NullPointerException\n decide(null, CallRequested[waitElapsed=false])                                                => throws NullPointerException\n--- a/examples/apps/crosscut/src/contract/api.contract\n+++ b/examples/apps/crosscut/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: crosscut, 34 public types, 125 members\n+module: crosscut, 36 public types, 140 members\n \n net.terminalvalue.crosscut.Decision: public sealed interface permits net.terminalvalue.crosscut.Decision$Transition, net.terminalvalue.crosscut.Decision$Unchanged, net.terminalvalue.crosscut.Decision$Rejected\n   public static net.terminalvalue.crosscut.Decision rejected(java.lang.String)\n@@ -94,6 +94,15 @@\n   public static long lastAfter(long, long, long, long, long)\n   public static long tokensAfter(long, long, long, long, long)\n \n+net.terminalvalue.crosscut.ratelimit.Window: public final record\n+  public Window(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long count()\n+  public long startNanos()\n+  public net.terminalvalue.crosscut.ratelimit.Window counted(long, long)\n+\n net.terminalvalue.crosscut.resilience.BreakerEffect: public final enum\n   public static final PERMIT: net.terminalvalue.crosscut.resilience.BreakerEffect\n   public static final RESET_METRICS: net.terminalvalue.crosscut.resilience.BreakerEffect\n@@ -128,6 +137,16 @@\n \n net.terminalvalue.crosscut.resilience.CircuitBreaker: public final class\n   public static net.terminalvalue.crosscut.Decision decide(net.terminalvalue.crosscut.resilience.BreakerState, net.terminalvalue.crosscut.resilience.BreakerEvent)\n+\n+net.terminalvalue.crosscut.retry.Backoff: public final record\n+  public Backoff(long, long)\n+  public final boolean equals(java.lang.Object)\n+  public final int hashCode()\n+  public final java.lang.String toString()\n+  public long baseMillis()\n+  public long capMillis()\n+  public long delayMillis(int)\n+  public static final MAX_CAP_MILLIS: long\n \n net.terminalvalue.crosscut.retry.RetryPolicy: public final class\n   public static boolean shouldRetry(int, boolean, int, int)\n",
   "proof": "two calls in flight: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2; fairness: TLC 2.19 explored 98 distinct states to depth 19 in 0 s, for the model WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
   "problem": null,
   "statement": null,
@@ -124,6 +130,16 @@
   },
   "sarif": "result.sarif",
   "output": "verifier-output.txt",
+  "modelContracts": [
+    {
+      "symbol": "net.terminalvalue.crosscut.resilience.CircuitBreaker#decide",
+      "contract": "src/contract/CircuitBreaker.decide.contract",
+      "operator": "spec/CircuitBreakerContract.tla",
+      "connection": "derived",
+      "rowsChanged": 3,
+      "allowed": true
+    }
+  ],
   "violationKind": null,
   "forever": null,
   "configurations": [
@@ -131,6 +147,7 @@
       "label": "two calls in flight",
       "cfg": "spec/CircuitBreaker.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants hold in 98 states",
       "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
       "invariant": null,
@@ -143,6 +160,7 @@
       "label": "fairness",
       "cfg": "spec/CircuitBreakerLive.cfg",
       "verdict": "verified",
+      "status": "completed",
       "summary": "✓ Verified: all invariants and properties hold in 98 states",
       "domain": "WindowSize = 2, FailureRate = 50, PermittedProbes = 2, WaitDuration = 2, MaxInFlight = 2",
       "invariant": null,
@@ -151,5 +169,7 @@
       "trace": null,
       "forever": null
     }
-  ]
+  ],
+  "modelVerdict": "verified",
+  "modelSummary": "✓ Verified: all invariants hold in 98 states, and under 1 more configuration"
 }

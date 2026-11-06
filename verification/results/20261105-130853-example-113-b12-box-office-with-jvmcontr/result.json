@@ -1,0 +1,180 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-130853-example-113-b12-box-office-with-jvmcontr",
+  "title": "Example 113 (B12, Box Office) with jvmcontract required from build.py's plan",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 13.2s, peak 540.8 MiB (estimated 10m00s, 3.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-130853-example-113-b12-box-office-with-jvmcontr.json",
+    "sha256": "828655bcc7dcc6dd46ea5f87b7a825de7d05dced45332372870e8263e8f5be37",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-130853-example-113-b12-box-office-with-jvmcontr",
+      "title": "Example 113 (B12, Box Office) with jvmcontract required from build.py's plan",
+      "description": "build.py's plan says a Box Office B12 run calls jvmcontract verify, so its pipeline job now requires jvmcontract: the pipeline builds the verifier at the job's commit and reserves its build memory, where before the run built it itself, outside the reservation. Example 113 should give its recorded verdict, a violation for the nested Billing record without @Valid, unchanged.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:verify",
+        "B12"
+      ],
+      "links": {
+        "examples": [
+          "113"
+        ]
+      },
+      "expected": "example 113 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T13:08:53+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "Gradle compile of ticketing-service plus jvmcontract verify; a cold jvmcontract build adds a few minutes"
+      },
+      "steps": [
+        {
+          "name": "example 113 (B12)",
+          "run": "python3 examples/tools/build.py 113",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/113-billing-constraints-without-valid-cascade"
+      ]
+    }
+  },
+  "sourceCommit": "f3d011a1f6138ce309bbd9033897b5e066c2b2c6",
+  "startedAt": "2026-11-06T17:14:33+00:00",
+  "finishedAt": "2026-11-06T17:14:46+00:00",
+  "wallSeconds": 13.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "Gradle compile of ticketing-service plus jvmcontract verify; a cold jvmcontract build adds a few minutes"
+  },
+  "usage": {
+    "peakMemoryBytes": 567042048,
+    "wallSeconds": 13.2,
+    "cpuSeconds": 7.5,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 113 (B12)",
+      "run": "python3 examples/tools/build.py 113",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 13.226,
+      "cpuSeconds": 7.456,
+      "cpuThrottledSeconds": 0.091,
+      "peakMemoryBytes": 567042048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-113-b12.log",
+        "lines": 2,
+        "bytes": 132,
+        "sha256": "1ec4ff5b6711c1fe951f95d21337eee855d7af80f211ea147a5ffea48b0a6e68",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "113-billing-constraints-without-valid-cascade: violation (as expected)",
+          "groups": [
+            "113",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "113-billing-constraints-without-valid-cascade: running (B12)",
+        "113-billing-constraints-without-valid-cascade: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/113-billing-constraints-without-valid-cascade/result.json",
+      "change": "modified",
+      "bytes": 16294,
+      "sha256": "1d76064595d82640a8c8ac11b8a76cdeafb193fb639816a9dd9c16ab8a46dfc3",
+      "sourceSha256": "0201efab530223c3a5e075a5443811b7d111a4a7ef47f83a0579abfcb886275a"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/113-billing-constraints-without-valid-cascade/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2dba58ff924b309a0151a2ea4244f230cdbf5043",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2dba58ff924b309a0151a2ea4244f230cdbf5043/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

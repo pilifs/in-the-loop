@@ -1,0 +1,356 @@
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md
+@@ -112,14 +112,18 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 4.3 s; loops unwound 32 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); a JDK method outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub: a void one does nothing and another returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20).
++
++This page renders attempt `20261106T171549Z-08ea7250` at claim `268579010ba48ec0`, in pipeline job `20261106-031642-example-127-b9-re-run-its-statement-says`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 4.3 s; loops unwound 32 times with unwinding assertions)
++  not vacuous: delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20) reaches the calls
++  constructors: either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+ ```
+ 
+ </details>
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json
+@@ -1,37 +1,286 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: equivalent on every input",
+-  "matchesExpected": true,
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.crosscut.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+-    "startLine": 21,
+-    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n}\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
+-    "startLine": 21,
+-    "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift, kept\n     * short of the sign bit: a shift that would leave the range of a {@code long} is already past the cap.\n     */\n    public long delayMillis(int attempt) {\n        if (attempt <= 0) {\n            return baseMillis;\n        }\n        int shift = Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1);\n        return Math.min(capMillis, baseMillis << shift);\n    }\n}\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "this: Backoff(baseMillis: long, capMillis: long) × attempt: int",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "format": 2,
++  "claim": {
++    "id": "268579010ba48ec0",
++    "format": 1,
++    "example": "127",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.crosscut.retry.Backoff#delayMillis",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": "81483d81869819afab56dcd1e24414803f0398f711bec893b8b315f7f5027780",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "50a99592e7d5b6ad7ea4115ce5c68e231f574e86f7c806f8fdff9b1229d0baab",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171549Z-08ea7250",
++    "claim": "268579010ba48ec0",
++    "startedAt": "2026-11-06T17:15:49+00:00",
++    "seconds": 9.1,
++    "engine": "jbmc",
++    "options": [
++      "--unwind",
++      "32"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "e5471226fec8622a90910eeac1aff1676772690fff15717ac13c69ab7d38120e",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
++        "files": 39
++      },
++      "after": {
++        "sha256": "c9fb8f2b70a227d5e1b42c615e368bdbe70c1909d807977b3e091cc2c8c48af8",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-031642-example-127-b9-re-run-its-statement-says",
++      "sourceCommit": "f963e6a672ec9bceebc8a1c21f174fbcdf3798cd",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-031642-example-127-b9-re-run-its-statement-says"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 32,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.6,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.5,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "javac unpatched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.4,
++        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
++        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 4.4,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-version-of-jbmc.stdout",
++        "stderr": "logs/09-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-7ura94th/attempts/127/attempt-y7zc7bpm"
++  },
++  "conclusion": {
++    "claim": "268579010ba48ec0",
++    "attempt": "20261106T171549Z-08ea7250",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✓ Verified: equivalent on every input",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.crosscut.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
++      "startLine": 21,
++      "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one.\n     */\n    public long delayMillis(int attempt) {\n        long delay = baseMillis;\n        for (int i = 0; i < attempt && delay < capMillis; i++) {\n            delay = Math.min(capMillis, delay * 2);\n        }\n        return delay;\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/retry/Backoff.java",
++      "startLine": 21,
++      "code": "\n    /**\n     * The delay before the given attempt: the base doubled {@code attempt} times, stopping at the cap. The first\n     * attempt (zero) waits the base, and so does any earlier one. Doubling {@code attempt} times is a shift, kept\n     * short of the sign bit: a shift that would leave the range of a {@code long} is already past the cap.\n     */\n    public long delayMillis(int attempt) {\n        if (attempt <= 0) {\n            return baseMillis;\n        }\n        int shift = Math.min(attempt, Long.numberOfLeadingZeros(baseMillis) - 1);\n        return Math.min(capMillis, baseMillis << shift);\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "this: Backoff(baseMillis: long, capMillis: long) × attempt: int",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 4.3 s; loops unwound 32 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 4.279,
++      "properties": 3,
++      "unwind": 32,
++      "maxArrayLength": 8,
++      "stage": null
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "net.terminalvalue.crosscut.retry.Backoff",
++            "kind": "record",
++            "null": false,
++            "components": [
++              "baseMillis: long",
++              "capMillis: long"
++            ]
++          },
++          {
++            "name": "attempt",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "this: Backoff(baseMillis: long, capMillis: long) × attempt: int"
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "basis": "harness"
++        },
++        {
++          "kind": "library",
++          "text": "a JDK method outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub: a void one does nothing and another returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++      },
++      "bounds": {
++        "unwind": 32,
++        "maxArrayLength": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null
++      },
++      "gapMode": null,
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20).",
++        "witness": "delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20)"
++      }
++    },
++    "replay": null
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "f3b5b98759563c44a9bf69c727c997f6534cffd242acd206ced05352be696d1f",
++        "bytes": 2701
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "45dd1dee42acf891e83534b21b24b1c40a8dfad81541f78ae2c16851928b6989",
++        "bytes": 639
++      }
++    ]
++  }
+ }
+--- a/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt
++++ b/examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt
+@@ -1 +1,3 @@
+-✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.retry.Backoff#delayMillis behaves as before on every input (JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 4.3 s; loops unwound 32 times with unwinding assertions)
++  not vacuous: delayMillis(this=Backoff[baseMillis=20, capMillis=20], attempt=20) reaches the calls
++  constructors: either version's constructor Backoff(baseMillis: long, capMillis: long) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it

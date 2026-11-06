@@ -1,0 +1,55 @@
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md
+@@ -110,7 +110,7 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
++How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -119,7 +119,7 @@
+   tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)
+     before: 0
+     after:  1
+-  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
++  (found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -29,7 +35,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
++  "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+--- a/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt
++++ b/examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/verifier-output.txt
+@@ -2,6 +2,6 @@
+   tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)
+     before: 0
+     after:  1
+-  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
++  (found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

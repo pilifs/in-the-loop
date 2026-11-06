@@ -1,0 +1,225 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-234448-example-133-b9-own-checker-renders-its-o",
+  "title": "Example 133 (B9, own checker) renders its own run as current",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 8.0s, peak 96.9 MiB (estimated 3m00s, 1.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 133 (B9)) was held back 7.1s by its 1-CPU quota in 7.8s: it would run faster with more CPUs (a JVM needs 2)",
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-234448-example-133-b9-own-checker-renders-its-o.json",
+    "sha256": "f06307affa75227ced3c51b4dc0c9d424ca79debc34002c2773945e695327673",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-234448-example-133-b9-own-checker-renders-its-o",
+      "title": "Example 133 (B9, own checker) renders its own run as current",
+      "description": "Step 3c of llm-dlc/loops/build-orchestration.md: a page now says whether its result is still the result of the current files. build.py fingerprints the claim again from the patch, the sources the patch applies to, the plan's statement and the scope, and checks the bundle against the files beside result.json. A fresh run must render as current: the page names its attempt, claim and pipeline job and says the claim is still the one the current files make, with no stale warning. If it says stale, the pipeline's workdir fingerprints the sources differently from the run's own copy, and that is the bug to fix. The verdict (verified) and every recorded field must be unchanged apart from the run's new claim, attempt, conclusion and bundle.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "133"
+        ]
+      },
+      "expected": "example 133 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; its page says its claim is still the one the current files make, with no stale warning",
+      "submitted": {
+        "at": "2026-11-05T23:44:48+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "the own checker proves 133 in about half a second"
+      },
+      "steps": [
+        {
+          "name": "example 133 (B9)",
+          "run": "python3 examples/tools/build.py 133",
+          "cwd": "."
+        },
+        {
+          "name": "page renders as current",
+          "run": "grep -q 'Its claim is still the one the current files make' examples/133-*/README.md && ! grep -q 'Stale result' examples/133-*/README.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+      ]
+    }
+  },
+  "sourceCommit": "525b35ea05de1ce4a1ae1401f8cd17a608c6457c",
+  "startedAt": "2026-11-06T17:14:56+00:00",
+  "finishedAt": "2026-11-06T17:15:04+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "the own checker proves 133 in about half a second"
+  },
+  "usage": {
+    "peakMemoryBytes": 101580800,
+    "wallSeconds": 8.0,
+    "cpuSeconds": 7.7,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 7.814,
+      "cpuSeconds": 7.707,
+      "cpuThrottledSeconds": 7.103,
+      "peakMemoryBytes": 101580800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-133-b9.log",
+        "lines": 2,
+        "bytes": 202,
+        "sha256": "a043cbc582ceae449cdd6e3222c09a8d33a5ba444fdc0f0480b06ed18e76faf6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)",
+          "groups": [
+            "133",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: running (B9)",
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "page renders as current",
+      "run": "grep -q 'Its claim is still the one the current files make' examples/133-*/README.md && ! grep -q 'Stale result' examples/133-*/README.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.01,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2695168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-page-renders-as-current.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "change": "modified",
+      "bytes": 16061,
+      "sha256": "079a0aed3d2fc132db932785f4b87fee9f323be3ecb0a0354bb683f5c9eb9922",
+      "sourceSha256": "64d37aa603bb7477e5e7c8dd57fe7ad4e1ca66b660193b01523a16952fa1addb"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "change": "modified",
+      "bytes": 6024,
+      "sha256": "5c77c11db357f7ba5514895db4a3c14da2f7e440720b717abbccebebda2a6777",
+      "sourceSha256": "591d36b07b4db45eed8cbddb4222cc0a950dc84dd18b4e3859221464a9c4a122"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

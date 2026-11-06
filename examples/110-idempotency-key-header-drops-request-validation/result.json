@@ -1,7 +1,13 @@
 {
   "verdict": "violation",
-  "verdictLabel": "✗ Violation: 2 boundary changes",
+  "verdictLabel": "✗ Violation: 9 boundary changes",
+  "execution": {
+    "status": "completed",
+    "exitCode": 1,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": ":ticketing-service:test",
     "passed": true,
@@ -18,7 +24,7 @@
     "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestHeader;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /**\n     * Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. Clients\n     * send an {@code Idempotency-Key} on every POST, as they do for holds; an order is already idempotent per hold, so\n     * the key is accepted and not needed.\n     */\n    @PostMapping\n    ResponseEntity<Order> place(\n            @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey,\n            @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
   },
   "casesTotal": null,
-  "domain": "19 beans, 13 entry points, 0 advised methods, 0 problems",
+  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
   "counterexamples": [
     {
       "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
@@ -27,7 +33,42 @@
     },
     {
       "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": null,
+      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
       "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)",
+      "actual": null
+    },
+    {
+      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry",
       "actual": null
     }
   ],
@@ -44,5 +85,6 @@
   "stateMachine": null,
   "coverage": null,
   "sarif": "result.sarif",
-  "output": "verifier-output.txt"
+  "output": "verifier-output.txt",
+  "newProblems": []
 }

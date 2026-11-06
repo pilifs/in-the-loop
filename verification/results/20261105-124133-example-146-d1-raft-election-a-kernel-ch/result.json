@@ -1,0 +1,204 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-124133-example-146-d1-raft-election-a-kernel-ch",
+  "title": "Example 146 (D1, Raft election): a kernel changed in a refactor is checked as built",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.4s, peak 974.6 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-124133-example-146-d1-raft-election-a-kernel-ch.json",
+    "sha256": "492fef12cdc588fd4e38d7b49929b09b970bb2290bddb0be884e20a3e2330700",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-124133-example-146-d1-raft-election-a-kernel-ch",
+      "title": "Example 146 (D1, Raft election): a kernel changed in a refactor is checked as built",
+      "description": "New example 146: example 060's patch (the leader's election-timeout case folded into the others as dead code) declared as a refactor, behaviourChangeIntended false, so the contract is not regenerated. Since step 2a of llm-dlc/loops/build-orchestration.md, build.py derives each generated operator's contract from the patched classes on every D1 run (jvmcontract derive) and records the connection in modelContracts; a difference not intended is a violation of its own. The earlier runner generated the operator from the committed contract here and checked the code before the patch.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc",
+        "jvmcontract:derive"
+      ],
+      "links": {
+        "examples": [
+          "146"
+        ]
+      },
+      "expected": "build.py exits 0 with 146 a violation as expected: modelContracts has RoleMachine#decide connection derived, rowsChanged 1, allowed false, VoteRule#decide verified; contractDiff shows decide(LEADER, ElectionTimeout[]); TLC's own verdict (modelVerdict) is violation, LeadersNeverCampaign 4-step trace under three servers, as recorded for 060; the SARIF report has a contract-changed result beside the invariant-violated ones",
+      "submitted": {
+        "at": "2026-11-05T12:41:33+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "same patch and seven configurations as 060"
+      },
+      "steps": [
+        {
+          "name": "example 146 (D1)",
+          "run": "python3 examples/tools/build.py 146",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built"
+      ]
+    }
+  },
+  "sourceCommit": "88372924fc0ea4bfae1968717cebfe6a87127157",
+  "startedAt": "2026-11-06T17:13:57+00:00",
+  "finishedAt": "2026-11-06T17:14:16+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "same patch and seven configurations as 060"
+  },
+  "usage": {
+    "peakMemoryBytes": 1021943808,
+    "wallSeconds": 19.4,
+    "cpuSeconds": 28.2,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 146 (D1)",
+      "run": "python3 examples/tools/build.py 146",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 19.44,
+      "cpuSeconds": 28.237,
+      "cpuThrottledSeconds": 4.228,
+      "peakMemoryBytes": 1021943808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-146-d1.log",
+        "lines": 2,
+        "bytes": 185,
+        "sha256": "b1be62edde492e74cc7dcc1876768592d6ce5a1e3c06fc871faecb44f85954f7",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built: violation (as expected)",
+          "groups": [
+            "146",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built: running (D1)",
+        "146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/README.md",
+      "change": "added",
+      "bytes": 86061,
+      "sha256": "d0e644bebe9d98d58ab46b104de667768b9809966f05c2ac1c83bbcd0dea20c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/result.json",
+      "change": "added",
+      "bytes": 28189,
+      "sha256": "a2269a02d93653af4bdeead2e8d600c0581f97e6cd1f8681dd1ba3c0fc19eb78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/result.sarif",
+      "change": "added",
+      "bytes": 5419,
+      "sha256": "8bc3f614afdb55d9dc2ba3ccbd1a78cc77048790decb6912ad8e49538fa7cabc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/verifier-output.txt",
+      "change": "added",
+      "bytes": 48403,
+      "sha256": "f63edd296c3677df5f484295ad004db8b5d2c66a5499daddcfebac1be5481380",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/README.md",
+      "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/result.json",
+      "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/result.sarif",
+      "examples/146-a-timeout-rule-folded-as-dead-code-in-a-refactor-is-checked-as-built/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2ae41443c8aab5d7a9b35ded1e6d45bfe09367e8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

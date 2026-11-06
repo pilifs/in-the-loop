@@ -1,0 +1,196 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-112331-example-017-b11-under-build-py-s-executi",
+  "title": "Example 017 (B11) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 123.9 MiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-112331-example-017-b11-under-build-py-s-executi.json",
+    "sha256": "c2090828f312ef772545f10a86ed4269aa6a7756bfda84b38685e07c0e5b42bb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-112331-example-017-b11-under-build-py-s-executi",
+      "title": "Example 017 (B11) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "017"
+        ]
+      },
+      "expected": "example 017 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:23:31+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 017 (B11)",
+          "run": "python3 examples/tools/build.py 017",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/017-hybrid-logical-clock-refactor-proved-monotonic"
+      ]
+    }
+  },
+  "sourceCommit": "432ef36d6093761b21e71aeb06d96ca31fb3747e",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:51+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 129961984,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 7.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 017 (B11)",
+      "run": "python3 examples/tools/build.py 017",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 4.81,
+      "cpuSeconds": 6.983,
+      "cpuThrottledSeconds": 0.84,
+      "peakMemoryBytes": 129961984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-017-b11.log",
+        "lines": 2,
+        "bytes": 141,
+        "sha256": "09479ee53b4591e1680dc11c808d2039be442378357f6b41eff74118db75d19f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "017-hybrid-logical-clock-refactor-proved-monotonic: verified (as expected)",
+          "groups": [
+            "017",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "017-hybrid-logical-clock-refactor-proved-monotonic: running (B11)",
+        "017-hybrid-logical-clock-refactor-proved-monotonic: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/017-hybrid-logical-clock-refactor-proved-monotonic/README.md",
+      "change": "modified",
+      "bytes": 11569,
+      "sha256": "529d66c8a2c33a2da1cb466bf6bd860f30e8cad6ef5f230eb777043d92bfde8f",
+      "sourceSha256": "d6ec2ea51f58e62f42e5093c74e0d41072346c5f5c2575a36e47c63945ada072"
+    },
+    {
+      "path": "examples/017-hybrid-logical-clock-refactor-proved-monotonic/result.json",
+      "change": "modified",
+      "bytes": 2775,
+      "sha256": "df9ff99b32a07b3c9fa2418851096d5f58afa730190564bc7764bbb687700f3f",
+      "sourceSha256": "52f80b73ed34ac21df88e77d0c8065fc4dc76101153033a213af99953dde15a9"
+    },
+    {
+      "path": "examples/017-hybrid-logical-clock-refactor-proved-monotonic/verifier-output.txt",
+      "change": "modified",
+      "bytes": 489,
+      "sha256": "8c21d0a073387acc9d6d836ab55963dfc0e8d24ea4d3654d03326cac64d2ae84",
+      "sourceSha256": "8f98f536bda8ec90db64c11ceac2f56765fe0d236b7be681919c77d8e9ec990e"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/017-hybrid-logical-clock-refactor-proved-monotonic/result.json",
+      "examples/017-hybrid-logical-clock-refactor-proved-monotonic/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/017-hybrid-logical-clock-refactor-proved-monotonic/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e589f32ddb7715843d1ffc746b7fe8202201862",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9e589f32ddb7715843d1ffc746b7fe8202201862/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

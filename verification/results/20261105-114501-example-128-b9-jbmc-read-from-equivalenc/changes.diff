@@ -1,0 +1,47 @@
+--- a/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
++++ b/examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.crosscut.Tests",
+     "passed": true,
+@@ -23,7 +29,9 @@
+     {
+       "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
+       "contract": "throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\")",
+-      "actual": "1"
++      "actual": "1",
++      "found": "offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)",
++      "shrinkRuns": 19
+     }
+   ],
+   "purityViolations": [],
+@@ -39,5 +47,18 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "jbmc",
++    "checker": "JBMC 6.11.0",
++    "seconds": 0.06,
++    "properties": 2,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": "[0:20]"
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  }
+ }

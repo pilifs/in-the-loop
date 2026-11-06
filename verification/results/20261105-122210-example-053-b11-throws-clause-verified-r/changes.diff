@@ -1,0 +1,111 @@
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md
+@@ -127,12 +127,12 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+@@ -193,6 +193,12 @@
+               }
+             },
+             {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
+               "id": "property-violated",
+               "shortDescription": {
+                 "text": "An input exists on which the method violates its stated property."
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: property holds on every input",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.mica.Tests",
+     "passed": true,
+@@ -23,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions",
++  "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+   "problem": null,
+   "statement": "statement.java",
+   "trace": null,
+@@ -37,6 +43,34 @@
+     ]
+   },
+   "stateMachine": null,
++  "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "properties": [
++    {
++      "harness": null,
++      "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
++      "assume": null,
++      "throws": [
++        "java.lang.ArithmeticException when divisor == 0"
++      ],
++      "verdict": "verified",
++      "domain": "dividend: int × divisor: int",
++      "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
++      "problem": null,
++      "vacuous": null,
++      "counterexample": null,
++      "statement": null,
++      "search": {
++        "engine": "jbmc",
++        "checker": "JBMC 6.11.0",
++        "seconds": 0.26,
++        "properties": 2,
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "stage": null
++      },
++      "replay": null
++    }
++  ]
+ }
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.sarif
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.sarif
+@@ -33,6 +33,12 @@
+               }
+             },
+             {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
+               "id": "property-violated",
+               "shortDescription": {
+                 "text": "An input exists on which the method violates its stated property."
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/verifier-output.txt
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions)

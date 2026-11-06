@@ -1,0 +1,179 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-114501-example-143-b9-own-checker-read-from-equ",
+  "title": "Example 143 (B9, own checker) read from equivalence --json",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.2s, peak 113.8 MiB (estimated 5m00s, 2.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261105-114501-example-143-b9-own-checker-read-from-equ.json",
+    "sha256": "3576a06a5fb20abdd2dfe8c3bd8c64cbcbf867914908b756e89dce2752dbd67b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-114501-example-143-b9-own-checker-read-from-equ",
+      "title": "Example 143 (B9, own checker) read from equivalence --json",
+      "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 143 is a violation found by the tool's own checker over arrays: its verdict, witness and proof line must be unchanged, with search.engine native and search.native giving the path and solver numbers.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "143"
+        ]
+      },
+      "expected": "example 143 gives its expected violation with the same witness as before: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:45:01+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a Mica B9 example with the own checker, 1.1 s"
+      },
+      "steps": [
+        {
+          "name": "example 143 (B9)",
+          "run": "python3 examples/tools/build.py 143",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+      ]
+    }
+  },
+  "sourceCommit": "3e76cd1954e71968b17a8ba6a3fc0c2ce5262652",
+  "startedAt": "2026-11-06T17:13:46+00:00",
+  "finishedAt": "2026-11-06T17:13:53+00:00",
+  "wallSeconds": 7.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a Mica B9 example with the own checker, 1.1 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 119328768,
+    "wallSeconds": 6.2,
+    "cpuSeconds": 9.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 143 (B9)",
+      "run": "python3 examples/tools/build.py 143",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 6.212,
+      "cpuSeconds": 9.469,
+      "cpuThrottledSeconds": 1.051,
+      "peakMemoryBytes": 119328768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-143-b9.log",
+        "lines": 2,
+        "bytes": 219,
+        "sha256": "8fabd713f834abe1573a3da6d38160e971ad3f370961ac76a1385f9c3023151b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: violation (as expected)",
+          "groups": [
+            "143",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: running (B9)",
+        "143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json",
+      "change": "modified",
+      "bytes": 3070,
+      "sha256": "75d2f59e7c303acaf312842045035c6ab3594adc24d318e9c82fe1010f9c65b3",
+      "sourceSha256": "9324f4489777ed14d7ea8a909860480694da23f277923e058d31d3a44d0664d5"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "577a6103b51e49b429952b17f39bb63930b672e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/577a6103b51e49b429952b17f39bb63930b672e5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

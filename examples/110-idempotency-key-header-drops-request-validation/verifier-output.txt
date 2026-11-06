@@ -1,4 +1,11 @@
 ✗ Boundaries of module ticketing-service differ from their contract:
   added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request)
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
+  added net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
   removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)
-  (19 beans, 13 entry points, 0 advised methods, 0 problems)
+  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument
+  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)
+  removed net.terminalvalue.boxoffice.ticketing.api.OrderController: POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry
+  (16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems)

@@ -1,0 +1,1015 @@
+--- a/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md
++++ b/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md
+@@ -206,6 +206,13 @@
+ 
+ </details>
+ 
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `RoleMachine#decide` (`spec/RoleMachineContract.tla`): the regenerated contract, 8 rows from the committed one, as the change intends
++- `VoteRule#decide` (`spec/VoteRuleContract.tla`): the committed contract, which the patched classes still match
++
++**Results reused.** Under three servers, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:05+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `8fa73c094628`); Under the inductive step, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:11+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `08ea091f423d`); Under four servers, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:13+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `aa6f6d7e0754`); Under fairness, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:17+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `a80b736f639c`); Under a server left behind, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:19+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `8360f739b397`); Under delayed replies, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:25+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `6b41d13349c2`); Under history, TLC was not run again: the result is the one recorded at 2026-11-06T17:05:27+00:00 by an earlier run whose inputs, the model's modules and configurations, the generated operators, the standard modules, the command and the tools, were the same (fingerprint `92b8cb25d809`).
++
+ The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
+ 
+ ```mermaid
+@@ -271,14 +278,14 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
++How the verdict was reached: three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1103524] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 25896] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -293,9 +300,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:33)
++Starting... (2026-11-06 17:05:04)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:34.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:04.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -337,11 +344,11 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:56:34)
++Finished in 01s at (2026-11-06 17:05:05)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1103650] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26042] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -356,7 +363,7 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:35)
++Starting... (2026-11-06 17:05:06)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -372,7 +379,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-03 23:56:41.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 17:05:10.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -412,11 +419,11 @@
+ 76099 states generated, 17470 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 1.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 07s at (2026-11-03 23:56:43)
++Finished in 05s at (2026-11-06 17:05:11)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104060] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26296] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -431,9 +438,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:44)
++Starting... (2026-11-06 17:05:12)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:45.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:12.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -475,11 +482,11 @@
+ 7125 states generated, 829 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 12.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-03 23:56:45)
++Finished in 01s at (2026-11-06 17:05:13)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104188] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26438] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -494,12 +501,12 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:46)
++Starting... (2026-11-06 17:05:14)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:47.
+-Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-03 23:56:49)
+-Finished checking temporal properties in 00s at 2026-11-03 23:56:49
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:14.
++Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-06 17:05:16)
++Finished checking temporal properties in 00s at 2026-11-06 17:05:16
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -541,11 +548,11 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 03s at (2026-11-03 23:56:49)
++Finished in 02s at (2026-11-06 17:05:16)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104412] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26785] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -560,9 +567,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:50)
++Starting... (2026-11-06 17:05:17)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:51.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:18.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -596,11 +603,11 @@
+ 2526 states generated, 461 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:56:51)
++Finished in 01s at (2026-11-06 17:05:18)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104501] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26872] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -615,9 +622,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:52)
++Starting... (2026-11-06 17:05:19)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:53.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:19.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -654,11 +661,11 @@
+ 115864 states generated, 20351 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 14.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+-Finished in 07s at (2026-11-03 23:57:00)
++Finished in 06s at (2026-11-06 17:05:25)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104932] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26964] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -673,9 +680,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:57:01)
++Starting... (2026-11-06 17:05:25)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:57:01.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:26.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -717,7 +724,7 @@
+ 19537 states generated, 4798 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 11.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
+-Finished in 02s at (2026-11-03 23:57:02)
++Finished in 02s at (2026-11-06 17:05:27)
+ ```
+ 
+ </details>
+@@ -745,6 +752,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.json
++++ b/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "verified",
+   "verdictLabel": "✓ Verified: all invariants and properties hold in 610 states, and under 6 more configurations",
++  "execution": {
++    "status": "completed",
++    "exitCode": 0,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.quorum.Tests",
+     "passed": true,
+@@ -23,7 +29,7 @@
+   "purityViolations": [],
+   "trustedCalls": [],
+   "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -13,8 +13,8 @@\n decide(FOLLOWER, RequestVote[term=OLDER])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=CURRENT])     => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(FOLLOWER, RequestVote[term=NEWER])       => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(FOLLOWER, Response[term=OLDER])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(FOLLOWER, Response[term=OLDER])          => Transition[next=FOLLOWER, effects=[LOG_STALE_REPLY]]\n+decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n@@ -26,8 +26,8 @@\n decide(CANDIDATE, RequestVote[term=OLDER])      => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=CURRENT])    => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(CANDIDATE, RequestVote[term=NEWER])      => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(CANDIDATE, Response[term=OLDER])         => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(CANDIDATE, Response[term=OLDER])         => Transition[next=CANDIDATE, effects=[LOG_STALE_REPLY]]\n+decide(CANDIDATE, Response[term=CURRENT])       => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(CANDIDATE, Response[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(CANDIDATE, null)                         => throws NullPointerException\n decide(LEADER, ElectionTimeout[])               => Unchanged[reason=\"a leader does not hold elections\"]\n@@ -39,8 +39,8 @@\n decide(LEADER, RequestVote[term=OLDER])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=CURRENT])       => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(LEADER, RequestVote[term=NEWER])         => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(LEADER, Response[term=OLDER])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(LEADER, Response[term=OLDER])            => Transition[next=LEADER, effects=[LOG_STALE_REPLY]]\n+decide(LEADER, Response[term=CURRENT])          => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(LEADER, Response[term=NEWER])            => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(LEADER, null)                            => throws NullPointerException\n decide(null, ElectionTimeout[])                 => throws NullPointerException\n@@ -52,7 +52,7 @@\n decide(null, RequestVote[term=OLDER])           => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=CURRENT])         => Unchanged[reason=\"the vote itself is decided by the vote rule\"]\n decide(null, RequestVote[term=NEWER])           => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n-decide(null, Response[term=OLDER])              => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n-decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n+decide(null, Response[term=OLDER])              => Transition[next=null, effects=[LOG_STALE_REPLY]]\n+decide(null, Response[term=CURRENT])            => Unchanged[reason=\"a reply from the current term changes no role\"]\n decide(null, Response[term=NEWER])              => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(null, null)                              => throws NullPointerException\n--- a/examples/apps/quorum/src/contract/api.contract\n+++ b/examples/apps/quorum/src/contract/api.contract\n@@ -2,7 +2,7 @@\n # It lists every public and protected type and member of this module, from the compiled classes.\n # A change here is a change in what the module's users can call: review it like an API change.\n kind: api\n-module: quorum, 63 public types, 247 members\n+module: quorum, 63 public types, 248 members\n \n net.terminalvalue.quorum.Decision: public sealed interface permits net.terminalvalue.quorum.Decision$Transition, net.terminalvalue.quorum.Decision$Unchanged, net.terminalvalue.quorum.Decision$Rejected\n   public static net.terminalvalue.quorum.Decision rejected(java.lang.String)\n@@ -149,6 +149,7 @@\n net.terminalvalue.quorum.raft.RoleEffect: public final enum\n   public static final ADOPT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n   public static final INCREMENT_TERM: net.terminalvalue.quorum.raft.RoleEffect\n+  public static final LOG_STALE_REPLY: net.terminalvalue.quorum.raft.RoleEffect\n   public static final REQUEST_VOTES: net.terminalvalue.quorum.raft.RoleEffect\n   public static final RESET_ELECTION_TIMER: net.terminalvalue.quorum.raft.RoleEffect\n   public static final SEND_HEARTBEATS: net.terminalvalue.quorum.raft.RoleEffect\n",
+-  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
++  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+   "problem": null,
+   "statement": null,
+   "trace": null,
+@@ -32,15 +38,26 @@
+   "property": null,
+   "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] → effects=[LOG_STALE_REPLY]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] → effects=[LOG_STALE_REPLY]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> LEADER: Response[term=OLDER] → effects=[LOG_STALE_REPLY]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
+   "coverage": {
++    "status": "complete",
+     "configurations": [
+       {
+         "label": "three servers",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -57,6 +74,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 4,
+             "total": 27,
+             "never": [
+@@ -91,10 +109,20 @@
+         "label": "the inductive step",
+         "fromRuns": false,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -111,6 +139,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 6,
+             "total": 27,
+             "never": [
+@@ -143,10 +172,20 @@
+         "label": "four servers",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -163,6 +202,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 4,
+             "total": 27,
+             "never": [
+@@ -197,10 +237,20 @@
+         "label": "fairness",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -217,6 +267,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 4,
+             "total": 27,
+             "never": [
+@@ -251,10 +302,20 @@
+         "label": "a server left behind",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -271,6 +332,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 12,
+             "total": 27,
+             "never": [
+@@ -297,10 +359,20 @@
+         "label": "delayed replies",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 33,
+             "total": 36,
+             "never": [
+@@ -311,6 +383,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 4,
+             "total": 27,
+             "never": [
+@@ -345,10 +418,20 @@
+         "label": "history",
+         "fromRuns": true,
+         "finished": true,
++        "verdict": "verified",
++        "status": "completed",
++        "reason": null,
+         "counted": true,
++        "coverageStatus": "complete",
++        "coverageReason": null,
++        "listed": [
++          "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "net.terminalvalue.quorum.raft.VoteRule#decide"
++        ],
+         "operators": [
+           {
+             "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "listed": true,
+             "reached": 27,
+             "total": 36,
+             "never": [
+@@ -365,6 +448,7 @@
+           },
+           {
+             "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++            "listed": true,
+             "reached": 4,
+             "total": 27,
+             "never": [
+@@ -399,27 +483,33 @@
+     "changedRows": [
+       {
+         "case": "decide(FOLLOWER, Response[term=OLDER])",
++        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+         "before": "Unchanged[reason=\"a reply from the current or an older term changes no role\"]",
+         "after": "Transition[next=FOLLOWER, effects=[LOG_STALE_REPLY]]",
+         "takenUnder": [
+           "delayed replies"
+-        ]
++        ],
++        "unknownUnder": []
+       },
+       {
+         "case": "decide(CANDIDATE, Response[term=OLDER])",
++        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+         "before": "Unchanged[reason=\"a reply from the current or an older term changes no role\"]",
+         "after": "Transition[next=CANDIDATE, effects=[LOG_STALE_REPLY]]",
+         "takenUnder": [
+           "delayed replies"
+-        ]
++        ],
++        "unknownUnder": []
+       },
+       {
+         "case": "decide(LEADER, Response[term=OLDER])",
++        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+         "before": "Unchanged[reason=\"a reply from the current or an older term changes no role\"]",
+         "after": "Transition[next=LEADER, effects=[LOG_STALE_REPLY]]",
+         "takenUnder": [
+           "delayed replies"
+-        ]
++        ],
++        "unknownUnder": []
+       }
+     ],
+     "nullRows": 1,
+@@ -427,6 +517,75 @@
+   },
+   "sarif": "result.sarif",
+   "output": "verifier-output.txt",
++  "modelContracts": [
++    {
++      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++      "contract": "src/contract/RoleMachine.decide.contract",
++      "operator": "spec/RoleMachineContract.tla",
++      "connection": "derived",
++      "rowsChanged": 8,
++      "allowed": true
++    },
++    {
++      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++      "contract": "src/contract/VoteRule.decide.contract",
++      "operator": "spec/VoteRuleContract.tla",
++      "connection": "verified",
++      "rowsChanged": 0,
++      "allowed": true
++    }
++  ],
++  "checkpoints": [
++    {
++      "label": "three servers",
++      "cfg": "spec/RaftElection.cfg",
++      "fingerprint": "8fa73c094628f8d47579ed9afa7683b29b8c109c889d9851a8435ba436994f93",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:05+00:00"
++    },
++    {
++      "label": "the inductive step",
++      "cfg": "spec/RaftElectionInductive.cfg",
++      "fingerprint": "08ea091f423dc857b7fe2fbdfd1910c50eb6c2050e52a11540097dceb009e4b2",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:11+00:00"
++    },
++    {
++      "label": "four servers",
++      "cfg": "spec/RaftElectionFour.cfg",
++      "fingerprint": "aa6f6d7e0754d643d5e4fb4401f303c1511972b4a1eefe3ac78aaca489a496e9",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:13+00:00"
++    },
++    {
++      "label": "fairness",
++      "cfg": "spec/RaftElectionLive.cfg",
++      "fingerprint": "a80b736f639c620bb4e997227b80256dd9ab06b5cddef828c0ad4c5cf86db5de",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:17+00:00"
++    },
++    {
++      "label": "a server left behind",
++      "cfg": "spec/RaftElectionLogs.cfg",
++      "fingerprint": "8360f739b3973ee4f0d26b74da60770b823647d8bd7f5ecfc6b78d51245d41e6",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:19+00:00"
++    },
++    {
++      "label": "delayed replies",
++      "cfg": "spec/RaftElectionDelayed.cfg",
++      "fingerprint": "6b41d13349c2c9e6eae5b580ced116de8f91194870d631ab42515981d40b38fc",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:25+00:00"
++    },
++    {
++      "label": "history",
++      "cfg": "spec/RaftElectionHistory.cfg",
++      "fingerprint": "92b8cb25d809e7903e7a89f4056734bf4ee823a23d3432ce82504b8ed6f60598",
++      "reused": true,
++      "recordedAt": "2026-11-06T17:05:27+00:00"
++    }
++  ],
+   "violationKind": null,
+   "forever": null,
+   "configurations": [
+@@ -434,6 +593,8 @@
+       "label": "three servers",
+       "cfg": "spec/RaftElection.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 610 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+       "invariant": null,
+@@ -446,6 +607,8 @@
+       "label": "the inductive step",
+       "cfg": "spec/RaftElectionInductive.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+       "invariant": null,
+@@ -458,6 +621,8 @@
+       "label": "four servers",
+       "cfg": "spec/RaftElectionFour.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 829 states",
+       "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+       "invariant": null,
+@@ -470,6 +635,8 @@
+       "label": "fairness",
+       "cfg": "spec/RaftElectionLive.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 610 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+       "invariant": null,
+@@ -482,6 +649,8 @@
+       "label": "a server left behind",
+       "cfg": "spec/RaftElectionLogs.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 461 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
+       "invariant": null,
+@@ -494,6 +663,8 @@
+       "label": "delayed replies",
+       "cfg": "spec/RaftElectionDelayed.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants and properties hold in 20,351 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
+       "invariant": null,
+@@ -506,6 +677,8 @@
+       "label": "history",
+       "cfg": "spec/RaftElectionHistory.cfg",
+       "verdict": "verified",
++      "status": "completed",
++      "reason": null,
+       "summary": "✓ Verified: all invariants hold in 4,798 states",
+       "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+       "invariant": null,
+@@ -514,5 +687,7 @@
+       "trace": null,
+       "forever": null
+     }
+-  ]
++  ],
++  "modelVerdict": "verified",
++  "modelSummary": "✓ Verified: all invariants and properties hold in 610 states, and under 6 more configurations"
+ }
+--- a/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.sarif
++++ b/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.sarif
+@@ -18,6 +18,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/verifier-output.txt
++++ b/examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/verifier-output.txt
+@@ -1,23 +1,23 @@
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1103524] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:33)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:34.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 25896] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:04)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:04.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -59,26 +59,26 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:56:34)
++Finished in 01s at (2026-11-06 17:05:05)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1103650] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:35)
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26042] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:06)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -94,7 +94,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-03 23:56:41.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 17:05:10.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -134,28 +134,28 @@
+ 76099 states generated, 17470 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 1.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 07s at (2026-11-03 23:56:43)
++Finished in 05s at (2026-11-06 17:05:11)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104060] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:44)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:45.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26296] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:12)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:12.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -197,31 +197,31 @@
+ 7125 states generated, 829 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 12.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-03 23:56:45)
++Finished in 01s at (2026-11-06 17:05:13)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104188] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:46)
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26438] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:14)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:47.
+-Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-03 23:56:49)
+-Finished checking temporal properties in 00s at 2026-11-03 23:56:49
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:14.
++Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-06 17:05:16)
++Finished checking temporal properties in 00s at 2026-11-06 17:05:16
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -263,28 +263,28 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 03s at (2026-11-03 23:56:49)
++Finished in 02s at (2026-11-06 17:05:16)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104412] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:50)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:51.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26785] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:17)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:18.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -318,28 +318,28 @@
+ 2526 states generated, 461 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:56:51)
++Finished in 01s at (2026-11-06 17:05:18)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104501] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:56:52)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:56:53.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26872] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:19)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:19.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -376,28 +376,28 @@
+ 115864 states generated, 20351 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 14.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+-Finished in 07s at (2026-11-03 23:57:00)
++Finished in 06s at (2026-11-06 17:05:25)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1104932] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:57:01)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:57:01.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26964] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 17:05:25)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:26.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -439,4 +439,4 @@
+ 19537 states generated, 4798 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 11.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
+-Finished in 02s at (2026-11-03 23:57:02)
++Finished in 02s at (2026-11-06 17:05:27)

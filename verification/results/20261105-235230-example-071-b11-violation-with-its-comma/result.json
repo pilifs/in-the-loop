@@ -1,0 +1,276 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-235230-example-071-b11-violation-with-its-comma",
+  "title": "Example 071 (B11, violation) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 7.4s, peak 104.9 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 071 (B11)) was held back 5.6s by its 1-CPU quota in 7.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "3 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-235230-example-071-b11-violation-with-its-comma.json",
+    "sha256": "4b71a0594c12856b0570d74bbc3ee287f52f2e67d153c0df0771bf79753a093d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-235230-example-071-b11-violation-with-its-comma",
+      "title": "Example 071 (B11, violation) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "071"
+        ]
+      },
+      "expected": "example 071 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-05T23:52:30+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "three JBMC property proofs, under a minute"
+      },
+      "steps": [
+        {
+          "name": "example 071 (B11)",
+          "run": "python3 examples/tools/build.py 071",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse"
+      ]
+    }
+  },
+  "sourceCommit": "69bfde4188b171de6b45ff39b0ca35abc65d6423",
+  "startedAt": "2026-11-06T17:15:00+00:00",
+  "finishedAt": "2026-11-06T17:15:08+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "three JBMC property proofs, under a minute"
+  },
+  "usage": {
+    "peakMemoryBytes": 109944832,
+    "wallSeconds": 7.4,
+    "cpuSeconds": 6.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 071 (B11)",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 7.215,
+      "cpuSeconds": 6.854,
+      "cpuThrottledSeconds": 5.573,
+      "peakMemoryBytes": 109944832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-071-b11.log",
+        "lines": 18,
+        "bytes": 722,
+        "sha256": "9ec905164b79e44b41a57ccbad8fdab1cbaa7b85858063230df0051d8fc0b103",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)",
+          "groups": [
+            "071",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 1.9 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 2.1 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.2 s",
+        "  · jvmcontract prove",
+        "  · jvmcontract prove: exited 1, 1.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.022,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5701632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 78,
+        "sha256": "ec0870bfe623dfe633f01ad906d84843ec94a7b7bea654641f2269f13e960b82",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "8 stages; workspace .build-py/examples-eb8erxps/attempts/071/attempt-mudq7svl"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "change": "modified",
+      "bytes": 22046,
+      "sha256": "dc954974e455d141af52a59134917f593cf689221f1f9e9b139f5c2e06e92bb7",
+      "sourceSha256": "90397682ec90b12b2f24fce2976abce8e5ac500f93fb06f2670dd02292dbe0f9"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "change": "modified",
+      "bytes": 20530,
+      "sha256": "1562d5bc4cc1504972997cfdfb30982ff8b324bedd701b6dbf8c5f7788546428",
+      "sourceSha256": "ea5faac3b91aee9d0d7529ed0e1f6203cd0bb7e68a19d327477ed51bd86a971e"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-1.java",
+      "change": "added",
+      "bytes": 1679,
+      "sha256": "2e2b92de67718fad2deeaf9b243bf281a968b8765c397329cc6a65f65a4a7a3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-2.java",
+      "change": "added",
+      "bytes": 1635,
+      "sha256": "deffebb3a067782215ff522393e3778fa292fc9c8a15ddd73d8b3a563a4da8e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-3.java",
+      "change": "added",
+      "bytes": 1723,
+      "sha256": "9cf6513087a99b415a46cf7f449a40eb0fa826b28f386ed0e0f1d45b0d68cb09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1931,
+      "sha256": "14d159063f9c108bdb1b4a5904ca6f5c4fba4b222f056a16db045093755b5613",
+      "sourceSha256": "363ee2511e8b91713b2fdba3fee0d687a8fe106f3a27986a40cc367287fa2259"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-1.java",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-2.java",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/statement-3.java"
+    ],
+    "conflicts": [
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab3ec98f172603c31bb65ab9f8e6f7908725692d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab3ec98f172603c31bb65ab9f8e6f7908725692d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

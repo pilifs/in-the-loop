@@ -1,0 +1,245 @@
+--- a/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
++++ b/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: counterexample found",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.mica.Tests",
+     "passed": true,
+@@ -23,7 +29,97 @@
+     {
+       "input": "encodeInto(chars=['\\u0080'], out=[0])",
+       "contract": "throws ArrayIndexOutOfBoundsException(\"Index 1 out of bounds for length 1\"), leaving out=[-62]",
+-      "actual": "1, leaving out=[-128]"
++      "actual": "1, leaving out=[-128]",
++      "found": "encodeInto(chars=['\\u0080'], out=[32])",
++      "shrinkRuns": 29,
++      "witness": {
++        "inputs": [
++          {
++            "name": "chars",
++            "type": "char[]",
++            "value": [
++              128
++            ]
++          },
++          {
++            "name": "out",
++            "type": "byte[]",
++            "value": [
++              0
++            ]
++          }
++        ],
++        "foundInputs": [
++          {
++            "name": "chars",
++            "type": "char[]",
++            "value": [
++              128
++            ]
++          },
++          {
++            "name": "out",
++            "type": "byte[]",
++            "value": [
++              32
++            ]
++          }
++        ],
++        "call": {
++          "class": "net.terminalvalue.mica.classfile.ModifiedUtf8",
++          "classFile": "net/terminalvalue/mica/classfile/ModifiedUtf8.class",
++          "classFileSha256": "c61094b8501cfc0ca9aa0f6a023cc77199c83c7621a3368e446ee65cf6198c94",
++          "classes": "after",
++          "method": "encodeInto",
++          "descriptor": "([C[B)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "chars",
++              "type": "char[]",
++              "value": [
++                128
++              ],
++              "from": "chars"
++            },
++            {
++              "name": "out",
++              "type": "byte[]",
++              "value": [
++                0
++              ],
++              "from": "out"
++            }
++          ]
++        },
++        "previousCall": {
++          "class": "net.terminalvalue.mica.classfile.ModifiedUtf8",
++          "classFile": "net/terminalvalue/mica/classfile/ModifiedUtf8.class",
++          "classFileSha256": "67f5d34ce215a08746c5d22c1ca15fd0d04964f9dd61de90739436c7153e80c3",
++          "classes": "before",
++          "method": "encodeInto",
++          "descriptor": "([C[B)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "chars",
++              "type": "char[]",
++              "value": [
++                128
++              ],
++              "from": "chars"
++            },
++            {
++              "name": "out",
++              "type": "byte[]",
++              "value": [
++                0
++              ],
++              "from": "out"
++            }
++          ]
++        }
++      }
+     }
+   ],
+   "purityViolations": [],
+@@ -39,5 +135,128 @@
+   "stateMachine": null,
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 1.026,
++    "properties": 1,
++    "unwind": 16,
++    "maxArrayLength": 8,
++    "stage": "[-100000:100000]",
++    "native": {
++      "paths": 732,
++      "merges": 212,
++      "solverCalls": 2057,
++      "solvingSeconds": 0.882065446,
++      "gatesEvaluated": 372239,
++      "evaluatingSeconds": 0.007064178,
++      "divisions": 0,
++      "divisionsBuilt": 0,
++      "multiplications": 0,
++      "multiplicationsBuilt": 0,
++      "variables": 46127,
++      "clauses": 169043,
++      "seconds": 1.009387726
++    }
++  },
++  "replay": {
++    "by": "interpreter",
++    "reproduced": true
++  },
++  "claim": {
++    "id": "d46095dfd3ccd792",
++    "format": 1,
++    "example": "143",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": "59c8426e382ca7a6571c6b0347f25054262614ff88b41c3f966fdc0054ed73ac",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "e41fdc7ae15f8874e4dc124550bdac5f6c124a600c7efa903c5df68a73c53940",
++        "files": 50
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171456Z-ff56e86d",
++    "claim": "d46095dfd3ccd792",
++    "startedAt": "2026-11-06T17:14:56+00:00",
++    "seconds": 6.9,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "cebc1e1e3c67e1116a24dd99836f1f6cc10d037973f10a6ee0a6ea88b54ef88e"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "6060a86d7043ae2c593eab96c76051e6bc5c2d55e2d98c0471319464eb62a7ec",
++        "files": 30
++      },
++      "after": {
++        "sha256": "ac4c6b350923a99e277802b1438b48b2d5e08c2caead8d6c407e49c55c2c98da",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-133040-example-143-b9-own-checker-violation-wit",
++      "sourceCommit": "4ed55f07fe144babb5f8e5c0a0287deda7dcd9ac",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-133040-example-143-b9-own-checker-violation-wit"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    }
++  },
++  "conclusion": {
++    "claim": "d46095dfd3ccd792",
++    "attempt": "20261106T171456Z-ff56e86d",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "8ef047bdc8a6497a257d10133e52c441012d25efd72974ac4d33ffefe94a99d9",
++        "bytes": 2666
++      },
++      {
++        "path": "statement.java",
++        "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
++        "bytes": 2611
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "730f24013dd7abe24e07c5b440f58624c31718430809c5d50bd0c3ca44b67e34",
++        "bytes": 718
++      }
++    ]
++  }
+ }

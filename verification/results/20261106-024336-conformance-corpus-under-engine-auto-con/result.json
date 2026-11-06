@@ -1,0 +1,248 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-024336-conformance-corpus-under-engine-auto-con",
+  "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 21m50s, peak 995.4 MiB (estimated 20m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:holds×4",
+  "attention": [
+    "declared output lib/target/conformance-confirm.log was not produced",
+    "step 1 (conformance corpus under auto --confirm) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-024336-conformance-corpus-under-engine-auto-con.json",
+    "sha256": "1466dd249c7eab206227c954a6eca7995c4164fdaecd523a970ed1f88fd2abcf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-024336-conformance-corpus-under-engine-auto-con",
+      "title": "Conformance corpus under --engine auto --confirm: JBMC's word on every proof of the own checker, held to the JVM",
+      "description": "Step 1e of llm-dlc/loops/sound-verdicts.md adds --confirm to --engine auto: JBMC proves again, in one run over every input, each statement the tool's own checker proved, and a JBMC refutation is reported as neither verdict (unverifiable, 'the engines disagree'). This job runs the ignored test the_corpus_agrees_with_the_jvm_under_auto_confirm over the 93 claims of the conformance corpus (lib/tests/conformance.rs), under --gaps strict and --gaps assume. Every witness and claim is also run on a real JVM. The test fails on a JBMC confirmation of a claim the JVM refutes, and on a disagreement over a claim the JVM does not refute. Under assume, the class-initializer claims boom and inherited should come out as disagreements (JBMC runs the initializer the own checker assumed had run), and the claims that assumed a JDK call should be not-asked.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/src/equivalence.rs",
+          "lib/src/property.rs",
+          "llm-dlc/loops/sound-verdicts.md"
+        ]
+      },
+      "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_auto_confirm passes. The log's table shows a confirmation status per claim; under assume, boom and inherited are Disagreed and the JDK-call claims NotAsked. A failure lists each disagreement with the JVM, a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+      "submitted": {
+        "at": "2026-11-06T02:43:36+00:00"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "timeout": "60m",
+        "notes": "about 90 single-stage JBMC runs on methods of a line or two (each claim the own checker proves, under two gap modes), plus the native runs, which take 11 s for the corpus in the session"
+      },
+      "steps": [
+        {
+          "name": "conformance corpus under auto --confirm",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/conformance-confirm.log"
+      ]
+    }
+  },
+  "sourceCommit": "c2e347f43d28ec0162fcaa04dc7d36c98425efb4",
+  "startedAt": "2026-11-06T17:15:48+00:00",
+  "finishedAt": "2026-11-06T17:37:39+00:00",
+  "wallSeconds": 1311.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "about 90 single-stage JBMC runs on methods of a line or two (each claim the own checker proves, under two gap modes), plus the native runs, which take 11 s for the corpus in the session"
+  },
+  "usage": {
+    "peakMemoryBytes": 1043767296,
+    "wallSeconds": 1310.9,
+    "cpuSeconds": 1369.0,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 1.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 1310.93,
+      "cpuSeconds": 1368.986,
+      "cpuThrottledSeconds": 1.09,
+      "peakMemoryBytes": 1043767296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-corpus-under-auto.log",
+        "lines": 300,
+        "bytes": 22323,
+        "sha256": "af444aa7a2596f445541ce68f118f9c5e0292514597a0a5abc3828046b96175b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 4,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 255,
+          "text": "✓ conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 258,
+          "text": "✓ conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 285,
+          "text": "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 288,
+          "text": "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 298,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 1213.55s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "  caught(n=0)",
+        "    outcome in the interpreter: -1, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "caught [assert n != 0 || result == -1]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#caught cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -1` on every i",
+        "  caught(n=0)",
+        "    outcome in the interpreter: -1, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "nestedHandler [assert n != 0 || result == -2]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#nestedHandler cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == ",
+        "  nestedHandler(n=0)",
+        "    outcome in the interpreter: -2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "nestedHandler [assert n != 0 || result == -2]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#nestedHandler cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == ",
+        "  nestedHandler(n=0)",
+        "    outcome in the interpreter: -2, where the harness holds, as the own checker says",
+        "",
+        "Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.",
+        "",
+        "pairsEqual [assert !result]: Auto --gaps strict says Verified, and the JVM refutes it: note: the tool's own checker gave no verdict (outside the fragment: invokedynamic other than string concatenation); JBMC",
+        "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "pairsEqual [assert !result]: Auto --gaps Assume says Verified with no gap assumed, and the JVM refutes it: note: the tool's own checker gave no verdict (outside the fragment: invokedynamic other than string concatenation); JBMC",
+        "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... FAILED",
+        "",
+        "failures:",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_auto_confirm",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 1213.55s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-024336-conformance-corpus-under-engine-auto-con"
+}

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T16:53:18.349Z",
-  "ended": "2026-11-06T17:12:34.887Z",
-  "duration_seconds": 1157,
+  "ended": "2026-11-06T17:55:31.979Z",
+  "duration_seconds": 3734,
   "stats": {
-    "turns": 4,
-    "api_calls": 71,
-    "tool_calls": 71,
+    "turns": 6,
+    "api_calls": 107,
+    "tool_calls": 106,
     "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 118977,
+    "peak_context_tokens": 169733,
     "usage": {
-      "input_tokens": 150,
-      "output_tokens": 36661,
-      "cache_read_input_tokens": 5894120,
-      "cache_creation_input_tokens": 87724
+      "input_tokens": 226,
+      "output_tokens": 55953,
+      "cache_read_input_tokens": 10964734,
+      "cache_creation_input_tokens": 136601
     }
   },
   "tools": {
-    "Bash": 67,
+    "Bash": 102,
     "Edit": 3,
     "Skill": 1
   },
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-06T16:53:18.349Z",
-      "ended": "2026-11-06T17:12:34.887Z",
-      "turns": 4,
-      "api_calls": 71,
+      "ended": "2026-11-06T17:55:31.979Z",
+      "turns": 6,
+      "api_calls": 107,
       "usage": {
-        "input_tokens": 150,
-        "output_tokens": 36661,
-        "cache_read_input_tokens": 5894120,
-        "cache_creation_input_tokens": 87724
+        "input_tokens": 226,
+        "output_tokens": 55953,
+        "cache_read_input_tokens": 10964734,
+        "cache_creation_input_tokens": 136601
       },
-      "peak_context_tokens": 118977
+      "peak_context_tokens": 169733
     }
   ],
   "log": {
-    "sha256": "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864",
-    "bytes": 1360806,
-    "lines": 550,
-    "gzip_bytes": 233654,
-    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864.jsonl.gz"
+    "sha256": "5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865",
+    "bytes": 1932965,
+    "lines": 798,
+    "gzip_bytes": 306038,
+    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -93,6 +93,14 @@
       "summary": "Results record the runner's machine name, and the installer provides jsonschema",
       "body": "A new runner setting, machine_name (verification/pipeline.toml, empty by default; set per machine in pipeline.local.toml), is what a result records as runner.host and environment.host, and what the note in a truncated log names, in place of the hostname. This lets machines be aliased as more VMs or cloud runners are added, without publishing hostnames, which the trace redactor already treats as personal. Claims in the runner's local state keep the real hostname, which they need to recognise their own stale claims. The VM now running the queue is named vm-1 in its local config; results from the WSL laptop keep its hostname, FilSurface, as before.\n\nThe first run on the VM failed 26 of its first 50 jobs within a second, all because the Python module jsonschema was missing: build.py publishes no example result it cannot validate. The Ubuntu installer now installs python3-jsonschema and doctor.sh checks it. Verified: the pipeline's unit tests pass (23, with a new test that a configured machine name is recorded in both host fields and the truncated-log note, and the hostname nowhere in the result); doctor.sh reports jsonschema 4.19.2 on the VM.",
       "log_sha256": "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864"
+    },
+    {
+      "change_id": "nxxnuomvmtmvmxkzyvzksxqrkuzuttzk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 60 jobs, the first run on the vm-1 VM",
+      "body": "Every job that was pending ran on vm-1, a 28-vCPU x86_64 VM (Ubuntu 26.04), under a budget of 12 workers, 24 CPUs and 32 GiB; all earlier results came from the 8-core aarch64 WSL laptop. 54 passed and 6 failed. A first attempt was set aside unrecorded: 26 of its jobs failed because Python's jsonschema module was missing on the VM (now installed by the setup script), and its results named the VM by hostname. TLC results for examples 072, 074, 083, 093 and 099 were reused from checkpoints that attempt left on the same machine, under identical inputs, as their results record, so those jobs' times are not measurements.\n\nFindings for the submitters: both conformance corpus jobs (20261106-021741, 20261106-024336) fail with disagreements with the JVM. Under --gaps strict JBMC says Verified for capacity, builderCapacity, mapCapacity, setCapacity and loadFactor, which the JVM refutes, and under auto --confirm the own checker reports violations on caught(n=0) and nestedHandler(n=0) that the JVM does not reproduce (10 and 12 disagreements). Examples 147, 148 and 149 stop before any proof: their patches create the subject file Jitter.java, and build.py's excerpt of a patch requires the subject to exist before it, at the jobs' commits and still at this one. Job 20261105-235249 (example 142 killed mid-proof) failed on the machine, not on build.py: its step expects GNU timeout's exit status 137 after -s KILL, and the uutils coreutils Ubuntu 26.04 ships returns 124.\n\nOutputs of 39 passing jobs were not applied, because their files changed after the jobs' commits; they are kept under each result's outputs/. Most short B8, B9 and B11 runs were throttled by a 1-CPU estimate. The applied outputs regenerated examples/README.md and examples/index.json.",
+      "log_sha256": "5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865"
     }
   ],
   "logs": {
@@ -101,6 +109,12 @@
       "lines": 101,
       "gzip_bytes": 109951,
       "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/46baf1efb1ab47219ef1fb8b695f74e32b788171822531b1b26f9f0d5555351f.jsonl.gz"
+    },
+    "5456e4745a28b20b5f66ad3aa290111ca99ea8368cca63a276cfe90bf4e3c865": {
+      "bytes": 1932965,
+      "lines": 798,
+      "gzip_bytes": 306038,
+      "url": null
     },
     "584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78": {
       "bytes": 428857,

@@ -1,0 +1,231 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-021741-conformance-corpus-under-jbmc-and-engine",
+  "title": "Conformance corpus under JBMC and --engine auto: no Verified the JVM refutes",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 18m18s, peak 975.7 MiB (estimated 20m00s, 3.0 GiB); signals: cargo:tests×1; jvmcontract:holds×2",
+  "attention": [
+    "declared output lib/target/conformance-jbmc.log was not produced",
+    "step 1 (conformance corpus under JBMC and auto) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-021741-conformance-corpus-under-jbmc-and-engine.json",
+    "sha256": "91daddb5ec2152aaa645abf9a56bd4aca50be49fc4cbd6dec69359fb4038c549",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-021741-conformance-corpus-under-jbmc-and-engine",
+      "title": "Conformance corpus under JBMC and --engine auto: no Verified the JVM refutes",
+      "description": "Step 1d of llm-dlc/loops/sound-verdicts.md. lib/tests/conformance.rs holds 54 small Java methods (lib/tests/conformance/conformance/Conformance.java) with 93 claims, 48 of which a real JVM refutes. The cases cover the gaps and their reproducers (a negative capacity to ArrayList, HashMap, HashSet and StringBuilder; synchronized (null); Random.nextBytes), field hiding, literal identity, class initializers that throw, exceptions (finally overriding a return, nested handlers, bounds, casts, throw null, rethrow), aliasing, null arrays, record constructors, virtual and default-method dispatch, and arithmetic edge cases (MIN_VALUE / -1, negative remainders, shift counts out of range, narrowing, overflow). A Java runner executes every call and every claim's generated harness on the JVM. The test run inline covers the tool's own checker under --gaps strict and assume. This job runs the ignored test, which puts every claim through --engine jbmc and --engine auto under --gaps strict. It fails if either engine says Verified for a claim the JVM refutes, or reports a violation whose witness does not refute the harness on the JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs",
+          "lib/tests/conformance/conformance/Conformance.java",
+          "llm-dlc/loops/sound-verdicts.md"
+        ]
+      },
+      "expected": "exits 0: the_corpus_agrees_with_the_jvm_under_jbmc_and_auto passes. The log lists each claim's verdict per engine. A failure lists each disagreement with the JVM, which is a finding about JBMC or the adapter to triage under the brief's Progress, not something to retry.",
+      "submitted": {
+        "at": "2026-11-06T02:17:41+00:00",
+        "session": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m",
+        "timeout": "60m",
+        "notes": "about 93 JBMC property runs on methods of a line or two, up to three interval stages each, plus the auto fallbacks on about 14 refused claims; the native half of the same test takes 11 s in the session"
+      },
+      "steps": [
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/target/conformance-jbmc.log"
+      ]
+    }
+  },
+  "sourceCommit": "470be6c5ff8bdbf869a0a1a64d3cd91d9140ef0a",
+  "startedAt": "2026-11-06T17:15:32+00:00",
+  "finishedAt": "2026-11-06T17:33:51+00:00",
+  "wallSeconds": 1099.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": "about 93 JBMC property runs on methods of a line or two, up to three interval stages each, plus the auto fallbacks on about 14 refused claims; the native half of the same test takes 11 s in the session"
+  },
+  "usage": {
+    "peakMemoryBytes": 1023053824,
+    "wallSeconds": 1098.6,
+    "cpuSeconds": 1152.3,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.92
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 1098.629,
+      "cpuSeconds": 1152.273,
+      "cpuThrottledSeconds": 1.077,
+      "peakMemoryBytes": 1023053824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-conformance-corpus-under-jbmc.log",
+        "lines": 282,
+        "bytes": 19697,
+        "sha256": "a3defaf83cfab75e2aa5162e43a759470f9482963675115f98445b77c3e133e5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2,
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 261,
+          "text": "✓ conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 270,
+          "text": "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+          "groups": [
+            "conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 280,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1000.30s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "",
+        "54 cases, 93 claims (48 refuted on the JVM), 186 runs; the interpreter refuses firstByte([0])",
+        "",
+        "thread 'the_corpus_agrees_with_the_jvm_under_jbmc_and_auto' (58823) panicked at tests/conformance.rs:478:5:",
+        "10 disagreements with the JVM:",
+        "capacity [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#capacity satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "builderCapacity [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#builderCapacity satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "mapCapacity [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#mapCapacity satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "setCapacity [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#setCapacity satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "loadFactor [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "loadFactor [assert result == 1]: Auto --gaps strict says Verified, and the JVM refutes it: note: the tool's own checker gave no verdict (outside the fragment: floating point); JBMC",
+        "✓ conformance.Conformance#loadFactor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "nullMonitor [assert result == 1]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#nullMonitor satisfies `result == 1` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "firstByte [assert out.length == 0 || result == \\old(out[0])]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#firstByte satisfies `out.length == 0 || result == \\old(out[0])` on every input (JBMC 6.11.0: 2 properties proved over out: byte[] of length ≤ 8, not null ",
+        "",
+        "pairsEqual [assert !result]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "pairsEqual [assert !result]: Auto --gaps strict says Verified, and the JVM refutes it: note: the tool's own checker gave no verdict (outside the fragment: invokedynamic other than string concatenation); JBMC",
+        "✓ conformance.Conformance#pairsEqual satisfies `!result` on every input (JBMC 6.11.0: 2 properties proved over a: int × b: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... FAILED",
+        "",
+        "failures:",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1000.30s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-06T17:53:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-021741-conformance-corpus-under-jbmc-and-engine"
+}

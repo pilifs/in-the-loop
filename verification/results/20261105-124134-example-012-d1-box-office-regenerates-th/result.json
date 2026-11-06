@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-124134-example-012-d1-box-office-regenerates-th",
+  "title": "Example 012 (D1, Box Office) regenerates the order state machine on every run",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.4s, peak 741.8 MiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-124134-example-012-d1-box-office-regenerates-th.json",
+    "sha256": "95a78c4602950c62f8d877753015f096f2d127d6cac6833c07ab2bbbfff68bae",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-124134-example-012-d1-box-office-regenerates-th",
+      "title": "Example 012 (D1, Box Office) regenerates the order state machine on every run",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: Box Office's run_tlc now runs :ticketing-domain:updateContracts on every D1 run, not only for an intended change, and compares OrderLifecycle#decide's contract with the committed one. 012 patches HoldService and is not meant to change behaviour, so the contract must be unchanged ('verified') and the verdict must not move.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "tlc"
+      ],
+      "links": {
+        "examples": [
+          "012"
+        ]
+      },
+      "expected": "build.py exits 0, 012 verified as before; modelContracts has OrderLifecycle#decide connection verified, rowsChanged 0, allowed true; contractDiff null",
+      "submitted": {
+        "at": "2026-11-05T12:41:34+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "Gradle build of the Box Office copy plus one updateContracts"
+      },
+      "steps": [
+        {
+          "name": "example 012 (D1)",
+          "run": "python3 examples/tools/build.py 012",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/012-deleting-the-sweeper-is-safe"
+      ]
+    }
+  },
+  "sourceCommit": "88372924fc0ea4bfae1968717cebfe6a87127157",
+  "startedAt": "2026-11-06T17:13:58+00:00",
+  "finishedAt": "2026-11-06T17:14:25+00:00",
+  "wallSeconds": 27.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "Gradle build of the Box Office copy plus one updateContracts"
+  },
+  "usage": {
+    "peakMemoryBytes": 777797632,
+    "wallSeconds": 26.4,
+    "cpuSeconds": 29.6,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 26.45,
+      "cpuSeconds": 29.625,
+      "cpuThrottledSeconds": 3.675,
+      "peakMemoryBytes": 777797632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-012-d1.log",
+        "lines": 2,
+        "bytes": 104,
+        "sha256": "1614495aa4c59dfab20e3aec3650e4c1e2023d16e579bcac859978bdd2c684f0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "012-deleting-the-sweeper-is-safe: verified (as expected)",
+          "groups": [
+            "012",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "012-deleting-the-sweeper-is-safe: running (D1)",
+        "012-deleting-the-sweeper-is-safe: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/README.md",
+      "change": "modified",
+      "bytes": 13217,
+      "sha256": "433abffe5ee57c59e85f30ae06e493c855f47ac4605482e9663cc606279f92a2",
+      "sourceSha256": "b6442322b534ba8ab4d7fb552e42e9fcadb8fbbfc8b53c3bb929e7cb8a35b86c"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "change": "modified",
+      "bytes": 3661,
+      "sha256": "57d3f440faa64543d6a10e1e0559ffadafb327b3c597c25b8bd474825e9a2a7f",
+      "sourceSha256": "227c0ad0edfc0235b2bd3d586384c0a8d21eac7223c556962ec04647858db191"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/result.sarif",
+      "change": "modified",
+      "bytes": 925,
+      "sha256": "50a6386f831e768de8cc7ec1a1a55c0c6f6cc5818bf1f888090a050bb4095f19",
+      "sourceSha256": "99530209924edc0edb69b88003055c378b10b4e23e8867f0ce55659f91b0dab8"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1490,
+      "sha256": "6eb291788fc47d7c11ccb4e93028f7b45a6d613639b8e53b855ad916282d4dbe",
+      "sourceSha256": "9171f7627022847b0166d99fcf01f7864536075be85bf9b593892d8d7ae48dc5"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "examples/012-deleting-the-sweeper-is-safe/result.sarif",
+      "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/012-deleting-the-sweeper-is-safe/README.md"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

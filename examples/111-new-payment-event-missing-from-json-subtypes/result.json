@@ -1,7 +1,13 @@
 {
   "verdict": "violation",
   "verdictLabel": "✗ Violation: 1 new problem",
+  "execution": {
+    "status": "completed",
+    "exitCode": 0,
+    "reason": null
+  },
   "matchesExpected": true,
+  "expectation": "yes",
   "existingTests": {
     "task": ":contracts:test",
     "passed": true,
@@ -42,5 +48,82 @@
   "output": "verifier-output.txt",
   "newProblems": [
     "wire net.terminalvalue.boxoffice.contracts.PaymentEvent: ! PaymentVoided is a permitted subtype that @JsonSubTypes does not list: it is written under the type id \"PaymentEvent$PaymentVoided\", which a reader of PaymentEvent rejects"
-  ]
+  ],
+  "claim": {
+    "id": "80dba4979218c44c",
+    "format": 1,
+    "example": "111",
+    "statement": {
+      "approach": "B12",
+      "target": "net.terminalvalue.boxoffice.contracts.PaymentEvent",
+      "file": "examples/apps/boxoffice/contracts/src/main/java/net/terminalvalue/boxoffice/contracts/PaymentEvent.java",
+      "behaviourChangeIntended": true
+    },
+    "scope": {},
+    "inputs": {
+      "patch": "650ec423a10e8f7da7dcb6426bd0c626750e9f56147ae2ae7b3b9a197f78cdf0",
+      "before": {
+        "sha256": "1de5f25a93165ada196dafa616704b78b66ca0153aabde797e563119c10d4074",
+        "files": 106
+      },
+      "after": {
+        "sha256": "b3386e5e105c786b84aff211453314f17161449129b1e2337924727867014e7a",
+        "files": 106
+      },
+      "dependencies": "declared in the build files"
+    }
+  },
+  "attempt": {
+    "id": "20261106T171441Z-56cf027c",
+    "claim": "80dba4979218c44c",
+    "startedAt": "2026-11-06T17:14:41+00:00",
+    "seconds": 18.8,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "gradle": "gradle-9.8.2-bin",
+      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "05a1928f78ff7a626caded21d02d725ff115070600b3553a6b18d72ac3705b48",
+        "files": 11
+      }
+    },
+    "pipeline": {
+      "jobId": "20261105-131902-example-111-b12-box-office-recorded-as-a",
+      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-111-b12-box-office-recorded-as-a"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    }
+  },
+  "conclusion": {
+    "claim": "80dba4979218c44c",
+    "attempt": "20261106T171441Z-56cf027c",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": []
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
+        "bytes": 1881
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "2358d09644eead3e77714da2ca9caf31fa3ea922e7f6c7f9282af65966efe54b",
+        "bytes": 552
+      }
+    ]
+  }
 }

@@ -1,0 +1,181 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261105-114502-example-144-b9-own-checker-vacuous-read",
+  "title": "Example 144 (B9, own checker, vacuous) read from equivalence --json",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.6s, peak 97.3 MiB (estimated 5m00s, 1.0 GiB); 1 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "step 1 (example 144 (B9)) was held back 7.3s by its 1-CPU quota in 7.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261105-114502-example-144-b9-own-checker-vacuous-read.json",
+    "sha256": "b425958dcc4b02c9298cfe3aabfbb5768dd0439526beaf55b2226e4ad4d30b73",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261105-114502-example-144-b9-own-checker-vacuous-read",
+      "title": "Example 144 (B9, own checker, vacuous) read from equivalence --json",
+      "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 144 is verified vacuously: coverage.vacuous must still be true with the same reason, now read from the outcome's vacuous field rather than the 'vacuously:' line, and the expectation still met.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "144"
+        ]
+      },
+      "expected": "example 144 gives its expected vacuous verification: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-05T11:45:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "a Mica B9 example with the own checker, 0.1 s plus the vacuity probe"
+      },
+      "steps": [
+        {
+          "name": "example 144 (B9)",
+          "run": "python3 examples/tools/build.py 144",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
+      ]
+    }
+  },
+  "sourceCommit": "3e76cd1954e71968b17a8ba6a3fc0c2ce5262652",
+  "startedAt": "2026-11-06T17:13:53+00:00",
+  "finishedAt": "2026-11-06T17:14:01+00:00",
+  "wallSeconds": 8.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 43179,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "a Mica B9 example with the own checker, 0.1 s plus the vacuity probe"
+  },
+  "usage": {
+    "peakMemoryBytes": 102014976,
+    "wallSeconds": 7.6,
+    "cpuSeconds": 7.5,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 7.616,
+      "cpuSeconds": 7.499,
+      "cpuThrottledSeconds": 7.263,
+      "peakMemoryBytes": 102014976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-144-b9.log",
+        "lines": 2,
+        "bytes": 246,
+        "sha256": "90564f1e1dcf644372440e60699946b828f173603abaa8241c436774055312c4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 2,
+          "text": "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)",
+          "groups": [
+            "144",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: running (B9)",
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json",
+      "change": "modified",
+      "bytes": 2912,
+      "sha256": "f4a1125b902972a3891e8da754b1fe5e48edbbef7c6fb59b83ebd3a3ffb7b39b",
+      "sourceSha256": "4684aac754c9e5a7379236af4372b972afb76f0d3ed476a65d515470b6e31297"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T17:53:38+00:00",
+    "applied": [
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "577a6103b51e49b429952b17f39bb63930b672e5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/577a6103b51e49b429952b17f39bb63930b672e5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

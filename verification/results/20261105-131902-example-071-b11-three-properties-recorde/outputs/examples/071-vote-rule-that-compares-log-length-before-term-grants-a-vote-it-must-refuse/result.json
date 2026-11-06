@@ -1,0 +1,246 @@
+{
+  "verdict": "violation",
+  "verdictLabel": "✗ Violation: counterexample found to 1 of 3 properties",
+  "execution": {
+    "status": "completed",
+    "exitCode": 1,
+    "reason": null
+  },
+  "matchesExpected": true,
+  "expectation": "yes",
+  "existingTests": {
+    "task": "java -ea net.terminalvalue.quorum.Tests",
+    "passed": true,
+    "failures": []
+  },
+  "before": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 61,
+    "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        LogOrder log = candidateLastLogTerm != lastLogTerm\n                ? (candidateLastLogTerm > lastLogTerm ? AHEAD : BEHIND)\n                : candidateLastLogIndex > lastLogIndex ? AHEAD : candidateLastLogIndex == lastLogIndex ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+  },
+  "after": {
+    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+    "startLine": 61,
+    "code": "                                int candidate, long candidateTerm, long candidateLastLogTerm, long candidateLastLogIndex) {\n        TermOrder term = candidateTerm < currentTerm ? OLDER : candidateTerm == currentTerm ? CURRENT : NEWER;\n        Ballot ballot = votedFor == NO_VOTE ? Ballot.OPEN : votedFor == candidate ? FOR_THE_CANDIDATE : Ballot.FOR_ANOTHER;\n        // The longer log is the one further along; between logs of one length, the one with the newer last entry.\n        LogOrder log = candidateLastLogIndex != lastLogIndex\n                ? (candidateLastLogIndex > lastLogIndex ? AHEAD : BEHIND)\n                : candidateLastLogTerm > lastLogTerm ? AHEAD : candidateLastLogTerm == lastLogTerm ? EVEN : BEHIND;\n        return decide(ballot, new VoteRequest(term, log)) instanceof Decision.Transition;\n    }\n}\n"
+  },
+  "casesTotal": null,
+  "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+  "counterexamples": [
+    {
+      "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)",
+      "contract": "!result",
+      "actual": "true",
+      "found": "grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20)",
+      "shrinkRuns": 44
+    }
+  ],
+  "purityViolations": [],
+  "trustedCalls": [],
+  "contractDiff": null,
+  "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+  "problem": null,
+  "statement": "statement-3.java",
+  "trace": null,
+  "statesExplored": null,
+  "invariant": null,
+  "property": {
+    "assert": "!result",
+    "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)"
+  },
+  "stateMachine": null,
+  "coverage": null,
+  "sarif": "result.sarif",
+  "output": "verifier-output.txt",
+  "properties": [
+    {
+      "harness": "property-1",
+      "assert": "!result",
+      "assume": "candidateTerm == currentTerm && votedFor != -1 && votedFor != candidate",
+      "verdict": "verified",
+      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+      "proof": "JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.3 s; loops unwound 16 times with unwinding assertions",
+      "problem": null,
+      "vacuous": null,
+      "counterexample": null,
+      "statement": "statement-1.java",
+      "search": {
+        "engine": "jbmc",
+        "checker": "JBMC 6.11.0",
+        "seconds": 0.31,
+        "properties": 2,
+        "unwind": 16,
+        "maxArrayLength": 8,
+        "stage": null
+      },
+      "replay": null
+    },
+    {
+      "harness": "property-2",
+      "assert": "!result",
+      "assume": "candidateTerm < currentTerm",
+      "verdict": "verified",
+      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+      "proof": "JBMC 6.11.0: 2 properties proved over currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long in 0.4 s; loops unwound 16 times with unwinding assertions",
+      "problem": null,
+      "vacuous": null,
+      "counterexample": null,
+      "statement": "statement-2.java",
+      "search": {
+        "engine": "jbmc",
+        "checker": "JBMC 6.11.0",
+        "seconds": 0.363,
+        "properties": 2,
+        "unwind": 16,
+        "maxArrayLength": 8,
+        "stage": null
+      },
+      "replay": null
+    },
+    {
+      "harness": "property-3",
+      "assert": "!result",
+      "assume": "candidateLastLogTerm < lastLogTerm || (candidateLastLogTerm == lastLogTerm && candidateLastLogIndex < lastLogIndex)",
+      "verdict": "violation",
+      "domain": "currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+      "proof": "found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20), shrunk to the input above in 44 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long",
+      "problem": null,
+      "vacuous": null,
+      "counterexample": {
+        "input": "grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)",
+        "contract": "!result",
+        "actual": "true",
+        "found": "grant(currentTerm=11, votedFor=20, lastLogTerm=17, lastLogIndex=1, candidate=20, candidateTerm=20, candidateLastLogTerm=16, candidateLastLogIndex=20)",
+        "shrinkRuns": 44
+      },
+      "statement": "statement-3.java",
+      "search": {
+        "engine": "jbmc",
+        "checker": "JBMC 6.11.0",
+        "seconds": 0.155,
+        "properties": 2,
+        "unwind": 16,
+        "maxArrayLength": 8,
+        "stage": "[0:20]"
+      },
+      "replay": {
+        "by": "interpreter",
+        "reproduced": true
+      }
+    }
+  ],
+  "claim": {
+    "id": "56047d29f030a33b",
+    "format": 1,
+    "example": "071",
+    "statement": {
+      "approach": "B11",
+      "target": "net.terminalvalue.quorum.raft.VoteRule#grant",
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/VoteRule.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null
+    },
+    "inputs": {
+      "patch": "9cdf953e0c4125bb7a3f7532ef7afd5c9926e54b1395f65eac7fb4f8745ecb70",
+      "before": {
+        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
+        "files": 110
+      },
+      "after": {
+        "sha256": "92bbf57f81e77376de58162c718d3176a2f67d739f48ac68e8f6f34adad89df7",
+        "files": 110
+      },
+      "dependencies": "the JDK"
+    }
+  },
+  "attempt": {
+    "id": "20261106T171436Z-f9ff03d8",
+    "claim": "56047d29f030a33b",
+    "startedAt": "2026-11-06T17:14:36+00:00",
+    "seconds": 2.9,
+    "engine": "jbmc",
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4",
+      "jbmc": "6.11.0 (cbmc-6.11.0)"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "ba0728472a8045349372e080f012377e6ff17e6df87dc521431dcaf90a2dc787",
+        "files": 70
+      }
+    },
+    "pipeline": {
+      "jobId": "20261105-131902-example-071-b11-three-properties-recorde",
+      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-071-b11-three-properties-recorde"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "56047d29f030a33b",
+    "attempt": "20261106T171436Z-f9ff03d8",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "name": "property-1",
+        "statement": "!result",
+        "status": "established"
+      },
+      {
+        "name": "property-2",
+        "statement": "!result",
+        "status": "established"
+      },
+      {
+        "name": "property-3",
+        "statement": "!result",
+        "status": "refuted"
+      }
+    ]
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "4c10bdc41607fd0cbd24b3501e56e5c56e0f42642a82a75e84cb98d322c99cf8",
+        "bytes": 2760
+      },
+      {
+        "path": "statement-1.java",
+        "sha256": "2e2b92de67718fad2deeaf9b243bf281a968b8765c397329cc6a65f65a4a7a3a",
+        "bytes": 1679
+      },
+      {
+        "path": "statement-2.java",
+        "sha256": "deffebb3a067782215ff522393e3778fa292fc9c8a15ddd73d8b3a563a4da8e3",
+        "bytes": 1635
+      },
+      {
+        "path": "statement-3.java",
+        "sha256": "9cf6513087a99b415a46cf7f449a40eb0fa826b28f386ed0e0f1d45b0d68cb09",
+        "bytes": 1723
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "3c222c7b2d1d51fd665e751cc550554b397c1c7d6e11042335ac695b93d14d33",
+        "bytes": 1931
+      }
+    ]
+  }
+}

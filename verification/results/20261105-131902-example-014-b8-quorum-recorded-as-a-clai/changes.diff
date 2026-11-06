@@ -1,0 +1,99 @@
+--- a/examples/014-leader-that-ignores-newer-terms-in-replies/result.json
++++ b/examples/014-leader-that-ignores-newer-terms-in-replies/result.json
+@@ -1,7 +1,13 @@
+ {
+   "verdict": "violation",
+   "verdictLabel": "✗ Violation: 1 of 52 cases changed",
++  "execution": {
++    "status": "completed",
++    "exitCode": 1,
++    "reason": null
++  },
+   "matchesExpected": true,
++  "expectation": "yes",
+   "existingTests": {
+     "task": "java -ea net.terminalvalue.quorum.Tests",
+     "passed": true,
+@@ -45,5 +51,81 @@
+   "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=NEWER] (Unchanged)\n",
+   "coverage": null,
+   "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "output": "verifier-output.txt",
++  "claim": {
++    "id": "31617d98b8ce13ce",
++    "format": 1,
++    "example": "014",
++    "statement": {
++      "approach": "B8",
++      "target": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {},
++    "inputs": {
++      "patch": "0c31de5171545252e642a5c07aa0d0d6d264c4be459be103934cb7dc240d1245",
++      "before": {
++        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
++        "files": 110
++      },
++      "after": {
++        "sha256": "7ea7f1148c5bbcf75191d20bb65e5fb501a8bc2d3c2e89ee3bdae193f74c7d0b",
++        "files": 110
++      },
++      "dependencies": "the JDK"
++    }
++  },
++  "attempt": {
++    "id": "20261106T171435Z-eb3092bf",
++    "claim": "31617d98b8ce13ce",
++    "startedAt": "2026-11-06T17:14:35+00:00",
++    "seconds": 3.9,
++    "engine": null,
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "201ca9e6b7ac6a44156df15e6e619f17956ed5f54a4192c8baa424e8d78d1f3f",
++        "files": 70
++      }
++    },
++    "pipeline": {
++      "jobId": "20261105-131902-example-014-b8-quorum-recorded-as-a-clai",
++      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-014-b8-quorum-recorded-as-a-clai"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    }
++  },
++  "conclusion": {
++    "claim": "31617d98b8ce13ce",
++    "attempt": "20261106T171435Z-eb3092bf",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "35d1a5315ce43d9a671e71f0b49fbce1e579da0969c4104f5b9b4d39c4371a07",
++        "bytes": 2702
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "0c6c7bd02618b44fdc7b9fbbc0801f81e42dc5e6130b48cfff4d0857cc12be0c",
++        "bytes": 2842
++      }
++    ]
++  }
+ }
