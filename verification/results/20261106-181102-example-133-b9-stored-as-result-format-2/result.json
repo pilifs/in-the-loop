@@ -1,0 +1,261 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181102-example-133-b9-stored-as-result-format-2",
+  "title": "Example 133 (B9) stored as result format 2",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 4.4s, peak 103.0 MiB (estimated 3m00s, 1.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-181102-example-133-b9-stored-as-result-format-2.json",
+    "sha256": "7516eb8d24fd2d3ab3a79354d15e3bc606d0c4ef67c399c56dccf23373739fed",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181102-example-133-b9-stored-as-result-format-2",
+      "title": "Example 133 (B9) stored as result format 2",
+      "description": "Option B of open question 1 in llm-dlc/loops/build-orchestration.md, settled by the user on 2026-11-05: result.json is now stored as format 2 (examples/tools/result_format.py, examples/schema/stored-result.schema.json). Each fact is stored once: the verdict as conclusion.status, the execution in attempt.execution, each obligation (B11 property, D1 configuration, generated operator's contract) with its own evidence, and everything else under evidence. Pages read it through the flat view, so they render as before. Before publishing, build.py checks that the result stored and read back is the same result; a run whose result would not store whole exits without publishing. The verdict must be as expected, the stored result must have format 2 with obligations of the expected kinds (none), and its flat view must carry the claim and attempt.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "133"
+        ]
+      },
+      "expected": "example 133 gives its expected verdict, verified: build.py prints 'as expected' and exits 0; result.json has format 2 with obligations of kinds: none",
+      "submitted": {
+        "at": "2026-11-06T18:11:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "the own checker proves 133 in about half a second",
+        "cpus": 2.0
+      },
+      "steps": [
+        {
+          "name": "example 133 (B9)",
+          "run": "python3 examples/tools/build.py 133",
+          "cwd": "."
+        },
+        {
+          "name": "stored as format 2",
+          "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/133-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted(''.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition"
+      ],
+      "supersedes": "20261106-000906-example-133-b9-stored-as-result-format-2"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:14:04+00:00",
+  "finishedAt": "2026-11-06T18:14:09+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "the own checker proves 133 in about half a second"
+  },
+  "usage": {
+    "peakMemoryBytes": 108052480,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.2,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 133 (B9)",
+      "run": "python3 examples/tools/build.py 133",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 4.207,
+      "cpuSeconds": 6.187,
+      "cpuThrottledSeconds": 0.623,
+      "peakMemoryBytes": 108052480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-133-b9.log",
+        "lines": 18,
+        "bytes": 776,
+        "sha256": "837fcd1cfb8613cb0be34a73587457a4beb8b3d298aceed4a38d3658d794cf0c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)",
+          "groups": [
+            "133",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "stored as format 2",
+      "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/133-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted(''.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.021,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6209536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-stored-as-format-2.log",
+        "lines": 1,
+        "bytes": 36,
+        "sha256": "ff3d9366e8f4ad3e9590dc7ddb9dfd75eeaed323425b51adbeba5d418442478a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "format 2; verified 0 obligations []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "change": "modified",
+      "bytes": 17886,
+      "sha256": "70d777f3fcdf8251f60280bc26378e356ae981e1bbbef755e7bdbdae28468aaf",
+      "sourceSha256": "8a95427406f82376a723f9011b4475e57a3d51e641a762ad3add00ec611388a5"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json",
+      "change": "modified",
+      "bytes": 12348,
+      "sha256": "d182ff4a3175e13504acb71d93bbf3c06fcde221e905c1d5265682bf8aa1ac01",
+      "sourceSha256": "03556df25feb4a464b8509646173e7ce5ba1640cd3960f9e004ba4f6a5359a6a"
+    },
+    {
+      "path": "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt",
+      "change": "modified",
+      "bytes": 609,
+      "sha256": "5083db2645c9a3217ebbd6d8c85ee714d0f9d0d6ce7152f2085723345997ee23",
+      "sourceSha256": "b0e5da6477c8a152c1c643c7a97724f4201009dd5d8e6cd1ff65861510b29521"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md",
+      "examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

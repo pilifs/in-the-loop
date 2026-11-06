@@ -1,0 +1,244 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-093-d1-2pc-participant-crashes-c",
+  "title": "Example 093 (D1, 2PC participant crashes): coverage status over three generated operators and inductive steps",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.8s, peak 871.9 MiB (estimated 20m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-093-d1-2pc-participant-crashes-c.json",
+    "sha256": "8a5004d607b087c242eac9a7f8c5738edaad51c68b9fa58f96112a4ed96e8769",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-093-d1-2pc-participant-crashes-c",
+      "title": "Example 093 (D1, 2PC participant crashes): coverage status over three generated operators and inductive steps",
+      "description": "The 2PC model generates three operators (coordinator, recovery, participant) and has inductive configurations and a recorded-runs configuration that counts no coverage. 093 is a violation found under participant crashes; its result must keep the verdict, record each configuration's verdict, status and reason, say 'stopped at the counterexample' only for the run that found one, and write a checkpoint for each configuration that completed.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "093"
+        ]
+      },
+      "expected": "example 093 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "example 093 (D1)",
+          "run": "python3 examples/tools/build.py 093",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed"
+      ],
+      "supersedes": "20261105-125706-example-093-d1-2pc-participant-crashes-c"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:09+00:00",
+  "finishedAt": "2026-11-06T18:13:31+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 914251776,
+    "wallSeconds": 20.8,
+    "cpuSeconds": 30.2,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 093 (D1)",
+      "run": "python3 examples/tools/build.py 093",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 20.847,
+      "cpuSeconds": 30.238,
+      "cpuThrottledSeconds": 3.12,
+      "peakMemoryBytes": 914251776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-093-d1.log",
+        "lines": 50,
+        "bytes": 2283,
+        "sha256": "acbf82727306884948bed77794418e8a93f9e712e1d9a0f7f5459d169fb12979",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 50,
+          "text": "093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed: violation (as expected)",
+          "groups": [
+            "093",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive Coordinator#decide",
+        "  · jvmcontract derive Coordinator#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive Recovery#decide",
+        "  · jvmcontract derive Recovery#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive Participant#decide",
+        "  · jvmcontract derive Participant#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc TwoPhaseCommit.cfg",
+        "  · jvmcontract tlc TwoPhaseCommit.cfg: exited 0, 1.7 s",
+        "  · jvmcontract tlc TwoPhaseCommitInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitInductive.cfg: exited 0, 1.5 s",
+        "  · jvmcontract tlc TwoPhaseCommitCrash.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitCrash.cfg: exited 0, 3.6 s",
+        "  · jvmcontract tlc TwoPhaseCommitCrashInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitCrashInductive.cfg: exited 0, 1.7 s",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrash.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrash.cfg: exited 1, 5.9 s",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrashInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrashInductive.cfg: exited 1, 1.6 s",
+        "  · the trace writer",
+        "  · the trace writer: exited 0, 0.1 s",
+        "  · jvmcontract tlc TwoPhaseCommitTrace.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitTrace.cfg: exited 0, 0.9 s",
+        "  · jvmcontract derive Participant#decide",
+        "  · jvmcontract derive Participant#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md",
+      "change": "modified",
+      "bytes": 59990,
+      "sha256": "cab4dd8f476ef29180d439b129ff1e21f798bb8a2a0af9e83d27ee864cfd8d49",
+      "sourceSha256": "3c56959e0dda7c47baed66cb6c37068e23696b56c94f8971e8af30ff18bac74e"
+    },
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.json",
+      "change": "modified",
+      "bytes": 46280,
+      "sha256": "38638f1574c781496479e9f039b54bde3deecc8a2cdd9adf8a7e751cb0c16710",
+      "sourceSha256": "e3c30186ea81e288e9a2a338bef1295912c1424945fd1e03169e0796aead57ba"
+    },
+    {
+      "path": "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/verifier-output.txt",
+      "change": "modified",
+      "bytes": 31643,
+      "sha256": "f01edcdfe8b69dab30af289dc63a3f28ae98094f4296bc01a2af55cf3dbd9912",
+      "sourceSha256": "d77b8f7a44a21c47f74601aa90d0886832d2ca23a50c4577b8996c30d63df0a7"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/README.md",
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/result.json",
+      "examples/093-restarted-participant-that-releases-its-locks-aborts-what-the-coordinator-committed/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

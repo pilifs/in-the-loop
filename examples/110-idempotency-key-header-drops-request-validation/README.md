@@ -163,7 +163,7 @@ Put `@Valid` back on the body (`@Valid @RequestBody PlaceOrder request`), and re
 
 ## Evidence
 
-This page renders attempt `20261106T171504Z-dd5928b2` at claim `d1624c589c557cd2`, in pipeline job `20261105-235230-example-110-b12-violation-with-its-comma`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181143Z-8605a92d` at claim `d1624c589c557cd2`, in pipeline job `20261106-181059-example-110-b12-under-build-py-s-executi`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

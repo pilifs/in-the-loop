@@ -1,0 +1,2460 @@
+--- a/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/README.md
++++ b/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/README.md
+@@ -174,6 +174,11 @@
+ 7. **Canvass**, `Server.requestVote`: a candidate asks one server for its vote and gets the answer; the request and the reply each go through the role machine, then the vote rule on the voter, given its ballot and the candidate's term and log against its own, and the tally on the candidate. `elected = {<<s1, 2>>, <<s2, 2>>}`, `role = (s1 :> "LEADER" @@ s2 :> "LEADER" @@ s3 :> "FOLLOWER")`, `voted = {<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>, <<s2, 2, s1>>}`, `votedFor = (s1 :> s2 @@ s2 :> s1 @@ s3 :> "none")`, `votes = (s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})`
+ 
+ </details>
++
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `RoleMachine#decide` (`spec/RoleMachineContract.tla`): the regenerated contract, 1 row from the committed one, as the change intends
++- `VoteRule#decide` (`spec/VoteRuleContract.tla`): the committed contract, which the patched classes still match
+ 
+ The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
+ 
+@@ -240,16 +245,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: three servers: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 487 distinct states to depth 7 in 0 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: three servers: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 487 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
++
++This page renders attempt `20261106T181303Z-cdc67917` at claim `570f0d78208ccfa6`, in pipeline job `20261106-181101-example-062-d1-raft-election-several-con`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1077738] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82123] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -264,9 +269,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:16)
++Starting... (2026-11-06 18:13:05)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:16.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:06.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -369,11 +374,11 @@
+ 951 states generated, 401 distinct states found, 240 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
+-Finished in 01s at (2026-11-03 23:49:17)
++Finished in 01s at (2026-11-06 18:13:06)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1077827] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82210] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -388,7 +393,7 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:17)
++Starting... (2026-11-06 18:13:07)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -404,7 +409,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-03 23:49:24.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 18:13:11.
+ Error: Invariant CampaignersVoteForThemselves is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -460,42 +465,15 @@
+   decide(LEADER, Response[term=OLDER]) => Unchanged
+   decide(LEADER, Response[term=CURRENT]) => Unchanged
+   decide(LEADER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]
+-Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: 0 of 27; never taken (27):
+-  decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+-  decide(OPEN, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+-  decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+-  decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+-  decide(OPEN, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+-  decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=EVEN]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=EVEN]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected
+-  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
+-  decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]
++Rows of net.terminalvalue.quorum.raft.VoteRule#decide a step of the model takes: unknown, TLC's coverage statistics do not list it under any action.
+ 17491 states generated, 17471 distinct states found, 17463 states left on queue.
+ The depth of the complete state graph search is 2.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 06s at (2026-11-03 23:49:24)
++Finished in 04s at (2026-11-06 18:13:11)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1078203] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82509] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -510,9 +488,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:25)
++Starting... (2026-11-06 18:13:12)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:25.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:12.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -626,11 +604,11 @@
+ 2348 states generated, 740 distinct states found, 470 states left on queue.
+ The depth of the complete state graph search is 8.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 8 and the 95th percentile is 6).
+-Finished in 01s at (2026-11-03 23:49:26)
++Finished in 01s at (2026-11-06 18:13:13)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1078311] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82707] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -645,10 +623,10 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:27)
++Starting... (2026-11-06 18:13:14)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:27.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:14.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -751,11 +729,11 @@
+ 951 states generated, 401 distinct states found, 240 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
+-Finished in 02s at (2026-11-03 23:49:28)
++Finished in 01s at (2026-11-06 18:13:15)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1078455] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82798] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -770,9 +748,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:29)
++Starting... (2026-11-06 18:13:16)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:30.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:17.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -867,11 +845,11 @@
+ 1630 states generated, 578 distinct states found, 306 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-03 23:49:30)
++Finished in 01s at (2026-11-06 18:13:17)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1078565] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82831] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -886,9 +864,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:31)
++Starting... (2026-11-06 18:13:18)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:31.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:19.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -1004,11 +982,11 @@
+ 10316 states generated, 4609 distinct states found, 2760 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 7 and the 95th percentile is 5).
+-Finished in 02s at (2026-11-03 23:49:33)
++Finished in 02s at (2026-11-06 18:13:20)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1078678] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82915] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -1023,9 +1001,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:49:33)
++Starting... (2026-11-06 18:13:21)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:49:34.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:21.
+ Error: Invariant AtMostOneLeaderPerTerm is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -1128,7 +1106,7 @@
+ 987 states generated, 487 distinct states found, 318 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 6).
+-Finished in 00s at (2026-11-03 23:49:34)
++Finished in 01s at (2026-11-06 18:13:21)
+ ```
+ 
+ </details>
+@@ -1155,6 +1133,12 @@
+               "id": "unverifiable",
+               "shortDescription": {
+                 "text": "TLC could not check the model."
++              }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
+               }
+             }
+           ]
+--- a/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/result.json
++++ b/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/result.json
+@@ -1,850 +1,5 @@
+ {
+-  "verdict": "violation",
+-  "verdictLabel": "✗ Violation: ElectionSafety, 7-step trace",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 1,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.quorum.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+-    "startLine": 36,
+-    "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER, CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+-    "startLine": 36,
+-    "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            // A candidate whose election timed out tries again in a new term. Its tally already holds its own\n            // vote, cast when it first ran, so it need not vote again, and REQUEST_VOTES asks only the servers\n            // whose vote the tally lacks: the ones that never answered.\n            case CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, REQUEST_VOTES);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -17,7 +17,7 @@\n decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n-decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n+decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, REQUEST_VOTES]]\n decide(CANDIDATE, VotesCounted[majority=false]) => Unchanged[reason=\"no majority yet\"]\n decide(CANDIDATE, VotesCounted[majority=true])  => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(CANDIDATE, AppendEntries[term=OLDER])    => Rejected[reason=\"stale leader\"]\n",
+-  "proof": "three servers: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 487 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+-  "problem": null,
+-  "statement": null,
+-  "trace": [
+-    {
+-      "step": 1,
+-      "action": "Initial predicate",
+-      "changes": {
+-        "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-        "elected": "{}",
+-        "replies": "{}",
+-        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-        "voted": "{}",
+-        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-        "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-      }
+-    },
+-    {
+-      "step": 2,
+-      "action": "Timeout",
+-      "changes": {
+-        "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+-        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-        "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-        "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+-      }
+-    },
+-    {
+-      "step": 3,
+-      "action": "Timeout",
+-      "changes": {
+-        "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
+-        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-      }
+-    },
+-    {
+-      "step": 4,
+-      "action": "Timeout",
+-      "changes": {
+-        "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+-        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-        "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-        "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+-      }
+-    },
+-    {
+-      "step": 5,
+-      "action": "Timeout",
+-      "changes": {
+-        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+-        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-      }
+-    },
+-    {
+-      "step": 6,
+-      "action": "Canvass",
+-      "changes": {
+-        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-        "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-        "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-      }
+-    },
+-    {
+-      "step": 7,
+-      "action": "Canvass",
+-      "changes": {
+-        "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-        "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
+-        "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-      }
+-    }
+-  ],
+-  "statesExplored": 401,
+-  "invariant": "ElectionSafety",
+-  "property": null,
+-  "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
+-  "coverage": {
+-    "status": "unavailable",
+-    "configurations": [
+-      {
+-        "label": "three servers",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "the inductive step",
+-        "fromRuns": false,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "four servers",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "fairness",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "a server left behind",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "delayed replies",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      },
+-      {
+-        "label": "history",
+-        "fromRuns": true,
+-        "finished": false,
+-        "verdict": "violation",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "unavailable",
+-        "coverageReason": "the run stopped at a counterexample",
+-        "listed": [],
+-        "operators": []
+-      }
+-    ],
+-    "changedRows": [
+-      {
+-        "case": "decide(CANDIDATE, ElectionTimeout[])",
+-        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-        "before": "Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]",
+-        "after": "Transition[next=CANDIDATE, effects=[INCREMENT_TERM, REQUEST_VOTES]]",
+-        "takenUnder": [],
+-        "unknownUnder": []
+-      }
+-    ],
+-    "nullRows": 0,
+-    "vacuous": false
+-  },
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "modelContracts": [
+-    {
+-      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-      "contract": "src/contract/RoleMachine.decide.contract",
+-      "operator": "spec/RoleMachineContract.tla",
+-      "connection": "derived",
+-      "rowsChanged": 1,
+-      "allowed": true
+-    },
+-    {
+-      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-      "contract": "src/contract/VoteRule.decide.contract",
+-      "operator": "spec/VoteRuleContract.tla",
+-      "connection": "verified",
+-      "rowsChanged": 0,
+-      "allowed": true
+-    }
+-  ],
+-  "checkpoints": [
+-    {
+-      "label": "three servers",
+-      "cfg": "spec/RaftElection.cfg",
+-      "fingerprint": "b3cffa780ffb6df780ab1526291c38f8c69e440ea46f1fd30ac37415b94168b1",
+-      "reused": false
+-    },
+-    {
+-      "label": "the inductive step",
+-      "cfg": "spec/RaftElectionInductive.cfg",
+-      "fingerprint": "dee1811e09066d08ab97cc732997e8df29690b55b352d68a2eb7094b9982d5d5",
+-      "reused": false
+-    },
+-    {
+-      "label": "four servers",
+-      "cfg": "spec/RaftElectionFour.cfg",
+-      "fingerprint": "7d990d2987cac9cc3582ea71deb06f8fec63e38e69400296ba225ce60abcc9eb",
+-      "reused": false
+-    },
+-    {
+-      "label": "fairness",
+-      "cfg": "spec/RaftElectionLive.cfg",
+-      "fingerprint": "8eaadda13a7b2256458bf06a2c5f9f64f18ca15fff63b09623d97248a36f3d57",
+-      "reused": false
+-    },
+-    {
+-      "label": "a server left behind",
+-      "cfg": "spec/RaftElectionLogs.cfg",
+-      "fingerprint": "d6f512904721d4e685de4362102057a2793a00ddd2d70ee3be0186b1643b0ee0",
+-      "reused": false
+-    },
+-    {
+-      "label": "delayed replies",
+-      "cfg": "spec/RaftElectionDelayed.cfg",
+-      "fingerprint": "6e80a5e55f97755e2fff467c3da2636638c56333c75d29bd5dd76b9678286e0e",
+-      "reused": false
+-    },
+-    {
+-      "label": "history",
+-      "cfg": "spec/RaftElectionHistory.cfg",
+-      "fingerprint": "01b30561dc54f0e1f6dfd6390aecca7c822125ca51929c674298538284f1a237",
+-      "reused": false
+-    }
+-  ],
+-  "violationKind": "invariant",
+-  "forever": null,
+-  "configurations": [
+-    {
+-      "label": "three servers",
+-      "cfg": "spec/RaftElection.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: ElectionSafety, 7-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": "ElectionSafety",
+-      "violationKind": "invariant",
+-      "statesExplored": 401,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Canvass",
+-          "changes": {
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Canvass",
+-          "changes": {
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "the inductive step",
+-      "cfg": "spec/RaftElectionInductive.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: CampaignersVoteForThemselves, 2-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": "CampaignersVoteForThemselves",
+-      "violationKind": "invariant",
+-      "statesExplored": 17471,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 2)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "four servers",
+-      "cfg": "spec/RaftElectionFour.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: ElectionSafety, 8-step trace",
+-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": "ElectionSafety",
+-      "violationKind": "invariant",
+-      "statesExplored": 740,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Canvass",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)",
+-            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\" @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s1 @@ s3 :> \"none\" @@ s4 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0 @@ s4 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\" @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Canvass",
+-          "changes": {
+-            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\" @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Canvass",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 0)",
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2, s3} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        },
+-        {
+-          "step": 8,
+-          "action": "Canvass",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 2)",
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> s2)",
+-            "votes": "(s1 :> {s1, s2, s3} @@ s2 :> {s1, s2, s4} @@ s3 :> {} @@ s4 :> {})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "fairness",
+-      "cfg": "spec/RaftElectionLive.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: ElectionSafety, 7-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": "ElectionSafety",
+-      "violationKind": "invariant",
+-      "statesExplored": 401,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Canvass",
+-          "changes": {
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Canvass",
+-          "changes": {
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "a server left behind",
+-      "cfg": "spec/RaftElectionLogs.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: ElectionSafety, 7-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": "ElectionSafety",
+-      "violationKind": "invariant",
+-      "statesExplored": 578,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 1)",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"CANDIDATE\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
+-            "votes": "(s1 :> {} @@ s2 :> {s2} @@ s3 :> {s3})"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 2)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Canvass",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"CANDIDATE\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s3})"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Canvass",
+-          "changes": {
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"LEADER\")",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s3 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s2, s3})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "delayed replies",
+-      "cfg": "spec/RaftElectionDelayed.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: ElectionSafety, 9-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
+-      "invariant": "ElectionSafety",
+-      "violationKind": "invariant",
+-      "statesExplored": 4609,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Ask",
+-          "changes": {
+-            "replies": "{[term |-> 2, granted |-> TRUE, to |-> s2, from |-> s1]}",
+-            "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Answer",
+-          "changes": {
+-            "replies": "{}",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 8,
+-          "action": "Ask",
+-          "changes": {
+-            "replies": "{[term |-> 2, granted |-> TRUE, to |-> s1, from |-> s2]}",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 9,
+-          "action": "Answer",
+-          "changes": {
+-            "replies": "{}",
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    },
+-    {
+-      "label": "history",
+-      "cfg": "spec/RaftElectionHistory.cfg",
+-      "verdict": "violation",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✗ Violation: AtMostOneLeaderPerTerm, 7-step trace",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+-      "invariant": "AtMostOneLeaderPerTerm",
+-      "violationKind": "invariant",
+-      "statesExplored": 487,
+-      "trace": [
+-        {
+-          "step": 1,
+-          "action": "Initial predicate",
+-          "changes": {
+-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+-            "elected": "{}",
+-            "replies": "{}",
+-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 2,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{<<s1, 1, s1>>}",
+-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 3,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 4,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{<<s1, 1, s1>>, <<s2, 1, s2>>}",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 5,
+-          "action": "Timeout",
+-          "changes": {
+-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
+-          }
+-        },
+-        {
+-          "step": 6,
+-          "action": "Canvass",
+-          "changes": {
+-            "elected": "{<<s2, 2>>}",
+-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>}",
+-            "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        },
+-        {
+-          "step": 7,
+-          "action": "Canvass",
+-          "changes": {
+-            "elected": "{<<s1, 2>>, <<s2, 2>>}",
+-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
+-            "voted": "{<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>, <<s2, 2, s1>>}",
+-            "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
+-            "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
+-          }
+-        }
+-      ],
+-      "forever": null
+-    }
+-  ],
+-  "modelVerdict": "violation",
+-  "modelSummary": "✗ Violation: ElectionSafety, 7-step trace",
++  "format": 2,
+   "claim": {
+     "id": "570f0d78208ccfa6",
+     "format": 1,
+@@ -880,16 +35,16 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261106T171436Z-f20b3bdd",
++    "id": "20261106T181303Z-cdc67917",
+     "claim": "570f0d78208ccfa6",
+-    "startedAt": "2026-11-06T17:14:36+00:00",
+-    "seconds": 19.7,
++    "startedAt": "2026-11-06T18:13:03+00:00",
++    "seconds": 18.8,
+     "engine": null,
+     "options": [],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
+       "tlc": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+     },
+     "bytecode": {
+@@ -900,69 +55,1089 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261105-131902-example-062-d1-raft-election-several-con",
+-      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-062-d1-raft-election-several-con"
++      "jobId": "20261106-181101-example-062-d1-raft-election-several-con",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-062-d1-raft-election-several-con"
+     },
+     "execution": {
+       "status": "completed",
+       "exitCode": 1,
+       "reason": null
+-    }
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched quorum main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.9,
++        "stdout": "logs/02-javac-patched-quorum-main.stdout",
++        "stderr": "logs/02-javac-patched-quorum-main.stderr"
++      },
++      {
++        "name": "javac patched quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.0,
++        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
++        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
++      },
++      {
++        "name": "the quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-quorum-tests.stdout",
++        "stderr": "logs/04-the-quorum-tests.stderr"
++      },
++      {
++        "name": "jvmcontract update",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/05-jvmcontract-update.stdout",
++        "stderr": "logs/05-jvmcontract-update.stderr"
++      },
++      {
++        "name": "jvmcontract derive RoleMachine#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-jvmcontract-derive-rolemachine-decide.stdout",
++        "stderr": "logs/06-jvmcontract-derive-rolemachine-decide.stderr"
++      },
++      {
++        "name": "jvmcontract derive VoteRule#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-jvmcontract-derive-voterule-decide.stdout",
++        "stderr": "logs/07-jvmcontract-derive-voterule-decide.stderr"
++      },
++      {
++        "name": "jvmcontract tla",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-jvmcontract-tla.stdout",
++        "stderr": "logs/08-jvmcontract-tla.stderr"
++      },
++      {
++        "name": "jvmcontract tla",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-jvmcontract-tla.stdout",
++        "stderr": "logs/09-jvmcontract-tla.stderr"
++      },
++      {
++        "name": "java -version",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/10-java-version.stdout",
++        "stderr": "logs/10-java-version.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElection.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 1.6,
++        "stdout": "logs/11-jvmcontract-tlc-raftelection-cfg.stdout",
++        "stderr": "logs/11-jvmcontract-tlc-raftelection-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionInductive.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 4.9,
++        "stdout": "logs/12-jvmcontract-tlc-raftelectioninductive-cfg.stdout",
++        "stderr": "logs/12-jvmcontract-tlc-raftelectioninductive-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionFour.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 2.1,
++        "stdout": "logs/13-jvmcontract-tlc-raftelectionfour-cfg.stdout",
++        "stderr": "logs/13-jvmcontract-tlc-raftelectionfour-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionLive.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 2.2,
++        "stdout": "logs/14-jvmcontract-tlc-raftelectionlive-cfg.stdout",
++        "stderr": "logs/14-jvmcontract-tlc-raftelectionlive-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionLogs.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 2.0,
++        "stdout": "logs/15-jvmcontract-tlc-raftelectionlogs-cfg.stdout",
++        "stderr": "logs/15-jvmcontract-tlc-raftelectionlogs-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionDelayed.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 2.5,
++        "stdout": "logs/16-jvmcontract-tlc-raftelectiondelayed-cfg.stdout",
++        "stderr": "logs/16-jvmcontract-tlc-raftelectiondelayed-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionHistory.cfg",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 1.4,
++        "stdout": "logs/17-jvmcontract-tlc-raftelectionhistory-cfg.stdout",
++        "stderr": "logs/17-jvmcontract-tlc-raftelectionhistory-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract derive RoleMachine#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/18-jvmcontract-derive-rolemachine-decide.stdout",
++        "stderr": "logs/18-jvmcontract-derive-rolemachine-decide.stderr"
++      },
++      {
++        "name": "jvmcontract statemachine",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/19-jvmcontract-statemachine.stdout",
++        "stderr": "logs/19-jvmcontract-statemachine.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/20-version-of-java.stdout",
++        "stderr": "logs/20-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/21-version-of-javac.stdout",
++        "stderr": "logs/21-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-ab_wozhw/attempts/062/attempt-787ovita"
+   },
+   "conclusion": {
+     "claim": "570f0d78208ccfa6",
+-    "attempt": "20261106T171436Z-f20b3bdd",
++    "attempt": "20261106T181303Z-cdc67917",
+     "status": "refuted",
+     "vacuous": false,
+     "expectation": "yes",
+     "obligations": [
+       {
++        "kind": "configuration",
+         "name": "three servers",
+         "statement": "spec/RaftElection.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "three servers",
++          "cfg": "spec/RaftElection.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: ElectionSafety, 7-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": "ElectionSafety",
++          "violationKind": "invariant",
++          "statesExplored": 401,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Canvass",
++              "changes": {
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Canvass",
++              "changes": {
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "the inductive step",
+         "statement": "spec/RaftElectionInductive.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "the inductive step",
++          "cfg": "spec/RaftElectionInductive.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: CampaignersVoteForThemselves, 2-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": "CampaignersVoteForThemselves",
++          "violationKind": "invariant",
++          "statesExplored": 17471,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 1)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"CANDIDATE\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {s3})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 2)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "four servers",
+         "statement": "spec/RaftElectionFour.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "four servers",
++          "cfg": "spec/RaftElectionFour.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: ElectionSafety, 8-step trace",
++          "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": "ElectionSafety",
++          "violationKind": "invariant",
++          "statesExplored": 740,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0 @@ s4 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\" @@ s4 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Canvass",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)",
++                "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\" @@ s4 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0 @@ s4 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s1 @@ s3 :> \"none\" @@ s4 :> \"none\")"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0 @@ s4 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\" @@ s4 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s2} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Canvass",
++              "changes": {
++                "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> \"none\" @@ s4 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Canvass",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 0)",
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> \"none\")",
++                "votes": "(s1 :> {s1, s2, s3} @@ s2 :> {s1, s2} @@ s3 :> {} @@ s4 :> {})"
++              }
++            },
++            {
++              "step": 8,
++              "action": "Canvass",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2 @@ s4 :> 2)",
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\" @@ s4 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> s2 @@ s3 :> s1 @@ s4 :> s2)",
++                "votes": "(s1 :> {s1, s2, s3} @@ s2 :> {s1, s2, s4} @@ s3 :> {} @@ s4 :> {})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "fairness",
+         "statement": "spec/RaftElectionLive.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "fairness",
++          "cfg": "spec/RaftElectionLive.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: ElectionSafety, 7-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": "ElectionSafety",
++          "violationKind": "invariant",
++          "statesExplored": 401,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Canvass",
++              "changes": {
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Canvass",
++              "changes": {
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "a server left behind",
+         "statement": "spec/RaftElectionLogs.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "a server left behind",
++          "cfg": "spec/RaftElectionLogs.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: ElectionSafety, 7-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": "ElectionSafety",
++          "violationKind": "invariant",
++          "statesExplored": 578,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 1 @@ s3 :> 0)",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 1)",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"CANDIDATE\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> s3)",
++                "votes": "(s1 :> {} @@ s2 :> {s2} @@ s3 :> {s3})"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 2 @@ s3 :> 2)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Canvass",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"CANDIDATE\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s3})"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Canvass",
++              "changes": {
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"LEADER\" @@ s3 :> \"LEADER\")",
++                "votedFor": "(s1 :> s2 @@ s2 :> s3 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {s1, s2} @@ s3 :> {s2, s3})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "delayed replies",
+         "statement": "spec/RaftElectionDelayed.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "delayed replies",
++          "cfg": "spec/RaftElectionDelayed.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: ElectionSafety, 9-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
++          "invariant": "ElectionSafety",
++          "violationKind": "invariant",
++          "statesExplored": 4609,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Ask",
++              "changes": {
++                "replies": "{[term |-> 2, granted |-> TRUE, to |-> s2, from |-> s1]}",
++                "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Answer",
++              "changes": {
++                "replies": "{}",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 8,
++              "action": "Ask",
++              "changes": {
++                "replies": "{[term |-> 2, granted |-> TRUE, to |-> s1, from |-> s2]}",
++                "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 9,
++              "action": "Answer",
++              "changes": {
++                "replies": "{}",
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
+         "name": "history",
+         "statement": "spec/RaftElectionHistory.cfg",
+-        "status": "refuted"
+-      },
+-      {
++        "status": "refuted",
++        "evidence": {
++          "label": "history",
++          "cfg": "spec/RaftElectionHistory.cfg",
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "summary": "✗ Violation: AtMostOneLeaderPerTerm, 7-step trace",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
++          "invariant": "AtMostOneLeaderPerTerm",
++          "violationKind": "invariant",
++          "statesExplored": 487,
++          "trace": [
++            {
++              "step": 1,
++              "action": "Initial predicate",
++              "changes": {
++                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++                "elected": "{}",
++                "replies": "{}",
++                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 2,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{<<s1, 1, s1>>}",
++                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 3,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 4,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{<<s1, 1, s1>>, <<s2, 1, s2>>}",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 5,
++              "action": "Timeout",
++              "changes": {
++                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
++                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++              }
++            },
++            {
++              "step": 6,
++              "action": "Canvass",
++              "changes": {
++                "elected": "{<<s2, 2>>}",
++                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>}",
++                "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            },
++            {
++              "step": 7,
++              "action": "Canvass",
++              "changes": {
++                "elected": "{<<s1, 2>>, <<s2, 2>>}",
++                "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++                "voted": "{<<s1, 1, s1>>, <<s1, 2, s2>>, <<s2, 1, s2>>, <<s2, 2, s1>>}",
++                "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
++                "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
++              }
++            }
++          ],
++          "forever": null
++        }
++      },
++      {
++        "kind": "operator-contract",
+         "name": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+         "statement": "the contract the operator is generated from, as built",
+-        "status": "established"
+-      },
+-      {
++        "status": "established",
++        "evidence": {
++          "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "contract": "src/contract/RoleMachine.decide.contract",
++          "operator": "spec/RoleMachineContract.tla",
++          "connection": "derived",
++          "rowsChanged": 1,
++          "allowed": true
++        }
++      },
++      {
++        "kind": "operator-contract",
+         "name": "net.terminalvalue.quorum.raft.VoteRule#decide",
+         "statement": "the contract the operator is generated from, as built",
+-        "status": "established"
++        "status": "established",
++        "evidence": {
++          "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++          "contract": "src/contract/VoteRule.decide.contract",
++          "operator": "spec/VoteRuleContract.tla",
++          "connection": "verified",
++          "rowsChanged": 0,
++          "allowed": true
++        }
+       }
+-    ]
++    ],
++    "label": "✗ Violation: ElectionSafety, 7-step trace",
++    "obligationKeys": {
++      "configuration": "configurations",
++      "operator-contract": "modelContracts"
++    }
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.quorum.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "startLine": 36,
++      "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER, CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
++    },
++    "after": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "startLine": 36,
++      "code": "public static Decision<Role, RoleEffect> decide(Role role, RoleEvent event) {\n    return switch (event) {\n        case ElectionTimeout _ -> switch (role) {\n            case FOLLOWER -> transition(CANDIDATE, INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES);\n            // A candidate whose election timed out tries again in a new term. Its tally already holds its own\n            // vote, cast when it first ran, so it need not vote again, and REQUEST_VOTES asks only the servers\n            // whose vote the tally lacks: the ones that never answered.\n            case CANDIDATE -> transition(CANDIDATE, INCREMENT_TERM, REQUEST_VOTES);\n            case LEADER -> unchanged(\"a leader does not hold elections\");\n        };\n        case VotesCounted votes -> switch (role) {\n"
++    },
++    "casesTotal": null,
++    "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -17,7 +17,7 @@\n decide(FOLLOWER, Response[term=CURRENT])        => Unchanged[reason=\"a reply from the current or an older term changes no role\"]\n decide(FOLLOWER, Response[term=NEWER])          => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]\n decide(FOLLOWER, null)                          => throws NullPointerException\n-decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n+decide(CANDIDATE, ElectionTimeout[])            => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, REQUEST_VOTES]]\n decide(CANDIDATE, VotesCounted[majority=false]) => Unchanged[reason=\"no majority yet\"]\n decide(CANDIDATE, VotesCounted[majority=true])  => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(CANDIDATE, AppendEntries[term=OLDER])    => Rejected[reason=\"stale leader\"]\n",
++    "proof": "three servers: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,471 distinct states to depth 2 in 4 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 740 distinct states to depth 8 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 401 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 578 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 4,609 distinct states to depth 9 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 487 distinct states to depth 7 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
++    "problem": null,
++    "statement": null,
++    "trace": [
++      {
++        "step": 1,
++        "action": "Initial predicate",
++        "changes": {
++          "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
++          "elected": "{}",
++          "replies": "{}",
++          "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++          "voted": "{}",
++          "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
++          "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
++        }
++      },
++      {
++        "step": 2,
++        "action": "Timeout",
++        "changes": {
++          "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
++          "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
++          "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++          "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
++        }
++      },
++      {
++        "step": 3,
++        "action": "Timeout",
++        "changes": {
++          "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)",
++          "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++        }
++      },
++      {
++        "step": 4,
++        "action": "Timeout",
++        "changes": {
++          "currentTerm": "(s1 :> 2 @@ s2 :> 1 @@ s3 :> 0)",
++          "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"CANDIDATE\" @@ s3 :> \"FOLLOWER\")",
++          "votedFor": "(s1 :> \"none\" @@ s2 :> s2 @@ s3 :> \"none\")",
++          "votes": "(s1 :> {s1} @@ s2 :> {s2} @@ s3 :> {})"
++        }
++      },
++      {
++        "step": 5,
++        "action": "Timeout",
++        "changes": {
++          "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
++          "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")"
++        }
++      },
++      {
++        "step": 6,
++        "action": "Canvass",
++        "changes": {
++          "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++          "votedFor": "(s1 :> s2 @@ s2 :> \"none\" @@ s3 :> \"none\")",
++          "votes": "(s1 :> {s1} @@ s2 :> {s1, s2} @@ s3 :> {})"
++        }
++      },
++      {
++        "step": 7,
++        "action": "Canvass",
++        "changes": {
++          "role": "(s1 :> \"LEADER\" @@ s2 :> \"LEADER\" @@ s3 :> \"FOLLOWER\")",
++          "votedFor": "(s1 :> s2 @@ s2 :> s1 @@ s3 :> \"none\")",
++          "votes": "(s1 :> {s1, s2} @@ s2 :> {s1, s2} @@ s3 :> {})"
++        }
++      }
++    ],
++    "statesExplored": 401,
++    "invariant": "ElectionSafety",
++    "property": null,
++    "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=true] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
++    "coverage": {
++      "status": "unavailable",
++      "configurations": [
++        {
++          "label": "three servers",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "the inductive step",
++          "fromRuns": false,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "four servers",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "fairness",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "a server left behind",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "delayed replies",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        },
++        {
++          "label": "history",
++          "fromRuns": true,
++          "finished": false,
++          "verdict": "violation",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "unavailable",
++          "coverageReason": "the run stopped at a counterexample",
++          "listed": [],
++          "operators": []
++        }
++      ],
++      "changedRows": [
++        {
++          "case": "decide(CANDIDATE, ElectionTimeout[])",
++          "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "before": "Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]",
++          "after": "Transition[next=CANDIDATE, effects=[INCREMENT_TERM, REQUEST_VOTES]]",
++          "takenUnder": [],
++          "unknownUnder": []
++        }
++      ],
++      "nullRows": 0,
++      "vacuous": false
++    },
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "checkpoints": [
++      {
++        "label": "three servers",
++        "cfg": "spec/RaftElection.cfg",
++        "fingerprint": "c6cb9cdacf9fea114cd9da0c4cf3b9f609cde255942471c26e5404876a6b0f90",
++        "reused": false
++      },
++      {
++        "label": "the inductive step",
++        "cfg": "spec/RaftElectionInductive.cfg",
++        "fingerprint": "2dd4c94254d1c6170929a8147ca998db7e2a867b4c6acd1b3b3a59f3a4d0fcc8",
++        "reused": false
++      },
++      {
++        "label": "four servers",
++        "cfg": "spec/RaftElectionFour.cfg",
++        "fingerprint": "c977e0566fadc782c3c604bf1e7a3546152b1d5e5c48f9176ad86df6a5d0aefc",
++        "reused": false
++      },
++      {
++        "label": "fairness",
++        "cfg": "spec/RaftElectionLive.cfg",
++        "fingerprint": "4110dad399bc8511863ea41d2130efd44c06ad0e283044d4b7555d2173dadd87",
++        "reused": false
++      },
++      {
++        "label": "a server left behind",
++        "cfg": "spec/RaftElectionLogs.cfg",
++        "fingerprint": "09daee1a2f324f06933df3b997a7463da0a829712c485ae93f0ff857efdb4dfa",
++        "reused": false
++      },
++      {
++        "label": "delayed replies",
++        "cfg": "spec/RaftElectionDelayed.cfg",
++        "fingerprint": "175d29237cc3caf49a264e9b2cffa5aae443bb0e3c71dba866497bd223a4cbc9",
++        "reused": false
++      },
++      {
++        "label": "history",
++        "cfg": "spec/RaftElectionHistory.cfg",
++        "fingerprint": "a7998612c300d2902ae07891cb9d6b54d851effc62a81fcc4e466f78a33a78a5",
++        "reused": false
++      }
++    ],
++    "violationKind": "invariant",
++    "forever": null,
++    "modelVerdict": "violation",
++    "modelSummary": "✗ Violation: ElectionSafety, 7-step trace"
+   },
+   "bundle": {
+     "artifacts": [
+@@ -973,7 +1148,7 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "1cb98ef681f7efff875f2ab7ab9df7c1932163b8fce9368a9189f305c166b729",
++        "sha256": "27857f0064ac51b3d75824d74d16242e0440341626cb41ee687e42de8b5d47a0",
+         "bytes": 47469
+       }
+     ]
+--- a/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/verifier-output.txt
++++ b/examples/062-candidate-that-retries-without-voting-again-elects-two-leaders/verifier-output.txt
+@@ -1,6 +1,6 @@
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 49417] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82123] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -15,9 +15,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:39)
++Starting... (2026-11-06 18:13:05)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:39.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:06.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -120,11 +120,11 @@
+ 951 states generated, 401 distinct states found, 240 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
+-Finished in 01s at (2026-11-06 17:14:40)
++Finished in 01s at (2026-11-06 18:13:06)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 49605] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82210] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -139,7 +139,7 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:40)
++Starting... (2026-11-06 18:13:07)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -155,7 +155,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-06 17:14:46.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 18:13:11.
+ Error: Invariant CampaignersVoteForThemselves is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -215,11 +215,11 @@
+ 17491 states generated, 17471 distinct states found, 17463 states left on queue.
+ The depth of the complete state graph search is 2.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 05s at (2026-11-06 17:14:46)
++Finished in 04s at (2026-11-06 18:13:11)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 49984] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82509] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -234,9 +234,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:46)
++Starting... (2026-11-06 18:13:12)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:47.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:12.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -350,11 +350,11 @@
+ 2348 states generated, 740 distinct states found, 470 states left on queue.
+ The depth of the complete state graph search is 8.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 8 and the 95th percentile is 6).
+-Finished in 01s at (2026-11-06 17:14:48)
++Finished in 01s at (2026-11-06 18:13:13)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 50183] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82707] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -369,10 +369,10 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:49)
++Starting... (2026-11-06 18:13:14)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:49.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:14.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -475,11 +475,11 @@
+ 951 states generated, 401 distinct states found, 240 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 5).
+-Finished in 01s at (2026-11-06 17:14:50)
++Finished in 01s at (2026-11-06 18:13:15)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 50374] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82798] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -494,9 +494,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:51)
++Starting... (2026-11-06 18:13:16)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:51.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:17.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -591,11 +591,11 @@
+ 1630 states generated, 578 distinct states found, 306 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 5 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-06 17:14:52)
++Finished in 01s at (2026-11-06 18:13:17)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 50555] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82831] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -610,9 +610,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:53)
++Starting... (2026-11-06 18:13:18)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:53.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:19.
+ Error: Invariant ElectionSafety is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -728,11 +728,11 @@
+ 10316 states generated, 4609 distinct states found, 2760 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 2 (minimum is 0, the maximum 7 and the 95th percentile is 5).
+-Finished in 01s at (2026-11-06 17:14:54)
++Finished in 02s at (2026-11-06 18:13:20)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 50807] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 82915] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -747,9 +747,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:14:55)
++Starting... (2026-11-06 18:13:21)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:55.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:21.
+ Error: Invariant AtMostOneLeaderPerTerm is violated.
+ Error: The behavior up to this point is:
+ State 1: <Initial predicate>
+@@ -852,4 +852,4 @@
+ 987 states generated, 487 distinct states found, 318 states left on queue.
+ The depth of the complete state graph search is 7.
+ The average outdegree of the complete state graph is 3 (minimum is 0, the maximum 6 and the 95th percentile is 6).
+-Finished in 01s at (2026-11-06 17:14:56)
++Finished in 01s at (2026-11-06 18:13:21)

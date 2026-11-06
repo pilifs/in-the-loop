@@ -1,87 +1,484 @@
 {
-  "verdict": "violation",
-  "verdictLabel": "✗ Violation: counterexample found",
-  "execution": {
-    "status": "completed",
-    "exitCode": 1,
-    "reason": null
-  },
-  "matchesExpected": true,
-  "expectation": "yes",
-  "existingTests": {
-    "task": "java -ea net.terminalvalue.mica.Tests",
-    "passed": true,
-    "failures": []
-  },
-  "before": {
-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
-    "startLine": 3,
-    "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which is a six-byte header, the name index and\n * the length, followed by its {@code attribute_length} bytes of information.\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s: everything after the attribute's own six-byte header.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += 6 + nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
-  },
-  "after": {
-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
-    "startLine": 3,
-    "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which contributes its {@code attribute_length}\n * (JVMS §4.7: the length of the subsequent information in bytes, not including the initial six bytes).\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
-  },
-  "casesTotal": null,
-  "domain": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
-  "counterexamples": [
-    {
-      "input": "attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])",
-      "contract": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
-      "actual": "13",
-      "found": "attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534])",
-      "shrinkRuns": 10
+  "format": 2,
+  "claim": {
+    "id": "9110815c4d386329",
+    "format": 1,
+    "example": "050",
+    "statement": {
+      "approach": "B11",
+      "target": "net.terminalvalue.mica.classfile.CodeAttribute#attributeLength",
+      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+      "behaviourChangeIntended": false
+    },
+    "scope": {
+      "maxArrayLength": null
+    },
+    "inputs": {
+      "patch": "109fc22a48158279dfcb075e2a1c905a989520b6e51445d040aee0efe46b9765",
+      "before": {
+        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
+        "files": 50
+      },
+      "after": {
+        "sha256": "ebaccf8580911e4d8e487f1fe3edb0f335711f33c08cd5efea7cb3a8cef1ebe1",
+        "files": 50
+      },
+      "dependencies": "the JDK"
     }
-  ],
-  "purityViolations": [],
-  "trustedCalls": [],
-  "contractDiff": null,
-  "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
-  "problem": null,
-  "statement": "statement.java",
-  "trace": null,
-  "statesExplored": null,
-  "invariant": null,
-  "property": {
-    "assert": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
-    "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)"
   },
-  "stateMachine": null,
-  "coverage": null,
-  "sarif": "result.sarif",
-  "output": "verifier-output.txt",
-  "properties": [
-    {
-      "harness": null,
-      "assert": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
-      "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)",
-      "verdict": "violation",
-      "domain": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
-      "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8",
-      "problem": null,
-      "vacuous": null,
-      "counterexample": {
+  "attempt": {
+    "id": "20261106T181224Z-487c0c66",
+    "claim": "9110815c4d386329",
+    "startedAt": "2026-11-06T18:12:24+00:00",
+    "seconds": 2.1,
+    "engine": "jbmc",
+    "options": [
+      "--gaps",
+      "strict"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
+      "jbmc": "6.11.0 (cbmc-6.11.0)"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "103d35e27ba9cc5e8591c18ccd63557eb1e3148d52f8281a03465b684b1220c7",
+        "files": 30
+      }
+    },
+    "pipeline": {
+      "jobId": "20261106-181059-example-050-b11-violation-with-its-prope",
+      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-050-b11-violation-with-its-prope"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched mica main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.9,
+        "stdout": "logs/02-javac-patched-mica-main.stdout",
+        "stderr": "logs/02-javac-patched-mica-main.stderr"
+      },
+      {
+        "name": "javac patched mica tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.8,
+        "stdout": "logs/03-javac-patched-mica-tests.stdout",
+        "stderr": "logs/03-javac-patched-mica-tests.stderr"
+      },
+      {
+        "name": "the mica tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-mica-tests.stdout",
+        "stderr": "logs/04-the-mica-tests.stderr"
+      },
+      {
+        "name": "jvmcontract prove",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.3,
+        "stdout": "logs/05-jvmcontract-prove.stdout",
+        "stderr": "logs/05-jvmcontract-prove.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/06-version-of-java.stdout",
+        "stderr": "logs/06-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/07-version-of-javac.stdout",
+        "stderr": "logs/07-version-of-javac.stderr"
+      },
+      {
+        "name": "version of jbmc",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/08-version-of-jbmc.stdout",
+        "stderr": "logs/08-version-of-jbmc.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-ve06y81_/attempts/050/attempt-1xf35e6b"
+  },
+  "conclusion": {
+    "claim": "9110815c4d386329",
+    "attempt": "20261106T181224Z-487c0c66",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+          "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)",
+          "verdict": "violation",
+          "domain": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null",
+          "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])",
+            "contract": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+            "actual": "13",
+            "found": "attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534])",
+            "shrinkRuns": 10,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "codeLength",
+                  "type": "int",
+                  "value": 1
+                },
+                {
+                  "name": "exceptionTableLength",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "nestedAttributeLength",
+                  "type": "int[]",
+                  "value": [
+                    0
+                  ]
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "codeLength",
+                  "type": "int",
+                  "value": 1
+                },
+                {
+                  "name": "exceptionTableLength",
+                  "type": "int",
+                  "value": 7
+                },
+                {
+                  "name": "nestedAttributeLength",
+                  "type": "int[]",
+                  "value": [
+                    65527,
+                    65534
+                  ]
+                }
+              ],
+              "call": {
+                "class": "net.terminalvalue.mica.classfile.CodeAttribute",
+                "classFile": "net/terminalvalue/mica/classfile/CodeAttribute.class",
+                "classFileSha256": "4291bc99e58ad47049a621f138068ef9d4c9f0883162b607b9667b2d273dd25a",
+                "classes": "after",
+                "method": "attributeLength",
+                "descriptor": "(II[I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "codeLength",
+                    "type": "int",
+                    "value": 1,
+                    "from": "codeLength"
+                  },
+                  {
+                    "name": "exceptionTableLength",
+                    "type": "int",
+                    "value": 0,
+                    "from": "exceptionTableLength"
+                  },
+                  {
+                    "name": "nestedAttributeLength",
+                    "type": "int[]",
+                    "value": [
+                      0
+                    ],
+                    "from": "nestedAttributeLength"
+                  }
+                ]
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "jbmc",
+            "checker": "JBMC 6.11.0",
+            "seconds": 0.266,
+            "properties": 5,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": "[0:20]",
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "jbmc",
+                "purpose": "proof",
+                "stage": "[0:20]",
+                "budgetSeconds": 75.0,
+                "seconds": 0.201,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.005,
+                  "lowering": 0.002,
+                  "symbolic": 0.08,
+                  "encoding": 0.017,
+                  "solving": 0.056,
+                  "trace": 0.005,
+                  "other": 0.035
+                },
+                "formula": {
+                  "steps": 3685,
+                  "conditions": 5,
+                  "variables": 17870,
+                  "clauses": 59868
+                }
+              }
+            ],
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "codeLength",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "exceptionTableLength",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "nestedAttributeLength",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 8
+                }
+              ],
+              "sharedArrays": false,
+              "text": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)",
+                "basis": "stated"
+              },
+              {
+                "kind": "library",
+                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": 8,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+              "classes": 10,
+              "jdk": "25.0.5"
+            },
+            "checker": {
+              "engine": "jbmc",
+              "name": "JBMC 6.11.0",
+              "solver": "cadical",
+              "fallback": null
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation: counterexample found",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.mica.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+      "startLine": 3,
+      "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which is a six-byte header, the name index and\n * the length, followed by its {@code attribute_length} bytes of information.\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s: everything after the attribute's own six-byte header.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += 6 + nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
+    },
+    "after": {
+      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/CodeAttribute.java",
+      "startLine": 3,
+      "code": "/**\n * The layout of a {@code Code} attribute (JVMS §4.7.3): {@code max_stack} and {@code max_locals} (two bytes each),\n * {@code code_length} (four) and the code, {@code exception_table_length} (two) and eight bytes per entry, then\n * {@code attributes_count} (two) and the nested attributes, each of which contributes its {@code attribute_length}\n * (JVMS §4.7: the length of the subsequent information in bytes, not including the initial six bytes).\n */\npublic final class CodeAttribute {\n\n    // ...\n    /**\n     * The {@code attribute_length} of a {@code Code} attribute with {@code codeLength} bytes of code,\n     * {@code exceptionTableLength} exception table entries, and nested attributes of the given\n     * {@code attribute_length}s.\n     */\n    public static int attributeLength(int codeLength, int exceptionTableLength, int[] nestedAttributeLength) {\n        int nested = 0;\n        for (int i = 0; i < nestedAttributeLength.length; i++) {\n            nested += nestedAttributeLength[i];\n        }\n        return 2 + 2 + 4 + codeLength + 2 + 8 * exceptionTableLength + 2 + nested;\n    }\n"
+    },
+    "casesTotal": null,
+    "domain": "codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null",
+    "counterexamples": [
+      {
         "input": "attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])",
         "contract": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
         "actual": "13",
         "found": "attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534])",
-        "shrinkRuns": 10
-      },
-      "statement": null,
-      "search": {
-        "engine": "jbmc",
-        "checker": "JBMC 6.11.0",
-        "seconds": 0.254,
-        "properties": 5,
-        "unwind": 16,
-        "maxArrayLength": 8,
-        "stage": "[0:20]"
-      },
-      "replay": {
-        "by": "interpreter",
-        "reproduced": true
+        "shrinkRuns": 10,
+        "witness": {
+          "inputs": [
+            {
+              "name": "codeLength",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "exceptionTableLength",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "nestedAttributeLength",
+              "type": "int[]",
+              "value": [
+                0
+              ]
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "codeLength",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "exceptionTableLength",
+              "type": "int",
+              "value": 7
+            },
+            {
+              "name": "nestedAttributeLength",
+              "type": "int[]",
+              "value": [
+                65527,
+                65534
+              ]
+            }
+          ],
+          "call": {
+            "class": "net.terminalvalue.mica.classfile.CodeAttribute",
+            "classFile": "net/terminalvalue/mica/classfile/CodeAttribute.class",
+            "classFileSha256": "4291bc99e58ad47049a621f138068ef9d4c9f0883162b607b9667b2d273dd25a",
+            "classes": "after",
+            "method": "attributeLength",
+            "descriptor": "(II[I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "codeLength",
+                "type": "int",
+                "value": 1,
+                "from": "codeLength"
+              },
+              {
+                "name": "exceptionTableLength",
+                "type": "int",
+                "value": 0,
+                "from": "exceptionTableLength"
+              },
+              {
+                "name": "nestedAttributeLength",
+                "type": "int[]",
+                "value": [
+                  0
+                ],
+                "from": "nestedAttributeLength"
+              }
+            ]
+          }
+        }
       }
-    }
-  ]
+    ],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": {
+      "assert": "result == 12 + codeLength + 8 * exceptionTableLength + (\\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])",
+      "assume": "codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535)"
+    },
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt"
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "e5f29afd0ce8163123f153b048e20d20a1f20a090e077b610f70a2a18d054375",
+        "bytes": 2972
+      },
+      {
+        "path": "statement.java",
+        "sha256": "94a194a6dfec15b10f8030c88f3d9080470404e3dacf854e2d6d9042b0cb9bce",
+        "bytes": 1963
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "ceba08538ea9ac776fb89e4c0bddd887cc0c7b1a6947b5bdfac654c4ae934555",
+        "bytes": 1162
+      }
+    ]
+  }
 }

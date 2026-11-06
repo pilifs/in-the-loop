@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-053-b11-throws-clause-verified-r",
+  "title": "Example 053 (B11, throws clause, verified) read from prove --json",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.0s, peak 108.6 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-053-b11-throws-clause-verified-r.json",
+    "sha256": "67aaf59dcbd486afd44f85c65a108c33e3fb5826fcea9b2b2ee751f87e70bad1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-053-b11-throws-clause-verified-r",
+      "title": "Example 053 (B11, throws clause, verified) read from prove --json",
+      "description": "build.py now runs jvmcontract prove with --json and keeps one outcome per property the module's properties.contract declares for the target (build-orchestration brief, step 1d), instead of reading one assertion, one witness and one proof line from the console text with regexes. The result gains properties: for each, its assumption, assertion, throws clauses as checked, verdict, domain, proof line, problem, vacuity, witness (with found and shrinkRuns), search (engine, checker, seconds, bounds, input range) and replay (by interpreter, reproduced), and for several properties the work directory property-N and the harness copied as statement-N.java. The verdict is computed over them: a violation when any property is refuted, verified only when all hold, unverifiable otherwise. The library's property Outcome gains search, replay and throws_checked. Example 053 is a single verified property with a throws clause (ArithmeticException when divisor == 0): its verdict, property (with the clause named in full, java.lang.ArithmeticException), domain, proof line and statement.java must be unchanged, with properties holding the one outcome.",
+      "kind": "example",
+      "capabilities": [
+        "B11",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "053"
+        ]
+      },
+      "expected": "example 053 is verified as expected: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a Mica B11 example: javac build and one JBMC proof"
+      },
+      "steps": [
+        {
+          "name": "example 053 (B11)",
+          "run": "python3 examples/tools/build.py 053",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/053-idiv-that-leaves-division-by-zero-to-the-host"
+      ],
+      "supersedes": "20261105-122210-example-053-b11-throws-clause-verified-r"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:29+00:00",
+  "finishedAt": "2026-11-06T18:12:34+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a Mica B11 example: javac build and one JBMC proof"
+  },
+  "usage": {
+    "peakMemoryBytes": 113864704,
+    "wallSeconds": 4.0,
+    "cpuSeconds": 5.5,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 053 (B11)",
+      "run": "python3 examples/tools/build.py 053",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 5.456,
+      "cpuThrottledSeconds": 0.577,
+      "peakMemoryBytes": 113864704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-053-b11.log",
+        "lines": 18,
+        "bytes": 649,
+        "sha256": "e9c98fdf17257fca7f4143ea4a77e81c82129ae6bcabda4f3c96a436e3e8ad65",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "053-idiv-that-leaves-division-by-zero-to-the-host: verified (as expected)",
+          "groups": [
+            "053",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "053-idiv-that-leaves-division-by-zero-to-the-host: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 0.8 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 0.9 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.1 s",
+        "  · jvmcontract prove",
+        "  · jvmcontract prove: exited 0, 0.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "053-idiv-that-leaves-division-by-zero-to-the-host: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md",
+      "change": "modified",
+      "bytes": 14982,
+      "sha256": "8d2f8c19b1a7abb85c83bf01d8e24fb2907c1cb4c51e77626c96e9543b3b19f7",
+      "sourceSha256": "8ea655cf9994921818356b0afc1eedf2b560f62b5b26253e712c1e1074c64b98"
+    },
+    {
+      "path": "examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json",
+      "change": "modified",
+      "bytes": 13363,
+      "sha256": "383a4c4763198b35734ec21965fc60b6a8282e2cc9e1038dc6a16f0e36e09420",
+      "sourceSha256": "074d8348bbe5189ea2fc16671d8017a98a19234be783c689e0b706e910e5cdb2"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md",
+      "examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

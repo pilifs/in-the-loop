@@ -2,6 +2,6 @@
   encodeInto(chars=['\u0080'], out=[0])
     before: throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]
     after:  1, leaving out=[-128]
-  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

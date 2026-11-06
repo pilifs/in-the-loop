@@ -1,0 +1,244 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-072-d1-vacuous-coverage-status-c",
+  "title": "Example 072 (D1, vacuous): coverage status complete, still vacuous",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 28.5s, peak 1.0 GiB (estimated 15m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-072-d1-vacuous-coverage-status-c.json",
+    "sha256": "23d400634a8c5d96acef69e7871ca227c519e67acc1c4d02e68430b9f57382d8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-072-d1-vacuous-coverage-status-c",
+      "title": "Example 072 (D1, vacuous): coverage status complete, still vacuous",
+      "description": "build.py now records whether TLC's coverage of each generated operator was read (coverage.status complete/partial/unavailable, listed operators per configuration, from jvmcontract tlc's new per-operator 'listed' flag), and only complete coverage can make a verdict vacuous. 072 changes two vote-rule rows no run takes and expects 'verified, vacuously': it must still get it, with coverage.status complete, and its result gains checkpoints (one per configuration, none reused on a first run) and each configuration's verdict, status and reason in coverage.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "072"
+        ]
+      },
+      "expected": "example 072 gives its expected verdict, verified (vacuously): build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "example 072 (D1)",
+          "run": "python3 examples/tools/build.py 072",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice"
+      ],
+      "supersedes": "20261105-125705-example-072-d1-vacuous-coverage-status-c"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:29+00:00",
+  "finishedAt": "2026-11-06T18:12:58+00:00",
+  "wallSeconds": 29.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1117720576,
+    "wallSeconds": 28.5,
+    "cpuSeconds": 41.5,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 072 (D1)",
+      "run": "python3 examples/tools/build.py 072",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 28.46,
+      "cpuSeconds": 41.522,
+      "cpuThrottledSeconds": 4.845,
+      "peakMemoryBytes": 1117720576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-072-d1.log",
+        "lines": 44,
+        "bytes": 1949,
+        "sha256": "89183a71e70672e4c7c2d7cb8a255072f9a865d46b1c58816b3ce306feffe767",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 44,
+          "text": "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)",
+          "groups": [
+            "072",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "  · javac patched quorum main: exited 0, 1.1 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 1.1 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · jvmcontract update",
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc RaftElection.cfg",
+        "  · jvmcontract tlc RaftElection.cfg: exited 0, 1.8 s",
+        "  · jvmcontract tlc RaftElectionInductive.cfg",
+        "  · jvmcontract tlc RaftElectionInductive.cfg: exited 0, 6.9 s",
+        "  · jvmcontract tlc RaftElectionFour.cfg",
+        "  · jvmcontract tlc RaftElectionFour.cfg: exited 0, 2.2 s",
+        "  · jvmcontract tlc RaftElectionLive.cfg",
+        "  · jvmcontract tlc RaftElectionLive.cfg: exited 0, 3.3 s",
+        "  · jvmcontract tlc RaftElectionLogs.cfg",
+        "  · jvmcontract tlc RaftElectionLogs.cfg: exited 0, 1.9 s",
+        "  · jvmcontract tlc RaftElectionDelayed.cfg",
+        "  · jvmcontract tlc RaftElectionDelayed.cfg: exited 0, 5.9 s",
+        "  · jvmcontract tlc RaftElectionHistory.cfg",
+        "  · jvmcontract tlc RaftElectionHistory.cfg: exited 0, 2.3 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "change": "modified",
+      "bytes": 57464,
+      "sha256": "495318febae51da12ba5b4189ac05fddf8b43576def6aadb2971a0edd806787e",
+      "sourceSha256": "88af861b6f3014b1e6d35c8c42cdd7fda55267eabbcf7798f8c3d7f991c85280"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json",
+      "change": "modified",
+      "bytes": 53854,
+      "sha256": "39c0c08e25b7ea43d0d29e115a56deae96c0f7dbfc723d6c32ef84ac0f237d6d",
+      "sourceSha256": "cf5c2d042ae89020818c98fd99b370cd2522f4bbc9cfb648ec95fc9ee53a3761"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt",
+      "change": "modified",
+      "bytes": 30669,
+      "sha256": "1b66c3587a16664fd465c96e3d71651981fa49312d12ae0cede2b80148816cd8",
+      "sourceSha256": "96f122027dcaec8d3dbdede65f80c18260356dd8058f118196323083d60b2408"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json",
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,213 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-128-b9-jbmc-violation-with-its-w",
+  "title": "Example 128 (B9, JBMC, violation) with its witness as typed calls of both versions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 119.9 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-128-b9-jbmc-violation-with-its-w.json",
+    "sha256": "f7169aa07f71c062bd3f3542b7a325d51cfab56378d884f8b99a3218a9384346",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-128-b9-jbmc-violation-with-its-w",
+      "title": "Example 128 (B9, JBMC, violation) with its witness as typed calls of both versions",
+      "description": "jvmcontract's equivalence and prove outcomes now keep each counterexample's witness as data (the second half of step 3b of llm-dlc/loops/build-orchestration.md): typed inputs with exact values (a long as a decimal string, a float or double as Java's toString), the patched version's call (class, class file, descriptor, static or not, the receiver as a record of its components, each argument naming the input it came from) and for a regression proof the previous version's call, whose arguments under previousArguments name the expression that computed them. build.py records it as counterexamples[].witness, with each class file's SHA-256 as built. The verdict and every other field must be unchanged; the counterexample must gain a witness that validates against the schema. 128's new version is a record's method and its previous version static, called with expressions over the components: witness.call must have the receiver Batch[start, size] and previousCall the static offsetToCommit (JII)J with arguments from this.start, this.size and failedIndex, both class files with a digest.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "128"
+        ]
+      },
+      "expected": "example 128 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a JBMC violation on a record method, 0.5 s; the rest is javac"
+      },
+      "steps": [
+        {
+          "name": "example 128 (B9)",
+          "run": "python3 examples/tools/build.py 128",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check"
+      ],
+      "supersedes": "20261105-133040-example-128-b9-jbmc-violation-with-its-w"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:24+00:00",
+  "finishedAt": "2026-11-06T18:13:28+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a JBMC violation on a record method, 0.5 s; the rest is javac"
+  },
+  "usage": {
+    "peakMemoryBytes": 125698048,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 128 (B9)",
+      "run": "python3 examples/tools/build.py 128",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 4.408,
+      "cpuSeconds": 6.57,
+      "cpuThrottledSeconds": 0.702,
+      "peakMemoryBytes": 125698048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-128-b9.log",
+        "lines": 20,
+        "bytes": 808,
+        "sha256": "f976a45773eadcf6264d7fd1f7ab5f072bc5c4eec96cbc341f611c1ff6f72955",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)",
+          "groups": [
+            "128",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.9 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "128-batch-commit-made-a-records-method-loses-the-failed-index-check: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "change": "modified",
+      "bytes": 27715,
+      "sha256": "15b6ed963f96aa2bc68f7e4fe517265f146c7cb99f2867c0e100ef4860526852",
+      "sourceSha256": "8cb82021c0d1e648c748e7eb07c01cf81a0979bd9852f90378a10630f4241426"
+    },
+    {
+      "path": "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json",
+      "change": "modified",
+      "bytes": 15918,
+      "sha256": "2a9eee24761ca15d83a027906f0be25c4f7509565f0e71615909c837d8f6ccfd",
+      "sourceSha256": "be26550bc25a25f2595b241755d64af6e440f2cabfb7fb906503ab224fdea5a0"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/README.md",
+      "examples/128-batch-commit-made-a-records-method-loses-the-failed-index-check/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

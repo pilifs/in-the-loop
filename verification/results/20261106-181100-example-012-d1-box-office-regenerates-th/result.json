@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-012-d1-box-office-regenerates-th",
+  "title": "Example 012 (D1, Box Office) regenerates the order state machine on every run",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.6s, peak 129.9 MiB (estimated 15m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-012-d1-box-office-regenerates-th.json",
+    "sha256": "8ce96d21284cb2777801c1d18e70abb6a39163ff3b3acd2989f8e79f208aed92",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-012-d1-box-office-regenerates-th",
+      "title": "Example 012 (D1, Box Office) regenerates the order state machine on every run",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: Box Office's run_tlc now runs :ticketing-domain:updateContracts on every D1 run, not only for an intended change, and compares OrderLifecycle#decide's contract with the committed one. 012 patches HoldService and is not meant to change behaviour, so the contract must be unchanged ('verified') and the verdict must not move.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "tlc"
+      ],
+      "links": {
+        "examples": [
+          "012"
+        ]
+      },
+      "expected": "build.py exits 0, 012 verified as before; modelContracts has OrderLifecycle#decide connection verified, rowsChanged 0, allowed true; contractDiff null",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "Gradle build of the Box Office copy plus one updateContracts"
+      },
+      "steps": [
+        {
+          "name": "example 012 (D1)",
+          "run": "python3 examples/tools/build.py 012",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/012-deleting-the-sweeper-is-safe"
+      ],
+      "supersedes": "20261105-124134-example-012-d1-box-office-regenerates-th"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:28+00:00",
+  "finishedAt": "2026-11-06T18:12:38+00:00",
+  "wallSeconds": 10.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "Gradle build of the Box Office copy plus one updateContracts"
+  },
+  "usage": {
+    "peakMemoryBytes": 136183808,
+    "wallSeconds": 9.6,
+    "cpuSeconds": 5.3,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 9.619,
+      "cpuSeconds": 5.265,
+      "cpuThrottledSeconds": 0.158,
+      "peakMemoryBytes": 136183808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-012-d1.log",
+        "lines": 16,
+        "bytes": 611,
+        "sha256": "2218318b0628b6ead12f133687c2157bfbc7ab4eed953b1d0d9c0b4c7fcb58a6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 16,
+          "text": "012-deleting-the-sweeper-is-safe: verified (as expected)",
+          "groups": [
+            "012",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "012-deleting-the-sweeper-is-safe: running (D1)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · gradle :ticketing-service:test",
+        "  · gradle :ticketing-service:test: exited 0, 4.9 s",
+        "  · gradle :ticketing-domain:updateContracts",
+        "  · gradle :ticketing-domain:updateContracts: exited 0, 1.7 s",
+        "  · contract to TLA+",
+        "  · contract to TLA+: exited 0, 0.0 s",
+        "  · TLC on BoxOffice.tla",
+        "  · TLC on BoxOffice.tla: exited 0, 1.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "012-deleting-the-sweeper-is-safe: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/README.md",
+      "change": "modified",
+      "bytes": 13567,
+      "sha256": "50d5c3a0989606d426868b33bca1d51bbb412cc8e5bd270a94ee0f41689f2320",
+      "sourceSha256": "f5218c053941f19055e457dc2cda3134c3336e36e9d4af1a78e4b31d814a4d49"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "change": "modified",
+      "bytes": 8456,
+      "sha256": "71645ef3e62c6e187bf84cb9fb8f4a4359fdc628674e0471194fc598fa391979",
+      "sourceSha256": "57d3f440faa64543d6a10e1e0559ffadafb327b3c597c25b8bd474825e9a2a7f"
+    },
+    {
+      "path": "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1490,
+      "sha256": "b3c25079e714e149016eeb7c30c9eafa6772c8b14b8c76434b9789dbabeba770",
+      "sourceSha256": "6eb291788fc47d7c11ccb4e93028f7b45a6d613639b8e53b855ad916282d4dbe"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/012-deleting-the-sweeper-is-safe/README.md",
+      "examples/012-deleting-the-sweeper-is-safe/result.json",
+      "examples/012-deleting-the-sweeper-is-safe/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

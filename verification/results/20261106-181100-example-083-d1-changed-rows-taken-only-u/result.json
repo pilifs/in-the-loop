@@ -1,0 +1,244 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-083-d1-changed-rows-taken-only-u",
+  "title": "Example 083 (D1): changed rows taken only under the delayed configuration, coverage known everywhere",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 27.7s, peak 1.0 GiB (estimated 15m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-083-d1-changed-rows-taken-only-u.json",
+    "sha256": "fb63ec920fc78d5f84f788311094c5980b82fc762f136b3df96b307c853d1c2f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-083-d1-changed-rows-taken-only-u",
+      "title": "Example 083 (D1): changed rows taken only under the delayed configuration, coverage known everywhere",
+      "description": "083 is verified under all seven election configurations, and only the delayed one takes the rows the change touches. With the coverage status, the page's table must be as before (no 'not counted' cell) and coverage.status complete, which shows TLC's statistics list both generated operators under every configuration that counts coverage.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "083"
+        ]
+      },
+      "expected": "example 083 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "example 083 (D1)",
+          "run": "python3 examples/tools/build.py 083",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them"
+      ],
+      "supersedes": "20261105-125706-example-083-d1-changed-rows-taken-only-u"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:35+00:00",
+  "finishedAt": "2026-11-06T18:13:03+00:00",
+  "wallSeconds": 28.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1101877248,
+    "wallSeconds": 27.7,
+    "cpuSeconds": 40.1,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 083 (D1)",
+      "run": "python3 examples/tools/build.py 083",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 27.665,
+      "cpuSeconds": 40.145,
+      "cpuThrottledSeconds": 4.98,
+      "peakMemoryBytes": 1101877248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-083-d1.log",
+        "lines": 44,
+        "bytes": 1933,
+        "sha256": "68fedbfae7c2312c7e5f773160dc9ae539ae838e0a42471b991a542d5cc51938",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 44,
+          "text": "083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them: verified (as expected)",
+          "groups": [
+            "083",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "  · javac patched quorum main: exited 0, 0.9 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 0.9 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · jvmcontract update",
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc RaftElection.cfg",
+        "  · jvmcontract tlc RaftElection.cfg: exited 0, 1.8 s",
+        "  · jvmcontract tlc RaftElectionInductive.cfg",
+        "  · jvmcontract tlc RaftElectionInductive.cfg: exited 0, 6.4 s",
+        "  · jvmcontract tlc RaftElectionFour.cfg",
+        "  · jvmcontract tlc RaftElectionFour.cfg: exited 0, 2.2 s",
+        "  · jvmcontract tlc RaftElectionLive.cfg",
+        "  · jvmcontract tlc RaftElectionLive.cfg: exited 0, 3.2 s",
+        "  · jvmcontract tlc RaftElectionLogs.cfg",
+        "  · jvmcontract tlc RaftElectionLogs.cfg: exited 0, 1.8 s",
+        "  · jvmcontract tlc RaftElectionDelayed.cfg",
+        "  · jvmcontract tlc RaftElectionDelayed.cfg: exited 0, 6.0 s",
+        "  · jvmcontract tlc RaftElectionHistory.cfg",
+        "  · jvmcontract tlc RaftElectionHistory.cfg: exited 0, 2.3 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md",
+      "change": "modified",
+      "bytes": 59466,
+      "sha256": "7da027ec0e604aff0727692ce9a5cd4e98084c771db9324d656795440182c04f",
+      "sourceSha256": "ba08fb590281af074fc6d7dc63a762c479bcc4caee4be85fb850089e04c52363"
+    },
+    {
+      "path": "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.json",
+      "change": "modified",
+      "bytes": 59480,
+      "sha256": "a531e213b6a3f15c02181c1612c4b0edbaac35c5e37308966937de8a806fb0c6",
+      "sourceSha256": "686ae6678047035b4528a374f5baeae9303e7c4ee770fc2ba840a59b9ac6d64f"
+    },
+    {
+      "path": "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/verifier-output.txt",
+      "change": "modified",
+      "bytes": 31996,
+      "sha256": "b8239b358795f23095173e63b29b6dc3444989e10f6fdbb94a82941bbe59fd39",
+      "sourceSha256": "f2b240d23b023fb2c684e9de399d08f92699eb2bed073451218de0de51cdbc6e"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/README.md",
+      "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/result.json",
+      "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,6 +1,6 @@
 == three participants: spec/TwoPhaseCommit.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 46483] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80843] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -17,12 +17,12 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:07)
+Starting... (2026-11-06 18:12:42)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:08.
-Checking 3 branches of temporal properties for the complete state space with 2184 total distinct states at (2026-11-06 17:14:08)
-Finished checking temporal properties in 00s at 2026-11-06 17:14:08
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:42.
+Checking 3 branches of temporal properties for the complete state space with 2184 total distinct states at (2026-11-06 18:12:43)
+Finished checking temporal properties in 00s at 2026-11-06 18:12:43
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -36,10 +36,7 @@ Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model ta
   decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
-Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 0 of 3; never taken (3):
-  decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
-  decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
-  decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: unknown, TLC's coverage statistics do not list it under any action.
 Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model takes: 6 of 28; never taken (22):
   decide(WORKING, Learned[outcome=NONE]) => Unchanged
   decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]
@@ -66,11 +63,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 2489 states generated, 728 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 11.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
-Finished in 01s at (2026-11-06 17:14:08)
+Finished in 01s at (2026-11-06 18:12:43)
 
 == the inductive step: spec/TwoPhaseCommitInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 46642] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80919] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -87,7 +84,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:09)
+Starting... (2026-11-06 18:12:44)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -98,7 +95,7 @@ Computed 64 initial states...
 Computed 128 initial states...
 Computed 256 initial states...
 Computed 512 initial states...
-Finished computing initial states: 736 distinct states generated at 2026-11-06 17:14:10.
+Finished computing initial states: 736 distinct states generated at 2026-11-06 18:12:45.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -112,10 +109,7 @@ Rows of net.terminalvalue.quorum.twopc.Coordinator#decide a step of the model ta
   decide(COMMITTED, Timeout[unanimousSoFar=true]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=false]) => Unchanged
   decide(ABORTED, Timeout[unanimousSoFar=true]) => Unchanged
-Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: 0 of 3; never taken (3):
-  decide(COLLECTING, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
-  decide(COMMITTED, Restarted[]) => Transition[next=COMMITTED, effects=[SEND_COMMIT]]
-  decide(ABORTED, Restarted[]) => Transition[next=ABORTED, effects=[SEND_ABORT]]
+Rows of net.terminalvalue.quorum.twopc.Recovery#decide a step of the model takes: unknown, TLC's coverage statistics do not list it under any action.
 Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model takes: 6 of 28; never taken (22):
   decide(WORKING, Learned[outcome=NONE]) => Unchanged
   decide(WORKING, Learned[outcome=COMMIT]) => Transition[next=COMMITTED, effects=[]]
@@ -142,11 +136,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 3224 states generated, 736 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 00s at (2026-11-06 17:14:10)
+Finished in 01s at (2026-11-06 18:12:45)
 
 == crashes: spec/TwoPhaseCommitCrash.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 46704] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80965] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -163,12 +157,12 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:10)
+Starting... (2026-11-06 18:12:45)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:11.
-Checking 3 branches of temporal properties for the complete state space with 10344 total distinct states at (2026-11-06 17:14:13)
-Finished checking temporal properties in 00s at 2026-11-06 17:14:13
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:46.
+Checking 3 branches of temporal properties for the complete state space with 10344 total distinct states at (2026-11-06 18:12:48)
+Finished checking temporal properties in 00s at 2026-11-06 18:12:48
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -209,11 +203,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 14717 states generated, 3448 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 12.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 12 and the 95th percentile is 4).
-Finished in 02s at (2026-11-06 17:14:13)
+Finished in 02s at (2026-11-06 18:12:48)
 
 == the inductive step with crashes: spec/TwoPhaseCommitCrashInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 46933] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81109] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -230,7 +224,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:13)
+Starting... (2026-11-06 18:12:48)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -243,7 +237,7 @@ Computed 256 initial states...
 Computed 512 initial states...
 Computed 1024 initial states...
 Computed 2048 initial states...
-Finished computing initial states: 2728 distinct states generated at 2026-11-06 17:14:14.
+Finished computing initial states: 2728 distinct states generated at 2026-11-06 18:12:49.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -284,11 +278,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 12760 states generated, 2728 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 01s at (2026-11-06 17:14:14)
+Finished in 01s at (2026-11-06 18:12:49)
 
 == participant crashes: spec/TwoPhaseCommitParticipantCrash.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 47029] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81221] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -305,14 +299,14 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:15)
+Starting... (2026-11-06 18:12:50)
 Implied-temporal checking--satisfiability problem has 3 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:15.
-Checking 3 branches of temporal properties for the current state space with 15151 total distinct states at (2026-11-06 17:14:18)
-Finished checking temporal properties in 00s at 2026-11-06 17:14:18
-Checking 3 branches of temporal properties for the complete state space with 38262 total distinct states at (2026-11-06 17:14:22)
-Finished checking temporal properties in 00s at 2026-11-06 17:14:22
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:50.
+Checking 3 branches of temporal properties for the current state space with 15005 total distinct states at (2026-11-06 18:12:53)
+Finished checking temporal properties in 00s at 2026-11-06 18:12:53
+Checking 3 branches of temporal properties for the complete state space with 38262 total distinct states at (2026-11-06 18:12:57)
+Finished checking temporal properties in 00s at 2026-11-06 18:12:57
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -349,11 +343,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 65295 states generated, 12754 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 12.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 27 and the 95th percentile is 4).
-Finished in 07s at (2026-11-06 17:14:22)
+Finished in 07s at (2026-11-06 18:12:57)
 
 == the inductive step with participant crashes: spec/TwoPhaseCommitParticipantCrashInductive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 47930] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81454] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -370,7 +364,7 @@ Semantic processing of module RecoveryContract
 Semantic processing of module ParticipantContract
 Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
-Starting... (2026-11-06 17:14:22)
+Starting... (2026-11-06 18:12:58)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
@@ -387,7 +381,7 @@ Computed 4096 initial states...
 Computed 8192 initial states...
 Computed 16384 initial states...
 Computed 32768 initial states...
-Finished computing initial states: 33204 states generated, with 18636 of them distinct at 2026-11-06 17:14:23.
+Finished computing initial states: 33204 states generated, with 18636 of them distinct at 2026-11-06 18:12:58.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -425,11 +419,11 @@ Rows of net.terminalvalue.quorum.twopc.Participant#decide a step of the model ta
 120032 states generated, 18636 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 1.
 The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
-Finished in 01s at (2026-11-06 17:14:24)
+Finished in 01s at (2026-11-06 18:12:59)
 
 == the recorded runs: spec/TwoPhaseCommitTrace.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 48041] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81585] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/TwoPhaseCommitTrace.tla
 Parsing file examples/apps/quorum/spec/TwoPhaseCommit.tla
 Parsing file examples/apps/quorum/spec/TwoPhaseCommitTraces.tla
@@ -450,12 +444,12 @@ Semantic processing of module TCommit
 Semantic processing of module TwoPhaseCommit
 Semantic processing of module TwoPhaseCommitTraces
 Semantic processing of module TwoPhaseCommitTrace
-Starting... (2026-11-06 17:14:25)
+Starting... (2026-11-06 18:13:00)
 Computing initial states...
 Computed 2 initial states...
 Computed 4 initial states...
 Computed 8 initial states...
-Finished computing initial states: 11 distinct states generated at 2026-11-06 17:14:25.
+Finished computing initial states: 11 distinct states generated at 2026-11-06 18:13:00.
 Error: Action property EveryStepIsOneOfTheModel is violated.
 Error: The behavior up to this point is:
 State 1: <Initial predicate>
@@ -517,4 +511,4 @@ State 4: <TraceNext line 63, col 5 to line 66, col 35 of module TwoPhaseCommitTr
 40 states generated, 40 distinct states found, 10 states left on queue.
 The depth of the complete state graph search is 4.
 The average outdegree of the complete state graph is 1 (minimum is 1, the maximum 1 and the 95th percentile is 1).
-Finished in 00s at (2026-11-06 17:14:25)
+Finished in 00s at (2026-11-06 18:13:00)

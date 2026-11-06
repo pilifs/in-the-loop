@@ -192,6 +192,10 @@ Every invariant holds in every reachable state of the model: 3,604 distinct stat
 
 The order state machine inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the services really make.
 
+**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
+
+- `OrderLifecycle#decide` (`spec/OrderLifecycleContract.tla`): the committed contract, which the patched classes still match
+
 ## Would the existing tests have caught it?
 
 Every existing unit test passes, as it should (`:ticketing-service:test`, run against the patched code).
@@ -216,13 +220,13 @@ Safe to merge as far as correctness goes. Keep the sweeper if the seat list is r
 
 How the verdict was reached: TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+This page renders attempt `20261106T181229Z-64aa94c3` at claim `590bcf69b741418d`, in pipeline job `20261106-181100-example-012-d1-box-office-regenerates-th`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 25 and seed 8174216969514127529 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 80272] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/Sequences.tla
@@ -233,9 +237,9 @@ Semantic processing of module Sequences
 Semantic processing of module FiniteSets
 Semantic processing of module OrderLifecycleContract
 Semantic processing of module BoxOffice
-Starting... (2026-11-02 21:27:09)
+Starting... (2026-11-06 18:12:36)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:36.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -243,7 +247,7 @@ Model checking completed. No error has been found.
 6716 states generated, 3604 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 26.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
-Finished in 00s at (2026-11-02 21:27:10)
+Finished in 00s at (2026-11-06 18:12:36)
 ```
 
 </details>
@@ -270,6 +274,12 @@ Finished in 00s at (2026-11-02 21:27:10)
               "id": "unverifiable",
               "shortDescription": {
                 "text": "TLC could not check the model."
+              }
+            },
+            {
+              "id": "contract-changed",
+              "shortDescription": {
+                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
               }
             }
           ]

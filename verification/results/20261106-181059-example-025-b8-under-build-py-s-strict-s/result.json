@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181059-example-025-b8-under-build-py-s-strict-s",
+  "title": "Example 025 (B8) under build.py's strict selection",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.4s, peak 100.0 MiB (estimated 5m00s, 1.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181059-example-025-b8-under-build-py-s-strict-s.json",
+    "sha256": "b71149e42398346a7ca476a8f8ca857e2f20ac9a2fbe5d258c0207a67bec98a4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181059-example-025-b8-under-build-py-s-strict-s",
+      "title": "Example 025 (B8) under build.py's strict selection",
+      "description": "build.py now refuses an argument that is not an example id (exit 2, nothing run) and reports a requested example it cannot run as not-executed with exit 1 (build-orchestration brief, step 1b). This job checks that an ordinary run of one constructed example is unaffected: example 025 gives its expected violation, build.py prints 'as expected' and exits 0, and result.json is unchanged apart from gaining execution and expectation (step 1a).",
+      "kind": "example",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {
+        "examples": [
+          "025"
+        ]
+      },
+      "expected": "example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:10:59+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "a Crosscut B8 example builds with javac and runs jvmcontract verify in seconds"
+      },
+      "steps": [
+        {
+          "name": "example 025 (B8)",
+          "run": "python3 examples/tools/build.py 025",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/025-transaction-that-commits-after-an-error"
+      ],
+      "supersedes": "20261105-113118-example-025-b8-under-build-py-s-strict-s"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:11:21+00:00",
+  "finishedAt": "2026-11-06T18:12:28+00:00",
+  "wallSeconds": 67.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "a Crosscut B8 example builds with javac and runs jvmcontract verify in seconds"
+  },
+  "usage": {
+    "peakMemoryBytes": 104812544,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 4.9,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 3.406,
+      "cpuSeconds": 4.856,
+      "cpuThrottledSeconds": 0.457,
+      "peakMemoryBytes": 104812544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-025-b8.log",
+        "lines": 20,
+        "bytes": 796,
+        "sha256": "cd2dc453bd838e13d531b36061dc04f6ff66a9167cfc655f7c0e4e70ae6659c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "025-transaction-that-commits-after-an-error: violation (as expected)",
+          "groups": [
+            "025",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "025-transaction-that-commits-after-an-error: running (B8)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.8 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · jvmcontract verify",
+        "  · jvmcontract verify: exited 1, 0.0 s",
+        "  · jvmcontract derive TransactionBoundary#exit",
+        "  · jvmcontract derive TransactionBoundary#exit: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 2, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "025-transaction-that-commits-after-an-error: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/README.md",
+      "change": "modified",
+      "bytes": 15109,
+      "sha256": "f850745ecf633ef4863ab648d59af5060d77cc0e9f6722252d86c836f304d847",
+      "sourceSha256": "e1ba33055c85a708ab7594e387230bd369e1b62e1086d8a1037ad49b3cafcaec"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.json",
+      "change": "modified",
+      "bytes": 7207,
+      "sha256": "dd1cbaa38fa961565f952a9817a8199e9a68e0c937fba6fcb8fa2770de5dbe5c",
+      "sourceSha256": "cb839e2a5b21a80ace391370754883f2ac2c1a848917988cfa2f5615e65ed124"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/025-transaction-that-commits-after-an-error/README.md",
+      "examples/025-transaction-that-commits-after-an-error/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

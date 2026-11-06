@@ -28,19 +28,21 @@
     }
   },
   "attempt": {
-    "id": "20261106T171549Z-08ea7250",
+    "id": "20261106T181350Z-684dd73b",
     "claim": "268579010ba48ec0",
-    "startedAt": "2026-11-06T17:15:49+00:00",
-    "seconds": 9.1,
+    "startedAt": "2026-11-06T18:13:50+00:00",
+    "seconds": 7.3,
     "engine": "jbmc",
     "options": [
+      "--gaps",
+      "strict",
       "--unwind",
       "32"
     ],
     "tools": {
       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
       "javac": "javac 25.0.5",
-      "jvmcontract": "e5471226fec8622a90910eeac1aff1676772690fff15717ac13c69ab7d38120e",
+      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
       "jbmc": "6.11.0 (cbmc-6.11.0)"
     },
     "bytecode": {
@@ -54,9 +56,9 @@
       }
     },
     "pipeline": {
-      "jobId": "20261106-031642-example-127-b9-re-run-its-statement-says",
-      "sourceCommit": "f963e6a672ec9bceebc8a1c21f174fbcdf3798cd",
-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-031642-example-127-b9-re-run-its-statement-says"
+      "jobId": "20261106-181102-example-127-b9-re-run-its-statement-says",
+      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181102-example-127-b9-re-run-its-statement-says"
     },
     "execution": {
       "status": "completed",
@@ -81,7 +83,7 @@
         "name": "javac patched crosscut main",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 1.6,
+        "seconds": 0.8,
         "stdout": "logs/02-javac-patched-crosscut-main.stdout",
         "stderr": "logs/02-javac-patched-crosscut-main.stderr"
       },
@@ -89,7 +91,7 @@
         "name": "javac patched crosscut tests",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 1.5,
+        "seconds": 0.7,
         "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
         "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
       },
@@ -105,7 +107,7 @@
         "name": "javac unpatched crosscut main",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 1.4,
+        "seconds": 0.7,
         "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
         "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
       },
@@ -113,7 +115,7 @@
         "name": "jvmcontract equivalence",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 4.4,
+        "seconds": 5.0,
         "stdout": "logs/06-jvmcontract-equivalence.stdout",
         "stderr": "logs/06-jvmcontract-equivalence.stderr"
       },
@@ -129,7 +131,7 @@
         "name": "version of javac",
         "status": "exited",
         "exitCode": 0,
-        "seconds": 0.2,
+        "seconds": 0.1,
         "stdout": "logs/08-version-of-javac.stdout",
         "stderr": "logs/08-version-of-javac.stderr"
       },
@@ -142,11 +144,11 @@
         "stderr": "logs/09-version-of-jbmc.stderr"
       }
     ],
-    "workspace": ".build-py/examples-7ura94th/attempts/127/attempt-y7zc7bpm"
+    "workspace": ".build-py/examples-l9duqn76/attempts/127/attempt-v_fgwg9i"
   },
   "conclusion": {
     "claim": "268579010ba48ec0",
-    "attempt": "20261106T171549Z-08ea7250",
+    "attempt": "20261106T181350Z-684dd73b",
     "status": "established",
     "vacuous": false,
     "expectation": "yes",
@@ -176,7 +178,7 @@
     "purityViolations": [],
     "trustedCalls": [],
     "contractDiff": null,
-    "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 4.3 s; loops unwound 32 times with unwinding assertions",
+    "proof": "JBMC 6.11.0: 3 properties proved over this: Backoff(baseMillis: long, capMillis: long) × attempt: int in 5.0 s; loops unwound 32 times with unwinding assertions",
     "problem": null,
     "statement": "statement.java",
     "trace": null,
@@ -190,11 +192,109 @@
     "search": {
       "engine": "jbmc",
       "checker": "JBMC 6.11.0",
-      "seconds": 4.279,
+      "seconds": 5.001,
       "properties": 3,
       "unwind": 32,
       "maxArrayLength": 8,
-      "stage": null
+      "stage": null,
+      "deadlineSeconds": 600.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": "[0:20]",
+          "budgetSeconds": 75.0,
+          "seconds": 0.552,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.016,
+            "lowering": 0.006,
+            "symbolic": 0.035,
+            "encoding": 0.031,
+            "solving": 0.432,
+            "trace": 0.0,
+            "other": 0.032
+          },
+          "formula": {
+            "steps": 2570,
+            "conditions": 2,
+            "variables": 48395,
+            "clauses": 147366
+          }
+        },
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": "[-100000:100000]",
+          "budgetSeconds": 75.0,
+          "seconds": 1.304,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.015,
+            "lowering": 0.005,
+            "symbolic": 0.03,
+            "encoding": 0.027,
+            "solving": 1.19,
+            "trace": 0.0,
+            "other": 0.038
+          },
+          "formula": {
+            "steps": 2570,
+            "conditions": 2,
+            "variables": 48395,
+            "clauses": 147366
+          }
+        },
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": null,
+          "budgetSeconds": 598.062,
+          "seconds": 3.059,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.02,
+            "lowering": 0.007,
+            "symbolic": 0.047,
+            "encoding": 0.033,
+            "solving": 2.904,
+            "trace": 0.0,
+            "other": 0.048
+          },
+          "formula": {
+            "steps": 2563,
+            "conditions": 2,
+            "variables": 47677,
+            "clauses": 145907
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budgetSeconds": 594.999,
+          "seconds": 0.001,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.001,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1273,
+            "clauses": 3739
+          }
+        }
+      ],
+      "gapMode": "strict"
     },
     "stated": {
       "kind": "regression",
@@ -228,7 +328,7 @@
         },
         {
           "kind": "library",
-          "text": "a JDK method outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub: a void one does nothing and another returns any value of its type",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
           "basis": "engine"
         }
       ],
@@ -253,7 +353,7 @@
         "solver": "cadical",
         "fallback": null
       },
-      "gapMode": null,
+      "gapMode": "strict",
       "confirmation": null,
       "vacuity": {
         "status": "non-vacuous",
@@ -278,7 +378,7 @@
       },
       {
         "path": "verifier-output.txt",
-        "sha256": "45dd1dee42acf891e83534b21b24b1c40a8dfad81541f78ae2c16851928b6989",
+        "sha256": "29f9c25f87e92f2610e3acd065f099ec22559d00471ee928df46259eabf6b93e",
         "bytes": 639
       }
     ]

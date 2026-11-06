@@ -1,0 +1,476 @@
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/README.md
+@@ -128,14 +128,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `dividend: int × divisor: int`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against (divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend), and on exceptions: none may be thrown but as a throws clause says: java.lang.ArithmeticException when divisor == 0. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
++
++This page renders attempt `20261106T181230Z-2b9e9391` at claim `302628ea10615f45`, in pipeline job `20261106-181100-example-053-b11-throws-clause-verified-r`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions)
+ ```
+ 
+ </details>
+@@ -196,6 +198,12 @@
+               }
+             },
+             {
++              "id": "boundaries-changed",
++              "shortDescription": {
++                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
++              }
++            },
++            {
+               "id": "property-violated",
+               "shortDescription": {
+                 "text": "An input exists on which the method violates its stated property."
+--- a/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
++++ b/examples/053-idiv-that-leaves-division-by-zero-to-the-host/result.json
+@@ -1,76 +1,370 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: property holds on every input",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
++  "format": 2,
++  "claim": {
++    "id": "302628ea10615f45",
++    "format": 1,
++    "example": "053",
++    "statement": {
++      "approach": "B11",
++      "target": "net.terminalvalue.mica.interp.Arithmetic#idiv",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null
++    },
++    "inputs": {
++      "patch": "6ab3400b00b9f7dc73c13f3d906c9384e0c0e9239fa9f3345548ecd039236f7d",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "045b0a53839be7ba1c73ab6518b8f550d68b49215559385a6863354281f18642",
++        "files": 50
++      },
++      "dependencies": "the JDK"
++    }
+   },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.mica.Tests",
+-    "passed": true,
+-    "failures": []
++  "attempt": {
++    "id": "20261106T181230Z-2b9e9391",
++    "claim": "302628ea10615f45",
++    "startedAt": "2026-11-06T18:12:30+00:00",
++    "seconds": 2.1,
++    "engine": "jbmc",
++    "options": [
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "9e26acfe9ef3fef47ae554f36e1d1a065c6826ab25586445f0d07f5304bbb4db",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181100-example-053-b11-throws-clause-verified-r",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181100-example-053-b11-throws-clause-verified-r"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.8,
++        "stdout": "logs/02-javac-patched-mica-main.stdout",
++        "stderr": "logs/02-javac-patched-mica-main.stderr"
++      },
++      {
++        "name": "javac patched mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.9,
++        "stdout": "logs/03-javac-patched-mica-tests.stdout",
++        "stderr": "logs/03-javac-patched-mica-tests.stderr"
++      },
++      {
++        "name": "the mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-mica-tests.stdout",
++        "stderr": "logs/04-the-mica-tests.stderr"
++      },
++      {
++        "name": "jvmcontract prove",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.4,
++        "stdout": "logs/05-jvmcontract-prove.stdout",
++        "stderr": "logs/05-jvmcontract-prove.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-version-of-jbmc.stdout",
++        "stderr": "logs/08-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-0m5hv4tk/attempts/053/attempt-jpyqedmv"
+   },
+-  "before": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+-    "startLine": 11,
+-    "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}.\n     * The one overflow, {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no\n     * exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend % divisor;\n    }\n}\n"
++  "conclusion": {
++    "claim": "302628ea10615f45",
++    "attempt": "20261106T181230Z-2b9e9391",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
++        "status": "established",
++        "evidence": {
++          "harness": null,
++          "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
++          "assume": null,
++          "throws": [
++            "java.lang.ArithmeticException when divisor == 0"
++          ],
++          "verdict": "verified",
++          "domain": "dividend: int × divisor: int",
++          "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
++          "problem": null,
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": {
++            "engine": "jbmc",
++            "checker": "JBMC 6.11.0",
++            "seconds": 0.331,
++            "properties": 2,
++            "unwind": 16,
++            "maxArrayLength": 8,
++            "stage": null,
++            "deadlineSeconds": 600.0,
++            "runs": [
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": "[0:20]",
++                "budgetSeconds": 75.0,
++                "seconds": 0.051,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.003,
++                  "lowering": 0.001,
++                  "symbolic": 0.002,
++                  "encoding": 0.003,
++                  "solving": 0.012,
++                  "trace": 0.0,
++                  "other": 0.029
++                },
++                "formula": {
++                  "steps": 190,
++                  "conditions": 1,
++                  "variables": 4737,
++                  "clauses": 17118
++                }
++              },
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": "[-100000:100000]",
++                "budgetSeconds": 75.0,
++                "seconds": 0.051,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.001,
++                  "symbolic": 0.002,
++                  "encoding": 0.003,
++                  "solving": 0.019,
++                  "trace": 0.0,
++                  "other": 0.023
++                },
++                "formula": {
++                  "steps": 190,
++                  "conditions": 1,
++                  "variables": 4737,
++                  "clauses": 17118
++                }
++              },
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": null,
++                "budgetSeconds": 599.823,
++                "seconds": 0.151,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.001,
++                  "symbolic": 0.002,
++                  "encoding": 0.002,
++                  "solving": 0.128,
++                  "trace": 0.0,
++                  "other": 0.015
++                },
++                "formula": {
++                  "steps": 188,
++                  "conditions": 1,
++                  "variables": 4607,
++                  "clauses": 16852
++                }
++              }
++            ],
++            "gapMode": "strict"
++          },
++          "replay": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "dividend",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "divisor",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "sharedArrays": false,
++              "text": "dividend: int × divisor: int"
++            },
++            "assumptions": [
++              {
++                "kind": "library",
++                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against (divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
++              "exceptions": "none may be thrown but as a throws clause says: java.lang.ArithmeticException when divisor == 0"
++            },
++            "bounds": {
++              "unwind": 16,
++              "maxArrayLength": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++              "classes": 10,
++              "jdk": "25.0.5"
++            },
++            "checker": {
++              "engine": "jbmc",
++              "name": "JBMC 6.11.0",
++              "solver": "cadical",
++              "fallback": null
++            },
++            "gapMode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        }
++      }
++    ],
++    "label": "✓ Verified: property holds on every input",
++    "obligationKeys": {
++      "property": "properties"
++    }
+   },
+-  "after": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
+-    "startLine": 11,
+-    "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}, which\n     * is what the host's own {@code idiv} throws, so the kernel does not check first. The one overflow,\n     * {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        return dividend % divisor;\n    }\n}\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "dividend: int × divisor: int",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": {
+-    "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
+-    "assume": null,
+-    "throws": [
+-      "java.lang.ArithmeticException when divisor == 0"
+-    ]
+-  },
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "properties": [
+-    {
+-      "harness": null,
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.mica.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
++      "startLine": 11,
++      "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}.\n     * The one overflow, {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no\n     * exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        if (divisor == 0) {\n            throw new ArithmeticException(\"/ by zero\");\n        }\n        return dividend % divisor;\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/Arithmetic.java",
++      "startLine": 11,
++      "code": "    private Arithmetic() {}\n\n    /**\n     * {@code idiv}: the quotient rounded towards zero. Division by zero throws {@code ArithmeticException}, which\n     * is what the host's own {@code idiv} throws, so the kernel does not check first. The one overflow,\n     * {@code Integer.MIN_VALUE / -1}, is specified: the result is the dividend, and no exception is thrown.\n     */\n    public static int idiv(int dividend, int divisor) {\n        return dividend / divisor;\n    }\n\n    /** {@code irem}: the remainder, with the sign of the dividend, so that {@code (a / b) * b + (a % b) == a}. */\n    public static int irem(int dividend, int divisor) {\n        return dividend % divisor;\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "dividend: int × divisor: int",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": {
+       "assert": "(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)",
+       "assume": null,
+       "throws": [
+         "java.lang.ArithmeticException when divisor == 0"
+-      ],
+-      "verdict": "verified",
+-      "domain": "dividend: int × divisor: int",
+-      "proof": "JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions",
+-      "problem": null,
+-      "vacuous": null,
+-      "counterexample": null,
+-      "statement": null,
+-      "search": {
+-        "engine": "jbmc",
+-        "checker": "JBMC 6.11.0",
+-        "seconds": 0.26,
+-        "properties": 2,
+-        "unwind": 16,
+-        "maxArrayLength": 8,
+-        "stage": null
+-      },
+-      "replay": null
+-    }
+-  ]
++      ]
++    },
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt"
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "2ef15fbbbb8701659944c438b2f7230d4ecff16be3a77af2f737eea222e3c184",
++        "bytes": 1688
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "901882b7b0b03118d91213209573d1a56f3b3fd62fa77e25556df1db88b2f7e8",
++        "bytes": 345
++      }
++    ]
++  }
+ }

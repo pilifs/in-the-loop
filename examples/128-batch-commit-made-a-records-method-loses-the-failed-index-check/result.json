@@ -1,64 +1,426 @@
 {
-  "verdict": "violation",
-  "verdictLabel": "✗ Violation: counterexample found",
-  "execution": {
-    "status": "completed",
-    "exitCode": 1,
-    "reason": null
-  },
-  "matchesExpected": true,
-  "expectation": "yes",
-  "existingTests": {
-    "task": "java -ea net.terminalvalue.crosscut.Tests",
-    "passed": true,
-    "failures": []
-  },
-  "before": {
-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
-    "startLine": 1,
-    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}\n * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic final class BatchCommit {\n\n    private BatchCommit() {}\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    /**\n     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index\n     * within the batch of the record that failed, or {@link #NONE_FAILED}.\n     */\n    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {\n        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {\n            throw new IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\");\n        }\n        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;\n    }\n}\n"
-  },
-  "after": {
-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java",
-    "startLine": 1,
-    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,\n * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a\n * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic record Batch(long start, int size) {\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    public Batch {\n        if (start < 0 || size <= 0) {\n            throw new IllegalArgumentException(\"start >= 0 and size > 0 are required\");\n        }\n    }\n\n    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */\n    public long offsetToCommit(int failedIndex) {\n        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;\n    }\n}\n"
-  },
-  "casesTotal": null,
-  "domain": "this: Batch(start: long, size: int) × failedIndex: int",
-  "counterexamples": [
-    {
-      "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
-      "contract": "throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\")",
-      "actual": "1",
-      "found": "offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)",
-      "shrinkRuns": 19
+  "format": 2,
+  "claim": {
+    "id": "cb63cad56915b8db",
+    "format": 1,
+    "example": "128",
+    "statement": {
+      "approach": "B9",
+      "target": "net.terminalvalue.crosscut.kafka.Batch#offsetToCommit",
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+      "behaviourChangeIntended": false,
+      "previousSymbol": "net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit",
+      "previousArguments": "this.start, this.size, failedIndex"
+    },
+    "scope": {
+      "maxArrayLength": null,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": "36ecdfcfa043e06d2d413e636afa0532025c1206e32a2371d955d1675c0b3b61",
+      "before": {
+        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
+        "files": 54
+      },
+      "after": {
+        "sha256": "c5b2695f55abb7d1bb8666cc132376834068365be0a0bd0d4e7114d849ec4872",
+        "files": 54
+      },
+      "dependencies": "the JDK"
     }
-  ],
-  "purityViolations": [],
-  "trustedCalls": [],
-  "contractDiff": null,
-  "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int",
-  "problem": null,
-  "statement": "statement.java",
-  "trace": null,
-  "statesExplored": null,
-  "invariant": null,
-  "property": null,
-  "stateMachine": null,
-  "coverage": null,
-  "sarif": "result.sarif",
-  "output": "verifier-output.txt",
-  "search": {
-    "engine": "jbmc",
-    "checker": "JBMC 6.11.0",
-    "seconds": 0.06,
-    "properties": 2,
-    "unwind": 16,
-    "maxArrayLength": 8,
-    "stage": "[0:20]"
   },
-  "replay": {
-    "by": "interpreter",
-    "reproduced": true
+  "attempt": {
+    "id": "20261106T181324Z-aec296cc",
+    "claim": "cb63cad56915b8db",
+    "startedAt": "2026-11-06T18:13:24+00:00",
+    "seconds": 2.6,
+    "engine": "jbmc",
+    "options": [
+      "--gaps",
+      "strict"
+    ],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
+      "jbmc": "6.11.0 (cbmc-6.11.0)"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
+        "files": 39
+      },
+      "after": {
+        "sha256": "591af38b0dc5c739fcee290fb9b39be8c0e2d57a9991ec4f4eef7d621af15904",
+        "files": 39
+      }
+    },
+    "pipeline": {
+      "jobId": "20261106-181101-example-128-b9-jbmc-violation-with-its-w",
+      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-128-b9-jbmc-violation-with-its-w"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.7,
+        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
+        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
+      },
+      {
+        "name": "javac patched crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.9,
+        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
+        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
+      },
+      {
+        "name": "the crosscut tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-crosscut-tests.stdout",
+        "stderr": "logs/04-the-crosscut-tests.stderr"
+      },
+      {
+        "name": "javac unpatched crosscut main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.7,
+        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
+        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
+      },
+      {
+        "name": "jvmcontract equivalence",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.2,
+        "stdout": "logs/06-jvmcontract-equivalence.stdout",
+        "stderr": "logs/06-jvmcontract-equivalence.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-version-of-java.stdout",
+        "stderr": "logs/07-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/08-version-of-javac.stdout",
+        "stderr": "logs/08-version-of-javac.stderr"
+      },
+      {
+        "name": "version of jbmc",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/09-version-of-jbmc.stdout",
+        "stderr": "logs/09-version-of-jbmc.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-cm7e5fbl/attempts/128/attempt-hw72tzas"
+  },
+  "conclusion": {
+    "claim": "cb63cad56915b8db",
+    "attempt": "20261106T181324Z-aec296cc",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation: counterexample found",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.crosscut.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+      "startLine": 1,
+      "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}\n * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic final class BatchCommit {\n\n    private BatchCommit() {}\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    /**\n     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index\n     * within the batch of the record that failed, or {@link #NONE_FAILED}.\n     */\n    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {\n        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {\n            throw new IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\");\n        }\n        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;\n    }\n}\n"
+    },
+    "after": {
+      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java",
+      "startLine": 1,
+      "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,\n * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a\n * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic record Batch(long start, int size) {\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    public Batch {\n        if (start < 0 || size <= 0) {\n            throw new IllegalArgumentException(\"start >= 0 and size > 0 are required\");\n        }\n    }\n\n    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */\n    public long offsetToCommit(int failedIndex) {\n        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;\n    }\n}\n"
+    },
+    "casesTotal": null,
+    "domain": "this: Batch(start: long, size: int) × failedIndex: int",
+    "counterexamples": [
+      {
+        "input": "offsetToCommit(this=Batch[start=0, size=1], failedIndex=1), previously offsetToCommit(batchStart=0, batchSize=1, failedIndex=1)",
+        "contract": "throws IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\")",
+        "actual": "1",
+        "found": "offsetToCommit(this=Batch[start=15, size=15], failedIndex=15)",
+        "shrinkRuns": 19,
+        "witness": {
+          "inputs": [
+            {
+              "name": "this.start",
+              "type": "long",
+              "value": "0"
+            },
+            {
+              "name": "this.size",
+              "type": "int",
+              "value": 1
+            },
+            {
+              "name": "failedIndex",
+              "type": "int",
+              "value": 1
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "this.start",
+              "type": "long",
+              "value": "15"
+            },
+            {
+              "name": "this.size",
+              "type": "int",
+              "value": 15
+            },
+            {
+              "name": "failedIndex",
+              "type": "int",
+              "value": 15
+            }
+          ],
+          "call": {
+            "class": "net.terminalvalue.crosscut.kafka.Batch",
+            "classFile": "net/terminalvalue/crosscut/kafka/Batch.class",
+            "classFileSha256": "7fe5bd5cc0e1fc5944ddfdf2d528c4fa9f06133d2627777d67e3433b4c463998",
+            "classes": "after",
+            "method": "offsetToCommit",
+            "descriptor": "(I)J",
+            "static": false,
+            "receiver": {
+              "name": "this",
+              "type": "net.terminalvalue.crosscut.kafka.Batch",
+              "components": [
+                {
+                  "name": "start",
+                  "type": "long",
+                  "value": "0",
+                  "from": "this.start"
+                },
+                {
+                  "name": "size",
+                  "type": "int",
+                  "value": 1,
+                  "from": "this.size"
+                }
+              ]
+            },
+            "arguments": [
+              {
+                "name": "failedIndex",
+                "type": "int",
+                "value": 1,
+                "from": "failedIndex"
+              }
+            ]
+          },
+          "previousCall": {
+            "class": "net.terminalvalue.crosscut.kafka.BatchCommit",
+            "classFile": "net/terminalvalue/crosscut/kafka/BatchCommit.class",
+            "classFileSha256": "358468dd14eaba6de309af4407d30bdba4644da700e5fac8b6dc0eaac63e7652",
+            "classes": "before",
+            "method": "offsetToCommit",
+            "descriptor": "(JII)J",
+            "static": true,
+            "arguments": [
+              {
+                "name": "batchStart",
+                "type": "long",
+                "value": "0",
+                "from": "this.start"
+              },
+              {
+                "name": "batchSize",
+                "type": "int",
+                "value": 1,
+                "from": "this.size"
+              },
+              {
+                "name": "failedIndex",
+                "type": "int",
+                "value": 1,
+                "from": "failedIndex"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": null,
+    "proof": "found by JBMC 6.11.0 in 0.1 s searching inputs in [0:20] as offsetToCommit(this=Batch[start=15, size=15], failedIndex=15), shrunk to the input above in 19 interpreter runs, replayed in the interpreter; domain this: Batch(start: long, size: int) × failedIndex: int",
+    "problem": null,
+    "statement": "statement.java",
+    "trace": null,
+    "statesExplored": null,
+    "invariant": null,
+    "property": null,
+    "stateMachine": null,
+    "coverage": null,
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 0.129,
+      "properties": 2,
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "stage": "[0:20]",
+      "deadlineSeconds": 600.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": "[0:20]",
+          "budgetSeconds": 75.0,
+          "seconds": 0.051,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.002,
+            "symbolic": 0.003,
+            "encoding": 0.002,
+            "solving": 0.0,
+            "trace": 0.001,
+            "other": 0.04
+          },
+          "formula": {
+            "steps": 254,
+            "conditions": 1,
+            "variables": 4077,
+            "clauses": 8225
+          }
+        }
+      ],
+      "gapMode": "strict"
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "this",
+            "type": "net.terminalvalue.crosscut.kafka.Batch",
+            "kind": "record",
+            "null": false,
+            "components": [
+              "start: long",
+              "size: int"
+            ]
+          },
+          {
+            "name": "failedIndex",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "this: Batch(start: long, size: int) × failedIndex: int"
+      },
+      "assumptions": [
+        {
+          "kind": "constructible",
+          "text": "the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it",
+          "basis": "harness"
+        },
+        {
+          "kind": "previous-arguments",
+          "text": "the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped",
+          "basis": "harness"
+        },
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result, equal in both versions",
+        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
+        "classes": 10,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "result.sarif",
+        "sha256": "4fdc0482755f6e319cdee50faf452da106c6807e102c57277d6ecdcfff7d5b6e",
+        "bytes": 2848
+      },
+      {
+        "path": "statement.java",
+        "sha256": "b0da5afe9d9a6729172f360782310a11bfa58713ecade3a848f32baabecf61cb",
+        "bytes": 2903
+      },
+      {
+        "path": "verifier-output.txt",
+        "sha256": "9cd3c8ab2c9d1dfb0f8a2bdeb9511c66dab6cbeeadbcdb1cecf5afe7b9cf66be",
+        "bytes": 888
+      }
+    ]
   }
 }

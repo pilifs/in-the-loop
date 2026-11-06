@@ -1,0 +1,211 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181102-example-144-b9-re-run-its-result-records",
+  "title": "Example 144 (B9) re-run: its result records the statement it proved, as data",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.0s, peak 104.8 MiB (estimated 3m00s, 1.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181102-example-144-b9-re-run-its-result-records.json",
+    "sha256": "cac6226acfc53effc2b6026e7918e16047d7c600e47c6dcbca475a8f9a6dd016",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181102-example-144-b9-re-run-its-result-records",
+      "title": "Example 144 (B9) re-run: its result records the statement it proved, as data",
+      "description": "Step 2a of llm-dlc/loops/sound-verdicts.md: jvmcontract's --json outcome now carries 'stated', the statement a verdict is about (domain with nullability and aliasing, assumptions with their basis, observations, bounds and completeness, the model bundle's digest, the checker and SAT solver, gap mode, confirmation), which build.py records as result.stated and the page states in one paragraph. Example 144 is the LookupSwitch#find linear scan proved by the tool's own checker at the default array bound 8, vacuously; 145 is the same change at bound 12. Re-running both records two statements that differ only in the domain (array bound 8 vs 12), so the pages show the acceptance on real results. The verdicts should not move: 144 verified vacuously, 145 verified, both in the interim gap mode assume that build.py gives recorded examples.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/statement.rs"
+        ],
+        "examples": [
+          "144"
+        ]
+      },
+      "expected": "verified, vacuously (as before); result.json gains 'stated' with domain 'matches: int[] of length ≤ 8, not null × key: int' and the page a 'What the verdict is about' paragraph",
+      "submitted": {
+        "at": "2026-11-06T18:11:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "example 144 (B9)",
+          "run": "python3 examples/tools/build.py 144",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound"
+      ],
+      "supersedes": "20261106-025930-example-144-b9-re-run-its-result-records"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:14:04+00:00",
+  "finishedAt": "2026-11-06T18:14:08+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 109871104,
+    "wallSeconds": 4.0,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 144 (B9)",
+      "run": "python3 examples/tools/build.py 144",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 4.009,
+      "cpuSeconds": 5.921,
+      "cpuThrottledSeconds": 0.54,
+      "peakMemoryBytes": 109871104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-144-b9.log",
+        "lines": 18,
+        "bytes": 788,
+        "sha256": "8d286a28d2c0db669279b258a974e5bbc1ec58d5705f8b8884775df04bae8178",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)",
+          "groups": [
+            "144",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched mica main",
+        "  · javac patched mica main: exited 0, 0.7 s",
+        "  · javac patched mica tests",
+        "  · javac patched mica tests: exited 0, 0.7 s",
+        "  · the mica tests",
+        "  · the mica tests: exited 0, 0.1 s",
+        "  · javac unpatched mica main",
+        "  · javac unpatched mica main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.1 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md",
+      "change": "modified",
+      "bytes": 18415,
+      "sha256": "b7d0ee2271c492c08a4cfffe6ef6ab91634928dd8299dc22832f8eda31d81d18",
+      "sourceSha256": "a3a29ddc73d70cd358fa6c0ad5c648a539c89583f8c5d6652ae810c94c802a7a"
+    },
+    {
+      "path": "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json",
+      "change": "modified",
+      "bytes": 11359,
+      "sha256": "6ec2f60999a68444a77d1669e4061f451ad7840f5fdcde2aafe167c54a1167e9",
+      "sourceSha256": "f4a1125b902972a3891e8da754b1fe5e48edbbef7c6fb59b83ebd3a3ffb7b39b"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md",
+      "examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

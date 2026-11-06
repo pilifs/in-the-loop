@@ -1,0 +1,274 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181102-example-072-d1-stored-as-result-format-2",
+  "title": "Example 072 (D1) stored as result format 2",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 4.2s, peak 126.1 MiB (estimated 10m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-181102-example-072-d1-stored-as-result-format-2.json",
+    "sha256": "86b300cf980b3ea89c431c24e1169930c4369416d4acc2f9c0be7ef19c8a85ce",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181102-example-072-d1-stored-as-result-format-2",
+      "title": "Example 072 (D1) stored as result format 2",
+      "description": "Option B of open question 1 in llm-dlc/loops/build-orchestration.md, settled by the user on 2026-11-05: result.json is now stored as format 2 (examples/tools/result_format.py, examples/schema/stored-result.schema.json). Each fact is stored once: the verdict as conclusion.status, the execution in attempt.execution, each obligation (B11 property, D1 configuration, generated operator's contract) with its own evidence, and everything else under evidence. Pages read it through the flat view, so they render as before. Before publishing, build.py checks that the result stored and read back is the same result; a run whose result would not store whole exits without publishing. The verdict must be as expected, the stored result must have format 2 with obligations of the expected kinds (configuration operator-contract), and its flat view must carry the claim and attempt.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "examples": [
+          "072"
+        ]
+      },
+      "expected": "example 072 gives its expected verdict, verified vacuously: build.py prints 'as expected' and exits 0; result.json has format 2 with obligations of kinds: configuration operator-contract",
+      "submitted": {
+        "at": "2026-11-06T18:11:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "TLC on the 2PC model, a few configurations",
+        "cpus": 2.0
+      },
+      "steps": [
+        {
+          "name": "example 072 (D1)",
+          "run": "python3 examples/tools/build.py 072",
+          "cwd": "."
+        },
+        {
+          "name": "stored as format 2",
+          "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/072-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted('configuration operator-contract'.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice"
+      ],
+      "supersedes": "20261106-000906-example-072-d1-stored-as-result-format-2"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:41+00:00",
+  "finishedAt": "2026-11-06T18:13:45+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "TLC on the 2PC model, a few configurations"
+  },
+  "usage": {
+    "peakMemoryBytes": 132231168,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 072 (D1)",
+      "run": "python3 examples/tools/build.py 072",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 5.814,
+      "cpuThrottledSeconds": 0.705,
+      "peakMemoryBytes": 132231168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-072-d1.log",
+        "lines": 30,
+        "bytes": 1228,
+        "sha256": "354b56e65b3408b20b46238ca0ee346190f853629edd9a7b696dc44722805473",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 30,
+          "text": "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)",
+          "groups": [
+            "072",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: running (D1)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.9 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 1.0 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · jvmcontract update",
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "stored as format 2",
+      "run": "python3 -c \"import json,glob,sys; sys.path.insert(0,'examples/tools'); import result_format as f; p=glob.glob('examples/072-*/result.json')[0]; d=json.load(open(p)); assert d['format']==2, d.get('format'); v=f.load(p); assert v['claim'] and v['attempt'] and v['verdict'] is not None; kinds=sorted({o['kind'] for o in d['conclusion']['obligations']}); assert kinds==sorted('configuration operator-contract'.split()), kinds; print('format 2;', v['verdict'], len(d['conclusion']['obligations']), 'obligations', kinds)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.027,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6483968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-stored-as-format-2.log",
+        "lines": 1,
+        "bytes": 72,
+        "sha256": "b67eb7925a555e51f3a34574a9c8b0d8ef48cbfd58f81dccfe0059f636370718",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "format 2; verified 9 obligations ['configuration', 'operator-contract']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "change": "modified",
+      "bytes": 59545,
+      "sha256": "04e01a5beb97da0d3ef43e2da406181b12c8f002dc34d8bfb12f26e51349bc49",
+      "sourceSha256": "88af861b6f3014b1e6d35c8c42cdd7fda55267eabbcf7798f8c3d7f991c85280"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json",
+      "change": "modified",
+      "bytes": 52131,
+      "sha256": "0bf2c86300dbec6378ec1e31feee907b38e5dc4e8b18f40d0355bf6147032bfc",
+      "sourceSha256": "cf5c2d042ae89020818c98fd99b370cd2522f4bbc9cfb648ec95fc9ee53a3761"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt",
+      "change": "modified",
+      "bytes": 30669,
+      "sha256": "1b66c3587a16664fd465c96e3d71651981fa49312d12ae0cede2b80148816cd8",
+      "sourceSha256": "96f122027dcaec8d3dbdede65f80c18260356dd8058f118196323083d60b2408"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

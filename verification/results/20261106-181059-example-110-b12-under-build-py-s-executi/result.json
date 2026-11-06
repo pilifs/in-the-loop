@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181059-example-110-b12-under-build-py-s-executi",
+  "title": "Example 110 (B12) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m06s, peak 1.7 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181059-example-110-b12-under-build-py-s-executi.json",
+    "sha256": "7afb66071f5fd91152e1c6285c5ae5832b369699460758d6c78153672eb2fa42",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181059-example-110-b12-under-build-py-s-executi",
+      "title": "Example 110 (B12) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "B12"
+      ],
+      "links": {
+        "examples": [
+          "110"
+        ]
+      },
+      "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:10:59+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m"
+      },
+      "steps": [
+        {
+          "name": "example 110 (B12)",
+          "run": "python3 examples/tools/build.py 110",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/110-idempotency-key-header-drops-request-validation"
+      ],
+      "supersedes": "20261105-112331-example-110-b12-under-build-py-s-executi"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:11:42+00:00",
+  "finishedAt": "2026-11-06T18:13:49+00:00",
+  "wallSeconds": 127.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1774985216,
+    "wallSeconds": 126.1,
+    "cpuSeconds": 178.7,
+    "memoryOfEstimate": 0.55,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 126.082,
+      "cpuSeconds": 178.693,
+      "cpuThrottledSeconds": 19.443,
+      "peakMemoryBytes": 1774985216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-110-b12.log",
+        "lines": 18,
+        "bytes": 807,
+        "sha256": "ebcd80073619f52f13ea889810c06d3b8da24c21800ea9a79115d840e9f9dbc0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "110-idempotency-key-header-drops-request-validation: violation (as expected)",
+          "groups": [
+            "110",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "110-idempotency-key-header-drops-request-validation: running (B12)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · gradle :ticketing-service:test",
+        "  · gradle :ticketing-service:test: exited 0, 11.6 s",
+        "  · gradle :ticketing-service:compileJava",
+        "  · gradle :ticketing-service:compileJava: exited 0, 1.2 s",
+        "  · gradle :ticketing-service:printRuntimeClasspath",
+        "  · gradle :ticketing-service:printRuntimeClasspath: exited 0, 1.1 s",
+        "  · cargo build jvmcontract",
+        "  · cargo build jvmcontract: exited 0, 107.6 s",
+        "  · jvmcontract verify (boundaries)",
+        "  · jvmcontract verify (boundaries): exited 1, 1.9 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.3 s",
+        "110-idempotency-key-header-drops-request-validation: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "change": "modified",
+      "bytes": 21011,
+      "sha256": "7420c0628f0e27f24a7f29779c840d8c58ebeeeeae03c8992cb00a64ece97b1c",
+      "sourceSha256": "ffdc53441c798595703b0e342f8993d708ca4bd7e044b940fbab4d6d687c44aa"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.json",
+      "change": "modified",
+      "bytes": 11000,
+      "sha256": "94ad83b5ca0883b5b01ea3a530e392d3b01614421f592418be2d0ba67dbd52df",
+      "sourceSha256": "b9fbd1ef7b07c6cfd67920978cec909a244bdf8bf99d333e4aac013da979a26c"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "examples/110-idempotency-key-header-drops-request-validation/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

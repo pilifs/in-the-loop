@@ -128,14 +128,16 @@ Merge. The throws clause stays as the kernel's specification of its exceptional 
 
 ## Evidence
 
-How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions.
+How the verdict was reached: JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `dividend: int × divisor: int`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against (divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend), and on exceptions: none may be thrown but as a throws clause says: java.lang.ArithmeticException when divisor == 0. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
+
+This page renders attempt `20261106T181230Z-2b9e9391` at claim `302628ea10615f45`, in pipeline job `20261106-181100-example-053-b11-throws-clause-verified-r`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.2 s; loops unwound 16 times with unwinding assertions)
+✓ net.terminalvalue.mica.interp.Arithmetic#idiv satisfies `(divisor != -1 || result == -dividend) && (divisor != 1 || result == dividend)` on every input, and throws java.lang.ArithmeticException when divisor == 0 (JBMC 6.11.0: 2 properties proved over dividend: int × divisor: int in 0.3 s; loops unwound 16 times with unwinding assertions)
 ```
 
 </details>
@@ -193,6 +195,12 @@ public final class PropertyHarness {
               "id": "api-changed",
               "shortDescription": {
                 "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
               }
             },
             {

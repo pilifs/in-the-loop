@@ -111,9 +111,11 @@ Keep the difference: `System.nanoTime` readings are made to be subtracted, and t
 
 ## Evidence
 
-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
+How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261106T181229Z-25cbf8ce` at claim `b45ee83e7f2a5292`, in pipeline job `20261106-181059-example-132-b9-own-checker-violation-wit`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -122,7 +124,7 @@ This result was recorded before runs fingerprinted their inputs, so whether it s
   tokensAfter(tokens=0, lastNanos=1, nowNanos=18, periodNanos=18, capacity=1)
     before: 0
     after:  1
-  (found by jvmcontract's own checker (CaDiCaL) in 0.3 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
+  (found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as tokensAfter(tokens=5, lastNanos=16, nowNanos=20, periodNanos=18, capacity=6), shrunk to the input above in 63 interpreter runs, replayed in the interpreter; domain tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

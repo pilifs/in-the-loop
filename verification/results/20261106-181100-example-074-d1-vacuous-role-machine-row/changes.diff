@@ -1,0 +1,2217 @@
+--- a/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md
++++ b/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/README.md
+@@ -162,6 +162,11 @@
+ ```
+ 
+ </details>
++
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `RoleMachine#decide` (`spec/RoleMachineContract.tla`): the regenerated contract, 2 rows from the committed one, as the change intends
++- `VoteRule#decide` (`spec/VoteRuleContract.tla`): the committed contract, which the patched classes still match
+ 
+ The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
+ 
+@@ -228,16 +233,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 3 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 7 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE.
++
++This page renders attempt `20261106T181231Z-0ac29da5` at claim `435b831f9cd800b4`, in pipeline job `20261106-181100-example-074-d1-vacuous-role-machine-row`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1096477] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80001] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -252,9 +257,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:32)
++Starting... (2026-11-06 18:12:33)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:54:33.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:34.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -296,11 +301,11 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:54:33)
++Finished in 01s at (2026-11-06 18:12:35)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1096582] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80206] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -315,7 +320,7 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:34)
++Starting... (2026-11-06 18:12:35)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -331,7 +336,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-03 23:54:40.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 18:12:40.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -371,11 +376,11 @@
+ 76099 states generated, 17470 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 1.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 07s at (2026-11-03 23:54:42)
++Finished in 06s at (2026-11-06 18:12:41)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1096973] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80774] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -390,9 +395,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:42)
++Starting... (2026-11-06 18:12:42)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:54:43.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:42.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -434,11 +439,11 @@
+ 7125 states generated, 829 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 12.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-03 23:54:44)
++Finished in 01s at (2026-11-06 18:12:43)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1097107] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80903] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -453,12 +458,12 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:45)
++Starting... (2026-11-06 18:12:44)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:54:45.
+-Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-03 23:54:48)
+-Finished checking temporal properties in 00s at 2026-11-03 23:54:48
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:45.
++Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-06 18:12:46)
++Finished checking temporal properties in 00s at 2026-11-06 18:12:46
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -500,11 +505,11 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 03s at (2026-11-03 23:54:48)
++Finished in 02s at (2026-11-06 18:12:46)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1097332] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81061] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -519,9 +524,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:49)
++Starting... (2026-11-06 18:12:47)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:54:50.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:48.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -555,11 +560,11 @@
+ 2526 states generated, 461 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-03 23:54:50)
++Finished in 01s at (2026-11-06 18:12:48)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1097456] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81181] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -574,9 +579,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:51)
++Starting... (2026-11-06 18:12:49)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:54:52.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:50.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -613,11 +618,11 @@
+ 115864 states generated, 20351 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 14.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+-Finished in 07s at (2026-11-03 23:54:59)
++Finished in 05s at (2026-11-06 18:12:54)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1097835] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81340] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/quorum/spec/RaftElection.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+@@ -632,9 +637,9 @@
+ Semantic processing of module RoleMachineContract
+ Semantic processing of module VoteRuleContract
+ Semantic processing of module RaftElection
+-Starting... (2026-11-03 23:54:59)
++Starting... (2026-11-06 18:12:55)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-03 23:55:00.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:55.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -676,7 +681,7 @@
+ 19537 states generated, 4798 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 11.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
+-Finished in 02s at (2026-11-03 23:55:01)
++Finished in 01s at (2026-11-06 18:12:57)
+ ```
+ 
+ </details>
+@@ -704,6 +709,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.json
++++ b/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/result.json
+@@ -1,671 +1,972 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified, vacuously: no run takes the 1 row the change alters",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
++  "format": 2,
++  "claim": {
++    "id": "435b831f9cd800b4",
++    "format": 1,
++    "example": "074",
++    "statement": {
++      "approach": "D1",
++      "target": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "behaviourChangeIntended": true
++    },
++    "scope": {},
++    "inputs": {
++      "patch": "6ab78d1275c060b239d5a4c3a0d45a6b4534d5c5e1e3b64cc9e2132f5af4751e",
++      "before": {
++        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
++        "files": 110
++      },
++      "after": {
++        "sha256": "e03bd15fed6295afcccaba4823d1eab28908e4ea0f2cce620bbf6268b58847e4",
++        "files": 110
++      },
++      "dependencies": "the JDK",
++      "model": {
++        "examples/apps/quorum/spec/RaftElection.tla": "e60bf5f209ed974d727c8f4c853fb7c353035f27db6f779070387981029096e5",
++        "examples/apps/quorum/spec/RaftElection.cfg": "7e77cfbd28bba00d6675fd5df9101586af176e2a1b46d38209bc738f78b4848a",
++        "examples/apps/quorum/spec/RaftElectionInductive.cfg": "6d28c7213dd76821b3a0a2176cf429e1abf9564196854168e1a69a3cccd9deb6",
++        "examples/apps/quorum/spec/RaftElectionFour.cfg": "2a486c937cc30a01f403babcabb150c0646d55fff372ac0fe4ad5813cf59d1f2",
++        "examples/apps/quorum/spec/RaftElectionLive.cfg": "b021cc89faedbc0d42a4576f90f189091dcee1a265316acb95f94f2bf8245131",
++        "examples/apps/quorum/spec/RaftElectionLogs.cfg": "4671e0538448aade2264fdf0aa123e656d9c90d4797811a138b8daa905e353e2",
++        "examples/apps/quorum/spec/RaftElectionDelayed.cfg": "f23e19a84452b2de4c56ae41e279bbfd32379cdfa60f57f6dd30847bcf35bedf",
++        "examples/apps/quorum/spec/RaftElectionHistory.cfg": "3516d6bb4969242b34e696590cd2dc9d7096ef6d8d688ec22c6e646a6338b407"
++      }
++    }
+   },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.quorum.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+-    "startLine": 40,
+-    "code": "    case LEADER -> unchanged(\"a leader does not hold elections\");\n};\ncase VotesCounted votes -> switch (role) {\n    case CANDIDATE -> votes.majority() ? transition(LEADER, SEND_HEARTBEATS) : unchanged(\"no majority yet\");\n    case FOLLOWER, LEADER -> unchanged(\"votes of an election this server is no longer in\");\n};\ncase AppendEntries entries -> switch (entries.term()) {\n    case NEWER -> transition(FOLLOWER, ADOPT_TERM, RESET_ELECTION_TIMER);\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
+-    "startLine": 40,
+-    "code": "    case LEADER -> unchanged(\"a leader does not hold elections\");\n};\ncase VotesCounted votes -> switch (role) {\n    // A majority is a majority: a candidate that stepped down while its votes were still in flight was\n    // elected all the same, and takes the leadership rather than let the term go to waste.\n    case CANDIDATE, FOLLOWER -> votes.majority() ? transition(LEADER, SEND_HEARTBEATS) : unchanged(\"no majority yet\");\n    case LEADER -> unchanged(\"votes of an election this server is no longer in\");\n};\ncase AppendEntries entries -> switch (entries.term()) {\n    case NEWER -> transition(FOLLOWER, ADOPT_TERM, RESET_ELECTION_TIMER);\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -5,8 +5,8 @@\n domain: Role (4) × RoleEvent (13) = 52 cases\n \n decide(FOLLOWER, ElectionTimeout[])             => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n-decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"votes of an election this server is no longer in\"]\n-decide(FOLLOWER, VotesCounted[majority=true])   => Unchanged[reason=\"votes of an election this server is no longer in\"]\n+decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"no majority yet\"]\n+decide(FOLLOWER, VotesCounted[majority=true])   => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(FOLLOWER, AppendEntries[term=OLDER])     => Rejected[reason=\"stale leader\"]\n decide(FOLLOWER, AppendEntries[term=CURRENT])   => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]\n decide(FOLLOWER, AppendEntries[term=NEWER])     => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]\n",
+-  "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+-  "problem": null,
+-  "statement": null,
+-  "trace": null,
+-  "statesExplored": 610,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
+-  "coverage": {
+-    "status": "complete",
+-    "configurations": [
+-      {
+-        "label": "three servers",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 4,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "the inductive step",
+-        "fromRuns": false,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 6,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "four servers",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 4,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "fairness",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 4,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "a server left behind",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 12,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "delayed replies",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 33,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 4,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
+-      },
+-      {
+-        "label": "history",
+-        "fromRuns": true,
+-        "finished": true,
+-        "verdict": "verified",
+-        "status": "completed",
+-        "reason": null,
+-        "counted": true,
+-        "coverageStatus": "complete",
+-        "coverageReason": null,
+-        "listed": [
+-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-          "net.terminalvalue.quorum.raft.VoteRule#decide"
+-        ],
+-        "operators": [
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-            "listed": true,
+-            "reached": 27,
+-            "total": 36,
+-            "never": [
+-              "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
+-            ]
+-          },
+-          {
+-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-            "listed": true,
+-            "reached": 4,
+-            "total": 27,
+-            "never": [
+-              "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+-            ]
+-          }
+-        ]
++  "attempt": {
++    "id": "20261106T181231Z-0ac29da5",
++    "claim": "435b831f9cd800b4",
++    "startedAt": "2026-11-06T18:12:31+00:00",
++    "seconds": 26.1,
++    "engine": null,
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "tlc": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "6d2dd7c89c2c664c521edbb26ae2fb6946b2e5277065042cf975fd8cf34f5578",
++        "files": 70
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181100-example-074-d1-vacuous-role-machine-row",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181100-example-074-d1-vacuous-role-machine-row"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched quorum main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.1,
++        "stdout": "logs/02-javac-patched-quorum-main.stdout",
++        "stderr": "logs/02-javac-patched-quorum-main.stderr"
++      },
++      {
++        "name": "javac patched quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.9,
++        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
++        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
++      },
++      {
++        "name": "the quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-quorum-tests.stdout",
++        "stderr": "logs/04-the-quorum-tests.stderr"
++      },
++      {
++        "name": "jvmcontract update",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/05-jvmcontract-update.stdout",
++        "stderr": "logs/05-jvmcontract-update.stderr"
++      },
++      {
++        "name": "jvmcontract derive RoleMachine#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-jvmcontract-derive-rolemachine-decide.stdout",
++        "stderr": "logs/06-jvmcontract-derive-rolemachine-decide.stderr"
++      },
++      {
++        "name": "jvmcontract derive VoteRule#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-jvmcontract-derive-voterule-decide.stdout",
++        "stderr": "logs/07-jvmcontract-derive-voterule-decide.stderr"
++      },
++      {
++        "name": "jvmcontract tla",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-jvmcontract-tla.stdout",
++        "stderr": "logs/08-jvmcontract-tla.stderr"
++      },
++      {
++        "name": "jvmcontract tla",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-jvmcontract-tla.stdout",
++        "stderr": "logs/09-jvmcontract-tla.stderr"
++      },
++      {
++        "name": "java -version",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/10-java-version.stdout",
++        "stderr": "logs/10-java-version.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElection.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.8,
++        "stdout": "logs/11-jvmcontract-tlc-raftelection-cfg.stdout",
++        "stderr": "logs/11-jvmcontract-tlc-raftelection-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionInductive.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 6.6,
++        "stdout": "logs/12-jvmcontract-tlc-raftelectioninductive-cfg.stdout",
++        "stderr": "logs/12-jvmcontract-tlc-raftelectioninductive-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionFour.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 2.2,
++        "stdout": "logs/13-jvmcontract-tlc-raftelectionfour-cfg.stdout",
++        "stderr": "logs/13-jvmcontract-tlc-raftelectionfour-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionLive.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 3.1,
++        "stdout": "logs/14-jvmcontract-tlc-raftelectionlive-cfg.stdout",
++        "stderr": "logs/14-jvmcontract-tlc-raftelectionlive-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionLogs.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 2.0,
++        "stdout": "logs/15-jvmcontract-tlc-raftelectionlogs-cfg.stdout",
++        "stderr": "logs/15-jvmcontract-tlc-raftelectionlogs-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionDelayed.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 5.9,
++        "stdout": "logs/16-jvmcontract-tlc-raftelectiondelayed-cfg.stdout",
++        "stderr": "logs/16-jvmcontract-tlc-raftelectiondelayed-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract tlc RaftElectionHistory.cfg",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 2.3,
++        "stdout": "logs/17-jvmcontract-tlc-raftelectionhistory-cfg.stdout",
++        "stderr": "logs/17-jvmcontract-tlc-raftelectionhistory-cfg.stderr"
++      },
++      {
++        "name": "jvmcontract derive RoleMachine#decide",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/18-jvmcontract-derive-rolemachine-decide.stdout",
++        "stderr": "logs/18-jvmcontract-derive-rolemachine-decide.stderr"
++      },
++      {
++        "name": "jvmcontract statemachine",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/19-jvmcontract-statemachine.stdout",
++        "stderr": "logs/19-jvmcontract-statemachine.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/20-version-of-java.stdout",
++        "stderr": "logs/20-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/21-version-of-javac.stdout",
++        "stderr": "logs/21-version-of-javac.stderr"
+       }
+     ],
+-    "changedRows": [
+-      {
+-        "case": "decide(FOLLOWER, VotesCounted[majority=true])",
+-        "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-        "before": "Unchanged[reason=\"votes of an election this server is no longer in\"]",
+-        "after": "Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
+-        "takenUnder": [],
+-        "unknownUnder": []
++    "workspace": ".build-py/examples-_i44_tn1/attempts/074/attempt-65bohmq2"
++  },
++  "conclusion": {
++    "claim": "435b831f9cd800b4",
++    "attempt": "20261106T181231Z-0ac29da5",
++    "status": "established",
++    "vacuous": true,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "configuration",
++        "name": "three servers",
++        "statement": "spec/RaftElection.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "three servers",
++          "cfg": "spec/RaftElection.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 610 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 610,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "the inductive step",
++        "statement": "spec/RaftElectionInductive.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "the inductive step",
++          "cfg": "spec/RaftElectionInductive.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 17470,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "four servers",
++        "statement": "spec/RaftElectionFour.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "four servers",
++          "cfg": "spec/RaftElectionFour.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 829 states",
++          "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 829,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "fairness",
++        "statement": "spec/RaftElectionLive.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "fairness",
++          "cfg": "spec/RaftElectionLive.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 610 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 610,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "a server left behind",
++        "statement": "spec/RaftElectionLogs.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "a server left behind",
++          "cfg": "spec/RaftElectionLogs.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 461 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 461,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "delayed replies",
++        "statement": "spec/RaftElectionDelayed.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "delayed replies",
++          "cfg": "spec/RaftElectionDelayed.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants and properties hold in 20,351 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 20351,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "configuration",
++        "name": "history",
++        "statement": "spec/RaftElectionHistory.cfg",
++        "status": "established",
++        "evidence": {
++          "label": "history",
++          "cfg": "spec/RaftElectionHistory.cfg",
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "summary": "✓ Verified: all invariants hold in 4,798 states",
++          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
++          "invariant": null,
++          "violationKind": null,
++          "statesExplored": 4798,
++          "trace": null,
++          "forever": null
++        }
++      },
++      {
++        "kind": "operator-contract",
++        "name": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++        "statement": "the contract the operator is generated from, as built",
++        "status": "established",
++        "evidence": {
++          "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "contract": "src/contract/RoleMachine.decide.contract",
++          "operator": "spec/RoleMachineContract.tla",
++          "connection": "derived",
++          "rowsChanged": 2,
++          "allowed": true
++        }
++      },
++      {
++        "kind": "operator-contract",
++        "name": "net.terminalvalue.quorum.raft.VoteRule#decide",
++        "statement": "the contract the operator is generated from, as built",
++        "status": "established",
++        "evidence": {
++          "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++          "contract": "src/contract/VoteRule.decide.contract",
++          "operator": "spec/VoteRuleContract.tla",
++          "connection": "verified",
++          "rowsChanged": 0,
++          "allowed": true
++        }
+       }
+     ],
+-    "nullRows": 0,
+-    "vacuous": true
++    "label": "✓ Verified, vacuously: no run takes the 1 row the change alters",
++    "obligationKeys": {
++      "configuration": "configurations",
++      "operator-contract": "modelContracts"
++    }
+   },
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "modelContracts": [
+-    {
+-      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+-      "contract": "src/contract/RoleMachine.decide.contract",
+-      "operator": "spec/RoleMachineContract.tla",
+-      "connection": "derived",
+-      "rowsChanged": 2,
+-      "allowed": true
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.quorum.Tests",
++      "passed": true,
++      "failures": []
+     },
+-    {
+-      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+-      "contract": "src/contract/VoteRule.decide.contract",
+-      "operator": "spec/VoteRuleContract.tla",
+-      "connection": "verified",
+-      "rowsChanged": 0,
+-      "allowed": true
+-    }
+-  ],
+-  "checkpoints": [
+-    {
+-      "label": "three servers",
+-      "cfg": "spec/RaftElection.cfg",
+-      "fingerprint": "26376513fc1e67f860293b8f2739f9bb382d9133c4288026fe3ac4660d434504",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:05+00:00"
++    "before": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "startLine": 40,
++      "code": "    case LEADER -> unchanged(\"a leader does not hold elections\");\n};\ncase VotesCounted votes -> switch (role) {\n    case CANDIDATE -> votes.majority() ? transition(LEADER, SEND_HEARTBEATS) : unchanged(\"no majority yet\");\n    case FOLLOWER, LEADER -> unchanged(\"votes of an election this server is no longer in\");\n};\ncase AppendEntries entries -> switch (entries.term()) {\n    case NEWER -> transition(FOLLOWER, ADOPT_TERM, RESET_ELECTION_TIMER);\n"
+     },
+-    {
+-      "label": "the inductive step",
+-      "cfg": "spec/RaftElectionInductive.cfg",
+-      "fingerprint": "77fd51e20a66f2b40fa26721592b9c9bd41d360c72448dc3b6716dadc334b5af",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:12+00:00"
++    "after": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/RoleMachine.java",
++      "startLine": 40,
++      "code": "    case LEADER -> unchanged(\"a leader does not hold elections\");\n};\ncase VotesCounted votes -> switch (role) {\n    // A majority is a majority: a candidate that stepped down while its votes were still in flight was\n    // elected all the same, and takes the leadership rather than let the term go to waste.\n    case CANDIDATE, FOLLOWER -> votes.majority() ? transition(LEADER, SEND_HEARTBEATS) : unchanged(\"no majority yet\");\n    case LEADER -> unchanged(\"votes of an election this server is no longer in\");\n};\ncase AppendEntries entries -> switch (entries.term()) {\n    case NEWER -> transition(FOLLOWER, ADOPT_TERM, RESET_ELECTION_TIMER);\n"
+     },
+-    {
+-      "label": "four servers",
+-      "cfg": "spec/RaftElectionFour.cfg",
+-      "fingerprint": "8f797d8783f7aa16efb33b951fd15761fa988ba7ad37bf6be81225ade454a133",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:14+00:00"
++    "casesTotal": null,
++    "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": "--- a/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n+++ b/examples/apps/quorum/src/contract/RoleMachine.decide.contract\n@@ -5,8 +5,8 @@\n domain: Role (4) × RoleEvent (13) = 52 cases\n \n decide(FOLLOWER, ElectionTimeout[])             => Transition[next=CANDIDATE, effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]]\n-decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"votes of an election this server is no longer in\"]\n-decide(FOLLOWER, VotesCounted[majority=true])   => Unchanged[reason=\"votes of an election this server is no longer in\"]\n+decide(FOLLOWER, VotesCounted[majority=false])  => Unchanged[reason=\"no majority yet\"]\n+decide(FOLLOWER, VotesCounted[majority=true])   => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]\n decide(FOLLOWER, AppendEntries[term=OLDER])     => Rejected[reason=\"stale leader\"]\n decide(FOLLOWER, AppendEntries[term=CURRENT])   => Transition[next=FOLLOWER, effects=[RESET_ELECTION_TIMER]]\n decide(FOLLOWER, AppendEntries[term=NEWER])     => Transition[next=FOLLOWER, effects=[ADOPT_TERM, RESET_ELECTION_TIMER]]\n",
++    "proof": "three servers: TLC 2.19 explored 610 distinct states to depth 10 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; the inductive step: TLC 2.19 explored 17,470 distinct states to depth 1 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; four servers: TLC 2.19 explored 829 distinct states to depth 12 in 1 s, for the model Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; fairness: TLC 2.19 explored 610 distinct states to depth 10 in 2 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE; a server left behind: TLC 2.19 explored 461 distinct states to depth 9 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE; delayed replies: TLC 2.19 explored 20,351 distinct states to depth 14 in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE; history: TLC 2.19 explored 4,798 distinct states to depth 11 in 1 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
++    "problem": null,
++    "statement": null,
++    "trace": null,
++    "statesExplored": 610,
++    "invariant": null,
++    "property": null,
++    "stateMachine": "stateDiagram-v2\n    CANDIDATE --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    CANDIDATE --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    CANDIDATE --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    FOLLOWER --> CANDIDATE: ElectionTimeout[] → effects=[INCREMENT_TERM, VOTE_FOR_SELF, REQUEST_VOTES]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=CURRENT] → effects=[RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    FOLLOWER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> LEADER: VotesCounted[majority=true] → effects=[SEND_HEARTBEATS]\n    LEADER --> FOLLOWER: AppendEntries[term=NEWER] → effects=[ADOPT_TERM, RESET_ELECTION_TIMER]\n    LEADER --> FOLLOWER: RequestVote[term=NEWER] → effects=[ADOPT_TERM]\n    LEADER --> FOLLOWER: Response[term=NEWER] → effects=[ADOPT_TERM]\n    FOLLOWER --> FOLLOWER: VotesCounted[majority=false] (Unchanged)\n    FOLLOWER --> FOLLOWER: AppendEntries[term=OLDER] (Rejected)\n    FOLLOWER --> FOLLOWER: RequestVote[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: RequestVote[term=CURRENT] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=OLDER] (Unchanged)\n    FOLLOWER --> FOLLOWER: Response[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: VotesCounted[majority=false] (Unchanged)\n    CANDIDATE --> CANDIDATE: AppendEntries[term=OLDER] (Rejected)\n    CANDIDATE --> CANDIDATE: RequestVote[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: RequestVote[term=CURRENT] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=OLDER] (Unchanged)\n    CANDIDATE --> CANDIDATE: Response[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: ElectionTimeout[] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=false] (Unchanged)\n    LEADER --> LEADER: VotesCounted[majority=true] (Unchanged)\n    LEADER --> LEADER: AppendEntries[term=OLDER] (Rejected)\n    LEADER --> LEADER: RequestVote[term=OLDER] (Unchanged)\n    LEADER --> LEADER: RequestVote[term=CURRENT] (Unchanged)\n    LEADER --> LEADER: Response[term=OLDER] (Unchanged)\n    LEADER --> LEADER: Response[term=CURRENT] (Unchanged)\n",
++    "coverage": {
++      "status": "complete",
++      "configurations": [
++        {
++          "label": "three servers",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 4,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "the inductive step",
++          "fromRuns": false,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 6,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "four servers",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 4,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "fairness",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 4,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "a server left behind",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 12,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "delayed replies",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 33,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 4,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        },
++        {
++          "label": "history",
++          "fromRuns": true,
++          "finished": true,
++          "verdict": "verified",
++          "status": "completed",
++          "reason": null,
++          "counted": true,
++          "coverageStatus": "complete",
++          "coverageReason": null,
++          "listed": [
++            "net.terminalvalue.quorum.raft.RoleMachine#decide",
++            "net.terminalvalue.quorum.raft.VoteRule#decide"
++          ],
++          "operators": [
++            {
++              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++              "listed": true,
++              "reached": 27,
++              "total": 36,
++              "never": [
++                "decide(FOLLOWER, VotesCounted[majority=true]) => Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
++                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
++                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
++                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
++                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
++                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
++                "decide(LEADER, Response[term=OLDER]) => Unchanged"
++              ]
++            },
++            {
++              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
++              "listed": true,
++              "reached": 4,
++              "total": 27,
++              "never": [
++                "decide(OPEN, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=CURRENT, log=AHEAD]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
++                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
++              ]
++            }
++          ]
++        }
++      ],
++      "changedRows": [
++        {
++          "case": "decide(FOLLOWER, VotesCounted[majority=true])",
++          "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
++          "before": "Unchanged[reason=\"votes of an election this server is no longer in\"]",
++          "after": "Transition[next=LEADER, effects=[SEND_HEARTBEATS]]",
++          "takenUnder": [],
++          "unknownUnder": []
++        }
++      ],
++      "nullRows": 0,
++      "vacuous": true
+     },
+-    {
+-      "label": "fairness",
+-      "cfg": "spec/RaftElectionLive.cfg",
+-      "fingerprint": "3d025c2064b8f0000792a7a448c5ef520d934ef6af35b11c82770a7cdb4f635f",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:17+00:00"
+-    },
+-    {
+-      "label": "a server left behind",
+-      "cfg": "spec/RaftElectionLogs.cfg",
+-      "fingerprint": "a39c9633f7b01cb45b4052225106bf1bd20528e9d8ad4adca611b60f33486310",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:19+00:00"
+-    },
+-    {
+-      "label": "delayed replies",
+-      "cfg": "spec/RaftElectionDelayed.cfg",
+-      "fingerprint": "9258f16ac26a095367e6150c8b787690e43be6f69febde4d13ae4bdf790c16e6",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:25+00:00"
+-    },
+-    {
+-      "label": "history",
+-      "cfg": "spec/RaftElectionHistory.cfg",
+-      "fingerprint": "f0ec87c4f43624716acee8f2116d20322a7cc4a9a8b880c920427c9018d2ceec",
+-      "reused": true,
+-      "recordedAt": "2026-11-06T17:05:28+00:00"
+-    }
+-  ],
+-  "violationKind": null,
+-  "forever": null,
+-  "configurations": [
+-    {
+-      "label": "three servers",
+-      "cfg": "spec/RaftElection.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 610 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 610,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "the inductive step",
+-      "cfg": "spec/RaftElectionInductive.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 17,470 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 17470,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "four servers",
+-      "cfg": "spec/RaftElectionFour.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 829 states",
+-      "domain": "Servers = {s1, s2, s3, s4}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 829,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "fairness",
+-      "cfg": "spec/RaftElectionLive.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 610 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 610,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "a server left behind",
+-      "cfg": "spec/RaftElectionLogs.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 461 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {s1}, DelayedReplies = FALSE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 461,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "delayed replies",
+-      "cfg": "spec/RaftElectionDelayed.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants and properties hold in 20,351 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, LeftBehind = {}, DelayedReplies = TRUE, History = FALSE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 20351,
+-      "trace": null,
+-      "forever": null
+-    },
+-    {
+-      "label": "history",
+-      "cfg": "spec/RaftElectionHistory.cfg",
+-      "verdict": "verified",
+-      "status": "completed",
+-      "reason": null,
+-      "summary": "✓ Verified: all invariants hold in 4,798 states",
+-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, LeftBehind = {}, DelayedReplies = FALSE, History = TRUE",
+-      "invariant": null,
+-      "violationKind": null,
+-      "statesExplored": 4798,
+-      "trace": null,
+-      "forever": null
+-    }
+-  ],
+-  "modelVerdict": "verified",
+-  "modelSummary": "✓ Verified, vacuously: no run takes the 1 row the change alters"
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "checkpoints": [
++      {
++        "label": "three servers",
++        "cfg": "spec/RaftElection.cfg",
++        "fingerprint": "350465f09f8025ff2707153af35d3c8335e8303a86635a09913439afecdd02fe",
++        "reused": false
++      },
++      {
++        "label": "the inductive step",
++        "cfg": "spec/RaftElectionInductive.cfg",
++        "fingerprint": "349f5f261ba8f0167863695afdd3c07d4e8f3030b19ee5b06452f682000aced3",
++        "reused": false
++      },
++      {
++        "label": "four servers",
++        "cfg": "spec/RaftElectionFour.cfg",
++        "fingerprint": "f51c7036d94ab228233e4bff3912decbd606024572d41a1052a566b85db26a38",
++        "reused": false
++      },
++      {
++        "label": "fairness",
++        "cfg": "spec/RaftElectionLive.cfg",
++        "fingerprint": "50b61aca95763af268f1afebfd6a9a8a05682cdf6cb16735de50041ada9800c1",
++        "reused": false
++      },
++      {
++        "label": "a server left behind",
++        "cfg": "spec/RaftElectionLogs.cfg",
++        "fingerprint": "b192766bff03bcc20bda28656935b7fd8eef997b85f140deddbe945eb14c8e8d",
++        "reused": false
++      },
++      {
++        "label": "delayed replies",
++        "cfg": "spec/RaftElectionDelayed.cfg",
++        "fingerprint": "b4d3ac70ffcb9205a36bd60be5df01a394579ce6ba9e345dda3db3c73ae23f3a",
++        "reused": false
++      },
++      {
++        "label": "history",
++        "cfg": "spec/RaftElectionHistory.cfg",
++        "fingerprint": "2734ad859808fc4d0115ed45d9795ccf34e5800caf3d6e1850f92a800451eea3",
++        "reused": false
++      }
++    ],
++    "violationKind": null,
++    "forever": null,
++    "modelVerdict": "verified",
++    "modelSummary": "✓ Verified, vacuously: no run takes the 1 row the change alters"
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "643a57b8da8c795e23f1e5172ff173a3cdb0ec87613e9a2ab1c4ac1392d2cddb",
++        "bytes": 983
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "ce3bea90895fa79fd4f12e5cc02650f3bdb329e93f20d7754a9b56c44f3b275c",
++        "bytes": 31515
++      }
++    ]
++  }
+ }
+--- a/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/verifier-output.txt
++++ b/examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late/verifier-output.txt
+@@ -1,23 +1,23 @@
+ == three servers: spec/RaftElection.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 25964] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:04)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:04.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80001] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:33)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:34.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -59,26 +59,26 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-06 17:05:05)
++Finished in 01s at (2026-11-06 18:12:35)
+ 
+ == the inductive step: spec/RaftElectionInductive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26058] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:06)
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80206] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:35)
+ Computing initial states...
+ Computed 2 initial states...
+ Computed 4 initial states...
+@@ -94,7 +94,7 @@
+ Computed 4096 initial states...
+ Computed 8192 initial states...
+ Computed 16384 initial states...
+-Finished computing initial states: 17470 distinct states generated at 2026-11-06 17:05:10.
++Finished computing initial states: 17470 distinct states generated at 2026-11-06 18:12:40.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -134,28 +134,28 @@
+ 76099 states generated, 17470 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 1.
+ The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+-Finished in 06s at (2026-11-06 17:05:12)
++Finished in 06s at (2026-11-06 18:12:41)
+ 
+ == four servers: spec/RaftElectionFour.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26351] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:12)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:13.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80774] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:42)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:42.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -197,31 +197,31 @@
+ 7125 states generated, 829 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 12.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-06 17:05:14)
++Finished in 01s at (2026-11-06 18:12:43)
+ 
+ == fairness: spec/RaftElectionLive.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26685] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:15)
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 80903] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:44)
+ Implied-temporal checking--satisfiability problem has 4 branches.
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:15.
+-Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-06 17:05:17)
+-Finished checking temporal properties in 00s at 2026-11-06 17:05:17
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:45.
++Checking 4 branches of temporal properties for the complete state space with 2440 total distinct states at (2026-11-06 18:12:46)
++Finished checking temporal properties in 00s at 2026-11-06 18:12:46
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -263,28 +263,28 @@
+ 3328 states generated, 610 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 10.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 02s at (2026-11-06 17:05:17)
++Finished in 02s at (2026-11-06 18:12:46)
+ 
+ == a server left behind: spec/RaftElectionLogs.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26827] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:18)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:18.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81061] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:47)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:48.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -318,28 +318,28 @@
+ 2526 states generated, 461 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 9.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 5 and the 95th percentile is 3).
+-Finished in 01s at (2026-11-06 17:05:19)
++Finished in 01s at (2026-11-06 18:12:48)
+ 
+ == delayed replies: spec/RaftElectionDelayed.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 26914] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:19)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:20.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81181] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:49)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:50.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -376,28 +376,28 @@
+ 115864 states generated, 20351 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 14.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
+-Finished in 05s at (2026-11-06 17:05:25)
++Finished in 05s at (2026-11-06 18:12:54)
+ 
+ == history: spec/RaftElectionHistory.cfg ==
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 27005] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+-Parsing file examples/apps/quorum/spec/RaftElection.tla
+-Parsing file examples/tools/tla/standard-modules/Naturals.tla
+-Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
+-Parsing file examples/tools/tla/standard-modules/Sequences.tla
+-Parsing file examples/tools/tla/standard-modules/TLC.tla
+-Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
+-Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
+-Semantic processing of module Naturals
+-Semantic processing of module Sequences
+-Semantic processing of module FiniteSets
+-Semantic processing of module TLC
+-Semantic processing of module RoleMachineContract
+-Semantic processing of module VoteRuleContract
+-Semantic processing of module RaftElection
+-Starting... (2026-11-06 17:05:26)
+-Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:05:26.
++Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2457MB heap and 64MB offheap memory [pid: 81340] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Parsing file examples/apps/quorum/spec/RaftElection.tla
++Parsing file examples/tools/tla/standard-modules/Naturals.tla
++Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
++Parsing file examples/tools/tla/standard-modules/Sequences.tla
++Parsing file examples/tools/tla/standard-modules/TLC.tla
++Parsing file examples/apps/quorum/spec/RoleMachineContract.tla
++Parsing file examples/apps/quorum/spec/VoteRuleContract.tla
++Semantic processing of module Naturals
++Semantic processing of module Sequences
++Semantic processing of module FiniteSets
++Semantic processing of module TLC
++Semantic processing of module RoleMachineContract
++Semantic processing of module VoteRuleContract
++Semantic processing of module RaftElection
++Starting... (2026-11-06 18:12:55)
++Computing initial states...
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:55.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -439,4 +439,4 @@
+ 19537 states generated, 4798 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 11.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 4).
+-Finished in 01s at (2026-11-06 17:05:27)
++Finished in 01s at (2026-11-06 18:12:57)

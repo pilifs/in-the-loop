@@ -1,0 +1,435 @@
+--- a/examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md
++++ b/examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/README.md
+@@ -117,11 +117,11 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 8, not null × key: int in 0.0 s; loops unwound 16 times with unwinding assertions.
+ 
+-**What the verdict is about.** For every input in `matches: int[] of length ≤ 8, not null × key: int`, assuming !(matches.length <= 8): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `matches`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 8 long; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps assume. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
++**What the verdict is about.** For every input in `matches: int[] of length ≤ 8, not null × key: int`, assuming !(matches.length <= 8): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `matches`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 8 long; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. No input in the domain reaches the calls, so the verdict is vacuous (below).
+ 
+ **The proof is vacuous:** no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing. The tool found this by running the statement with the calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.
+ 
+-This page renders attempt `20261106T171549Z-a57f2e87` at claim `1be453b4ee98e443`, in pipeline job `20261106-025930-example-144-b9-re-run-its-result-records`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261106T181404Z-c8a6c7cb` at claim `1be453b4ee98e443`, in pipeline job `20261106-181102-example-144-b9-re-run-its-result-records`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json
++++ b/examples/144-a-short-table-scan-declared-as-the-intended-change-whose-proof-covers-no-table-at-the-default-bound/result.json
+@@ -1,71 +1,349 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified, vacuously: no input in the domain reaches the calls",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.mica.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+-    "startLine": 14,
+-    "code": "    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+-    "startLine": 14,
+-    "code": "    return (low + high) >>> 1;\n}\n\n/** Tables of at most this many pairs are scanned in order rather than bisected. */\npublic static final int SCAN_LIMIT = 8;\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    if (matches.length <= SCAN_LIMIT) {\n        for (int i = 0; i < matches.length; i++) {\n            if (matches[i] == key) {\n                return i;\n            }\n        }\n        return -1;\n    }\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "matches: int[] of length ≤ 8 × key: int",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 8 × key: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": {
+-    "vacuous": true,
+-    "reason": "no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing"
+-  },
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "native",
+-    "checker": "jvmcontract's own checker (CaDiCaL)",
+-    "seconds": 0.013,
+-    "properties": 1,
+-    "unwind": 16,
+-    "maxArrayLength": 8,
+-    "stage": null,
+-    "native": {
+-      "paths": 1,
+-      "merges": 0,
+-      "solverCalls": 0,
+-      "solvingSeconds": 0.0,
+-      "gatesEvaluated": 0,
+-      "evaluatingSeconds": 0.0,
+-      "divisions": 0,
+-      "divisionsBuilt": 0,
+-      "multiplications": 0,
+-      "multiplicationsBuilt": 0,
+-      "variables": 385,
+-      "clauses": 224,
+-      "seconds": 0.00019819
++  "format": 2,
++  "claim": {
++    "id": "1be453b4ee98e443",
++    "format": 1,
++    "example": "144",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "behaviourChangeIntended": false,
++      "intendedInputs": "matches.length <= 8"
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": "matches.length <= 8"
++    },
++    "inputs": {
++      "patch": "078a8c3e4bfc3fe02dcf9087f1e2e7456a26fe9860b0a51a8a01c9fbacd77cdc",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "2f6c00faa56e0ec8fa09051fd162fdfbf2da035bad9278562fb60b5752dcee0c",
++        "files": 50
++      },
++      "dependencies": "the JDK"
+     }
+   },
+-  "replay": null
++  "attempt": {
++    "id": "20261106T181404Z-c8a6c7cb",
++    "claim": "1be453b4ee98e443",
++    "startedAt": "2026-11-06T18:14:04+00:00",
++    "seconds": 2.2,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native",
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "6060a86d7043ae2c593eab96c76051e6bc5c2d55e2d98c0471319464eb62a7ec",
++        "files": 30
++      },
++      "after": {
++        "sha256": "3b980f1b14e2f09f9cf246755ea18b289fb02948164fe33f02e00660922f247e",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181102-example-144-b9-re-run-its-result-records",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181102-example-144-b9-re-run-its-result-records"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/02-javac-patched-mica-main.stdout",
++        "stderr": "logs/02-javac-patched-mica-main.stderr"
++      },
++      {
++        "name": "javac patched mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/03-javac-patched-mica-tests.stdout",
++        "stderr": "logs/03-javac-patched-mica-tests.stderr"
++      },
++      {
++        "name": "the mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-mica-tests.stdout",
++        "stderr": "logs/04-the-mica-tests.stderr"
++      },
++      {
++        "name": "javac unpatched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-mica-main.stdout",
++        "stderr": "logs/05-javac-unpatched-mica-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-7q58oeeo/attempts/144/attempt-r3zj0viv"
++  },
++  "conclusion": {
++    "claim": "1be453b4ee98e443",
++    "attempt": "20261106T181404Z-c8a6c7cb",
++    "status": "established",
++    "vacuous": true,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✓ Verified, vacuously: no input in the domain reaches the calls",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.mica.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "startLine": 14,
++      "code": "    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
++    },
++    "after": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "startLine": 14,
++      "code": "    return (low + high) >>> 1;\n}\n\n/** Tables of at most this many pairs are scanned in order rather than bisected. */\npublic static final int SCAN_LIMIT = 8;\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    if (matches.length <= SCAN_LIMIT) {\n        for (int i = 0; i < matches.length; i++) {\n            if (matches[i] == key) {\n                return i;\n            }\n        }\n        return -1;\n    }\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
++    },
++    "casesTotal": null,
++    "domain": "matches: int[] of length ≤ 8, not null × key: int",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 8, not null × key: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": {
++      "vacuous": true,
++      "reason": "no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing"
++    },
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.017,
++      "properties": 1,
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "stage": null,
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budgetSeconds": 600.0,
++          "seconds": 0.0,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 385,
++            "clauses": 224
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budgetSeconds": 599.983,
++          "seconds": 0.0,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 385,
++            "clauses": 224
++          }
++        }
++      ],
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solverCalls": 0,
++        "solvingSeconds": 0.0,
++        "gatesEvaluated": 0,
++        "evaluatingSeconds": 0.0,
++        "divisions": 0,
++        "divisionsBuilt": 0,
++        "multiplications": 0,
++        "multiplicationsBuilt": 0,
++        "variables": 385,
++        "clauses": 224,
++        "seconds": 0.000163567,
++        "loadingSeconds": 0.0,
++        "decodingSeconds": 1.2163e-05,
++        "encodingSeconds": 0.0,
++        "witnessSeconds": 0.0
++      },
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matches",
++            "type": "int[]",
++            "kind": "array",
++            "null": false,
++            "maxLength": 8
++          },
++          {
++            "name": "key",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "matches: int[] of length ≤ 8, not null × key: int"
++      },
++      "assumptions": [
++        {
++          "kind": "intended-inputs",
++          "text": "!(matches.length <= 8): the input is not among those the change is meant for",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++        "arrays": [
++          "matches"
++        ]
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "vacuous",
++        "basis": "probe",
++        "text": "The verdict is vacuous: no input in the domain reaches the calls, every one being among the intended inputs (--unchanged-unless); the proof covers no input and says nothing."
++      }
++    },
++    "replay": null
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "d0717a8cc13efe3fb572eabf27a36a73e40f8657dc5677f6b0e721b058060eda",
++        "bytes": 2525
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "bb681239339630230da74db0c9f6b67f1ab8e2ac5f465f42afb6a5a24b54fe9a",
++        "bytes": 452
++      }
++    ]
++  }
+ }

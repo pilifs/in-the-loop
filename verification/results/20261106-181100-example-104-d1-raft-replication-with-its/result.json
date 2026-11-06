@@ -1,0 +1,241 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-104-d1-raft-replication-with-its",
+  "title": "Example 104 (D1, Raft replication) with its operators tied to the patched classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6m11s, peak 3.7 GiB (estimated 20m00s, 4.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-104-d1-raft-replication-with-its.json",
+    "sha256": "a6eadc39690987e2b185cd414c72f414184b1a098a6a5243c9a2484903e3f186",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-104-d1-raft-replication-with-its",
+      "title": "Example 104 (D1, Raft replication) with its operators tied to the patched classes",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: the D1 runner derives every generated operator's contract (AppendRule, CommitRule, ReplyRule) from the patched classes. 104 is an intended refactor of ReplyRule, verified; the regenerated contract must equal the derived one, and the verdict must not move.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc",
+        "jvmcontract:derive"
+      ],
+      "links": {
+        "examples": [
+          "104"
+        ]
+      },
+      "expected": "build.py exits 0, 104 verified as before; modelContracts lists three operators, each allowed true (ReplyRule derived or verified by whether its rows changed); modelVerdict verified",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "20m",
+        "notes": "delayed-replies configuration needs the 2.5 GB TLC heap"
+      },
+      "steps": [
+        {
+          "name": "example 104 (D1)",
+          "run": "python3 examples/tools/build.py 104",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe"
+      ],
+      "supersedes": "20261105-124134-example-104-d1-raft-replication-with-its"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:58+00:00",
+  "finishedAt": "2026-11-06T18:19:11+00:00",
+  "wallSeconds": 373.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1200.0,
+    "notes": "delayed-replies configuration needs the 2.5 GB TLC heap"
+  },
+  "usage": {
+    "peakMemoryBytes": 3927543808,
+    "wallSeconds": 371.9,
+    "cpuSeconds": 393.9,
+    "memoryOfEstimate": 0.91,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 104 (D1)",
+      "run": "python3 examples/tools/build.py 104",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 371.875,
+      "cpuSeconds": 393.898,
+      "cpuThrottledSeconds": 3.251,
+      "peakMemoryBytes": 3927543808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-104-d1.log",
+        "lines": 50,
+        "bytes": 2138,
+        "sha256": "9b523a54a229513a314ee128683d311b48e11e541bcf707efe86690008f619c3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 50,
+          "text": "104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe: verified (as expected)",
+          "groups": [
+            "104",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive AppendRule#decide",
+        "  · jvmcontract derive AppendRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive ReplyRule#decide",
+        "  · jvmcontract derive ReplyRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive CommitRule#decide",
+        "  · jvmcontract derive CommitRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc RaftReplication.cfg",
+        "  · jvmcontract tlc RaftReplication.cfg: exited 0, 11.1 s",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg: exited 0, 7.1 s",
+        "  · jvmcontract tlc RaftReplicationLive.cfg",
+        "  · jvmcontract tlc RaftReplicationLive.cfg: exited 0, 50.8 s",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg: exited 0, 299.0 s",
+        "  · jvmcontract derive ReplyRule#decide",
+        "  · jvmcontract derive ReplyRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/README.md",
+      "change": "modified",
+      "bytes": 50353,
+      "sha256": "e50f475be57289584ed70f347fd63ecadeffd775da24bfafe8c004bb99e39f9b",
+      "sourceSha256": "1a1ed39eb71451061bb74836934ecf0c61af3d269ae3cbb6798cebf700817af6"
+    },
+    {
+      "path": "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/result.json",
+      "change": "modified",
+      "bytes": 47356,
+      "sha256": "3f3fc6c1fc9b1561bebfb54db171eec47655a9f5e51a730590d592e416053071",
+      "sourceSha256": "36f383f19431718950b587157aed86a812e0be450c813bdaf42d837153c9ad80"
+    },
+    {
+      "path": "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/verifier-output.txt",
+      "change": "modified",
+      "bytes": 25742,
+      "sha256": "7c2fe8e05a2946be0be76d9bab4430c7cc035ec6b840b2008e41374bac674804",
+      "sourceSha256": "7a08c7b7dfd4162f07898f6339133436ab1dfa5aa2c8f1e8a5a7962128f828f9"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/README.md",
+      "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/result.json",
+      "examples/104-leader-that-takes-a-late-acceptance-as-news-moves-a-follower-back-proved-safe/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

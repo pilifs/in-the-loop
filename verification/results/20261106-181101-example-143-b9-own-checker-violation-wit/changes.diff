@@ -1,0 +1,536 @@
+--- a/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md
++++ b/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/README.md
+@@ -77,7 +77,7 @@
+ |---|---|---|
+ | `encodeInto(chars=['\u0080'], out=[0])` | `throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]` | `1, leaving out=[-128]` |
+ 
+-One disagreeing input is enough to fail the build. The domain is `chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8`; the search tries small values first so that the witness is readable, and would have covered all of it.
++One disagreeing input is enough to fail the build. The domain is `chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array`; the search tries small values first so that the witness is readable, and would have covered all of it.
+ 
+ ## Would the existing tests have caught it?
+ 
+@@ -105,9 +105,11 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array.
++
++**What the verdict is about.** For every input in `chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array`, assuming every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `chars`, `out`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 8 long. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
++
++This page renders attempt `20261106T181332Z-45a41cde` at claim `d46095dfd3ccd792`, in pipeline job `20261106-181101-example-143-b9-own-checker-violation-wit`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+@@ -116,7 +118,7 @@
+   encodeInto(chars=['\u0080'], out=[0])
+     before: throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]
+     after:  1, leaving out=[-128]
+-  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
+ ```
+--- a/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
++++ b/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/result.json
+@@ -1,79 +1,414 @@
+ {
+-  "verdict": "violation",
+-  "verdictLabel": "✗ Violation: counterexample found",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 1,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.mica.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+-    "startLine": 46,
+-    "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    for (char c : chars) {\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
+-    "startLine": 46,
+-    "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    int i = 0;\n    // Most constants are ASCII: copy the leading run of one-byte characters without the general test.\n    while (i < chars.length && (char) (chars[i] - 1) <= 0x7f) {\n        out[k++] = (byte) chars[i++];\n    }\n    for (; i < chars.length; i++) {\n        char c = chars[i];\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
+-  "counterexamples": [
+-    {
+-      "input": "encodeInto(chars=['\\u0080'], out=[0])",
+-      "contract": "throws ArrayIndexOutOfBoundsException(\"Index 1 out of bounds for length 1\"), leaving out=[-62]",
+-      "actual": "1, leaving out=[-128]",
+-      "found": "encodeInto(chars=['\\u0080'], out=[32])",
+-      "shrinkRuns": 29
+-    }
+-  ],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "native",
+-    "checker": "jvmcontract's own checker (CaDiCaL)",
+-    "seconds": 1.034,
+-    "properties": 1,
+-    "unwind": 16,
+-    "maxArrayLength": 8,
+-    "stage": "[-100000:100000]",
+-    "native": {
+-      "paths": 735,
+-      "merges": 212,
+-      "solverCalls": 2064,
+-      "solvingSeconds": 0.8864051,
+-      "gatesEvaluated": 378679,
+-      "evaluatingSeconds": 0.006921296,
+-      "divisions": 0,
+-      "divisionsBuilt": 0,
+-      "multiplications": 0,
+-      "multiplicationsBuilt": 0,
+-      "variables": 46220,
+-      "clauses": 169370,
+-      "seconds": 1.010343785
++  "format": 2,
++  "claim": {
++    "id": "d46095dfd3ccd792",
++    "format": 1,
++    "example": "143",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": "59c8426e382ca7a6571c6b0347f25054262614ff88b41c3f966fdc0054ed73ac",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "e41fdc7ae15f8874e4dc124550bdac5f6c124a600c7efa903c5df68a73c53940",
++        "files": 50
++      },
++      "dependencies": "the JDK"
+     }
+   },
+-  "replay": {
+-    "by": "interpreter",
+-    "reproduced": true
++  "attempt": {
++    "id": "20261106T181332Z-45a41cde",
++    "claim": "d46095dfd3ccd792",
++    "startedAt": "2026-11-06T18:13:32+00:00",
++    "seconds": 3.3,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native",
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "6060a86d7043ae2c593eab96c76051e6bc5c2d55e2d98c0471319464eb62a7ec",
++        "files": 30
++      },
++      "after": {
++        "sha256": "ac4c6b350923a99e277802b1438b48b2d5e08c2caead8d6c407e49c55c2c98da",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181101-example-143-b9-own-checker-violation-wit",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-143-b9-own-checker-violation-wit"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.6,
++        "stdout": "logs/02-javac-patched-mica-main.stdout",
++        "stderr": "logs/02-javac-patched-mica-main.stderr"
++      },
++      {
++        "name": "javac patched mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.8,
++        "stdout": "logs/03-javac-patched-mica-tests.stdout",
++        "stderr": "logs/03-javac-patched-mica-tests.stderr"
++      },
++      {
++        "name": "the mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-mica-tests.stdout",
++        "stderr": "logs/04-the-mica-tests.stderr"
++      },
++      {
++        "name": "javac unpatched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-mica-main.stdout",
++        "stderr": "logs/05-javac-unpatched-mica-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 1.1,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-_emvnn2o/attempts/143/attempt-0_prrr3k"
++  },
++  "conclusion": {
++    "claim": "d46095dfd3ccd792",
++    "attempt": "20261106T181332Z-45a41cde",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✗ Violation: counterexample found",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.mica.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
++      "startLine": 46,
++      "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    for (char c : chars) {\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
++    },
++    "after": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/classfile/ModifiedUtf8.java",
++      "startLine": 46,
++      "code": " */\npublic static int encodeInto(char[] chars, byte[] out) {\n    int k = 0;\n    int i = 0;\n    // Most constants are ASCII: copy the leading run of one-byte characters without the general test.\n    while (i < chars.length && (char) (chars[i] - 1) <= 0x7f) {\n        out[k++] = (byte) chars[i++];\n    }\n    for (; i < chars.length; i++) {\n        char c = chars[i];\n        if (c >= 0x0001 && c <= 0x007f) {\n            out[k++] = (byte) c;\n        } else if (c <= 0x07ff) {\n"
++    },
++    "casesTotal": null,
++    "domain": "chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array",
++    "counterexamples": [
++      {
++        "input": "encodeInto(chars=['\\u0080'], out=[0])",
++        "contract": "throws ArrayIndexOutOfBoundsException(\"Index 1 out of bounds for length 1\"), leaving out=[-62]",
++        "actual": "1, leaving out=[-128]",
++        "found": "encodeInto(chars=['\\u0080'], out=[32])",
++        "shrinkRuns": 29,
++        "witness": {
++          "inputs": [
++            {
++              "name": "chars",
++              "type": "char[]",
++              "value": [
++                128
++              ]
++            },
++            {
++              "name": "out",
++              "type": "byte[]",
++              "value": [
++                0
++              ]
++            }
++          ],
++          "foundInputs": [
++            {
++              "name": "chars",
++              "type": "char[]",
++              "value": [
++                128
++              ]
++            },
++            {
++              "name": "out",
++              "type": "byte[]",
++              "value": [
++                32
++              ]
++            }
++          ],
++          "call": {
++            "class": "net.terminalvalue.mica.classfile.ModifiedUtf8",
++            "classFile": "net/terminalvalue/mica/classfile/ModifiedUtf8.class",
++            "classFileSha256": "c61094b8501cfc0ca9aa0f6a023cc77199c83c7621a3368e446ee65cf6198c94",
++            "classes": "after",
++            "method": "encodeInto",
++            "descriptor": "([C[B)I",
++            "static": true,
++            "arguments": [
++              {
++                "name": "chars",
++                "type": "char[]",
++                "value": [
++                  128
++                ],
++                "from": "chars"
++              },
++              {
++                "name": "out",
++                "type": "byte[]",
++                "value": [
++                  0
++                ],
++                "from": "out"
++              }
++            ]
++          },
++          "previousCall": {
++            "class": "net.terminalvalue.mica.classfile.ModifiedUtf8",
++            "classFile": "net/terminalvalue/mica/classfile/ModifiedUtf8.class",
++            "classFileSha256": "67f5d34ce215a08746c5d22c1ca15fd0d04964f9dd61de90739436c7153e80c3",
++            "classes": "before",
++            "method": "encodeInto",
++            "descriptor": "([C[B)I",
++            "static": true,
++            "arguments": [
++              {
++                "name": "chars",
++                "type": "char[]",
++                "value": [
++                  128
++                ],
++                "from": "chars"
++              },
++              {
++                "name": "out",
++                "type": "byte[]",
++                "value": [
++                  0
++                ],
++                "from": "out"
++              }
++            ]
++          }
++        }
++      }
++    ],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.032,
++      "properties": 1,
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "stage": "[-100000:100000]",
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budgetSeconds": 600.0,
++          "seconds": 1.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.039,
++            "encoding": 0.076,
++            "solving": 0.887,
++            "trace": 0.001,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 46420,
++            "clauses": 170058
++          }
++        }
++      ],
++      "native": {
++        "paths": 738,
++        "merges": 222,
++        "solverCalls": 2072,
++        "solvingSeconds": 0.887119862,
++        "gatesEvaluated": 387785,
++        "evaluatingSeconds": 0.006507003,
++        "divisions": 0,
++        "divisionsBuilt": 0,
++        "multiplications": 0,
++        "multiplicationsBuilt": 0,
++        "variables": 46420,
++        "clauses": 170058,
++        "seconds": 1.004320155,
++        "loadingSeconds": 0.000219075,
++        "decodingSeconds": 2.8213e-05,
++        "encodingSeconds": 0.076346368,
++        "witnessSeconds": 0.001371981
++      },
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "chars",
++            "type": "char[]",
++            "kind": "array",
++            "null": false,
++            "maxLength": 8
++          },
++          {
++            "name": "out",
++            "type": "byte[]",
++            "kind": "array",
++            "null": false,
++            "maxLength": 8
++          }
++        ],
++        "sharedArrays": false,
++        "text": "chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++        "arrays": [
++          "chars",
++          "out"
++        ]
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null
++    },
++    "replay": {
++      "by": "interpreter",
++      "reproduced": true
++    }
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "8ef047bdc8a6497a257d10133e52c441012d25efd72974ac4d33ffefe94a99d9",
++        "bytes": 2666
++      },
++      {
++        "path": "statement.java",
++        "sha256": "4508ed3b9e15af1fd4e796f26b6c6df842284a5cf1b36096c9c70fde3e3e11d8",
++        "bytes": 2611
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "a7a340b1595574abf258406f6eaef4e2e5a97d88ffbb6c82574006e32e43bf6f",
++        "bytes": 761
++      }
++    ]
+   }
+ }
+--- a/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt
++++ b/examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow/verifier-output.txt
+@@ -2,6 +2,6 @@
+   encodeInto(chars=['\u0080'], out=[0])
+     before: throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]
+     after:  1, leaving out=[-128]
+-  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
++  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array)
+ 
+ If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

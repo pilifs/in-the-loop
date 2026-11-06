@@ -110,7 +110,7 @@ The property `result == 12 + codeLength + 8 * exceptionTableLength + (\sum int i
 |---|---|
 | `attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])` | `13` |
 
-One input is enough to fail the build. The domain is `codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8`; the search tries small values first so that the witness is readable, and would have covered all of it.
+One input is enough to fail the build. The domain is `codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
 ## Would the existing tests have caught it?
 
@@ -136,9 +136,11 @@ Revert, and keep the sentence in the class comment that distinguishes the two le
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as attributeLength(codeLength=18, exceptionTableLength=0, nestedAttributeLength=[1527, 503, 0, 6136, 7680, 496, 0]), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8.
+How the verdict was reached: found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null`, assuming codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535) (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against result == 12 + codeLength + 8 * exceptionTableLength + (\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i]), and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 8 long. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261106T181224Z-487c0c66` at claim `9110815c4d386329`, in pipeline job `20261106-181059-example-050-b11-violation-with-its-prope`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -146,7 +148,7 @@ This result was recorded before runs fingerprinted their inputs, so whether it s
 ✗ Property of net.terminalvalue.mica.classfile.CodeAttribute#attributeLength violated: `result == 12 + codeLength + 8 * exceptionTableLength + (\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])` where codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535):
   attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])
     outcome: 13
-  (found by JBMC 6.11.0 in 0.2 s searching inputs in [0:20] as attributeLength(codeLength=18, exceptionTableLength=0, nestedAttributeLength=[1527, 503, 0, 6136, 7680, 496, 0]), shrunk to the input above in 14 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8)
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
 ```
@@ -206,6 +208,12 @@ public final class PropertyHarness {
               "id": "api-changed",
               "shortDescription": {
                 "text": "The module's public API differs from its contract."
+              }
+            },
+            {
+              "id": "boundaries-changed",
+              "shortDescription": {
+                "text": "The module's boundaries (routes, listeners, schedules, bean definitions, the advice on them, or a problem with that advice) differ from their contract."
               }
             },
             {

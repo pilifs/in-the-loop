@@ -1,0 +1,471 @@
+--- a/examples/017-hybrid-logical-clock-refactor-proved-monotonic/README.md
++++ b/examples/017-hybrid-logical-clock-refactor-proved-monotonic/README.md
+@@ -118,14 +118,17 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.8 s; loops unwound 16 times with unwinding assertions.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `nowMillis: long × last: long × message: long`, assuming nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last), and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found receive(nowMillis=20, last=20, message=20).
++
++This page renders attempt `20261106T181224Z-076a1c8c` at claim `f6d21ee68659a79b`, in pipeline job `20261106-181053-example-017-b11-under-build-py-s-executi`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.8 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: receive(nowMillis=20, last=20, message=20) reaches the calls
+ ```
+ 
+ </details>
+--- a/examples/017-hybrid-logical-clock-refactor-proved-monotonic/result.json
++++ b/examples/017-hybrid-logical-clock-refactor-proved-monotonic/result.json
+@@ -1,46 +1,398 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: property holds on every input",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
++  "format": 2,
++  "claim": {
++    "id": "f6d21ee68659a79b",
++    "format": 1,
++    "example": "017",
++    "statement": {
++      "approach": "B11",
++      "target": "net.terminalvalue.quorum.clock.HybridLogicalClock#receive",
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null
++    },
++    "inputs": {
++      "patch": "f117f3867873f6d203ccd6399006904ad5055e88594f0a4ed8c0ad50b4bbf54c",
++      "before": {
++        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
++        "files": 110
++      },
++      "after": {
++        "sha256": "ef6692bcfea79f40036995509856be906045433240091abfa4cff7397e70b2b2",
++        "files": 110
++      },
++      "dependencies": "the JDK"
++    }
+   },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.quorum.Tests",
+-    "passed": true,
+-    "failures": []
++  "attempt": {
++    "id": "20261106T181224Z-076a1c8c",
++    "claim": "f6d21ee68659a79b",
++    "startedAt": "2026-11-06T18:12:24+00:00",
++    "seconds": 2.8,
++    "engine": "jbmc",
++    "options": [
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "880f2b45bd169cba4d6ddd11d7886fd06468e5722413f4dde756af56fcf933e6",
++        "files": 70
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181053-example-017-b11-under-build-py-s-executi",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181053-example-017-b11-under-build-py-s-executi"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched quorum main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.1,
++        "stdout": "logs/02-javac-patched-quorum-main.stdout",
++        "stderr": "logs/02-javac-patched-quorum-main.stderr"
++      },
++      {
++        "name": "javac patched quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.0,
++        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
++        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
++      },
++      {
++        "name": "the quorum tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-quorum-tests.stdout",
++        "stderr": "logs/04-the-quorum-tests.stderr"
++      },
++      {
++        "name": "jvmcontract prove",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-jvmcontract-prove.stdout",
++        "stderr": "logs/05-jvmcontract-prove.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/08-version-of-jbmc.stdout",
++        "stderr": "logs/08-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-ovipc2rx/attempts/017/attempt-iyjh0xpi"
+   },
+-  "before": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
+-    "startLine": 55,
+-    "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long lastPhysical = physical(last);\n        long messagePhysical = physical(message);\n        if (nowMillis > lastPhysical && nowMillis > messagePhysical) {\n            return of(nowMillis, 0);\n        }\n        if (lastPhysical == messagePhysical) {\n            return of(lastPhysical, Math.max(logical(last), logical(message)) + 1L);\n        }\n        if (lastPhysical > messagePhysical) {\n            return of(lastPhysical, logical(last) + 1L);\n        }\n        return of(messagePhysical, logical(message) + 1L);\n    }\n}\n"
++  "conclusion": {
++    "claim": "f6d21ee68659a79b",
++    "attempt": "20261106T181224Z-076a1c8c",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
++        "status": "established",
++        "evidence": {
++          "harness": null,
++          "assert": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
++          "assume": "nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF",
++          "verdict": "verified",
++          "domain": "nowMillis: long × last: long × message: long",
++          "proof": "JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions",
++          "problem": null,
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": {
++            "engine": "jbmc",
++            "checker": "JBMC 6.11.0",
++            "seconds": 0.624,
++            "properties": 2,
++            "unwind": 16,
++            "maxArrayLength": 8,
++            "stage": null,
++            "deadlineSeconds": 600.0,
++            "runs": [
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": "[0:20]",
++                "budgetSeconds": 75.0,
++                "seconds": 0.1,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.013,
++                  "lowering": 0.003,
++                  "symbolic": 0.011,
++                  "encoding": 0.005,
++                  "solving": 0.016,
++                  "trace": 0.0,
++                  "other": 0.053
++                },
++                "formula": {
++                  "steps": 891,
++                  "conditions": 2,
++                  "variables": 12720,
++                  "clauses": 24374
++                }
++              },
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": "[-100000:100000]",
++                "budgetSeconds": 75.0,
++                "seconds": 0.151,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.012,
++                  "lowering": 0.006,
++                  "symbolic": 0.02,
++                  "encoding": 0.007,
++                  "solving": 0.058,
++                  "trace": 0.0,
++                  "other": 0.048
++                },
++                "formula": {
++                  "steps": 891,
++                  "conditions": 2,
++                  "variables": 12720,
++                  "clauses": 24374
++                }
++              },
++              {
++                "checker": "jbmc",
++                "purpose": "proof",
++                "stage": null,
++                "budgetSeconds": 599.681,
++                "seconds": 0.301,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.012,
++                  "lowering": 0.004,
++                  "symbolic": 0.011,
++                  "encoding": 0.004,
++                  "solving": 0.24,
++                  "trace": 0.0,
++                  "other": 0.031
++                },
++                "formula": {
++                  "steps": 886,
++                  "conditions": 2,
++                  "variables": 12134,
++                  "clauses": 23185
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "probe",
++                "stage": null,
++                "budgetSeconds": 599.376,
++                "seconds": 0.001,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.001,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 1055,
++                  "clauses": 2903
++                }
++              }
++            ],
++            "gapMode": "strict"
++          },
++          "replay": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "nowMillis",
++                  "type": "long",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "last",
++                  "type": "long",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "message",
++                  "type": "long",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "sharedArrays": false,
++              "text": "nowMillis: long × last: long × message: long"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF",
++                "basis": "stated"
++              },
++              {
++                "kind": "library",
++                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 16,
++              "maxArrayLength": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++              "classes": 10,
++              "jdk": "25.0.5"
++            },
++            "checker": {
++              "engine": "jbmc",
++              "name": "JBMC 6.11.0",
++              "solver": "cadical",
++              "fallback": null
++            },
++            "gapMode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "probe",
++              "text": "Some input in the domain reaches the calls: the tool's own checker found receive(nowMillis=20, last=20, message=20).",
++              "witness": "receive(nowMillis=20, last=20, message=20)"
++            }
++          }
++        }
++      }
++    ],
++    "label": "✓ Verified: property holds on every input",
++    "obligationKeys": {
++      "property": "properties"
++    }
+   },
+-  "after": {
+-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
+-    "startLine": 55,
+-    "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long physical = Math.max(nowMillis, Math.max(physical(last), physical(message)));\n        long logical = 0;\n        if (physical == physical(last)) {\n            logical = logical(last) + 1L;\n        }\n        if (physical == physical(message)) {\n            logical = Math.max(logical, logical(message) + 1L);\n        }\n        return of(physical, logical);\n    }\n}\n"
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.quorum.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
++      "startLine": 55,
++      "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long lastPhysical = physical(last);\n        long messagePhysical = physical(message);\n        if (nowMillis > lastPhysical && nowMillis > messagePhysical) {\n            return of(nowMillis, 0);\n        }\n        if (lastPhysical == messagePhysical) {\n            return of(lastPhysical, Math.max(logical(last), logical(message)) + 1L);\n        }\n        if (lastPhysical > messagePhysical) {\n            return of(lastPhysical, logical(last) + 1L);\n        }\n        return of(messagePhysical, logical(message) + 1L);\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/clock/HybridLogicalClock.java",
++      "startLine": 55,
++      "code": "\n    /** The timestamp of a receive event, given the message's timestamp. */\n    public static long receive(long nowMillis, long last, long message) {\n        long physical = Math.max(nowMillis, Math.max(physical(last), physical(message)));\n        long logical = 0;\n        if (physical == physical(last)) {\n            logical = logical(last) + 1L;\n        }\n        if (physical == physical(message)) {\n            logical = Math.max(logical, logical(message) + 1L);\n        }\n        return of(physical, logical);\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "nowMillis: long × last: long × message: long",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": {
++      "assert": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
++      "assume": "nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF"
++    },
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt"
+   },
+-  "casesTotal": null,
+-  "domain": "nowMillis: long × last: long × message: long",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.7 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": {
+-    "assert": "result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)",
+-    "assume": "nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF"
+-  },
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt"
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "ab06a3f565d1bcf7cc58a3c71477039c5100bc775354cabcf78e432484a400c7",
++        "bytes": 1690
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "3a045a205f9fced9c33374bee1c3fde1c27bc672cad34e9145198326d88218d3",
++        "bytes": 565
++      }
++    ]
++  }
+ }
+--- a/examples/017-hybrid-logical-clock-refactor-proved-monotonic/verifier-output.txt
++++ b/examples/017-hybrid-logical-clock-refactor-proved-monotonic/verifier-output.txt
+@@ -1 +1,2 @@
+-✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.7 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: receive(nowMillis=20, last=20, message=20) reaches the calls

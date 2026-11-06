@@ -1,0 +1,244 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-099-d1-raft-replication-liveness",
+  "title": "Example 099 (D1, Raft replication liveness): per-configuration checkpoints on the largest model",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m24s, peak 2.7 GiB (estimated 20m00s, 4.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-099-d1-raft-replication-liveness.json",
+    "sha256": "7aa2e6814ba7ae14165755a8338e126ab33f1f7cd4f7e91fef9929b2dc8b6ef3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-099-d1-raft-replication-liveness",
+      "title": "Example 099 (D1, Raft replication liveness): per-configuration checkpoints on the largest model",
+      "description": "099 is a temporal violation under the replication model's fairness configuration. It checks per-configuration checkpoints and coverage status on the largest model (three generated operators, delayed replies needing the 2.5 GB TLC heap): the verdict must be unchanged, and checkpoints records one fingerprint per configuration.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/tla.rs",
+          "examples/tools/build.py"
+        ],
+        "examples": [
+          "099"
+        ]
+      },
+      "expected": "example 099 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "example 099 (D1)",
+          "run": "python3 examples/tools/build.py 099",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry"
+      ],
+      "supersedes": "20261105-125706-example-099-d1-raft-replication-liveness"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:09+00:00",
+  "finishedAt": "2026-11-06T18:16:34+00:00",
+  "wallSeconds": 205.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2902659072,
+    "wallSeconds": 204.1,
+    "cpuSeconds": 236.8,
+    "memoryOfEstimate": 0.68,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 099 (D1)",
+      "run": "python3 examples/tools/build.py 099",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 204.097,
+      "cpuSeconds": 236.812,
+      "cpuThrottledSeconds": 5.941,
+      "peakMemoryBytes": 2902659072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-099-d1.log",
+        "lines": 50,
+        "bytes": 2161,
+        "sha256": "6cb31c84c743bf8819045a5361dace1668a01b279aebfb1e565f77bda86c22c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 50,
+          "text": "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry: violation (as expected)",
+          "groups": [
+            "099",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive AppendRule#decide",
+        "  · jvmcontract derive AppendRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive ReplyRule#decide",
+        "  · jvmcontract derive ReplyRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive CommitRule#decide",
+        "  · jvmcontract derive CommitRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc RaftReplication.cfg",
+        "  · jvmcontract tlc RaftReplication.cfg: exited 0, 10.2 s",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg: exited 0, 6.6 s",
+        "  · jvmcontract tlc RaftReplicationLive.cfg",
+        "  · jvmcontract tlc RaftReplicationLive.cfg: exited 1, 83.3 s",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg: exited 0, 100.1 s",
+        "  · jvmcontract derive AppendRule#decide",
+        "  · jvmcontract derive AppendRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md",
+      "change": "modified",
+      "bytes": 263818,
+      "sha256": "1a08fabd84f63883ee892b766bc9a46c39a299f3dfbda4c747c2879bd65506c9",
+      "sourceSha256": "1b9eff59e04b8fda1379d9670a19ebccd9464583788f806bcabae7eb0508a65c"
+    },
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.json",
+      "change": "modified",
+      "bytes": 52455,
+      "sha256": "4955453c6a28010bb9214578af5e783db6a4ac56cf4cd8ffa7c99ed423889163",
+      "sourceSha256": "94659312be2c204aed040b646eae8476be552cb6cfd4c388347fcaaabff17a87"
+    },
+    {
+      "path": "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/verifier-output.txt",
+      "change": "modified",
+      "bytes": 230902,
+      "sha256": "518c96112aac84666461f98007fd89c65c5ad95b6bab4595a3592601652ec46f",
+      "sourceSha256": "6da7fb696c2a7c6ac207fdb7cff13940557819a0a5c2f7aa8830088c3a483768"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/README.md",
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/result.json",
+      "examples/099-follower-that-leaves-its-commit-index-alone-on-a-heartbeat-never-applies-the-last-entry/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-129-b9-jbmc-verified-recorded-as",
+  "title": "Example 129 (B9, JBMC, verified) recorded as a claim, an attempt and a bundle",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 119.5 MiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-129-b9-jbmc-verified-recorded-as.json",
+    "sha256": "a3ac85af62ca8fa97118271f7dd5faca79c6e22e9be1213ccc690dc10e527610",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-129-b9-jbmc-verified-recorded-as",
+      "title": "Example 129 (B9, JBMC, verified) recorded as a claim, an attempt and a bundle",
+      "description": "build.py now records each run as an attempt at a frozen claim (step 3b of llm-dlc/loops/build-orchestration.md): result.json gains claim (what is checked, its scope, and SHA-256 fingerprints of the patch and the copied sources before and after it, and for D1 the model files), attempt (engine, flags, tool identities, the bytecode built, the pipeline job's VERIFY_JOB_ID/VERIFY_SOURCE_COMMIT/VERIFY_WORKDIR, how the run ended, and for jvmcontract proofs whether exploration was shown complete), conclusion (established/refuted/unresolved per obligation) and bundle (each evidence file with its SHA-256). The runner writes into its own attempt directory, and nothing is published into the example's folder until the result validates against the schema and the files match the bundle; evidence of an earlier run that the bundle does not list is removed. The verdict and every flat field must be unchanged; the new blocks must be present, attempt.pipeline must name this job, and the example's folder must hold exactly the files its bundle lists. 129 is a JBMC proof that verifies, so attempt.exploration.complete must be true.",
+      "kind": "example",
+      "capabilities": [
+        "B9"
+      ],
+      "links": {
+        "examples": [
+          "129"
+        ]
+      },
+      "expected": "example 129 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "notes": "a JBMC proof of a record method, 0.5 s; the rest is javac"
+      },
+      "steps": [
+        {
+          "name": "example 129 (B9)",
+          "run": "python3 examples/tools/build.py 129",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components"
+      ],
+      "supersedes": "20261105-131902-example-129-b9-jbmc-verified-recorded-as"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:29+00:00",
+  "finishedAt": "2026-11-06T18:13:34+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": "a JBMC proof of a record method, 0.5 s; the rest is javac"
+  },
+  "usage": {
+    "peakMemoryBytes": 125329408,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 129 (B9)",
+      "run": "python3 examples/tools/build.py 129",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 4.811,
+      "cpuSeconds": 6.614,
+      "cpuThrottledSeconds": 0.749,
+      "peakMemoryBytes": 125329408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-129-b9.log",
+        "lines": 20,
+        "bytes": 825,
+        "sha256": "c2f6aac3ca6482091997ed785c35aef76b8d7a32f5443df3364d2db111f8ff71",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)",
+          "groups": [
+            "129",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 0.3 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "change": "modified",
+      "bytes": 24881,
+      "sha256": "71c6ed7f3307f6decd42abc20916979ec087b880bd0a8121b3a9185f8cf90e61",
+      "sourceSha256": "ae4f384728e012abd1b7e59652e5b26c3e837c9142135becca8210e01d91b8a7"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "change": "modified",
+      "bytes": 14684,
+      "sha256": "12d62860b3b8cd08f0b2540f9b88442cbc08ddeb539a5f8f0a2c37e44ef96982",
+      "sourceSha256": "eff03175cbb94dc26b40db9a49c719f4f25e57e746a2a7bc4959a54ced7f540a"
+    },
+    {
+      "path": "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt",
+      "change": "modified",
+      "bytes": 716,
+      "sha256": "ffe379f06ee963b0ac087cbf202d4c2205b5c92302e6ec0a761ca76cc66bd29f",
+      "sourceSha256": "0a5595acaa3dc571133e38c59bf3d5aa23a0f12e6d658c8c983a9983d773f280"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json",
+      "examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,448 @@
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/README.md
+@@ -114,16 +114,17 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.6 s; loops unwound 16 times with unwinding assertions.
+-
+-**What the verdict is about.** For every input in `matches: int[] of length ≤ 12, not null × key: int`, assuming !(matches.length <= 8): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `matches`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 12 long; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps assume. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+-
+-This page renders attempt `20261106T171549Z-7358b3ef` at claim `b5d7a490a979c1c6`, in pipeline job `20261106-025930-example-145-b9-re-run-its-result-records`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.5 s; loops unwound 16 times with unwinding assertions.
++
++**What the verdict is about.** For every input in `matches: int[] of length ≤ 12, not null × key: int`, assuming !(matches.length <= 8): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `matches`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 12 long; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found find(matches=[20, 20, 20, 20, 20, 20, 20, 20, 20], key=20).
++
++This page renders attempt `20261106T181332Z-3bac226d` at claim `b5d7a490a979c1c6`, in pipeline job `20261106-181101-example-145-b9-re-run-its-result-records`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.6 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.5 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: find(matches=[20, 20, 20, 20, 20, 20, 20, 20, 20], key=20) reaches the calls
+ ```
+ 
+ </details>
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/result.json
+@@ -1,68 +1,349 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.mica.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+-    "startLine": 14,
+-    "code": "    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
+-    "startLine": 14,
+-    "code": "    return (low + high) >>> 1;\n}\n\n/** Tables of at most this many pairs are scanned in order rather than bisected. */\npublic static final int SCAN_LIMIT = 8;\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    if (matches.length <= SCAN_LIMIT) {\n        for (int i = 0; i < matches.length; i++) {\n            if (matches[i] == key) {\n                return i;\n            }\n        }\n        return -1;\n    }\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "matches: int[] of length ≤ 12 × key: int",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "native",
+-    "checker": "jvmcontract's own checker (CaDiCaL)",
+-    "seconds": 3.122,
+-    "properties": 1,
+-    "unwind": 16,
+-    "maxArrayLength": 12,
+-    "stage": null,
+-    "native": {
+-      "paths": 89,
+-      "merges": 0,
+-      "solverCalls": 548,
+-      "solvingSeconds": 2.952806548,
+-      "gatesEvaluated": 181366,
+-      "evaluatingSeconds": 0.004022145,
+-      "divisions": 0,
+-      "divisionsBuilt": 0,
+-      "multiplications": 0,
+-      "multiplicationsBuilt": 0,
+-      "variables": 39019,
+-      "clauses": 137000,
+-      "seconds": 3.103517649
++  "format": 2,
++  "claim": {
++    "id": "b5d7a490a979c1c6",
++    "format": 1,
++    "example": "145",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.mica.interp.LookupSwitch#find",
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "behaviourChangeIntended": false,
++      "intendedInputs": "matches.length <= 8"
++    },
++    "scope": {
++      "maxArrayLength": 12,
++      "intendedInputs": "matches.length <= 8"
++    },
++    "inputs": {
++      "patch": "078a8c3e4bfc3fe02dcf9087f1e2e7456a26fe9860b0a51a8a01c9fbacd77cdc",
++      "before": {
++        "sha256": "b0fea5f6a931c7a0bbe6baf883c140bf038d7a06e5547e312f113d11caf146be",
++        "files": 50
++      },
++      "after": {
++        "sha256": "2f6c00faa56e0ec8fa09051fd162fdfbf2da035bad9278562fb60b5752dcee0c",
++        "files": 50
++      },
++      "dependencies": "the JDK"
+     }
+   },
+-  "replay": null
++  "attempt": {
++    "id": "20261106T181332Z-3bac226d",
++    "claim": "b5d7a490a979c1c6",
++    "startedAt": "2026-11-06T18:13:32+00:00",
++    "seconds": 5.8,
++    "engine": "native",
++    "options": [
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--max-array-length",
++      "12"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "6060a86d7043ae2c593eab96c76051e6bc5c2d55e2d98c0471319464eb62a7ec",
++        "files": 30
++      },
++      "after": {
++        "sha256": "3b980f1b14e2f09f9cf246755ea18b289fb02948164fe33f02e00660922f247e",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181101-example-145-b9-re-run-its-result-records",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-145-b9-re-run-its-result-records"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 12,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/02-javac-patched-mica-main.stdout",
++        "stderr": "logs/02-javac-patched-mica-main.stderr"
++      },
++      {
++        "name": "javac patched mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/03-javac-patched-mica-tests.stdout",
++        "stderr": "logs/03-javac-patched-mica-tests.stderr"
++      },
++      {
++        "name": "the mica tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-mica-tests.stdout",
++        "stderr": "logs/04-the-mica-tests.stderr"
++      },
++      {
++        "name": "javac unpatched mica main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-mica-main.stdout",
++        "stderr": "logs/05-javac-unpatched-mica-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 3.6,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-weliebb4/attempts/145/attempt-h2hznp15"
++  },
++  "conclusion": {
++    "claim": "b5d7a490a979c1c6",
++    "attempt": "20261106T181332Z-3bac226d",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✓ Verified: equivalent on every input outside the declared change",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.mica.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "startLine": 14,
++      "code": "    return (low + high) >>> 1;\n}\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
++    },
++    "after": {
++      "file": "examples/apps/mica/src/main/java/net/terminalvalue/mica/interp/LookupSwitch.java",
++      "startLine": 14,
++      "code": "    return (low + high) >>> 1;\n}\n\n/** Tables of at most this many pairs are scanned in order rather than bisected. */\npublic static final int SCAN_LIMIT = 8;\n\n/** The index of {@code key} in the sorted {@code matches}, or -1 when the default offset applies. */\npublic static int find(int[] matches, int key) {\n    if (matches.length <= SCAN_LIMIT) {\n        for (int i = 0; i < matches.length; i++) {\n            if (matches[i] == key) {\n                return i;\n            }\n        }\n        return -1;\n    }\n    int low = 0;\n    int high = matches.length - 1;\n    while (low <= high) {\n"
++    },
++    "casesTotal": null,
++    "domain": "matches: int[] of length ≤ 12, not null × key: int",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.5 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 3.53,
++      "properties": 1,
++      "unwind": 16,
++      "maxArrayLength": 12,
++      "stage": null,
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budgetSeconds": 600.0,
++          "seconds": 3.505,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.046,
++            "encoding": 0.121,
++            "solving": 3.338,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 39019,
++            "clauses": 137000
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budgetSeconds": 596.47,
++          "seconds": 0.001,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.001,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1982,
++            "clauses": 5322
++          }
++        }
++      ],
++      "native": {
++        "paths": 89,
++        "merges": 0,
++        "solverCalls": 548,
++        "solvingSeconds": 3.338158763,
++        "gatesEvaluated": 179798,
++        "evaluatingSeconds": 0.004443509,
++        "divisions": 0,
++        "divisionsBuilt": 0,
++        "multiplications": 0,
++        "multiplicationsBuilt": 0,
++        "variables": 39019,
++        "clauses": 137000,
++        "seconds": 3.505145465,
++        "loadingSeconds": 8.9288e-05,
++        "decodingSeconds": 3.0478e-05,
++        "encodingSeconds": 0.120533376,
++        "witnessSeconds": 0.0
++      },
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matches",
++            "type": "int[]",
++            "kind": "array",
++            "null": false,
++            "maxLength": 12
++          },
++          {
++            "name": "key",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "matches: int[] of length ≤ 12, not null × key: int"
++      },
++      "assumptions": [
++        {
++          "kind": "intended-inputs",
++          "text": "!(matches.length <= 8): the input is not among those the change is meant for",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++        "arrays": [
++          "matches"
++        ]
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 12,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found find(matches=[20, 20, 20, 20, 20, 20, 20, 20, 20], key=20).",
++        "witness": "find(matches=[20, 20, 20, 20, 20, 20, 20, 20, 20], key=20)"
++      }
++    },
++    "replay": null
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "d0717a8cc13efe3fb572eabf27a36a73e40f8657dc5677f6b0e721b058060eda",
++        "bytes": 2525
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "372b69d7fd0bd886bac32a4ffca13b0188702ae3192d3d3a872ae2df20556c84",
++        "bytes": 383
++      }
++    ]
++  }
+ }
+--- a/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt
++++ b/examples/145-the-bound-raised-past-the-scan-limit-the-bisection-proved-unchanged-on-the-tables-the-scope-admits/verifier-output.txt
+@@ -1 +1,2 @@
+-✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12 × key: int in 3.1 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.mica.interp.LookupSwitch#find behaves as before on every input where !(matches.length <= 8) (jvmcontract's own checker (CaDiCaL): 1 properties proved over matches: int[] of length ≤ 12, not null × key: int in 3.5 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: find(matches=[20, 20, 20, 20, 20, 20, 20, 20, 20], key=20) reaches the calls

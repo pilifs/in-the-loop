@@ -1,0 +1,241 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181100-example-090-d1-2pc-trace-validation-with",
+  "title": "Example 090 (D1, 2PC trace validation) with its operators tied to the patched classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22.5s, peak 1.0 GiB (estimated 15m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181100-example-090-d1-2pc-trace-validation-with.json",
+    "sha256": "41a5e4e7a0f63ee686c22ed255cd014c032ee4c56e85dc3079cc4ac99c3fb19d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181100-example-090-d1-2pc-trace-validation-with",
+      "title": "Example 090 (D1, 2PC trace validation) with its operators tied to the patched classes",
+      "description": "Step 2a of llm-dlc/loops/build-orchestration.md: every D1 run derives the contract of each generated operator (Coordinator, Recovery, Participant) from the patched classes and records it in modelContracts. 090 is not meant to change behaviour and patches CoordinatorNode, not a kernel, so all three must be 'verified' (the committed contract) and nothing else may move.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc",
+        "jvmcontract:derive"
+      ],
+      "links": {
+        "examples": [
+          "090"
+        ]
+      },
+      "expected": "build.py exits 0, 090 a violation as before (same trace); modelContracts lists three operators, each connection verified, rowsChanged 0, allowed true; contractDiff null; modelVerdict violation",
+      "submitted": {
+        "at": "2026-11-06T18:11:00+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "notes": "as the earlier 2PC D1 jobs"
+      },
+      "steps": [
+        {
+          "name": "example 090 (D1)",
+          "run": "python3 examples/tools/build.py 090",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run"
+      ],
+      "supersedes": "20261105-124134-example-090-d1-2pc-trace-validation-with"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:39+00:00",
+  "finishedAt": "2026-11-06T18:13:02+00:00",
+  "wallSeconds": 23.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": "as the earlier 2PC D1 jobs"
+  },
+  "usage": {
+    "peakMemoryBytes": 1082036224,
+    "wallSeconds": 22.5,
+    "cpuSeconds": 32.3,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 090 (D1)",
+      "run": "python3 examples/tools/build.py 090",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 22.454,
+      "cpuSeconds": 32.295,
+      "cpuThrottledSeconds": 3.451,
+      "peakMemoryBytes": 1082036224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-090-d1.log",
+        "lines": 46,
+        "bytes": 2133,
+        "sha256": "c72324ad60783b347ff0195ac5c9c7c7896b773ae4b9bf47b4dcb38fcc146d7e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 46,
+          "text": "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run: violation (as expected)",
+          "groups": [
+            "090",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "  · javac patched quorum tests: exited 0, 1.1 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · jvmcontract derive Coordinator#decide",
+        "  · jvmcontract derive Coordinator#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive Recovery#decide",
+        "  · jvmcontract derive Recovery#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive Participant#decide",
+        "  · jvmcontract derive Participant#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc TwoPhaseCommit.cfg",
+        "  · jvmcontract tlc TwoPhaseCommit.cfg: exited 0, 1.7 s",
+        "  · jvmcontract tlc TwoPhaseCommitInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitInductive.cfg: exited 0, 1.4 s",
+        "  · jvmcontract tlc TwoPhaseCommitCrash.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitCrash.cfg: exited 0, 2.9 s",
+        "  · jvmcontract tlc TwoPhaseCommitCrashInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitCrashInductive.cfg: exited 0, 1.5 s",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrash.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrash.cfg: exited 0, 7.8 s",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrashInductive.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitParticipantCrashInductive.cfg: exited 0, 2.1 s",
+        "  · the trace writer",
+        "  · the trace writer: exited 0, 0.1 s",
+        "  · jvmcontract tlc TwoPhaseCommitTrace.cfg",
+        "  · jvmcontract tlc TwoPhaseCommitTrace.cfg: exited 1, 0.9 s",
+        "  · jvmcontract derive CoordinatorNode#act",
+        "  · jvmcontract derive CoordinatorNode#act: exited 1, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md",
+      "change": "modified",
+      "bytes": 51919,
+      "sha256": "62a86295922d5f391aa1ee0a36b988e97844dfbc0e4b4d725c3261cde45bdbe3",
+      "sourceSha256": "72b9b94c61da09f6ca4d5545c38ebed4c1af27f021d3510c0fb3e03c7832e387"
+    },
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.json",
+      "change": "modified",
+      "bytes": 45638,
+      "sha256": "b45bb2bf45e063aa91b892187dfcefad815bb0b61619af37500bca03182c21fd",
+      "sourceSha256": "118132c6a7e7a8af8d39f9d9a59ef5705239795a8f97507b37c72129dfd8d7c4"
+    },
+    {
+      "path": "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/verifier-output.txt",
+      "change": "modified",
+      "bytes": 28970,
+      "sha256": "35f74887f3996a4036c7e76f5ab3af6df12014f9e3f20848c439a0526e71692e",
+      "sourceSha256": "00c40bb38db2f8058b8c525706a93d49f29333e1070691e1f55a5ded1ab9ea15"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/README.md",
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/result.json",
+      "examples/090-coordinator-node-that-broadcasts-before-logging-caught-by-its-own-recorded-run/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

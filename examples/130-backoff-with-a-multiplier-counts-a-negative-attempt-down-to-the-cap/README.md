@@ -244,9 +244,11 @@ Count up as before, `for (int i = 0; i < attempt && delay < capMillis; i++)`, or
 
 ## Evidence
 
-How the verdict was reached: found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
+How the verdict was reached: found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int`, each record (this) built from its components through its canonical constructor, assuming !(this.multiplier != 2): the input is not among those the change is meant for (stated by the claim); the new version's constructor Backoff(baseMillis: long, capMillis: long, multiplier: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments new Backoff(this.baseMillis, this.capMillis), attempt are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 32 times, every one shown to end within that. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261106T181329Z-6e81271d` at claim `59efb61448e02a72`, in pipeline job `20261106-181101-example-130-b9-own-checker-violation-wit`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -255,7 +257,7 @@ This result was recorded before runs fingerprinted their inputs, so whether it s
   delayMillis(this=Backoff[baseMillis=1, capMillis=2, multiplier=2], attempt=-1), previously delayMillis(this=Backoff[baseMillis=1, capMillis=2], attempt=-1)
     before: 1
     after:  2
-  (found by JBMC 6.11.0 in 8.2 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
+  (found by JBMC 6.11.0 in 9.6 s searching inputs in [-100000:100000] as delayMillis(this=Backoff[baseMillis=544, capMillis=1886, multiplier=2], attempt=-99583), shrunk to the input above in 110 interpreter runs, replayed in the interpreter; domain this: Backoff(baseMillis: long, capMillis: long, multiplier: int) × attempt: int)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

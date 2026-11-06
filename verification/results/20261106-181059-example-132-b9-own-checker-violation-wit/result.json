@@ -1,0 +1,210 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181059-example-132-b9-own-checker-violation-wit",
+  "title": "Example 132 (B9, own checker, violation) with long inputs typed exactly",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 99.9 MiB (estimated 5m00s, 1.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181059-example-132-b9-own-checker-violation-wit.json",
+    "sha256": "1917dbe2567c44e2d9902e4cdce963c549f197edabc9a5fe887bda3da7adf04d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181059-example-132-b9-own-checker-violation-wit",
+      "title": "Example 132 (B9, own checker, violation) with long inputs typed exactly",
+      "description": "jvmcontract's equivalence and prove outcomes now keep each counterexample's witness as data (the second half of step 3b of llm-dlc/loops/build-orchestration.md): typed inputs with exact values (a long as a decimal string, a float or double as Java's toString), the patched version's call (class, class file, descriptor, static or not, the receiver as a record of its components, each argument naming the input it came from) and for a regression proof the previous version's call, whose arguments under previousArguments name the expression that computed them. build.py records it as counterexamples[].witness, with each class file's SHA-256 as built. The verdict and every other field must be unchanged; the counterexample must gain a witness that validates against the schema. 132 is a static method over long and int parameters, proved by the own checker within a scope: its inputs must be typed long as decimal strings.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "own-checker"
+      ],
+      "links": {
+        "examples": [
+          "132"
+        ]
+      },
+      "expected": "example 132 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:10:59+00:00",
+        "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "5m",
+        "notes": "the own checker, 3 s"
+      },
+      "steps": [
+        {
+          "name": "example 132 (B9)",
+          "run": "python3 examples/tools/build.py 132",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond"
+      ],
+      "supersedes": "20261105-133040-example-132-b9-own-checker-violation-wit"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:28+00:00",
+  "finishedAt": "2026-11-06T18:12:34+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 300.0,
+    "notes": "the own checker, 3 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 104755200,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 6.8,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 132 (B9)",
+      "run": "python3 examples/tools/build.py 132",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 4.809,
+      "cpuSeconds": 6.827,
+      "cpuThrottledSeconds": 0.707,
+      "peakMemoryBytes": 104755200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-132-b9.log",
+        "lines": 18,
+        "bytes": 775,
+        "sha256": "3c56a6a1882a81c41b950a23df5c2b5180d236f2f7d4649ccb31ddcc493b4c6a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 18,
+          "text": "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)",
+          "groups": [
+            "132",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.8 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.5 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "change": "modified",
+      "bytes": 20016,
+      "sha256": "6f9a74ec4fdf3da4e6b7b658af920b5c57b77aac867923b2a9af53afc4ee2bd1",
+      "sourceSha256": "99ddd567ad6f836a189d0eb05de233c74abf95c254dc73d5db5d766c9a65eef6"
+    },
+    {
+      "path": "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json",
+      "change": "modified",
+      "bytes": 15847,
+      "sha256": "415bb6c56b7802615c4323612c9726ab2e17713dc4b04a1863e6adb6186d43e7",
+      "sourceSha256": "bd799ee1563b22765b42c68ef26298381855e97dec08fde1655a3026a9d672ae"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/README.md",
+      "examples/132-a-refill-that-counts-periods-from-the-epoch-credits-a-token-for-a-nanosecond/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

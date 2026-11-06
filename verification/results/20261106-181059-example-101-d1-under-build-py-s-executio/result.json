@@ -1,0 +1,280 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181059-example-101-d1-under-build-py-s-executio",
+  "title": "Example 101 (D1) under build.py's execution status",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m25s, peak 2.7 GiB (estimated 15m00s, 3.0 GiB); 4 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181059-example-101-d1-under-build-py-s-executio.json",
+    "sha256": "61ed20a9749bea35ac140a688ba5470765496afa729a9a804d5e2248b2b72fb4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181059-example-101-d1-under-build-py-s-executio",
+      "title": "Example 101 (D1) under build.py's execution status",
+      "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+      "kind": "example",
+      "capabilities": [
+        "D1"
+      ],
+      "links": {
+        "examples": [
+          "101"
+        ]
+      },
+      "expected": "example 101 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:10:59+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "example 101 (D1)",
+          "run": "python3 examples/tools/build.py 101",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live"
+      ],
+      "supersedes": "20261105-112331-example-101-d1-under-build-py-s-executio"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:11:21+00:00",
+  "finishedAt": "2026-11-06T18:15:49+00:00",
+  "wallSeconds": 268.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2941861888,
+    "wallSeconds": 205.1,
+    "cpuSeconds": 224.0,
+    "memoryOfEstimate": 0.91,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 62.347,
+      "cpuSeconds": 62.311,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 922107904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d6f618acba51ba54246d839880d4ef2aedb16335f6f4dc93b923dd6e65fe20c6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-101-d1-under-build-py-s-executio/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 02s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 101 (D1)",
+      "run": "python3 examples/tools/build.py 101",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 205.074,
+      "cpuSeconds": 224.019,
+      "cpuThrottledSeconds": 3.621,
+      "peakMemoryBytes": 2941861888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-101-d1.log",
+        "lines": 50,
+        "bytes": 2146,
+        "sha256": "d2f9cc0017d8cb7a49a060226e6d1db678ae7b2edbef07e6a836d218f3081a01",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 50,
+          "text": "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live: verified (as expected)",
+          "groups": [
+            "101",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive AppendRule#decide",
+        "  · jvmcontract derive AppendRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive ReplyRule#decide",
+        "  · jvmcontract derive ReplyRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive CommitRule#decide",
+        "  · jvmcontract derive CommitRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract tlc RaftReplication.cfg",
+        "  · jvmcontract tlc RaftReplication.cfg: exited 0, 12.5 s",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg",
+        "  · jvmcontract tlc RaftReplicationFigureEight.cfg: exited 0, 7.5 s",
+        "  · jvmcontract tlc RaftReplicationLive.cfg",
+        "  · jvmcontract tlc RaftReplicationLive.cfg: exited 0, 56.5 s",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg",
+        "  · jvmcontract tlc RaftReplicationDelayed.cfg: exited 0, 124.5 s",
+        "  · jvmcontract derive AppendRule#decide",
+        "  · jvmcontract derive AppendRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md",
+      "change": "modified",
+      "bytes": 53388,
+      "sha256": "bdf3205798dd447899eade458774069fd0a32a528c4650d503078c12ad19219b",
+      "sourceSha256": "05a26b07be425e21a6496acaea8f71788db75a53ff559c3de2b99d5d21014b39"
+    },
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.json",
+      "change": "modified",
+      "bytes": 51095,
+      "sha256": "459a8928ca99c7aae38e8fcdca02e40cc4ac81b23d4681748e257aff4b5d126a",
+      "sourceSha256": "46af07b1bd9124aa1fae136ef464f1ae02668968eeda1757d1a29c01ac8a7c72"
+    },
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.sarif",
+      "change": "modified",
+      "bytes": 983,
+      "sha256": "643a57b8da8c795e23f1e5172ff173a3cdb0ec87613e9a2ab1c4ac1392d2cddb",
+      "sourceSha256": "ad0339481e9f3f875b6bb2af074afb39087ed880596828f280499e3cf82ae8b5"
+    },
+    {
+      "path": "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/verifier-output.txt",
+      "change": "modified",
+      "bytes": 25741,
+      "sha256": "161251fa0673adc2bfd441c27b53bec1f28a65c0fa655341e750d3a96a501a51",
+      "sourceSha256": "0bf0f64994b3174c00d34440e30673b3b49c1da80809c8b8de90ca12edca9b89"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/README.md",
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.json",
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/result.sarif",
+      "examples/101-follower-that-takes-the-commit-index-on-the-heartbeat-after-an-entry-proved-live/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

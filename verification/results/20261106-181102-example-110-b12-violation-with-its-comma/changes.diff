@@ -1,0 +1,323 @@
+--- a/examples/110-idempotency-key-header-drops-request-validation/README.md
++++ b/examples/110-idempotency-key-header-drops-request-validation/README.md
+@@ -163,7 +163,7 @@
+ 
+ ## Evidence
+ 
+-This page renders attempt `20261106T171504Z-dd5928b2` at claim `d1624c589c557cd2`, in pipeline job `20261105-235230-example-110-b12-violation-with-its-comma`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
++This page renders attempt `20261106T181346Z-7dac5252` at claim `d1624c589c557cd2`, in pipeline job `20261106-181102-example-110-b12-violation-with-its-comma`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+--- a/examples/110-idempotency-key-header-drops-request-validation/result.json
++++ b/examples/110-idempotency-key-header-drops-request-validation/result.json
+@@ -1,90 +1,222 @@
+ {
+-  "verdict": "violation",
+-  "verdictLabel": "✗ Violation: 9 boundary changes",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 1,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": ":ticketing-service:test",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
+-    "startLine": 1,
+-    "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /** Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. */\n    @PostMapping\n    ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
+-    "startLine": 1,
+-    "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestHeader;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /**\n     * Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. Clients\n     * send an {@code Idempotency-Key} on every POST, as they do for holds; an order is already idempotent per hold, so\n     * the key is accepted and not needed.\n     */\n    @PostMapping\n    ResponseEntity<Order> place(\n            @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey,\n            @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
+-  "counterexamples": [
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": null,
+-      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)"
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": null,
+-      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request"
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": null,
+-      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument"
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": null,
+-      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": null,
+-      "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)",
+-      "actual": null
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument",
+-      "actual": null
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)",
+-      "actual": null
+-    },
+-    {
+-      "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
+-      "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry",
+-      "actual": null
++  "format": 2,
++  "claim": {
++    "id": "d1624c589c557cd2",
++    "format": 1,
++    "example": "110",
++    "statement": {
++      "approach": "B12",
++      "target": "net.terminalvalue.boxoffice.ticketing.api.OrderController#place",
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {},
++    "inputs": {
++      "patch": "e93c160047f71445caaa6061d02eb9613bebf7c231eb5591363a0043fdc243c7",
++      "before": {
++        "sha256": "1de5f25a93165ada196dafa616704b78b66ca0153aabde797e563119c10d4074",
++        "files": 106
++      },
++      "after": {
++        "sha256": "6974a6f8c45b0db630854472af88eca0db5e32b19475292accff16583ad5b6e1",
++        "files": 106
++      },
++      "dependencies": "declared in the build files"
+     }
+-  ],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": null,
+-  "problem": null,
+-  "statement": null,
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "newProblems": []
++  },
++  "attempt": {
++    "id": "20261106T181346Z-7dac5252",
++    "claim": "d1624c589c557cd2",
++    "startedAt": "2026-11-06T18:13:46+00:00",
++    "seconds": 19.9,
++    "engine": null,
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "gradle": "gradle-9.8.2-bin",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "f5e928d96d53f72677672c50c3d48518ae6a284fb65e17e90db53da852083390",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181102-example-110-b12-violation-with-its-comma",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181102-example-110-b12-violation-with-its-comma"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 1,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "gradle :ticketing-service:test",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 16.3,
++        "stdout": "logs/02-gradle-ticketing-service-test.stdout",
++        "stderr": "logs/02-gradle-ticketing-service-test.stderr"
++      },
++      {
++        "name": "gradle :ticketing-service:compileJava",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.2,
++        "stdout": "logs/03-gradle-ticketing-service-compilejava.stdout",
++        "stderr": "logs/03-gradle-ticketing-service-compilejava.stderr"
++      },
++      {
++        "name": "gradle :ticketing-service:printRuntimeClasspath",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.2,
++        "stdout": "logs/04-gradle-ticketing-service-printruntimeclasspath.stdout",
++        "stderr": "logs/04-gradle-ticketing-service-printruntimeclasspath.stderr"
++      },
++      {
++        "name": "jvmcontract verify (boundaries)",
++        "status": "exited",
++        "exitCode": 1,
++        "seconds": 1.2,
++        "stdout": "logs/05-jvmcontract-verify-boundaries.stdout",
++        "stderr": "logs/05-jvmcontract-verify-boundaries.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-t0t9ty0j/attempts/110/attempt-urff3zb6"
++  },
++  "conclusion": {
++    "claim": "d1624c589c557cd2",
++    "attempt": "20261106T181346Z-7dac5252",
++    "status": "refuted",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✗ Violation: 9 boundary changes",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": ":ticketing-service:test",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
++      "startLine": 1,
++      "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.Valid;\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /** Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. */\n    @PostMapping\n    ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
++    },
++    "after": {
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/api/OrderController.java",
++      "startLine": 1,
++      "code": "package net.terminalvalue.boxoffice.ticketing.api;\n\nimport jakarta.validation.constraints.NotBlank;\nimport java.net.URI;\nimport java.time.Instant;\n    // ...\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestHeader;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n    // ...\n        this.orders = orders;\n    }\n\n    /**\n     * Responds 202 with a new order, 200 with the existing one for this hold, or 409 if the hold has expired. Clients\n     * send an {@code Idempotency-Key} on every POST, as they do for holds; an order is already idempotent per hold, so\n     * the key is accepted and not needed.\n     */\n    @PostMapping\n    ResponseEntity<Order> place(\n            @RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey,\n            @RequestBody PlaceOrder request) {\n        var result = orders.place(request.holdId(), request.paymentToken());\n        var body = Order.of(result.value());\n        return ResponseEntity.status(result.created() ? HttpStatus.ACCEPTED : HttpStatus.OK)\n"
++    },
++    "casesTotal": null,
++    "domain": "16 beans, 13 entry points, 0 advised methods, 14 configuration keys, 9 wire types, 4 stored types, 1 problems",
++    "counterexamples": [
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": null,
++        "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request)"
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": null,
++        "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): ! constraints on PlaceOrder are not checked: no @Valid on request"
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": null,
++        "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument"
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": null,
++        "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)"
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": null,
++        "actual": "POST /orders => ResponseEntity<Order> place(@RequestHeader(name = \"Idempotency-Key\", required = false) String idempotencyKey, @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry"
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request)",
++        "actual": null
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): reads HoldDocument, OrderDocument, SeatDocument",
++        "actual": null
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): throws ConflictException (409 by ApiErrors.conflict), IllegalStateException (500), NotFoundException (404 by ApiErrors.notFound)",
++        "actual": null
++      },
++      {
++        "input": "net.terminalvalue.boxoffice.ticketing.api.OrderController",
++        "contract": "POST /orders => ResponseEntity<Order> place(@Valid @RequestBody PlaceOrder request): writes OrderDocument, Outbox.Entry",
++        "actual": null
++      }
++    ],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": null,
++    "problem": null,
++    "statement": null,
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "newProblems": []
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "341aa4ef6bf08ecd8c6f10fed53098c90e3d7aeacb1877a52afc53438dfd880c",
++        "bytes": 4761
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "1387de4f20656f8c6f3979599d54a96607dd020d26b19db152a093aabd83b17b",
++        "bytes": 2424
++      }
++    ]
++  }
+ }

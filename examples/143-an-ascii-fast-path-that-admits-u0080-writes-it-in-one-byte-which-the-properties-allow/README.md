@@ -77,7 +77,7 @@ The two versions disagree. The prover found this input, and the verifier replaye
 |---|---|---|
 | `encodeInto(chars=['\u0080'], out=[0])` | `throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]` | `1, leaving out=[-128]` |
 
-One disagreeing input is enough to fail the build. The domain is `chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8`; the search tries small values first so that the witness is readable, and would have covered all of it.
+One disagreeing input is enough to fail the build. The domain is `chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array`; the search tries small values first so that the witness is readable, and would have covered all of it.
 
 ## Would the existing tests have caught it?
 
@@ -105,9 +105,11 @@ Write the test as the general loop's first branch does, `(char) (chars[i] - 1) <
 
 ## Evidence
 
-How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8.
+How the verdict was reached: found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array`, assuming every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared; and on what they leave in `chars`, `out`. Loops are unwound up to 16 times, every one shown to end within that, and an array parameter is at most 8 long. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5.
+
+This page renders attempt `20261106T181332Z-45a41cde` at claim `d46095dfd3ccd792`, in pipeline job `20261106-181101-example-143-b9-own-checker-violation-wit`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
@@ -116,7 +118,7 @@ This result was recorded before runs fingerprinted their inputs, so whether it s
   encodeInto(chars=['\u0080'], out=[0])
     before: throws ArrayIndexOutOfBoundsException("Index 1 out of bounds for length 1"), leaving out=[-62]
     after:  1, leaving out=[-128]
-  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8 × out: byte[] of length ≤ 8)
+  (found by jvmcontract's own checker (CaDiCaL) in 1.0 s searching inputs in [-100000:100000] as encodeInto(chars=['\u0080'], out=[32]), shrunk to the input above in 29 interpreter runs, replayed in the interpreter; domain chars: char[] of length ≤ 8, not null × out: byte[] of length ≤ 8, not null; no two the same array)
 
 If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.
 ```

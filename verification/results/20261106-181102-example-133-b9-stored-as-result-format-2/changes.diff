@@ -1,0 +1,428 @@
+--- a/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md
++++ b/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/README.md
+@@ -113,12 +113,15 @@
+ 
+ How the verdict was reached: jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions.
+ 
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for (stated by the claim); every JDK class is initialized already, its static initializer having run and thrown nothing (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by jvmcontract's own checker (CaDiCaL), SAT solver CaDiCaL 1.9.5 (bundled), under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20).
++
++This page renders attempt `20261106T181404Z-4503ab3d` at claim `0e64b4f98f709e23`, in pipeline job `20261106-181102-example-133-b9-stored-as-result-format-2`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ ✓ net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter behaves as before on every input where !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20) reaches the calls
+ ```
+ 
+ </details>
+--- a/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json
++++ b/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/result.json
+@@ -1,70 +1,5 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: equivalent on every input outside the declared change",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.crosscut.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+-    "startLine": 10,
+-    "code": "\nprivate TokenBucket() {}\n\n/** The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}. */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    return Math.min(capacity, tokens + earned);\n}\n\n/**\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
+-    "startLine": 10,
+-    "code": "\nprivate TokenBucket() {}\n\n/**\n * The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}:\n * the tokens held plus those earned, but no more of them than the bucket has room for.\n */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    long room = capacity - tokens;\n    return tokens + Math.min(earned, room);\n}\n\n/**\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "native",
+-    "checker": "jvmcontract's own checker (CaDiCaL)",
+-    "seconds": 0.19,
+-    "properties": 1,
+-    "unwind": 16,
+-    "maxArrayLength": 8,
+-    "stage": null,
+-    "native": {
+-      "paths": 9,
+-      "merges": 0,
+-      "solverCalls": 10,
+-      "solvingSeconds": 0.164154658,
+-      "gatesEvaluated": 3029,
+-      "evaluatingSeconds": 4.5876e-05,
+-      "divisions": 1,
+-      "divisionsBuilt": 0,
+-      "multiplications": 0,
+-      "multiplicationsBuilt": 0,
+-      "variables": 7369,
+-      "clauses": 23526,
+-      "seconds": 0.167936776
+-    }
+-  },
+-  "replay": null,
++  "format": 2,
+   "claim": {
+     "id": "0e64b4f98f709e23",
+     "format": 1,
+@@ -94,19 +29,21 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261106T171447Z-dab010c5",
++    "id": "20261106T181404Z-4503ab3d",
+     "claim": "0e64b4f98f709e23",
+-    "startedAt": "2026-11-06T17:14:47+00:00",
+-    "seconds": 6.3,
++    "startedAt": "2026-11-06T18:14:04+00:00",
++    "seconds": 2.4,
+     "engine": "native",
+     "options": [
+       "--engine",
+-      "native"
++      "native",
++      "--gaps",
++      "strict"
+     ],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4"
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230"
+     },
+     "bytecode": {
+       "before": {
+@@ -119,9 +56,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261105-131902-example-133-b9-own-checker-verified-reco",
+-      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-133-b9-own-checker-verified-reco"
++      "jobId": "20261106-181102-example-133-b9-stored-as-result-format-2",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181102-example-133-b9-stored-as-result-format-2"
+     },
+     "execution": {
+       "status": "completed",
+@@ -132,15 +69,275 @@
+       "unwind": 16,
+       "maxArrayLength": 8,
+       "complete": true
+-    }
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "javac unpatched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
++        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-5_l2byxr/attempts/133/attempt-1_5zu8e8"
+   },
+   "conclusion": {
+     "claim": "0e64b4f98f709e23",
+-    "attempt": "20261106T171447Z-dab010c5",
++    "attempt": "20261106T181404Z-4503ab3d",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+-    "obligations": []
++    "obligations": [],
++    "label": "✓ Verified: equivalent on every input outside the declared change",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.crosscut.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
++      "startLine": 10,
++      "code": "\nprivate TokenBucket() {}\n\n/** The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}. */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    return Math.min(capacity, tokens + earned);\n}\n\n/**\n"
++    },
++    "after": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/TokenBucket.java",
++      "startLine": 10,
++      "code": "\nprivate TokenBucket() {}\n\n/**\n * The tokens in the bucket after crediting the refills earned between {@code lastNanos} and {@code nowNanos}:\n * the tokens held plus those earned, but no more of them than the bucket has room for.\n */\npublic static long tokensAfter(long tokens, long lastNanos, long nowNanos, long periodNanos, long capacity) {\n    long earned = (nowNanos - lastNanos) / periodNanos;\n    long room = capacity - tokens;\n    return tokens + Math.min(earned, room);\n}\n\n/**\n"
++    },
++    "casesTotal": null,
++    "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.162,
++      "properties": 1,
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "stage": null,
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budgetSeconds": 600.0,
++          "seconds": 0.14,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.136,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 7369,
++            "clauses": 23526
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budgetSeconds": 599.838,
++          "seconds": 0.002,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.001,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2639,
++            "clauses": 7803
++          }
++        }
++      ],
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solverCalls": 10,
++        "solvingSeconds": 0.136136558,
++        "gatesEvaluated": 3029,
++        "evaluatingSeconds": 5.5446e-05,
++        "divisions": 1,
++        "divisionsBuilt": 0,
++        "multiplications": 0,
++        "multiplicationsBuilt": 0,
++        "variables": 7369,
++        "clauses": 23526,
++        "seconds": 0.140384344,
++        "loadingSeconds": 0.000231987,
++        "decodingSeconds": 2.5579e-05,
++        "encodingSeconds": 8.9792e-05,
++        "witnessSeconds": 0.0
++      },
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "tokens",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "lastNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "nowNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "periodNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "capacity",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long"
++      },
++      "assumptions": [
++        {
++          "kind": "intended-inputs",
++          "text": "!(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)): the input is not among those the change is meant for",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20).",
++        "witness": "tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20)"
++      }
++    },
++    "replay": null
+   },
+   "bundle": {
+     "artifacts": [
+@@ -156,8 +353,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "b0e5da6477c8a152c1c643c7a97724f4201009dd5d8e6cd1ff65861510b29521",
+-        "bytes": 497
++        "sha256": "5083db2645c9a3217ebbd6d8c85ee714d0f9d0d6ce7152f2085723345997ee23",
++        "bytes": 609
+       }
+     ]
+   }
+--- a/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt
++++ b/examples/133-a-refill-capped-by-the-room-left-proved-equal-within-the-modules-precondition/verifier-output.txt
+@@ -1 +1,2 @@
+ ✓ net.terminalvalue.crosscut.ratelimit.TokenBucket#tokensAfter behaves as before on every input where !(!(periodNanos > 0 && lastNanos >= 0 && nowNanos >= lastNanos && nowNanos <= 4611686018427387903L && capacity > 0 && capacity <= 1000000000L && tokens >= 0 && tokens <= capacity)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 0.2 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: tokensAfter(tokens=20, lastNanos=20, nowNanos=20, periodNanos=20, capacity=20) reaches the calls

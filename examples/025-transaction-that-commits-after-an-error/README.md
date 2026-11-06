@@ -111,7 +111,7 @@ Revert, or write the rule as Spring does, `instanceof RuntimeException || instan
 
 The proof trusted these JDK APIs to be pure: `java.lang.Enum.ordinal`, `java.lang.MatchException.<init>`, `java.lang.Record.<init>`, `java.lang.runtime.SwitchBootstraps.typeSwitch`, `java.util.List.copyOf`, `java.util.List.of`, `java.util.Objects.requireNonNull`.
 
-This page renders attempt `20261106T171458Z-9a5140ff` at claim `35164c1aff042c68`, in pipeline job `20261105-235230-example-025-b8-violation-with-its-comman`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+This page renders attempt `20261106T181224Z-3160b2c0` at claim `35164c1aff042c68`, in pipeline job `20261106-181059-example-025-b8-under-build-py-s-strict-s`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 

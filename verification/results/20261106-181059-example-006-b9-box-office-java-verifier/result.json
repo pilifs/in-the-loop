@@ -1,0 +1,207 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181059-example-006-b9-box-office-java-verifier",
+  "title": "Example 006 (B9, Box Office Java verifier) gains its replay record",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.6s, peak 809.0 MiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181059-example-006-b9-box-office-java-verifier.json",
+    "sha256": "c63903e3c2c953f7731873f43e7e26c6358334e555310cadcafb04e776aa3874",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181059-example-006-b9-box-office-java-verifier",
+      "title": "Example 006 (B9, Box Office Java verifier) gains its replay record",
+      "description": "build.py now runs jvmcontract equivalence with --json and reads the library's Outcome instead of its console text (build-orchestration brief, step 1c). The verdict must agree with the exit code, and the result gains search (engine, checker, seconds, bounds, input range, shared callees, the own checker's path and solver numbers) and replay (where the witness was replayed: jvmcontract's bytecode interpreter), and a violation's counterexample gains found and shrinkRuns. The page now says the witness was replayed in jvmcontract's bytecode interpreter, not on the JVM. Example 006 runs the Box Office Java verifier, which replays its witness on the JVM: it keeps its text path, records replay.by jvm, and its page keeps saying 'on the JVM'.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "006"
+        ]
+      },
+      "expected": "example 006 gives its expected violation: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-06T18:10:59+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "a Box Office B9 example: Gradle build of the module and the Java verifier, under a minute"
+      },
+      "steps": [
+        {
+          "name": "example 006 (B9)",
+          "run": "python3 examples/tools/build.py 006",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/006-per-seat-discount-rounds-differently"
+      ],
+      "supersedes": "20261105-114502-example-006-b9-box-office-java-verifier"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:11:21+00:00",
+  "finishedAt": "2026-11-06T18:11:42+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "a Box Office B9 example: Gradle build of the module and the Java verifier, under a minute"
+  },
+  "usage": {
+    "peakMemoryBytes": 848338944,
+    "wallSeconds": 19.6,
+    "cpuSeconds": 35.3,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 006 (B9)",
+      "run": "python3 examples/tools/build.py 006",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 19.645,
+      "cpuSeconds": 35.32,
+      "cpuThrottledSeconds": 5.991,
+      "peakMemoryBytes": 848338944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-006-b9.log",
+        "lines": 20,
+        "bytes": 801,
+        "sha256": "a4084637e6c0913c0ab18ab8a6034a028803c802fbbd56dce045e13b5274b302",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "006-per-seat-discount-rounds-differently: violation (as expected)",
+          "groups": [
+            "006",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "006-per-seat-discount-rounds-differently: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · gradle :ticketing-domain:test",
+        "  · gradle :ticketing-domain:test: exited 0, 11.4 s",
+        "  · gradle :ticketing-domain:compileJava",
+        "  · gradle :ticketing-domain:compileJava: exited 0, 1.1 s",
+        "  · gradle jar",
+        "  · gradle jar: exited 0, 1.6 s",
+        "  · gradle :ticketing-domain:compileJava",
+        "  · gradle :ticketing-domain:compileJava: exited 0, 3.4 s",
+        "  · the Java verifier's equivalence proof",
+        "  · the Java verifier's equivalence proof: exited 1, 0.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.2 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "006-per-seat-discount-rounds-differently: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/006-per-seat-discount-rounds-differently/README.md",
+      "change": "modified",
+      "bytes": 11817,
+      "sha256": "1d58afbf9301bc82839ec9eaaa363fcc7fa3db8bc4219840554f5bf5955ab8d2",
+      "sourceSha256": "90fa0a6c25102818ede1f1e2af238579c1355dbf9f668cb62bca8b5bc5468fb1"
+    },
+    {
+      "path": "examples/006-per-seat-discount-rounds-differently/result.json",
+      "change": "modified",
+      "bytes": 7813,
+      "sha256": "0ff3071d476132b6eab50b5eac11b2a1157f137d412f2196f4fe1f936c077e41",
+      "sourceSha256": "26e96ed96c1fa8a95d7bccd6bd10386fb2a1e860b208dc4ca7fa78e88f6054e6"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/006-per-seat-discount-rounds-differently/README.md",
+      "examples/006-per-seat-discount-rounds-differently/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

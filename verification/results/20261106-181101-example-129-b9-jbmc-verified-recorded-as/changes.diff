@@ -1,0 +1,444 @@
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/README.md
+@@ -259,12 +259,16 @@
+ 
+ How the verdict was reached: JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions.
+ 
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found offsetToCommit(this=Batch[start=20, size=20], failedIndex=20).
++
++This page renders attempt `20261106T181329Z-9b9168da` at claim `cbd6a2297f9727b5`, in pipeline job `20261106-181101-example-129-b9-jbmc-verified-recorded-as`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ ✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: offsetToCommit(this=Batch[start=20, size=20], failedIndex=20) reaches the calls
++  constructors: the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
+ ```
+ 
+ </details>
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/result.json
+@@ -1,55 +1,5 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: equivalent on every input",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
+-  },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.crosscut.Tests",
+-    "passed": true,
+-    "failures": []
+-  },
+-  "before": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
+-    "startLine": 1,
+-    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}\n * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic final class BatchCommit {\n\n    private BatchCommit() {}\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    /**\n     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index\n     * within the batch of the record that failed, or {@link #NONE_FAILED}.\n     */\n    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {\n        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {\n            throw new IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\");\n        }\n        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;\n    }\n}\n"
+-  },
+-  "after": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java",
+-    "startLine": 1,
+-    "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,\n * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a\n * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic record Batch(long start, int size) {\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    public Batch {\n        if (start < 0 || size <= 0) {\n            throw new IllegalArgumentException(\"start >= 0 and size > 0 are required\");\n        }\n    }\n\n    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */\n    public long offsetToCommit(int failedIndex) {\n        if (failedIndex < NONE_FAILED || failedIndex >= size) {\n            throw new IllegalArgumentException(\"-1 <= failedIndex < size is required\");\n        }\n        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;\n    }\n}\n"
+-  },
+-  "casesTotal": null,
+-  "domain": "this: Batch(start: long, size: int) × failedIndex: int",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.2 s; loops unwound 16 times with unwinding assertions",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "jbmc",
+-    "checker": "JBMC 6.11.0",
+-    "seconds": 0.169,
+-    "properties": 2,
+-    "unwind": 16,
+-    "maxArrayLength": 8,
+-    "stage": null
+-  },
+-  "replay": null,
++  "format": 2,
+   "claim": {
+     "id": "cbd6a2297f9727b5",
+     "format": 1,
+@@ -80,16 +30,19 @@
+     }
+   },
+   "attempt": {
+-    "id": "20261106T171444Z-0d35521d",
++    "id": "20261106T181329Z-9b9168da",
+     "claim": "cbd6a2297f9727b5",
+-    "startedAt": "2026-11-06T17:14:44+00:00",
+-    "seconds": 3.3,
++    "startedAt": "2026-11-06T18:13:29+00:00",
++    "seconds": 2.6,
+     "engine": "jbmc",
+-    "options": [],
++    "options": [
++      "--gaps",
++      "strict"
++    ],
+     "tools": {
+       "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+       "javac": "javac 25.0.5",
+-      "jvmcontract": "1cbad83fc79a905818295edf363945ab153327a934f66938e327e6e6d8b45df4",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
+       "jbmc": "6.11.0 (cbmc-6.11.0)"
+     },
+     "bytecode": {
+@@ -103,9 +56,9 @@
+       }
+     },
+     "pipeline": {
+-      "jobId": "20261105-131902-example-129-b9-jbmc-verified-recorded-as",
+-      "sourceCommit": "7f06a6ba1e06d17b606a842ddabf8033f9305081",
+-      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261105-131902-example-129-b9-jbmc-verified-recorded-as"
++      "jobId": "20261106-181101-example-129-b9-jbmc-verified-recorded-as",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-129-b9-jbmc-verified-recorded-as"
+     },
+     "execution": {
+       "status": "completed",
+@@ -116,15 +69,305 @@
+       "unwind": 16,
+       "maxArrayLength": 8,
+       "complete": true
+-    }
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "javac unpatched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
++        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.3,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.2,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-version-of-jbmc.stdout",
++        "stderr": "logs/09-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-dgdvxhb6/attempts/129/attempt-f1yc3y_q"
+   },
+   "conclusion": {
+     "claim": "cbd6a2297f9727b5",
+-    "attempt": "20261106T171444Z-0d35521d",
++    "attempt": "20261106T181329Z-9b9168da",
+     "status": "established",
+     "vacuous": false,
+     "expectation": "yes",
+-    "obligations": []
++    "obligations": [],
++    "label": "✓ Verified: equivalent on every input",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.crosscut.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/BatchCommit.java",
++      "startLine": 1,
++      "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * Which offset a batch listener commits after a batch, in the semantics of Spring Kafka's {@code DefaultErrorHandler}\n * for a {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic final class BatchCommit {\n\n    private BatchCommit() {}\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    /**\n     * The offset to commit for a batch of {@code batchSize} records starting at {@code batchStart}, given the index\n     * within the batch of the record that failed, or {@link #NONE_FAILED}.\n     */\n    public static long offsetToCommit(long batchStart, int batchSize, int failedIndex) {\n        if (batchStart < 0 || batchSize <= 0 || failedIndex < NONE_FAILED || failedIndex >= batchSize) {\n            throw new IllegalArgumentException(\"batchStart >= 0, batchSize > 0 and -1 <= failedIndex < batchSize are required\");\n        }\n        return failedIndex == NONE_FAILED ? batchStart + batchSize : batchStart + failedIndex;\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/kafka/Batch.java",
++      "startLine": 1,
++      "code": "package net.terminalvalue.crosscut.kafka;\n\n/**\n * A batch a batch {@code @KafkaListener} received: the offset of its first record and how many records it holds,\n * and which offset to commit after it, in the semantics of Spring Kafka's {@code DefaultErrorHandler} for a\n * {@code BatchListenerFailedException}: the records before the one that failed are done, the failed record and\n * every record after it are redelivered. A committed offset is the next record to read, so it is one past the last\n * record that is done.\n */\npublic record Batch(long start, int size) {\n\n    /** No record of the batch failed. */\n    public static final int NONE_FAILED = -1;\n\n    public Batch {\n        if (start < 0 || size <= 0) {\n            throw new IllegalArgumentException(\"start >= 0 and size > 0 are required\");\n        }\n    }\n\n    /** The offset to commit, given the index within the batch of the record that failed, or {@link #NONE_FAILED}. */\n    public long offsetToCommit(int failedIndex) {\n        if (failedIndex < NONE_FAILED || failedIndex >= size) {\n            throw new IllegalArgumentException(\"-1 <= failedIndex < size is required\");\n        }\n        return failedIndex == NONE_FAILED ? start + size : start + failedIndex;\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "this: Batch(start: long, size: int) × failedIndex: int",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 0.288,
++      "properties": 2,
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "stage": null,
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[0:20]",
++          "budgetSeconds": 75.0,
++          "seconds": 0.051,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.006,
++            "lowering": 0.002,
++            "symbolic": 0.005,
++            "encoding": 0.004,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.029
++          },
++          "formula": {
++            "steps": 309,
++            "conditions": 1,
++            "variables": 4555,
++            "clauses": 8959
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[-100000:100000]",
++          "budgetSeconds": 75.0,
++          "seconds": 0.051,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.002,
++            "symbolic": 0.005,
++            "encoding": 0.002,
++            "solving": 0.026,
++            "trace": 0.0,
++            "other": 0.012
++          },
++          "formula": {
++            "steps": 309,
++            "conditions": 1,
++            "variables": 4555,
++            "clauses": 8959
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budgetSeconds": 599.816,
++          "seconds": 0.101,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.003,
++            "symbolic": 0.006,
++            "encoding": 0.003,
++            "solving": 0.035,
++            "trace": 0.0,
++            "other": 0.049
++          },
++          "formula": {
++            "steps": 306,
++            "conditions": 1,
++            "variables": 4296,
++            "clauses": 8432
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budgetSeconds": 599.712,
++          "seconds": 0.001,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.0,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 516,
++            "clauses": 1317
++          }
++        }
++      ],
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "net.terminalvalue.crosscut.kafka.Batch",
++            "kind": "record",
++            "null": false,
++            "components": [
++              "start: long",
++              "size: int"
++            ]
++          },
++          {
++            "name": "failedIndex",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "this: Batch(start: long, size: int) × failedIndex: int"
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it",
++          "basis": "harness"
++        },
++        {
++          "kind": "previous-arguments",
++          "text": "the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped",
++          "basis": "harness"
++        },
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found offsetToCommit(this=Batch[start=20, size=20], failedIndex=20).",
++        "witness": "offsetToCommit(this=Batch[start=20, size=20], failedIndex=20)"
++      }
++    },
++    "replay": null
+   },
+   "bundle": {
+     "artifacts": [
+@@ -140,8 +383,8 @@
+       },
+       {
+         "path": "verifier-output.txt",
+-        "sha256": "0a5595acaa3dc571133e38c59bf3d5aa23a0f12e6d658c8c983a9983d773f280",
+-        "bytes": 348
++        "sha256": "ffe379f06ee963b0ac087cbf202d4c2205b5c92302e6ec0a761ca76cc66bd29f",
++        "bytes": 716
+       }
+     ]
+   }
+--- a/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt
++++ b/examples/129-batch-commit-made-a-records-method-proved-equal-on-the-batchs-components/verifier-output.txt
+@@ -1 +1,3 @@
+-✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.2 s; loops unwound 16 times with unwinding assertions)
++✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions)
++  not vacuous: offsetToCommit(this=Batch[start=20, size=20], failedIndex=20) reaches the calls
++  constructors: the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it

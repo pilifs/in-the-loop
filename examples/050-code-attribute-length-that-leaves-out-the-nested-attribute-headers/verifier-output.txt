@@ -1,6 +1,6 @@
 ✗ Property of net.terminalvalue.mica.classfile.CodeAttribute#attributeLength violated: `result == 12 + codeLength + 8 * exceptionTableLength + (\sum int i; 0 <= i && i < nestedAttributeLength.length; 6 + nestedAttributeLength[i])` where codeLength >= 1 && codeLength <= 65535 && exceptionTableLength >= 0 && exceptionTableLength <= 65535 && (\forall int i; 0 <= i && i < nestedAttributeLength.length; nestedAttributeLength[i] >= 0 && nestedAttributeLength[i] <= 65535):
   attributeLength(codeLength=1, exceptionTableLength=0, nestedAttributeLength=[0])
     outcome: 13
-  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8)
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as attributeLength(codeLength=1, exceptionTableLength=7, nestedAttributeLength=[65527, 65534]), shrunk to the input above in 10 interpreter runs, replayed in the interpreter; domain codeLength: int × exceptionTableLength: int × nestedAttributeLength: int[] of length ≤ 8, not null)
 
 The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

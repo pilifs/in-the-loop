@@ -1,690 +1,1015 @@
 {
-  "verdict": "violation",
-  "verdictLabel": "✗ Violation: FollowersLearnCommits, 8-step trace then forever (fairness)",
-  "execution": {
-    "status": "completed",
-    "exitCode": 1,
-    "reason": null
-  },
-  "matchesExpected": true,
-  "expectation": "yes",
-  "existingTests": {
-    "task": "java -ea net.terminalvalue.quorum.Tests",
-    "passed": true,
-    "failures": []
-  },
-  "before": {
-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
-    "startLine": 15,
-    "code": "* consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so\n* that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of\n* whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the\n* entries it now holds in common with it.\n*\n* <p>The check is what makes the log matching property hold: a follower accepts an entry only after the entry\n* before it, so two logs that agree on an entry agree on everything before it. The term check comes before this\n   // ...\n           case MISSING -> rejected(\"no entry at the previous index\");\n           case CONFLICTING -> rejected(\"another entry at the previous index\");\n           case MATCHING -> switch (request.entry()) {\n               case NONE, SAME -> request.commitAhead()\n                       ? transition(MATCHING, ADVANCE_COMMIT)\n                       : unchanged(\"holds what was sent, and nothing new to commit\");\n               case ABSENT -> request.commitAhead()\n                       ? transition(MATCHING, APPEND, ADVANCE_COMMIT)\n                       : transition(MATCHING, APPEND);\n"
-  },
-  "after": {
-    "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
-    "startLine": 15,
-    "code": "* consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so\n* that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of\n* whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the\n* entries it now holds in common with it, on a request that carries an entry: a heartbeat carries nothing to apply.\n*\n* <p>The check is what makes the log matching property hold: a follower accepts an entry only after the entry\n* before it, so two logs that agree on an entry agree on everything before it. The term check comes before this\n   // ...\n           case MISSING -> rejected(\"no entry at the previous index\");\n           case CONFLICTING -> rejected(\"another entry at the previous index\");\n           case MATCHING -> switch (request.entry()) {\n               case NONE, SAME -> unchanged(\"holds what was sent, and nothing new to apply\"); // a heartbeat or a duplicate is a liveness signal, not a write: the commit index moves with the entries\n               case ABSENT -> request.commitAhead()\n                       ? transition(MATCHING, APPEND, ADVANCE_COMMIT)\n                       : transition(MATCHING, APPEND);\n"
-  },
-  "casesTotal": null,
-  "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
-  "counterexamples": [],
-  "purityViolations": [],
-  "trustedCalls": [],
-  "contractDiff": "--- a/examples/apps/quorum/src/contract/AppendRule.decide.contract\n+++ b/examples/apps/quorum/src/contract/AppendRule.decide.contract\n@@ -22,12 +22,12 @@\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true])  => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, null)                                                => Rejected[reason=\"another entry at the previous index\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=false])         => Transition[next=MATCHING, effects=[APPEND]]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=true])          => Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=false])    => Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=true])     => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]\n decide(MATCHING, null)                                                   => throws NullPointerException\n",
-  "proof": "three terms, two entries: TLC 2.19 explored 17,221 distinct states to depth 20 in 10 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 7,277 distinct states to depth 18 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 3,081 distinct states in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 214,040 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
-  "problem": null,
-  "statement": null,
-  "trace": [
-    {
-      "step": 1,
-      "action": "Initial predicate",
-      "changes": {
-        "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
-        "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
-        "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
-        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "replies": "{}",
-        "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-        "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
-        "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
-      }
+  "format": 2,
+  "claim": {
+    "id": "afffd4d43a75689d",
+    "format": 1,
+    "example": "099",
+    "statement": {
+      "approach": "D1",
+      "target": "net.terminalvalue.quorum.raft.AppendRule#decide",
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+      "behaviourChangeIntended": true
     },
-    {
-      "step": 2,
-      "action": "Timeout",
-      "changes": {
-        "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
-        "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-        "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
-        "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
-      }
-    },
-    {
-      "step": 3,
-      "action": "Timeout",
-      "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
-      }
-    },
-    {
-      "step": 4,
-      "action": "Canvass",
-      "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-        "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
-        "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
-      }
-    },
-    {
-      "step": 5,
-      "action": "ClientRequest",
-      "changes": {
-        "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
-      }
-    },
-    {
-      "step": 6,
-      "action": "Replicate",
-      "changes": {
-        "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
-        "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
-        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
-      }
-    },
-    {
-      "step": 7,
-      "action": "AdvanceCommit",
-      "changes": {
-        "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
-      }
-    },
-    {
-      "step": 8,
-      "action": "Replicate",
-      "changes": {
-        "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
-        "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
-        "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-        "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+    "scope": {},
+    "inputs": {
+      "patch": "f139d3ab686199b3e4b106b6f498bfb763bf9ccc4f7d6705610dbe02b43091e0",
+      "before": {
+        "sha256": "b9f27c0b0716e9445d9b81f7cb1dacc23bb07547775b12aa2bfcf0fe3b543458",
+        "files": 110
+      },
+      "after": {
+        "sha256": "9d0f2157a0f026f0d60f3e48b93d95ed751f27a9193be7e094b8373857a71807",
+        "files": 110
+      },
+      "dependencies": "the JDK",
+      "model": {
+        "examples/apps/quorum/spec/RaftReplication.tla": "ebbdce395d41fb5a91f6a3e26967c1f3231698fa3b914f87dfc964b6219d4fb7",
+        "examples/apps/quorum/spec/RaftReplication.cfg": "f37571d24aab6410dd46585c6b6792371388368f2be0f57321f9aca82eac4ea5",
+        "examples/apps/quorum/spec/RaftReplicationFigureEight.cfg": "7fa5351846c49739bda4730bfd2248bea0bd00e0329257db91df3d9a464c1201",
+        "examples/apps/quorum/spec/RaftReplicationLive.cfg": "e530971dbc848986eb07448414a9e244aa2dc377eea8ffb51f94f021dca3c88e",
+        "examples/apps/quorum/spec/RaftReplicationDelayed.cfg": "eb915a24b950d8d68192b08d53f1d518e107ebc050e3fb625a7f028d12a3f2a0"
       }
     }
-  ],
-  "statesExplored": 3081,
-  "invariant": "FollowersLearnCommits",
-  "property": null,
-  "stateMachine": "stateDiagram-v2\n    CONFLICTING: CONFLICTING (no incoming transition, terminal)\n    MATCHING: MATCHING (no incoming transition, terminal)\n    MISSING: MISSING (no incoming transition, terminal)\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=false] → effects=[APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=true] → effects=[APPEND, ADVANCE_COMMIT]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=false] → effects=[TRUNCATE, APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=true] → effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=true] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=true] (Unchanged)\n",
-  "coverage": {
-    "status": "partial",
-    "configurations": [
+  },
+  "attempt": {
+    "id": "20261106T181310Z-e60ff7d0",
+    "claim": "afffd4d43a75689d",
+    "startedAt": "2026-11-06T18:13:10+00:00",
+    "seconds": 202.4,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
+      "tlc": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "74906f0c60a9cf4a6f9154a765d49bcd14378f14cca2f882c41056dacb64ccda",
+        "files": 70
+      }
+    },
+    "pipeline": {
+      "jobId": "20261106-181101-example-099-d1-raft-replication-liveness",
+      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181101-example-099-d1-raft-replication-liveness"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "apply the patch",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/01-apply-the-patch.stdout",
+        "stderr": "logs/01-apply-the-patch.stderr"
+      },
+      {
+        "name": "javac patched quorum main",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.0,
+        "stdout": "logs/02-javac-patched-quorum-main.stdout",
+        "stderr": "logs/02-javac-patched-quorum-main.stderr"
+      },
+      {
+        "name": "javac patched quorum tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.9,
+        "stdout": "logs/03-javac-patched-quorum-tests.stdout",
+        "stderr": "logs/03-javac-patched-quorum-tests.stderr"
+      },
+      {
+        "name": "the quorum tests",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/04-the-quorum-tests.stdout",
+        "stderr": "logs/04-the-quorum-tests.stderr"
+      },
+      {
+        "name": "jvmcontract update",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/05-jvmcontract-update.stdout",
+        "stderr": "logs/05-jvmcontract-update.stderr"
+      },
+      {
+        "name": "jvmcontract derive AppendRule#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/06-jvmcontract-derive-appendrule-decide.stdout",
+        "stderr": "logs/06-jvmcontract-derive-appendrule-decide.stderr"
+      },
+      {
+        "name": "jvmcontract derive ReplyRule#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/07-jvmcontract-derive-replyrule-decide.stdout",
+        "stderr": "logs/07-jvmcontract-derive-replyrule-decide.stderr"
+      },
+      {
+        "name": "jvmcontract derive CommitRule#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/08-jvmcontract-derive-commitrule-decide.stdout",
+        "stderr": "logs/08-jvmcontract-derive-commitrule-decide.stderr"
+      },
+      {
+        "name": "jvmcontract derive RoleMachine#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/09-jvmcontract-derive-rolemachine-decide.stdout",
+        "stderr": "logs/09-jvmcontract-derive-rolemachine-decide.stderr"
+      },
+      {
+        "name": "jvmcontract derive VoteRule#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/10-jvmcontract-derive-voterule-decide.stdout",
+        "stderr": "logs/10-jvmcontract-derive-voterule-decide.stderr"
+      },
+      {
+        "name": "jvmcontract tla",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/11-jvmcontract-tla.stdout",
+        "stderr": "logs/11-jvmcontract-tla.stderr"
+      },
+      {
+        "name": "jvmcontract tla",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/12-jvmcontract-tla.stdout",
+        "stderr": "logs/12-jvmcontract-tla.stderr"
+      },
+      {
+        "name": "jvmcontract tla",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/13-jvmcontract-tla.stdout",
+        "stderr": "logs/13-jvmcontract-tla.stderr"
+      },
+      {
+        "name": "jvmcontract tla",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/14-jvmcontract-tla.stdout",
+        "stderr": "logs/14-jvmcontract-tla.stderr"
+      },
+      {
+        "name": "jvmcontract tla",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/15-jvmcontract-tla.stdout",
+        "stderr": "logs/15-jvmcontract-tla.stderr"
+      },
+      {
+        "name": "java -version",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/16-java-version.stdout",
+        "stderr": "logs/16-java-version.stderr"
+      },
+      {
+        "name": "jvmcontract tlc RaftReplication.cfg",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 10.2,
+        "stdout": "logs/17-jvmcontract-tlc-raftreplication-cfg.stdout",
+        "stderr": "logs/17-jvmcontract-tlc-raftreplication-cfg.stderr"
+      },
+      {
+        "name": "jvmcontract tlc RaftReplicationFigureEight.cfg",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 6.6,
+        "stdout": "logs/18-jvmcontract-tlc-raftreplicationfigureeight-cfg.stdout",
+        "stderr": "logs/18-jvmcontract-tlc-raftreplicationfigureeight-cfg.stderr"
+      },
+      {
+        "name": "jvmcontract tlc RaftReplicationLive.cfg",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 83.3,
+        "stdout": "logs/19-jvmcontract-tlc-raftreplicationlive-cfg.stdout",
+        "stderr": "logs/19-jvmcontract-tlc-raftreplicationlive-cfg.stderr"
+      },
+      {
+        "name": "jvmcontract tlc RaftReplicationDelayed.cfg",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 100.1,
+        "stdout": "logs/20-jvmcontract-tlc-raftreplicationdelayed-cfg.stdout",
+        "stderr": "logs/20-jvmcontract-tlc-raftreplicationdelayed-cfg.stderr"
+      },
+      {
+        "name": "jvmcontract derive AppendRule#decide",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/21-jvmcontract-derive-appendrule-decide.stdout",
+        "stderr": "logs/21-jvmcontract-derive-appendrule-decide.stderr"
+      },
+      {
+        "name": "jvmcontract statemachine",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/22-jvmcontract-statemachine.stdout",
+        "stderr": "logs/22-jvmcontract-statemachine.stderr"
+      },
+      {
+        "name": "version of java",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.0,
+        "stdout": "logs/23-version-of-java.stdout",
+        "stderr": "logs/23-version-of-java.stderr"
+      },
+      {
+        "name": "version of javac",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "stdout": "logs/24-version-of-javac.stdout",
+        "stderr": "logs/24-version-of-javac.stderr"
+      }
+    ],
+    "workspace": ".build-py/examples-1a8e_omr/attempts/099/attempt-fu43dde4"
+  },
+  "conclusion": {
+    "claim": "afffd4d43a75689d",
+    "attempt": "20261106T181310Z-e60ff7d0",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "configuration",
+        "name": "three terms, two entries",
+        "statement": "spec/RaftReplication.cfg",
+        "status": "established",
+        "evidence": {
+          "label": "three terms, two entries",
+          "cfg": "spec/RaftReplication.cfg",
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "summary": "✓ Verified: all invariants and properties hold in 17,221 states",
+          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE",
+          "invariant": null,
+          "violationKind": null,
+          "statesExplored": 17221,
+          "trace": null,
+          "forever": null
+        }
+      },
+      {
+        "kind": "configuration",
+        "name": "figure 8",
+        "statement": "spec/RaftReplicationFigureEight.cfg",
+        "status": "established",
+        "evidence": {
+          "label": "figure 8",
+          "cfg": "spec/RaftReplicationFigureEight.cfg",
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "summary": "✓ Verified: all invariants and properties hold in 7,277 states",
+          "domain": "Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE",
+          "invariant": null,
+          "violationKind": null,
+          "statesExplored": 7277,
+          "trace": null,
+          "forever": null
+        }
+      },
+      {
+        "kind": "configuration",
+        "name": "fairness",
+        "statement": "spec/RaftReplicationLive.cfg",
+        "status": "refuted",
+        "evidence": {
+          "label": "fairness",
+          "cfg": "spec/RaftReplicationLive.cfg",
+          "verdict": "violation",
+          "status": "completed",
+          "reason": null,
+          "summary": "✗ Violation: FollowersLearnCommits, 8-step trace then forever",
+          "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
+          "invariant": "FollowersLearnCommits",
+          "violationKind": "temporal",
+          "statesExplored": 3789,
+          "trace": [
+            {
+              "step": 1,
+              "action": "Initial predicate",
+              "changes": {
+                "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+                "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+                "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+                "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+                "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+                "replies": "{}",
+                "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+                "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+                "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+              }
+            },
+            {
+              "step": 2,
+              "action": "Timeout",
+              "changes": {
+                "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+                "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+                "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+                "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+              }
+            },
+            {
+              "step": 3,
+              "action": "Timeout",
+              "changes": {
+                "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
+              }
+            },
+            {
+              "step": 4,
+              "action": "Canvass",
+              "changes": {
+                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+                "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+                "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+                "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+                "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+              }
+            },
+            {
+              "step": 5,
+              "action": "ClientRequest",
+              "changes": {
+                "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+              }
+            },
+            {
+              "step": 6,
+              "action": "Replicate",
+              "changes": {
+                "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
+                "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
+                "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+                "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+              }
+            },
+            {
+              "step": 7,
+              "action": "AdvanceCommit",
+              "changes": {
+                "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
+              }
+            },
+            {
+              "step": 8,
+              "action": "Replicate",
+              "changes": {
+                "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+                "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
+                "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+                "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+              }
+            }
+          ],
+          "forever": "stays in that state forever"
+        }
+      },
+      {
+        "kind": "configuration",
+        "name": "delayed replies",
+        "statement": "spec/RaftReplicationDelayed.cfg",
+        "status": "established",
+        "evidence": {
+          "label": "delayed replies",
+          "cfg": "spec/RaftReplicationDelayed.cfg",
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "summary": "✓ Verified: all invariants and properties hold in 214,040 states",
+          "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+          "invariant": null,
+          "violationKind": null,
+          "statesExplored": 214040,
+          "trace": null,
+          "forever": null
+        }
+      },
+      {
+        "kind": "operator-contract",
+        "name": "net.terminalvalue.quorum.raft.AppendRule#decide",
+        "statement": "the contract the operator is generated from, as built",
+        "status": "established",
+        "evidence": {
+          "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+          "contract": "src/contract/AppendRule.decide.contract",
+          "operator": "spec/AppendRuleContract.tla",
+          "connection": "derived",
+          "rowsChanged": 4,
+          "allowed": true
+        }
+      },
+      {
+        "kind": "operator-contract",
+        "name": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+        "statement": "the contract the operator is generated from, as built",
+        "status": "established",
+        "evidence": {
+          "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+          "contract": "src/contract/ReplyRule.decide.contract",
+          "operator": "spec/ReplyRuleContract.tla",
+          "connection": "verified",
+          "rowsChanged": 0,
+          "allowed": true
+        }
+      },
+      {
+        "kind": "operator-contract",
+        "name": "net.terminalvalue.quorum.raft.CommitRule#decide",
+        "statement": "the contract the operator is generated from, as built",
+        "status": "established",
+        "evidence": {
+          "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+          "contract": "src/contract/CommitRule.decide.contract",
+          "operator": "spec/CommitRuleContract.tla",
+          "connection": "verified",
+          "rowsChanged": 0,
+          "allowed": true
+        }
+      },
+      {
+        "kind": "operator-contract",
+        "name": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+        "statement": "the contract the operator is generated from, as built",
+        "status": "established",
+        "evidence": {
+          "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+          "contract": "src/contract/RoleMachine.decide.contract",
+          "operator": "spec/RoleMachineContract.tla",
+          "connection": "verified",
+          "rowsChanged": 0,
+          "allowed": true
+        }
+      },
+      {
+        "kind": "operator-contract",
+        "name": "net.terminalvalue.quorum.raft.VoteRule#decide",
+        "statement": "the contract the operator is generated from, as built",
+        "status": "established",
+        "evidence": {
+          "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+          "contract": "src/contract/VoteRule.decide.contract",
+          "operator": "spec/VoteRuleContract.tla",
+          "connection": "verified",
+          "rowsChanged": 0,
+          "allowed": true
+        }
+      }
+    ],
+    "label": "✗ Violation: FollowersLearnCommits, 8-step trace then forever (fairness)",
+    "obligationKeys": {
+      "configuration": "configurations",
+      "operator-contract": "modelContracts"
+    }
+  },
+  "evidence": {
+    "existingTests": {
+      "task": "java -ea net.terminalvalue.quorum.Tests",
+      "passed": true,
+      "failures": []
+    },
+    "before": {
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+      "startLine": 15,
+      "code": "* consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so\n* that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of\n* whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the\n* entries it now holds in common with it.\n*\n* <p>The check is what makes the log matching property hold: a follower accepts an entry only after the entry\n* before it, so two logs that agree on an entry agree on everything before it. The term check comes before this\n   // ...\n           case MISSING -> rejected(\"no entry at the previous index\");\n           case CONFLICTING -> rejected(\"another entry at the previous index\");\n           case MATCHING -> switch (request.entry()) {\n               case NONE, SAME -> request.commitAhead()\n                       ? transition(MATCHING, ADVANCE_COMMIT)\n                       : unchanged(\"holds what was sent, and nothing new to commit\");\n               case ABSENT -> request.commitAhead()\n                       ? transition(MATCHING, APPEND, ADVANCE_COMMIT)\n                       : transition(MATCHING, APPEND);\n"
+    },
+    "after": {
+      "file": "examples/apps/quorum/src/main/java/net/terminalvalue/quorum/raft/AppendRule.java",
+      "startLine": 15,
+      "code": "* consistency check first, which refuses the request unless the follower holds the entry before the ones sent, so\n* that the leader backs up and tries again from one entry earlier; then the entry sent goes in, in place of\n* whatever the follower held at its index; and the follower's commit index follows the leader's, as far as the\n* entries it now holds in common with it, on a request that carries an entry: a heartbeat carries nothing to apply.\n*\n* <p>The check is what makes the log matching property hold: a follower accepts an entry only after the entry\n* before it, so two logs that agree on an entry agree on everything before it. The term check comes before this\n   // ...\n           case MISSING -> rejected(\"no entry at the previous index\");\n           case CONFLICTING -> rejected(\"another entry at the previous index\");\n           case MATCHING -> switch (request.entry()) {\n               case NONE, SAME -> unchanged(\"holds what was sent, and nothing new to apply\"); // a heartbeat or a duplicate is a liveness signal, not a write: the commit index moves with the entries\n               case ABSENT -> request.commitAhead()\n                       ? transition(MATCHING, APPEND, ADVANCE_COMMIT)\n                       : transition(MATCHING, APPEND);\n"
+    },
+    "casesTotal": null,
+    "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
+    "counterexamples": [],
+    "purityViolations": [],
+    "trustedCalls": [],
+    "contractDiff": "--- a/examples/apps/quorum/src/contract/AppendRule.decide.contract\n+++ b/examples/apps/quorum/src/contract/AppendRule.decide.contract\n@@ -22,12 +22,12 @@\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true])  => Rejected[reason=\"another entry at the previous index\"]\n decide(CONFLICTING, null)                                                => Rejected[reason=\"another entry at the previous index\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=false])         => Transition[next=MATCHING, effects=[APPEND]]\n decide(MATCHING, AppendRequest[entry=ABSENT, commitAhead=true])          => Transition[next=MATCHING, effects=[APPEND, ADVANCE_COMMIT]]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to commit\"]\n-decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false])           => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n+decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])            => Unchanged[reason=\"holds what was sent, and nothing new to apply\"]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=false])    => Transition[next=MATCHING, effects=[TRUNCATE, APPEND]]\n decide(MATCHING, AppendRequest[entry=CONFLICTING, commitAhead=true])     => Transition[next=MATCHING, effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]]\n decide(MATCHING, null)                                                   => throws NullPointerException\n",
+    "proof": "three terms, two entries: TLC 2.19 explored 17,221 distinct states to depth 20 in 9 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 7,277 distinct states to depth 18 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 3,789 distinct states in 5 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 214,040 distinct states to depth 23, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
+    "problem": null,
+    "statement": null,
+    "trace": [
+      {
+        "step": 1,
+        "action": "Initial predicate",
+        "changes": {
+          "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+          "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
+          "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
+          "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+          "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+          "replies": "{}",
+          "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+          "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
+          "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
+        }
+      },
+      {
+        "step": 2,
+        "action": "Timeout",
+        "changes": {
+          "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
+          "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+          "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
+          "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
+        }
+      },
+      {
+        "step": 3,
+        "action": "Timeout",
+        "changes": {
+          "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
+        }
+      },
+      {
+        "step": 4,
+        "action": "Canvass",
+        "changes": {
+          "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
+          "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+          "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
+          "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
+          "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
+        }
+      },
+      {
+        "step": 5,
+        "action": "ClientRequest",
+        "changes": {
+          "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
+        }
+      },
+      {
+        "step": 6,
+        "action": "Replicate",
+        "changes": {
+          "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
+          "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
+          "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+          "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+        }
+      },
+      {
+        "step": 7,
+        "action": "AdvanceCommit",
+        "changes": {
+          "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
+        }
+      },
+      {
+        "step": 8,
+        "action": "Replicate",
+        "changes": {
+          "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
+          "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
+          "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
+          "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
+        }
+      }
+    ],
+    "statesExplored": 3789,
+    "invariant": "FollowersLearnCommits",
+    "property": null,
+    "stateMachine": "stateDiagram-v2\n    CONFLICTING: CONFLICTING (no incoming transition, terminal)\n    MATCHING: MATCHING (no incoming transition, terminal)\n    MISSING: MISSING (no incoming transition, terminal)\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=false] → effects=[APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=ABSENT, commitAhead=true] → effects=[APPEND, ADVANCE_COMMIT]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=false] → effects=[TRUNCATE, APPEND]\n    MATCHING --> MATCHING: AppendRequest[entry=CONFLICTING, commitAhead=true] → effects=[TRUNCATE, APPEND, ADVANCE_COMMIT]\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    MISSING --> MISSING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=NONE, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=ABSENT, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=SAME, commitAhead=true] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=false] (Rejected)\n    CONFLICTING --> CONFLICTING: AppendRequest[entry=CONFLICTING, commitAhead=true] (Rejected)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=NONE, commitAhead=true] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=false] (Unchanged)\n    MATCHING --> MATCHING: AppendRequest[entry=SAME, commitAhead=true] (Unchanged)\n",
+    "coverage": {
+      "status": "partial",
+      "configurations": [
+        {
+          "label": "three terms, two entries",
+          "fromRuns": true,
+          "finished": true,
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "counted": true,
+          "coverageStatus": "complete",
+          "coverageReason": null,
+          "listed": [
+            "net.terminalvalue.quorum.raft.AppendRule#decide",
+            "net.terminalvalue.quorum.raft.CommitRule#decide",
+            "net.terminalvalue.quorum.raft.ReplyRule#decide",
+            "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "net.terminalvalue.quorum.raft.VoteRule#decide"
+          ],
+          "operators": [
+            {
+              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+              "listed": true,
+              "reached": 27,
+              "total": 36,
+              "never": [
+                "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+                "decide(LEADER, Response[term=OLDER]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+              "listed": true,
+              "reached": 12,
+              "total": 27,
+              "never": [
+                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+              "listed": true,
+              "reached": 16,
+              "total": 24,
+              "never": [
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged",
+                "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+              "listed": true,
+              "reached": 3,
+              "total": 4,
+              "never": [
+                "decide(ANSWERED, AppendReply[accepted=false]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+              "listed": true,
+              "reached": 4,
+              "total": 12,
+              "never": [
+                "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
+                "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
+                "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "figure 8",
+          "fromRuns": true,
+          "finished": true,
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "counted": true,
+          "coverageStatus": "complete",
+          "coverageReason": null,
+          "listed": [
+            "net.terminalvalue.quorum.raft.AppendRule#decide",
+            "net.terminalvalue.quorum.raft.CommitRule#decide",
+            "net.terminalvalue.quorum.raft.ReplyRule#decide",
+            "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "net.terminalvalue.quorum.raft.VoteRule#decide"
+          ],
+          "operators": [
+            {
+              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+              "listed": true,
+              "reached": 27,
+              "total": 36,
+              "never": [
+                "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+                "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
+                "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
+                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+                "decide(LEADER, Response[term=OLDER]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+              "listed": true,
+              "reached": 12,
+              "total": 27,
+              "never": [
+                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+              "listed": true,
+              "reached": 10,
+              "total": 24,
+              "never": [
+                "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+                "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged",
+                "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+              "listed": true,
+              "reached": 3,
+              "total": 4,
+              "never": [
+                "decide(ANSWERED, AppendReply[accepted=false]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+              "listed": true,
+              "reached": 4,
+              "total": 12,
+              "never": [
+                "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
+                "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
+                "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "fairness",
+          "fromRuns": true,
+          "finished": false,
+          "verdict": "violation",
+          "status": "completed",
+          "reason": null,
+          "counted": true,
+          "coverageStatus": "unavailable",
+          "coverageReason": "the run stopped at a counterexample",
+          "listed": [],
+          "operators": []
+        },
+        {
+          "label": "delayed replies",
+          "fromRuns": true,
+          "finished": true,
+          "verdict": "verified",
+          "status": "completed",
+          "reason": null,
+          "counted": true,
+          "coverageStatus": "complete",
+          "coverageReason": null,
+          "listed": [
+            "net.terminalvalue.quorum.raft.AppendRule#decide",
+            "net.terminalvalue.quorum.raft.CommitRule#decide",
+            "net.terminalvalue.quorum.raft.ReplyRule#decide",
+            "net.terminalvalue.quorum.raft.RoleMachine#decide",
+            "net.terminalvalue.quorum.raft.VoteRule#decide"
+          ],
+          "operators": [
+            {
+              "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
+              "listed": true,
+              "reached": 29,
+              "total": 36,
+              "never": [
+                "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
+                "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
+                "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
+                "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
+                "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
+                "decide(LEADER, Response[term=OLDER]) => Unchanged"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
+              "listed": true,
+              "reached": 10,
+              "total": 27,
+              "never": [
+                "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+                "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
+                "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+              "listed": true,
+              "reached": 9,
+              "total": 24,
+              "never": [
+                "decide(MISSING, AppendRequest[entry=NONE, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+                "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
+                "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected"
+              ]
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
+              "listed": true,
+              "reached": 4,
+              "total": 4,
+              "never": []
+            },
+            {
+              "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
+              "listed": true,
+              "reached": 4,
+              "total": 12,
+              "never": [
+                "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
+                "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
+                "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
+                "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
+              ]
+            }
+          ]
+        }
+      ],
+      "changedRows": [
+        {
+          "case": "decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])",
+          "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+          "before": "Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]",
+          "after": "Unchanged[reason=\"holds what was sent, and nothing new to apply\"]",
+          "takenUnder": [
+            "three terms, two entries",
+            "figure 8",
+            "delayed replies"
+          ],
+          "unknownUnder": []
+        },
+        {
+          "case": "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])",
+          "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
+          "before": "Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]",
+          "after": "Unchanged[reason=\"holds what was sent, and nothing new to apply\"]",
+          "takenUnder": [
+            "delayed replies"
+          ],
+          "unknownUnder": []
+        }
+      ],
+      "nullRows": 0,
+      "vacuous": false
+    },
+    "sarif": "result.sarif",
+    "output": "verifier-output.txt",
+    "checkpoints": [
       {
         "label": "three terms, two entries",
-        "fromRuns": true,
-        "finished": true,
-        "verdict": "verified",
-        "status": "completed",
-        "reason": null,
-        "counted": true,
-        "coverageStatus": "complete",
-        "coverageReason": null,
-        "listed": [
-          "net.terminalvalue.quorum.raft.AppendRule#decide",
-          "net.terminalvalue.quorum.raft.CommitRule#decide",
-          "net.terminalvalue.quorum.raft.ReplyRule#decide",
-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
-          "net.terminalvalue.quorum.raft.VoteRule#decide"
-        ],
-        "operators": [
-          {
-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
-            "listed": true,
-            "reached": 27,
-            "total": 36,
-            "never": [
-              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
-            "listed": true,
-            "reached": 12,
-            "total": 27,
-            "never": [
-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-            "listed": true,
-            "reached": 16,
-            "total": 24,
-            "never": [
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged",
-              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
-            "listed": true,
-            "reached": 3,
-            "total": 4,
-            "never": [
-              "decide(ANSWERED, AppendReply[accepted=false]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
-            "listed": true,
-            "reached": 4,
-            "total": 12,
-            "never": [
-              "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
-              "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
-              "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
-            ]
-          }
-        ]
+        "cfg": "spec/RaftReplication.cfg",
+        "fingerprint": "72fabf9897598cbb380efc24a514dcb65118885bd677e2b472d1b4d87e00a7aa",
+        "reused": false
       },
       {
         "label": "figure 8",
-        "fromRuns": true,
-        "finished": true,
-        "verdict": "verified",
-        "status": "completed",
-        "reason": null,
-        "counted": true,
-        "coverageStatus": "complete",
-        "coverageReason": null,
-        "listed": [
-          "net.terminalvalue.quorum.raft.AppendRule#decide",
-          "net.terminalvalue.quorum.raft.CommitRule#decide",
-          "net.terminalvalue.quorum.raft.ReplyRule#decide",
-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
-          "net.terminalvalue.quorum.raft.VoteRule#decide"
-        ],
-        "operators": [
-          {
-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
-            "listed": true,
-            "reached": 27,
-            "total": 36,
-            "never": [
-              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
-              "decide(FOLLOWER, Response[term=OLDER]) => Unchanged",
-              "decide(FOLLOWER, Response[term=CURRENT]) => Unchanged",
-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
-            "listed": true,
-            "reached": 12,
-            "total": 27,
-            "never": [
-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-            "listed": true,
-            "reached": 10,
-            "total": 24,
-            "never": [
-              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
-              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=false]) => Unchanged",
-              "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
-            "listed": true,
-            "reached": 3,
-            "total": 4,
-            "never": [
-              "decide(ANSWERED, AppendReply[accepted=false]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
-            "listed": true,
-            "reached": 4,
-            "total": 12,
-            "never": [
-              "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
-              "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
-              "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
-            ]
-          }
-        ]
+        "cfg": "spec/RaftReplicationFigureEight.cfg",
+        "fingerprint": "9a83877f3737459d3156cbe50c7ebdfeb3d92e55371a0e8b9bac4a8ecc8f2ffb",
+        "reused": false
       },
       {
         "label": "fairness",
-        "fromRuns": true,
-        "finished": false,
-        "verdict": "violation",
-        "status": "completed",
-        "reason": null,
-        "counted": true,
-        "coverageStatus": "unavailable",
-        "coverageReason": "the run stopped at a counterexample",
-        "listed": [],
-        "operators": []
+        "cfg": "spec/RaftReplicationLive.cfg",
+        "fingerprint": "e90b6ba39601c48f0da49d6934f4ff9c6ac6b3848b91012a9262f50e2fb0a164",
+        "reused": false
       },
       {
         "label": "delayed replies",
-        "fromRuns": true,
-        "finished": true,
-        "verdict": "verified",
-        "status": "completed",
-        "reason": null,
-        "counted": true,
-        "coverageStatus": "complete",
-        "coverageReason": null,
-        "listed": [
-          "net.terminalvalue.quorum.raft.AppendRule#decide",
-          "net.terminalvalue.quorum.raft.CommitRule#decide",
-          "net.terminalvalue.quorum.raft.ReplyRule#decide",
-          "net.terminalvalue.quorum.raft.RoleMachine#decide",
-          "net.terminalvalue.quorum.raft.VoteRule#decide"
-        ],
-        "operators": [
-          {
-            "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
-            "listed": true,
-            "reached": 29,
-            "total": 36,
-            "never": [
-              "decide(FOLLOWER, VotesCounted[majority=true]) => Unchanged",
-              "decide(FOLLOWER, Response[term=NEWER]) => Transition[next=FOLLOWER, effects=[ADOPT_TERM]]",
-              "decide(CANDIDATE, Response[term=OLDER]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=false]) => Unchanged",
-              "decide(LEADER, VotesCounted[majority=true]) => Unchanged",
-              "decide(LEADER, AppendEntries[term=CURRENT]) => throws IllegalStateException",
-              "decide(LEADER, Response[term=OLDER]) => Unchanged"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
-            "listed": true,
-            "reached": 10,
-            "total": 27,
-            "never": [
-              "decide(OPEN, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
-              "decide(OPEN, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(OPEN, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(OPEN, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=EVEN]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=CURRENT, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_THE_CANDIDATE, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=OLDER, log=AHEAD]) => Rejected",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=BEHIND]) => Rejected",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=EVEN]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]",
-              "decide(FOR_ANOTHER, VoteRequest[term=NEWER, log=AHEAD]) => Transition[next=FOR_THE_CANDIDATE, effects=[GRANT]]"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-            "listed": true,
-            "reached": 9,
-            "total": 24,
-            "never": [
-              "decide(MISSING, AppendRequest[entry=NONE, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
-              "decide(MISSING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=NONE, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=ABSENT, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=SAME, commitAhead=true]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=false]) => Rejected",
-              "decide(CONFLICTING, AppendRequest[entry=CONFLICTING, commitAhead=true]) => Rejected"
-            ]
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
-            "listed": true,
-            "reached": 4,
-            "total": 4,
-            "never": []
-          },
-          {
-            "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
-            "listed": true,
-            "reached": 4,
-            "total": 12,
-            "never": [
-              "decide(PENDING, Replication[term=NEWER, majority=false]) => throws IllegalStateException",
-              "decide(PENDING, Replication[term=NEWER, majority=true]) => throws IllegalStateException",
-              "decide(COMMITTED, Replication[term=OLDER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=OLDER, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged",
-              "decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged"
-            ]
-          }
-        ]
+        "cfg": "spec/RaftReplicationDelayed.cfg",
+        "fingerprint": "41b6685a048fd6d2d8bbd17e81c0503e6f4738d0d6942d892bc367315347a282",
+        "reused": false
       }
     ],
-    "changedRows": [
+    "violationKind": "temporal",
+    "forever": "stays in that state forever",
+    "modelVerdict": "violation",
+    "modelSummary": "✗ Violation: FollowersLearnCommits, 8-step trace then forever (fairness)"
+  },
+  "bundle": {
+    "artifacts": [
       {
-        "case": "decide(MATCHING, AppendRequest[entry=NONE, commitAhead=true])",
-        "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-        "before": "Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]",
-        "after": "Unchanged[reason=\"holds what was sent, and nothing new to apply\"]",
-        "takenUnder": [
-          "three terms, two entries",
-          "figure 8",
-          "delayed replies"
-        ],
-        "unknownUnder": []
+        "path": "result.sarif",
+        "sha256": "3f69b46ed27867f34146607535e9bb7283c5bc73214a1df5fccd2ab34b240c50",
+        "bytes": 1645
       },
       {
-        "case": "decide(MATCHING, AppendRequest[entry=SAME, commitAhead=true])",
-        "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-        "before": "Transition[next=MATCHING, effects=[ADVANCE_COMMIT]]",
-        "after": "Unchanged[reason=\"holds what was sent, and nothing new to apply\"]",
-        "takenUnder": [
-          "delayed replies"
-        ],
-        "unknownUnder": []
+        "path": "verifier-output.txt",
+        "sha256": "518c96112aac84666461f98007fd89c65c5ad95b6bab4595a3592601652ec46f",
+        "bytes": 230902
       }
-    ],
-    "nullRows": 0,
-    "vacuous": false
-  },
-  "sarif": "result.sarif",
-  "output": "verifier-output.txt",
-  "modelContracts": [
-    {
-      "symbol": "net.terminalvalue.quorum.raft.AppendRule#decide",
-      "contract": "src/contract/AppendRule.decide.contract",
-      "operator": "spec/AppendRuleContract.tla",
-      "connection": "derived",
-      "rowsChanged": 4,
-      "allowed": true
-    },
-    {
-      "symbol": "net.terminalvalue.quorum.raft.ReplyRule#decide",
-      "contract": "src/contract/ReplyRule.decide.contract",
-      "operator": "spec/ReplyRuleContract.tla",
-      "connection": "verified",
-      "rowsChanged": 0,
-      "allowed": true
-    },
-    {
-      "symbol": "net.terminalvalue.quorum.raft.CommitRule#decide",
-      "contract": "src/contract/CommitRule.decide.contract",
-      "operator": "spec/CommitRuleContract.tla",
-      "connection": "verified",
-      "rowsChanged": 0,
-      "allowed": true
-    },
-    {
-      "symbol": "net.terminalvalue.quorum.raft.RoleMachine#decide",
-      "contract": "src/contract/RoleMachine.decide.contract",
-      "operator": "spec/RoleMachineContract.tla",
-      "connection": "verified",
-      "rowsChanged": 0,
-      "allowed": true
-    },
-    {
-      "symbol": "net.terminalvalue.quorum.raft.VoteRule#decide",
-      "contract": "src/contract/VoteRule.decide.contract",
-      "operator": "spec/VoteRuleContract.tla",
-      "connection": "verified",
-      "rowsChanged": 0,
-      "allowed": true
-    }
-  ],
-  "checkpoints": [
-    {
-      "label": "three terms, two entries",
-      "cfg": "spec/RaftReplication.cfg",
-      "fingerprint": "4aa7be0b3ba83a037844811637e129781e698367553a3b786bb14dc2b6bec183",
-      "reused": true,
-      "recordedAt": "2026-11-06T17:05:41+00:00"
-    },
-    {
-      "label": "figure 8",
-      "cfg": "spec/RaftReplicationFigureEight.cfg",
-      "fingerprint": "016fd15eb2c2d3e0bb9a82cae943baa9a86098ae43b4e154383e9b6de92d6830",
-      "reused": true,
-      "recordedAt": "2026-11-06T17:05:48+00:00"
-    },
-    {
-      "label": "fairness",
-      "cfg": "spec/RaftReplicationLive.cfg",
-      "fingerprint": "db13a629e940c66bb024c323e090f61b1d86f584516d436310906ea28d7a2728",
-      "reused": true,
-      "recordedAt": "2026-11-06T17:07:09+00:00"
-    },
-    {
-      "label": "delayed replies",
-      "cfg": "spec/RaftReplicationDelayed.cfg",
-      "fingerprint": "c01618f8b70e1444441c36cb1795c93d97b54d829b48f4ef22594090dd610c79",
-      "reused": true,
-      "recordedAt": "2026-11-06T17:09:00+00:00"
-    }
-  ],
-  "violationKind": "temporal",
-  "forever": "stays in that state forever",
-  "configurations": [
-    {
-      "label": "three terms, two entries",
-      "cfg": "spec/RaftReplication.cfg",
-      "verdict": "verified",
-      "status": "completed",
-      "reason": null,
-      "summary": "✓ Verified: all invariants and properties hold in 17,221 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE",
-      "invariant": null,
-      "violationKind": null,
-      "statesExplored": 17221,
-      "trace": null,
-      "forever": null
-    },
-    {
-      "label": "figure 8",
-      "cfg": "spec/RaftReplicationFigureEight.cfg",
-      "verdict": "verified",
-      "status": "completed",
-      "reason": null,
-      "summary": "✓ Verified: all invariants and properties hold in 7,277 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE",
-      "invariant": null,
-      "violationKind": null,
-      "statesExplored": 7277,
-      "trace": null,
-      "forever": null
-    },
-    {
-      "label": "fairness",
-      "cfg": "spec/RaftReplicationLive.cfg",
-      "verdict": "violation",
-      "status": "completed",
-      "reason": null,
-      "summary": "✗ Violation: FollowersLearnCommits, 8-step trace then forever",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE",
-      "invariant": "FollowersLearnCommits",
-      "violationKind": "temporal",
-      "statesExplored": 3081,
-      "trace": [
-        {
-          "step": 1,
-          "action": "Initial predicate",
-          "changes": {
-            "commitIndex": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
-            "currentTerm": "(s1 :> 0 @@ s2 :> 0 @@ s3 :> 0)",
-            "log": "(s1 :> <<>> @@ s2 :> <<>> @@ s3 :> <<>>)",
-            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "nextIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "replies": "{}",
-            "role": "(s1 :> \"FOLLOWER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-            "votedFor": "(s1 :> \"none\" @@ s2 :> \"none\" @@ s3 :> \"none\")",
-            "votes": "(s1 :> {} @@ s2 :> {} @@ s3 :> {})"
-          }
-        },
-        {
-          "step": 2,
-          "action": "Timeout",
-          "changes": {
-            "currentTerm": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)",
-            "role": "(s1 :> \"CANDIDATE\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-            "votedFor": "(s1 :> s1 @@ s2 :> \"none\" @@ s3 :> \"none\")",
-            "votes": "(s1 :> {s1} @@ s2 :> {} @@ s3 :> {})"
-          }
-        },
-        {
-          "step": 3,
-          "action": "Timeout",
-          "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 0 @@ s3 :> 0)"
-          }
-        },
-        {
-          "step": 4,
-          "action": "Canvass",
-          "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 0)",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "role": "(s1 :> \"LEADER\" @@ s2 :> \"FOLLOWER\" @@ s3 :> \"FOLLOWER\")",
-            "votedFor": "(s1 :> s1 @@ s2 :> s1 @@ s3 :> \"none\")",
-            "votes": "(s1 :> {s1, s2} @@ s2 :> {} @@ s3 :> {})"
-          }
-        },
-        {
-          "step": 5,
-          "action": "ClientRequest",
-          "changes": {
-            "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<>>)"
-          }
-        },
-        {
-          "step": 6,
-          "action": "Replicate",
-          "changes": {
-            "currentTerm": "(s1 :> 2 @@ s2 :> 2 @@ s3 :> 2)",
-            "log": "(s1 :> <<2>> @@ s2 :> <<>> @@ s3 :> <<2>>)",
-            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 1 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
-          }
-        },
-        {
-          "step": 7,
-          "action": "AdvanceCommit",
-          "changes": {
-            "commitIndex": "(s1 :> 1 @@ s2 :> 0 @@ s3 :> 0)"
-          }
-        },
-        {
-          "step": 8,
-          "action": "Replicate",
-          "changes": {
-            "commitIndex": "(s1 :> 1 @@ s2 :> 1 @@ s3 :> 0)",
-            "log": "(s1 :> <<2>> @@ s2 :> <<2>> @@ s3 :> <<2>>)",
-            "matchIndex": "( s1 :> (s1 :> 0 @@ s2 :> 1 @@ s3 :> 1) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )",
-            "nextIndex": "( s1 :> (s1 :> 1 @@ s2 :> 2 @@ s3 :> 2) @@ s2 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) @@ s3 :> (s1 :> 0 @@ s2 :> 0 @@ s3 :> 0) )"
-          }
-        }
-      ],
-      "forever": "stays in that state forever"
-    },
-    {
-      "label": "delayed replies",
-      "cfg": "spec/RaftReplicationDelayed.cfg",
-      "verdict": "verified",
-      "status": "completed",
-      "reason": null,
-      "summary": "✓ Verified: all invariants and properties hold in 214,040 states",
-      "domain": "Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE",
-      "invariant": null,
-      "violationKind": null,
-      "statesExplored": 214040,
-      "trace": null,
-      "forever": null
-    }
-  ],
-  "modelVerdict": "violation",
-  "modelSummary": "✗ Violation: FollowersLearnCommits, 8-step trace then forever (fairness)"
+    ]
+  }
 }

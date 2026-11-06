@@ -118,14 +118,17 @@ Merge. The properties did not change, so the pull request contains code only, an
 
 ## Evidence
 
-How the verdict was reached: JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.8 s; loops unwound 16 times with unwinding assertions.
+How the verdict was reached: JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `nowMillis: long × last: long × message: long`, assuming nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (stated by the claim); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the method is checked on the result and the parameters, against result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last), and on exceptions: none may be thrown. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found receive(nowMillis=20, last=20, message=20).
+
+This page renders attempt `20261106T181224Z-076a1c8c` at claim `f6d21ee68659a79b`, in pipeline job `20261106-181053-example-017-b11-under-build-py-s-executi`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.8 s; loops unwound 16 times with unwinding assertions)
+✓ net.terminalvalue.quorum.clock.HybridLogicalClock#receive satisfies `result > last && result > message && (result >>> 16) >= nowMillis && result == receive(nowMillis, message, last)` on every input where nowMillis >= 0 && nowMillis <= 0x7FFFFFFFFFFFL && last >= 0 && message >= 0 && (last & 0xFFFF) < 0xFFFF && (message & 0xFFFF) < 0xFFFF (JBMC 6.11.0: 2 properties proved over nowMillis: long × last: long × message: long in 0.6 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: receive(nowMillis=20, last=20, message=20) reaches the calls
 ```
 
 </details>

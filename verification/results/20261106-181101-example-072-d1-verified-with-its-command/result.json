@@ -1,0 +1,274 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-072-d1-verified-with-its-command",
+  "title": "Example 072 (D1, verified) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 4.2s, peak 127.8 MiB (estimated 10m00s, 3.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-072-d1-verified-with-its-command.json",
+    "sha256": "c3185840edf2c6b2b134ce0782ec475563ced8f96d96ffab59e84f550e9f8812",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-072-d1-verified-with-its-command",
+      "title": "Example 072 (D1, verified) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "D1",
+        "jvmcontract:tlc"
+      ],
+      "links": {
+        "examples": [
+          "072"
+        ]
+      },
+      "expected": "example 072 gives its expected verdict, verified vacuously: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "tlc"
+      ],
+      "resources": {
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "TLC on the 2PC model, a few configurations",
+        "cpus": 2.0
+      },
+      "steps": [
+        {
+          "name": "example 072 (D1)",
+          "run": "python3 examples/tools/build.py 072",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/072-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice"
+      ],
+      "supersedes": "20261105-235230-example-072-d1-verified-with-its-command"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:04+00:00",
+  "finishedAt": "2026-11-06T18:13:09+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "TLC on the 2PC model, a few configurations"
+  },
+  "usage": {
+    "peakMemoryBytes": 133996544,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 5.9,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 072 (D1)",
+      "run": "python3 examples/tools/build.py 072",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 4.007,
+      "cpuSeconds": 5.901,
+      "cpuThrottledSeconds": 0.867,
+      "peakMemoryBytes": 133996544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-072-d1.log",
+        "lines": 30,
+        "bytes": 1228,
+        "sha256": "354b56e65b3408b20b46238ca0ee346190f853629edd9a7b696dc44722805473",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 30,
+          "text": "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)",
+          "groups": [
+            "072",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: running (D1)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.9 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 1.0 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · jvmcontract update",
+        "  · jvmcontract update: exited 0, 0.0 s",
+        "  · jvmcontract derive RoleMachine#decide",
+        "  · jvmcontract derive RoleMachine#decide: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · jvmcontract tla",
+        "  · jvmcontract tla: exited 0, 0.0 s",
+        "  · java -version",
+        "  · java -version: exited 0, 0.0 s",
+        "  · jvmcontract derive VoteRule#decide",
+        "  · jvmcontract derive VoteRule#decide: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 0, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/072-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.022,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5713920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 79,
+        "sha256": "ba9b4b536deddb21695a7b1d89bf128f60fe2816bf8cff30c041834bf18c0137",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "14 stages; workspace .build-py/examples-agxsozbf/attempts/072/attempt-1urj50vi"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "change": "modified",
+      "bytes": 59545,
+      "sha256": "bed3fe78da78994dc19f89bd8d309b0519dd6e2a0be777df098d380cf12512d0",
+      "sourceSha256": "88af861b6f3014b1e6d35c8c42cdd7fda55267eabbcf7798f8c3d7f991c85280"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json",
+      "change": "modified",
+      "bytes": 52131,
+      "sha256": "d880e248c04f77070c05f65447e6c16ecaf1bdd17d008bf06a2ad5d441e47979",
+      "sourceSha256": "cf5c2d042ae89020818c98fd99b370cd2522f4bbc9cfb648ec95fc9ee53a3761"
+    },
+    {
+      "path": "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt",
+      "change": "modified",
+      "bytes": 30669,
+      "sha256": "1b66c3587a16664fd465c96e3d71651981fa49312d12ae0cede2b80148816cd8",
+      "sourceSha256": "96f122027dcaec8d3dbdede65f80c18260356dd8058f118196323083d60b2408"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/verifier-output.txt"
+    ],
+    "conflicts": [
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/README.md",
+      "examples/072-vote-rule-that-refuses-a-repeat-request-is-verified-by-a-model-that-never-asks-twice/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

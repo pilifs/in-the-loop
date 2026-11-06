@@ -1,0 +1,253 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181101-example-025-b8-violation-with-its-comman",
+  "title": "Example 025 (B8, violation) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 3.4s, peak 109.5 MiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-181101-example-025-b8-violation-with-its-comman.json",
+    "sha256": "b7169cdcc15c206184a547c1a701c86656d2163af739450e1556476ef7c5b287",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181101-example-025-b8-violation-with-its-comman",
+      "title": "Example 025 (B8, violation) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "B8"
+      ],
+      "links": {
+        "examples": [
+          "025"
+        ]
+      },
+      "expected": "example 025 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-06T18:11:01+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "Box Office Gradle build and the Java contract verifier",
+        "cpus": 2.0
+      },
+      "steps": [
+        {
+          "name": "example 025 (B8)",
+          "run": "python3 examples/tools/build.py 025",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/025-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/025-transaction-that-commits-after-an-error"
+      ],
+      "supersedes": "20261105-235230-example-025-b8-violation-with-its-comman"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:12:59+00:00",
+  "finishedAt": "2026-11-06T18:13:03+00:00",
+  "wallSeconds": 4.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "Box Office Gradle build and the Java contract verifier"
+  },
+  "usage": {
+    "peakMemoryBytes": 114860032,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 4.5,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 025 (B8)",
+      "run": "python3 examples/tools/build.py 025",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 3.207,
+      "cpuSeconds": 4.524,
+      "cpuThrottledSeconds": 0.652,
+      "peakMemoryBytes": 114860032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-025-b8.log",
+        "lines": 20,
+        "bytes": 796,
+        "sha256": "2b057015f81c0a832d8146b12f6d423d4b3bd1c97e95bbf1b9c149ad69c26186",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "025-transaction-that-commits-after-an-error: violation (as expected)",
+          "groups": [
+            "025",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "025-transaction-that-commits-after-an-error: running (B8)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.7 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · jvmcontract verify",
+        "  · jvmcontract verify: exited 1, 0.0 s",
+        "  · jvmcontract derive TransactionBoundary#exit",
+        "  · jvmcontract derive TransactionBoundary#exit: exited 0, 0.0 s",
+        "  · jvmcontract statemachine",
+        "  · jvmcontract statemachine: exited 2, 0.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "025-transaction-that-commits-after-an-error: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/025-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.024,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5472256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 78,
+        "sha256": "5d1f91c91e2be4ab9fd77f222e711c9d0711bd42aa59a5cd0c322339efabbbcb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "9 stages; workspace .build-py/examples-yobl2ao7/attempts/025/attempt-cpq3at24"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/README.md",
+      "change": "modified",
+      "bytes": 15109,
+      "sha256": "f293df09aaace3ead297b143a8d470cca7fc7921040998489dd5d3d0217c0b05",
+      "sourceSha256": "e1ba33055c85a708ab7594e387230bd369e1b62e1086d8a1037ad49b3cafcaec"
+    },
+    {
+      "path": "examples/025-transaction-that-commits-after-an-error/result.json",
+      "change": "modified",
+      "bytes": 7207,
+      "sha256": "fa47d68da36e81ddf9df9f5695fb221c1b0f17aa4c88b9e7a268b498f33ec9fd",
+      "sourceSha256": "cb839e2a5b21a80ace391370754883f2ac2c1a848917988cfa2f5615e65ed124"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [],
+    "conflicts": [
+      "examples/025-transaction-that-commits-after-an-error/README.md",
+      "examples/025-transaction-that-commits-after-an-error/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

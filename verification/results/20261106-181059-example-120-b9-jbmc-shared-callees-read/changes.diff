@@ -1,0 +1,455 @@
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/README.md
+@@ -114,14 +114,16 @@
+ 
+ ## Evidence
+ 
+-How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
+-
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
++
++**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
++
++This page renders attempt `20261106T181225Z-2f4bd5aa` at claim `a5f4b0f7606a99f2`, in pipeline job `20261106-181059-example-120-b9-jbmc-shared-callees-read`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+ ```
+ 
+ </details>
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/result.json
+@@ -1,57 +1,374 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: equivalent on every input",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
++  "format": 2,
++  "claim": {
++    "id": "a5f4b0f7606a99f2",
++    "format": 1,
++    "example": "120",
++    "statement": {
++      "approach": "B9",
++      "target": "net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken",
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {
++      "maxArrayLength": null,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": "36a3484b519164c8e5911ae3b9864ced8ec326d07399334e328d2c1456355ef1",
++      "before": {
++        "sha256": "705fd446b5705ed4474219fbdfa62295bc704a080508cea7a74c5850fcdfe96a",
++        "files": 54
++      },
++      "after": {
++        "sha256": "411dfb4ad657c364a5fc7519d980b004d06a5b9477fd2bb3b8618d8c047a2020",
++        "files": 54
++      },
++      "dependencies": "the JDK"
++    }
+   },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": "java -ea net.terminalvalue.crosscut.Tests",
+-    "passed": true,
+-    "failures": []
++  "attempt": {
++    "id": "20261106T181225Z-2f4bd5aa",
++    "claim": "a5f4b0f7606a99f2",
++    "startedAt": "2026-11-06T18:12:25+00:00",
++    "seconds": 3.5,
++    "engine": "jbmc",
++    "options": [
++      "--gaps",
++      "strict"
++    ],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "jvmcontract": "793f2d98a0e23e2f6d909a62584d875f8f62ab8e6a8902259897b4bff5154230",
++      "jbmc": "6.11.0 (cbmc-6.11.0)"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "f23a388579fe06a2472159290cfb857aa9fb6da270b86896d3144b8fa8b8d499",
++        "files": 39
++      },
++      "after": {
++        "sha256": "e2607dc09764697a2cd0301b7614517f2bfa53bfc7d54369ef9df0c651927e0f",
++        "files": 39
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181059-example-120-b9-jbmc-shared-callees-read",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181059-example-120-b9-jbmc-shared-callees-read"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "exploration": {
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "complete": true
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "javac patched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.8,
++        "stdout": "logs/02-javac-patched-crosscut-main.stdout",
++        "stderr": "logs/02-javac-patched-crosscut-main.stderr"
++      },
++      {
++        "name": "javac patched crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/03-javac-patched-crosscut-tests.stdout",
++        "stderr": "logs/03-javac-patched-crosscut-tests.stderr"
++      },
++      {
++        "name": "the crosscut tests",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/04-the-crosscut-tests.stdout",
++        "stderr": "logs/04-the-crosscut-tests.stderr"
++      },
++      {
++        "name": "javac unpatched crosscut main",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.7,
++        "stdout": "logs/05-javac-unpatched-crosscut-main.stdout",
++        "stderr": "logs/05-javac-unpatched-crosscut-main.stderr"
++      },
++      {
++        "name": "jvmcontract equivalence",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.2,
++        "stdout": "logs/06-jvmcontract-equivalence.stdout",
++        "stderr": "logs/06-jvmcontract-equivalence.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/07-version-of-java.stdout",
++        "stderr": "logs/07-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/08-version-of-javac.stdout",
++        "stderr": "logs/08-version-of-javac.stderr"
++      },
++      {
++        "name": "version of jbmc",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/09-version-of-jbmc.stdout",
++        "stderr": "logs/09-version-of-jbmc.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-gfl0qiqh/attempts/120/attempt-h2l7tzu1"
+   },
+-  "before": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+-    "startLine": 4,
+-    "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the credited time plus a period, less now.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        return TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) + periodNanos - nowNanos;\n    }\n}\n"
++  "conclusion": {
++    "claim": "a5f4b0f7606a99f2",
++    "attempt": "20261106T181225Z-2f4bd5aa",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✓ Verified: equivalent on every input",
++    "obligationKeys": {}
+   },
+-  "after": {
+-    "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
+-    "startLine": 4,
+-    "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the period less the time since the credit.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        long credited = TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity);\n        return periodNanos - (nowNanos - credited);\n    }\n}\n"
++  "evidence": {
++    "existingTests": {
++      "task": "java -ea net.terminalvalue.crosscut.Tests",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
++      "startLine": 4,
++      "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the credited time plus a period, less now.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        return TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) + periodNanos - nowNanos;\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/crosscut/src/main/java/net/terminalvalue/crosscut/ratelimit/RetryAfter.java",
++      "startLine": 4,
++      "code": " * How long a request the bucket refuses must wait for a token: Bucket4j's {@code nanosToWaitForRefill}, and the\n * {@code Retry-After} a gateway answers a refused request with. It is a function of the bucket's refill arithmetic in\n * {@link TokenBucket}: nothing when the refill at {@code nowNanos} leaves a token, else until the period under way\n * ends, which is the period less the time since the credit.\n */\npublic final class RetryAfter {\n\n    // ...\n        if (TokenBucket.tokensAfter(tokens, lastNanos, nowNanos, periodNanos, capacity) > 0) {\n            return 0;\n        }\n        long credited = TokenBucket.lastAfter(tokens, lastNanos, nowNanos, periodNanos, capacity);\n        return periodNanos - (nowNanos - credited);\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
++    "problem": null,
++    "statement": "statement.java",
++    "trace": null,
++    "statesExplored": null,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.147,
++      "properties": 2,
++      "unwind": 16,
++      "maxArrayLength": 8,
++      "stage": null,
++      "sharedCallees": [
++        "TokenBucket.lastAfter",
++        "TokenBucket.tokensAfter"
++      ],
++      "deadlineSeconds": 600.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "shared",
++          "stage": "[0:20]",
++          "budgetSeconds": 75.0,
++          "seconds": 0.151,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.014,
++            "lowering": 0.004,
++            "symbolic": 0.01,
++            "encoding": 0.013,
++            "solving": 0.091,
++            "trace": 0.0,
++            "other": 0.02
++          },
++          "formula": {
++            "steps": 1109,
++            "conditions": 1,
++            "variables": 30836,
++            "clauses": 88819
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "shared",
++          "stage": "[-100000:100000]",
++          "budgetSeconds": 75.0,
++          "seconds": 0.351,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.018,
++            "lowering": 0.004,
++            "symbolic": 0.01,
++            "encoding": 0.011,
++            "solving": 0.257,
++            "trace": 0.0,
++            "other": 0.051
++          },
++          "formula": {
++            "steps": 1109,
++            "conditions": 1,
++            "variables": 30836,
++            "clauses": 88819
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "shared",
++          "stage": null,
++          "budgetSeconds": 599.408,
++          "seconds": 0.552,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.014,
++            "lowering": 0.004,
++            "symbolic": 0.011,
++            "encoding": 0.012,
++            "solving": 0.479,
++            "trace": 0.0,
++            "other": 0.032
++          },
++          "formula": {
++            "steps": 1096,
++            "conditions": 1,
++            "variables": 29409,
++            "clauses": 85926
++          }
++        }
++      ],
++      "gapMode": "strict"
++    },
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "tokens",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "lastNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "nowNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "periodNanos",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "capacity",
++            "type": "long",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "sharedArrays": false,
++        "text": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result, equal in both versions",
++        "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256",
++        "classes": 10,
++        "jdk": "25.0.5"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    },
++    "replay": null
+   },
+-  "casesTotal": null,
+-  "domain": "tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter",
+-  "problem": null,
+-  "statement": "statement.java",
+-  "trace": null,
+-  "statesExplored": null,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "search": {
+-    "engine": "jbmc",
+-    "checker": "JBMC 6.11.0",
+-    "seconds": 1.219,
+-    "properties": 2,
+-    "unwind": 16,
+-    "maxArrayLength": 8,
+-    "stage": null,
+-    "sharedCallees": [
+-      "TokenBucket.lastAfter",
+-      "TokenBucket.tokensAfter"
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "6e723854c5927f7c45e7aa79d7390535c8be43be0df942d6a33b48209baaaf08",
++        "bytes": 1881
++      },
++      {
++        "path": "statement.java",
++        "sha256": "41d1581a97025ba5032c39e3509c89cc568f20900165c81d288cfc54533bfcc8",
++        "bytes": 2412
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "6ea27fe4ef93f5ebeb8df6efa1410997675d0047e986c06b17bddaaba3ff06c5",
++        "bytes": 409
++      }
+     ]
+-  },
+-  "replay": null
++  }
+ }
+--- a/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
++++ b/examples/120-retry-after-rewritten-around-unchanged-refill-helpers/verifier-output.txt
+@@ -1 +1 @@
+-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.2 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
++✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)

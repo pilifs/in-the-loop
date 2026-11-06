@@ -210,6 +210,14 @@ decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
 
 </details>
 
+**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
+
+- `AppendRule#decide` (`spec/AppendRuleContract.tla`): the committed contract, which the patched classes still match
+- `ReplyRule#decide` (`spec/ReplyRuleContract.tla`): the regenerated contract, 1 row from the committed one, as the change intends
+- `CommitRule#decide` (`spec/CommitRuleContract.tla`): the committed contract, which the patched classes still match
+- `RoleMachine#decide` (`spec/RoleMachineContract.tla`): the committed contract, which the patched classes still match
+- `VoteRule#decide` (`spec/VoteRuleContract.tla`): the committed contract, which the patched classes still match
+
 The state machine the patched code implements, drawn from its derived contract (`jvmcontract statemachine`); a state with no way in or no way out is marked:
 
 ```mermaid
@@ -246,16 +254,16 @@ Merge, if the round trips are acceptable. Taking a late acceptance as the follow
 
 ## Evidence
 
-How the verdict was reached: three terms, two entries: TLC 2.19 explored 20,253 distinct states to depth 20 in 13 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 8,838 distinct states to depth 18 in 8 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,388 distinct states to depth 16, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 605,428 distinct states to depth 26, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
+How the verdict was reached: three terms, two entries: TLC 2.19 explored 20,253 distinct states to depth 20 in 10 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 2, DelayedReplies = FALSE; figure 8: TLC 2.19 explored 8,838 distinct states to depth 18 in 6 s, for the model Servers = {s1, s2, s3}, MaxTerm = 4, MaxEntries = 1, DelayedReplies = FALSE; fairness: TLC 2.19 explored 14,388 distinct states to depth 16 in 50 s, for the model Servers = {s1, s2, s3}, MaxTerm = 3, MaxEntries = 1, DelayedReplies = FALSE; delayed replies: TLC 2.19 explored 605,428 distinct states to depth 26, for the model Servers = {s1, s2, s3}, MaxTerm = 2, MaxEntries = 1, DelayedReplies = TRUE.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+This page renders attempt `20261106T181259Z-267c2223` at claim `314b01d1991a5c09`, in pipeline job `20261106-181100-example-104-d1-raft-replication-with-its`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
 == three terms, two entries: spec/RaftReplication.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1240176] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 3276MB heap and 64MB offheap memory [pid: 81778] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -276,9 +284,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-04 00:40:16)
+Starting... (2026-11-06 18:13:01)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-04 00:40:19.
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:03.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -332,11 +340,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 100137 states generated, 20253 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 20.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 8 and the 95th percentile is 3).
-Finished in 13s at (2026-11-04 00:40:29)
+Finished in 10s at (2026-11-06 18:13:12)
 
 == figure 8: spec/RaftReplicationFigureEight.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1240800] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 3276MB heap and 64MB offheap memory [pid: 82600] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -357,9 +365,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-04 00:40:30)
+Starting... (2026-11-06 18:13:12)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-04 00:40:33.
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:14.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -419,11 +427,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 48709 states generated, 8838 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 18.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 08s at (2026-11-04 00:40:38)
+Finished in 06s at (2026-11-06 18:13:19)
 
 == fairness: spec/RaftReplicationLive.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1241263] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 3276MB heap and 64MB offheap memory [pid: 82887] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -444,16 +452,14 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-04 00:40:39)
+Starting... (2026-11-06 18:13:20)
 Implied-temporal checking--satisfiability problem has 5 branches.
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-04 00:40:42.
-Checking 5 branches of temporal properties for the current state space with 2615 total distinct states at (2026-11-04 00:40:45)
-Finished checking temporal properties in 00s at 2026-11-04 00:40:45
-Checking 5 branches of temporal properties for the current state space with 50460 total distinct states at (2026-11-04 00:41:45)
-Finished checking temporal properties in 00s at 2026-11-04 00:41:45
-Checking 5 branches of temporal properties for the complete state space with 71940 total distinct states at (2026-11-04 00:42:05)
-Finished checking temporal properties in 00s at 2026-11-04 00:42:05
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:13:21.
+Checking 5 branches of temporal properties for the current state space with 3915 total distinct states at (2026-11-06 18:13:24)
+Finished checking temporal properties in 00s at 2026-11-06 18:13:25
+Checking 5 branches of temporal properties for the complete state space with 71940 total distinct states at (2026-11-06 18:14:09)
+Finished checking temporal properties in 00s at 2026-11-06 18:14:09
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -513,11 +519,11 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
 71185 states generated, 14388 distinct states found, 0 states left on queue.
 The depth of the complete state graph search is 16.
 The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 7 and the 95th percentile is 3).
-Finished in 01min 26s at (2026-11-04 00:42:06)
+Finished in 50s at (2026-11-06 18:14:10)
 
 == delayed replies: spec/RaftReplicationDelayed.cfg ==
 TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
-Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 2185MB heap and 64MB offheap memory [pid: 1246297] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
+Running breadth-first search Model-Checking with fp 1 and seed 1 with 1 worker on 2 cores with 3276MB heap and 64MB offheap memory [pid: 85910] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
 Parsing file examples/apps/quorum/spec/RaftReplication.tla
 Parsing file examples/tools/tla/standard-modules/Naturals.tla
 Parsing file examples/tools/tla/standard-modules/FiniteSets.tla
@@ -538,9 +544,9 @@ Semantic processing of module AppendRuleContract
 Semantic processing of module ReplyRuleContract
 Semantic processing of module CommitRuleContract
 Semantic processing of module RaftReplication
-Starting... (2026-11-04 00:42:07)
+Starting... (2026-11-06 18:14:10)
 Computing initial states...
-Finished computing initial states: 1 distinct state generated at 2026-11-04 00:42:09.
+Finished computing initial states: 1 distinct state generated at 2026-11-06 18:14:12.
 Model checking completed. No error has been found.
   Estimates of the probability that TLC did not check all reachable states
   because two distinct states had the same fingerprint:
@@ -597,6 +603,10 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
   decide(COMMITTED, Replication[term=CURRENT, majority=true]) => Unchanged
   decide(COMMITTED, Replication[term=NEWER, majority=false]) => Unchanged
   decide(COMMITTED, Replication[term=NEWER, majority=true]) => Unchanged
+8598201 states generated, 605428 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 26.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 10 and the 95th percentile is 3).
+Finished in 04min 58s at (2026-11-06 18:19:09)
 ```
 
 </details>
@@ -623,6 +633,12 @@ Rows of net.terminalvalue.quorum.raft.CommitRule#decide a step of the model take
               "id": "unverifiable",
               "shortDescription": {
                 "text": "TLC could not check the model."
+              }
+            },
+            {
+              "id": "contract-changed",
+              "shortDescription": {
+                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
               }
             }
           ]

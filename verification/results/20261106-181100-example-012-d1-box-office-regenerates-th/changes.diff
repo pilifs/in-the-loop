@@ -1,0 +1,340 @@
+--- a/examples/012-deleting-the-sweeper-is-safe/README.md
++++ b/examples/012-deleting-the-sweeper-is-safe/README.md
+@@ -192,6 +192,10 @@
+ 
+ The order state machine inside the model is generated from the behavioural contract of the patched code, so the model checks the decisions the services really make.
+ 
++**Where the model's rules come from.** Each operator the model checks is generated from the contract derived from the patched classes in this run:
++
++- `OrderLifecycle#decide` (`spec/OrderLifecycleContract.tla`): the committed contract, which the patched classes still match
++
+ ## Would the existing tests have caught it?
+ 
+ Every existing unit test passes, as it should (`:ticketing-service:test`, run against the patched code).
+@@ -216,13 +220,13 @@
+ 
+ How the verdict was reached: TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1.
+ 
+-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
++This page renders attempt `20261106T181229Z-64aa94c3` at claim `590bcf69b741418d`, in pipeline job `20261106-181100-example-012-d1-box-office-regenerates-th`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
+ 
+ <details><summary>Verifier output</summary>
+ 
+ ```text
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 98 and seed -5792134552417892974 with 1 worker on 2 cores with 683MB heap and 64MB offheap memory [pid: 904508] (Linux 6.6.87.2-microsoft-standard-WSL2 aarch64, Eclipse Adoptium 25.0.4.1 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 25 and seed 8174216969514127529 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 80272] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -233,9 +237,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-11-02 21:27:09)
++Starting... (2026-11-06 18:12:36)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-02 21:27:09.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:36.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -243,7 +247,7 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-02 21:27:10)
++Finished in 00s at (2026-11-06 18:12:36)
+ ```
+ 
+ </details>
+@@ -271,6 +275,12 @@
+               "shortDescription": {
+                 "text": "TLC could not check the model."
+               }
++            },
++            {
++              "id": "contract-changed",
++              "shortDescription": {
++                "text": "The patched code changes the behavioural contract a generated operator of the model comes from, and the change is not meant to alter behaviour."
++              }
+             }
+           ]
+         }
+--- a/examples/012-deleting-the-sweeper-is-safe/result.json
++++ b/examples/012-deleting-the-sweeper-is-safe/result.json
+@@ -1,55 +1,198 @@
+ {
+-  "verdict": "verified",
+-  "verdictLabel": "✓ Verified: all invariants hold in 3,604 states",
+-  "execution": {
+-    "status": "completed",
+-    "exitCode": 0,
+-    "reason": null
++  "format": 2,
++  "claim": {
++    "id": "590bcf69b741418d",
++    "format": 1,
++    "example": "012",
++    "statement": {
++      "approach": "D1",
++      "target": "net.terminalvalue.boxoffice.ticketing.app.HoldService#releaseExpiredHolds",
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
++      "behaviourChangeIntended": false
++    },
++    "scope": {},
++    "inputs": {
++      "patch": "6c969f4c98fff880bf64b330a711213bcfe4cd05d79a9a60c1192017fe1948a4",
++      "before": {
++        "sha256": "1de5f25a93165ada196dafa616704b78b66ca0153aabde797e563119c10d4074",
++        "files": 106
++      },
++      "after": {
++        "sha256": "d66cdc1dfa44562c68fceac48a155833a9a5b7ac93808a1201b412fc0fc14e07",
++        "files": 106
++      },
++      "dependencies": "declared in the build files",
++      "model": {
++        "examples/apps/boxoffice/spec/BoxOffice.tla": "6b4dbf14f767deb6f560f11fa0523f03f5bf97832a2678e625f63f28e596b33a",
++        "examples/apps/boxoffice/spec/BoxOffice.cfg": "e79c2cc630f2e5764a3b063ed22116af39c23a6979a33d29991df5f6e187920d"
++      }
++    }
+   },
+-  "matchesExpected": true,
+-  "expectation": "yes",
+-  "existingTests": {
+-    "task": ":ticketing-service:test",
+-    "passed": true,
+-    "failures": []
++  "attempt": {
++    "id": "20261106T181229Z-64aa94c3",
++    "claim": "590bcf69b741418d",
++    "startedAt": "2026-11-06T18:12:29+00:00",
++    "seconds": 7.6,
++    "engine": null,
++    "options": [],
++    "tools": {
++      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "javac": "javac 25.0.5",
++      "gradle": "gradle-9.8.2-bin",
++      "tlc": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
++    },
++    "bytecode": {
++      "before": null,
++      "after": {
++        "sha256": "8aaa811b446af1d834f8d4ea7b3451bafd3976b956fb09ed1484e209ac108bea",
++        "files": 30
++      }
++    },
++    "pipeline": {
++      "jobId": "20261106-181100-example-012-d1-box-office-regenerates-th",
++      "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-181100-example-012-d1-box-office-regenerates-th"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "apply the patch",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/01-apply-the-patch.stdout",
++        "stderr": "logs/01-apply-the-patch.stderr"
++      },
++      {
++        "name": "gradle :ticketing-service:test",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 4.9,
++        "stdout": "logs/02-gradle-ticketing-service-test.stdout",
++        "stderr": "logs/02-gradle-ticketing-service-test.stderr"
++      },
++      {
++        "name": "gradle :ticketing-domain:updateContracts",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.7,
++        "stdout": "logs/03-gradle-ticketing-domain-updatecontracts.stdout",
++        "stderr": "logs/03-gradle-ticketing-domain-updatecontracts.stderr"
++      },
++      {
++        "name": "contract to TLA+",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/04-contract-to-tla.stdout",
++        "stderr": "logs/04-contract-to-tla.stderr"
++      },
++      {
++        "name": "TLC on BoxOffice.tla",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 1.0,
++        "stdout": "logs/05-tlc-on-boxoffice-tla.stdout",
++        "stderr": "logs/05-tlc-on-boxoffice-tla.stderr"
++      },
++      {
++        "name": "version of java",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.0,
++        "stdout": "logs/06-version-of-java.stdout",
++        "stderr": "logs/06-version-of-java.stderr"
++      },
++      {
++        "name": "version of javac",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.1,
++        "stdout": "logs/07-version-of-javac.stdout",
++        "stderr": "logs/07-version-of-javac.stderr"
++      }
++    ],
++    "workspace": ".build-py/examples-txll6qex/attempts/012/attempt-pf7686qk"
+   },
+-  "before": {
+-    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+-    "startLine": 9,
+-    "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.scheduling.annotation.Scheduled;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private static final Logger log = LoggerFactory.getLogger(HoldService.class);\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n\n    /**\n     * Releases expired holds. Correctness does not depend on this: a new hold already treats an expired seat as free.\n     * The sweep keeps the stored status honest for readers and for the order flow.\n     */\n    @Scheduled(fixedDelayString = \"${boxoffice.hold.sweep-interval:1s}\")\n    public void releaseExpiredHolds() {\n        long released = store.releaseExpired(clock.instant());\n        if (released > 0) {\n            log.info(\"Released {} seats whose hold expired\", released);\n        }\n    }\n}\n"
++  "conclusion": {
++    "claim": "590bcf69b741418d",
++    "attempt": "20261106T181229Z-64aa94c3",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "operator-contract",
++        "name": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
++        "statement": "the contract the operator is generated from, as built",
++        "status": "established",
++        "evidence": {
++          "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
++          "contract": "ticketing-domain/src/contract/OrderLifecycle.decide.contract",
++          "operator": "spec/OrderLifecycleContract.tla",
++          "connection": "verified",
++          "rowsChanged": 0,
++          "allowed": true
++        }
++      }
++    ],
++    "label": "✓ Verified: all invariants hold in 3,604 states",
++    "obligationKeys": {
++      "operator-contract": "modelContracts"
++    }
+   },
+-  "after": {
+-    "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
+-    "startLine": 9,
+-    "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n}\n"
++  "evidence": {
++    "existingTests": {
++      "task": ":ticketing-service:test",
++      "passed": true,
++      "failures": []
++    },
++    "before": {
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
++      "startLine": 9,
++      "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nimport org.springframework.scheduling.annotation.Scheduled;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private static final Logger log = LoggerFactory.getLogger(HoldService.class);\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n\n    /**\n     * Releases expired holds. Correctness does not depend on this: a new hold already treats an expired seat as free.\n     * The sweep keeps the stored status honest for readers and for the order flow.\n     */\n    @Scheduled(fixedDelayString = \"${boxoffice.hold.sweep-interval:1s}\")\n    public void releaseExpiredHolds() {\n        long released = store.releaseExpired(clock.instant());\n        if (released > 0) {\n            log.info(\"Released {} seats whose hold expired\", released);\n        }\n    }\n}\n"
++    },
++    "after": {
++      "file": "examples/apps/boxoffice/ticketing-service/src/main/java/net/terminalvalue/boxoffice/ticketing/app/HoldService.java",
++      "startLine": 9,
++      "code": "import net.terminalvalue.boxoffice.ticketing.domain.HoldPolicy;\nimport net.terminalvalue.boxoffice.ticketing.store.HoldDocument;\nimport net.terminalvalue.boxoffice.ticketing.store.TicketingStore;\nimport org.springframework.stereotype.Service;\n\n/**\n    // ...\n@Service\npublic class HoldService {\n\n    private final TicketingStore store;\n    private final Transactions transactions;\n    private final HoldPolicy policy;\n    // ...\n    public HoldDocument get(String holdId) {\n        return store.hold(holdId).orElseThrow(() -> new NotFoundException(\"no hold \" + holdId));\n    }\n}\n"
++    },
++    "casesTotal": null,
++    "domain": "Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
++    "counterexamples": [],
++    "purityViolations": [],
++    "trustedCalls": [],
++    "contractDiff": null,
++    "proof": "TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
++    "problem": null,
++    "statement": null,
++    "trace": null,
++    "statesExplored": 3604,
++    "invariant": null,
++    "property": null,
++    "stateMachine": null,
++    "coverage": null,
++    "sarif": "result.sarif",
++    "output": "verifier-output.txt",
++    "modelVerdict": "verified",
++    "modelSummary": "✓ Verified: all invariants hold in 3,604 states"
+   },
+-  "casesTotal": null,
+-  "domain": "Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
+-  "counterexamples": [],
+-  "purityViolations": [],
+-  "trustedCalls": [],
+-  "contractDiff": null,
+-  "proof": "TLC 2.19 explored 3,604 distinct states to depth 26 in 00 s, for the model Customers = {alice, bob}, Seats = {s1}, MaxTime = 3, HoldTtl = 1",
+-  "problem": null,
+-  "statement": null,
+-  "trace": null,
+-  "statesExplored": 3604,
+-  "invariant": null,
+-  "property": null,
+-  "stateMachine": null,
+-  "coverage": null,
+-  "sarif": "result.sarif",
+-  "output": "verifier-output.txt",
+-  "modelContracts": [
+-    {
+-      "symbol": "net.terminalvalue.boxoffice.ticketing.domain.OrderLifecycle#decide",
+-      "contract": "ticketing-domain/src/contract/OrderLifecycle.decide.contract",
+-      "operator": "spec/OrderLifecycleContract.tla",
+-      "connection": "verified",
+-      "rowsChanged": 0,
+-      "allowed": true
+-    }
+-  ],
+-  "modelVerdict": "verified",
+-  "modelSummary": "✓ Verified: all invariants hold in 3,604 states"
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "result.sarif",
++        "sha256": "50a6386f831e768de8cc7ec1a1a55c0c6f6cc5818bf1f888090a050bb4095f19",
++        "bytes": 925
++      },
++      {
++        "path": "verifier-output.txt",
++        "sha256": "b3c25079e714e149016eeb7c30c9eafa6772c8b14b8c76434b9789dbabeba770",
++        "bytes": 1490
++      }
++    ]
++  }
+ }
+--- a/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
++++ b/examples/012-deleting-the-sweeper-is-safe/verifier-output.txt
+@@ -1,5 +1,5 @@
+ TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+-Running breadth-first search Model-Checking with fp 67 and seed 3394227475015576580 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 47914] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
++Running breadth-first search Model-Checking with fp 25 and seed 8174216969514127529 with 1 worker on 2 cores with 1024MB heap and 64MB offheap memory [pid: 80272] (Linux 7.0.0-43-generic amd64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+ Parsing file examples/apps/boxoffice/spec/BoxOffice.tla
+ Parsing file examples/tools/tla/standard-modules/Naturals.tla
+ Parsing file examples/tools/tla/standard-modules/Sequences.tla
+@@ -10,9 +10,9 @@
+ Semantic processing of module FiniteSets
+ Semantic processing of module OrderLifecycleContract
+ Semantic processing of module BoxOffice
+-Starting... (2026-11-06 17:14:22)
++Starting... (2026-11-06 18:12:36)
+ Computing initial states...
+-Finished computing initial states: 1 distinct state generated at 2026-11-06 17:14:22.
++Finished computing initial states: 1 distinct state generated at 2026-11-06 18:12:36.
+ Model checking completed. No error has been found.
+   Estimates of the probability that TLC did not check all reachable states
+   because two distinct states had the same fingerprint:
+@@ -20,4 +20,4 @@
+ 6716 states generated, 3604 distinct states found, 0 states left on queue.
+ The depth of the complete state graph search is 26.
+ The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 3).
+-Finished in 00s at (2026-11-06 17:14:23)
++Finished in 00s at (2026-11-06 18:12:36)

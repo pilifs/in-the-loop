@@ -1,0 +1,222 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181102-example-127-b9-re-run-its-statement-says",
+  "title": "Example 127 (B9) re-run: its statement says it is not vacuous, and that the records' constructors are another obligation",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.2s, peak 126.3 MiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed; signals: example:as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-181102-example-127-b9-re-run-its-statement-says.json",
+    "sha256": "26cab55e277f346d2b512e87c71d0a59076e3a2c59931c3594ba9117694c459e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181102-example-127-b9-re-run-its-statement-says",
+      "title": "Example 127 (B9) re-run: its statement says it is not vacuous, and that the records' constructors are another obligation",
+      "description": "Step 2b of llm-dlc/loops/sound-verdicts.md makes vacuity a status of every verified statement (non-vacuous, vacuous or unknown, with how it is known), kept in result.stated.vacuity and stated on the page, and has the console and the statement say, for a proof over records built through their constructors, that whether the two versions' constructors accept the same inputs is not part of the proof. Example 127 (Crosscut's Backoff#delayMillis, a record method, proved equal by JBMC) is the recorded proof over records: its harness skips an input a constructor rejects, so the tool's own checker probes it, and the result should record status non-vacuous with the probe's witness (a delayMillis(this=Backoff[...], attempt=...) call), the constructors' caveat among the assumptions, and the same verified verdict as before. Nothing about the proof itself changed.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "127"
+        ],
+        "paths": [
+          "lib/src/statement.rs"
+        ]
+      },
+      "expected": "verified, matching expected; result.stated.vacuity.status non-vacuous with basis probe and a witness; a constructible assumption in result.stated.assumptions; the page's 'What the verdict is about' paragraph ends with the witness sentence",
+      "submitted": {
+        "at": "2026-11-06T18:11:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "example 127 (B9)",
+          "run": "python3 examples/tools/build.py 127",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components"
+      ],
+      "supersedes": "20261106-031642-example-127-b9-re-run-its-statement-says"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:50+00:00",
+  "finishedAt": "2026-11-06T18:13:59+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 132386816,
+    "wallSeconds": 9.2,
+    "cpuSeconds": 11.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 127 (B9)",
+      "run": "python3 examples/tools/build.py 127",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 9.219,
+      "cpuSeconds": 11.329,
+      "cpuThrottledSeconds": 0.687,
+      "peakMemoryBytes": 132386816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-127-b9.log",
+        "lines": 20,
+        "bytes": 839,
+        "sha256": "23689e0b204a8b3afb3d73edc4d44f8fd2b451f434b5afb208a613d4635a975f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)",
+          "groups": [
+            "127",
+            "verified"
+          ]
+        }
+      ],
+      "tail": [
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched crosscut main",
+        "  · javac patched crosscut main: exited 0, 0.8 s",
+        "  · javac patched crosscut tests",
+        "  · javac patched crosscut tests: exited 0, 0.7 s",
+        "  · the crosscut tests",
+        "  · the crosscut tests: exited 0, 0.1 s",
+        "  · javac unpatched crosscut main",
+        "  · javac unpatched crosscut main: exited 0, 0.7 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 0, 5.0 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components: verified (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md",
+      "change": "modified",
+      "bytes": 16671,
+      "sha256": "fb627e4a0e4887a573b0f020f47321a447e6f3b6bef447e1eb45a7b122f8e3b5",
+      "sourceSha256": "bfb93eb7c1def4fea9d682cd62d2d36017b5ba8a461951a8fb3375a2dcb04269"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json",
+      "change": "modified",
+      "bytes": 12922,
+      "sha256": "daddc91c37cc35c89fd45002d19bf6064241f142ea75ce65f96827f23ad91bd0",
+      "sourceSha256": "a301159beb9447371bcd17f1aed9730d3342a78953fa18b6e1d7559f6470b4c1"
+    },
+    {
+      "path": "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt",
+      "change": "modified",
+      "bytes": 639,
+      "sha256": "29f9c25f87e92f2610e3acd065f099ec22559d00471ee928df46259eabf6b93e",
+      "sourceSha256": "45dd1dee42acf891e83534b21b24b1c40a8dfad81541f78ae2c16851928b6989"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/README.md",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/result.json",
+      "examples/127-backoff-loop-replaced-by-a-guarded-shift-proved-equal-on-the-records-components/verifier-output.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

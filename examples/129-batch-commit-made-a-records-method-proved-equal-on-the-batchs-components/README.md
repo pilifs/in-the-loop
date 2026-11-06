@@ -259,12 +259,16 @@ Nothing to fix. The example is the control for 128: the same refactor with the g
 
 How the verdict was reached: JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `this: Batch(start: long, size: int) × failedIndex: int`, each record (this) built from its components through its canonical constructor, assuming the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it (made by how the harness builds the statement); the previous version's arguments this.start, this.size, failedIndex are computed without throwing: an input on which they throw is skipped (made by how the harness builds the statement); a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Some input in the domain reaches the calls: the tool's own checker found offsetToCommit(this=Batch[start=20, size=20], failedIndex=20).
+
+This page renders attempt `20261106T181329Z-9b9168da` at claim `cbd6a2297f9727b5`, in pipeline job `20261106-181101-example-129-b9-jbmc-verified-recorded-as`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
 ✓ net.terminalvalue.crosscut.kafka.Batch#offsetToCommit behaves as the previous net.terminalvalue.crosscut.kafka.BatchCommit#offsetToCommit(this.start, this.size, failedIndex) on every input (JBMC 6.11.0: 2 properties proved over this: Batch(start: long, size: int) × failedIndex: int in 0.3 s; loops unwound 16 times with unwinding assertions)
+  not vacuous: offsetToCommit(this=Batch[start=20, size=20], failedIndex=20) reaches the calls
+  constructors: the new version's constructor Batch(start: long, size: int) accepts the components of this: an input it rejects is skipped, so the statement is about the records both versions can build, and whether the constructors accept the same inputs is not part of it
 ```
 
 </details>

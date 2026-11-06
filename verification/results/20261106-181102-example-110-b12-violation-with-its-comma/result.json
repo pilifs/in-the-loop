@@ -1,0 +1,251 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-181102-example-110-b12-violation-with-its-comma",
+  "title": "Example 110 (B12, violation) with its commands run as logged stages",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 22.1s, peak 1.1 GiB (estimated 10m00s, 3.0 GiB); 2 output file(s) changed; signals: example:as-expected×1",
+  "attention": [
+    "2 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-181102-example-110-b12-violation-with-its-comma.json",
+    "sha256": "fe6c66bbfb73e3cce54c941ab40d5e87f55106c0318d4dc65d21491dfabe0bb4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-181102-example-110-b12-violation-with-its-comma",
+      "title": "Example 110 (B12, violation) with its commands run as logged stages",
+      "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+      "kind": "example",
+      "capabilities": [
+        "B12",
+        "jvmcontract:verify"
+      ],
+      "links": {
+        "examples": [
+          "110"
+        ]
+      },
+      "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+      "submitted": {
+        "at": "2026-11-06T18:11:02+00:00"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "gradle",
+        "jvmcontract"
+      ],
+      "resources": {
+        "memory": "3G",
+        "duration": "10m",
+        "notes": "Box Office Gradle build and boundary contracts",
+        "cpus": 2.0
+      },
+      "steps": [
+        {
+          "name": "example 110 (B12)",
+          "run": "python3 examples/tools/build.py 110",
+          "cwd": "."
+        },
+        {
+          "name": "attempt records stages and workspace",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/110-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/110-idempotency-key-header-drops-request-validation"
+      ],
+      "supersedes": "20261105-235230-example-110-b12-violation-with-its-comma"
+    }
+  },
+  "sourceCommit": "e9763b54db8e56b44f3a92fc48fdd7702bbbd768",
+  "startedAt": "2026-11-06T18:13:46+00:00",
+  "finishedAt": "2026-11-06T18:14:08+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 75996,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 600.0,
+    "notes": "Box Office Gradle build and boundary contracts"
+  },
+  "usage": {
+    "peakMemoryBytes": 1214607360,
+    "wallSeconds": 22.1,
+    "cpuSeconds": 34.6,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 21.851,
+      "cpuSeconds": 34.618,
+      "cpuThrottledSeconds": 4.824,
+      "peakMemoryBytes": 1214607360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-110-b12.log",
+        "lines": 16,
+        "bytes": 730,
+        "sha256": "4c7b019ede037582f76f501e280d52f189b76d839df0553a9e18c57c6a6efcf4",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 16,
+          "text": "110-idempotency-key-header-drops-request-validation: violation (as expected)",
+          "groups": [
+            "110",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "110-idempotency-key-header-drops-request-validation: running (B12)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · gradle :ticketing-service:test",
+        "  · gradle :ticketing-service:test: exited 0, 16.3 s",
+        "  · gradle :ticketing-service:compileJava",
+        "  · gradle :ticketing-service:compileJava: exited 0, 1.2 s",
+        "  · gradle :ticketing-service:printRuntimeClasspath",
+        "  · gradle :ticketing-service:printRuntimeClasspath: exited 0, 1.2 s",
+        "  · jvmcontract verify (boundaries)",
+        "  · jvmcontract verify (boundaries): exited 1, 1.2 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "110-idempotency-key-header-drops-request-validation: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/110-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.024,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5709824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-attempt-records-stages-and-wor.log",
+        "lines": 1,
+        "bytes": 78,
+        "sha256": "dbcceedf57477d88e89c33d34aeaed5083f0354617c4c32a9a9b77e05ca8b4a0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "7 stages; workspace .build-py/examples-t0t9ty0j/attempts/110/attempt-urff3zb6"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "change": "modified",
+      "bytes": 21011,
+      "sha256": "5a8986cb44f7510373ba231bf44a11aec97038a99006e1c9bf9a01947a75fe54",
+      "sourceSha256": "ffdc53441c798595703b0e342f8993d708ca4bd7e044b940fbab4d6d687c44aa"
+    },
+    {
+      "path": "examples/110-idempotency-key-header-drops-request-validation/result.json",
+      "change": "modified",
+      "bytes": 10743,
+      "sha256": "804b4a018002afa2a76a862a446a4a287dc09191e89e39180e6e17966956a855",
+      "sourceSha256": "b9fbd1ef7b07c6cfd67920978cec909a244bdf8bf99d333e4aac013da979a26c"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T18:19:23+00:00",
+    "applied": [],
+    "conflicts": [
+      "examples/110-idempotency-key-header-drops-request-validation/README.md",
+      "examples/110-idempotency-key-header-drops-request-validation/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1b6ab1f2c80f31fdd14e59c73a44fec46b92ba9c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

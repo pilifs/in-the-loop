@@ -114,14 +114,16 @@ Merge. The proof line names the helpers it took as one function, which is what a
 
 ## Evidence
 
-How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
+How the verdict was reached: JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter.
 
-This result was recorded before runs fingerprinted their inputs, so whether it still matches the current patch and sources is not known.
+**What the verdict is about.** For every input in `tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long`, assuming a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type (the checker's own semantics): the two versions agree on the result, equal in both versions, and on exceptions: whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared. Loops are unwound up to 16 times, every one shown to end within that; the search covered every execution of every input within these bounds. Checked by JBMC 6.11.0, SAT solver cadical, under --gaps strict. It read the tool's 10 models of JDK classes (`sha256:4836373ed5758c8ea910ea00557dcc3b89ba25c8b6d2a77420cdd9af2ef86256`) and the classes of JDK 25.0.5. Nothing skips an input in the domain before the calls, so the verdict is about every one of them.
+
+This page renders attempt `20261106T181225Z-2f4bd5aa` at claim `a5f4b0f7606a99f2`, in pipeline job `20261106-181059-example-120-b9-jbmc-shared-callees-read`. Its claim is still the one the current files make: the patch, the sources it applies to, what is checked and the scope are those the run fingerprinted. The files below are the run's bundle.
 
 <details><summary>Verifier output</summary>
 
 ```text
-✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.7 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
+✓ net.terminalvalue.crosscut.ratelimit.RetryAfter#nanosUntilToken behaves as before on every input (JBMC 6.11.0: 2 properties proved over tokens: long × lastNanos: long × nowNanos: long × periodNanos: long × capacity: long in 1.1 s; loops unwound 16 times with unwinding assertions; 2 callees unchanged in both versions and taken as one function in both: TokenBucket.lastAfter, TokenBucket.tokensAfter)
 ```
 
 </details>
