@@ -98,6 +98,10 @@ pub struct Prepared {
 /// A preflight that could not be read gives no contracts and no advice: the proof is then refused as under strict
 /// ([`crate::jbmc_gaps::hold`]).
 pub fn prepare(pre: &Preflight, options: &crate::gap_contracts::ContractOptions, claim: crate::advice::Claim, entries: &[PathBuf], models: bool, work: &Path) -> Result<Prepared, Error> {
+    crate::phases::timed(crate::phases::Step::Contracts, || prepare_untimed(pre, options, claim, entries, models, work))
+}
+
+fn prepare_untimed(pre: &Preflight, options: &crate::gap_contracts::ContractOptions, claim: crate::advice::Claim, entries: &[PathBuf], models: bool, work: &Path) -> Result<Prepared, Error> {
     let Some(found) = &pre.found else {
         return Ok(Prepared { setting: GapSetting::from(GapMode::Advised), loaded: None, advice: None, notes: String::new() });
     };
@@ -126,6 +130,10 @@ pub struct Applied {
 /// contracts' methods, into `dir/redirected`, and the classes JBMC needs to run them are written into
 /// `dir/classes`. `cp` is the class path with the JDK, for the overrides and the exceptions.
 pub fn apply(setting: &GapSetting, found: &Found, classpath: &[PathBuf], rewrite: &[PathBuf], cp: &ClassPath, dir: &Path) -> Result<Applied, Error> {
+    crate::phases::timed(crate::phases::Step::Contracts, || apply_untimed(setting, found, classpath, rewrite, cp, dir))
+}
+
+fn apply_untimed(setting: &GapSetting, found: &Found, classpath: &[PathBuf], rewrite: &[PathBuf], cp: &ClassPath, dir: &Path) -> Result<Applied, Error> {
     let mut applied = Applied { classpath: classpath.to_vec(), ..Applied::default() };
     let Some(contracts_dir) = &setting.class_dir else { return Ok(applied) };
     let classes_dir = dir.join("classes");

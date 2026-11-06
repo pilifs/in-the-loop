@@ -693,7 +693,19 @@
               "budgetSeconds": { "description": "The time the run was given.", "type": "number" },
               "seconds": { "description": "The time it took.", "type": "number" },
               "ended": { "description": "`verified`, `violation`, `no-verdict`, or `out-of-time` when its budget ran out; a preliminary stage out of time hands on to the next.", "enum": ["verified", "violation", "no-verdict", "out-of-time"] },
-              "ending": { "description": "How the checker said the run ended (lib/src/jbmc.rs `Ending`, step 4b of llm-dlc/loops/sound-verdicts.md), the kinds of no verdict apart: `verified`; `counterexample` (the harness's assertion fails); `unwinding-failure` (a loop past --unwind); `other-failure` (a property the harness does not state fails); `timeout`; `memory-exhausted`; `killed` (by a signal, possibly the out-of-memory killer); `solver-failure` (nothing failed and nothing was proved); `unsupported-input` (JBMC did not take the program, or a class path entry); `unavailable` (no JBMC); `unreadable` (output that says none of these); `no-verdict` (the own checker's other reasons: a gap refused, a construct outside its fragment, its path budget). JBMC's is read from its `--json-ui` output. Absent in results written before 2026-11-06.", "enum": ["verified", "counterexample", "unwinding-failure", "other-failure", "timeout", "memory-exhausted", "killed", "solver-failure", "unsupported-input", "unavailable", "unreadable", "no-verdict"] }
+              "ending": { "description": "How the checker said the run ended (lib/src/jbmc.rs `Ending`, step 4b of llm-dlc/loops/sound-verdicts.md), the kinds of no verdict apart: `verified`; `counterexample` (the harness's assertion fails); `unwinding-failure` (a loop past --unwind); `other-failure` (a property the harness does not state fails); `timeout`; `memory-exhausted`; `killed` (by a signal, possibly the out-of-memory killer); `solver-failure` (nothing failed and nothing was proved); `unsupported-input` (JBMC did not take the program, or a class path entry); `unavailable` (no JBMC); `unreadable` (output that says none of these); `no-verdict` (the own checker's other reasons: a gap refused, a construct outside its fragment, its path budget). JBMC's is read from its `--json-ui` output. Absent in results written before 2026-11-06.", "enum": ["verified", "counterexample", "unwinding-failure", "other-failure", "timeout", "memory-exhausted", "killed", "solver-failure", "unsupported-input", "unavailable", "unreadable", "no-verdict"] },
+              "phases": {
+                "description": "Where the run's seconds went, phase by phase, the same phases for both checkers (lib/src/phases.rs, step 5b of llm-dlc/loops/sound-verdicts.md): `loading` (reading and parsing class files), `lowering` (the own checker decoding methods; JBMC generating its GOTO program), `symbolic` (symbolic execution), `encoding` (building the formula), `solving`, `trace` (reading the witness out), `other`. JBMC's come from its `Runtime` lines and the times of its messages; a run cut off gives the rest of its time to the phase it was in. Null when the output had no times to read; absent in results written before 2026-11-06.",
+                "type": ["object", "null"],
+                "additionalProperties": false,
+                "properties": { "loading": { "type": "number" }, "lowering": { "type": "number" }, "symbolic": { "type": "number" }, "encoding": { "type": "number" }, "solving": { "type": "number" }, "trace": { "type": "number" }, "other": { "type": "number" } }
+              },
+              "formula": {
+                "description": "The size of what the run solved: JBMC's SSA `steps` and verification `conditions` left after simplification, and the formula's `variables` and `clauses` (null where the run did not say). Absent in results written before 2026-11-06.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": { "steps": { "type": "number" }, "conditions": { "type": "number" }, "variables": { "type": ["number", "null"] }, "clauses": { "type": ["number", "null"] } }
+              }
             }
           }
         },
@@ -766,7 +778,7 @@
           }
         },
         "native": {
-          "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds).",
+          "description": "The own checker's account of its search, when the verdict is its: the numbers of its summary line (paths, merges, solverCalls, solvingSeconds, gatesEvaluated, evaluatingSeconds, divisions, divisionsBuilt, multiplications, multiplicationsBuilt, variables, clauses, seconds), and since 2026-11-06 the seconds of its other phases (loadingSeconds, decodingSeconds, encodingSeconds, witnessSeconds; lib/src/phases.rs).",
           "type": "object",
           "additionalProperties": { "type": "number" }
         }

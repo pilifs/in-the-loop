@@ -1,16 +1,18 @@
 # The benchmark corpus
 
-Step 5a of [`llm-dlc/loops/sound-verdicts.md`](../../llm-dlc/loops/sound-verdicts.md): before an optimization is
-chosen, measure both engines on a corpus that did not motivate the optimizations, and keep correctness, coverage, time
-and memory apart. An unsupported case is not a success, and a `Verified` the JVM refutes outweighs any speed.
+Steps 5a and 5b of [`llm-dlc/loops/sound-verdicts.md`](../../llm-dlc/loops/sound-verdicts.md): before an optimization
+is chosen, measure both engines on a corpus that did not motivate the optimizations, keep correctness, coverage, time
+and memory apart, and split each engine's time into its phases. An unsupported case is not a success, and a `Verified`
+the JVM refutes outweighs any speed.
 
-The corpus is in three groups:
+The corpus is in three groups, and a fourth for the phase measurements:
 
 | Group | What | Cases | Where |
 |---|---|---:|---|
 | 1, semantic conformance | the conformance corpus of step 1d: small methods with claims about gaps, identity, initialization, exceptions, aliasing, `null` arrays, records and arithmetic edge cases | 93 claims | [`conformance.json`](conformance.json), written by `the_benchmark_takes_its_first_group_from_this_corpus` in [`../tests/conformance.rs`](../tests/conformance.rs) |
 | 2, real regressions | four documented bugs, each with the broken and the fixed version (`src/broken`, `src/fixed`): the broken version's property refuted, the fixed version's proved, and a regression proof that the fix changes only the inputs it was meant to | 13 | [`corpus.json`](corpus.json) |
 | 3, held-out performance cases | regressions written for the benchmark after the engines' optimizations (`src/v1` to `src/v3`), one or more per workload, kept as first written whatever an engine makes of them | 12 | [`corpus.json`](corpus.json) |
+| 4, recorded examples | the reviews' case studies, examples 141 (a bisection rewritten half-open, `binary-search`) and 142 (an ASCII fast path for a modified UTF-8 encoder, `utf8`), their claims read from their `example.json` and their patches applied to Mica; under strict alone, since they reach no gap. Their expected answer is the recorded one, and they are not in the JVM's search | 2 | `RECORDED` in [`run.py`](run.py) |
 
 Group 2's bugs, each cited in its source file and in `corpus.json`:
 
@@ -66,12 +68,37 @@ A run is one of:
 For each run the runner keeps the wall-clock and CPU seconds, the peak resident memory of `jvmcontract` and of every
 process it waited for (JBMC, the JVM it tests contracts on), read from `wait4`, and what the solver side reports (the
 own checker's paths, solver calls, variables and clauses; JBMC's runs, each with its stage, seconds and ending).
-Step 5b splits these per phase.
+
+## Where the time goes (step 5b)
+
+Each checker run reports its seconds in the same phases for both engines ([`../src/phases.rs`](../src/phases.rs)),
+and the size of the formula it solved:
+
+| Phase | The own checker | JBMC 6.11.0 |
+|---|---|---|
+| `loading` | reading and parsing class files | its first message to `Generating GOTO Program` |
+| `lowering` | decoding methods | the GOTO program and its passes, to `Starting Bounded Model Checking` |
+| `symbolic` | exploring the paths, gates evaluated in path models included | `Runtime Symex` and `Runtime Postprocess Equation` |
+| `encoding` | building circuits, as the paths are explored; one operation in 64 is timed, since a clock read costs about 0.3 µs on WSL2 | `Runtime Convert SSA` and `Runtime Post-process` |
+| `solving` | CaDiCaL's calls | `Runtime Solver` |
+| `trace` | reading the witness out of a model | `Building error trace` to the next message |
+| `checker-other` | nothing | the rest of the run: starting, printing |
+
+JBMC's times come from its own `Runtime` lines and from the times of its messages (`--timestamp monotonic`). A run
+cut off by its deadline or its memory gives the rest of its time to the phase it was in, so a timeout says where it
+was spent. Around the runs, the driver's steps are timed too: `gaps` (the gap scan under advised, JBMC's preflight of
+its goto program), `contracts`, `replay` (the interpreter, shrinking), `jvm` (a witness run on a JVM), `harness`,
+`setup` (the JDK's classes and the models written to the work directory), and `driver`, the rest of the process.
+
+`RESULTS.md` has a table per workload and engine, under strict, over every run, decided or not: the share of each
+phase, the phase that dominates, and the largest formula. Group 4 has a table of its own, since one of its runs
+outweighs a whole workload of the corpus. The table is what [`jbmc-patch-queue.md`](../../llm-dlc/loops/jbmc-patch-queue.md)
+ranks its candidates from.
 
 ## Running it
 
 ```bash
-python3 lib/benchmark/run.py --engines native --groups 2,3          # seconds: the own checker only
+python3 lib/benchmark/run.py --engines native --groups 2,3,4        # under a minute: the own checker only
 python3 lib/benchmark/run.py --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md   # both engines: a pipeline job
 python3 lib/benchmark/run.py --render lib/benchmark/results.json    # the tables again from a results file
 python3 -m unittest lib/benchmark/test_run.py                       # the runner's tests; no proof runs

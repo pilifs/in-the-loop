@@ -143,6 +143,13 @@ pub struct Outcome {
     pub multiplications: u64,
     pub refined_multiplications: u64,
     pub seconds: f64,
+    /// The phases the solving and evaluating above are not: reading and parsing class files, decoding methods,
+    /// building circuits (the encoding, as the paths are explored), and reading a witness out of a model; the
+    /// rest of `seconds` is the symbolic execution ([`Outcome::profile`]).
+    pub loading: f64,
+    pub decoding: f64,
+    pub encoding: f64,
+    pub witness: f64,
     /// The solver, for the report.
     pub solver: String,
     /// The gaps the run met, each refused (strict: a path ended there) or assumed, with where.
@@ -154,6 +161,7 @@ impl Outcome {
     /// The outcome in the shape of a JBMC result, so that the proof drivers treat it as one.
     pub fn into_jbmc_result(self, log: std::path::PathBuf) -> crate::jbmc::JbmcResult {
         let stats = self.stats();
+        let profile = self.profile();
         let ending = crate::jbmc::Ending::of_native(self.verdict, self.problem.as_deref());
         crate::jbmc::JbmcResult {
             verdict: self.verdict,
@@ -169,7 +177,16 @@ impl Outcome {
             gaps: self.gaps,
             gap_mode: Some(self.gap_mode),
             ending,
+            profile,
         }
+    }
+
+    /// The run's phases as [`crate::phases`] names them for both checkers: the symbolic execution is what the
+    /// other phases leave of the run, gates evaluated in path models included, and nothing is `other`.
+    pub fn profile(&self) -> crate::phases::Profile {
+        let symbolic = (self.seconds - self.loading - self.decoding - self.encoding - self.solving - self.witness).max(0.0);
+        let phases = crate::phases::Phases { loading: self.loading, lowering: self.decoding, symbolic, encoding: self.encoding, solving: self.solving, trace: self.witness, other: 0.0 }.completed(self.seconds);
+        crate::phases::Profile { phases: Some(phases), formula: crate::phases::Formula { steps: None, conditions: None, variables: Some(self.variables.max(0) as u64), clauses: Some(self.clauses) } }
     }
 
     /// The numbers of [`Outcome::summary`], for a structured report.
@@ -188,6 +205,10 @@ impl Outcome {
             variables: self.variables,
             clauses: self.clauses,
             seconds: self.seconds,
+            loading_seconds: self.loading,
+            decoding_seconds: self.decoding,
+            encoding_seconds: self.encoding,
+            witness_seconds: self.witness,
         }
     }
 
@@ -227,6 +248,12 @@ pub struct Stats {
     pub variables: i32,
     pub clauses: u64,
     pub seconds: f64,
+    /// Reading and parsing class files, decoding methods, building circuits, and reading a witness out of a
+    /// model: with the solving and evaluating above, the phases of [`crate::phases`].
+    pub loading_seconds: f64,
+    pub decoding_seconds: f64,
+    pub encoding_seconds: f64,
+    pub witness_seconds: f64,
 }
 
 /// Why a parameter type is outside the fragment, if it is.
@@ -476,6 +503,9 @@ struct Engine<'a> {
     hides: HashMap<String, bool>,
     /// The application classes whose `<clinit>` initializing a class would run, by class ([`gaps::initializers`]).
     initializers: HashMap<String, Rc<Vec<String>>>,
+    /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
+    decoding: Duration,
+    witness: Duration,
 }
 
 fn unsupported<T>(what: impl Into<String>) -> Result<T, Stop> {
@@ -532,7 +562,10 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         initializers: HashMap::new(),
+        decoding: Duration::ZERO,
+        witness: Duration::ZERO,
     };
+    let loading_before = cp.loading();
     let solver = engine.b.signature();
     let jdk = gaps::jdk_release();
     let outcome = |engine: &Engine, verdict: Verdict, input: Input, stage: Option<String>, problem: Option<String>| Outcome {
@@ -554,6 +587,10 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         multiplications: engine.b.multiplications().0,
         refined_multiplications: engine.b.multiplications().1,
         seconds: started.elapsed().as_secs_f64(),
+        loading: (cp.loading() - loading_before).as_secs_f64(),
+        decoding: engine.decoding.as_secs_f64(),
+        encoding: engine.b.encoding.as_secs_f64(),
+        witness: engine.witness.as_secs_f64(),
         solver: solver.clone(),
         gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
@@ -740,6 +777,16 @@ impl<'a> Engine<'a> {
         if let Some(c) = self.codes.get(&key) {
             return Ok(c.clone());
         }
+        let started = Instant::now();
+        let compiled = self.decode(class, name, descriptor);
+        self.decoding += started.elapsed();
+        let compiled = compiled?;
+        self.codes.insert(key, compiled.clone());
+        Ok(compiled)
+    }
+
+    /// [`Engine::code`] for a method not decoded yet.
+    fn decode(&mut self, class: &Rc<ClassFile>, name: &str, descriptor: &str) -> Result<Rc<Decoded>, Stop> {
         let method = class.method(name, descriptor).ok_or_else(|| Stop::Unsupported(format!("no method {}.{name}{descriptor}", class.name)))?;
         if method.is_native() {
             return unsupported(format!("{}.{name} is native", class.name.replace('/', ".")));
@@ -776,9 +823,7 @@ impl<'a> Engine<'a> {
         }
         let joins = ways_in.iter().map(|&n| n >= 2).collect();
         let lines = pcs.iter().map(|&pc| code.line_at(pc)).collect();
-        let compiled = Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins });
-        self.codes.insert(key, compiled.clone());
-        Ok(compiled)
+        Ok(Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins }))
     }
 
     /// Runs one path to its end, or, once `Options::merge_after` paths have been explored, to a join point, where
@@ -915,6 +960,15 @@ impl<'a> Engine<'a> {
     /// An input that takes the violating path of condition `cond`, from the first stage of [`STAGES`] that has
     /// one, or from the whole range (stage `STAGES.len()`) when none does.
     fn staged_input(&mut self, cond: &[Lit]) -> Result<(usize, Input), Stop> {
+        // Its solving and encoding are counted as such; the rest is reading the witness.
+        let (started, solving, encoding) = (Instant::now(), self.b.solving, self.b.encoding);
+        let found = self.staged_input_solved(cond);
+        let elsewhere = (self.b.solving - solving) + (self.b.encoding - encoding);
+        self.witness += started.elapsed().saturating_sub(elsewhere);
+        found
+    }
+
+    fn staged_input_solved(&mut self, cond: &[Lit]) -> Result<(usize, Input), Stop> {
         let mut assumptions = cond.to_vec();
         for i in 0..STAGES.len() {
             let l = self.stage_literal(i);

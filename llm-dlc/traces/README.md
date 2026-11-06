@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 24, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 09:44 UTC |
-| Prompts | 763 |
-| Model calls | 7,360 |
-| Tool calls | 8,224 (180 failed) |
-| Compactions | 105 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 10:28 UTC |
+| Prompts | 768 |
+| Model calls | 7,471 |
+| Tool calls | 8,337 (181 failed) |
+| Compactions | 106 |
 | Subagents | 3 |
-| Tokens written | 10,731,855 |
-| Tokens read | 1,232,579,860 (97.7% from cache) |
-| Commits with a trace | 203 |
-| Log snapshots | 263 (920.0 MB gzipped, 242 uploaded) |
+| Tokens written | 10,831,390 |
+| Tokens read | 1,257,953,828 (97.7% from cache) |
+| Commits with a trace | 204 |
+| Log snapshots | 264 (930.3 MB gzipped, 242 uploaded) |
 
 ## Sessions
 
@@ -50,7 +50,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 05:07 UTC | [FEATURE_LOOP_MEMORY_MAX memory limit](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | ended | 12 min | `claude-opus-5-5` | 4 | 15 | 13 | 0 | 0 | 62,962 | 2 |
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
-| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 10 h 9 min | `claude-opus-5-5` | 117 | 1,664 | 1,681 | 15 | 21 | 375,335 | 28 |
+| 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | open | 10 h 53 min | `claude-opus-5-5` | 122 | 1,775 | 1,794 | 16 | 22 | 375,335 | 29 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -83,16 +83,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 7,454 | 32 | 35,435 | 797,905 | 95.7% | 112 |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,671,499 | 3,374 | 5,559,709 | 310,878,088 | 98.2% | 189 |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,771,034 | 3,596 | 5,885,713 | 335,925,830 | 98.3% | 193 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,088 | 86.2% | 24 |
-| `Edit` | 400 | 4.9% | 12 |
-| `Read` | 295 | 3.6% | 15 |
-| `Write` | 295 | 3.6% | 11 |
+| `Bash` | 7,192 | 86.3% | 24 |
+| `Edit` | 402 | 4.8% | 12 |
+| `Read` | 301 | 3.6% | 15 |
+| `Write` | 296 | 3.6% | 11 |
 | `ToolSearch` | 59 | 0.7% | 13 |
 | `Monitor` | 31 | 0.4% | 5 |
 | `WebFetch` | 22 | 0.3% | 4 |
@@ -313,6 +313,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 201 | change `nlvopkvx` | JBMC's own approximations are gaps under strict and assume: its stubs of methods it has no bytecode for, the invokedynamic call sites it gives the value zero or null, and the monitors it drops are named from its goto program, and a JBMC proof that reaches one is no verdict under strict (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486.jsonl.gz)) |
 | 202 | change `nnlwukyp` | JBMC applies the contracts for its gaps: under --engine jbmc --gaps advised a JDK call JBMC stubs takes the contract the own checker would, its call sites rewritten into calls of the contract's method, and a gap with no contract stops the run with the advice | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7.jsonl.gz)) |
 | 203 | change `vnslpqrk` | The benchmark corpus: the conformance corpus, four documented bugs with their broken and fixed versions, and twelve held-out regressions, run on both engines under strict, assume and advised, with every expected answer and every witness checked on the JVM and correctness, coverage, time and memory kept apart (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02.jsonl.gz)) |
+| 204 | change `xrrytono` | Per-phase measurements for both engines: every checker run split into loading, lowering, symbolic execution, encoding, solving and trace, with its formula's size, JBMC's read from its own timings and message times, and a table per workload of which phase dominates (verification pending) | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) ([log](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c.jsonl.gz)) |
 
 ## Logs
 
@@ -343,7 +344,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6751f657`](6751f657-78ac-484c-8e36-eef607a6c325/summary.md) | 2 | 2 | 0.3 MB | [`1780f779fe72`](https://terminalvalue.net/raw-traces/6751f657-78ac-484c-8e36-eef607a6c325/1780f779fe72e73992e7dd31f7de0b3582323d87a05700e2540395fe776761c0.jsonl.gz) |
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
-| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 28 | 7 | 110.6 MB | `78023527e392`, not uploaded |
+| [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 29 | 7 | 120.9 MB | `28a29aa659f2`, not uploaded |
 
 ## Session notes
 

@@ -109,6 +109,8 @@ pub struct ClassPath {
     /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
     models: bool,
     cache: RefCell<HashMap<String, Option<Loaded>>>,
+    /// The time spent reading and parsing class files, for a checker's phases ([`crate::phases`]).
+    loading: std::cell::Cell<std::time::Duration>,
 }
 
 impl Default for ClassPath {
@@ -121,7 +123,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()) }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), loading: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -236,9 +238,18 @@ impl ClassPath {
         if let Some(cached) = self.cache.borrow().get(name) {
             return Ok(cached.clone());
         }
-        let loaded = self.load_uncached(name)?;
+        // A model loaded on the way times itself; this counts the whole load once.
+        let (before, started) = (self.loading.get(), std::time::Instant::now());
+        let loaded = self.load_uncached(name);
+        self.loading.set(before + started.elapsed());
+        let loaded = loaded?;
         self.cache.borrow_mut().insert(name.to_string(), loaded.clone());
         Ok(loaded)
+    }
+
+    /// How long reading and parsing class files has taken so far, models included.
+    pub fn loading(&self) -> std::time::Duration {
+        self.loading.get()
     }
 
     fn load_uncached(&self, name: &str) -> Result<Option<Loaded>, Error> {
@@ -270,7 +281,9 @@ impl ClassPath {
         if let Some(cached) = self.cache.borrow().get(&key) {
             return cached.as_ref().map(|l| l.class.clone());
         }
+        let started = std::time::Instant::now();
         let loaded = crate::models::class(name).ok().flatten().map(|class| Loaded { class: Rc::new(class), origin: Origin::Model });
+        self.loading.set(self.loading.get() + started.elapsed());
         let class = loaded.as_ref().map(|l| l.class.clone());
         self.cache.borrow_mut().insert(key, loaded);
         class

@@ -402,6 +402,10 @@ pub struct Preflight {
 
 /// Runs the preflight for `run` (its log next to the run's), within `budget`.
 pub fn preflight(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error> {
+    crate::phases::timed(crate::phases::Step::Gaps, || preflight_untimed(run, budget))
+}
+
+fn preflight_untimed(run: &JbmcRun, budget: Duration) -> Result<Preflight, Error> {
     let log = run.log.with_file_name("jbmc-goto.txt");
     let started = std::time::Instant::now();
     if !crate::jbmc::available(&run.executable) {

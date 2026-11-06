@@ -144,6 +144,8 @@ pub struct JbmcResult {
     pub gap_mode: Option<crate::bmc::gaps::GapMode>,
     /// How the run ended.
     pub ending: Ending,
+    /// Where the run's time went, phase by phase, and the size of its formula ([`crate::phases`]).
+    pub profile: crate::phases::Profile,
 }
 
 /// An argument of a counterexample: a primitive, an array of primitives, or `null`.
@@ -225,7 +227,8 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
         "--unwinding-assertions".into(),
     ];
     if run.read == Reading::Json {
-        cmd.push("--json-ui".into());
+        // The time of each message, which the phases of the run are read from ([`crate::phases::of_jbmc`]).
+        cmd.extend(["--json-ui".into(), "--timestamp".into(), "monotonic".into()]);
     }
     if let Some(stage) = &run.stage {
         cmd.extend(["--java-assume-inputs-interval".into(), stage.clone()]);
@@ -421,6 +424,7 @@ fn run_once(run: &JbmcRun) -> Result<JbmcResult, Error> {
             gaps: Vec::new(),
             gap_mode: None,
             ending: Ending::Unavailable,
+            profile: Default::default(),
         });
     }
     let started = std::time::Instant::now();
@@ -442,6 +446,9 @@ fn run_once(run: &JbmcRun) -> Result<JbmcResult, Error> {
     };
     result.log = run.log.clone();
     result.seconds = seconds;
+    if run.read != Reading::Text {
+        result.profile = crate::phases::of_jbmc(&json_items(&output), seconds);
+    }
     if output.contains("did not finish within") {
         result.verdict = Verdict::Unverifiable;
         result.ending = Ending::Timeout;
@@ -470,6 +477,7 @@ fn blank(version: &str, stage: Option<String>, ending: Ending, verdict: Verdict,
         gaps: Vec::new(),
         gap_mode: None,
         ending,
+        profile: Default::default(),
     }
 }
 

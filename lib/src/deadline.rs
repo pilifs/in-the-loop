@@ -134,6 +134,9 @@ pub struct Run {
     pub ended: String,
     /// How the checker said the run ended ([`crate::jbmc::Ending`]): which kind of no verdict it was, above all.
     pub ending: crate::jbmc::Ending,
+    /// Where its time went, phase by phase, and its formula's size: `phases` and `formula` ([`crate::phases`]).
+    #[serde(flatten)]
+    pub profile: crate::phases::Profile,
 }
 
 impl Run {
@@ -152,6 +155,7 @@ impl Run {
             seconds: round(result.seconds),
             ended: ended.into(),
             ending: result.ending,
+            profile: result.profile.clone(),
         }
     }
 }

@@ -229,6 +229,10 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
 
 /// Runs the counterexample through `class_internal.method` in the interpreter, with the effect monitor off.
 pub fn replay(cp: &ClassPath, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
+    crate::phases::timed(crate::phases::Step::Replay, || replay_untimed(cp, class_internal, method, descriptor, signature, arguments))
+}
+
+fn replay_untimed(cp: &ClassPath, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
     let names: Vec<String> = (0..signature.params.len()).map(|i| format!("p{i}")).collect();
     replay_in(cp, &Layout::plain(&names, &signature.params), None, class_internal, method, descriptor, signature, arguments)
 }
@@ -239,6 +243,11 @@ pub fn replay(cp: &ClassPath, class_internal: &str, method: &str, descriptor: &s
 /// left are keyed by flat parameter slot.
 #[allow(clippy::too_many_arguments)]
 pub fn replay_in(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
+    crate::phases::timed(crate::phases::Step::Replay, || replay_in_untimed(cp, layout, prefix, class_internal, method, descriptor, signature, arguments))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, class_internal: &str, method: &str, descriptor: &str, signature: &MethodDescriptor, arguments: &[Argument]) -> Replayed {
     let mut m = Machine::new(cp);
     m.monitor = false;
     let _ = m.begin_case();
@@ -328,6 +337,10 @@ pub const SHRINK_BUDGET: u32 = 4000;
 /// assumption is part of the harness, so an input outside it passes). An input the interpreter cannot run is not
 /// accepted.
 pub fn shrink_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
+    crate::phases::timed(crate::phases::Step::Replay, || shrink_in_harness_untimed(cp, harness_class, types, found))
+}
+
+fn shrink_in_harness_untimed(cp: &ClassPath, harness_class: &str, types: &[Type], found: Vec<Argument>) -> Shrunk {
     let mut m = Machine::new(cp);
     m.monitor = false;
     let mut fails = |arguments: &[Argument]| fails_in(&mut m, harness_class, types, arguments);

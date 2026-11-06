@@ -144,6 +144,57 @@ class TablesTest(unittest.TestCase):
         self.assertIn("Every expected answer of groups 2 and 3 is borne out on the JVM.", page)
 
 
+class PhasesTest(unittest.TestCase):
+    """Step 5b: a run's seconds by phase, from the checker runs' phases and the driver's steps."""
+
+    data = {"search": {"runs": [
+        {"checker": "jbmc", "seconds": 0.1, "phases": {"loading": 0.01, "lowering": 0.01, "symbolic": 0.02, "encoding": 0.01, "solving": 0.03, "trace": 0.0, "other": 0.02},
+         "formula": {"steps": 116, "conditions": 1, "variables": 1804, "clauses": 3952}},
+        {"checker": "jbmc", "seconds": 0.2, "phases": {"loading": 0.01, "lowering": 0.0, "symbolic": 0.04, "encoding": 0.05, "solving": 0.08, "trace": 0.01, "other": 0.01},
+         "formula": {"steps": 114, "variables": 1674, "clauses": 9000}},
+        {"checker": "jbmc", "seconds": 0.5, "phases": None, "formula": {"variables": None, "clauses": None}}],
+        "phases": {"seconds": 0.9, "setup": 0.02, "harness": 0.0, "gaps": 0.05, "contracts": 0.0, "runs": 0.8, "replay": 0.01, "jvm": 0.0, "other": 0.02}}}
+
+    def test_a_run_is_its_checker_runs_phases_and_the_drivers_steps(self):
+        p = run.phases_of(self.data, 1.0)
+        self.assertEqual(set(p), set(run.PHASES))
+        self.assertEqual((p["solving"], p["encoding"], p["checker-other"]), (0.11, 0.06, 0.03))
+        self.assertEqual((p["gaps"], p["setup"], p["replay"]), (0.05, 0.02, 0.01))
+        self.assertAlmostEqual(sum(p.values()), 1.0, places=2, msg="the rest of the process, an untimed run's seconds among it, is the driver's")
+        self.assertAlmostEqual(p["driver"], 0.62, places=3)
+        self.assertEqual(run.formula_of(self.data), {"steps": 116, "conditions": 1, "variables": 1804, "clauses": 9000})
+        nothing = run.phases_of(None, 2.0)
+        self.assertEqual((nothing["driver"], nothing["solving"]), (2.0, 0.0))
+
+    def test_the_table_names_the_dominant_phase_per_workload_and_engine(self):
+        results = results_with_phases()
+        rows = {(r["workload"], r["engine"]): r for r in run.by_phase(results)}
+        self.assertEqual(rows[("div-rem", "jbmc")]["dominant"], "solving")
+        self.assertEqual(rows[("div-rem", "jbmc")]["undecided"], 1, "a run out of time counts, its time spent")
+        self.assertEqual(rows[("div-rem", "native")]["dominant"], "encoding")
+        self.assertNotIn(("semantics", "native"), rows, "group 1's native runs had no phases")
+        page = run.render(results)
+        self.assertIn("## Where the time goes, by workload, under strict", page)
+        self.assertIn("| div-rem | jbmc | 1 (1 undecided) | 120.0 |", page)
+        self.assertIn("**solving** 90%", page)
+        self.assertIn("### The recorded examples", page)
+        self.assertIn("| example/142 | native | 1 | 7.0 |", page)
+
+
+def results_with_phases():
+    r = results()
+    phases = lambda **kw: {**dict.fromkeys(run.PHASES, 0.0), **kw}
+    by = {(x["case"], x["engine"], x["mode"]): x for x in r["runs"]}
+    by[("real/b", "jbmc", "strict")]["phases"] = phases(solving=108.0, encoding=6.0, symbolic=6.0)
+    by[("real/b", "native", "strict")]["phases"] = phases(encoding=0.15, solving=0.05)
+    by[("conformance/a/1", "jbmc", "strict")]["phases"] = phases(**{"checker-other": 0.3, "gaps": 0.2})
+    r["cases"].append({"id": "example/142", "group": 4, "workload": "utf8", "kind": "regression", "expected": "verified"})
+    r["settings"]["groups"].append(4)
+    r["runs"].append({"case": "example/142", "engine": "native", "mode": "strict", "verdict": "verified", "class": "correct", "seconds": 7.0,
+                      "peakMB": 74.0, "assumed": [], "phases": phases(solving=6.4, encoding=0.3), "formula": {"clauses": 161165}})
+    return r
+
+
 class CorpusTest(unittest.TestCase):
     def test_every_case_is_complete_and_names_classes_that_exist(self):
         corpus = json.loads((HERE / "corpus.json").read_text())
@@ -167,6 +218,18 @@ class CorpusTest(unittest.TestCase):
         group = json.loads((HERE / "conformance.json").read_text())["cases"]
         self.assertGreater(len(group), 50)
         self.assertTrue(all(c["group"] == 1 and c["expected"] in ("verified", "violation") for c in group))
+
+    def test_the_recorded_examples_are_read_from_their_example_files(self):
+        cases = {c["id"]: c for c in run.recorded_cases()}
+        self.assertEqual(set(cases), {"example/141", "example/142"})
+        self.assertEqual(cases["example/141"]["target"], "net.terminalvalue.mica.interp.LookupSwitch#find")
+        self.assertIn("\\forall", cases["example/141"]["unchangedUnless"])
+        self.assertIsNone(cases["example/142"]["unchangedUnless"])
+        for c in cases.values():
+            self.assertEqual((c["group"], c["modes"], c["expected"]), (4, ["strict"], "verified"))
+            self.assertTrue(Path(c["patch"]).exists() and (run.REPO / c["app"] / "src/main/java").is_dir(), c)
+        cmd = run.command(cases["example/141"], "jbmc", "strict", {"example-141-before": Path("/b"), "example-141-after": Path("/a")}, Path("/w"), CommandTest.Options)
+        self.assertEqual(cmd[cmd.index("--unchanged-unless") + 1], cases["example/141"]["unchangedUnless"])
 
     @unittest.skipUnless(shutil.which("java") and shutil.which("javac"), "needs a JDK")
     def test_the_reference_has_exactly_the_corpus_cases(self):

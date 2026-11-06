@@ -67,6 +67,10 @@ pub fn class(name: &str) -> Result<Option<ClassFile>, Error> {
 /// Writes every model's class file under `dir`, as `dir/java/lang/Character.class` and so on: a class path entry
 /// for JBMC, or for any other tool that reads class files.
 pub fn write_to(dir: &Path) -> Result<(), Error> {
+    crate::phases::timed(crate::phases::Step::Setup, || write_to_untimed(dir))
+}
+
+fn write_to_untimed(dir: &Path) -> Result<(), Error> {
     for model in MODELS {
         let target = dir.join(format!("{}.class", model.name));
         if let Some(parent) = target.parent() {

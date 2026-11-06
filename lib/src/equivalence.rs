@@ -264,6 +264,10 @@ pub struct Search {
     /// Every checker run of the check, in order, each with its budget out of the deadline; the confirmation's
     /// run is its own check.
     pub runs: Vec<Run>,
+    /// Where the check's time went outside its runs: the harness, gaps, contracts, replay, the JVM
+    /// ([`crate::phases::Check`]); each run's own phases are under `runs`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phases: Option<crate::phases::Check>,
 }
 
 /// The own checker's budget: under `auto` the check but the part kept for JBMC's fallback, otherwise all of it.
@@ -604,6 +608,19 @@ fn as_parameter(v: Value, t: &Type) -> Value {
 
 /// Runs the regression proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    crate::phases::begin();
+    let outcome = run_check(options);
+    let runs = outcome.as_ref().ok().and_then(|o| o.search.as_ref()).map(|s| s.runs.iter().map(|r| r.seconds).sum()).unwrap_or(0.0);
+    let check = crate::phases::end(runs);
+    let mut outcome = outcome?;
+    if let Some(search) = &mut outcome.search {
+        search.phases = check;
+    }
+    Ok(outcome)
+}
+
+/// [`run`], whose phases it times.
+fn run_check(options: &Options) -> Result<Outcome, Error> {
     let work = match &options.work {
         Some(w) => w.clone(),
         None => crate::tla::tempfile_path("jvmcontract-equivalence"),
@@ -1199,6 +1216,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         confirmation,
         deadline_seconds: deadline.total().as_secs_f64(),
         runs,
+        phases: None,
     });
     let mut replay = None;
     let sharing = match shared_used.len() {
@@ -1475,6 +1493,10 @@ struct Replays {
 
 /// Copies the JDK classes in [`JDK_CLASSES`] out of the JDK image, for JBMC's class path.
 pub fn extract_jdk_classes(dir: &Path, java_home: Option<&Path>) -> Result<(), Error> {
+    crate::phases::timed(crate::phases::Step::Setup, || extract_jdk_classes_untimed(dir, java_home))
+}
+
+fn extract_jdk_classes_untimed(dir: &Path, java_home: Option<&Path>) -> Result<(), Error> {
     let home = match java_home {
         Some(h) => h.to_path_buf(),
         None => crate::jimage::JImage::find_java_home().ok_or_else(|| Error::new("no JDK found (set JAVA_HOME)"))?,

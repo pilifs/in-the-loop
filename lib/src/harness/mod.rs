@@ -596,6 +596,10 @@ fn kind_of(t: &Type) -> Kind {
 /// among the receiver and the arguments (`layout`) is built from its components in both versions before the calls,
 /// and the input is skipped when a constructor throws; a record result is compared component by component.
 pub fn generate(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32, before: Option<&BeforeMethod>) -> Result<Harness, Error> {
+    crate::phases::timed(crate::phases::Step::Harness, || generate_untimed(class_internal, method, layout, ret, unchanged_unless, max_array_length, before))
+}
+
+fn generate_untimed(class_internal: &str, method: &str, layout: &Layout, ret: &Type, unchanged_unless: Option<&str>, max_array_length: u32, before: Option<&BeforeMethod>) -> Result<Harness, Error> {
     let mut harness = generate_in(class_internal, method, layout, ret, unchanged_unless, max_array_length, before, false)?;
     harness.probe = generate_in(class_internal, method, layout, ret, unchanged_unless, max_array_length, before, true)?.bytes;
     Ok(harness)
@@ -1313,6 +1317,11 @@ pub struct PropertyHarness {
 /// `max_array_length` bounds the array parameters, and sizes the copies the harness takes for `\old`.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
+    crate::phases::timed(crate::phases::Step::Harness, || generate_property_untimed(class_internal, method, params, ret, assume, assertion, signals, max_array_length))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generate_property_untimed(class_internal: &str, method: &str, params: &[Param], ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
     let mut harness = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, false)?;
     if assume.is_some() {
         harness.probe = generate_property_in(class_internal, method, params, ret, assume, assertion, signals, max_array_length, true)?.bytes;

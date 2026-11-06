@@ -191,6 +191,19 @@ pub struct Outcome {
 
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    crate::phases::begin();
+    let outcome = run_check(options);
+    let runs = outcome.as_ref().ok().and_then(|o| o.search.as_ref()).map(|s| s.runs.iter().map(|r| r.seconds).sum()).unwrap_or(0.0);
+    let check = crate::phases::end(runs);
+    let mut outcome = outcome?;
+    if let Some(search) = &mut outcome.search {
+        search.phases = check;
+    }
+    Ok(outcome)
+}
+
+/// [`run`], whose phases it times.
+fn run_check(options: &Options) -> Result<Outcome, Error> {
     let work = match &options.work {
         Some(w) => w.clone(),
         None => crate::tla::tempfile_path("jvmcontract-property"),
@@ -491,6 +504,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         confirmation,
         deadline_seconds: deadline.total().as_secs_f64(),
         runs,
+        phases: None,
     });
     let mut replay = None;
     let where_ = options.assume.as_deref().map(|a| format!(" where {a}")).unwrap_or_default();

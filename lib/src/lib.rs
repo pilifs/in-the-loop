@@ -51,6 +51,7 @@ pub mod jdk_facts;
 pub mod jimage;
 pub mod jvm_witness;
 pub mod models;
+pub mod phases;
 pub mod property;
 pub mod purity;
 pub mod relocate;

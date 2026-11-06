@@ -149,6 +149,10 @@ pub enum Part {
 /// Scans what the tool's own checker would run of the harness `class.method`, on the class path `entries` (the
 /// engine's, with the tool's models when `models`): the class path, and every gap it may reach.
 pub fn scan_harness(entries: &[PathBuf], models: bool, class: &str, method: &str) -> Result<(ClassPath, gaps::Scan), Error> {
+    crate::phases::timed(crate::phases::Step::Gaps, || scan_harness_untimed(entries, models, class, method))
+}
+
+fn scan_harness_untimed(entries: &[PathBuf], models: bool, class: &str, method: &str) -> Result<(ClassPath, gaps::Scan), Error> {
     let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path))?.with_models(models);
     let harness = cp.application(class)?.ok_or_else(|| Error::new(format!("the harness class {class} is not on the class path")))?;
     let check = harness.methods.iter().find(|m| m.name == method).ok_or_else(|| Error::new(format!("the harness has no method {method}")))?;
@@ -160,6 +164,10 @@ pub fn scan_harness(entries: &[PathBuf], models: bool, class: &str, method: &str
 /// the proof can go on. The template, of the gaps still open, is written to `work/contracts.template`. `checker` is
 /// `jbmc` when the gaps are JBMC's ([`crate::jbmc_contracts`]), none for the tool's own checker's.
 pub fn preflight(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>, checker: Option<&str>) -> Result<Option<Advice>, Error> {
+    crate::phases::timed(crate::phases::Step::Gaps, || preflight_untimed(cp, scan, claim, work, contracts, checker))
+}
+
+fn preflight_untimed(cp: &ClassPath, scan: &gaps::Scan, claim: Claim, work: &Path, contracts: Option<&crate::gap_contracts::Loaded>, checker: Option<&str>) -> Result<Option<Advice>, Error> {
     let jdk = scan.jdk.clone();
     let is_closed = |g: &Gap| contracts.is_some_and(|c| c.closed.contains_key(g));
     let closed: Vec<String> = scan.gaps.keys().filter(|g| is_closed(g)).map(|g| g.id(jdk.as_deref())).collect();

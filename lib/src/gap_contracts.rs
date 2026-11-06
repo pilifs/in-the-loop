@@ -589,6 +589,10 @@ impl Default for ContractOptions {
 /// agent. Returns the contracts as read, and a note line for each refused, and for each of the library's that this
 /// run checks again.
 pub fn setting(mode: gaps::GapMode, options: &ContractOptions, scan: Option<&gaps::Scan>, entries: &[PathBuf], models: bool, work: &Path) -> Result<(gaps::GapSetting, Option<Loaded>, String), Error> {
+    crate::phases::timed(crate::phases::Step::Contracts, || setting_untimed(mode, options, scan, entries, models, work))
+}
+
+fn setting_untimed(mode: gaps::GapMode, options: &ContractOptions, scan: Option<&gaps::Scan>, entries: &[PathBuf], models: bool, work: &Path) -> Result<(gaps::GapSetting, Option<Loaded>, String), Error> {
     let mut setting = gaps::GapSetting::from(mode);
     if options.file.is_some() && mode != gaps::GapMode::Advised {
         return Err(Error::new(CONTRACTS_NEED_ADVISED));

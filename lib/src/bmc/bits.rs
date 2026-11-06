@@ -165,7 +165,33 @@ pub struct Blaster {
     /// How many gates were evaluated in a path's model, and the time it took.
     pub evaluated: u64,
     pub evaluating: std::time::Duration,
+    /// The time spent building circuits and handing their clauses to the solver: the encoding, which happens as
+    /// the paths are explored, estimated from a sample of the operations ([`Blaster::encoding`]).
+    pub encoding: std::time::Duration,
+    /// Whether an operation is being built, so that one built inside another counts as part of it.
+    timing: bool,
+    /// The state of the generator that picks which operations are timed.
+    sampling: u64,
+    /// What reading the clock around nothing takes, which each timed operation's time includes once.
+    clock: std::time::Duration,
 }
+
+/// What timing nothing takes: the median of a few empty timed regions.
+fn clock_cost() -> std::time::Duration {
+    let mut spans: Vec<std::time::Duration> = (0..15).map(|_| {
+        let started = std::time::Instant::now();
+        started.elapsed()
+    }).collect();
+    spans.sort();
+    spans[spans.len() / 2]
+}
+
+/// One in this many word-level operations is timed, and its time counted this many times over: a clock read
+/// costs about 0.3 µs on the WSL2 machine the benchmark runs on (measured 2026-11-06), as much as a small
+/// operation takes, so timing every one doubled the encoding it measured. The operations timed are picked at
+/// random, so the estimate is unbiased whatever the order operations come in, and the clock's own cost is taken
+/// off each ([`clock_cost`]).
+const ENCODING_SAMPLE: u32 = 64;
 
 impl fmt::Debug for Blaster {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -185,7 +211,7 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO };
+        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost() };
         b.clause(&[TRUE]);
         b
     }
@@ -193,6 +219,30 @@ impl Blaster {
     /// Stops the solver after this many seconds on any one call.
     pub fn set_timeout(&mut self, seconds: f32) {
         self.solver.set_callbacks(Some(cadical::Timeout::new(seconds)));
+    }
+
+    /// Runs `build`, an operation that builds circuits: one in [`ENCODING_SAMPLE`] of those not built inside
+    /// another is timed, and counted that many times over as encoding.
+    #[inline]
+    fn encoding<T>(&mut self, build: impl FnOnce(&mut Self) -> T) -> T {
+        if self.timing {
+            return build(self);
+        }
+        self.timing = true;
+        // xorshift64: which operations are timed does not follow their order.
+        self.sampling ^= self.sampling << 13;
+        self.sampling ^= self.sampling >> 7;
+        self.sampling ^= self.sampling << 17;
+        let out = if self.sampling % u64::from(ENCODING_SAMPLE) == 0 {
+            let started = std::time::Instant::now();
+            let out = build(self);
+            self.encoding += started.elapsed().saturating_sub(self.clock) * ENCODING_SAMPLE;
+            out
+        } else {
+            build(self)
+        };
+        self.timing = false;
+        out
     }
 
     fn clause(&mut self, lits: &[Lit]) {
@@ -254,6 +304,10 @@ impl Blaster {
     }
 
     pub fn and(&mut self, a: Lit, b: Lit) -> Lit {
+        self.encoding(|s| s.and_gate(a, b))
+    }
+
+    fn and_gate(&mut self, a: Lit, b: Lit) -> Lit {
         if a == FALSE || b == FALSE || a == -b {
             return FALSE;
         }
@@ -280,6 +334,10 @@ impl Blaster {
     }
 
     pub fn xor(&mut self, a: Lit, b: Lit) -> Lit {
+        self.encoding(|s| s.xor_gate(a, b))
+    }
+
+    fn xor_gate(&mut self, a: Lit, b: Lit) -> Lit {
         if a == FALSE {
             return b;
         }
@@ -320,6 +378,10 @@ impl Blaster {
 
     /// `if c then a else b`.
     pub fn ite(&mut self, c: Lit, a: Lit, b: Lit) -> Lit {
+        self.encoding(|s| s.ite_gate(c, a, b))
+    }
+
+    fn ite_gate(&mut self, c: Lit, a: Lit, b: Lit) -> Lit {
         if c == TRUE || a == b {
             return a;
         }
@@ -347,25 +409,25 @@ impl Blaster {
 
     /// The conjunction of several literals.
     pub fn all(&mut self, lits: &[Lit]) -> Lit {
-        lits.iter().fold(TRUE, |acc, &l| self.and(acc, l))
+        self.encoding(|s| lits.iter().fold(TRUE, |acc, &l| s.and(acc, l)))
     }
 
     // Bit-vector operations. Every operand has the width of its result unless said otherwise.
 
     pub fn ite_bits(&mut self, c: Lit, a: &Bits, b: &Bits) -> Bits {
-        a.iter().zip(b).map(|(&x, &y)| self.ite(c, x, y)).collect()
+        self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.ite(c, x, y)).collect())
     }
 
     pub fn and_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
-        a.iter().zip(b).map(|(&x, &y)| self.and(x, y)).collect()
+        self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.and(x, y)).collect())
     }
 
     pub fn or_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
-        a.iter().zip(b).map(|(&x, &y)| self.or(x, y)).collect()
+        self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.or(x, y)).collect())
     }
 
     pub fn xor_bits(&mut self, a: &Bits, b: &Bits) -> Bits {
-        a.iter().zip(b).map(|(&x, &y)| self.xor(x, y)).collect()
+        self.encoding(|s| a.iter().zip(b).map(|(&x, &y)| s.xor(x, y)).collect())
     }
 
     pub fn not_bits(&self, a: &Bits) -> Bits {
@@ -387,12 +449,12 @@ impl Blaster {
     }
 
     pub fn add(&mut self, a: &Bits, b: &Bits) -> Bits {
-        self.add_carry(a, b, FALSE).0
+        self.encoding(|s| s.add_carry(a, b, FALSE).0)
     }
 
     pub fn sub(&mut self, a: &Bits, b: &Bits) -> Bits {
         let nb = self.not_bits(b);
-        self.add_carry(a, &nb, TRUE).0
+        self.encoding(|s| s.add_carry(a, &nb, TRUE).0)
     }
 
     pub fn neg(&mut self, a: &Bits) -> Bits {
@@ -402,6 +464,10 @@ impl Blaster {
 
     /// Two's-complement multiplication, modulo the width (as `imul` and `lmul` are).
     pub fn mul(&mut self, a: &Bits, b: &Bits) -> Bits {
+        self.encoding(|s| s.mul_built(a, b))
+    }
+
+    fn mul_built(&mut self, a: &Bits, b: &Bits) -> Bits {
         let width = a.len();
         let mut acc = self.constant(0, width);
         for i in 0..width {
@@ -420,6 +486,10 @@ impl Blaster {
 
     /// Unsigned `a < b`: the borrow of `a - b`.
     pub fn ult(&mut self, a: &Bits, b: &Bits) -> Lit {
+        self.encoding(|s| s.ult_built(a, b))
+    }
+
+    fn ult_built(&mut self, a: &Bits, b: &Bits) -> Lit {
         let nb = self.not_bits(b);
         let (_, carry) = self.add_carry(a, &nb, TRUE);
         -carry
@@ -440,6 +510,10 @@ impl Blaster {
     }
 
     pub fn eq(&mut self, a: &Bits, b: &Bits) -> Lit {
+        self.encoding(|s| s.eq_built(a, b))
+    }
+
+    fn eq_built(&mut self, a: &Bits, b: &Bits) -> Lit {
         let mut acc = TRUE;
         for (&x, &y) in a.iter().zip(b) {
             let d = self.xor(x, y);
@@ -469,6 +543,10 @@ impl Blaster {
     /// [`Blaster::division_facts`], the circuit built by [`Blaster::refine_division`] only when a model needs it.
     /// Constant operands fold as they do in [`Blaster::sdivrem`].
     pub fn sdivrem_lazy(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
+        self.encoding(|s| s.sdivrem_lazy_built(a, b))
+    }
+
+    fn sdivrem_lazy_built(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
         if a.iter().chain(b).all(|&l| is_const(l)) {
             return self.sdivrem(a, b);
         }
@@ -493,6 +571,10 @@ impl Blaster {
     /// included, so `(a / b) * b` is that subtraction, with no product at all, and a method that aligns to a
     /// multiple either way computes the same bits.
     pub fn mul_lazy(&mut self, a: &Bits, b: &Bits) -> Bits {
+        self.encoding(|s| s.mul_lazy_built(a, b))
+    }
+
+    fn mul_lazy_built(&mut self, a: &Bits, b: &Bits) -> Bits {
         if a.iter().all(|&l| is_const(l)) || b.iter().all(|&l| is_const(l)) {
             return self.mul(a, b);
         }
@@ -639,6 +721,10 @@ impl Blaster {
 
     /// Builds the circuit of operation `i` and ties its bits to the ones the solver chooses.
     pub fn refine_operation(&mut self, i: usize) {
+        self.encoding(|s| s.refine_operation_built(i))
+    }
+
+    fn refine_operation_built(&mut self, i: usize) {
         let (a, b) = (self.lazy[i].a.clone(), self.lazy[i].b.clone());
         let (q, r) = match self.lazy[i].op {
             Op::DivRem => self.sdivrem(&a, &b),
@@ -670,6 +756,10 @@ impl Blaster {
     /// Unsigned division and remainder by restoring division; the quotient of a division by zero is all ones and
     /// the remainder the dividend, as hardware does, but the JVM throws before it gets here.
     pub fn udivrem(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
+        self.encoding(|s| s.udivrem_built(a, b))
+    }
+
+    fn udivrem_built(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
         let width = a.len();
         let mut rem = self.constant(0, width);
         let mut quot = vec![FALSE; width];
@@ -688,6 +778,10 @@ impl Blaster {
     /// Signed division and remainder as `idiv`/`irem` define them: the quotient truncates toward zero, the
     /// remainder takes the dividend's sign, and `MIN_VALUE / -1` wraps to `MIN_VALUE`.
     pub fn sdivrem(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
+        self.encoding(|s| s.sdivrem_built(a, b))
+    }
+
+    fn sdivrem_built(&mut self, a: &Bits, b: &Bits) -> (Bits, Bits) {
         let sa = self.negative(a);
         let sb = self.negative(b);
         let na = self.neg(a);
@@ -706,6 +800,10 @@ impl Blaster {
     /// A shift by a symbolic amount, masked to the width as the JVM masks it (`& 31`, `& 63`). `arith` keeps the
     /// sign for right shifts.
     fn shift(&mut self, a: &Bits, amount: &Bits, left: bool, arith: bool) -> Bits {
+        self.encoding(|s| s.shift_built(a, amount, left, arith))
+    }
+
+    fn shift_built(&mut self, a: &Bits, amount: &Bits, left: bool, arith: bool) -> Bits {
         let width = a.len();
         let steps = width.trailing_zeros() as usize; // 5 for 32, 6 for 64
         let fill = if arith { self.negative(a) } else { FALSE };
@@ -1126,6 +1224,29 @@ mod tests {
         assert_eq!(real_division(32, i64::from(i32::MIN), -1), (i64::from(i32::MIN), 0));
         assert_eq!(real_division(64, i64::MIN, -1), (i64::MIN, 0));
         assert_eq!(real_division(64, 5, 0), (-1, 5));
+    }
+
+    #[test]
+    fn the_encoding_is_estimated_from_a_sample_of_the_operations() {
+        let mut b = Blaster::new();
+        let (x, y) = (b.fresh(32), b.fresh(32));
+        let started = std::time::Instant::now();
+        let mut acc = x.clone();
+        for _ in 0..20_000 {
+            let sum = b.add(&acc, &y);
+            acc = b.xor_bits(&sum, &x);
+        }
+        let wall = started.elapsed();
+        assert!(b.encoding > std::time::Duration::ZERO, "some operations were timed");
+        // Every operation here builds circuits, so the estimate is the loop's time, give or take the sample's
+        // error and the loop's own work.
+        assert!(b.encoding < wall * 2 && b.encoding > wall / 4, "estimated {:?} of {:?}", b.encoding, wall);
+        // An operation inside another (the adders of a multiplication) counts as part of it, once.
+        let before = b.encoding;
+        let product = b.mul(&x, &y);
+        assert_eq!(product.len(), 32);
+        assert!(!b.timing, "the clock is not left running");
+        assert!(b.encoding >= before);
     }
 
     #[test]

@@ -1422,6 +1422,72 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     - A table per workload says which phase dominates on each engine, and goes into `jbmc-patch-queue.md`.
     - The text parser goes once `-073804` agrees.
 
+- **5b, per-phase measurements (2026-11-06).**
+  - **The phases** ([`lib/src/phases.rs`](../../lib/src/phases.rs)). Every checker run has a `Profile`, the same for
+    both engines. Its seconds are split into `loading`, `lowering`, `symbolic`, `encoding`, `solving`, `trace` and
+    `other`. Its `formula` gives JBMC's SSA steps and verification conditions, and the variables and clauses. It is
+    recorded on each of `search.runs` as `phases` and `formula`.
+    - **The own checker** extends `bmc::Stats` with `loading_seconds` (`ClassPath` times its loads),
+      `decoding_seconds` (`Engine::code`), `encoding_seconds` (the `Blaster`'s word-level operations) and
+      `witness_seconds` (`staged_input`, less its solving and encoding). Symbolic execution is what the others leave
+      of the run.
+    - **JBMC** runs under `--json-ui --timestamp monotonic`. Its `Runtime Symex`, `Convert SSA`, `Post-process` and
+      `Solver` lines give the phases it times. The times of its messages give loading (to `Generating GOTO
+      Program`), lowering (to `Starting Bounded Model Checking`) and the trace. Checked on JBMC 6.11.0 first: the
+      flag adds a `timestamp` to every message. **A run cut off by its deadline or its memory gives the rest of its
+      time to the phase it was in**, so a JBMC timeout says where its time went.
+    - **The drivers time their own steps** (`search.phases`): setup (the JDK's classes and the models), harness,
+      gaps (the advised scan and JBMC's preflights), contracts, replay and shrinking, the JVM witness run, and the
+      rest. The timers sit in the called functions, so neither driver's control flow changed.
+  - **A measurement found on the way: a clock read costs about 0.3 µs on this WSL2 ARM machine** (574 ns per timed
+    region, measured). Timing each word-level operation cost as much as the encoding it measured: example 142 went
+    from 7.14 to 7.38 s, against 0.24 s of encoding. The own checker now times one operation in 64, picked by a
+    xorshift so the sample does not follow the order operations come in. It scales the sample up, after taking off
+    the clock's own cost, which is measured when the `Blaster` is made. On 142, encoding reads 0.17–0.21 s and
+    symbolic execution 0.06–0.08 s; solving is 95% either way. The other timers are cheap (1,885 solver calls on 142).
+  - **The runner** ([`lib/benchmark/run.py`](../../lib/benchmark/run.py)).
+    - Each run record gets `phases`: the checker runs' phases summed, JBMC's start and output as `checker-other`,
+      the driver's steps, and `driver` for the rest of the process. It also gets the largest `formula`.
+    - `RESULTS.md` gains **"Where the time goes, by workload, under strict"**: a row per workload and engine over
+      every run, decided or not, with each phase's share, the dominant phase and the largest formula.
+    - **Group 4, the recorded examples 5b names**: 141 (binary search) and 142 (UTF-8). Their claims are read from
+      their `example.json`, their patches are applied to a copy of Mica, and they run under strict alone. Their
+      expected answer is the recorded one, so neither the JVM's search nor the witness check covers them, and they
+      have a table of their own.
+    - `test_run.py` has 17 tests.
+  - **Inline, the own checker over groups 2–4** (a 20 s deadline): correct on every case but
+    `real/bucket/fix-confined`, out of time as in 5a. Solving dominates every workload whose runs take more than a
+    fraction of a second: 96% for div-rem, 86% for binary search, 89% for 141 (2.0 s) and 92% for 142 (7.3 s). On
+    the short cases, the driver's fixed cost of about 50–70 ms dominates.
+  - **A JBMC smoke run of the four midpoint cases.** On the bounded `binarySearch` (`search-within-bound`), JBMC takes
+    45 s, 94% of it solving 3.28 million clauses; the own checker takes 3.1 s, 88% solving 240,000 clauses. On the
+    small cases, JBMC's start and output are about a fifth of a check, and its preflight another fifth. That run
+    reached 1.4 GB inline, past CLAUDE.md's 1 GB for inline work; nothing else on JBMC was run inline.
+  - **The table goes into [`jbmc-patch-queue.md`](jbmc-patch-queue.md)**, which gains a section "Evidence: where each
+    engine's time goes". It maps each candidate patch to the phase it would shrink, and the workloads where that
+    phase must dominate for the patch to pay. It also has the first inline figures. Those already point at the
+    formula's size (the array-representation candidate) rather than arithmetic, for binary search.
+  - **The full run is job `20261106-102624-benchmark-corpus-with-per-phase-measurem`**: the 5a run plus group 4,
+    with the phases. It **supersedes `-094317`**, which runs the same cases at the 5a revision without them.
+  - The schema has `phases` and `formula` on each run, and the native stats' new fields: `build.py` keeps them, and
+    `DeadlineTest` checks it. 159 Python tests in all. All 140 recorded results still validate, and no page changed.
+    `lib/README.md` describes the JSON. All Rust tests pass: 145 unit, 6 conformance, 60 integration, 1 skill.
+  - **This departs from the brief in three ways.**
+    - The own checker has no separate encoding pass: it builds the formula as it explores the paths and hands each
+      clause to one incremental solver. So its `encoding` is the time inside the circuit builders, sampled, and its
+      `symbolic` what the other phases leave.
+    - Peak memory is per process (`wait4`), not per phase. Neither checker reports memory by phase.
+    - **The ranking of the patch candidates waits for the job.** The table it writes is the evidence. This step
+      leaves the mapping it will be read with, and the first figures.
+  - Not done:
+    - The console report doesn't print the phases; `--json` and the results do.
+    - The driver's fixed cost of about 50 ms (reading the target and its class path, the statement, the report) is
+      measured but not split further.
+    - The `--confirm` run's phases are not in `search.runs`, since it is a second check.
+  - Next: once job `-102624` is back, rank the patch candidates in `jbmc-patch-queue.md` from its table. Remove the
+    text parser once `-073804` agrees. Those, with the pending jobs, are what is left of the brief; every phase's
+    plan step is done.
+
 ## Loop settings
 
 The session is fixed: further work on this brief resumes it.

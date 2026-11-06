@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T09:44:08.896Z",
-  "duration_seconds": 36580,
+  "ended": "2026-11-06T10:28:11.295Z",
+  "duration_seconds": 39222,
   "stats": {
-    "turns": 117,
-    "api_calls": 1664,
-    "tool_calls": 1681,
-    "tool_errors": 15,
-    "compactions": 21,
+    "turns": 122,
+    "api_calls": 1775,
+    "tool_calls": 1794,
+    "tool_errors": 16,
+    "compactions": 22,
     "peak_context_tokens": 375335,
     "usage": {
-      "input_tokens": 3374,
-      "output_tokens": 1671499,
-      "cache_read_input_tokens": 310878088,
-      "cache_creation_input_tokens": 5559709
+      "input_tokens": 3596,
+      "output_tokens": 1771034,
+      "cache_read_input_tokens": 335925830,
+      "cache_creation_input_tokens": 5885713
     }
   },
   "tools": {
-    "Bash": 1505,
-    "Read": 115,
-    "Write": 27,
-    "Edit": 22,
+    "Bash": 1609,
+    "Read": 121,
+    "Write": 28,
+    "Edit": 24,
     "ToolSearch": 7,
     "WebFetch": 4,
     "TaskStop": 1
@@ -57,6 +57,7 @@
     "lib/src/jbmc_contracts.rs",
     "lib/src/jbmc_gaps.rs",
     "lib/src/jvm_witness.rs",
+    "lib/src/phases.rs",
     "lib/src/property.rs",
     "lib/src/statement.rs",
     "lib/tests/conformance.rs",
@@ -365,24 +366,38 @@
     {
       "index": 21,
       "started": "2026-11-06T09:19:06.675Z",
-      "ended": "2026-11-06T09:44:08.896Z",
-      "turns": 4,
-      "api_calls": 53,
+      "ended": "2026-11-06T09:44:58.347Z",
+      "turns": 5,
+      "api_calls": 58,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 104343,
-        "cache_read_input_tokens": 9909694,
-        "cache_creation_input_tokens": 250973
+        "input_tokens": 116,
+        "output_tokens": 107002,
+        "cache_read_input_tokens": 11247279,
+        "cache_creation_input_tokens": 268477
       },
-      "peak_context_tokens": 264053
+      "peak_context_tokens": 281557
+    },
+    {
+      "index": 22,
+      "started": "2026-11-06T09:45:45.283Z",
+      "ended": "2026-11-06T10:28:11.295Z",
+      "turns": 4,
+      "api_calls": 106,
+      "usage": {
+        "input_tokens": 212,
+        "output_tokens": 96876,
+        "cache_read_input_tokens": 23710157,
+        "cache_creation_input_tokens": 308500
+      },
+      "peak_context_tokens": 321580
     }
   ],
   "log": {
-    "sha256": "78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02",
-    "bytes": 51382760,
-    "lines": 17348,
-    "gzip_bytes": 9675512,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02.jsonl.gz"
+    "sha256": "28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c",
+    "bytes": 54468550,
+    "lines": 18443,
+    "gzip_bytes": 10249986,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -609,6 +624,14 @@
       "summary": "The benchmark corpus: the conformance corpus, four documented bugs with their broken and fixed versions, and twelve held-out regressions, run on both engines under strict, assume and advised, with every expected answer and every witness checked on the JVM and correctness, coverage, time and memory kept apart (verification pending)",
       "body": "Step 5a of llm-dlc/loops/sound-verdicts.md. lib/benchmark/ holds 118 cases in the brief's three groups. Group 1 is the conformance corpus's 93 claims, written to conformance.json by a new test in lib/tests/conformance.rs that fails when the file is not the corpus. Group 2 is four documented bugs, each with its broken and fixed version as a source tree: JDK-5045582's binarySearch midpoint, FindBugs' RV_ABSOLUTE_VALUE_OF_HASHCODE, Java Puzzlers' Oddity, and CERT NUM00-J's overflowing range check. Each bug has three cases, the ecosystem review's sequence: the broken property refuted, the fixed one proved, and a regression proof that the fix changes only what it meant to. A fourth case for JDK-5045582 is the whole search, which agrees on every array of up to 8 elements: a real bug outside the proof's domain. Group 3 is twelve regressions written after the engines' optimizations, over the workloads step 5b tabulates (scalar arithmetic, div/rem, binary search, UTF-8 length, array mutation, records), three of them violations.\n\nThe expected answers come from the JVM, not the tool. Reference.java states each claim of groups 2 and 3 in Java, apart from the tool's harness generator and expression language, and runs each version in its own class loader. A violation case's witness must refute the claim there. A verified case is searched on boundary values and 200,000 seeded inputs, which is evidence, not proof. lib/benchmark/run.py runs each case on --engine native and --engine jbmc under --gaps strict, assume and advised (the contract library, --max-trust 0) with matched settings: one harness, unwind 16, arrays of up to 8, a 120 s deadline. It classifies each run as correct, correct assuming a named gap, unsupported with its reason, false success, or false alarm. It runs every reported witness on the JVM, and records wall and CPU seconds, peak memory from wait4 (which counts JBMC: a 300 MB grandchild reads as 308 MB) and the solver's figures. It writes results.json and RESULTS.md.\n\nVerified: the 14 tests of lib/benchmark/test_run.py pass (classification, matched commands, witness arguments, measurement, the tables, and Reference.java listing exactly the corpus's ids). Unit (140), conformance (6) and skill tests pass; the integration suite was not run, since the only change to lib/src is help text. Inline, the own checker alone over groups 2 and 3 at a 20 s deadline: the JVM bears out all 25 answers, and 24 of 25 cases are correct in each mode, with none wrong, a median of 0.1 s and 73 MB at most. real/bucket/fix-confined (Math.abs(hash) % b against (hash & 0x7fffffff) % b for non-negative hashes) runs out of time, as it did past 100 s under the default deadline: a held-out finding about the lazy division. A five-run smoke test of the JBMC side found nothing unexpected.\n\nVerification pending: job 20261106-094317-benchmark-corpus-step-5a-both-engines-un (verification/jobs/), the full run of about 700 runs, which writes lib/benchmark/RESULTS.md and results.json. Also fixed: lib/README.md still said --gaps advised needs --engine native or auto, which step 4c's second part made untrue, and the --engine help said the own checker has no arrays. The brief is not wrong, but this step departs from it three ways, recorded under Progress: there is no CVE kernel; group 2's properties are stated from their published sources and held to the JVM, not reviewed by a person; and group 3 is held out from the optimizations' development but not from their author, this session.",
       "log_sha256": "78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02"
+    },
+    {
+      "change_id": "xrrytonoyyypznlmxnwvmkyywzmplorw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Per-phase measurements for both engines: every checker run split into loading, lowering, symbolic execution, encoding, solving and trace, with its formula's size, JBMC's read from its own timings and message times, and a table per workload of which phase dominates (verification pending)",
+      "body": "Step 5b of llm-dlc/loops/sound-verdicts.md. lib/src/phases.rs gives each checker run a Profile, the same phases for the tool's own checker and JBMC, recorded on search.runs as phases and formula. The own checker extends bmc::Stats with loading, decoding, encoding and witness seconds; symbolic execution is what the others leave of the run. JBMC now runs under --json-ui --timestamp monotonic. Its Runtime lines give symbolic execution, encoding (Convert SSA, Post-process) and solving, and the times of its messages give loading, lowering and the trace. A run cut off by its deadline or memory gives the rest of its time to the phase it was in. Each run's formula records JBMC's SSA steps and verification conditions, and the variables and clauses. The drivers time their own steps in search.phases: setup, harness, gap scans and preflights, contracts, replay, and the JVM witness run.\n\nFound on the way: a clock read costs about 0.3 us on this WSL2 ARM machine (574 ns per timed region). Timing every word-level circuit operation cost as much as the encoding it measured (example 142: 7.14 s to 7.38 s, against 0.24 s of encoding). The own checker now times a random 1 in 64 operations, takes off the clock's own measured cost, and scales up.\n\nlib/benchmark/run.py carries each run's phases (the checker's own, JBMC's start and output, the driver's steps, the rest of the process) and its largest formula into results.json. RESULTS.md gains 'Where the time goes, by workload, under strict', a row per workload and engine with each phase's share and the dominant one. Group 4 adds the recorded examples the brief names, 141 (binary search) and 142 (UTF-8), patched onto Mica and run under strict, with a table of their own. jbmc-patch-queue.md gains an evidence section that maps each candidate patch to the phase it would shrink, with the first inline figures. On the bounded binarySearch JBMC took 45 s, 94% of it solving 3.28 million clauses, against the own checker's 3.1 s and 240,000 clauses. That points at the formula's size, not arithmetic, for that workload. The ranking itself waits for the job.\n\nVerified: all Rust tests (145 unit, among them the phase readers on CBMC-shaped fixtures, a cut-off run in each phase and the sampled encoding estimate; 6 conformance; 60 integration on the real JBMC 6.11.0; 1 skill), 17 runner tests, and 159 build.py tests, one of them new for the schema's phases and formula. Every recorded result still validates against the schema. Inline, the own checker over groups 2-4 at a 20 s deadline was correct on every case but real/bucket/fix-confined, out of time as in 5a, with solving dominant wherever a run takes more than a fraction of a second (141 at 89%, 142 at 92%). One inline JBMC run, the bounded binarySearch, reached 1.4 GB, past CLAUDE.md's 1 GB guideline for inline work. The full run is job 20261106-102624-benchmark-corpus-with-per-phase-measurem. It supersedes 20261106-094317, which runs the same cases at the 5a revision without phases.\n\nThe brief departs in three ways, recorded under Progress. The own checker has no separate encoding pass: it builds the formula as it explores, so encoding is the time inside its circuit builders. Peak memory is per process, not per phase. And ranking the patch candidates waits for the job's table.",
+      "log_sha256": "28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c"
     }
   ],
   "logs": {
@@ -652,6 +675,12 @@
       "bytes": 27677771,
       "lines": 9340,
       "gzip_bytes": 5114540,
+      "url": null
+    },
+    "28a29aa659f249577fe0c1d6c5e18de692926ee74fa3c2307301a2c80d0db87c": {
+      "bytes": 54468550,
+      "lines": 18443,
+      "gzip_bytes": 10249986,
       "url": null
     },
     "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039": {

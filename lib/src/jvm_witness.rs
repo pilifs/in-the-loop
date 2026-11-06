@@ -64,6 +64,10 @@ pub struct Run {
 /// `entries` is the class path: the harness's directory and the application's classes, never the tool's JDK
 /// models or extracted JDK classes, which the JVM has of its own.
 pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
+    crate::phases::timed(crate::phases::Step::Jvm, || run_untimed(dir, harness_class, types, slots, arguments, calls, entries))
+}
+
+fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
         let element = match t {
             Type::Array(e) => e.as_ref(),

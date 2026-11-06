@@ -67,6 +67,41 @@ Larger engine work, only with strong evidence from the measurements:
 3. Contribute patches upstream, keep them downstream, or both?
 4. Where does the CBMC build run, and how is it cached across jobs?
 
+## Evidence: where each engine's time goes
+
+`sound-verdicts.md`'s step 5b measures it. Each checker run is split into the same phases for both engines
+(`lib/src/phases.rs`): `loading`, `lowering`, `symbolic`, `encoding`, `solving`, `trace`, and JBMC's start and output
+(`checker-other`). Each run also gets its formula's size: JBMC's SSA steps, and the variables and clauses. JBMC's
+times are its own `Runtime` lines plus the times of its messages (`--timestamp monotonic`). A run cut off by its
+deadline or its memory gives the rest of its time to the phase it was in.
+
+**The table** is `lib/benchmark/RESULTS.md`, section "Where the time goes, by workload, under strict". It covers the
+benchmark corpus and examples 141 and 142, under one configuration: one harness, unwind 16, arrays of up to 8, a
+120 s deadline, the models on, and CaDiCaL on both. It comes from pipeline job
+`20261106-102624-benchmark-corpus-with-per-phase-measurem`, which is still pending.
+
+**Which phase each candidate would shrink**, so the table can rank them:
+
+| Candidate | Phase it acts on in JBMC | Workloads where that phase must dominate for it to pay |
+|---|---|---|
+| 3. shared quotient/remainder | `encoding` (Convert SSA), then `solving` through fewer clauses | `div-rem` |
+| 4. modular multiplication | `encoding`, `solving` | `scalar-arithmetic`, `div-rem` |
+| array representations | `encoding` and `solving` (the formula's size) | `binary-search`, `utf8`, `array-mutation` |
+| persistent prefixes, incremental solving | `symbolic`, and `solving` repeated across stages | branch-heavy cases; the interval stages run JBMC up to three times |
+| compiled-model cache, worker pool | `loading`, `lowering`, `checker-other`, and the preflight (`gaps`) | every short check |
+| structural hashing of gates | `encoding`, the formula's size | any |
+| 1. strict mode, 2. model selection | none: these are about correctness, and do not show in the table | |
+
+**First figures, inline, before the job** (one machine, one run each, not the table):
+- `real/midpoint/search-within-bound`, the whole bounded `binarySearch` before and after its fix, arrays of up to 8:
+  - JBMC: 45 s and 1.4 GB, 94% of it solving a formula of 3.28 million clauses;
+  - the own checker: 3.1 s, 88% solving, 240,000 clauses.
+
+  Here the formula's size dominates, which is the array-representation candidate's case, not the arithmetic one's.
+- Small cases (`real/midpoint`'s three others): JBMC takes about 0.1 s per run. JBMC's start and output are a fifth
+  of a check, its goto preflight another fifth, and the interval stages run it up to three times.
+- Example 142 on the own checker: 7.3 s, 95% solving.
+
 ## Notes
 
 - Nothing yet.

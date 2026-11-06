@@ -2079,6 +2079,25 @@ class DeadlineTest(unittest.TestCase):
         self.assertNotIn("runs", old)
         self.assertNotIn("deadlineSeconds", old)
 
+    def test_a_run_keeps_its_phases_and_formula(self):
+        """Step 5b: each run's seconds phase by phase, and the size of its formula (lib/src/phases.rs)."""
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        phases = {"loading": 0.013, "lowering": 0.007, "symbolic": 0.015, "encoding": 0.008, "solving": 0.021, "trace": 0.0, "other": 0.039}
+        run = {"checker": "jbmc", "purpose": "proof", "stage": None, "budget_seconds": 600.0, "seconds": 0.103, "ended": "verified",
+               "ending": "verified", "phases": phases, "formula": {"steps": 116, "conditions": 1, "variables": 1804, "clauses": 3952}}
+        native = {**run, "checker": "native", "phases": {**phases, "other": 0.0}, "formula": {"variables": 5991, "clauses": 20540}}
+        untimed = {**run, "phases": None, "formula": {"variables": None, "clauses": None}}
+        search = {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 0.3, "properties": 5, "unwind": 16, "max_array_length": 8,
+                  "stage": None, "deadline_seconds": 600.0, "runs": [run, native, untimed],
+                  "native": {"paths": 3, "solving_seconds": 0.1, "loading_seconds": 0.001, "encoding_seconds": 0.005}}
+        record = build.search_record({"search": search})
+        self.assertEqual(record["runs"][0]["phases"], phases)
+        self.assertEqual(record["native"]["encodingSeconds"], 0.005)
+        jsonschema.validate(record, schema["properties"]["search"])
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate({**record, "runs": [{**record["runs"][0], "phases": {**phases, "parsing": 1.0}}]}, schema["properties"]["search"])
+
 
 class StatementTest(unittest.TestCase):
     """Step 2a of llm-dlc/loops/sound-verdicts.md: the result records the statement a verdict is about as data, and
