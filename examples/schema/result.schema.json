@@ -717,7 +717,8 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": { "steps": { "type": "number" }, "conditions": { "type": "number" }, "variables": { "type": ["number", "null"] }, "clauses": { "type": ["number", "null"] } }
-              }
+              },
+              "phasesExcess": { "description": "The seconds by which the run's named phases add up past its `seconds`, beyond the tolerance (lib/src/phases.rs `Phases::excess`, step 1a of llm-dlc/loops/engine-priorities.md): a run whose phases cannot be trusted, flagged rather than scaled to fit. Absent when they fit, and in results written before 2026-11-06.", "type": "number", "exclusiveMinimum": 0 }
             }
           }
         },

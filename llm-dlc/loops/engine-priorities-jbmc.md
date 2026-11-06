@@ -162,7 +162,8 @@ Progress, so the reconcile loop knows where to look.
   - The job runs `native,jbmc,auto` under all three modes, about 2.5 h estimated. Advised runs may stop on the
     JDK 25.0.5 against the contract records' 25.0.4.1 (1a's note).
   - No shared file changed.
-- **3, the witnesses that don't reproduce: cause found, guarded, report drafted; job `20261106-203452` (failed, triaged below).**
+- **3, the witnesses that don't reproduce: done.** Cause found, guarded, report drafted; job `20261106-203452` failed
+  (triaged below), its rerun `20261106-231317` **passed**.
   - **The cause:** not the models, the trace reading, or the harness. JBMC 6.11.0 lets a runtime exception past the
     handler that catches it on the JVM, so the exception escapes the method. There are two shapes, found by running
     JBMC (in milliseconds) on the cases and on variants of them (`lib/tests/fixtures/jbmc-defects/README.md`):
@@ -218,8 +219,8 @@ Progress, so the reconcile loop knows where to look.
     - A `GapKind` for defects in `bmc/gaps.rs` could replace the separate `Defect` type, if gaps and defects should
       read alike in `--json`; today a defect shows only in the problem and the notes.
     - 4a's job will run with this guard: a recorded JBMC proof refused for a defect is a difference to report.
-- **4a, the strict job on both engines: `20261106-204220` failed on the result schema; rerun as `20261106-231837`
-  (pending, below).**
+- **4a, the strict job on both engines: JBMC's table measured (`20261106-231837`); the own checker's rerun as
+  `20261107-000039` (pending, below).**
   - The job runs `build.py` on the 41 recorded B9/B11 JBMC examples (Quorum, Crosscut, Mica), the same filter as
     job `-082917`, in two scratch copies of `examples/`:
     - as recorded (`--engine jbmc`, `--gaps strict`);
@@ -300,7 +301,7 @@ Progress, so the reconcile loop knows where to look.
   - Shared files changed: `lib/src/main.rs` (the two defaults), `property.rs` and `equivalence.rs` (the default in
     `Options::new` and its comment), `lib/tests/integration.rs` (three assertions), `lib/tests/conformance.rs` (one
     line in `jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline`), `lib/README.md`.
-- **3's job `20261106-203452`: triaged; `--confirm` fixed; rerun as `20261106-231317` (pending).**
+- **3's job `20261106-203452`: triaged; `--confirm` fixed; rerun as `20261106-231317` (passed, below).**
   - It failed two of three steps (44 m 36 s, peak 1.3 GiB). The corpus under `jbmc` and `auto` (strict) **passed**.
   - **`auto --confirm`: 12 disagreements, all the defects of 3.** On `caught`, `caughtAsRuntime` and `nestedHandler`
     under strict and assume, the own checker proves the claim, and JBMC's confirming run refutes it at `n = 0`
@@ -338,7 +339,7 @@ Progress, so the reconcile loop knows where to look.
     - `lib/README.md`: a sentence in `--confirm`'s paragraph.
   - Lib 157 tests pass, and the conformance tests other than the corpus pass. The corpus fails only on the
     12 known disagreements from the contract records.
-- **4a's job `20261106-204220`: failed on the schema; fixed; rerun as `20261106-231837` (pending).**
+- **4a's job `20261106-204220`: failed on the schema; fixed; rerun as `20261106-231837` (below).**
   - Both engine steps stopped at the first example, 013 (1 m 51 s, peak 1.1 GiB). `build.py` refused its result
     against `examples/schema/result.schema.json`: `'sat' was unexpected`. That was 1b's `stated.checker.sat`, which
     the schema didn't allow yet. Nothing else failed. The gap table then read only the 9 results already in format 2,
@@ -355,22 +356,56 @@ Progress, so the reconcile loop knows where to look.
     `--confirm`'s new rule and the `full-range` default on the examples.
   - No shared file changed. `build.py`'s `search_record` doesn't carry 2a's `search.staging` into the examples'
     results; nothing reads it there yet.
-- **Next:** the results of jobs `-231317` (3's rerun) and `-231837` (4a's rerun). Record what they show under 3 and
-  4a. 4a's tables go to the reconcile loop's 4c as they stand.
-- Status: waiting on jobs 20261106-231317 20261106-231837
-
-## Loop settings
-
-- session: 7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573
-- model: claude-opus-5-5
-- effort: high
-- workspace: jbmc
-- fork: 3761db96-b870-47f7-aded-2ba264c165f4
-
-## Loop until
-
-Go on while one of your phases has a step that needs nothing but your own work. Phases 1 and 2 are the core of this
-stream: don't stop before them unless a step waits on a job or on the user. When everything left waits on jobs, set the status to
-`waiting on jobs ID ...` and stop: you are run again once their results are collected. Stop with `done` when your
-phases are finished, or with `blocked: ...` when what is left needs the user's input and is recorded under Progress
-as deferred. Don't go on to polish, and don't start work that belongs to the other stream or the reconcile loop.
+- **3's rerun `20261106-231317`: passed** (33 m 53 s, peak 1.3 GiB), all three steps.
+  - Integration: 63 passed, `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` included. The own checker's
+    `Pricing#total` timing (above) didn't strike this time; the native stream's note stands.
+  - The corpus under `jbmc` and `auto` (strict): agrees with the JVM, 55 cases, 98 claims (52 refuted on the JVM),
+    196 runs, in 618 s. That covers the unmasked-shift claims (`shiftRight/3`, `shiftUnsigned/3`) and the
+    `full-range` default on the real JBMC.
+  - The corpus under `auto --confirm` (strict and assume): agrees, 196 runs, in 1,219 s. The 12 disagreements of
+    `-203452` are gone: `caught`, `caughtAsRuntime` and `nestedHandler` are proved by the own checker and unconfirmed,
+    naming the defect.
+  - So Phase 3 is done by its criterion: the cause is known, guarded with tests, and drafted as two reports for the user.
+- **4a's rerun `20261106-231837`: JBMC's table measured; the own checker's step failed on the schema again; rerun as
+  `20261107-000039` (pending).**
+  - **Step 1, JBMC under strict: passed.** 43 obligations of the 41 examples, every one run by JBMC under strict:
+    27 refuted, 13 established, 3 unresolved. The table is `lib/target/jobs/4a-coverage/jbmc-gaps.json` in the
+    default workspace's `verification/results/20261106-231837-…/outputs/`.
+    - `071#0` and `#1`: no verdict at the stubs `Enum.<init>`, `List.copyOf` and `List.of`, as job `-082917`
+      projected. `071#2` and `013#0` are still refuted through the same stubs. That replaces the projection with a
+      measurement.
+    - **`037#0`: refused at a JBMC defect**, the one example that differs from its expected verdict (verified). The
+      unmasked-shift guard (3) meets `-1 >>> Integer.numberOfLeadingZeros(cap - 1)` in `SymbolTable.tableSizeFor`. The
+      distance is 32 when `cap == 1`, where JBMC computes `-1 >>> 32` as 0 and the JVM as -1.
+    - **The recorded proof is correct, though.** Both values give `tableSizeFor(1) == 1`. Checked inline on the JVM
+      over all 2^32 ints: the two versions agree everywhere, and so does JBMC's reading of the shift; only one int has
+      distance 32. JBMC reasoned over a wrong value that happens not to matter, which the guard can't know from the
+      bytecode. Its refusal is the cost of its breadth (3's note), not a false proof found. Under strict the own checker
+      refuses `numberOfLeadingZeros` as a gap, so `auto` gives no verdict either; a contract (`advised`) or a model
+      would close it.
+    - **For the reconcile loop:** 037's `notes` should say this from the job (examples' notes are the reconcile
+      loop's), and 4c counts 037 as decided by neither engine under strict.
+  - **Step 2, the own checker: failed at example 018** (the fifth). `build.py` refused the result:
+    `'phasesExcess' was unexpected`. That is 1a's flag on a run whose named phases add up past its seconds, which
+    the schema's `runs` items did not allow. The table then read only the 12 results already in format 2, and its
+    assertion of 41 failed. Step 3's comparison (30 of 43 differ) is against that partial table, so it means nothing.
+    - Reproduced inline: the own checker's proof of 018 (0.18 s) has 0.019 s of encoding and 0.174 s of solving,
+      0.013 s past the run beyond the tolerance (1% plus 5 ms).
+    - Fix: each run in the schema's `search.runs` may carry `phasesExcess`, a positive number, as `deadline::Run`
+      serializes it.
+    - Verified inline: that real run record, spliced into the 14 committed results with runs, passes all of
+      `check_result`'s validation (flat schema, round trip, stored schema). A negative or string value is refused
+      (42 of 42 as expected). The schema at the previous commit refuses the real record. The own checker's whole
+      search record from that run validates against the schema's `search`. `test_build.py` has the same 35 errors
+      (1b's note); `test_gap_table.py` passes.
+  - **For the native stream and the reconcile loop:** the own checker's runs can be flagged too, not only JBMC's. Its
+    `encoding` is sampled (`bmc/bits.rs`: one operation in `ENCODING_SAMPLE` is timed, and multiplied), so on a short
+    run the estimate can overshoot. `solving` times only the solve calls. The flag keeps such runs out of
+    `run.py`'s phase tables (1a) rather than scaling them. A tolerance for a sampled phase, or exact timing on short
+    runs, is in `lib/src/bmc/`, so not changed here.
+  - **Job `20261107-000039`** is `-231837`'s three steps unchanged, at this commit. The JBMC step runs again so that
+    step 3 compares two tables from one commit.
+  - No shared file changed.
+- **Next:** job `-000039`'s results, under 4a: the own checker's table over the 41, and the comparison. Its tables go
+  to the reconcile loop's 4c as they stand. Then this stream's phases are done.
+- Status: waiting on jobs 20261107-000039

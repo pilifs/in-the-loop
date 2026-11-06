@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T23:19:01.975Z",
-  "duration_seconds": 14638,
+  "ended": "2026-11-07T00:01:28.030Z",
+  "duration_seconds": 17184,
   "stats": {
-    "turns": 54,
-    "api_calls": 520,
-    "tool_calls": 517,
+    "turns": 60,
+    "api_calls": 565,
+    "tool_calls": 563,
     "tool_errors": 8,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 1038,
-      "output_tokens": 407906,
-      "cache_read_input_tokens": 57239126,
-      "cache_creation_input_tokens": 1451282
+      "input_tokens": 1128,
+      "output_tokens": 436741,
+      "cache_read_input_tokens": 61571758,
+      "cache_creation_input_tokens": 1576860
     }
   },
   "tools": {
-    "Bash": 490,
-    "Read": 14,
-    "Edit": 11,
+    "Bash": 531,
+    "Read": 18,
+    "Edit": 12,
     "Write": 2
   },
   "files_touched": [
@@ -187,24 +187,38 @@
     {
       "index": 10,
       "started": "2026-11-06T23:15:16.037Z",
-      "ended": "2026-11-06T23:19:01.975Z",
-      "turns": 4,
-      "api_calls": 36,
+      "ended": "2026-11-06T23:19:27.075Z",
+      "turns": 5,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 72,
-        "output_tokens": 14846,
-        "cache_read_input_tokens": 2666834,
-        "cache_creation_input_tokens": 87698
+        "input_tokens": 78,
+        "output_tokens": 16522,
+        "cache_read_input_tokens": 2974716,
+        "cache_creation_input_tokens": 93006
       },
-      "peak_context_tokens": 100777
+      "peak_context_tokens": 106085
+    },
+    {
+      "index": 11,
+      "started": "2026-11-06T23:19:52.997Z",
+      "ended": "2026-11-07T00:01:28.030Z",
+      "turns": 5,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 84,
+        "output_tokens": 27159,
+        "cache_read_input_tokens": 4024750,
+        "cache_creation_input_tokens": 120270
+      },
+      "peak_context_tokens": 133349
     }
   ],
   "log": {
-    "sha256": "ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2",
-    "bytes": 13599495,
-    "lines": 5415,
-    "gzip_bytes": 2444886,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2.jsonl.gz"
+    "sha256": "324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8",
+    "bytes": 14984300,
+    "lines": 5882,
+    "gzip_bytes": 2720352,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -303,6 +317,14 @@
       "summary": "The examples' result schema allows the statement's SAT solver record; 4a's job rerun (verification pending)",
       "body": "Job 20261106-204220, step 4a of llm-dlc/loops/engine-priorities.md (the 41 recorded JBMC examples under strict on both engines), stopped in both engine steps at its first example: build.py refused 013's result against examples/schema/result.schema.json because 'sat' was unexpected. That is step 1b's stated.checker.sat, the SAT solver each result's evidence now names, which the schema did not allow yet. The checker object in the statement now allows sat, in the shape lib/src/statement.rs Sat serializes (solver, version or null, source, configuration), and nothing more.\n\nVerified inline: real sat records from a millisecond proof on each engine, spliced into the 14 committed results that carry a statement, pass build.py's whole validation (flat schema, round trip through the stored format, stored schema), and a record with an extra field is refused; three real statements (own checker, JBMC, auto --confirm) validate in full against $defs/statement; test_build.py has the same 35 pre-existing errors before and after the change, and test_gap_table.py passes.\n\nJob 20261106-231837 reruns -204220's three steps unchanged at this commit, so it also measures the unmasked-shift guard, --confirm's rule for refutations through a defect, and the full-range default on the examples. The stream's status is now waiting on jobs 20261106-231317 and 20261106-231837.",
       "log_sha256": "ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2"
+    },
+    {
+      "change_id": "xyplqrtnqlomslkusuutuvxxxzqkxntm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The examples' result schema allows a run's phasesExcess; 3's rerun passed, 4a's JBMC table measured, its own-checker step rerun (verification pending)",
+      "body": "Job 20261106-231317, the rerun of step 3's job (llm-dlc/loops/engine-priorities.md), passed: 63 integration tests, the corpus under jbmc and auto (98 claims, 196 runs, the unmasked-shift claims and the full-range default included) and under auto --confirm, where the 12 disagreements of -203452 are gone. Phase 3 is done: the cause of the witnesses that don't reproduce is known, guarded with tests, and drafted as reports for the user.\n\nJob 20261106-231837, step 4a's rerun, measured JBMC's per-obligation table under strict over the 41 recorded JBMC examples: 43 obligations, 27 refuted, 13 established, 3 unresolved. 071#0 and #1 are no verdict at the Enum.<init>, List.of and List.copyOf stubs, as job -082917 projected. 037#0, the one example that differs from its expected verdict, is a JBMC proof refused by the unmasked-shift guard at -1 >>> Integer.numberOfLeadingZeros(cap - 1), whose distance is 32 when cap == 1. Checked inline on the JVM over all 2^32 ints: the recorded proof is correct, since JBMC's wrong value for that shift gives the same result there, so the refusal is the guard's breadth, recorded for 037's notes and 4c.\n\nIts own-checker step stopped at example 018: build.py refused the result because the schema's search.runs items did not allow phasesExcess, step 1a's flag on a run whose named phases add up past its seconds. Reproduced inline: the own checker's 0.18 s run of 018 has sampled encoding (lib/src/bmc/bits.rs ENCODING_SAMPLE) and solving 0.013 s past it beyond the tolerance, recorded for the native stream. Each run in examples/schema/result.schema.json may now carry phasesExcess, a positive number. Verified: that real run record, spliced into the 14 committed results with runs, passes build.py's whole check_result validation; negative and string values are refused (42 of 42 as expected); the schema at the previous commit refuses the real record; the run's full search record validates; test_build.py has the same 35 pre-existing errors and test_gap_table.py passes.\n\nJob 20261107-000039 reruns -231837's three steps unchanged at this commit, so the own checker's table and the comparison come from one commit. The stream's status is now waiting on it.",
+      "log_sha256": "324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8"
     }
   ],
   "logs": {
@@ -316,6 +338,12 @@
       "bytes": 4214800,
       "lines": 1683,
       "gzip_bytes": 771292,
+      "url": null
+    },
+    "324eb23fd47023ad3fa32ebda201920dea6bd5a7d5866ae024d8b6f79428b0a8": {
+      "bytes": 14984300,
+      "lines": 5882,
+      "gzip_bytes": 2720352,
       "url": null
     },
     "51b81ecca682bda21cc8c857d8ccf3d0fb69076f0b95e14c7eaa0f0cec4d4377": {
