@@ -1,0 +1,228 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha",
+  "title": "Benchmark corpus with exclusive JBMC phases and JBMC's three staging policies (engine-priorities step 2b)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1h31m, peak 4.0 GiB (estimated 2h30m, 3.5 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha.json",
+    "sha256": "a11f03e77d5e7b95f18a6f6cfee02c8d86780efa696aaa2c1c9b00a5ecedbff8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha",
+      "title": "Benchmark corpus with exclusive JBMC phases and JBMC's three staging policies (engine-priorities step 2b)",
+      "description": "Step 2b of llm-dlc/loops/engine-priorities.md. Reruns the whole benchmark corpus (groups 1-4: 93 conformance claims, 13 real regressions, 12 held-out cases, examples 141 and 142) on the own checker, JBMC and auto, under strict, assume and advised, with matched settings (unwind 16, arrays up to 8, a 120 s deadline per check). Two things changed since the last benchmark job (20261106-102624, whose figures stand as recorded): JBMC's phases are now exclusive (step 1a: Runtime Post-process is counted once, inside Runtime Solver, and a run whose phases add up past its time is flagged and left out of the phase tables), and JBMC checks take a staging policy (step 2a, --jbmc-staging): staged (every interval stage that restricts the inputs, then the full range; today's default), full-range (the full range alone, its counterexample shrunk in the interpreter), and tight (the first restricting stage on a fortieth of the check, then the full range). Every jbmc run is made under all three; every auto run under staged, and again under the other two where the own checker gave no verdict and JBMC's fallback ran. The corpus's tables, 'Where the time goes' among them, are over staged; a new section 'JBMC's staging policies' compares the policies per engine and mode, proofs and counterexamples apart: verdicts, time, class changes from staged, witness size after lib/src/shrink.rs (array elements and largest magnitude), and auto fallbacks whose full range got under a second. Its results decide JBMC's default (step 2c). Known in advance: the JDK on cvm is 25.0.5 while the contract library's records are for 25.0.4.1, so advised runs may stop on a contract not on its record; that is reported, not a failure. Every expected answer and every witness is checked on the JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "benchmark",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark",
+          "lib/src/deadline.rs",
+          "lib/src/phases.rs"
+        ],
+        "examples": [
+          "141",
+          "142"
+        ]
+      },
+      "expected": "exits 0: no false success and no false alarm on any engine, mode or staging policy, and the JVM bears out every expected answer of groups 2 and 3. RESULTS.md names this job and its commit in its first line, has the correctness table, 'Where the time goes, by workload, under strict' with rows for native, jbmc and auto, 'The recorded examples', and 'JBMC's staging policies' with rows for jbmc under each mode and policy, proofs and counterexamples apart, and auto rows for the cases where it fell back. Runs out of time or memory on JBMC (141, 142, reverse, the floor-mod cases) are findings, not failures.",
+      "submitted": {
+        "at": "2026-11-06T20:10:41+00:00",
+        "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+        "by": "claude (engines-jbmc stream)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3.5G",
+        "duration": "2h30m",
+        "memoryLimit": "4G",
+        "timeout": "6h",
+        "notes": "job -102624 took about 40 minutes: JBMC about 33 min over 356 runs, the own checker about 7. Here JBMC runs three times (full-range and tight should be no slower than staged, so up to about 100 min), auto adds the own checker's 7 min again and its fallbacks (about 10-20 cases per mode, each up to 30 s, under each policy: up to about 50 min more). JBMC runs are capped at 3 GiB each; one runs at a time."
+      },
+      "steps": [
+        {
+          "name": "benchmark",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/results.json",
+        "lib/benchmark/RESULTS.md"
+      ]
+    }
+  },
+  "sourceCommit": "26227917d3b6a39d931316e86408e513c88e56bd",
+  "startedAt": "2026-11-06T20:11:32+00:00",
+  "finishedAt": "2026-11-06T21:42:39+00:00",
+  "wallSeconds": 5467.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 383556,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 21600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3758096384,
+    "durationSeconds": 9000.0,
+    "notes": "job -102624 took about 40 minutes: JBMC about 33 min over 356 runs, the own checker about 7. Here JBMC runs three times (full-range and tight should be no slower than staged, so up to about 100 min), auto adds the own checker's 7 min again and its fallbacks (about 10-20 cases per mode, each up to 30 s, under each policy: up to about 50 min more). JBMC runs are capped at 3 GiB each; one runs at a time."
+  },
+  "usage": {
+    "peakMemoryBytes": 4294967296,
+    "wallSeconds": 5466.6,
+    "cpuSeconds": 5434.7,
+    "memoryOfEstimate": 1.14,
+    "durationOfEstimate": 0.61
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --engines native,jbmc,auto --jbmc-staging staged,full-range,tight --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 21600.0,
+      "cancelled": false,
+      "wallSeconds": 5466.607,
+      "cpuSeconds": 5434.703,
+      "cpuThrottledSeconds": 2.514,
+      "peakMemoryBytes": 4294967296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 356,
+      "log": {
+        "path": "logs/1-benchmark.log",
+        "lines": 1802,
+        "bytes": 230656,
+        "sha256": "95d098ec454b6e83fdef203d32c8bfc72fbce790c7bc0478133331514342ef5d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "held/overlap/meets                           native strict             verified     correct                   0.06 s    36.7 MB",
+        "held/overlap/meets                           native assume             verified     correct                   0.06 s    36.7 MB",
+        "held/overlap/meets                           native advised            verified     correct                   0.07 s    36.9 MB",
+        "held/overlap/meets                           jbmc   strict  staged     verified     correct                   0.29 s    54.4 MB",
+        "held/overlap/meets                           jbmc   strict  full-range verified     correct                   0.18 s    54.1 MB",
+        "held/overlap/meets                           jbmc   strict  tight      verified     correct                   0.23 s    54.2 MB",
+        "held/overlap/meets                           jbmc   assume  staged     verified     correct                   0.29 s    54.1 MB",
+        "held/overlap/meets                           jbmc   assume  full-range verified     correct                   0.24 s    54.1 MB",
+        "held/overlap/meets                           jbmc   assume  tight      verified     correct                   0.26 s    54.2 MB",
+        "held/overlap/meets                           jbmc   advised staged     verified     correct                   0.35 s    54.5 MB",
+        "held/overlap/meets                           jbmc   advised full-range verified     correct                   0.24 s    54.1 MB",
+        "held/overlap/meets                           jbmc   advised tight      verified     correct                   0.29 s    54.4 MB",
+        "held/overlap/meets                           auto   strict  staged     verified     correct                   0.06 s    37.0 MB",
+        "held/overlap/meets                           auto   assume  staged     verified     correct                   0.06 s    37.0 MB",
+        "held/overlap/meets                           auto   advised staged     verified     correct                   0.07 s    37.0 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.08 s    37.0 MB",
+        "held/overlap/length                          native assume             violation    correct                   0.08 s    36.9 MB",
+        "held/overlap/length                          native advised            violation    correct                   0.08 s    37.3 MB",
+        "held/overlap/length                          jbmc   strict  staged     violation    correct                   0.35 s    54.2 MB",
+        "held/overlap/length                          jbmc   strict  full-range violation    correct                   0.18 s    54.2 MB",
+        "held/overlap/length                          jbmc   strict  tight      violation    correct                   0.23 s    53.9 MB",
+        "held/overlap/length                          jbmc   assume  staged     violation    correct                   0.34 s    53.9 MB",
+        "held/overlap/length                          jbmc   assume  full-range violation    correct                   0.18 s    54.0 MB",
+        "held/overlap/length                          jbmc   assume  tight      violation    correct                   0.24 s    54.2 MB",
+        "held/overlap/length                          jbmc   advised staged     violation    correct                   0.41 s    54.4 MB",
+        "held/overlap/length                          jbmc   advised full-range violation    correct                   0.26 s    54.2 MB",
+        "held/overlap/length                          jbmc   advised tight      violation    correct                   0.30 s    54.0 MB",
+        "held/overlap/length                          auto   strict  staged     violation    correct                   0.08 s    37.1 MB",
+        "held/overlap/length                          auto   assume  staged     violation    correct                   0.08 s    37.3 MB",
+        "held/overlap/length                          auto   advised staged     violation    correct                   0.08 s    37.3 MB",
+        "example/141                                  native strict             verified     correct                   1.34 s    57.1 MB",
+        "example/141                                  jbmc   strict  staged     verified     correct                  60.76 s  2059.7 MB",
+        "example/141                                  jbmc   strict  full-range verified     correct                  30.58 s  2059.8 MB",
+        "example/141                                  jbmc   strict  tight      verified     correct                  33.61 s  2059.7 MB",
+        "example/141                                  auto   strict  staged     verified     correct                   1.31 s    58.4 MB",
+        "example/142                                  native strict             verified     correct                   4.64 s    77.4 MB",
+        "example/142                                  jbmc   strict  staged     unverifiable unsupported               9.20 s  3410.0 MB",
+        "example/142                                  jbmc   strict  full-range unverifiable unsupported               9.20 s  3409.9 MB",
+        "example/142                                  jbmc   strict  tight      unverifiable unsupported               9.46 s  3409.8 MB",
+        "example/142                                  auto   strict  staged     verified     correct                   4.81 s    81.1 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/results.json",
+      "change": "modified",
+      "bytes": 3724754,
+      "sha256": "afb329ca14e98c3d7a98b184971d8bc3ec6220280a04bc2789ec166d2744161a",
+      "sourceSha256": "693a06ee1828789ed7589e98acc6418333eed7487897559e41f611ef5fd9b9de"
+    },
+    {
+      "path": "lib/benchmark/RESULTS.md",
+      "change": "modified",
+      "bytes": 67882,
+      "sha256": "5c41271697d9d195f08a43b14c7ca4c5bf22ea542b1ead2bb6e97a2c8c84fe97",
+      "sourceSha256": "6b81c7bda66f5d66bbdc069e3e4cd3c66c95003d3e90b25378a37943764df46a"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T21:42:49+00:00",
+    "applied": [
+      "lib/benchmark/results.json",
+      "lib/benchmark/RESULTS.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

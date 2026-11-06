@@ -1,0 +1,465 @@
+--- /dev/null
++++ b/lib/target/conformance-jbmc-step3.log
+@@ -0,0 +1,204 @@
++   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-203452-jbmc-s-escaping-exceptions-named-and-ref/lib)
++    Finished `release` profile [optimized] target(s) in 25.19s
++     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)
++
++running 1 test
++test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto has been running for over 60 seconds
++capacity         Jbmc/Strict Unverifiable assert result == 1
++capacity         Auto/Strict Unverifiable assert result == 1
++builderCapacity  Jbmc/Strict Unverifiable assert result == 1
++builderCapacity  Auto/Strict Unverifiable assert result == 1
++mapCapacity      Jbmc/Strict Unverifiable assert result == 1
++mapCapacity      Auto/Strict Unverifiable assert result == 1
++setCapacity      Jbmc/Strict Unverifiable assert result == 1
++setCapacity      Auto/Strict Unverifiable assert result == 1
++loadFactor       Jbmc/Strict Unverifiable assert result == 1
++loadFactor       Auto/Strict Unverifiable assert result == 1
++nullMonitor      Jbmc/Strict Unverifiable assert result == 1
++nullMonitor      Auto/Strict Violation    assert result == 1
++monitor          Jbmc/Strict Unverifiable assert result == n
++monitor          Auto/Strict Verified     assert result == n
++firstByte        Jbmc/Strict Unverifiable assert out.length == 0 || result == \old(out[0])
++firstByte        Auto/Strict Unverifiable assert out.length == 0 || result == \old(out[0])
++hiding           Jbmc/Strict Verified     assert result == n
++hiding           Auto/Strict Verified     assert result == n
++hiding           Jbmc/Strict Violation    assert result == 2
++hiding           Auto/Strict Violation    assert result == 2
++hidden           Jbmc/Strict Verified     assert result == 2
++hidden           Auto/Strict Verified     assert result == 2
++hidden           Jbmc/Strict Violation    assert result == n
++hidden           Auto/Strict Violation    assert result == n
++sameLiteral      Jbmc/Strict Verified     assert result
++sameLiteral      Auto/Strict Verified     assert result
++sameLiteral      Jbmc/Strict Violation    assert !result
++sameLiteral      Auto/Strict Violation    assert !result
++otherLiteral     Jbmc/Strict Verified     assert !result
++otherLiteral     Auto/Strict Verified     assert !result
++otherLiteral     Jbmc/Strict Violation    assert result
++otherLiteral     Auto/Strict Violation    assert result
++sameClass        Jbmc/Strict Verified     assert result
++sameClass        Auto/Strict Verified     assert result
++sameClass        Jbmc/Strict Violation    assert !result
++sameClass        Auto/Strict Violation    assert !result
++concatenated     Jbmc/Strict Unverifiable assert !result
++concatenated     Auto/Strict Verified     assert !result
++concatenated     Jbmc/Strict Violation    assert result
++concatenated     Auto/Strict Violation    assert result
++boom             Jbmc/Strict Violation    assert result == n
++boom             Auto/Strict Violation    assert result == n
++inherited        Jbmc/Strict Violation    assert result == n
++inherited        Auto/Strict Violation    assert result == n
++quiet            Jbmc/Strict Verified     assert result == n
++quiet            Auto/Strict Verified     assert result == n
++finallyWins      Jbmc/Strict Verified     assert result == 2
++finallyWins      Auto/Strict Verified     assert result == 2
++finallyWins      Jbmc/Strict Violation    assert result == 1
++finallyWins      Auto/Strict Violation    assert result == 1
++caught           Jbmc/Strict Unverifiable assert n != 0 || result == -1
++caught           Auto/Strict Verified     assert n != 0 || result == -1
++caught           Jbmc/Strict Violation    assert result != -1
++caught           Auto/Strict Violation    assert result != -1
++caught           Jbmc/Strict Unverifiable assert result == 10 / n; throws ArithmeticException when n == 0
++caught           Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++caughtAsRuntime  Jbmc/Strict Unverifiable assert n != 0 || result == -1
++caughtAsRuntime  Auto/Strict Verified     assert n != 0 || result == -1
++caughtAsRuntime  Jbmc/Strict Unverifiable assert result == 10 / n; throws ArithmeticException when n == 0
++caughtAsRuntime  Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++nestedHandler    Jbmc/Strict Unverifiable assert n != 0 || result == -2
++nestedHandler    Auto/Strict Verified     assert n != 0 || result == -2
++nestedHandler    Jbmc/Strict Violation    assert result != -2
++nestedHandler    Auto/Strict Violation    assert result != -2
++element          Jbmc/Strict Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
++element          Auto/Strict Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
++element          Jbmc/Strict Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
++element          Auto/Strict Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
++cast             Jbmc/Strict Verified     assert result == 0; throws ClassCastException when n > 0
++cast             Auto/Strict Verified     assert result == 0; throws ClassCastException when n > 0
++cast             Jbmc/Strict Violation    assert result == 0
++cast             Auto/Strict Violation    assert result == 0
++throwNull        Jbmc/Strict Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
++throwNull        Auto/Strict Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
++throwNull        Jbmc/Strict Violation    assert result == 0; throws IllegalStateException when n > -5
++throwNull        Auto/Strict Violation    assert result == 0; throws IllegalStateException when n > -5
++rethrown         Jbmc/Strict Verified     assert result == n; throws IllegalStateException when n < 0
++rethrown         Auto/Strict Verified     assert result == n; throws IllegalStateException when n < 0
++rethrown         Jbmc/Strict Violation    assert result == n; throws IllegalArgumentException when n < 0
++rethrown         Auto/Strict Violation    assert result == n; throws IllegalArgumentException when n < 0
++aliasedLocals    Jbmc/Strict Verified     assert result == n
++aliasedLocals    Auto/Strict Verified     assert result == n
++aliasedLocals    Jbmc/Strict Violation    assert result == 0
++aliasedLocals    Auto/Strict Violation    assert result == 0
++aliasedObjects   Jbmc/Strict Verified     assert result == n
++aliasedObjects   Auto/Strict Verified     assert result == n
++aliasedObjects   Jbmc/Strict Violation    assert result == 0
++aliasedObjects   Auto/Strict Violation    assert result == 0
++twoArrays        Jbmc/Strict Verified     assume a.length > 0 && b.length > 0; assert result == 1
++twoArrays        Auto/Strict Verified     assume a.length > 0 && b.length > 0; assert result == 1
++writeThrough     Jbmc/Strict Verified     assert result == 7
++writeThrough     Auto/Strict Verified     assert result == 7
++length           Jbmc/Strict Verified     assert result >= 0
++length           Auto/Strict Verified     assert result >= 0
++lengthOrMinusOne Jbmc/Strict Verified     assert result >= 0
++lengthOrMinusOne Auto/Strict Verified     assert result >= 0
++nullLocal        Jbmc/Strict Verified     assert result == 1; throws NullPointerException when n <= 0
++nullLocal        Auto/Strict Verified     assert result == 1; throws NullPointerException when n <= 0
++nullLocal        Jbmc/Strict Violation    assert result == 1
++nullLocal        Auto/Strict Violation    assert result == 1
++width            Jbmc/Strict Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
++width            Auto/Strict Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
++width            Jbmc/Strict Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
++width            Auto/Strict Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
++width            Jbmc/Strict Violation    assert result == hi - lo
++width            Auto/Strict Violation    assert result == hi - lo
++clamp            Jbmc/Strict Verified     assert result >= 0
++clamp            Auto/Strict Verified     assert result >= 0
++clamp            Jbmc/Strict Violation    assert result == n
++clamp            Auto/Strict Violation    assert result == n
++pairsEqual       Jbmc/Strict Unverifiable assert result
++pairsEqual       Auto/Strict Unverifiable assert result
++pairsEqual       Jbmc/Strict Unverifiable assert !result
++pairsEqual       Auto/Strict Unverifiable assert !result
++sides            Jbmc/Strict Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
++sides            Auto/Strict Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
++sides            Jbmc/Strict Violation    assert result == 4
++sides            Auto/Strict Violation    assert result == 4
++code             Jbmc/Strict Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
++code             Auto/Strict Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
++code             Jbmc/Strict Violation    assert result == 2
++code             Auto/Strict Violation    assert result == 2
++divide           Jbmc/Strict Verified     assume b == -1; assert result == -a
++divide           Auto/Strict Verified     assume b == -1; assert result == -a
++divide           Jbmc/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divide           Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divide           Jbmc/Strict Unverifiable assert result * b + a % b == a; throws ArithmeticException when b == 0
++divide           Auto/Strict Verified     assert result * b + a % b == a; throws ArithmeticException when b == 0
++divide           Jbmc/Strict Violation    assert result * b + a % b == a
++divide           Auto/Strict Violation    assert result * b + a % b == a
++divideLong       Jbmc/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divideLong       Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divideLong       Jbmc/Strict Verified     assume b == -1; assert result == -a
++divideLong       Auto/Strict Verified     assume b == -1; assert result == -a
++remainder        Jbmc/Strict Verified     assume b > 0; assert result > -b && result < b
++remainder        Auto/Strict Verified     assume b > 0; assert result > -b && result < b
++remainder        Jbmc/Strict Violation    assume b > 0; assert result >= 0
++remainder        Auto/Strict Violation    assume b > 0; assert result >= 0
++remainder        Jbmc/Strict Verified     assume b == -1; assert result == 0
++remainder        Auto/Strict Verified     assume b == -1; assert result == 0
++remainderLong    Jbmc/Strict Verified     assume b == -1; assert result == 0
++remainderLong    Auto/Strict Verified     assume b == -1; assert result == 0
++remainderLong    Jbmc/Strict Violation    assume a < 0 && b > 0; assert result >= 0
++remainderLong    Auto/Strict Violation    assume a < 0 && b > 0; assert result >= 0
++shiftLeft        Jbmc/Strict Verified     assume s == 32; assert result == x
++shiftLeft        Auto/Strict Verified     assume s == 32; assert result == x
++shiftLeft        Jbmc/Strict Violation    assume s == 32; assert result == 0
++shiftLeft        Auto/Strict Violation    assume s == 32; assert result == 0
++shiftLeft        Jbmc/Strict Verified     assume s == -1 && x == 1; assert result == -2147483648
++shiftLeft        Auto/Strict Verified     assume s == -1 && x == 1; assert result == -2147483648
++shiftLeftLong    Jbmc/Strict Verified     assume s == 64; assert result == x
++shiftLeftLong    Auto/Strict Verified     assume s == 64; assert result == x
++shiftLeftLong    Jbmc/Strict Violation    assume s == 64; assert result == 0
++shiftLeftLong    Auto/Strict Violation    assume s == 64; assert result == 0
++shiftLeftLong    Jbmc/Strict Verified     assume s == 32 && x == 1; assert result > 2147483647
++shiftLeftLong    Auto/Strict Verified     assume s == 32 && x == 1; assert result > 2147483647
++shiftRight       Jbmc/Strict Verified     assume x == -1; assert result == -1
++shiftRight       Auto/Strict Verified     assume x == -1; assert result == -1
++shiftRight       Jbmc/Strict Violation    assume s == 33; assert result == x / 2
++shiftRight       Auto/Strict Violation    assume s == 33; assert result == x / 2
++shiftUnsigned    Jbmc/Strict Violation    assume x < 0 && s == 32; assert result > 0
++shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0
++shiftUnsigned    Jbmc/Strict Verified     assume x < 0 && s == 1; assert result > 0
++shiftUnsigned    Auto/Strict Verified     assume x < 0 && s == 1; assert result > 0
++square           Jbmc/Strict Violation    assert result >= 0
++square           Auto/Strict Violation    assert result >= 0
++negate           Jbmc/Strict Violation    assume x < 0; assert result > 0
++negate           Auto/Strict Violation    assume x < 0; assert result > 0
++toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0
++toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0
++toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127
++toByte           Auto/Strict Verified     assert result >= -128 && result <= 127
++toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535
++toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535
++toChar           Jbmc/Strict Violation    assert result == x
++toChar           Auto/Strict Violation    assert result == x
++toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768
++toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768
++fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0
++fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0
++nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0
++nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0
++nextChar         Jbmc/Strict Violation    assert result > c
++nextChar         Auto/Strict Violation    assert result > c
++absolute         Jbmc/Strict Violation    assert result >= 0
++absolute         Auto/Strict Violation    assert result >= 0
++increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648
++increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648
++byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254
++byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254
++byteSum          Jbmc/Strict Violation    assert result >= 0
++byteSum          Auto/Strict Violation    assert result >= 0
++
++55 cases, 96 claims (50 refuted on the JVM), 192 runs; the interpreter refuses firstByte([0])
++test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok
++
++test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 624.88s
++
+--- /dev/null
++++ b/lib/target/conformance-confirm-step3.log
+@@ -0,0 +1,255 @@
++    Finished `release` profile [optimized] target(s) in 0.03s
++     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)
++
++running 1 test
++test the_corpus_agrees_with_the_jvm_under_auto_confirm has been running for over 60 seconds
++capacity         Auto/Strict Unverifiable assert result == 1
++capacity         Auto/Assume NotAsked Verified     assert result == 1
++builderCapacity  Auto/Strict Unverifiable assert result == 1
++builderCapacity  Auto/Assume NotAsked Verified     assert result == 1
++mapCapacity      Auto/Strict Unverifiable assert result == 1
++mapCapacity      Auto/Assume NotAsked Verified     assert result == 1
++setCapacity      Auto/Strict Unverifiable assert result == 1
++setCapacity      Auto/Assume NotAsked Verified     assert result == 1
++loadFactor       Auto/Strict Unverifiable assert result == 1
++loadFactor       Auto/Assume Verified     assert result == 1
++nullMonitor      Auto/Strict Violation    assert result == 1
++nullMonitor      Auto/Assume Violation    assert result == 1
++monitor          Auto/Strict NoVerdict Verified     assert result == n
++monitor          Auto/Assume Confirmed Verified     assert result == n
++firstByte        Auto/Strict Unverifiable assert out.length == 0 || result == \old(out[0])
++firstByte        Auto/Assume NotAsked Verified     assert out.length == 0 || result == \old(out[0])
++hiding           Auto/Strict Confirmed Verified     assert result == n
++hiding           Auto/Assume Confirmed Verified     assert result == n
++hiding           Auto/Strict Violation    assert result == 2
++hiding           Auto/Assume Violation    assert result == 2
++hidden           Auto/Strict Confirmed Verified     assert result == 2
++hidden           Auto/Assume Confirmed Verified     assert result == 2
++hidden           Auto/Strict Violation    assert result == n
++hidden           Auto/Assume Violation    assert result == n
++sameLiteral      Auto/Strict Confirmed Verified     assert result
++sameLiteral      Auto/Assume Confirmed Verified     assert result
++sameLiteral      Auto/Strict Violation    assert !result
++sameLiteral      Auto/Assume Violation    assert !result
++otherLiteral     Auto/Strict Confirmed Verified     assert !result
++otherLiteral     Auto/Assume Confirmed Verified     assert !result
++otherLiteral     Auto/Strict Violation    assert result
++otherLiteral     Auto/Assume Violation    assert result
++sameClass        Auto/Strict Confirmed Verified     assert result
++sameClass        Auto/Assume Confirmed Verified     assert result
++sameClass        Auto/Strict Violation    assert !result
++sameClass        Auto/Assume Violation    assert !result
++concatenated     Auto/Strict NoVerdict Verified     assert !result
++concatenated     Auto/Assume Confirmed Verified     assert !result
++concatenated     Auto/Strict Violation    assert result
++concatenated     Auto/Assume Violation    assert result
++boom             Auto/Strict Violation    assert result == n
++boom             Auto/Assume Disagreed Unverifiable assert result == n
++inherited        Auto/Strict Violation    assert result == n
++inherited        Auto/Assume Disagreed Unverifiable assert result == n
++quiet            Auto/Strict Verified     assert result == n
++quiet            Auto/Assume Confirmed Verified     assert result == n
++finallyWins      Auto/Strict Confirmed Verified     assert result == 2
++finallyWins      Auto/Assume Confirmed Verified     assert result == 2
++finallyWins      Auto/Strict Violation    assert result == 1
++finallyWins      Auto/Assume Violation    assert result == 1
++caught           Auto/Strict Disagreed Unverifiable assert n != 0 || result == -1
++caught           Auto/Assume Disagreed Unverifiable assert n != 0 || result == -1
++caught           Auto/Strict Violation    assert result != -1
++caught           Auto/Assume Violation    assert result != -1
++caught           Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++caught           Auto/Assume Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++caughtAsRuntime  Auto/Strict Disagreed Unverifiable assert n != 0 || result == -1
++caughtAsRuntime  Auto/Assume Disagreed Unverifiable assert n != 0 || result == -1
++caughtAsRuntime  Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++caughtAsRuntime  Auto/Assume Violation    assert result == 10 / n; throws ArithmeticException when n == 0
++nestedHandler    Auto/Strict Disagreed Unverifiable assert n != 0 || result == -2
++nestedHandler    Auto/Assume Disagreed Unverifiable assert n != 0 || result == -2
++nestedHandler    Auto/Strict Violation    assert result != -2
++nestedHandler    Auto/Assume Violation    assert result != -2
++element          Auto/Strict Confirmed Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
++element          Auto/Assume Confirmed Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
++element          Auto/Strict Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
++element          Auto/Assume Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
++cast             Auto/Strict Confirmed Verified     assert result == 0; throws ClassCastException when n > 0
++cast             Auto/Assume Confirmed Verified     assert result == 0; throws ClassCastException when n > 0
++cast             Auto/Strict Violation    assert result == 0
++cast             Auto/Assume Violation    assert result == 0
++throwNull        Auto/Strict Confirmed Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
++throwNull        Auto/Assume Confirmed Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
++throwNull        Auto/Strict Violation    assert result == 0; throws IllegalStateException when n > -5
++throwNull        Auto/Assume Violation    assert result == 0; throws IllegalStateException when n > -5
++rethrown         Auto/Strict Confirmed Verified     assert result == n; throws IllegalStateException when n < 0
++rethrown         Auto/Assume Confirmed Verified     assert result == n; throws IllegalStateException when n < 0
++rethrown         Auto/Strict Violation    assert result == n; throws IllegalArgumentException when n < 0
++rethrown         Auto/Assume Violation    assert result == n; throws IllegalArgumentException when n < 0
++aliasedLocals    Auto/Strict Confirmed Verified     assert result == n
++aliasedLocals    Auto/Assume Confirmed Verified     assert result == n
++aliasedLocals    Auto/Strict Violation    assert result == 0
++aliasedLocals    Auto/Assume Violation    assert result == 0
++aliasedObjects   Auto/Strict Confirmed Verified     assert result == n
++aliasedObjects   Auto/Assume Confirmed Verified     assert result == n
++aliasedObjects   Auto/Strict Violation    assert result == 0
++aliasedObjects   Auto/Assume Violation    assert result == 0
++twoArrays        Auto/Strict Confirmed Verified     assume a.length > 0 && b.length > 0; assert result == 1
++twoArrays        Auto/Assume Confirmed Verified     assume a.length > 0 && b.length > 0; assert result == 1
++writeThrough     Auto/Strict Confirmed Verified     assert result == 7
++writeThrough     Auto/Assume Confirmed Verified     assert result == 7
++length           Auto/Strict Confirmed Verified     assert result >= 0
++length           Auto/Assume Confirmed Verified     assert result >= 0
++lengthOrMinusOne Auto/Strict Confirmed Verified     assert result >= 0
++lengthOrMinusOne Auto/Assume Confirmed Verified     assert result >= 0
++nullLocal        Auto/Strict Confirmed Verified     assert result == 1; throws NullPointerException when n <= 0
++nullLocal        Auto/Assume Confirmed Verified     assert result == 1; throws NullPointerException when n <= 0
++nullLocal        Auto/Strict Violation    assert result == 1
++nullLocal        Auto/Assume Violation    assert result == 1
++width            Auto/Strict Confirmed Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
++width            Auto/Assume Confirmed Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
++width            Auto/Strict Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
++width            Auto/Assume Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
++width            Auto/Strict Violation    assert result == hi - lo
++width            Auto/Assume Violation    assert result == hi - lo
++clamp            Auto/Strict Confirmed Verified     assert result >= 0
++clamp            Auto/Assume Confirmed Verified     assert result >= 0
++clamp            Auto/Strict Violation    assert result == n
++clamp            Auto/Assume Violation    assert result == n
++pairsEqual       Auto/Strict Unverifiable assert result
++pairsEqual       Auto/Assume Unverifiable assert result
++pairsEqual       Auto/Strict Unverifiable assert !result
++pairsEqual       Auto/Assume Verified     assert !result
++sides            Auto/Strict Confirmed Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
++sides            Auto/Assume Confirmed Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
++sides            Auto/Strict Violation    assert result == 4
++sides            Auto/Assume Violation    assert result == 4
++code             Auto/Strict Confirmed Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
++code             Auto/Assume Confirmed Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
++code             Auto/Strict Violation    assert result == 2
++code             Auto/Assume Violation    assert result == 2
++divide           Auto/Strict Confirmed Verified     assume b == -1; assert result == -a
++divide           Auto/Assume Confirmed Verified     assume b == -1; assert result == -a
++divide           Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divide           Auto/Assume Violation    assume b == -1 && a < 0; assert result > 0
++divide           Auto/Strict NoVerdict Verified     assert result * b + a % b == a; throws ArithmeticException when b == 0
++divide           Auto/Assume NoVerdict Verified     assert result * b + a % b == a; throws ArithmeticException when b == 0
++divide           Auto/Strict Violation    assert result * b + a % b == a
++divide           Auto/Assume Violation    assert result * b + a % b == a
++divideLong       Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
++divideLong       Auto/Assume Violation    assume b == -1 && a < 0; assert result > 0
++divideLong       Auto/Strict Confirmed Verified     assume b == -1; assert result == -a
++divideLong       Auto/Assume Confirmed Verified     assume b == -1; assert result == -a
++remainder        Auto/Strict Confirmed Verified     assume b > 0; assert result > -b && result < b
++remainder        Auto/Assume Confirmed Verified     assume b > 0; assert result > -b && result < b
++remainder        Auto/Strict Violation    assume b > 0; assert result >= 0
++remainder        Auto/Assume Violation    assume b > 0; assert result >= 0
++remainder        Auto/Strict Confirmed Verified     assume b == -1; assert result == 0
++remainder        Auto/Assume Confirmed Verified     assume b == -1; assert result == 0
++remainderLong    Auto/Strict Confirmed Verified     assume b == -1; assert result == 0
++remainderLong    Auto/Assume Confirmed Verified     assume b == -1; assert result == 0
++remainderLong    Auto/Strict Violation    assume a < 0 && b > 0; assert result >= 0
++remainderLong    Auto/Assume Violation    assume a < 0 && b > 0; assert result >= 0
++shiftLeft        Auto/Strict Confirmed Verified     assume s == 32; assert result == x
++shiftLeft        Auto/Assume Confirmed Verified     assume s == 32; assert result == x
++shiftLeft        Auto/Strict Violation    assume s == 32; assert result == 0
++shiftLeft        Auto/Assume Violation    assume s == 32; assert result == 0
++shiftLeft        Auto/Strict Confirmed Verified     assume s == -1 && x == 1; assert result == -2147483648
++shiftLeft        Auto/Assume Confirmed Verified     assume s == -1 && x == 1; assert result == -2147483648
++shiftLeftLong    Auto/Strict Confirmed Verified     assume s == 64; assert result == x
++shiftLeftLong    Auto/Assume Confirmed Verified     assume s == 64; assert result == x
++shiftLeftLong    Auto/Strict Violation    assume s == 64; assert result == 0
++shiftLeftLong    Auto/Assume Violation    assume s == 64; assert result == 0
++shiftLeftLong    Auto/Strict Confirmed Verified     assume s == 32 && x == 1; assert result > 2147483647
++shiftLeftLong    Auto/Assume Confirmed Verified     assume s == 32 && x == 1; assert result > 2147483647
++shiftRight       Auto/Strict Confirmed Verified     assume x == -1; assert result == -1
++shiftRight       Auto/Assume Confirmed Verified     assume x == -1; assert result == -1
++shiftRight       Auto/Strict Violation    assume s == 33; assert result == x / 2
++shiftRight       Auto/Assume Violation    assume s == 33; assert result == x / 2
++shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0
++shiftUnsigned    Auto/Assume Violation    assume x < 0 && s == 32; assert result > 0
++shiftUnsigned    Auto/Strict Confirmed Verified     assume x < 0 && s == 1; assert result > 0
++shiftUnsigned    Auto/Assume Confirmed Verified     assume x < 0 && s == 1; assert result > 0
++square           Auto/Strict Violation    assert result >= 0
++square           Auto/Assume Violation    assert result >= 0
++negate           Auto/Strict Violation    assume x < 0; assert result > 0
++negate           Auto/Assume Violation    assume x < 0; assert result > 0
++toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0
++toByte           Auto/Assume Violation    assume x >= 0; assert result >= 0
++toByte           Auto/Strict Confirmed Verified     assert result >= -128 && result <= 127
++toByte           Auto/Assume Confirmed Verified     assert result >= -128 && result <= 127
++toChar           Auto/Strict Confirmed Verified     assert result >= 0 && result <= 65535
++toChar           Auto/Assume Confirmed Verified     assert result >= 0 && result <= 65535
++toChar           Auto/Strict Violation    assert result == x
++toChar           Auto/Assume Violation    assert result == x
++toShort          Auto/Strict Confirmed Verified     assume x == 32768; assert result == -32768
++toShort          Auto/Assume Confirmed Verified     assume x == 32768; assert result == -32768
++fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0
++fromLong         Auto/Assume Violation    assume x > 2147483647; assert result > 0
++nextChar         Auto/Strict Confirmed Verified     assume c == 65535; assert result == 0
++nextChar         Auto/Assume Confirmed Verified     assume c == 65535; assert result == 0
++nextChar         Auto/Strict Violation    assert result > c
++nextChar         Auto/Assume Violation    assert result > c
++absolute         Auto/Strict Violation    assert result >= 0
++absolute         Auto/Assume Violation    assert result >= 0
++increment        Auto/Strict Confirmed Verified     assume x == 2147483647; assert result == -2147483648
++increment        Auto/Assume Confirmed Verified     assume x == 2147483647; assert result == -2147483648
++byteSum          Auto/Strict Confirmed Verified     assert result >= -256 && result <= 254
++byteSum          Auto/Assume Confirmed Verified     assert result >= -256 && result <= 254
++byteSum          Auto/Strict Violation    assert result >= 0
++byteSum          Auto/Assume Violation    assert result >= 0
++
++55 cases, 96 claims (50 refuted on the JVM), 192 runs; the interpreter refuses firstByte([0])
++
++thread 'the_corpus_agrees_with_the_jvm_under_auto_confirm' (1154601) panicked at tests/conformance.rs:689:5:
++12 disagreements with the JVM:
++caught [assert n != 0 || result == -1]: Auto --gaps Strict reports a violation on caught(n=0) that the JVM does not reproduce: the harness holds
++caught [assert n != 0 || result == -1]: Auto --gaps Assume reports a violation on caught(n=0) that the JVM does not reproduce: the harness holds
++caughtAsRuntime [assert n != 0 || result == -1]: Auto --gaps Strict reports a violation on caughtAsRuntime(n=0) that the JVM does not reproduce: the harness holds
++caughtAsRuntime [assert n != 0 || result == -1]: Auto --gaps Assume reports a violation on caughtAsRuntime(n=0) that the JVM does not reproduce: the harness holds
++nestedHandler [assert n != 0 || result == -2]: Auto --gaps Strict reports a violation on nestedHandler(n=0) that the JVM does not reproduce: the harness holds
++nestedHandler [assert n != 0 || result == -2]: Auto --gaps Assume reports a violation on nestedHandler(n=0) that the JVM does not reproduce: the harness holds
++caught [assert n != 0 || result == -1]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#caught cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -1` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  caught(n=0)
++    outcome in the interpreter: -1, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++caught [assert n != 0 || result == -1]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#caught cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -1` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  caught(n=0)
++    outcome in the interpreter: -1, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++caughtAsRuntime [assert n != 0 || result == -1]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#caughtAsRuntime cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -1` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  caughtAsRuntime(n=0)
++    outcome in the interpreter: -1, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++caughtAsRuntime [assert n != 0 || result == -1]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#caughtAsRuntime cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -1` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  caughtAsRuntime(n=0)
++    outcome in the interpreter: -1, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++nestedHandler [assert n != 0 || result == -2]: JBMC disagrees with a proof of the own checker's under --gaps Strict, and the JVM does not refute it: ✗ conformance.Conformance#nestedHandler cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  nestedHandler(n=0)
++    outcome in the interpreter: -2, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++nestedHandler [assert n != 0 || result == -2]: JBMC disagrees with a proof of the own checker's under --gaps Assume, and the JVM does not refute it: ✗ conformance.Conformance#nestedHandler cannot be verified: the engines disagree: the tool's own checker proves that it satisfies `n != 0 || result == -2` on every input (jvmcontract's own checker (CaDiCaL), 0.0 s), and JBMC 6.11.0 refutes it on
++  nestedHandler(n=0)
++    outcome in the interpreter: -2, where the harness holds, as the own checker says
++
++Neither verdict stands. Run the method on the input above on a JVM: if the property fails there, the tool's own checker is wrong, and otherwise JBMC is.
++
++note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
++test the_corpus_agrees_with_the_jvm_under_auto_confirm ... FAILED
++
++failures:
++
++failures:
++    the_corpus_agrees_with_the_jvm_under_auto_confirm
++
++test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 1218.37s
++
++error: test failed, to rerun pass `--test conformance`

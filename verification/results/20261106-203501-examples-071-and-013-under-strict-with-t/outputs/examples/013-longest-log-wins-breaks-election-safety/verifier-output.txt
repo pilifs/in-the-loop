@@ -1,0 +1,10 @@
+note: JBMC reaches 2 constructs it approximates (its stubs and unlinked call sites, examples/apps/quorum/build/equivalence/jbmc-goto.txt):
+  jbmc gap: jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-25.0.5: java.util.Collection.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at java.util.ImmutableCollections.listCopy:85
+  jbmc gap: jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5: java.util.Collection.isEmpty() is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at java.util.ImmutableCollections.listCopy:82
+✗ Behaviour of net.terminalvalue.quorum.raft.VoteRule#grant changed:
+  grant(currentTerm=0, votedFor=0, lastLogTerm=1, lastLogIndex=0, candidate=0, candidateTerm=0, candidateLastLogTerm=0, candidateLastLogIndex=1)
+    before: false
+    after:  true
+  (found by JBMC 6.11.0 in 0.3 s searching inputs in [0:20] as grant(currentTerm=20, votedFor=20, lastLogTerm=19, lastLogIndex=0, candidate=20, candidateTerm=20, candidateLastLogTerm=1, candidateLastLogIndex=17), shrunk to the input above in 24 interpreter runs, replayed in the interpreter; domain currentTerm: long × votedFor: int × lastLogTerm: long × lastLogIndex: long × candidate: int × candidateTerm: long × candidateLastLogTerm: long × candidateLastLogIndex: long)
+
+If the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.

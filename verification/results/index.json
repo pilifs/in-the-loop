@@ -2,6 +2,156 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref",
+      "title": "JBMC's escaping exceptions named and refused: corpus under JBMC, auto and --confirm, and the integration tests (engine-priorities step 3)",
+      "status": "failed",
+      "summary": "failed: 2 failed, 1 passed step(s) in 44m36s, peak 1.3 GiB (estimated 45m00s, 3.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+      "attention": [
+        "declared output lib/target/integration-step3.log was not produced",
+        "step 1 (integration tests) exited 1, expected 0",
+        "step 3 (conformance corpus under auto --confirm) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc_gaps.rs",
+          "lib/tests/fixtures/jbmc-defects/README.md",
+          "lib/tests/conformance.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md"
+        ]
+      },
+      "sourceCommit": "ffb68ef595258180748edcfaa44d0206203aff47",
+      "finishedAt": "2026-11-06T22:27:35+00:00",
+      "wallSeconds": 2676.2,
+      "peakMemoryBytes": 1372708864,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2700.0,
+        "notes": "the earlier JBMC conformance job (-021741) took 18 min for 93 claims; the corpus has about 135 claims now, and --confirm another run per own-checker proof; the integration tests took under 3 min in -015449"
+      },
+      "host": "vm-1",
+      "result": "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref/result.json"
+    },
+    {
+      "id": "20261106-203501-examples-071-and-013-under-strict-with-t",
+      "title": "Examples 071 and 013 under strict with the Enum and List models, the contract library recorded on JDK 25.0.5, and the conformance corpus under JBMC",
+      "status": "failed",
+      "summary": "failed: 4 passed, 2 failed step(s) in 14m04s, peak 1.0 GiB (estimated 45m00s, 3.0 GiB); 10 output file(s) changed; signals: example:as-expected×1; jvmcontract:holds×10; cargo:tests×1",
+      "attention": [
+        "step 3 (071: the first two proofs stand with no gap) exited 1, expected 0",
+        "step 6 (conformance corpus under JBMC and auto) exited 101, expected 0"
+      ],
+      "capabilities": [
+        "B11",
+        "B9",
+        "jvmcontract:prove",
+        "jvmcontract:gap-contracts"
+      ],
+      "links": {
+        "examples": [
+          "071",
+          "013"
+        ],
+        "paths": [
+          "lib/models/java/util/ImmutableCollections.java",
+          "lib/models/java/lang/Enum.java"
+        ],
+        "jobs": [
+          "20261106-082917"
+        ]
+      },
+      "sourceCommit": "7457928f1864c684b30ffbf46f295ae188dbe8aa",
+      "finishedAt": "2026-11-06T21:57:03+00:00",
+      "wallSeconds": 844.5,
+      "peakMemoryBytes": 1086943232,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 2700.0,
+        "notes": "071's three JBMC proofs and 013's run took under a minute each in job 20261106-181101; the library record is proofs and JVM tests over 7 contract files, minutes; the JBMC conformance test took 18 min for 93 claims in job 20261106-021741 and has 142 now, with a preflight per run; the JBMC conformance job peaked at 1.0 GiB with JBMC capped at 2 GiB (JVMCONTRACT_JBMC_MEMORY_MB=2048)"
+      },
+      "host": "vm-1",
+      "result": "20261106-203501-examples-071-and-013-under-strict-with-t/result.json"
+    },
+    {
+      "id": "20261106-204220-the-41-recorded-jbmc-examples-under-stri",
+      "title": "The 41 recorded JBMC examples under strict on both engines, with a per-obligation gap table (engine-priorities step 4a)",
+      "status": "failed",
+      "summary": "failed: 2 failed, 1 passed step(s) in 1m51s, peak 1.1 GiB (estimated 25m00s, 2.0 GiB); 90 output file(s) changed",
+      "attention": [
+        "step 1 (41 recorded JBMC examples under strict, on JBMC, with the gap table) exited 1, expected 0",
+        "step 2 (the same 41 under strict on the tool's own checker, with the gap table) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/gap_table.py",
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "61f5e48d1abfe9d3fcf2a0e394ee67b7893ae134",
+      "finishedAt": "2026-11-06T21:44:50+00:00",
+      "wallSeconds": 111.3,
+      "peakMemoryBytes": 1133903872,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 1500.0,
+        "notes": "job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU, held back 5 minutes by the quota (a JVM wants 2); build.py compiles and tests the app per example; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261106-204220-the-41-recorded-jbmc-examples-under-stri/result.json"
+    },
+    {
+      "id": "20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha",
+      "title": "Benchmark corpus with exclusive JBMC phases and JBMC's three staging policies (engine-priorities step 2b)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1h31m, peak 4.0 GiB (estimated 2h30m, 3.5 GiB); 2 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "benchmark",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark",
+          "lib/src/deadline.rs",
+          "lib/src/phases.rs"
+        ],
+        "examples": [
+          "141",
+          "142"
+        ]
+      },
+      "sourceCommit": "26227917d3b6a39d931316e86408e513c88e56bd",
+      "finishedAt": "2026-11-06T21:42:39+00:00",
+      "wallSeconds": 5466.6,
+      "peakMemoryBytes": 4294967296,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3758096384,
+        "durationSeconds": 9000.0,
+        "notes": "job -102624 took about 40 minutes: JBMC about 33 min over 356 runs, the own checker about 7. Here JBMC runs three times (full-range and tight should be no slower than staged, so up to about 100 min), auto adds the own checker's 7 min again and its fallbacks (about 10-20 cases per mode, each up to 30 s, under each policy: up to about 50 min more). JBMC runs are capped at 3 GiB each; one runs at a time."
+      },
+      "host": "vm-1",
+      "result": "20261106-201041-benchmark-corpus-with-exclusive-jbmc-pha/result.json"
+    },
+    {
       "id": "20261106-194328-cbmc-6-11-0-s-source-times-runtime-post",
       "title": "CBMC 6.11.0's source times Runtime Post-process inside Runtime Solver (resubmitted with a matching grep)",
       "status": "passed",

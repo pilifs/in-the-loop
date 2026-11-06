@@ -1,0 +1,731 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-203501-examples-071-and-013-under-strict-with-t",
+  "title": "Examples 071 and 013 under strict with the Enum and List models, the contract library recorded on JDK 25.0.5, and the conformance corpus under JBMC",
+  "status": "failed",
+  "summary": "failed: 4 passed, 2 failed step(s) in 14m04s, peak 1.0 GiB (estimated 45m00s, 3.0 GiB); 10 output file(s) changed; signals: example:as-expected×1; jvmcontract:holds×10; cargo:tests×1",
+  "attention": [
+    "step 3 (071: the first two proofs stand with no gap) exited 1, expected 0",
+    "step 6 (conformance corpus under JBMC and auto) exited 101, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261106-203501-examples-071-and-013-under-strict-with-t.json",
+    "sha256": "3b43dbdcd295d5b6ae224b070daeb3ed9248ffac992ce4edd0245498f0cb8c76",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-203501-examples-071-and-013-under-strict-with-t",
+      "title": "Examples 071 and 013 under strict with the Enum and List models, the contract library recorded on JDK 25.0.5, and the conformance corpus under JBMC",
+      "description": "Phase 5 of llm-dlc/loops/engine-priorities.md (the native stream). lib/models now has models of java.lang.Enum (Enum.<init>(String,int) sets name and ordinal; name, ordinal, toString, equals) and of java.util.List's factories of and copyOf with the JDK's immutable lists (ImmutableCollections.List12, ListN, EMPTY_LIST), on JBMC's class path only: JBMC stubbed these, and job 20261106-082917 found that example 071's three property proofs and 013's equivalence reach exactly these three stubs, so under strict 071's first two proofs were no verdict (its recorded result.json shows them unverifiable on jdk-constructor:java.lang.Enum.<init>, jdk-static-method:java.util.List.copyOf and List.of). The interpreter keeps its natives for these classes (fixed in the same change where they differed from the JVM: an enum's name is the string its constructor was given, List.of() is one list, get out of range throws as List12 or ListN does, a search for null throws NPE), and the models themselves were run on a JVM, relocated out of java.*, against the JDK's classes. Steps: (1) 071 under strict, as recorded examples now run: expected a violation as before; (2) a check that 071's first two obligations are now verified with no gap and the third a violation; (3) 013 under strict: a violation whose witness replays; (4) jvmcontract gap-contracts --record over lib/models/contracts on this machine's JDK 25.0.5 (checked.json records 25.0.4.1, so the library's contracts are not applied here); (5) the conformance corpus under JBMC and --engine auto, strict (the ignored test), whose log lists every claim's verdict: the 22 new claims over enums and immutable lists should raise no disagreement with the JVM. A risk step 2 will show: JBMC's gap preflight walks the call graph without paths, so stubs reached only through dispatch inside the model (Collection.isEmpty/toArray in listCopy, the abstract List.get) may be named as gaps. Not network-dependent.",
+      "kind": "model",
+      "capabilities": [
+        "B11",
+        "B9",
+        "jvmcontract:prove",
+        "jvmcontract:gap-contracts"
+      ],
+      "links": {
+        "examples": [
+          "071",
+          "013"
+        ],
+        "paths": [
+          "lib/models/java/util/ImmutableCollections.java",
+          "lib/models/java/lang/Enum.java"
+        ],
+        "jobs": [
+          "20261106-082917"
+        ]
+      },
+      "expected": "071 and 013 give their expected verdicts (violation) under strict; 071's obligations 1 and 2 are verified with no gap and 3 is a violation whose witness replays; checked.json is rewritten for JDK 25.0.5 with every contract checked again; the conformance log shows no disagreement on enumState and the list* cases (other failures in that step, if any, are named in its log and judged apart)",
+      "submitted": {
+        "at": "2026-11-06T20:35:13+00:00",
+        "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+        "by": "claude (engines-native stream)"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "45m",
+        "memoryLimit": "4G",
+        "timeout": "120m",
+        "notes": "071's three JBMC proofs and 013's run took under a minute each in job 20261106-181101; the library record is proofs and JVM tests over 7 contract files, minutes; the JBMC conformance test took 18 min for 93 claims in job 20261106-021741 and has 142 now, with a preflight per run; the JBMC conformance job peaked at 1.0 GiB with JBMC capped at 2 GiB (JVMCONTRACT_JBMC_MEMORY_MB=2048)"
+      },
+      "steps": [
+        {
+          "name": "build jvmcontract",
+          "run": "cd lib && cargo build --release",
+          "cwd": "."
+        },
+        {
+          "name": "example 071 (B11) under strict",
+          "run": "python3 examples/tools/build.py 071",
+          "cwd": "."
+        },
+        {
+          "name": "071: the first two proofs stand with no gap",
+          "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got\"",
+          "cwd": "."
+        },
+        {
+          "name": "example 013 (B9) under strict",
+          "run": "python3 examples/tools/build.py 013",
+          "cwd": "."
+        },
+        {
+          "name": "record the contract library on this JDK",
+          "run": "lib/target/release/jvmcontract gap-contracts --dir lib/models/contracts --record",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse",
+        "examples/013-longest-log-wins-breaks-election-safety",
+        "lib/models/contracts/checked.json",
+        "lib/target/conformance-jbmc.log"
+      ]
+    }
+  },
+  "sourceCommit": "7457928f1864c684b30ffbf46f295ae188dbe8aa",
+  "startedAt": "2026-11-06T21:42:58+00:00",
+  "finishedAt": "2026-11-06T21:57:03+00:00",
+  "wallSeconds": 845.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1020965,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 2700.0,
+    "notes": "071's three JBMC proofs and 013's run took under a minute each in job 20261106-181101; the library record is proofs and JVM tests over 7 contract files, minutes; the JBMC conformance test took 18 min for 93 claims in job 20261106-021741 and has 142 now, with a preflight per run; the JBMC conformance job peaked at 1.0 GiB with JBMC capped at 2 GiB (JVMCONTRACT_JBMC_MEMORY_MB=2048)"
+  },
+  "usage": {
+    "peakMemoryBytes": 1086943232,
+    "wallSeconds": 844.5,
+    "cpuSeconds": 903.8,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 102.47,
+      "cpuSeconds": 136.714,
+      "cpuThrottledSeconds": 0.565,
+      "peakMemoryBytes": 1086943232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-jvmcontract.log",
+        "lines": 47,
+        "bytes": 1596,
+        "sha256": "a465c5eca5dc67d5f8380aa1b025c020dfeb173df22efa4148850ff30cfff43b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling unicode-ident v1.0.27",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling memchr v2.8.3",
+        "   Compiling cc v1.10.0",
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling zmij v1.0.23",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling heck v0.5.0",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-203501-examples-071-and-013-under-strict-with-t/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 42s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "example 071 (B11) under strict",
+      "run": "python3 examples/tools/build.py 071",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.008,
+      "cpuSeconds": 6.431,
+      "cpuThrottledSeconds": 0.676,
+      "peakMemoryBytes": 140136448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-example-071-b11-under-strict.log",
+        "lines": 20,
+        "bytes": 797,
+        "sha256": "1892563c41dd61f7a3cca320e9b2ac7064253be1d55660a69704679847ef9f10",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 20,
+          "text": "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)",
+          "groups": [
+            "071",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: running (B11)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.8 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 0.9 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · cargo build jvmcontract",
+        "  · cargo build jvmcontract: exited 0, 0.0 s",
+        "  · jvmcontract prove",
+        "  · jvmcontract prove: exited 1, 1.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "071: the first two proofs stand with no gap",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); assert got[0]==('verified',[]) and got[1]==('verified',[]) and got[2][0]=='violation', got\"",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.03,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 7913472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-071-the-first-two-proofs-stand.log",
+        "lines": 6,
+        "bytes": 1795,
+        "sha256": "2ed9c4ae9caad5778a6b42e1dde68817fbd9e88f337886f74142eb5aee87f2f6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"<string>\", line 1, in <module>",
+        "    import json,glob; r=json.load(open(glob.glob('examples/071-*/result.json')[0])); o=r['conclusion']['obligations']; got=[(x['evidence']['verdict'], [g['id'] for g in (x['evidence'].get('search') or {}).get('gaps') or []]) for x in o]; print(got); assert got[0]==('verified',[]) and got[1]==('verif",
+        "                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError: [('unverifiable', ['jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-25.0.5', 'jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5']), ('unverifiable', ['jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-25.0.5', 'jdk-pri",
+        "[('unverifiable', ['jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-25.0.5', 'jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-25.0.5']), ('unverifiable', ['jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-25.0.5', 'jdk-primitive-method:ja"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "example 013 (B9) under strict",
+      "run": "python3 examples/tools/build.py 013",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 7.668,
+      "cpuThrottledSeconds": 1.218,
+      "peakMemoryBytes": 133525504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-example-013-b9-under-strict.log",
+        "lines": 22,
+        "bytes": 819,
+        "sha256": "069ec97192ba4b931a7e965ce963ca183af5a80152dc47fb969114476de7121f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "as-expected",
+          "line": 22,
+          "text": "013-longest-log-wins-breaks-election-safety: violation (as expected)",
+          "groups": [
+            "013",
+            "violation"
+          ]
+        }
+      ],
+      "tail": [
+        "013-longest-log-wins-breaks-election-safety: running (B9)",
+        "  · apply the patch",
+        "  · apply the patch: exited 0, 0.0 s",
+        "  · javac patched quorum main",
+        "  · javac patched quorum main: exited 0, 0.9 s",
+        "  · javac patched quorum tests",
+        "  · javac patched quorum tests: exited 0, 1.0 s",
+        "  · the quorum tests",
+        "  · the quorum tests: exited 0, 0.1 s",
+        "  · javac unpatched quorum main",
+        "  · javac unpatched quorum main: exited 0, 0.9 s",
+        "  · cargo build jvmcontract",
+        "  · cargo build jvmcontract: exited 0, 0.0 s",
+        "  · jvmcontract equivalence",
+        "  · jvmcontract equivalence: exited 1, 0.4 s",
+        "  · version of java",
+        "  · version of java: exited 0, 0.0 s",
+        "  · version of javac",
+        "  · version of javac: exited 0, 0.1 s",
+        "  · version of jbmc",
+        "  · version of jbmc: exited 0, 0.0 s",
+        "013-longest-log-wins-breaks-election-safety: violation (as expected)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "record the contract library on this JDK",
+      "run": "lib/target/release/jvmcontract gap-contracts --dir lib/models/contracts --record",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.324,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 123924480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-record-the-contract-library-on.log",
+        "lines": 11,
+        "bytes": 2733,
+        "sha256": "1ac7c7e4d631c970aa0f7c92b617ff79858afd5939e61d122924b8afd2a41067",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 10
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 1,
+          "text": "✓ jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:5): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 166 ",
+          "groups": [
+            "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:5): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:11): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 16",
+          "groups": [
+            "jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:11): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 3,
+          "text": "✓ jdk-static-method:java.lang.Long.numberOfLeadingZeros(J)I@jdk-25.0.5 (lib/models/contracts/java.lang.Long.contracts:5): proved on every input against the bytecode of java.lang.Long in JDK 25.0.5 (sha256:ce816f57b745...), by jvmcontract's own checker (CaDiCaL) over 35 paths; tested on 168 inputs on",
+          "groups": [
+            "jdk-static-method:java.lang.Long.numberOfLeadingZeros(J)I@jdk-25.0.5 (lib/models/contracts/java.lang.Long.contracts:5): proved on every input against the bytecode of java.lang.Long in JDK 25.0.5 (sha256:ce816f57b745...), by jvmcontract's own checker (CaDiCaL) over 35 paths; tested on 168 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ jdk-constructor:java.lang.StringBuilder.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.lang.StringBuilder.contracts:5): tested on 129 inputs on JDK 25.0.5 (seed 1), 37 more running out of the test's memory, none refuting it; recorded now",
+          "groups": [
+            "jdk-constructor:java.lang.StringBuilder.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.lang.StringBuilder.contracts:5): tested on 129 inputs on JDK 25.0.5 (seed 1), 37 more running out of the test's memory, none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 5,
+          "text": "✓ jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.ArrayList.contracts:5): tested on 128 inputs on JDK 25.0.5 (seed 1), 38 more running out of the test's memory, none refuting it; recorded now",
+          "groups": [
+            "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.ArrayList.contracts:5): tested on 128 inputs on JDK 25.0.5 (seed 1), 38 more running out of the test's memory, none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 6,
+          "text": "✓ jdk-constructor:java.util.HashMap.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashMap.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+          "groups": [
+            "jdk-constructor:java.util.HashMap.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashMap.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 7,
+          "text": "✓ jdk-constructor:java.util.HashSet.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashSet.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+          "groups": [
+            "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashSet.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 8,
+          "text": "✓ jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:5): tested on 168 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+          "groups": [
+            "jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:5): tested on 168 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 9,
+          "text": "✓ jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:10): tested on 166 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now",
+          "groups": [
+            "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:10): tested on 166 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 10,
+          "text": "✓ jdk-void-method:java.util.Random.nextBytes([B)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:17): tested on 199 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now",
+          "groups": [
+            "jdk-void-method:java.util.Random.nextBytes([B)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:17): tested on 199 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now"
+          ]
+        }
+      ],
+      "tail": [
+        "✓ jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:5): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 166 ",
+        "✓ jdk-static-method:java.lang.Integer.numberOfTrailingZeros(I)I@jdk-25.0.5 (lib/models/contracts/java.lang.Integer.contracts:11): proved on every input against the bytecode of java.lang.Integer in JDK 25.0.5 (sha256:4bda1092c3a1...), by jvmcontract's own checker (CaDiCaL) over 18 paths; tested on 16",
+        "✓ jdk-static-method:java.lang.Long.numberOfLeadingZeros(J)I@jdk-25.0.5 (lib/models/contracts/java.lang.Long.contracts:5): proved on every input against the bytecode of java.lang.Long in JDK 25.0.5 (sha256:ce816f57b745...), by jvmcontract's own checker (CaDiCaL) over 35 paths; tested on 168 inputs on",
+        "✓ jdk-constructor:java.lang.StringBuilder.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.lang.StringBuilder.contracts:5): tested on 129 inputs on JDK 25.0.5 (seed 1), 37 more running out of the test's memory, none refuting it; recorded now",
+        "✓ jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.ArrayList.contracts:5): tested on 128 inputs on JDK 25.0.5 (seed 1), 38 more running out of the test's memory, none refuting it; recorded now",
+        "✓ jdk-constructor:java.util.HashMap.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashMap.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+        "✓ jdk-constructor:java.util.HashSet.<init>(I)V@jdk-25.0.5 (lib/models/contracts/java.util.HashSet.contracts:5): tested on 166 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+        "✓ jdk-constructor:java.util.Random.<init>(J)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:5): tested on 168 inputs on JDK 25.0.5 (seed 1), none refuting it; recorded now",
+        "✓ jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:10): tested on 166 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now",
+        "✓ jdk-void-method:java.util.Random.nextBytes([B)V@jdk-25.0.5 (lib/models/contracts/java.util.Random.contracts:17): tested on 199 inputs on JDK 25.0.5 (seed 1), each called on new java.util.Random(), none refuting it; recorded now",
+        "10 contracts checked on JDK 25.0.5: 10 accepted (3 proved, 7 tested), 0 refused; records written to lib/models/contracts/checked.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc.log",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 731.419,
+      "cpuSeconds": 752.625,
+      "cpuThrottledSeconds": 0.493,
+      "peakMemoryBytes": 1046835200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-conformance-corpus-under-jbmc.log",
+        "lines": 293,
+        "bytes": 20609,
+        "sha256": "db87d5a81666dead9dc64fc22379742761a156cf01659a063000ee147f48dd0c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 291,
+          "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 661.68s",
+          "groups": [
+            "FAILED",
+            "0",
+            "1"
+          ]
+        }
+      ],
+      "tail": [
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "",
+        "73 cases, 131 claims (67 refuted on the JVM), 262 runs; the interpreter refuses firstByte([0]), listChange(7)",
+        "",
+        "thread 'the_corpus_agrees_with_the_jvm_under_jbmc_and_auto' (1045478) panicked at tests/conformance.rs:749:5:",
+        "1 disagreements with the JVM:",
+        "declaring [assert result == n + 107]: Jbmc --gaps strict says Verified, and the JVM refutes it: ✓ conformance.Conformance#declaring satisfies `result == n + 107` on every input (JBMC 6.11.0: 2 properties proved over n: int in 0.2 s; loops unwound 16 times with unwinding assertions)",
+        "",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... FAILED",
+        "",
+        "failures:",
+        "",
+        "failures:",
+        "    the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 661.68s",
+        "",
+        "error: test failed, to rerun pass `--test conformance`"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "change": "modified",
+      "bytes": 32959,
+      "sha256": "c9d10ed3ed740b2e73b434ffcc32974dd32fba8bb0059f3f70e61ed160b44d06",
+      "sourceSha256": "22d5e1561d103ae2fb17e35ef7dd5c9fb97e1bdf4845105cc389ccb146c92694"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "change": "modified",
+      "bytes": 41735,
+      "sha256": "235c9a24986cdc4475efa52c2028c3e60949c9764eb91ff3a0ec32b48e168e45",
+      "sourceSha256": "b066fd5b5f2d763fde98cdf726e346f6e897c2b8380b287d6483cb113e7d3e3f"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.sarif",
+      "change": "modified",
+      "bytes": 4632,
+      "sha256": "cc5dadecedf68a0216febf504c450b0e7472ae61b4b095530f43edc14bdb3130",
+      "sourceSha256": "c0f771183eb192ed5c9405ed78d56870d7b0d02e4e2584b752fda13ffc98ff5d"
+    },
+    {
+      "path": "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt",
+      "change": "modified",
+      "bytes": 4175,
+      "sha256": "65db846dfa5595f4a5ca1aa532315e52ef220459179399d733eede25159d3ed9",
+      "sourceSha256": "c75616224647fe7e3fc86c8e5fc3daa3805dbc94df88c3bb8bef2036d2c35fec"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/README.md",
+      "change": "modified",
+      "bytes": 19467,
+      "sha256": "e7640391250cec0d996ae0b12874cd21c0f2b8e87509cdd1643aef186209c5f4",
+      "sourceSha256": "67d5a63eccd48df3e4cca6c9c2f06cce64a823b217a5c1e802caa2ea3ab32f9c"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/result.json",
+      "change": "modified",
+      "bytes": 19700,
+      "sha256": "6685b2a196711a115c250c74e40e665666f8db88ce37637cfbec69887260777d",
+      "sourceSha256": "7161a2d2733b74758fc811e69a5865d0e06dc1e1feb42afa0240cf57709b6cf0"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/result.sarif",
+      "change": "modified",
+      "bytes": 2645,
+      "sha256": "44a559f814ba3f1559d0477291de323d30cddc5a4fe2be00576853080ed79178",
+      "sourceSha256": "11cb642ef74d5db9b715465cbc83aa9b139b73af22d42c38604aa89f91e9ec34"
+    },
+    {
+      "path": "examples/013-longest-log-wins-breaks-election-safety/verifier-output.txt",
+      "change": "modified",
+      "bytes": 1628,
+      "sha256": "9df7684313a587f4d14809ebb4e9b0c5f8c3455a37deb4a71bdae517bb33ae3f",
+      "sourceSha256": "a0f2b7aae3672bdda3f1d7042eca820f58cd81f6f4cbc9840cec33843ff5811a"
+    },
+    {
+      "path": "lib/models/contracts/checked.json",
+      "change": "modified",
+      "bytes": 13742,
+      "sha256": "fc5c7e3dd6460540ac0642ce71612788d972d809f14d3ad320e7c3275d023b60",
+      "sourceSha256": "368d584b98058d7c9a9bd3bcbaafddccba6a23ef9652caabd0084aeed01be9b2"
+    },
+    {
+      "path": "lib/target/conformance-jbmc.log",
+      "change": "added",
+      "bytes": 20609,
+      "sha256": "db87d5a81666dead9dc64fc22379742761a156cf01659a063000ee147f48dd0c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T22:27:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/README.md",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.json",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/result.sarif",
+      "examples/071-vote-rule-that-compares-log-length-before-term-grants-a-vote-it-must-refuse/verifier-output.txt",
+      "examples/013-longest-log-wins-breaks-election-safety/README.md",
+      "examples/013-longest-log-wins-breaks-election-safety/result.json",
+      "examples/013-longest-log-wins-breaks-election-safety/result.sarif",
+      "examples/013-longest-log-wins-breaks-election-safety/verifier-output.txt",
+      "lib/models/contracts/checked.json",
+      "lib/target/conformance-jbmc.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261106-203501-examples-071-and-013-under-strict-with-t"
+}
