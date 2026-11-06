@@ -24,7 +24,9 @@ commands by hand to see: the runner is how they run, under limits.
    of its own: 3.5 GB unless its brief sets `- memory:`. Leave the runner the machine's memory less the loops' caps. On
    this 9 GB machine with one loop, the defaults fit; without any, `--memory 7G --workers 3`. Use `--watch` only
    when the user asks for the pipeline to keep going; it does not stop by itself. While it runs, don't start proofs
-   of your own, and don't start a second runner: it refuses while the first holds the lock.
+   of your own, and don't start a second runner: it refuses while the first holds the lock. To wait for it, wait for
+   the background task's completion notification, or poll `python3 verification/pipeline.py status` until it shows
+   `running: 0`; never wait with `pgrep -f` on a pattern, since it matches the waiting command's own command line.
 
 3. **Collect.** When the run finishes, `python3 verification/pipeline.py collect`. It moves results into
    `verification/results/`, applies the outputs of jobs that passed to the working copy unless a file changed since
