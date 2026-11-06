@@ -1470,6 +1470,35 @@ class HookCursor(unittest.TestCase):
         with mock.patch.object(sync, "STATE", self.state_new):
             self.assertEqual(sync.hook_unsent(older_than=sync.HOOK_GRACE), [(sid, "2026-11-01T00:00:00+00:00")])
 
+    def test_one_langfuse_command_sends_several_sessions_and_names_those_left(self):
+        a, b, c = (str(uuid.UUID(int=n)) for n in (21, 22, 23))
+        sent = []
+
+        def send(sid, live):
+            if sid == b:
+                raise OSError("connection refused")
+            sent.append((sid, live))
+        with mock.patch.object(sync, "langfuse_send", send):
+            self.assertEqual(sync.cmd_langfuse([a, f"{c}:live", a]), 0)
+            self.assertEqual(sent, [(a, None), (c, True)])  # each once, in order, :live kept per session
+            sent.clear()
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err), mock.patch.object(sync, "log", lambda m: print(m, file=err)):
+                self.assertEqual(sync.cmd_langfuse([a, b, c]), 1)
+        self.assertEqual(sent, [(a, None)])  # the first failure stops it
+        self.assertIn(f"python3 llm-dlc/tools/sync.py langfuse {b} {c}", err.getvalue())
+
+    def test_a_session_with_nothing_to_send_is_not_warned_about_again(self):
+        sid = str(uuid.UUID(int=24))  # its hook failed, and neither its transcript nor a log of it exists
+        self.state_new.mkdir()
+        (self.state_new / f"{sid}.json").write_text(json.dumps({"exported": [], "hook_unsent": "2026-11-01T00:00:00+00:00"}))
+        with mock.patch.object(sync, "STATE", self.state_new), \
+                mock.patch.object(sync, "claude_project_dir", return_value=self.transcript.parent), \
+                contextlib.redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(sync.cmd_langfuse([sid]), 0)
+            self.assertEqual(sync.hook_unsent(), [])
+        self.assertIn("nothing to send", err.getvalue())
+
     def test_lines_in_counts_what_the_redactor_reads(self):
         rng = random.Random(4)
         for _ in range(300):

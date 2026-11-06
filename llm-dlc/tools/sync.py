@@ -71,7 +71,7 @@ Commands:
   sync.py perf [N] [COMMAND]    where the last N commands' time went: phases, bytes, cache hits,
                                 subprocesses, network requests (LLM_TRACES_PERF=1 prints each as it ends)
   sync.py langfuse SID[:live]... | --all | --pending
-                                send sessions' finished turns to Langfuse by hand (commit and sync never do;
+                                send one or more sessions' finished turns to Langfuse by hand (commit and sync never do;
                                 the Stop hook does at the end of each turn); --pending lists the sessions
                                 with turns to send, --all sends them (tools/langfuse-loop.sh waits for more)
 
@@ -1965,6 +1965,9 @@ def langfuse_send(sid: str, live: bool | None = None) -> None:
     m = load_manifest(sid)
     data = load_log(sid, m["log"]["sha256"]) if m.get("log") else None
     if data is None:
+        if not m.get("log"):  # no transcript and no log was ever stored: nothing can be sent, now or later
+            print(f"{sid}: nothing to send, no transcript on this machine and no stored log", file=sys.stderr)
+            mark_hook_unsent(sid, False)
         return
     live = m.get("status") != "ended" if live is None else live
     export_langfuse(sid, read_jsonl(data), m, live=live)
@@ -1986,12 +1989,14 @@ def cmd_langfuse(args: list[str]) -> int:
         return 0
     if args == ["--all"]:
         args = langfuse_todo()
-    for arg in args:
+    args = list(dict.fromkeys(args))  # a session named twice is sent once
+    for i, arg in enumerate(args):
         sid, _, flag = arg.partition(":")
         try:
             langfuse_send(sid, True if flag == "live" else None)
         except OSError as e:
             log(f"langfuse export deferred for {sid}: {e}")
+            log("to send the sessions not sent yet: python3 llm-dlc/tools/sync.py langfuse " + " ".join(args[i:]))
             return 1
         except Exception:
             log(traceback.format_exc())
@@ -3283,9 +3288,12 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     notes += found_notes
     with perf.phase("global files"):
         errors += check_global_files(manifests, redact)
-    for sid, since in hook_unsent(older_than=HOOK_GRACE):
-        warnings.append(f"{sid}: Langfuse may be missing turns: its end-of-turn hook has not finished a send "
-                        f"since {since}; with Langfuse up, run: python3 llm-dlc/tools/sync.py langfuse {sid}")
+    if unsent := hook_unsent(older_than=HOOK_GRACE):
+        # One warning and one command for them all: `sync.py langfuse` takes several sessions.
+        since = ", ".join(f"{sid} since {when}" for sid, when in unsent)
+        warnings.append(f"Langfuse may be missing turns of {len(unsent)} session(s) whose end-of-turn hook has not "
+                        f"finished a send ({since}); with Langfuse up, run: python3 llm-dlc/tools/sync.py langfuse "
+                        + " ".join(sid for sid, _ in unsent))
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():

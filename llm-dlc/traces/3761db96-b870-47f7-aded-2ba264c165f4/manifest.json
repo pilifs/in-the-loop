@@ -1,0 +1,90 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "3761db96-b870-47f7-aded-2ba264c165f4",
+  "status": "open",
+  "title": "Feature loop run review actions",
+  "first_prompt": "Review results of the latest feature loop run and let's go through user actions left by it",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.318"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-06T10:48:34.990Z",
+  "ended": "2026-11-06T11:02:54.194Z",
+  "duration_seconds": 859,
+  "stats": {
+    "turns": 3,
+    "api_calls": 31,
+    "tool_calls": 32,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 115175,
+    "usage": {
+      "input_tokens": 66,
+      "output_tokens": 14513,
+      "cache_read_input_tokens": 2837141,
+      "cache_creation_input_tokens": 87648
+    }
+  },
+  "tools": {
+    "Bash": 30,
+    "Edit": 2
+  },
+  "files_touched": [
+    "llm-dlc/tools/test_performance.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T10:48:34.990Z",
+      "ended": "2026-11-06T11:02:54.194Z",
+      "turns": 3,
+      "api_calls": 31,
+      "usage": {
+        "input_tokens": 66,
+        "output_tokens": 14513,
+        "cache_read_input_tokens": 2837141,
+        "cache_creation_input_tokens": 87648
+      },
+      "peak_context_tokens": 115175
+    }
+  ],
+  "log": {
+    "sha256": "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914",
+    "bytes": 985649,
+    "lines": 312,
+    "gzip_bytes": 194247,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "mpknnxqntolpmtlkkvlkrvpkltoopwxk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow list: maintainer approved 08d01372, 16a9205e, 4802395b, 874bad78, 8eb0af9c, ddc847c6",
+      "body": "maintainer approved 6 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n08d01372  long-token  pro…ct (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n16a9205e  long-token  pro…me (44 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n4802395b  long-token  pro…ct (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n874bad78  long-token  pro…me (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\n8eb0af9c  long-token  pro…me (41 chars): Integration-test work-directory names (property-...-native/strict/assume, temp dirs) printed in tool output; no secret\nddc847c6  public-ip  5.…2: JVMS section number 5.4.3.2 cited in prose, not an IP address",
+      "log_sha256": "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914"
+    },
+    {
+      "change_id": "kzlzspskoxwntrssvzmxmltsuulxwzpz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "One Langfuse command for several sessions, and a session with nothing to send stops being reported",
+      "body": "sync.py check now gives one warning for all sessions whose end-of-turn hook did not finish a Langfuse send, with a single 'sync.py langfuse SID SID ...' command, instead of one warning and one command per session. sync.py langfuse already took several sessions; it now sends a session named twice once, and when it stops at a failure it prints the command for the sessions it had not reached.",
+      "log_sha256": "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914"
+    }
+  ],
+  "logs": {
+    "f8a22b238bdd7b84bbc19c0a328d18115ff8bbbd44ac37c57a4e5b43b9692914": {
+      "bytes": 985649,
+      "lines": 312,
+      "gzip_bytes": 194247,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
