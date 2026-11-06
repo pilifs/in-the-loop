@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T20:42:48.988Z",
-  "duration_seconds": 5265,
+  "ended": "2026-11-06T22:47:15.556Z",
+  "duration_seconds": 12732,
   "stats": {
-    "turns": 33,
-    "api_calls": 319,
-    "tool_calls": 317,
+    "turns": 39,
+    "api_calls": 387,
+    "tool_calls": 385,
     "tool_errors": 6,
-    "compactions": 6,
+    "compactions": 7,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 636,
-      "output_tokens": 282459,
-      "cache_read_input_tokens": 36079523,
-      "cache_creation_input_tokens": 886617
+      "input_tokens": 772,
+      "output_tokens": 328980,
+      "cache_read_input_tokens": 44047600,
+      "cache_creation_input_tokens": 1080661
     }
   },
   "tools": {
-    "Bash": 303,
+    "Bash": 371,
     "Edit": 8,
     "Read": 4,
     "Write": 2
@@ -130,24 +130,38 @@
     {
       "index": 6,
       "started": "2026-11-06T20:37:18.009Z",
-      "ended": "2026-11-06T20:42:48.988Z",
-      "turns": 4,
-      "api_calls": 31,
+      "ended": "2026-11-06T20:43:30.428Z",
+      "turns": 5,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 62,
-        "output_tokens": 23744,
-        "cache_read_input_tokens": 2583811,
-        "cache_creation_input_tokens": 102018
+        "input_tokens": 74,
+        "output_tokens": 26085,
+        "cache_read_input_tokens": 3290449,
+        "cache_creation_input_tokens": 108062
       },
-      "peak_context_tokens": 115097
+      "peak_context_tokens": 121141
+    },
+    {
+      "index": 7,
+      "started": "2026-11-06T20:44:01.503Z",
+      "ended": "2026-11-06T22:47:15.556Z",
+      "turns": 5,
+      "api_calls": 62,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 44180,
+        "cache_read_input_tokens": 7261439,
+        "cache_creation_input_tokens": 188000
+      },
+      "peak_context_tokens": 172424
     }
   ],
   "log": {
-    "sha256": "815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5",
-    "bytes": 8367595,
-    "lines": 3333,
-    "gzip_bytes": 1501372,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5.jsonl.gz"
+    "sha256": "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351",
+    "bytes": 9953547,
+    "lines": 4005,
+    "gzip_bytes": 1760778,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -214,6 +228,14 @@
       "summary": "The 41 recorded JBMC examples run under strict on both engines, tabulated per obligation (verification pending)",
       "body": "Step 4a of llm-dlc/loops/engine-priorities.md, in the engines-jbmc stream. Job 20261106-204220 runs build.py on the 41 recorded B9/B11 examples JBMC proves (Quorum, Crosscut, Mica) in two scratch copies of examples/: as recorded (--engine jbmc, --gaps strict), and with only approach.engine set to native. It saves examples/tools/gap_table.py --json for each engine, every result.json, both build logs, and a comparison of the two tables. This replaces job 20261106-082917's projection, made under assume and rebuilt by hand, with a measured table. Recorded verdicts don't change: a verdict that differs from its expected one is reported in the table, not counted as a failure, and nothing in examples/ is written.\n\ngap_table.py's rows now name their engine and checker, the example's expectation, and, for an obligation with no verdict, its problem and whether it is a JBMC proof refused at a construct JBMC runs otherwise than the JVM. That is step 3's guard, which records the defect only in the problem text. The summary counts the obligations with no verdict at a gap (under strict, a refused proof is already unresolved), those refused at a JBMC defect, and the examples that differ from their expected verdict. --compare lists the obligations whose status differs between two tables, the input to step 4c's coverage inventory.",
       "log_sha256": "815ca37bacbca422073f4465abccd814835b86252063bde3e4369383ca0a21a5"
+    },
+    {
+      "change_id": "pxqzmomtzsxywrnnnnwrusvotkpzqrvo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC right-shifts by the whole distance: the preflight names an unmasked shift and refuses a JBMC proof through one",
+      "body": "Found while reading step 2b's benchmark job 20261106-201041 (passed) for 2c: the one case whose class differed between JBMC's staging policies, conformance/shiftRight/2, has a counterexample under full-range and tight (x = -2147483648, s = 33) that does not reproduce. JBMC 6.11.0 masks the distance of the left shifts (--show-goto-functions: shl(x, bitand(s, 31))) but not of the right ones (ashr(x, s), lshr), for int and long, so a distance outside 0..31 (0..63) fills the value with its sign or zeros where the JVM shifts by the distance's low bits. It also gave false proofs under strict: x >> s where s == 33, asserting result == 0 || result == -1, was verified by JBMC under both policies, while the JVM gives shiftRight(4, 33) == 2; likewise x >>> s == 0 where s == 32. The own checker refutes both.\n\nlib/src/jbmc_gaps.rs gains a third Defect, unmasked-shift: a right shift whose distance is not a constant within the width, nor its bitwise and with one, computed by instructions no branch joins. As with step 3's two, a JBMC proof that reaches one is refused under every --gaps mode and a counterexample is still replayed, its message naming the defect. The rule is broad (conformance/shiftRight/1, a correct JBMC proof under x == -1, is now refused; auto proves it on the own checker); constant distances are untouched. In the apps only Quorum's Backoff has a variable right shift, and its JBMC examples (016, 019) are violations.\n\nVerified: the preflight's fixture test (renamed the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm) covers 3 new defects and 3 neighbours (s & 31, >> 1, <<) and fails with the detection disabled. The corpus gains conformance/shiftRight/3 and shiftUnsigned/3, the two false proofs, which agree with the JVM on the own checker; lib/benchmark/conformance.json is regenerated (98 claims). On the real JBMC both are now refused naming the defect, and auto gives the violation. Lib 157, integration 63, skill, test_run.py and test_gap_table.py pass; conformance fails only on its 12 known JDK 25.0.5 disagreements. A draft upstream report for this cause is in lib/tests/fixtures/jbmc-defects/README.md, its reproducer checked on JBMC and the JVM; not filed.\n\nShared files changed, added to: lib/tests/conformance.rs (two claims and a call), lib/README.md (a sentence). Progress also records the three collected jobs: -201041 passed (2c next); -203452 failed in its integration step (a JBMC timeout on Pricing#total) and under auto --confirm; -204220 (4a) failed because the examples' result schema does not allow 1b's stated.checker.sat, to fix and resubmit.",
+      "log_sha256": "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351"
     }
   ],
   "logs": {
@@ -251,6 +273,12 @@
       "bytes": 8367595,
       "lines": 3333,
       "gzip_bytes": 1501372,
+      "url": null
+    },
+    "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351": {
+      "bytes": 9953547,
+      "lines": 4005,
+      "gzip_bytes": 1760778,
       "url": null
     },
     "e09e38638157c83915a33f34e6c04db98e0dcafbbcaec34649fed7497b7f6f99": {

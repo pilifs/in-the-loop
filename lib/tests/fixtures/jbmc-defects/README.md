@@ -1,12 +1,14 @@
-# Where JBMC 6.11.0 lets a runtime exception past its handler
+# Where JBMC 6.11.0 runs bytecode otherwise than the JVM
 
 Step 3 of `llm-dlc/loops/engine-priorities.md`: why JBMC's counterexamples to `conformance/caught/1` and
 `conformance/nestedHandler/1` (`n=0`) do not reproduce in the interpreter. Found on cvm (x86_64) with JBMC 6.11.0
 (`cbmc-6.11.0`), the options every run passes (`--throw-runtime-exceptions`, `--no-refine-strings`, CaDiCaL), and
 JDK 25.0.5. It is not the models, nor reading the trace: JBMC's trace says what JBMC computed, and it is not what the JVM
-does. There are two causes, and each also gave a false proof (below).
+does. There are two causes, and each also gave a false proof (below). A third, found while reading step 2b's benchmark
+job (`20261106-201041`), is [JBMC's right shifts](#cause-3-jbmc-right-shifts-by-the-whole-distance-a-jbmc-defect):
+`conformance/shiftRight/2`'s counterexample under the `full-range` and `tight` staging policies did not reproduce.
 
-`p/D.java` is the fixture of `jbmc_gaps`'s tests (`the_preflight_names_where_jbmc_raises_an_exception_past_its_handler`),
+`p/D.java` is the fixture of `jbmc_gaps`'s tests (`the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm`),
 one method per shape:
 
 | Method | Shape | JBMC 6.11.0 | Preflight |
@@ -19,6 +21,12 @@ one method per shape:
 | `superCatch` | `try { int r = 10 / n; return r; } catch (RuntimeException e)` | the exception escapes the handler | `stubbed-handler` |
 | `thrown` | `throw new IllegalArgumentException()` caught as `RuntimeException` | the exception escapes the handler | `stubbed-handler` |
 | `exact` | `throw new IllegalStateException()` caught as itself | caught, as on the JVM | — |
+| `shifted` | `x >> s` | shifts by the whole `s` | `unmasked-shift` |
+| `shiftedUnsigned` | `x >>> s` on a `long` | shifts by the whole `s` | `unmasked-shift` |
+| `literal` | `x >> 33` | shifts by 33: `0` or `-1` | `unmasked-shift` |
+| `masked` | `x >>> (s & 31)` | as the JVM | — |
+| `halved` | `x >> 1` | as the JVM | — |
+| `left` | `x << s` | masks the distance, as the JVM | — |
 
 `conformance/caught/1` is the first shape, the first cause. `nestedHandler/1` has both: its `IllegalArgumentException` escapes
 the `catch (RuntimeException e)`, and its `return 100 / n` the inner `catch (ArithmeticException x)`.
@@ -80,6 +88,40 @@ holds both, as `conformance/caught/3` and `conformance/caughtAsRuntime/2`:
 
 The own checker gives a violation on both. With the preflight, JBMC's proof of either is refused.
 
+## Cause 3: JBMC right-shifts by the whole distance (a JBMC defect)
+
+The JVM shifts an `int` by the low five bits of the distance and a `long` by the low six (JVMS `ishr`, `iushr`, `lshr`,
+`lushr`), so `x >> 33` is `x >> 1` and `x >> -1` is `x >> 31`. JBMC 6.11.0 masks the left shifts but not the right
+ones. In `--show-goto-functions`:
+
+```
+x << s    ASSIGN ...#return_value := shl(x, bitand(s, 31))
+x >> s    ASSIGN ...#return_value := ashr(x, s)
+```
+
+`ashr` and `lshr` by 32 or more, or by a negative distance read as unsigned, fill the value with its sign or with zeros.
+`x >> -1` happens to agree (`x >> 31` is the sign fill). Everything else outside `0..31` (`0..63` for a `long`)
+differs. Checked with `jvmcontract prove --engine jbmc` under both staging policies, against the own checker and the JVM:
+
+- `x >> s` where `s == 33`, asserting `result == 0 || result == -1`: JBMC ✓ **verified**, while the JVM gives
+  `shiftRight(4, 33) == 2`. The own checker gives a violation. That is a false proof under strict, now
+  `conformance/shiftRight/3`.
+- `x >>> s` where `s == 32`, asserting `result == 0`: JBMC ✓ verified, while the JVM gives `x`. Now
+  `conformance/shiftUnsigned/3`.
+- `result == x >> 1` for `x >> s` where `s == 33`, which holds: JBMC's counterexample (`x = -2147483648` over the full
+  range, `x = 2` under staged) does not reproduce. `conformance/shiftRight/2` (`result == x / 2`) is refuted on the JVM
+  by `x = -1` as well, which the staged search finds first and which reproduces. The full range found
+  `x = -2147483648`, where `x >> 1 == x / 2` on the JVM but not in JBMC, and that witness did not reproduce. That is the
+  one case whose class differed between the staging policies in job `-201041`.
+- `x >> 33` with the literal 33 (javac does not reduce it), `x >>> 32`, and `long` shifts by 64 or 65 disagree the
+  same way. `x << 32`, `x << 64` on a `long`, and `x >> (s & 31)` agree with the JVM.
+
+The preflight names a right shift by a distance not known to be within the width as `unmasked-shift`. That is any
+distance but a constant in `0..31` (`0..63`), or a bitwise and with such a constant, computed by instructions no
+branch joins. A proof that reaches one is refused under every `--gaps` mode. The rule is broad: a proof that keeps the
+distance in range by an assumption (`conformance/shiftRight/1`, `x == -1`) is refused too, and `--engine auto` lets the
+own checker prove it.
+
 ## Draft report for CBMC/JBMC (not filed: for the user to decide)
 
 > **JBMC: a runtime exception from an expression consumed after the end of a try range escapes the handler (`return a / b`)**
@@ -109,3 +151,24 @@ The own checker gives a violation on both. With the preflight, JBMC's proof of e
 > range. Saving the operand stack to temporaries at the end of a try range, as is done at jump targets, or emitting the
 > instrumented check at the address of the instruction that raises it, would keep the exception within the range's
 > handler.
+
+## Draft report for CBMC/JBMC, cause 3 (not filed: for the user to decide)
+
+> **JBMC: `ishr`, `iushr`, `lshr` and `lushr` do not mask the shift distance (`x >> 33` is not `x >> 1`)**
+>
+> JBMC 6.11.0 (cbmc-6.11.0), Linux x86_64. Classes compiled by javac 25.
+>
+> ```java
+> public class S {
+>     public static void r(int x) { assert (x >> 33) == (x >> 1); }
+>     public static void u(int x) { assert (x >>> 32) == x; }
+>     public static void l(int x) { assert (x << 33) == (x << 1); }
+> }
+> ```
+>
+> On the JVM all three assertions hold for every `x`: JVMS §6.5 says `ishr` and `iushr` use the low 5 bits of the
+> distance (`lshr` and `lushr` the low 6). `jbmc S --function S.r` fails (for example with `x = 2`), as does `S.u`
+> (`x = 1`). `S.l` is `VERIFICATION SUCCESSFUL`. In `--show-goto-functions` the left shift is
+> `shl(x, bitand(s, 31))`, but the right shift of `x >> s` is `ashr(x, s)` and of `x >>> s` is `lshr(x, s)`, with no
+> `bitand`. Masking the distance of `ishr`, `iushr`, `lshr` and `lushr` as is done for `ishl` and `lshl` would match
+> the JVM.

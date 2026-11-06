@@ -178,12 +178,16 @@ fn corpus() -> Vec<Case> {
             .holds(Some("s == 64"), "result == x", &[], V)
             .refuted(Some("s == 64"), "result == 0", &[], X)
             .holds(Some("s == 32 && x == 1"), "result > 2147483647", &[], V),
-        Case::new("shiftRight", &[("-1;7", "returns -1"), ("-1;33", "returns -1")])
+        // JBMC 6.11.0 right-shifts by the whole distance, unmasked: it proved the third claim of each (an
+        // `unmasked-shift` defect, which its preflight now names and refuses a proof through).
+        Case::new("shiftRight", &[("-1;7", "returns -1"), ("-1;33", "returns -1"), ("4;33", "returns 2")])
             .holds(Some("x == -1"), "result == -1", &[], V)
-            .refuted(Some("s == 33"), "result == x / 2", &[], X),
+            .refuted(Some("s == 33"), "result == x / 2", &[], X)
+            .refuted(Some("s == 33"), "result == 0 || result == -1", &[], X),
         Case::new("shiftUnsigned", &[("-1;32", "returns -1"), ("-1;1", "returns 2147483647")])
             .refuted(Some("x < 0 && s == 32"), "result > 0", &[], X)
-            .holds(Some("x < 0 && s == 1"), "result > 0", &[], V),
+            .holds(Some("x < 0 && s == 1"), "result > 0", &[], V)
+            .refuted(Some("s == 32"), "result == 0", &[], X),
         Case::new("square", &[("46341", "returns -2147479015")]).refuted(None, "result >= 0", &[], X),
         Case::new("negate", &[(MIN, "returns -2147483648")]).refuted(Some("x < 0"), "result > 0", &[], X),
         Case::new("toByte", &[("128", "returns -128"), ("-129", "returns 127")])

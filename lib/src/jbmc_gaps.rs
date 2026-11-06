@@ -169,10 +169,11 @@ pub struct Found {
 }
 
 /// A place where JBMC 6.11.0 runs a method's bytecode otherwise than the JVM: not an approximation of a call it has
-/// no bytecode for, which a statement could name as an assumption, but code it has and translates wrongly. Both kinds
-/// let a runtime exception past the handler that catches it on the JVM, so the exception escapes the method (a
-/// counterexample that does not reproduce, or a proof that it throws where the JVM returns). Found from the bytecode
-/// of the functions the harness reaches (`tests/fixtures/jbmc-defects/README.md` has the reproducers):
+/// no bytecode for, which a statement could name as an assumption, but code it has and translates wrongly: a
+/// counterexample that does not reproduce, or a proof of what the JVM does not do. The first two kinds let a runtime
+/// exception past the handler that catches it on the JVM, so the exception escapes the method; the third computes
+/// another value. Found from the bytecode of the functions the harness reaches
+/// (`tests/fixtures/jbmc-defects/README.md` has the reproducers):
 ///
 /// - `return-past-handler`: a `return` of a value whose computation may throw (an integer division or remainder,
 ///   an array element, a field, an array's length, a cast) inside a try block whose handler catches the exception.
@@ -182,9 +183,14 @@ pub struct Found {
 ///   exception of a subclass of it raised in the program (`ArithmeticException` from a division, or an
 ///   `IllegalArgumentException` thrown): JBMC's stub of a class has no superclass, so it does not know the
 ///   exception's class extends the handler's.
+/// - `unmasked-shift`: a right shift (`>>`, `>>>`, of an `int` or a `long`) by a distance not known to be within
+///   the type's width. The JVM shifts by the distance's low five bits (six for a `long`); JBMC lowers `ishr`,
+///   `iushr`, `lshr` and `lushr` to a shift by the whole distance, so one of 32 or more, or a negative one, fills
+///   the value with its sign or with zeros (`x >> 33` is `x >> 1` on the JVM, `0` or `-1` in JBMC). It lowers the
+///   left shifts with the mask.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct Defect {
-    /// `return-past-handler` or `stubbed-handler`.
+    /// `return-past-handler`, `stubbed-handler` or `unmasked-shift`.
     pub kind: &'static str,
     /// Where: the instruction that throws, or the handler's method and line.
     pub site: String,
@@ -279,6 +285,45 @@ fn returns_past_handlers(cp: &ClassPath, owner: &str, name: &str, class: &crate:
     out
 }
 
+/// The `unmasked-shift` defects of a method: each right shift whose distance is not a constant within the shifted
+/// type's width, nor such a constant's bitwise and with another value (`s & 31`), the instructions computing it
+/// reached by no branch. JBMC 6.11.0 shifts by the whole distance where the JVM masks it.
+fn unmasked_shifts(owner: &str, name: &str, code: &crate::classfile::Code, insns: &[(u32, Insn)]) -> Vec<Defect> {
+    use crate::classfile::bytecode::{ArithOp, Kind};
+    let mut joins: BTreeSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+    joins.extend(code.exception_table.iter().map(|h| h.handler_pc as u32));
+    let within = |insn: &Insn, width: i32| matches!(insn, Insn::IConst(c) if (0..width).contains(c));
+    let mut out = Vec::new();
+    for (i, (pc, insn)) in insns.iter().enumerate() {
+        let (op, width) = match insn {
+            Insn::Arith(op @ (ArithOp::Shr | ArithOp::Ushr), Kind::Int) => (op, 32),
+            Insn::Arith(op @ (ArithOp::Shr | ArithOp::Ushr), Kind::Long) => (op, 64),
+            _ => continue,
+        };
+        // The distance is the value pushed last: the instruction before, or a mask the two before it and it compute.
+        let before = |k: usize| i.checked_sub(k).map(|j| &insns[j]).filter(|_| (0..k).all(|m| !joins.contains(&insns[i - m].0)));
+        let constant = before(1).is_some_and(|(_, d)| within(d, width));
+        let masked = before(1).is_some_and(|(_, d)| matches!(d, Insn::Arith(ArithOp::And, Kind::Int)))
+            && (before(2).is_some_and(|(_, m)| within(m, width)) || (before(2).is_some_and(|(_, l)| matches!(l, Insn::Load(..))) && before(3).is_some_and(|(_, m)| within(m, width))));
+        if constant || masked {
+            continue;
+        }
+        let shift = if *op == ArithOp::Shr { ">>" } else { ">>>" };
+        let bits = if width == 32 { "five" } else { "six" };
+        let ty = if width == 32 { "an int" } else { "a long" };
+        out.push(Defect {
+            kind: "unmasked-shift",
+            site: Site { class: owner.to_string(), method: name.to_string(), line: code.line_at(*pc) }.display(),
+            what: format!(
+                "shifts {ty} with {shift} by a distance that may be outside 0..{}: the JVM shifts by the distance's low {bits} bits, JBMC by the whole distance, so it fills the value with {} where the JVM does not",
+                width - 1,
+                if *op == ArithOp::Shr { "its sign" } else { "zeros" }
+            ),
+        });
+    }
+    out
+}
+
 /// Whether JBMC knows `class` extends `ancestor`: up the superclasses it has class files of, a stub's being unknown.
 fn jbmc_extends(cp: &ClassPath, class: &str, ancestor: &str) -> bool {
     let mut current = class.to_string();
@@ -368,6 +413,7 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
         let Some(code) = class.method(&name, &descriptor).and_then(|m| m.code.as_ref()) else { continue };
         let insns = code.instructions().unwrap_or_default();
         found.defects.extend(returns_past_handlers(jbmc_cp, &owner, &name, &class, code, &insns));
+        found.defects.extend(unmasked_shifts(&owner, &name, code, &insns));
         for (_, insn) in &insns {
             raised.extend(raises(insn).0.iter().map(|e| e.to_string()));
             if let Insn::New(i) = insn {
@@ -806,12 +852,13 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         ))
     }
 
-    /// The reproducer of `conformance/caught/1` and `nestedHandler/1`, whose JBMC counterexamples do not reproduce:
-    /// JBMC 6.11.0 raises a runtime exception past the handler that catches it on the JVM, for a value returned from
-    /// a try block, and for a handler of a JDK class it has a stub of, which it does not know the exception's class
-    /// extends. Each is named where the program reaches it; their neighbours, which JBMC runs as the JVM does, are not.
+    /// The reproducers of `conformance/caught/1`, `nestedHandler/1` and `shiftRight/2`, whose JBMC counterexamples do
+    /// not reproduce: JBMC 6.11.0 raises a runtime exception past the handler that catches it on the JVM, for a value
+    /// returned from a try block, and for a handler of a JDK class it has a stub of, which it does not know the
+    /// exception's class extends; and it right-shifts by the whole distance, unmasked. Each is named where the program
+    /// reaches it; their neighbours, which JBMC runs as the JVM does, are not.
     #[test]
-    fn the_preflight_names_where_jbmc_raises_an_exception_past_its_handler() {
+    fn the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm() {
         let Some((_dir, cp)) = defect_fixture() else { return };
         let defects = |method: &str, descriptor: &str| -> Vec<(String, String)> {
             let found = find(&calling(method, descriptor), "H", method, &cp, None).unwrap();
@@ -821,7 +868,10 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert_eq!(defects("field", "(Lp/D;)I"), [("return-past-handler".to_string(), "p.D.field:8".to_string())]);
         assert_eq!(defects("superCatch", "(I)I"), [("stubbed-handler".to_string(), "p.D.superCatch:12".to_string())]);
         assert_eq!(defects("thrown", "(I)I"), [("stubbed-handler".to_string(), "p.D.thrown:13".to_string())]);
-        for (method, descriptor) in [("stored", "(I)I"), ("uncaught", "([II)I"), ("called", "(I)I"), ("exact", "(I)I")] {
+        assert_eq!(defects("shifted", "(II)I"), [("unmasked-shift".to_string(), "p.D.shifted:15".to_string())]);
+        assert_eq!(defects("shiftedUnsigned", "(JI)J"), [("unmasked-shift".to_string(), "p.D.shiftedUnsigned:16".to_string())]);
+        assert_eq!(defects("literal", "(I)I"), [("unmasked-shift".to_string(), "p.D.literal:17".to_string())]);
+        for (method, descriptor) in [("stored", "(I)I"), ("uncaught", "([II)I"), ("called", "(I)I"), ("exact", "(I)I"), ("masked", "(II)I"), ("halved", "(I)I"), ("left", "(II)I")] {
             assert_eq!(defects(method, descriptor), [], "{method}");
         }
         let found = find(&calling("returned", "(I)I"), "H", "returned", &cp, None).unwrap();
@@ -830,6 +880,9 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         let found = find(&calling("thrown", "(I)I"), "H", "thrown", &cp, None).unwrap();
         let what = &found.defects[0].what;
         assert!(what.contains("catch (java.lang.RuntimeException)") && what.contains("java.lang.IllegalArgumentException"), "{what}");
+        let found = find(&calling("shiftedUnsigned", "(JI)J"), "H", "shiftedUnsigned", &cp, None).unwrap();
+        let what = &found.defects[0].what;
+        assert!(what.contains("a long with >>>") && what.contains("0..63") && what.contains("low six bits") && what.contains("zeros"), "{what}");
     }
 
     /// A JBMC proof that reaches a defect is refused under every gap mode, assume too: the defect is not an

@@ -240,10 +240,51 @@ Progress, so the reconcile loop knows where to look.
   - Inline checks: the example filter gives the 41, and in a scratch copy with the engine rewritten, `build.py --plan`
     gives `--engine native --gaps strict` for all 41 (`--unwind 32` kept on the four Crosscut B9s).
   - No shared file changed.
-- **Next:** read the three jobs once collected. From `-201041`, decide 2c (JBMC's default staging, for ordinary checks
-  and the `auto` fallback). From `-203452`, triage 3's JBMC tests. From `-204220`, report 4a's table and every
-  difference from an expected verdict.
-- Status: waiting on jobs 20261106-201041 20261106-203452 20261106-204220
+- **3, a third defect: JBMC's right shifts are unmasked. Found in job `-201041`, guarded, report drafted.**
+  - Job `20261106-201041` (2b) **passed** (1 h 31 m, peak 4.0 GiB, at its cgroup's limit, with 356 `memory.high`
+    events). Collected in the default workspace, with `lib/benchmark/results.json` and `RESULTS.md` there.
+  - One case changed class between the policies, in every mode: `conformance/shiftRight/2`. It is a violation under
+    `staged` (`-1;33`), and witness-not-reproduced under `full-range` and `tight` (`x = -2147483648, s = 33`).
+  - **The cause:** JBMC 6.11.0 masks the distance of `<<` (`shl(x, bitand(s, 31))`) but not of `>>` and `>>>`
+    (`ashr(x, s)`, `lshr`), for `int` and `long`. Out of range it fills with the sign or zeros, where the JVM shifts by
+    the low five (six) bits. Shown with `--show-goto-functions` and with `prove --engine jbmc`, in milliseconds, under
+    both policies.
+  - **A false proof under strict:** `x >> s` where `s == 33`, asserting `result == 0 || result == -1`, was ✓ on JBMC,
+    while the JVM gives `shiftRight(4, 33) == 2`. So was `x >>> s == 0` where `s == 32`. The own checker refutes both.
+  - **The guard:** a third `Defect`, `unmasked-shift` (`jbmc_gaps::unmasked_shifts`). It is a right shift whose
+    distance is not a constant within the width, nor `& c` with such a constant, computed by instructions no branch
+    joins. A proof through one is refused under every mode, as in 3; a counterexample is still replayed.
+    - It is broad: `conformance/shiftRight/1` (`x == -1`), a correct JBMC proof, is now refused, and `auto` proves it on
+      the own checker.
+    - Constant distances, the common case, are untouched.
+    - In the apps, only Quorum's `Backoff` (`capMillis >> attempt`) has a variable right shift. Its examples on JBMC
+      (016, 019) are violations, which the guard leaves alone. 4a's resubmission will measure the rest.
+  - **Tests:**
+    - `the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm` (renamed from
+      `..._raises_an_exception_past_its_handler`) covers 6 more shapes in `p/D.java`: 3 defects and 3 neighbours
+      (`s & 31`, `>> 1`, `<<`). It fails with the detection disabled (checked).
+    - The corpus gains `conformance/shiftRight/3` and `shiftUnsigned/3`, the two false proofs (a new call `4;33`). On
+      the JVM and the own checker they agree; `lib/benchmark/conformance.json` is regenerated, now 98 claims.
+    - On the real JBMC both are refused naming the defect, and `auto` gives a violation.
+    - Lib 157, integration 63 and skill tests pass; conformance fails only on the 12 known disagreements.
+  - **Upstream:** a second draft report, for cause 3, is in `lib/tests/fixtures/jbmc-defects/README.md`, with a
+    reproducer checked on JBMC (fails on `>>` and `>>>`, passes on `<<`) and on the JVM (all hold). Not filed.
+  - **For 2c:** `shiftRight/2`'s lost verdict under `full-range` and `tight` is this defect. The staged search finds a
+    witness the defect doesn't touch first. It is not a property of the policies.
+  - **Shared files changed:**
+    - `lib/tests/conformance.rs`: two claims and a call, appended to `shiftRight` and `shiftUnsigned`;
+    - `lib/README.md`: a sentence on `unmasked-shift`.
+- **Next:**
+  - 2c from `-201041` (collected, passed).
+  - Triage 3's job `-203452`, which failed two steps:
+    - integration: `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, where JBMC timed out on
+      `fixtures.Pricing#total` (it passes inline);
+    - the corpus under `auto --confirm`.
+    - The corpus under `jbmc` and `auto` passed.
+  - 4a's job `-204220` failed in both engine steps on `build.py`'s result schema: `'sat' was unexpected`. That is
+    1b's `stated.checker.sat`, which the examples' result schema doesn't allow yet. Fix it and resubmit; the
+    resubmission measures this guard too.
+- Status: working
 
 ## Loop settings
 
