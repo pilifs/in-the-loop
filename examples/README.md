@@ -618,7 +618,9 @@ Take the next free number; constructed and real-world examples share the sequenc
    runs the tool's own checker instead of JBMC, for a method over integers, and `approach.gaps` (`strict` or `assume`,
    its `--gaps`) says what it does at a construct it does not implement as the JVM does: refuse it by name, or assume
    its approximation and name it in the verdict. An example that names none runs in `strict`, the library's default; a new example names
-   its mode. For B9,
+   its mode. `python3 examples/tools/gap_table.py --examples DIR` lists the gaps each obligation of a
+   run's results reaches (DIR a run's copy of `examples/`, whose results are format 2) and which ones strict would
+   refuse. For B9,
    `approach.unwind` raises the loop
    unwinding bound when a loop of the method needs more than the default sixteen turns. A B9 subject may be a method
    of a record whose components are primitive, or take or return one: the proof is on the components; a static
