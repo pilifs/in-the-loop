@@ -1,0 +1,81 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "6f7cf082-efef-4561-8de2-b54b3d27994f",
+  "status": "open",
+  "title": null,
+  "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "started": "2026-11-06T22:47:17.638Z",
+  "ended": "2026-11-06T23:52:54.069Z",
+  "duration_seconds": 3936,
+  "stats": {
+    "turns": 6,
+    "api_calls": 37,
+    "tool_calls": 30,
+    "tool_errors": 3,
+    "compactions": 0,
+    "peak_context_tokens": 58370,
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 6950,
+      "cache_read_input_tokens": 1387462,
+      "cache_creation_input_tokens": 46986
+    }
+  },
+  "tools": {
+    "Bash": 25,
+    "ScheduleWakeup": 4,
+    "Monitor": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T22:47:17.638Z",
+      "ended": "2026-11-06T23:52:54.069Z",
+      "turns": 6,
+      "api_calls": 37,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 6950,
+        "cache_read_input_tokens": 1387462,
+        "cache_creation_input_tokens": 46986
+      },
+      "peak_context_tokens": 58370
+    }
+  ],
+  "log": {
+    "sha256": "b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950",
+    "bytes": 577847,
+    "lines": 223,
+    "gzip_bytes": 104987,
+    "path": "llm-dlc/traces/6f7cf082-efef-4561-8de2-b54b3d27994f/logs/b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "xqmmzyrtzxqrxuprrtrnlwmuxvosuqkv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: Phase 6c checker comparisons and JBMC defects rerun pass (closing VF-007); 41-example job fails again (VF-006)",
+      "body": "Collected four jobs run at vm-1. 20261106-224616 and -230455 (own checker on CaDiCaL and Bitwuzla, bit-blasted and word-level, Phase 6c) passed; their comparison tables under lib/solvers/comparison/ were applied. 20261106-231317 (rerun of the JBMC escaping-exceptions job, same three commands) passed, closing VF-007. 20261106-231837 (41 JBMC examples under strict) failed again, now on a result-schema complaint about 'phasesExcess' and only 12 of 41 examples in the table; VF-006 updated. Verified by pipeline.py status showing nothing pending or uncollected.",
+      "log_sha256": "b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950"
+    }
+  ],
+  "logs": {
+    "b2b0ca6669314e153b39d8d0faf81a6cbec2f3a6c27a632ca035ee45ef8e8950": {
+      "bytes": 577847,
+      "lines": 223,
+      "gzip_bytes": 104987,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

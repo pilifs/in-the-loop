@@ -1,0 +1,4364 @@
+{
+ "about": "Results of lib/solvers/compare.py: the own checker's checks and CaDiCaL's transcripts of them on each solver, on the engine's bit-blasted clauses (Phase 6c of llm-dlc/loops/engine-priorities.md).",
+ "environment": {
+  "date": "2026-11-06T23:10:16+0000",
+  "jvmcontract": "jvmcontract 0.1.0",
+  "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+  "machine": "x86_64",
+  "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+  "cpus": 28,
+  "host": "claude-vm",
+  "bitwuzla": {
+   "path": "/home/filip/tools/bitwuzla/bitwuzla-0.8.2/lib/x86_64-linux-gnu/libbitwuzla.so.0",
+   "sha256": "eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99"
+  },
+  "commit": null
+ },
+ "settings": {
+  "mode": "strict",
+  "unwind": 16,
+  "maxArrayLength": 8,
+  "timeout": 600,
+  "repeat": 3,
+  "solvers": [
+   "cadical",
+   "bitwuzla",
+   "bitwuzla:preprocess=0"
+  ],
+  "cases": [
+   "real/midpoint/search-within-bound",
+   "example/141",
+   "example/142",
+   "held/reverse",
+   "held/prefix-sums"
+  ]
+ },
+ "cases": [
+  {
+   "id": "real/midpoint/search-within-bound",
+   "group": 2,
+   "workload": "binary-search",
+   "kind": "regression",
+   "expected": "verified"
+  },
+  {
+   "id": "held/reverse",
+   "group": 3,
+   "workload": "array-mutation",
+   "kind": "regression",
+   "expected": "verified"
+  },
+  {
+   "id": "held/prefix-sums",
+   "group": 3,
+   "workload": "array-mutation",
+   "kind": "regression",
+   "expected": "verified"
+  },
+  {
+   "id": "example/141",
+   "group": 4,
+   "workload": "binary-search",
+   "kind": "regression",
+   "expected": "verified"
+  },
+  {
+   "id": "example/142",
+   "group": 4,
+   "workload": "utf8",
+   "kind": "regression",
+   "expected": "verified"
+  }
+ ],
+ "checks": [
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "seconds": 1.747,
+   "cpuSeconds": 1.743,
+   "peakMB": 71.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 1.580902117,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.692,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.059,
+       "encoding": 0.052,
+       "solving": 1.581,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.059,
+    "encoding": 0.052,
+    "solving": 1.581,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.048
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "transcripts": [
+    {
+     "file": "1311586-1.icnf",
+     "bytes": 4748596,
+     "sha256": "c8c822e2d18faddd56ee2f626e6c00d774037a75a542b62efe7337bafdd43204"
+    }
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "seconds": 1.736,
+   "cpuSeconds": 1.727,
+   "peakMB": 68.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 1.5736843820000002,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.671,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.053,
+       "encoding": 0.044,
+       "solving": 1.574,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.053,
+    "encoding": 0.044,
+    "solving": 1.574,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.058
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "seconds": 1.755,
+   "cpuSeconds": 1.752,
+   "peakMB": 70.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 1.599678631,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.698,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.051,
+       "encoding": 0.047,
+       "solving": 1.6,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.051,
+    "encoding": 0.047,
+    "solving": 1.6,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.05
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "seconds": 25.011,
+   "cpuSeconds": 24.999,
+   "peakMB": 595.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 22.64501926,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 23.64,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.567,
+       "encoding": 0.427,
+       "solving": 22.645,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.567,
+    "encoding": 0.427,
+    "solving": 22.645,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 1.365
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1311604-1.icnf",
+     "bytes": 4749161,
+     "sha256": "bca72bc8160fcbea4e9ce755ac1b413110c9013512d22bc2e70e53eed4b31be0"
+    }
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "seconds": 27.658,
+   "cpuSeconds": 27.646,
+   "peakMB": 595.6,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 25.216506573,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 26.197,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.566,
+       "encoding": 0.415,
+       "solving": 25.217,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.566,
+    "encoding": 0.415,
+    "solving": 25.217,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 1.453
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "seconds": 34.543,
+   "cpuSeconds": 34.535,
+   "peakMB": 595.6,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 942,
+    "solving_seconds": 31.954388228,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 33.04,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.577,
+       "encoding": 0.509,
+       "solving": 31.954,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.577,
+    "encoding": 0.509,
+    "solving": 31.954,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 1.495
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "seconds": 20.952,
+   "cpuSeconds": 20.915,
+   "peakMB": 540.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 943,
+    "solving_seconds": 18.407386844,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 19.527,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.662,
+       "encoding": 0.457,
+       "solving": 18.407,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.662,
+    "encoding": 0.457,
+    "solving": 18.407,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.009,
+    "driver": 1.417
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1312002-1.icnf",
+     "bytes": 4749417,
+     "sha256": "14f5ad442928bb49c3e67ccae22b28afe8eb804bc6cea39542d1fe7b05be72f1"
+    }
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "seconds": 25.23,
+   "cpuSeconds": 25.22,
+   "peakMB": 546.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 943,
+    "solving_seconds": 22.872076289,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 23.897,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.568,
+       "encoding": 0.457,
+       "solving": 22.872,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.568,
+    "encoding": 0.457,
+    "solving": 22.872,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.01,
+    "driver": 1.323
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "seconds": 66.971,
+   "cpuSeconds": 66.957,
+   "peakMB": 545.5,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 81,
+    "merges": 0,
+    "solver_calls": 945,
+    "solving_seconds": 63.973007342,
+    "variables": 69486,
+    "clauses": 240144,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 65.113,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.645,
+       "encoding": 0.495,
+       "solving": 63.973,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 69486,
+       "clauses": 240144
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.645,
+    "encoding": 0.495,
+    "solving": 63.973,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.01,
+    "driver": 1.848
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "seconds": 0.152,
+   "cpuSeconds": 0.151,
+   "peakMB": 39.2,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 0.084437495,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.1,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.007,
+       "encoding": 0.008,
+       "solving": 0.084,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.007,
+    "encoding": 0.008,
+    "solving": 0.084,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.045
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "transcripts": [
+    {
+     "file": "1338098-1.icnf",
+     "bytes": 1099502,
+     "sha256": "e1902fe97c1069e5aca0850e4670d1395beed448d42d37810c16e96d7e1bfc83"
+    }
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "seconds": 0.152,
+   "cpuSeconds": 0.142,
+   "peakMB": 38.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 0.082748847,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.095,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.005,
+       "encoding": 0.007,
+       "solving": 0.083,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.005,
+    "encoding": 0.007,
+    "solving": 0.083,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.05
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "seconds": 0.152,
+   "cpuSeconds": 0.144,
+   "peakMB": 39.0,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 0.086230004,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.098,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.006,
+       "encoding": 0.006,
+       "solving": 0.086,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.006,
+    "encoding": 0.006,
+    "solving": 0.086,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.047
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "seconds": 3.855,
+   "cpuSeconds": 3.849,
+   "peakMB": 210.9,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 3.388796318,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 3.525,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.047,
+       "encoding": 0.09,
+       "solving": 3.389,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.047,
+    "encoding": 0.09,
+    "solving": 3.389,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.322
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1338101-1.icnf",
+     "bytes": 1099490,
+     "sha256": "5905607261365def398cd2559d839ecca4fb4fe522765ed182efd41fc1be1850"
+    }
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "seconds": 4.039,
+   "cpuSeconds": 4.029,
+   "peakMB": 210.9,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 3.569415152,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 3.702,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.049,
+       "encoding": 0.084,
+       "solving": 3.569,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.049,
+    "encoding": 0.084,
+    "solving": 3.569,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.329
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "seconds": 3.692,
+   "cpuSeconds": 3.684,
+   "peakMB": 211.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 3.227439431,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 3.357,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.044,
+       "encoding": 0.085,
+       "solving": 3.227,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.044,
+    "encoding": 0.085,
+    "solving": 3.227,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.329
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "seconds": 1.503,
+   "cpuSeconds": 1.494,
+   "peakMB": 181.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 1.080607965,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.215,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.035,
+       "encoding": 0.1,
+       "solving": 1.081,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.035,
+    "encoding": 0.1,
+    "solving": 1.081,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.28
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1338459-1.icnf",
+     "bytes": 1099504,
+     "sha256": "aa2838bed53395415a1124738052ad95629ae9e511b6a69b797f875b7f7eee6f"
+    }
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "seconds": 1.432,
+   "cpuSeconds": 1.425,
+   "peakMB": 181.4,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 1.015106197,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.139,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.041,
+       "encoding": 0.083,
+       "solving": 1.015,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.041,
+    "encoding": 0.083,
+    "solving": 1.015,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.286
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/reverse",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "seconds": 1.523,
+   "cpuSeconds": 1.52,
+   "peakMB": 181.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 115,
+    "solving_seconds": 1.081805133,
+    "variables": 16780,
+    "clauses": 59707,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.211,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.042,
+       "encoding": 0.087,
+       "solving": 1.082,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 16780,
+       "clauses": 59707
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.042,
+    "encoding": 0.087,
+    "solving": 1.082,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.304
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "seconds": 0.061,
+   "cpuSeconds": 0.052,
+   "peakMB": 30.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.000543139,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.004,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.002,
+       "encoding": 0.001,
+       "solving": 0.001,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.002,
+    "encoding": 0.001,
+    "solving": 0.001,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.05
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "transcripts": [
+    {
+     "file": "1341259-1.icnf",
+     "bytes": 85961,
+     "sha256": "021b6161e19d2186b69ba596a15d4a495eea14d48bcae5704cea18b2caaf3efe"
+    }
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "seconds": 0.061,
+   "cpuSeconds": 0.051,
+   "peakMB": 30.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.000493849,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.003,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.001,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.001,
+    "encoding": 0.001,
+    "solving": 0.0,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.051
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "seconds": 0.051,
+   "cpuSeconds": 0.049,
+   "peakMB": 30.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.000499309,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.003,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.001,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.001,
+    "encoding": 0.001,
+    "solving": 0.0,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.042
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "seconds": 0.122,
+   "cpuSeconds": 0.114,
+   "peakMB": 48.6,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.050701912,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.06,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.008,
+       "encoding": 0.001,
+       "solving": 0.051,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.001,
+    "solving": 0.051,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.055
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1341272-1.icnf",
+     "bytes": 86047,
+     "sha256": "f0901ae45c098c0a43bebb5640375140ca3cfd20946ffcfd284c3c98bd28bb21"
+    }
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "seconds": 0.122,
+   "cpuSeconds": 0.114,
+   "peakMB": 48.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.050630054,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.059,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.008,
+       "encoding": 0.001,
+       "solving": 0.051,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.001,
+    "solving": 0.051,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.055
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "seconds": 0.122,
+   "cpuSeconds": 0.114,
+   "peakMB": 48.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.05051483,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.059,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.008,
+       "encoding": 0.001,
+       "solving": 0.051,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.001,
+    "solving": 0.051,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.055
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "seconds": 0.112,
+   "cpuSeconds": 0.102,
+   "peakMB": 47.0,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.038522191,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.048,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.009,
+       "encoding": 0.001,
+       "solving": 0.039,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.009,
+    "encoding": 0.001,
+    "solving": 0.039,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.056
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1341275-1.icnf",
+     "bytes": 86061,
+     "sha256": "a6c93b6f65e46b6846a5f7ed81d3b406ad67fbd04026bd7f1d6cfbba2d66f26d"
+    }
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "seconds": 0.101,
+   "cpuSeconds": 0.101,
+   "peakMB": 47.0,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.037637701,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.047,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.008,
+       "encoding": 0.001,
+       "solving": 0.038,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.001,
+    "solving": 0.038,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.047
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "held/prefix-sums",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "seconds": 0.101,
+   "cpuSeconds": 0.101,
+   "peakMB": 47.0,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 9,
+    "merges": 0,
+    "solver_calls": 18,
+    "solving_seconds": 0.037929325,
+    "variables": 1933,
+    "clauses": 5637,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.047,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.008,
+       "encoding": 0.001,
+       "solving": 0.038,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1933,
+       "clauses": 5637
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.001,
+    "solving": 0.038,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.047
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/141",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "seconds": 1.375,
+   "cpuSeconds": 1.374,
+   "peakMB": 59.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 1.21119124,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.307,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.018,
+       "encoding": 0.077,
+       "solving": 1.211,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.001,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.0,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.018,
+    "encoding": 0.077,
+    "solving": 1.211,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.062
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "transcripts": [
+    {
+     "file": "1341287-1.icnf",
+     "bytes": 2838206,
+     "sha256": "1f7cb975346334a6d79e6721f5ffff1129a9c0ef32f01e627d0260bff596a729"
+    },
+    {
+     "file": "1341287-2.icnf",
+     "bytes": 43680,
+     "sha256": "7590765de72386cf07361b1729c25f2f911ac4947f146b863a0db318d1094983"
+    }
+   ]
+  },
+  {
+   "case": "example/141",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "seconds": 1.436,
+   "cpuSeconds": 1.428,
+   "peakMB": 57.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 1.258830705,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.356,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.025,
+       "encoding": 0.072,
+       "solving": 1.259,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.001,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.0,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.025,
+    "encoding": 0.072,
+    "solving": 1.259,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.072
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "example/141",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "seconds": 1.495,
+   "cpuSeconds": 1.494,
+   "peakMB": 58.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 1.327037512,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 1.426,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.026,
+       "encoding": 0.073,
+       "solving": 1.327,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.001,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.0,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.026,
+    "encoding": 0.073,
+    "solving": 1.327,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.062
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "seconds": 61.6,
+   "cpuSeconds": 61.593,
+   "peakMB": 399.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 60.063853649,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 60.682,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.159,
+       "encoding": 0.459,
+       "solving": 60.064,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.032,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.002,
+       "encoding": 0.0,
+       "solving": 0.029,
+       "trace": 0.001,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.161,
+    "encoding": 0.459,
+    "solving": 60.093,
+    "trace": 0.001,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.009,
+    "driver": 0.877
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1342345-1.icnf",
+     "bytes": 2838959,
+     "sha256": "159e9fb28ef8d32e201415bf21d3e6f7eac1f226bc5edcf29e2f8ddb07caa89e"
+    },
+    {
+     "file": "1342345-2.icnf",
+     "bytes": 43767,
+     "sha256": "3343ab4364e016f9db498dd333aed84c167e5c691f1d64e7cc216a039aeead31"
+    }
+   ]
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "seconds": 61.54,
+   "cpuSeconds": 61.524,
+   "peakMB": 399.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 59.977584966,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 60.567,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.152,
+       "encoding": 0.437,
+       "solving": 59.978,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.037,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.0,
+       "solving": 0.033,
+       "trace": 0.002,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.153,
+    "encoding": 0.437,
+    "solving": 60.011,
+    "trace": 0.002,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.93
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "seconds": 69.262,
+   "cpuSeconds": 69.254,
+   "peakMB": 399.2,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 67.675687549,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 68.303,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.156,
+       "encoding": 0.471,
+       "solving": 67.676,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.033,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.0,
+       "solving": 0.03,
+       "trace": 0.001,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.157,
+    "encoding": 0.471,
+    "solving": 67.706,
+    "trace": 0.001,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.919
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "seconds": 7.262,
+   "cpuSeconds": 7.258,
+   "peakMB": 344.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 5.920855364,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 6.484,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.113,
+       "encoding": 0.45,
+       "solving": 5.921,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.023,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.0,
+       "solving": 0.02,
+       "trace": 0.001,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.114,
+    "encoding": 0.45,
+    "solving": 5.941,
+    "trace": 0.001,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 0.748
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1358591-1.icnf",
+     "bytes": 2838305,
+     "sha256": "78f808aa3587e2ebaefb13e25806fbb8a64c25c7f196dad9fca7e4f2fd366109"
+    },
+    {
+     "file": "1358591-2.icnf",
+     "bytes": 43781,
+     "sha256": "9c2e560394043a1f006dbd53c157e24437a909253d1e15a7f9b0382253d65322"
+    }
+   ]
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "seconds": 7.373,
+   "cpuSeconds": 7.367,
+   "peakMB": 344.4,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 5.997553043,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 6.549,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.136,
+       "encoding": 0.415,
+       "solving": 5.998,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.026,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.0,
+       "solving": 0.023,
+       "trace": 0.002,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.137,
+    "encoding": 0.415,
+    "solving": 6.021,
+    "trace": 0.002,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.009,
+    "driver": 0.789
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/141",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "seconds": 7.618,
+   "cpuSeconds": 7.616,
+   "peakMB": 344.5,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 88,
+    "merges": 0,
+    "solver_calls": 1044,
+    "solving_seconds": 6.270502017,
+    "variables": 39635,
+    "clauses": 137013,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 6.84,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.122,
+       "encoding": 0.447,
+       "solving": 6.271,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 39635,
+       "clauses": 137013
+      }
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.023,
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.001,
+       "encoding": 0.0,
+       "solving": 0.02,
+       "trace": 0.001,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 1200,
+       "clauses": 3037
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.123,
+    "encoding": 0.447,
+    "solving": 6.291,
+    "trace": 0.001,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.009,
+    "driver": 0.747
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/142",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "seconds": 5.041,
+   "cpuSeconds": 5.039,
+   "peakMB": 81.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1885,
+    "solving_seconds": 4.841212277,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 4.984,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.057,
+       "encoding": 0.085,
+       "solving": 4.841,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.057,
+    "encoding": 0.085,
+    "solving": 4.841,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.051
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "transcripts": [
+    {
+     "file": "1375850-1.icnf",
+     "bytes": 3598588,
+     "sha256": "5047fcb69af1c6341f9e2cd0f83123faac18fac4cc92cab798fb2b8f6a362a25"
+    }
+   ]
+  },
+  {
+   "case": "example/142",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "seconds": 4.888,
+   "cpuSeconds": 4.886,
+   "peakMB": 82.6,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1885,
+    "solving_seconds": 4.698355344,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 4.828,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.053,
+       "encoding": 0.076,
+       "solving": 4.698,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.053,
+    "encoding": 0.076,
+    "solving": 4.698,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.054
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "example/142",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "seconds": 4.824,
+   "cpuSeconds": 4.82,
+   "peakMB": 84.2,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1885,
+    "solving_seconds": 4.635842999,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 4.764,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.049,
+       "encoding": 0.079,
+       "solving": 4.636,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.049,
+    "encoding": 0.079,
+    "solving": 4.636,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 0.053
+   },
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "checker": "jvmcontract's own checker (CaDiCaL)"
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "seconds": 41.236,
+   "cpuSeconds": 41.229,
+   "peakMB": 566.6,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1888,
+    "solving_seconds": 39.32514393,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 40.166,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.456,
+       "encoding": 0.385,
+       "solving": 39.325,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.456,
+    "encoding": 0.385,
+    "solving": 39.325,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 1.062
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1376127-1.icnf",
+     "bytes": 3599881,
+     "sha256": "46639e7b53e781e8c8176a785cefffebc89650fffc7a7b938be9e654baea59be"
+    }
+   ]
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "seconds": 45.775,
+   "cpuSeconds": 45.763,
+   "peakMB": 566.3,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1888,
+    "solving_seconds": 43.824434488,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 44.658,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.413,
+       "encoding": 0.42,
+       "solving": 43.824,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.413,
+    "encoding": 0.42,
+    "solving": 43.824,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 1.11
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "seconds": 40.94,
+   "cpuSeconds": 40.926,
+   "peakMB": 566.5,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1888,
+    "solving_seconds": 39.056586907,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 39.832,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.405,
+       "encoding": 0.37,
+       "solving": 39.057,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.405,
+    "encoding": 0.37,
+    "solving": 39.057,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.007,
+    "driver": 1.101
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "seconds": 18.159,
+   "cpuSeconds": 18.155,
+   "peakMB": 468.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1892,
+    "solving_seconds": 16.375826896,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 17.171,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.387,
+       "encoding": 0.408,
+       "solving": 16.376,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.387,
+    "encoding": 0.408,
+    "solving": 16.376,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.01,
+    "driver": 0.978
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)",
+   "transcripts": [
+    {
+     "file": "1398254-1.icnf",
+     "bytes": 3600795,
+     "sha256": "dc6d051fc9583d8ed453963ef0bdf6bf534678cf1e7f81330c6a3d3153538718"
+    }
+   ]
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "seconds": 18.963,
+   "cpuSeconds": 18.957,
+   "peakMB": 455.8,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1892,
+    "solving_seconds": 17.170129291,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 17.976,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.383,
+       "encoding": 0.423,
+       "solving": 17.17,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.383,
+    "encoding": 0.423,
+    "solving": 17.17,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.009,
+    "driver": 0.978
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  },
+  {
+   "case": "example/142",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "seconds": 18.482,
+   "cpuSeconds": 18.471,
+   "peakMB": 469.1,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "stats": {
+    "paths": 733,
+    "merges": 219,
+    "solver_calls": 1892,
+    "solving_seconds": 16.647480256,
+    "variables": 43974,
+    "clauses": 161165,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 17.467,
+      "ending": "verified",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.41,
+       "encoding": 0.409,
+       "solving": 16.647,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 43974,
+       "clauses": 161165
+      }
+     }
+    ]
+   },
+   "phases": {
+    "loading": 0.0,
+    "lowering": 0.0,
+    "symbolic": 0.41,
+    "encoding": 0.409,
+    "solving": 16.647,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.008,
+    "driver": 1.008
+   },
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "checker": "jvmcontract's own checker (Bitwuzla)"
+  }
+ ],
+ "replays": [
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 2.236,
+   "seconds": 2.226676391,
+   "solving": 2.154316875000001,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.256378603,
+    0.256078723,
+    0.236821322
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 2.075,
+   "seconds": 2.066063422,
+   "solving": 1.9981011029999982,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.262484113,
+    0.23729642,
+    0.230950037
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 2.229,
+   "seconds": 2.218947419,
+   "solving": 2.1452061019999995,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.27219661,
+    0.246091266,
+    0.244159963
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 34.407,
+   "seconds": 32.980751695,
+   "solving": 32.30139914800003,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 4,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.446065138,
+    1.368172295,
+    1.333047833
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 42.57,
+   "seconds": 40.834863987,
+   "solving": 40.12055650900002,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 7,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.6515840590000002,
+    1.606198982,
+    1.452551595
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 32.854,
+   "seconds": 31.486015686000002,
+   "solving": 30.77530370000006,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 2,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.26242664,
+    1.048235551,
+    0.932621715
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 15.968,
+   "seconds": 14.723632994,
+   "solving": 14.048851559999969,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 3,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.000209687,
+    1.000102018,
+    1.000075208
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 15.885,
+   "seconds": 14.686649189,
+   "solving": 14.03324420599999,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 3,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.446086857,
+    1.437551839,
+    1.00006124
+   ]
+  },
+  {
+   "case": "real/midpoint/search-within-bound",
+   "transcript": "1311586-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 14.125,
+   "seconds": 12.949866717,
+   "solving": 12.31917707,
+   "recorded": 1.5808940000000014,
+   "calls": 942,
+   "clauses": 240144,
+   "variables": 69486,
+   "contradictions": 0,
+   "undecided": 2,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.5383178210000001,
+    1.532113944,
+    1.000069257
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.1,
+   "seconds": 0.095897601,
+   "solving": 0.08318636200000001,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.004665892,
+    0.004600249,
+    0.004497486
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.124,
+   "seconds": 0.118414186,
+   "solving": 0.10030879300000001,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.005472837,
+    0.004786519,
+    0.004571274
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.101,
+   "seconds": 0.096518497,
+   "solving": 0.083808016,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.004773074,
+    0.004650283,
+    0.004567297
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 4.387,
+   "seconds": 4.081971927,
+   "solving": 3.955479462999997,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.233535407,
+    0.181670193,
+    0.120013179
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 4.293,
+   "seconds": 3.977375161,
+   "solving": 3.853341541000001,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.243479295,
+    0.179472833,
+    0.120651935
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 4.473,
+   "seconds": 4.158837196,
+   "solving": 4.034007802,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.262455555,
+    0.185382015,
+    0.121472132
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 1.814,
+   "seconds": 1.537634135,
+   "solving": 1.393198001,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.164718461,
+    0.110896088,
+    0.061534333
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 1.805,
+   "seconds": 1.5130019940000001,
+   "solving": 1.370658558,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.183644549,
+    0.112649861,
+    0.06487137
+   ]
+  },
+  {
+   "case": "held/reverse",
+   "transcript": "1338098-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 1.839,
+   "seconds": 1.546021284,
+   "solving": 1.405098065,
+   "recorded": 0.084437,
+   "calls": 115,
+   "clauses": 59707,
+   "variables": 16780,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.19341786,
+    0.110544465,
+    0.06182061
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.004,
+   "seconds": 0.001609813,
+   "solving": 0.000497065,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.000121248,
+    9.7022e-05,
+    9.1632e-05
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.005,
+   "seconds": 0.003094601,
+   "solving": 0.0008098220000000001,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.000187011,
+    0.000152566,
+    0.000146054
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.003,
+   "seconds": 0.001540723,
+   "solving": 0.00048244300000000004,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.000100659,
+    9.6752e-05,
+    8.8566e-05
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.07,
+   "seconds": 0.057805409,
+   "solving": 0.053239968,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.005845347,
+    0.005658646,
+    0.00539993
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.066,
+   "seconds": 0.055005852,
+   "solving": 0.050537753,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.005913284,
+    0.005137587,
+    0.004775037
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.071,
+   "seconds": 0.058117345,
+   "solving": 0.05333772900000001,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.005798889,
+    0.005261961,
+    0.005129663
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.053,
+   "seconds": 0.042316934,
+   "solving": 0.037523884,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.004007746,
+    0.003785459,
+    0.003566277
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.052,
+   "seconds": 0.042009427,
+   "solving": 0.037306484,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.003931633,
+    0.003724595,
+    0.003561347
+   ]
+  },
+  {
+   "case": "held/prefix-sums",
+   "transcript": "1341259-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.054,
+   "seconds": 0.042221786,
+   "solving": 0.037452398000000005,
+   "recorded": 0.000542,
+   "calls": 18,
+   "clauses": 5637,
+   "variables": 1933,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.004082716,
+    0.003730375,
+    0.003610419
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 1.28,
+   "seconds": 1.272785076,
+   "solving": 1.2395656319999988,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.128759039,
+    0.078098478,
+    0.059470717
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 1.278,
+   "seconds": 1.270202835,
+   "solving": 1.2381056569999993,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.129693332,
+    0.080668892,
+    0.060741011
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 1.256,
+   "seconds": 1.247954391,
+   "solving": 1.2158719519999996,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.127681235,
+    0.079667692,
+    0.062263056
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 59.819,
+   "seconds": 58.961911577,
+   "solving": 58.59144142499993,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.344603938,
+    0.334243274,
+    0.272032415
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 61.322,
+   "seconds": 60.546236235,
+   "solving": 60.17418579700005,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.342136902,
+    0.311462793,
+    0.290733629
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 61.133,
+   "seconds": 60.309015215,
+   "solving": 59.93952588699996,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.350241983,
+    0.279776917,
+    0.264930009
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 6.448,
+   "seconds": 5.791360642,
+   "solving": 5.423668234000001,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.202026644,
+    0.194447794,
+    0.182856856
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 6.778,
+   "seconds": 6.077222513,
+   "solving": 5.703395459999999,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.227647491,
+    0.216810369,
+    0.204904591
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 6.593,
+   "seconds": 5.93191896,
+   "solving": 5.556352735999998,
+   "recorded": 1.2111959999999995,
+   "calls": 1044,
+   "clauses": 137013,
+   "variables": 39635,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.205240057,
+    0.193460595,
+    0.188050393
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.003,
+   "seconds": 0.000758904,
+   "solving": 0.000138379,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    7.0622e-05,
+    3.195e-05,
+    1.9727e-05
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.004,
+   "seconds": 0.001174063,
+   "solving": 0.000195237,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    7.429e-05,
+    4.4734e-05,
+    3.8993e-05
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.003,
+   "seconds": 0.000726864,
+   "solving": 0.000110648,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    4.265e-05,
+    3.0007e-05,
+    2.2542e-05
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.041,
+   "seconds": 0.033136261,
+   "solving": 0.030588290999999997,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.019263172,
+    0.009489013,
+    0.001584002
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.04,
+   "seconds": 0.032287688,
+   "solving": 0.029796935,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.018392879,
+    0.009575796,
+    0.001554627
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.044,
+   "seconds": 0.034149762,
+   "solving": 0.031634261999999996,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    0.020041171,
+    0.009669793,
+    0.001627223
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 0.031,
+   "seconds": 0.02392069,
+   "solving": 0.021449663,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.014912128,
+    0.0050687,
+    0.001364961
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 0.035,
+   "seconds": 0.025826607,
+   "solving": 0.022944089,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.015457221,
+    0.005983166,
+    0.001390789
+   ]
+  },
+  {
+   "case": "example/141",
+   "transcript": "1341287-2.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 0.033,
+   "seconds": 0.025364799,
+   "solving": 0.022827139,
+   "recorded": 0.000112,
+   "calls": 5,
+   "clauses": 3037,
+   "variables": 1200,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    0.015598707,
+    0.005760047,
+    0.001361655
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "cadical",
+   "run": 1,
+   "exit": 0,
+   "wall": 5.042,
+   "seconds": 5.033384937,
+   "solving": 4.992543108999999,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.754517223,
+    0.499606047,
+    0.441460336
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "cadical",
+   "run": 2,
+   "exit": 0,
+   "wall": 5.051,
+   "seconds": 5.042987548,
+   "solving": 5.0050035059999995,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.807895403,
+    0.593470884,
+    0.442033458
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "cadical",
+   "run": 3,
+   "exit": 0,
+   "wall": 4.696,
+   "seconds": 4.68798171,
+   "solving": 4.649484233999999,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 0,
+   "decided": 0,
+   "signature": "CaDiCaL 1.9.5 (bundled)",
+   "slowest": [
+    0.721656019,
+    0.426199854,
+    0.410315317
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla",
+   "run": 1,
+   "exit": 0,
+   "wall": 45.11,
+   "seconds": 44.02213961,
+   "solving": 43.55861862799999,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 6,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.3009471320000001,
+    1.200768956,
+    1.145748387
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla",
+   "run": 2,
+   "exit": 0,
+   "wall": 40.195,
+   "seconds": 39.201954007,
+   "solving": 38.744692904999994,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 5,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.233323754,
+    1.099444974,
+    1.011364764
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla",
+   "run": 3,
+   "exit": 0,
+   "wall": 43.116,
+   "seconds": 42.100570102,
+   "solving": 41.60748391399998,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 5,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+   "slowest": [
+    1.293955375,
+    1.089059482,
+    1.002463449
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 1,
+   "exit": 0,
+   "wall": 16.122,
+   "seconds": 15.244737994,
+   "solving": 14.773922925999996,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 1,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.048634713,
+    1.011684813,
+    0.926618763
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 2,
+   "exit": 0,
+   "wall": 16.757,
+   "seconds": 15.917714539,
+   "solving": 15.429729806999998,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 2,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.000747808,
+    1.000677939,
+    0.897704541
+   ]
+  },
+  {
+   "case": "example/142",
+   "transcript": "1375850-1.icnf",
+   "solver": "bitwuzla:preprocess=0",
+   "run": 3,
+   "exit": 0,
+   "wall": 17.016,
+   "seconds": 16.18087196,
+   "solving": 15.681832924,
+   "recorded": 4.841217,
+   "calls": 1885,
+   "clauses": 161165,
+   "variables": 43974,
+   "contradictions": 0,
+   "undecided": 1,
+   "decided": 0,
+   "signature": "Bitwuzla 0.8.2 (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+   "slowest": [
+    1.004616535,
+    0.941225168,
+    0.898906009
+   ]
+  }
+ ]
+}

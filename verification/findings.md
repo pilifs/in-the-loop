@@ -31,30 +31,14 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md); see also VF-001.
 - **Closes when**: the same job, resubmitted unchanged at a fixing commit, has step 6 pass.
 
-### VF-007: engine-priorities step 3: escaping exceptions: `auto --confirm` disagrees with the JVM on 12 claims, and an integration test times out
-
-- **Status**: open
-- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203452-jbmc-s-escaping-exceptions-named-and-ref` (at `ffb68ef59525`), steps 1 and 3. Step 2 (corpus under JBMC and auto) passed.
-- **Found**: step 3 (`the_corpus_agrees_with_the_jvm_under_auto_confirm`, tests/conformance.rs:689) has 12
-  disagreements, all on methods that catch an exception (`caught`, `caughtAsRuntime`, `nestedHandler`, with `n=0`):
-  Auto under `--gaps Strict` and `Assume` reports a violation the JVM does not reproduce (the harness holds), and
-  `--confirm` says the engines disagree: the tool's own checker proves `n != 0 || result == -1` and JBMC refutes it on
-  `n=0`, while the interpreter gives -1. So JBMC's counterexample is spurious on caught exceptions (not the checker).
-  Step 1: integration test `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (tests/integration.rs:1431) got
-  Unverifiable ("the solver did not finish within the time limit") for `fixtures.Pricing#total`, expected Violation;
-  62 other tests passed (703 s). That one may be a time limit on a 2 CPU job rather than a logic fault: not rerun to tell.
-- **Needs**: the engine-priorities-jbmc loop: fix the handling of caught exceptions in the JBMC path, and decide whether
-  the `Pricing#total` test needs a larger solver limit or a fixed expectation.
-- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md).
-- **Closes when**: the same job, resubmitted unchanged, passes all three steps.
-
 ### VF-006: engine-priorities step 4a: the 41-example gap-table job fails on a schema error, so no table exists
 
 - **Status**: open
 - **Raised**: 2026-11-06 on `vm-1`. Job `20261106-204220-the-41-recorded-jbmc-examples-under-stri` (at `61f5e48d1abf`).
 - **Found**: steps 1 and 2 stop at "result.json: Additional properties are not allowed ('sat' was unexpected)" on
   example 013, in the result schema check of `build.py`'s attempt. Only 9 of the 41 examples reached the table (32 skipped as "not format 2"), so step 3's assertion `9 examples in the table, not 41` also fails. The same schema complaint ('newProblems' unexpected) is in older B12 results, so the result schema may lag the writer.
-- **Needs**: the submitter (engine-priorities step 4a): add `sat` to the result schema (or stop writing it), check that the 41 examples carry format-2 results with gaps recorded, then resubmit.
+- **Update 2026-11-06**: rerun `20261106-231837-the-41-recorded-jbmc-examples-under-stri` (at `835d5f28cbfd`, `vm-1`) fails again in a new way: step 2 (own checker) exits 1 at "result.json: Additional properties are not allowed ('phasesExcess' was unexpected)" on a `jvmcontract prove` attempt (attempt 018), so `sat` is fixed but the schema still lags the writer on another field. Steps 1 passed. Only 12 of 41 examples reach the table (29 skipped as "not format 2"), so step 3 again fails with `12 examples in the table, not 41`. Example 013 differs from its expected verdict (013#0 unresolved on `TermOrder.<clinit>`); 071#0 and 071#1 are unresolved on `Enum.<init>`, `List.copyOf`, `List.of` (see VF-005).
+- **Needs**: the submitter (engine-priorities step 4a): add `sat` and `phasesExcess` to the result schema (or stop writing them; check every field the writer emits against it), check that the 41 examples carry format-2 results with gaps recorded, then resubmit.
 - **Tracked in**: [`llm-dlc/loops/engine-priorities.md`](../llm-dlc/loops/engine-priorities.md).
 - **Closes when**: the job, resubmitted, passes with 41 examples in the table.
 
@@ -114,6 +98,23 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: both jobs, resubmitted unchanged after the fix, pass.
 
 ## Decided and closed
+
+### VF-007: engine-priorities step 3: escaping exceptions: `auto --confirm` disagrees with the JVM on 12 claims, and an integration test times out
+
+- **Status**: closed by job `20261106-231317-jbmc-s-defects-under-confirm-the-unmaske` (at `14607996bdca`, 2026-11-06, `vm-1`): the same three commands as `20261106-203452`, all three steps passed (33m53s, peak 1.3 GiB). The `Pricing#total` timeout did not recur.
+- **Raised**: 2026-11-06 on `vm-1`. Job `20261106-203452-jbmc-s-escaping-exceptions-named-and-ref` (at `ffb68ef59525`), steps 1 and 3. Step 2 (corpus under JBMC and auto) passed.
+- **Found**: step 3 (`the_corpus_agrees_with_the_jvm_under_auto_confirm`, tests/conformance.rs:689) has 12
+  disagreements, all on methods that catch an exception (`caught`, `caughtAsRuntime`, `nestedHandler`, with `n=0`):
+  Auto under `--gaps Strict` and `Assume` reports a violation the JVM does not reproduce (the harness holds), and
+  `--confirm` says the engines disagree: the tool's own checker proves `n != 0 || result == -1` and JBMC refutes it on
+  `n=0`, while the interpreter gives -1. So JBMC's counterexample is spurious on caught exceptions (not the checker).
+  Step 1: integration test `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs` (tests/integration.rs:1431) got
+  Unverifiable ("the solver did not finish within the time limit") for `fixtures.Pricing#total`, expected Violation;
+  62 other tests passed (703 s). That one may be a time limit on a 2 CPU job rather than a logic fault: not rerun to tell.
+- **Needs**: the engine-priorities-jbmc loop: fix the handling of caught exceptions in the JBMC path, and decide whether
+  the `Pricing#total` test needs a larger solver limit or a fixed expectation.
+- **Tracked in**: [`llm-dlc/loops/engine-priorities-jbmc.md`](../llm-dlc/loops/engine-priorities-jbmc.md).
+- **Closes when**: the same job, resubmitted unchanged, passes all three steps.
 
 ### VF-004: the CBMC 6.11.0 source-reading job's grep for `run_property_decider` matches nothing
 

@@ -1,0 +1,208 @@
+   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-231317-jbmc-s-defects-under-confirm-the-unmaske/lib)
+    Finished `release` profile [optimized] target(s) in 22.94s
+     Running tests/conformance.rs (target/release/deps/conformance-3836de857774f2d6)
+
+running 1 test
+test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto has been running for over 60 seconds
+capacity         Jbmc/Strict Unverifiable assert result == 1
+capacity         Auto/Strict Unverifiable assert result == 1
+builderCapacity  Jbmc/Strict Unverifiable assert result == 1
+builderCapacity  Auto/Strict Unverifiable assert result == 1
+mapCapacity      Jbmc/Strict Unverifiable assert result == 1
+mapCapacity      Auto/Strict Unverifiable assert result == 1
+setCapacity      Jbmc/Strict Unverifiable assert result == 1
+setCapacity      Auto/Strict Unverifiable assert result == 1
+loadFactor       Jbmc/Strict Unverifiable assert result == 1
+loadFactor       Auto/Strict Unverifiable assert result == 1
+nullMonitor      Jbmc/Strict Unverifiable assert result == 1
+nullMonitor      Auto/Strict Violation    assert result == 1
+monitor          Jbmc/Strict Unverifiable assert result == n
+monitor          Auto/Strict Verified     assert result == n
+firstByte        Jbmc/Strict Unverifiable assert out.length == 0 || result == \old(out[0])
+firstByte        Auto/Strict Unverifiable assert out.length == 0 || result == \old(out[0])
+hiding           Jbmc/Strict Verified     assert result == n
+hiding           Auto/Strict Verified     assert result == n
+hiding           Jbmc/Strict Violation    assert result == 2
+hiding           Auto/Strict Violation    assert result == 2
+hidden           Jbmc/Strict Verified     assert result == 2
+hidden           Auto/Strict Verified     assert result == 2
+hidden           Jbmc/Strict Violation    assert result == n
+hidden           Auto/Strict Violation    assert result == n
+sameLiteral      Jbmc/Strict Verified     assert result
+sameLiteral      Auto/Strict Verified     assert result
+sameLiteral      Jbmc/Strict Violation    assert !result
+sameLiteral      Auto/Strict Violation    assert !result
+otherLiteral     Jbmc/Strict Verified     assert !result
+otherLiteral     Auto/Strict Verified     assert !result
+otherLiteral     Jbmc/Strict Violation    assert result
+otherLiteral     Auto/Strict Violation    assert result
+sameClass        Jbmc/Strict Verified     assert result
+sameClass        Auto/Strict Verified     assert result
+sameClass        Jbmc/Strict Violation    assert !result
+sameClass        Auto/Strict Violation    assert !result
+concatenated     Jbmc/Strict Unverifiable assert !result
+concatenated     Auto/Strict Verified     assert !result
+concatenated     Jbmc/Strict Violation    assert result
+concatenated     Auto/Strict Violation    assert result
+boom             Jbmc/Strict Violation    assert result == n
+boom             Auto/Strict Violation    assert result == n
+inherited        Jbmc/Strict Violation    assert result == n
+inherited        Auto/Strict Violation    assert result == n
+quiet            Jbmc/Strict Verified     assert result == n
+quiet            Auto/Strict Verified     assert result == n
+finallyWins      Jbmc/Strict Verified     assert result == 2
+finallyWins      Auto/Strict Verified     assert result == 2
+finallyWins      Jbmc/Strict Violation    assert result == 1
+finallyWins      Auto/Strict Violation    assert result == 1
+caught           Jbmc/Strict Unverifiable assert n != 0 || result == -1
+caught           Auto/Strict Verified     assert n != 0 || result == -1
+caught           Jbmc/Strict Violation    assert result != -1
+caught           Auto/Strict Violation    assert result != -1
+caught           Jbmc/Strict Unverifiable assert result == 10 / n; throws ArithmeticException when n == 0
+caught           Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
+caughtAsRuntime  Jbmc/Strict Unverifiable assert n != 0 || result == -1
+caughtAsRuntime  Auto/Strict Verified     assert n != 0 || result == -1
+caughtAsRuntime  Jbmc/Strict Unverifiable assert result == 10 / n; throws ArithmeticException when n == 0
+caughtAsRuntime  Auto/Strict Violation    assert result == 10 / n; throws ArithmeticException when n == 0
+nestedHandler    Jbmc/Strict Unverifiable assert n != 0 || result == -2
+nestedHandler    Auto/Strict Verified     assert n != 0 || result == -2
+nestedHandler    Jbmc/Strict Violation    assert result != -2
+nestedHandler    Auto/Strict Violation    assert result != -2
+element          Jbmc/Strict Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
+element          Auto/Strict Verified     assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0 || i >= a.length
+element          Jbmc/Strict Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
+element          Auto/Strict Violation    assert result == a[i]; throws ArrayIndexOutOfBoundsException when i < 0
+cast             Jbmc/Strict Verified     assert result == 0; throws ClassCastException when n > 0
+cast             Auto/Strict Verified     assert result == 0; throws ClassCastException when n > 0
+cast             Jbmc/Strict Violation    assert result == 0
+cast             Auto/Strict Violation    assert result == 0
+throwNull        Jbmc/Strict Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
+throwNull        Auto/Strict Verified     assert result == 0; throws IllegalStateException when n > 0; throws NullPointerException when n > -5 && n <= 0
+throwNull        Jbmc/Strict Violation    assert result == 0; throws IllegalStateException when n > -5
+throwNull        Auto/Strict Violation    assert result == 0; throws IllegalStateException when n > -5
+rethrown         Jbmc/Strict Verified     assert result == n; throws IllegalStateException when n < 0
+rethrown         Auto/Strict Verified     assert result == n; throws IllegalStateException when n < 0
+rethrown         Jbmc/Strict Violation    assert result == n; throws IllegalArgumentException when n < 0
+rethrown         Auto/Strict Violation    assert result == n; throws IllegalArgumentException when n < 0
+aliasedLocals    Jbmc/Strict Verified     assert result == n
+aliasedLocals    Auto/Strict Verified     assert result == n
+aliasedLocals    Jbmc/Strict Violation    assert result == 0
+aliasedLocals    Auto/Strict Violation    assert result == 0
+aliasedObjects   Jbmc/Strict Verified     assert result == n
+aliasedObjects   Auto/Strict Verified     assert result == n
+aliasedObjects   Jbmc/Strict Violation    assert result == 0
+aliasedObjects   Auto/Strict Violation    assert result == 0
+twoArrays        Jbmc/Strict Verified     assume a.length > 0 && b.length > 0; assert result == 1
+twoArrays        Auto/Strict Verified     assume a.length > 0 && b.length > 0; assert result == 1
+writeThrough     Jbmc/Strict Verified     assert result == 7
+writeThrough     Auto/Strict Verified     assert result == 7
+length           Jbmc/Strict Verified     assert result >= 0
+length           Auto/Strict Verified     assert result >= 0
+lengthOrMinusOne Jbmc/Strict Verified     assert result >= 0
+lengthOrMinusOne Auto/Strict Verified     assert result >= 0
+nullLocal        Jbmc/Strict Verified     assert result == 1; throws NullPointerException when n <= 0
+nullLocal        Auto/Strict Verified     assert result == 1; throws NullPointerException when n <= 0
+nullLocal        Jbmc/Strict Violation    assert result == 1
+nullLocal        Auto/Strict Violation    assert result == 1
+width            Jbmc/Strict Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
+width            Auto/Strict Verified     assert result == hi - lo; throws IllegalArgumentException when lo > hi
+width            Jbmc/Strict Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
+width            Auto/Strict Violation    assert result >= 0; throws IllegalArgumentException when lo > hi
+width            Jbmc/Strict Violation    assert result == hi - lo
+width            Auto/Strict Violation    assert result == hi - lo
+clamp            Jbmc/Strict Verified     assert result >= 0
+clamp            Auto/Strict Verified     assert result >= 0
+clamp            Jbmc/Strict Violation    assert result == n
+clamp            Auto/Strict Violation    assert result == n
+pairsEqual       Jbmc/Strict Unverifiable assert result
+pairsEqual       Auto/Strict Unverifiable assert result
+pairsEqual       Jbmc/Strict Unverifiable assert !result
+pairsEqual       Auto/Strict Unverifiable assert !result
+sides            Jbmc/Strict Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
+sides            Auto/Strict Verified     assert (n <= 0 || result == 4) && (n >= 0 || result == 5) && (n != 0 || result == 0)
+sides            Jbmc/Strict Violation    assert result == 4
+sides            Auto/Strict Violation    assert result == 4
+code             Jbmc/Strict Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
+code             Auto/Strict Verified     assert (n <= 0 || result == 2) && (n > 0 || result == 1)
+code             Jbmc/Strict Violation    assert result == 2
+code             Auto/Strict Violation    assert result == 2
+divide           Jbmc/Strict Verified     assume b == -1; assert result == -a
+divide           Auto/Strict Verified     assume b == -1; assert result == -a
+divide           Jbmc/Strict Violation    assume b == -1 && a < 0; assert result > 0
+divide           Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
+divide           Jbmc/Strict Unverifiable assert result * b + a % b == a; throws ArithmeticException when b == 0
+divide           Auto/Strict Verified     assert result * b + a % b == a; throws ArithmeticException when b == 0
+divide           Jbmc/Strict Violation    assert result * b + a % b == a
+divide           Auto/Strict Violation    assert result * b + a % b == a
+divideLong       Jbmc/Strict Violation    assume b == -1 && a < 0; assert result > 0
+divideLong       Auto/Strict Violation    assume b == -1 && a < 0; assert result > 0
+divideLong       Jbmc/Strict Verified     assume b == -1; assert result == -a
+divideLong       Auto/Strict Verified     assume b == -1; assert result == -a
+remainder        Jbmc/Strict Verified     assume b > 0; assert result > -b && result < b
+remainder        Auto/Strict Verified     assume b > 0; assert result > -b && result < b
+remainder        Jbmc/Strict Violation    assume b > 0; assert result >= 0
+remainder        Auto/Strict Violation    assume b > 0; assert result >= 0
+remainder        Jbmc/Strict Verified     assume b == -1; assert result == 0
+remainder        Auto/Strict Verified     assume b == -1; assert result == 0
+remainderLong    Jbmc/Strict Verified     assume b == -1; assert result == 0
+remainderLong    Auto/Strict Verified     assume b == -1; assert result == 0
+remainderLong    Jbmc/Strict Violation    assume a < 0 && b > 0; assert result >= 0
+remainderLong    Auto/Strict Violation    assume a < 0 && b > 0; assert result >= 0
+shiftLeft        Jbmc/Strict Verified     assume s == 32; assert result == x
+shiftLeft        Auto/Strict Verified     assume s == 32; assert result == x
+shiftLeft        Jbmc/Strict Violation    assume s == 32; assert result == 0
+shiftLeft        Auto/Strict Violation    assume s == 32; assert result == 0
+shiftLeft        Jbmc/Strict Verified     assume s == -1 && x == 1; assert result == -2147483648
+shiftLeft        Auto/Strict Verified     assume s == -1 && x == 1; assert result == -2147483648
+shiftLeftLong    Jbmc/Strict Verified     assume s == 64; assert result == x
+shiftLeftLong    Auto/Strict Verified     assume s == 64; assert result == x
+shiftLeftLong    Jbmc/Strict Violation    assume s == 64; assert result == 0
+shiftLeftLong    Auto/Strict Violation    assume s == 64; assert result == 0
+shiftLeftLong    Jbmc/Strict Verified     assume s == 32 && x == 1; assert result > 2147483647
+shiftLeftLong    Auto/Strict Verified     assume s == 32 && x == 1; assert result > 2147483647
+shiftRight       Jbmc/Strict Unverifiable assume x == -1; assert result == -1
+shiftRight       Auto/Strict Verified     assume x == -1; assert result == -1
+shiftRight       Jbmc/Strict Unverifiable assume s == 33; assert result == x / 2
+shiftRight       Auto/Strict Violation    assume s == 33; assert result == x / 2
+shiftRight       Jbmc/Strict Unverifiable assume s == 33; assert result == 0 || result == -1
+shiftRight       Auto/Strict Violation    assume s == 33; assert result == 0 || result == -1
+shiftUnsigned    Jbmc/Strict Violation    assume x < 0 && s == 32; assert result > 0
+shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0
+shiftUnsigned    Jbmc/Strict Unverifiable assume x < 0 && s == 1; assert result > 0
+shiftUnsigned    Auto/Strict Verified     assume x < 0 && s == 1; assert result > 0
+shiftUnsigned    Jbmc/Strict Unverifiable assume s == 32; assert result == 0
+shiftUnsigned    Auto/Strict Violation    assume s == 32; assert result == 0
+square           Jbmc/Strict Violation    assert result >= 0
+square           Auto/Strict Violation    assert result >= 0
+negate           Jbmc/Strict Violation    assume x < 0; assert result > 0
+negate           Auto/Strict Violation    assume x < 0; assert result > 0
+toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0
+toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0
+toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127
+toByte           Auto/Strict Verified     assert result >= -128 && result <= 127
+toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535
+toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535
+toChar           Jbmc/Strict Violation    assert result == x
+toChar           Auto/Strict Violation    assert result == x
+toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768
+toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768
+fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0
+fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0
+nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0
+nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0
+nextChar         Jbmc/Strict Violation    assert result > c
+nextChar         Auto/Strict Violation    assert result > c
+absolute         Jbmc/Strict Violation    assert result >= 0
+absolute         Auto/Strict Violation    assert result >= 0
+increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648
+increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648
+byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254
+byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254
+byteSum          Jbmc/Strict Violation    assert result >= 0
+byteSum          Auto/Strict Violation    assert result >= 0
+
+55 cases, 98 claims (52 refuted on the JVM), 196 runs; the interpreter refuses firstByte([0])
+test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 618.10s
+

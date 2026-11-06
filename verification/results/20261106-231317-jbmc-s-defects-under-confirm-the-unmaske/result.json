@@ -1,0 +1,438 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-231317-jbmc-s-defects-under-confirm-the-unmaske",
+  "title": "JBMC's defects under --confirm, the unmasked-shift claims and the full-range default: the corpus under JBMC, auto and --confirm, and the integration tests (rerun of 20261106-203452)",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 33m53s, peak 1.3 GiB (estimated 50m00s, 3.0 GiB); 3 output file(s) changed; signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-231317-jbmc-s-defects-under-confirm-the-unmaske.json",
+    "sha256": "ab995868496ec601ab8d6750f01a7556e7c7a80f547cbd6d3672a1c70f1e729b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-231317-jbmc-s-defects-under-confirm-the-unmaske",
+      "title": "JBMC's defects under --confirm, the unmasked-shift claims and the full-range default: the corpus under JBMC, auto and --confirm, and the integration tests (rerun of 20261106-203452)",
+      "description": "Rerun of job 20261106-203452 (step 3 of llm-dlc/loops/engine-priorities.md), whose triage is under Progress in llm-dlc/loops/engine-priorities-jbmc.md. That job's --confirm step had 12 disagreements, all on conformance/caught, caughtAsRuntime and nestedHandler under strict and assume: the own checker proves 'n != 0 || result == -1', and JBMC's confirming run refutes it at n=0 through the defects the preflight names (return-past-handler, stubbed-handler: JBMC 6.11.0 lets the division's exception past the handler), on a witness the interpreter does not reproduce. The tool called that a disagreement (unverifiable, with JBMC's witness as the counterexample). Now equivalence::confirm runs the preflight on a refutation too: where it names a defect and the witness does not reproduce in the interpreter, the refutation is the defect's, as a JBMC proof through one is refused, so the confirmation is no-verdict and the own checker's proof stands, unconfirmed, the line naming the defect. A witness that reproduces is still a disagreement. Tested inline with a stand-in JBMC (conformance.rs, confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict) and checked by hand on the real JBMC on the three methods. Since -203452 ran, the unmasked-shift defect was guarded (conformance/shiftRight/3, shiftUnsigned/3 added) and JBMC's default staging became full-range (step 2c, from job 20261106-201041): neither has run through the ignored corpus tests yet. The integration step of -203452 failed in the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, on the own checker's (not JBMC's) regression proof of fixtures.Pricing#total (the rounding refactor), out of its 600 s: the own checker's branch probes have a wall-clock budget, so its path order depends on timing, and inline on cvm 2 of 8 identical runs did not finish in 40 s where the others took 4 s. That is lib/src/bmc/, the native stream's, recorded for it; this job may meet it again. Its tee also failed, since lib/target did not exist yet in the fresh checkout: the steps now create it.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/equivalence.rs",
+          "lib/src/jbmc_gaps.rs",
+          "lib/tests/conformance.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md"
+        ],
+        "jobs": [
+          "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref"
+        ]
+      },
+      "expected": "Steps 2 and 3 exit 0. Under --confirm, caught/1, caughtAsRuntime/1 and nestedHandler/1 are Verified with confirmation no-verdict naming the defect, and no disagreement is reported. Under --engine jbmc, shiftRight/3 and shiftUnsigned/3 are no verdict (the proof refused, naming unmasked-shift); under auto, violations. Step 1 exits 0, or fails only at the own checker's Pricing#total regression proof being out of time (the native stream's timing-dependent search, recorded under Progress); any other failure is a finding to triage, as is a claim JBMC says Verified that the JVM refutes.",
+      "submitted": {
+        "at": "2026-11-06T23:13:17+00:00",
+        "session": "7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573",
+        "by": "claude-opus-5-5"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "50m",
+        "memoryLimit": "3.5G",
+        "timeout": "2h",
+        "notes": "job -203452 took 44m36s with these steps (integration 13.5 min, --confirm corpus 20 min), peak 1.3 GiB; two claims more now"
+      },
+      "steps": [
+        {
+          "name": "integration tests",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test integration 2>&1 | tee target/integration-step3b.log",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under JBMC and auto",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-step3b.log",
+          "cwd": "."
+        },
+        {
+          "name": "conformance corpus under auto --confirm",
+          "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-step3b.log",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "lib/target/integration-step3b.log",
+        "lib/target/conformance-jbmc-step3b.log",
+        "lib/target/conformance-confirm-step3b.log"
+      ]
+    }
+  },
+  "sourceCommit": "14607996bdcaa1c63613fb1916907c812f4ec216",
+  "startedAt": "2026-11-06T23:14:42+00:00",
+  "finishedAt": "2026-11-06T23:48:36+00:00",
+  "wallSeconds": 2034.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1462603,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3758096384,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 3000.0,
+    "notes": "job -203452 took 44m36s with these steps (integration 13.5 min, --confirm corpus 20 min), peak 1.3 GiB; two claims more now"
+  },
+  "usage": {
+    "peakMemoryBytes": 1374593024,
+    "wallSeconds": 2033.3,
+    "cpuSeconds": 2159.0,
+    "memoryOfEstimate": 0.43,
+    "durationOfEstimate": 0.68
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "integration tests",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test integration 2>&1 | tee target/integration-step3b.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 173.217,
+      "cpuSeconds": 308.013,
+      "cpuThrottledSeconds": 78.009,
+      "peakMemoryBytes": 1374593024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-integration-tests.log",
+        "lines": 122,
+        "bytes": 6436,
+        "sha256": "d64c9c7a5f64163f59a08f2da401d4d5999a34d62e8f8311d3680189fbbeee16",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 121,
+          "text": "test result: ok. 63 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 80.25s",
+          "groups": [
+            "ok",
+            "63",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "test a_static_method_that_became_a_records_method_is_related_by_the_components ... ok",
+        "test a_target_identical_in_both_versions_needs_no_proof ... ok",
+        "test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok",
+        "test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok",
+        "test an_overloaded_method_is_named_by_its_parameter_types ... ok",
+        "test a_witness_through_contracts_is_run_on_a_jvm ... ok",
+        "test arrays_are_quantified_over_and_witnessed ... ok",
+        "test capability_contracts_list_each_entry_point_with_its_call_site ... ok",
+        "test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok",
+        "test details_print_the_statement_and_where_the_time_went ... ok",
+        "test draws_the_state_machine_of_a_contract ... ok",
+        "test generalized_quantifiers_fold_and_counterexamples_shrink ... ok",
+        "test generates_the_tla_operator_the_python_generator_wrote ... ok",
+        "test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok",
+        "test impure_or_unbounded_methods_are_refused_with_the_reason ... ok",
+        "test identity_and_initialization_agree_with_the_jvm ... ok",
+        "test jbmc_applies_the_contracts_for_its_gaps ... ok",
+        "test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok",
+        "test old_reads_an_array_as_the_call_received_it ... ok",
+        "test relocation_renames_the_class_and_its_references ... ok",
+        "test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... ok",
+        "test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok",
+        "test results_of_two_types_need_a_relation ... ok",
+        "test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok",
+        "test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok",
+        "test the_gap_scan_names_what_the_own_checker_approximates ... ok",
+        "test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok",
+        "test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok",
+        "test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok",
+        "test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok",
+        "test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok",
+        "test throws_clauses_prove_the_exceptional_path ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test unbounded_recursion_is_refused_not_run_forever ... ok",
+        "test update_then_verify_passes_and_detects_drift_with_sarif ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 63 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 80.25s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "conformance corpus under JBMC and auto",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_jbmc_and_auto -- --ignored --nocapture 2>&1 | tee target/conformance-jbmc-step3b.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 641.156,
+      "cpuSeconds": 636.359,
+      "cpuThrottledSeconds": 0.264,
+      "peakMemoryBytes": 539729920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-conformance-corpus-under-jbmc.log",
+        "lines": 208,
+        "bytes": 15558,
+        "sha256": "715fdabf67a4fcb984f6a022748d7adaf52a14ff0577c2665b1889f90fc90084",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 207,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 618.10s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "shiftUnsigned    Jbmc/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Auto/Strict Verified     assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Jbmc/Strict Unverifiable assume s == 32; assert result == 0",
+        "shiftUnsigned    Auto/Strict Violation    assume s == 32; assert result == 0",
+        "square           Jbmc/Strict Violation    assert result >= 0",
+        "square           Auto/Strict Violation    assert result >= 0",
+        "negate           Jbmc/Strict Violation    assume x < 0; assert result > 0",
+        "negate           Auto/Strict Violation    assume x < 0; assert result > 0",
+        "toByte           Jbmc/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Jbmc/Strict Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Strict Verified     assert result >= -128 && result <= 127",
+        "toChar           Jbmc/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Verified     assert result >= 0 && result <= 65535",
+        "toChar           Jbmc/Strict Violation    assert result == x",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toShort          Jbmc/Strict Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Strict Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Jbmc/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Jbmc/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Verified     assume c == 65535; assert result == 0",
+        "nextChar         Jbmc/Strict Violation    assert result > c",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "absolute         Jbmc/Strict Violation    assert result >= 0",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "increment        Jbmc/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Strict Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Jbmc/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Verified     assert result >= -256 && result <= 254",
+        "byteSum          Jbmc/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "",
+        "55 cases, 98 claims (52 refuted on the JVM), 196 runs; the interpreter refuses firstByte([0])",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 618.10s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "conformance corpus under auto --confirm",
+      "run": "set -o pipefail; cd lib && mkdir -p target && JVMCONTRACT_JBMC_MEMORY_MB=2048 cargo test --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --nocapture 2>&1 | tee target/conformance-confirm-step3b.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1218.947,
+      "cpuSeconds": 1214.637,
+      "cpuThrottledSeconds": 0.296,
+      "peakMemoryBytes": 177807360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-conformance-corpus-under-auto.log",
+        "lines": 207,
+        "bytes": 16362,
+        "sha256": "3cf9089128818183933a2360e1f5649ce035bf069f5e47fe9ea85452a2c78a8c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 206,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1218.76s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "shiftUnsigned    Auto/Strict Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Auto/Assume Violation    assume x < 0 && s == 32; assert result > 0",
+        "shiftUnsigned    Auto/Strict NoVerdict Verified     assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Auto/Assume NoVerdict Verified     assume x < 0 && s == 1; assert result > 0",
+        "shiftUnsigned    Auto/Strict Violation    assume s == 32; assert result == 0",
+        "shiftUnsigned    Auto/Assume Violation    assume s == 32; assert result == 0",
+        "square           Auto/Strict Violation    assert result >= 0",
+        "square           Auto/Assume Violation    assert result >= 0",
+        "negate           Auto/Strict Violation    assume x < 0; assert result > 0",
+        "negate           Auto/Assume Violation    assume x < 0; assert result > 0",
+        "toByte           Auto/Strict Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Assume Violation    assume x >= 0; assert result >= 0",
+        "toByte           Auto/Strict Confirmed Verified     assert result >= -128 && result <= 127",
+        "toByte           Auto/Assume Confirmed Verified     assert result >= -128 && result <= 127",
+        "toChar           Auto/Strict Confirmed Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Assume Confirmed Verified     assert result >= 0 && result <= 65535",
+        "toChar           Auto/Strict Violation    assert result == x",
+        "toChar           Auto/Assume Violation    assert result == x",
+        "toShort          Auto/Strict Confirmed Verified     assume x == 32768; assert result == -32768",
+        "toShort          Auto/Assume Confirmed Verified     assume x == 32768; assert result == -32768",
+        "fromLong         Auto/Strict Violation    assume x > 2147483647; assert result > 0",
+        "fromLong         Auto/Assume Violation    assume x > 2147483647; assert result > 0",
+        "nextChar         Auto/Strict Confirmed Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Assume Confirmed Verified     assume c == 65535; assert result == 0",
+        "nextChar         Auto/Strict Violation    assert result > c",
+        "nextChar         Auto/Assume Violation    assert result > c",
+        "absolute         Auto/Strict Violation    assert result >= 0",
+        "absolute         Auto/Assume Violation    assert result >= 0",
+        "increment        Auto/Strict Confirmed Verified     assume x == 2147483647; assert result == -2147483648",
+        "increment        Auto/Assume Confirmed Verified     assume x == 2147483647; assert result == -2147483648",
+        "byteSum          Auto/Strict Confirmed Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Assume Confirmed Verified     assert result >= -256 && result <= 254",
+        "byteSum          Auto/Strict Violation    assert result >= 0",
+        "byteSum          Auto/Assume Violation    assert result >= 0",
+        "",
+        "55 cases, 98 claims (52 refuted on the JVM), 196 runs; the interpreter refuses firstByte([0])",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 1218.76s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/target/integration-step3b.log",
+      "change": "added",
+      "bytes": 6436,
+      "sha256": "d64c9c7a5f64163f59a08f2da401d4d5999a34d62e8f8311d3680189fbbeee16",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/conformance-jbmc-step3b.log",
+      "change": "added",
+      "bytes": 15558,
+      "sha256": "715fdabf67a4fcb984f6a022748d7adaf52a14ff0577c2665b1889f90fc90084",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/target/conformance-confirm-step3b.log",
+      "change": "added",
+      "bytes": 16362,
+      "sha256": "3cf9089128818183933a2360e1f5649ce035bf069f5e47fe9ea85452a2c78a8c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T23:52:18+00:00",
+    "applied": [
+      "lib/target/integration-step3b.log",
+      "lib/target/conformance-jbmc-step3b.log",
+      "lib/target/conformance-confirm-step3b.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

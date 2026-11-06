@@ -2,6 +2,147 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261106-231837-the-41-recorded-jbmc-examples-under-stri",
+      "title": "The 41 recorded JBMC examples under strict on both engines, with a per-obligation gap table (engine-priorities step 4a, rerun of 20261106-204220)",
+      "status": "failed",
+      "summary": "failed: 2 passed, 1 failed step(s) in 3m11s, peak 1.1 GiB (estimated 25m00s, 2.0 GiB); 90 output file(s) changed; signals: example:as-expected×1; example:differ×1",
+      "attention": [
+        "step 2 (the same 41 under strict on the tool's own checker, with the gap table) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/tools/gap_table.py",
+          "lib/src/jbmc_gaps.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md",
+          "examples/tools/build.py",
+          "examples/schema/result.schema.json"
+        ]
+      },
+      "sourceCommit": "835d5f28cbfd666ffb763870a0d994e3c74d80a7",
+      "finishedAt": "2026-11-06T23:52:04+00:00",
+      "wallSeconds": 191.1,
+      "peakMemoryBytes": 1130291200,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 1500.0,
+        "notes": "job -204220 stopped at its first example in 1m51s; job -082917 ran the 41 under JBMC in 8m10s at peak 1.4 GiB on 1 CPU, held back 5 minutes by the quota (a JVM wants 2); build.py compiles and tests the app per example; the own checker is faster than JBMC on every case both decide (job -102624); JBMC is capped at 3 GiB"
+      },
+      "host": "vm-1",
+      "result": "20261106-231837-the-41-recorded-jbmc-examples-under-stri/result.json"
+    },
+    {
+      "id": "20261106-231317-jbmc-s-defects-under-confirm-the-unmaske",
+      "title": "JBMC's defects under --confirm, the unmasked-shift claims and the full-range default: the corpus under JBMC, auto and --confirm, and the integration tests (rerun of 20261106-203452)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 33m53s, peak 1.3 GiB (estimated 50m00s, 3.0 GiB); 3 output file(s) changed; signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "bmc:native",
+        "B11"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/equivalence.rs",
+          "lib/src/jbmc_gaps.rs",
+          "lib/tests/conformance.rs",
+          "llm-dlc/loops/engine-priorities-jbmc.md"
+        ],
+        "jobs": [
+          "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref"
+        ]
+      },
+      "sourceCommit": "14607996bdcaa1c63613fb1916907c812f4ec216",
+      "finishedAt": "2026-11-06T23:48:36+00:00",
+      "wallSeconds": 2033.3,
+      "peakMemoryBytes": 1374593024,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 3000.0,
+        "notes": "job -203452 took 44m36s with these steps (integration 13.5 min, --confirm corpus 20 min), peak 1.3 GiB; two claims more now"
+      },
+      "host": "vm-1",
+      "result": "20261106-231317-jbmc-s-defects-under-confirm-the-unmaske/result.json"
+    },
+    {
+      "id": "20261106-230455-the-own-checker-on-cadical-and-on-bitwuz",
+      "title": "The own checker on CaDiCaL and on Bitwuzla given the engine's word-level terms: five workloads, full checks (Phase 6c, part 2)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 3m51s, peak 1.1 GiB (estimated 30m00s, 1.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "solver:bitwuzla",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/solvers/compare.py",
+          "lib/src/bmc/bitwuzla.rs",
+          "lib/src/bmc/bits.rs",
+          "lib/src/bmc/sat.rs"
+        ],
+        "jobs": [
+          "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+          "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz"
+        ]
+      },
+      "sourceCommit": "bbb3062e89b411b388beeb370675442e3b3c3595",
+      "finishedAt": "2026-11-06T23:14:23+00:00",
+      "wallSeconds": 232.0,
+      "peakMemoryBytes": 1134231552,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 1800.0,
+        "notes": "Measured inline on this machine, one run each: reverse 0.18 s on CaDiCaL and 0.12 s on bitwuzla-words, prefix sums 0.05 and 0.06 s, example 141 2.35 s on bitwuzla-words (CaDiCaL about 2.2 s); peak 73 MB. The five checks on CaDiCaL take 8.3 s together, so three runs on three solvers come to a few minutes unless a case runs out of time on Bitwuzla (600 s each at most); the build is a few minutes."
+      },
+      "host": "vm-1",
+      "result": "20261106-230455-the-own-checker-on-cadical-and-on-bitwuz/result.json"
+    },
+    {
+      "id": "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz",
+      "title": "The own checker on CaDiCaL and on Bitwuzla, given the same bit-blasted clauses: five workloads, full checks and replays (Phase 6c, part 1)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 22m41s, peak 1.0 GiB (estimated 1h30m, 2.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+      "attention": [],
+      "capabilities": [
+        "solver:bitwuzla",
+        "jvmcontract:equivalence",
+        "jvmcontract:transcript"
+      ],
+      "links": {
+        "paths": [
+          "lib/solvers/compare.py",
+          "lib/src/bmc/bitwuzla.rs",
+          "lib/src/bmc/sat.rs"
+        ],
+        "jobs": [
+          "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical"
+        ]
+      },
+      "sourceCommit": "09739e6dacbd4473ba5e6bc84c791ae4d91a63cc",
+      "finishedAt": "2026-11-06T23:10:16+00:00",
+      "wallSeconds": 1361.3,
+      "peakMemoryBytes": 1106653184,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 5400.0,
+        "notes": "Measured inline on this machine: the five checks take 8.3 s on CaDiCaL and their transcripts replay in 7.8 s; Bitwuzla with preprocess=0 replayed binary search's 942 calls in 11.4 s (7x CaDiCaL), and with its defaults took 25-35x CaDiCaL on reverse and lower-bound. Three runs of every check and replay come to about an hour; peak memory was 212 MB on reverse under Bitwuzla, more on the 240k-clause binary search"
+      },
+      "host": "vm-1",
+      "result": "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz/result.json"
+    },
+    {
       "id": "20261106-203452-jbmc-s-escaping-exceptions-named-and-ref",
       "title": "JBMC's escaping exceptions named and refused: corpus under JBMC, auto and --confirm, and the integration tests (engine-priorities step 3)",
       "status": "failed",

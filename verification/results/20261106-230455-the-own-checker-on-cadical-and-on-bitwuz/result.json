@@ -1,0 +1,379 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-230455-the-own-checker-on-cadical-and-on-bitwuz",
+  "title": "The own checker on CaDiCaL and on Bitwuzla given the engine's word-level terms: five workloads, full checks (Phase 6c, part 2)",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 3m51s, peak 1.1 GiB (estimated 30m00s, 1.0 GiB); 2 output file(s) changed; signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-230455-the-own-checker-on-cadical-and-on-bitwuz.json",
+    "sha256": "6d39270edabb77bee059a8f98a3d5796ae9d937d189910de40bf8956958b7b35",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-230455-the-own-checker-on-cadical-and-on-bitwuz",
+      "title": "The own checker on CaDiCaL and on Bitwuzla given the engine's word-level terms: five workloads, full checks (Phase 6c, part 2)",
+      "description": "Phase 6c of llm-dlc/loops/engine-priorities.md (the native stream), its second part: Bitwuzla on word-level terms for the workloads where the formula's size dominates. The prototype is JVMCONTRACT_SOLVER=bitwuzla-words: the solver interface gains Terms (lib/src/bmc/sat.rs), and over a solver that takes terms the engine's encoding (lib/src/bmc/bits.rs) builds no circuits. Each gate is defined to Bitwuzla as a Boolean term, and each addition, subtraction, multiplication, signed division and remainder, comparison, shift by a symbolic amount, bitwise operation of two non-constant values and ite of two values as one bit-vector term (bvadd, bvsdiv, bvult, ite, ...), whose result bits are extracts of it (lib/src/bmc/bitwuzla.rs). Constants fold as before, and nothing is left to the engine's lazy division and multiplication: the solver is given the operation itself. Arrays stay the engine's bounded cells, read and written through ites over the index (no array theory). lib/solvers/compare.py --words runs the own checker's full checks of the benchmark's five workloads (real/midpoint/search-within-bound, the bounded binary search; example/141; example/142; held/reverse; held/prefix-sums) under strict, with the benchmark's own command lines (lib/benchmark/run.py, imported, not changed), three times each on three solvers: the bundled CaDiCaL 1.9.5 (the baseline, on the same machine), bitwuzla-words with Bitwuzla 0.8.2's defaults (sat-solver cadical, produce-models), and bitwuzla-words with preprocess=0. Bitwuzla is loaded with dlopen from ~/tools/bitwuzla/current, the install job 20261106-194049 made on this runner. There are no transcripts: the solver isn't given clauses. The script writes lib/solvers/comparison/word-level.json (every run, with each check's word-level operation count, the solvers' signatures, the library's path and sha256, the commit, the machine) and word-level.md (the table). It fails if CaDiCaL misses a case's expected verdict, if any decisive verdict is wrong, or if the solvers' decisive verdicts differ; a Bitwuzla run out of time is a measurement, listed as not decided. The bit-blasted part is job 20261106-224616. Times are taken on a shared runner, so other jobs may run beside it. No network.",
+      "kind": "other",
+      "capabilities": [
+        "solver:bitwuzla",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/solvers/compare.py",
+          "lib/src/bmc/bitwuzla.rs",
+          "lib/src/bmc/bits.rs",
+          "lib/src/bmc/sat.rs"
+        ],
+        "jobs": [
+          "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical",
+          "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz"
+        ]
+      },
+      "expected": "exits 0: all five cases verified on CaDiCaL, every decisive verdict on bitwuzla-words verified; word-level.json and word-level.md written with the three solvers' signatures",
+      "submitted": {
+        "at": "2026-11-06T23:04:55+00:00",
+        "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+        "by": "claude (engines-native stream)"
+      },
+      "requires": [
+        "cargo",
+        "java",
+        "javac",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "30m",
+        "memoryLimit": "3G",
+        "timeout": "3h",
+        "notes": "Measured inline on this machine, one run each: reverse 0.18 s on CaDiCaL and 0.12 s on bitwuzla-words, prefix sums 0.05 and 0.06 s, example 141 2.35 s on bitwuzla-words (CaDiCaL about 2.2 s); peak 73 MB. The five checks on CaDiCaL take 8.3 s together, so three runs on three solvers come to a few minutes unless a case runs out of time on Bitwuzla (600 s each at most); the build is a few minutes."
+      },
+      "steps": [
+        {
+          "name": "build jvmcontract",
+          "run": "cd lib && cargo build --release",
+          "cwd": "."
+        },
+        {
+          "name": "Bitwuzla loads here, and the word-level operations are the JVM's on it",
+          "run": "cd lib && out=$(cargo test --release --lib bitwuzla -- --nocapture 2>&1); status=$?; echo \"$out\"; test $status -eq 0 && ! grep -q \"skipped:\" <<< \"$out\"",
+          "cwd": "."
+        },
+        {
+          "name": "the word-level comparison",
+          "run": "python3 lib/solvers/compare.py --words --out lib/solvers/comparison",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/solvers/comparison/word-level.json",
+        "lib/solvers/comparison/word-level.md"
+      ]
+    }
+  },
+  "sourceCommit": "bbb3062e89b411b388beeb370675442e3b3c3595",
+  "startedAt": "2026-11-06T23:10:31+00:00",
+  "finishedAt": "2026-11-06T23:14:23+00:00",
+  "wallSeconds": 232.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1443809,
+    "workers": 12,
+    "cpus": 24.0,
+    "memoryBudgetBytes": 34359738368,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 1800.0,
+    "notes": "Measured inline on this machine, one run each: reverse 0.18 s on CaDiCaL and 0.12 s on bitwuzla-words, prefix sums 0.05 and 0.06 s, example 141 2.35 s on bitwuzla-words (CaDiCaL about 2.2 s); peak 73 MB. The five checks on CaDiCaL take 8.3 s together, so three runs on three solvers come to a few minutes unless a case runs out of time on Bitwuzla (600 s each at most); the build is a few minutes."
+  },
+  "usage": {
+    "peakMemoryBytes": 1134231552,
+    "wallSeconds": 232.0,
+    "cpuSeconds": 269.3,
+    "memoryOfEstimate": 1.06,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 28,
+    "memoryTotalBytes": 50431561728,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 96.423,
+      "cpuSeconds": 127.41,
+      "cpuThrottledSeconds": 0.602,
+      "peakMemoryBytes": 1134231552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-jvmcontract.log",
+        "lines": 46,
+        "bytes": 1544,
+        "sha256": "25954e1c21aa808e969bc143a86920763dcec4fae5de78d8c7dcc447f5d3c732",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling object v0.39.1",
+        "   Compiling jobserver v0.1.35",
+        "   Compiling memchr v2.8.3",
+        "   Compiling cc v1.10.0",
+        "   Compiling syn v3.0.9",
+        "   Compiling ar_archive_writer v0.5.3",
+        "   Compiling serde_core v1.0.229",
+        "   Compiling utf8parse v0.2.2",
+        "   Compiling anstyle-parse v1.0.0",
+        "   Compiling psm v0.1.32",
+        "   Compiling zmij v1.0.23",
+        "   Compiling cfg-if v1.0.5",
+        "   Compiling colorchoice v1.0.5",
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling crc32fast v1.5.3",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling stacker v0.1.25",
+        "   Compiling cadical v0.1.16",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling serde v1.0.229",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-230455-the-own-checker-on-cadical-and-on-bitwuz/lib)",
+        "    Finished `release` profile [optimized] target(s) in 1m 36s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Bitwuzla loads here, and the word-level operations are the JVM's on it",
+      "run": "cd lib && out=$(cargo test --release --lib bitwuzla -- --nocapture 2>&1); status=$?; echo \"$out\"; test $status -eq 0 && ! grep -q \"skipped:\" <<< \"$out\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 47.711,
+      "cpuSeconds": 49.7,
+      "cpuThrottledSeconds": 0.043,
+      "peakMemoryBytes": 840093696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-bitwuzla-loads-here-and-the-wo.log",
+        "lines": 20,
+        "bytes": 1141,
+        "sha256": "a8cf19bb168a0ddb50e63451b02c391bfa75ab155f9f670c21ad554cd6e0ac89",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 20,
+          "text": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 3.65s",
+          "groups": [
+            "ok",
+            "6",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261106-230455-the-own-checker-on-cadical-and-on-bitwuz/lib)",
+        "    Finished `release` profile [optimized] target(s) in 43.83s",
+        "     Running unittests src/lib.rs (target/release/deps/jvmcontract-e6f8b70cba5e6636)",
+        "",
+        "running 6 tests",
+        "test bmc::bitwuzla::tests::a_call_past_its_limit_stops_with_no_answer ... ok",
+        "test bmc::bitwuzla::tests::bitwuzla_names_itself_and_answers_incrementally_under_assumptions ... ok",
+        "test bmc::bitwuzla::tests::settings_are_read_checked_against_bitwuzla_and_named_in_the_signature ... ok",
+        "test bmc::bitwuzla::tests::the_option_info_has_the_c_layout ... ok",
+        "test bmc::tests::a_check_on_bitwuzla_decides_as_on_cadical_and_replays_cadicals_calls ... ok",
+        "test bmc::bits::tests::word_level_operations_on_bitwuzla_are_the_jvms ... ok",
+        "",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 3.65s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "the word-level comparison",
+      "run": "python3 lib/solvers/compare.py --words --out lib/solvers/comparison",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 87.861,
+      "cpuSeconds": 92.213,
+      "cpuThrottledSeconds": 1.267,
+      "peakMemoryBytes": 237842432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-word-level-comparison.log",
+        "lines": 87,
+        "bytes": 9150,
+        "sha256": "f5ffe69da00bbf4dcd5fc2ec343555719b70c7d1491e94690c8a2618db3494ad",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "`lib/solvers/compare.py` at `?` on claude-vm (x86_64, AMD RYZEN AI MAX+ 395 w/ Radeon 8060S, 28 CPUs), 2026-11-06T23:14:23+0000: jvmcontract 0.1.0, openjdk version \"25.0.5\" 2026-10-20 LTS. Each case under strict, unwind 16, arrays up to 8, 3 runs of each check and replay; seconds are the median, wit",
+        "",
+        "The solvers, as the checks' statements name them:",
+        "",
+        "- Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)",
+        "- Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, preprocess=0, otherwise defaults)",
+        "- CaDiCaL 1.9.5 (bundled)",
+        "",
+        "Bitwuzla's library: `/home/filip/tools/bitwuzla/bitwuzla-0.8.2/lib/x86_64-linux-gnu/libbitwuzla.so.0`, sha256 `eac09e6d6f892ae0…`.",
+        "",
+        "CaDiCaL is given the engine's clauses; `bitwuzla-words` its gates as Boolean terms and its word-level operations as bit-vector terms, so its clause count is only the constant's unit clause, and *Word ops* counts the operations it was given as terms.",
+        "",
+        "## Full checks",
+        "",
+        "| Case | Solver | Verdict | Seconds | Solver calls | Clauses | Word ops | Solving (engine) | Peak MB |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|",
+        "| real/midpoint/search-within-bound | cadical | verified | 1.736 (1.736–1.805) | 942 | 240144 | – | 1.583 (1.582–1.637) | 70 |",
+        "| real/midpoint/search-within-bound | bitwuzla-words | verified | 1.469 (1.463–1.472) | 937 | 1 | 626 | 1.352 (1.351–1.355) | 77 |",
+        "| real/midpoint/search-within-bound | bitwuzla-words:preprocess=0 | verified | 0.900 (0.899–0.912) | 937 | 1 | 626 | 0.793 (0.787–0.800) | 68 |",
+        "| example/141 | cadical | verified | 1.316 (1.305–1.330) | 1044 | 137013 | – | 1.183 (1.174–1.188) | 58 |",
+        "| example/141 | bitwuzla-words | verified | 2.037 (2.036–2.057) | 1124 | 1 | 694 | 1.904 (1.900–1.924) | 76 |",
+        "| example/141 | bitwuzla-words:preprocess=0 | verified | 1.279 (1.269–1.290) | 1124 | 1 | 694 | 1.142 (1.142–1.155) | 77 |",
+        "| example/142 | cadical | verified | 4.696 (4.630–4.745) | 1885 | 161165 | – | 4.513 (4.443–4.563) | 82 |",
+        "| example/142 | bitwuzla-words | verified | 10.086 (9.996–10.089) | 1891 | 1 | 3633 | 9.693 (9.609–9.693) | 216 |",
+        "| example/142 | bitwuzla-words:preprocess=0 | verified | 3.594 (3.559–3.603) | 1894 | 1 | 3633 | 3.288 (3.284–3.308) | 89 |",
+        "| held/reverse | cadical | verified | 0.153 (0.152–0.153) | 115 | 59707 | – | 0.086 (0.085–0.088) | 39 |",
+        "| held/reverse | bitwuzla-words | verified | 0.112 | 125 | 1 | 331 | 0.051 (0.050–0.051) | 43 |",
+        "| held/reverse | bitwuzla-words:preprocess=0 | verified | 0.092 (0.091–0.092) | 125 | 1 | 331 | 0.033 | 44 |",
+        "| held/prefix-sums | cadical | verified | 0.051 | 18 | 5637 | – | 0.000 (0.000–0.001) | 31 |",
+        "| held/prefix-sums | bitwuzla-words | verified | 0.061 (0.051–0.061) | 19 | 1 | 25 | 0.004 | 35 |",
+        "| held/prefix-sums | bitwuzla-words:preprocess=0 | verified | 0.051 | 19 | 1 | 25 | 0.001 | 35 |",
+        "",
+        "## Problems",
+        "",
+        "None: every decisive verdict is the expected one, CaDiCaL's on every case.",
+        "",
+        "## Not decided",
+        "",
+        "Nothing: every check gave a verdict.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/solvers/comparison/word-level.json",
+      "change": "added",
+      "bytes": 66660,
+      "sha256": "9f1de11e52dbe42d5b8af5092d21ddd19e8f25f5bf059dcc005b5c61be33df7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/solvers/comparison/word-level.md",
+      "change": "added",
+      "bytes": 3209,
+      "sha256": "9f5ffbd06352a6a26094e5dd55fd3b5b8ab265d14be454ce2a6867f70d7177f1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T23:14:33+00:00",
+    "applied": [
+      "lib/solvers/comparison/word-level.json",
+      "lib/solvers/comparison/word-level.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
