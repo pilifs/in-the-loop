@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T11:45:11.192Z",
-  "duration_seconds": 3396,
+  "ended": "2026-11-06T11:55:41.476Z",
+  "duration_seconds": 4026,
   "stats": {
-    "turns": 5,
-    "api_calls": 98,
-    "tool_calls": 101,
-    "tool_errors": 0,
+    "turns": 6,
+    "api_calls": 113,
+    "tool_calls": 115,
+    "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 216401,
+    "peak_context_tokens": 238352,
     "usage": {
-      "input_tokens": 206,
-      "output_tokens": 52897,
-      "cache_read_input_tokens": 14176381,
-      "cache_creation_input_tokens": 187460
+      "input_tokens": 238,
+      "output_tokens": 64035,
+      "cache_read_input_tokens": 17604424,
+      "cache_creation_input_tokens": 206939
     }
   },
   "tools": {
-    "Bash": 89,
-    "AskUserQuestion": 7,
+    "Bash": 99,
+    "AskUserQuestion": 11,
     "Edit": 3,
     "ToolSearch": 1,
     "Write": 1
@@ -44,24 +44,24 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T11:45:11.192Z",
-      "turns": 5,
-      "api_calls": 98,
+      "ended": "2026-11-06T11:55:41.476Z",
+      "turns": 6,
+      "api_calls": 113,
       "usage": {
-        "input_tokens": 206,
-        "output_tokens": 52897,
-        "cache_read_input_tokens": 14176381,
-        "cache_creation_input_tokens": 187460
+        "input_tokens": 238,
+        "output_tokens": 64035,
+        "cache_read_input_tokens": 17604424,
+        "cache_creation_input_tokens": 206939
       },
-      "peak_context_tokens": 216401
+      "peak_context_tokens": 238352
     }
   ],
   "log": {
-    "sha256": "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0",
-    "bytes": 2306623,
-    "lines": 898,
-    "gzip_bytes": 400790,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0.jsonl.gz"
+    "sha256": "045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32",
+    "bytes": 2587084,
+    "lines": 1010,
+    "gzip_bytes": 441219,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -104,9 +104,23 @@
       "summary": "A relative --jbmc path is found, and --details prints the statement and the time under a verdict",
       "body": "A --jbmc path given relative to the current directory (bin/jbmc) passed the availability check, which runs where the command is started, then failed as 'JBMC produced no verdict: no output', since JBMC runs in the work directory. jbmc::executable makes such a path absolute where both drivers build their JBMC runs; a bare name is still looked up on PATH. Reproduced first with the previous binary on a one-line class, then fixed; unit test a_relative_jbmc_path_is_made_absolute_and_a_bare_name_is_left_to_path and CLI test a_relative_jbmc_path_is_found_from_the_current_directory on the real JBMC.\n\n--details on prove and equivalence (lib/src/details.rs) prints, under the verdict, what --json holds as stated and search: the statement (domain, each assumption with its basis, what is observed, bounds, models, checker with solver and gap mode, confirmation, vacuity) and where the time went (the check's total, the driver's steps, and each checker run with its purpose, stage, ending, phase shares and formula size). The default report is unchanged. CLI test details_print_the_statement_and_where_the_time_went; lib/README.md documents both.\n\nAll Rust tests pass: 148 unit, 6 conformance, 62 integration. In the full run, on a loaded machine (635 s), the_tools_own_checker_agrees_with_jbmc_on_integer_proofs failed at its first assertion (the Pricing native regression proof, time-dependent, as recorded before); it passed alone in 16 s.",
       "log_sha256": "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0"
+    },
+    {
+      "change_id": "xlpuxzwnnrpvsukrmlxmrotnloyqluxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Benchmark group 2 reviewed by the user: the midpoint regression's scope tightened, the checksum property's note corrected",
+      "body": "The user reviewed the 13 group 2 cases (lib/benchmark/corpus.json) against their sources and code, case by case; this closes the benchmark's departure 'no person reviewed group 2's properties' (5a). Eleven were accepted as they were.\n\nreal/midpoint/fix-confined: the scope was 'low < 0 || high < low || low + high < 0', wider than the claim needs; for any two ints whose wrapped sum is not negative, (low + high) / 2 == (low + high) >>> 1, so it is now 'low + high < 0', a stronger claim with the same expected verdict, in corpus.json and Reference.java, with its 'why' corrected. real/checksum/broken-property: its 'why' now says the throws clause catches the bug and that the assertion only covers the empty range.\n\nVerified inline on the own checker under strict (run.py --groups 2, 20 s deadline): midpoint/fix-confined verified in 0.11 s and held on the JVM over 121,136 random inputs; all checksum and midpoint cases correct; test_run.py 17 pass. Job 20261106-102624 runs at its own commit, so its table has the previous scope.",
+      "log_sha256": "045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32"
     }
   ],
   "logs": {
+    "045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32": {
+      "bytes": 2587084,
+      "lines": 1010,
+      "gzip_bytes": 441219,
+      "url": null
+    },
     "3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0": {
       "bytes": 2306623,
       "lines": 898,

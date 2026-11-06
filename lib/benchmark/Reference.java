@@ -89,7 +89,7 @@ public class Reference {
             new Case("real/midpoint/broken-property", ii, midpoint("broken")),
             new Case("real/midpoint/fixed-property", ii, midpoint("fixed")),
             new Case("real/midpoint/fix-confined", ii, regression("broken", "fixed", "bench.real.Midpoint", "midpoint",
-                in -> (int) in[0] < 0 || (int) in[1] < (int) in[0] || (int) in[0] + (int) in[1] < 0)),
+                in -> (int) in[0] + (int) in[1] < 0)),
             new Case("real/midpoint/search-within-bound", new String[] {"int[]", "int"},
                 regression("broken", "fixed", "bench.real.Midpoint", "search", in -> false)),
             new Case("real/bucket/broken-property", ii, bucket("broken")),

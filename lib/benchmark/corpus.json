@@ -48,10 +48,10 @@
       "before": "broken",
       "after": "fixed",
       "target": "bench.real.Midpoint#midpoint",
-      "unchangedUnless": "low < 0 || high < low || low + high < 0",
+      "unchangedUnless": "low + high < 0",
       "expected": "verified",
       "source": "JDK-5045582; Joshua Bloch, \"Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken\", Google Research blog, 2 June 2006",
-      "why": "the fix changes the midpoint only where low + high overflows, or outside the search's ranges"
+      "why": "for any two ints whose sum, wrapped, is not negative, (low + high) / 2 and (low + high) >>> 1 are the same: the fix changes the midpoint only where low + high overflows"
     },
     {
       "id": "real/midpoint/search-within-bound",
@@ -169,7 +169,7 @@
       ],
       "expected": "violation",
       "source": "The CERT Oracle Coding Standard for Java, NUM00-J, \"Detect or prevent integer overflow\"; JDK 8's java.io.OutputStream.write(byte[], int, int) also tests (off + len) < 0",
-      "why": "off + len overflows to a negative number, which passes the check, and the loop runs no iteration: 0 for a range that is not in the array",
+      "why": "off + len overflows to a negative number, which passes the check, and the loop runs no iteration: 0 for a range that is not in the array. The throws clause catches it; the assertion only says that an empty range sums to 0, which both versions do",
       "witness": [
         [],
         1,
