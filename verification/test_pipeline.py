@@ -193,15 +193,58 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(r["status"], "passed")
         self.assertEqual(r["steps"][0]["signals"][0]["groups"], ["Safe"])
 
-    def test_a_job_past_its_timeout_is_stopped(self):
-        job_id = self.repo.submit("Run too long", "--run", "sleep 60", "--timeout", "2s")
+    def test_a_job_that_stalls_past_its_timeout_is_stopped(self):
+        # Silent and idle past its timeout for the whole stall window: a hang, stopped long before the sleep would end.
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\nstall_window = "3s"\n')
+        job_id = self.repo.submit("Hang", "--run", "sleep 120", "--timeout", "2s")
+        self.repo.commit("job")
+        started = time.monotonic()
+        self.repo.pipeline("run", "--rev", "HEAD")
+        self.assertLess(time.monotonic() - started, 40)
+        r = self.repo.result(job_id, collected=False)
+        self.assertEqual(r["status"], "timeout")
+        step = r["steps"][0]
+        self.assertTrue(step["timedOut"])
+        self.assertEqual(step["stoppedFor"], "stalled")
+        self.assertTrue(any("stalled past its 2" in a for a in r["attention"]), r["attention"])
+
+    def test_a_job_still_working_past_its_timeout_is_left_to_finish(self):
+        # Output keeps coming past the timeout and past several stall windows: the step finishes and passes.
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\nstall_window = "2s"\n')
+        job_id = self.repo.submit("Slow but working", "--run", "for i in $(seq 1 8); do echo $i; sleep 1; done", "--timeout", "1s")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        r = self.repo.result(job_id, collected=False)
+        self.assertEqual(r["status"], "passed", r["attention"])
+        step = r["steps"][0]
+        self.assertTrue(step["overranTimeout"])
+        self.assertIsNone(step["stoppedFor"])
+        self.assertGreater(step["wallSeconds"], 7)
+        self.assertTrue(any("was left to finish" in a for a in r["attention"]), r["attention"])
+
+    def test_a_silent_job_using_cpu_past_its_timeout_is_left_to_finish(self):
+        # No output, but CPU in use: a solver at work, not a hang.
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\nstall_window = "2s"\n')
+        job_id = self.repo.submit("Busy and silent", "--run", "end=$((SECONDS+7)); while [ $SECONDS -lt $end ]; do :; done",
+                                  "--timeout", "1s")
+        self.repo.commit("job")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        r = self.repo.result(job_id, collected=False)
+        self.assertEqual(r["status"], "passed", r["attention"])
+        self.assertTrue(r["steps"][0]["overranTimeout"])
+
+    def test_a_job_still_working_at_the_ceiling_is_stopped(self):
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\nstall_window = "2s"\nmax_timeout = "4s"\n')
+        job_id = self.repo.submit("Never ends", "--run", "while true; do echo .; sleep 0.5; done", "--timeout", "1s")
         self.repo.commit("job")
         started = time.monotonic()
         self.repo.pipeline("run", "--rev", "HEAD")
         self.assertLess(time.monotonic() - started, 30)
         r = self.repo.result(job_id, collected=False)
         self.assertEqual(r["status"], "timeout")
-        self.assertTrue(r["steps"][0]["timedOut"])
+        self.assertEqual(r["steps"][0]["stoppedFor"], "ceiling")
+        self.assertEqual(r["runner"]["maxTimeoutSeconds"], 4)
+        self.assertTrue(any("ceiling" in a for a in r["attention"]), r["attention"])
 
     def test_a_job_bigger_than_the_runner_is_deferred_and_stays_pending(self):
         job_id = self.repo.submit("Needs a big machine", "--run", "true", "--memory", "1G", "--memory-limit", "1600M")

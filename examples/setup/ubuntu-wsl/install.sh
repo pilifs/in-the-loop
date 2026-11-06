@@ -109,6 +109,8 @@ install_system() {
     && curl -fsSLo /tmp/cbmc.deb "$deb" && sudo apt-get install -y /tmp/cbmc.deb && rm -f /tmp/cbmc.deb \
     || warn "no CBMC .deb for Ubuntu $VERSION_ID/$ARCH"
 
+  install_gnu_coreutils
+
   step "kernel limits for kind (inotify)"
   printf 'fs.inotify.max_user_watches = 524288\nfs.inotify.max_user_instances = 512\n' \
     | sudo tee /etc/sysctl.d/99-kind.conf >/dev/null
@@ -281,6 +283,32 @@ install_angr() {
 }
 
 # --------------------------------------------------------------------------- shell
+GNU_COREUTILS="$HOME/.local/lib/gnu-coreutils"
+# Ubuntu 26.04 makes the Rust uutils its coreutils, which differ from GNU in ways jobs notice (timeout exits 124, not
+# 137, after -s KILL; tail rejects -15 before several files). build-essential depends on coreutils-from-uutils there,
+# so the switch is not made system-wide: GNU's own binaries (gnu-coreutils, as gnutimeout, gnutail, ...) are linked
+# under their plain names into one directory that the shell rc puts first on PATH.
+install_gnu_coreutils() {
+  timeout --version 2>/dev/null | head -n 1 | grep -q uutils || return 0
+  step "GNU coreutils ahead of uutils on PATH ($GNU_COREUTILS)"
+  sudo apt-get install -y gnu-coreutils
+  mkdir -p "$GNU_COREUTILS"
+  local f
+  for f in /usr/bin/gnu*; do
+    [[ $(dpkg -S "$f" 2>/dev/null) == gnu-coreutils:* ]] && ln -sfn "$f" "$GNU_COREUTILS/${f##*/gnu}"
+  done
+}
+
+install_gnu_coreutils_path() {   # after the toolchain block, so GNU's coreutils come before everything else
+  local rc mark="# >>> GNU coreutils first >>>"
+  [[ -d $GNU_COREUTILS ]] || return 0
+  for rc in "$HOME/.bashrc" "$HOME/.profile" "$HOME/.zshrc"; do   # .profile: a non-interactive login shell stops early in .bashrc
+    [[ $rc == *zshrc && ! -f $rc ]] && continue
+    grep -qF "$mark" "$rc" 2>/dev/null && continue
+    step "${rc/#$HOME/\~}: GNU coreutils first"
+    printf '%s\nexport PATH="%s:$PATH"\n# <<< GNU coreutils first <<<\n' "$mark" '$HOME/.local/lib/gnu-coreutils' >> "$rc"
+  done
+}
 install_shellrc() {
   local mark="# >>> formal-verification toolchain >>>"
   grep -qF "$mark" "$HOME/.bashrc" && return
@@ -333,6 +361,7 @@ main() {
   done
   install_shellrc
   install_zshrc
+  install_gnu_coreutils_path
   step "Done. Open a new shell (docker group + PATH), then run examples/setup/ubuntu-wsl/doctor.sh"
 }
 

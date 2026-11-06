@@ -17,7 +17,10 @@ cpus = 6
 memory = "5G"
 # No job's limit above this. A job that needs more is deferred, not run: it waits for a runner with more memory.
 job_memory_max = "4G"
+# A job's timeout is where the runner starts looking for a hang, not a deadline: past it, a step is stopped only once
+# it has stalled, under 1% of a CPU and no new output for stall_window. max_timeout stops any step, working or not.
 max_timeout = "6h"
+stall_window = "10m"
 # For building jvmcontract from lib/ when a job needs it and that tree is not cached yet.
 build_memory = "3G"
 state_dir = "verification/.state"

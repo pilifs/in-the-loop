@@ -26,6 +26,7 @@ check required gradle   "gradle --version | grep ^Gradle"
 check required maven    "mvn -v"
 echo "Dev tools"
 check required jj       "jj --version"
+check required coreutils "timeout --version | head -n 1 | grep -v uutils"  # GNU ahead of uutils on PATH (install.sh)
 check required gh       "gh --version"
 check required cargo    "cargo --version"
 check required jsonschema "python3 -c 'import importlib.metadata as m, jsonschema; print(\"jsonschema\", m.version(\"jsonschema\"))'"  # build.py publishes no result it cannot validate

@@ -59,7 +59,10 @@ DEFAULTS = {
         "cpus": 6,                    # CPUs shared out among running jobs
         "memory": "5G",               # memory shared out among running jobs, by their limits
         "job_memory_max": "4G",       # no job's limit above this; a job that needs more waits for a bigger machine
-        "max_timeout": "6h",
+        "max_timeout": "6h",          # the hard ceiling: no step runs longer, working or not
+        # Past its timeout a step is stopped only once it has stalled: under 1% of a CPU and no new output for this
+        # long. A step still working is left to finish, up to max_timeout, and its result says it overran.
+        "stall_window": "10m",
         "build_memory": "3G",         # for building jvmcontract when a job needs it and it is not cached
         "state_dir": f"{HERE}/.state",
         "keep_workdirs": "failed",    # always | failed | never
@@ -200,6 +203,7 @@ def load_config(args=None):
     runner["build_memory"] = parse_bytes(runner["build_memory"])
     runner["log_max_bytes"] = parse_bytes(runner["log_max_bytes"])
     runner["max_timeout"] = parse_seconds(runner["max_timeout"])
+    runner["stall_window"] = parse_seconds(runner["stall_window"])
     runner["cpus"] = float(runner["cpus"])
     runner["workers"] = int(runner["workers"])
     runner["machine_name"] = str(runner.get("machine_name") or "").strip() or socket.gethostname()
@@ -433,6 +437,8 @@ def environment(host):
                 "cargo": first_line([cargo, "--version"]),
                 "rustc": first_line(["rustc", "--version"]) or first_line([str(Path(cargo).parent / "rustc"), "--version"]),
                 "systemd": first_line(["systemd-run", "--version"]),
+                # GNU or uutils (Ubuntu 26.04's default): jobs see the difference, as in timeout's exit after -s KILL.
+                "coreutils": first_line(["timeout", "--version"]),
             },
         }
     return _ENVIRONMENT
@@ -544,11 +550,28 @@ def cgroup_of(pid):
     return None
 
 
-class Step:
-    """One step, run to its end or its timeout, with its log, exit and resource use."""
+def session_cpu_seconds(sid):
+    """CPU time of the live processes in session `sid` (a step without a cgroup), from /proc. Finished children whose
+    parent reaped them count through the parent's cutime and cstime."""
+    total, tick = 0, os.sysconf("SC_CLK_TCK")
+    for stat in Path("/proc").glob("[0-9]*/stat"):
+        try:
+            fields = stat.read_text().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        if int(fields[3]) == sid:          # field 6 of stat, after pid and comm: the session id
+            total += sum(int(x) for x in fields[11:15])   # utime, stime, cutime, cstime
+    return total / tick
 
-    def __init__(self, unit, isolation, cpus, memory_limit):
+
+class Step:
+    """One step, run to its end or until it is stopped: past its timeout once it has stalled (no CPU, no output for
+    the stall window), and at the hard ceiling whatever it is doing. The timeout is where a hang starts to be looked
+    for, not a deadline: a long run that is still working is information, about the change and about the machine."""
+
+    def __init__(self, unit, isolation, cpus, memory_limit, stall_window=600, ceiling=float("inf")):
         self.unit, self.isolation, self.cpus, self.memory_limit = unit, isolation, cpus, memory_limit
+        self.stall_window, self.ceiling = stall_window, ceiling
         self.pid = None
         self.cancelled = False
 
@@ -570,6 +593,20 @@ class Step:
             except ProcessLookupError:
                 pass
 
+    def cpu_seconds(self, cgroup, pid):
+        """The step's CPU time so far: its cgroup's when it has one, else its session's processes'."""
+        if cgroup:
+            try:
+                for line in (cgroup / "cpu.stat").read_text().splitlines():
+                    if line.startswith("usage_usec "):
+                        return int(line.split()[1]) / 1e6
+            except (OSError, ValueError):
+                return None
+        try:
+            return session_cpu_seconds(pid)
+        except OSError:
+            return None
+
     def run(self, run, cwd, env, log_path, stats_path, wrapper, timeout):
         if self.isolation == "systemd":
             run_quiet(["systemctl", "--user", "stop", f"{self.unit}.scope"])  # a leftover of the same name
@@ -578,6 +615,9 @@ class Step:
         started = time.monotonic()
         polled = {}
         timed_out, terminating, kill_at = False, False, float("inf")
+        stopped_for, overran = None, False
+        progress = None          # (cpu seconds, log bytes, when) at the start of the current stall window
+        checked = 0.0            # when progress was last looked at: every 30 s at most, since it reads /proc or a cgroup
         with open(log_path, "wb") as log:
             proc = subprocess.Popen(self.command(wrapper), stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                     env=env, start_new_session=True)
@@ -598,9 +638,25 @@ class Step:
                             polled["memory.peak"] = int((cgroup / "memory.peak").read_text())
                         except (OSError, ValueError):
                             pass
-                elapsed = time.monotonic() - started
-                if not terminating and (elapsed > timeout or self.cancelled):
-                    timed_out, terminating = not self.cancelled, True
+                now_ = time.monotonic()
+                elapsed = now_ - started
+                stop = None
+                if not terminating and self.cancelled:
+                    stop = "cancelled"
+                elif not terminating and elapsed > self.ceiling:
+                    stop = "ceiling"
+                elif not terminating and elapsed > timeout:
+                    overran = True
+                    if progress is None or now_ - checked >= min(self.stall_window, 30):
+                        checked = now_
+                        cpu = self.cpu_seconds(cgroup, proc.pid)
+                        size = log_path.stat().st_size if log_path.exists() else 0
+                        if progress is None or cpu is None or cpu - progress[0] > 0.01 * (now_ - progress[2]) or size != progress[1]:
+                            progress = (cpu or 0, size, now_)    # working: a new window starts
+                        elif now_ - progress[2] >= self.stall_window:
+                            stop = "stalled"
+                if stop:
+                    timed_out, terminating, stopped_for = stop != "cancelled", True, stop
                     self.stop(signal.SIGTERM)
                     kill_at = time.monotonic() + 15
                 elif terminating and time.monotonic() > kill_at:
@@ -623,6 +679,9 @@ class Step:
             "exitCode": code if code >= 0 else None,
             "signal": signal.Signals(-code).name if code < 0 else None,
             "timedOut": timed_out,
+            "stoppedFor": stopped_for if stopped_for != "cancelled" else None,
+            "overranTimeout": overran,
+            "timeoutSeconds": timeout,
             "cancelled": self.cancelled,
             "wallSeconds": round(wall, 3),
             "cpuSeconds": round(stats["cpu.stat.usage_usec"] / 1e6, 3) if "cpu.stat.usage_usec" in stats
@@ -766,7 +825,8 @@ class Runner:
             "wallSeconds": None,
             "runner": {"backend": self.runner["backend"], "isolation": self.isolation, "host": self.runner["machine_name"],
                        "pid": os.getpid(), "workers": self.runner["workers"], "cpus": self.runner["cpus"],
-                       "memoryBudgetBytes": self.runner["memory"]},
+                       "memoryBudgetBytes": self.runner["memory"], "maxTimeoutSeconds": self.runner["max_timeout"],
+                       "stallWindowSeconds": self.runner["stall_window"]},
             "limits": {"cpus": job_plan["cpus"], "memoryLimitBytes": job_plan["memoryLimit"],
                        "timeoutSeconds": job_plan["timeout"]},
             "estimate": {"cpus": job_plan["cpus"], "memoryBytes": job_plan["memoryEstimate"],
@@ -859,7 +919,8 @@ class Runner:
             env = dict(os.environ, CARGO_TARGET_DIR=str(self.state / "cargo-target"))
             log = self.state / "runs" / result["id"] / "logs" / "0-build-jvmcontract.log"
             step = Step(f"vjob-{result['id'][:40]}-build", self.isolation, max(entry["cpus"], 1),
-                        max(entry["memory"], self.runner["build_memory"]))
+                        max(entry["memory"], self.runner["build_memory"]), self.runner["stall_window"],
+                        self.runner["max_timeout"])
             entry["steps"].append(step)
             outcome = step.run(run, work, env, log, log.with_suffix(".stats"), self.wrapper, 3600)
             record = self.step_record({"name": "build jvmcontract", "run": run, "cwd": "."}, 0, outcome, log)
@@ -917,7 +978,7 @@ class Runner:
             timeout = min(parse_seconds(spec["timeout"]) if spec.get("timeout") else result["limits"]["timeoutSeconds"],
                           result["limits"]["timeoutSeconds"])
             step = Step(f"vjob-{job['id'][:40]}-{i}", self.isolation, result["limits"]["cpus"],
-                        result["limits"]["memoryLimitBytes"])
+                        result["limits"]["memoryLimitBytes"], self.runner["stall_window"], self.runner["max_timeout"])
             entry["steps"].append(step)
             outcome = step.run(spec["run"], work / spec.get("cwd", "."), env, log, log.with_suffix(".stats"),
                                self.wrapper, timeout)
@@ -992,8 +1053,17 @@ class Runner:
             where = f"step {s['index']} ({s['name']})"
             if s["status"] == "failed":
                 attention.append(f"{where} exited {s['exitCode'] if s['exitCode'] is not None else s['signal']}, expected {', '.join(map(str, s['expectExit']))}")
+            elif s["status"] == "timeout" and s.get("stoppedFor") == "ceiling":
+                attention.append(f"{where} was still working at the runner's {fmt_seconds(result['runner'].get('maxTimeoutSeconds') or s['wallSeconds'])} "
+                                 f"ceiling and was stopped there, with no verdict")
+            elif s["status"] == "timeout" and s.get("stoppedFor") == "stalled":
+                attention.append(f"{where} stalled past its {fmt_seconds(s.get('timeoutSeconds') or result['limits']['timeoutSeconds'])} timeout "
+                                 f"(no CPU and no output for {fmt_seconds(result['runner'].get('stallWindowSeconds') or 0)}) and was stopped")
             elif s["status"] == "timeout":
                 attention.append(f"{where} hit its {fmt_seconds(result['limits']['timeoutSeconds'])} timeout")
+            if s["status"] not in ("timeout", "cancelled") and s.get("overranTimeout"):
+                attention.append(f"{where} ran past its {fmt_seconds(s.get('timeoutSeconds') or result['limits']['timeoutSeconds'])} timeout "
+                                 f"while still working and was left to finish, in {fmt_seconds(s['wallSeconds'])}: the estimate is far off")
             elif s["status"] == "out-of-memory":
                 attention.append(f"{where} was killed at its {fmt_bytes(result['limits']['memoryLimitBytes'])} memory limit")
             counts = s.get("signalCounts", {})

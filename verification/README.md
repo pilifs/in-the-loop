@@ -108,9 +108,12 @@ Then carry on with the next thing. Don't wait for the result, and don't run the 
   four configurations of one example are one.
 
 **Estimates.** They are rough, and that is fine: the runner shares its budget out by them, caps each job at its
-memory limit (1.5 times the estimate unless you give `--memory-limit`) and stops it at its timeout (4 times the
-duration, at least 5 minutes, unless you give `--timeout`), and the result reports what was used next to what was
-estimated. Start from these, then from `report`'s calibration table. Anything that runs a JVM (TLC, the Box Office
+memory limit (1.5 times the estimate unless you give `--memory-limit`), and the result reports what was used next to
+what was estimated. A job's timeout (4 times the duration, at least 5 minutes, unless you give `--timeout`) is where the
+runner starts looking for a hang, not a deadline: past it, a step is stopped only once it has stalled, using under 1%
+of a CPU and writing no output for the runner's `stall_window` (10 minutes by default). A step still working is left
+to finish, and its result says it overran, since a long run is information about the change and about the machine.
+Only the runner's `max_timeout` stops a step that is still working. Start from these, then from `report`'s calibration table. Anything that runs a JVM (TLC, the Box Office
 Gradle build) wants 2 CPUs: with 1, its garbage collector and compiler threads are held back by the quota, and the
 result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at about 125 MB, in 36 s and 12 s.
 
@@ -186,6 +189,8 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
   and is read at the same commit as the jobs, so commit it before running; `status` says when it is not committed,
   and lists the pending jobs in the order they would start, with their priorities. `run --min-priority N` runs only
   the jobs at N or above and leaves the rest pending.
+- `max_timeout`, `stall_window`: the hard ceiling on any step, working or not, and how long a step past its timeout
+  must be idle and silent to count as hung (see Estimates).
 - `job_memory_max`: no job's limit is above it. A bigger job is deferred, and stays pending for a bigger runner.
 - `isolation`: `systemd` runs each step in a transient user scope with `MemoryMax` (no swap, so the cap is exact),
   `OOMPolicy=continue` (so one killed process does not stop the rest) and `CPUQuota`, and reads its peak memory and
