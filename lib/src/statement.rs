@@ -312,7 +312,9 @@ pub fn checker_assumptions(last: Option<&JbmcResult>) -> Vec<Assumption> {
     } else {
         out.push(Assumption {
             kind: AssumptionKind::Library,
-            text: format!("a JDK method outside the tool's models and the JDK classes JBMC is given ({}) is JBMC's stub: a void one does nothing and another returns any value of its type", crate::equivalence::JDK_CLASSES.iter().map(|c| c.replace('/', ".")).collect::<Vec<_>>().join(", ")),
+            // What the method reaches of JBMC's stubs is a gap of its own (crate::jbmc_gaps); what is left is what a
+            // JDK class's initializer reaches.
+            text: format!("a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given ({}) is JBMC's stub, which throws nothing and returns any value of its type", crate::equivalence::JDK_CLASSES.iter().map(|c| c.replace('/', ".")).collect::<Vec<_>>().join(", ")),
             basis: Basis::Engine,
             id: None,
         });

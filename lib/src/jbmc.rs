@@ -136,10 +136,11 @@ pub struct JbmcResult {
     pub seconds: f64,
     /// The tool's own checker's account of its search, when it gave the result rather than JBMC.
     pub native: Option<crate::bmc::Stats>,
-    /// The gaps the tool's own checker met ([`crate::bmc::gaps`]), refused or assumed; none from JBMC, whose own
-    /// approximations are not named yet (step 4c of `llm-dlc/loops/sound-verdicts.md`).
+    /// The gaps the run met, refused or assumed: the tool's own checker's ([`crate::bmc::gaps`]), or JBMC's own
+    /// approximations, from the preflight of its goto program ([`crate::jbmc_gaps`]).
     pub gaps: Vec<crate::bmc::gaps::GapRecord>,
-    /// The gap mode the tool's own checker ran under; `None` for JBMC.
+    /// The gap mode the checker ran under; `None` for a JBMC run that was not held to its preflight (a preliminary
+    /// stage, a test of the reader).
     pub gap_mode: Option<crate::bmc::gaps::GapMode>,
     /// How the run ended.
     pub ending: Ending,
@@ -244,7 +245,7 @@ pub fn command(run: &JbmcRun) -> Vec<String> {
 const DEFAULT_MEMORY_MB: u64 = 3072;
 
 /// The limit on a JBMC run in MiB: `JVMCONTRACT_JBMC_MEMORY_MB`, or the default. 0 turns it off.
-fn memory_limit_mb() -> Option<u64> {
+pub(crate) fn memory_limit_mb() -> Option<u64> {
     let configured = std::env::var("JVMCONTRACT_JBMC_MEMORY_MB").ok().and_then(|v| v.trim().parse().ok());
     Some(configured.unwrap_or(DEFAULT_MEMORY_MB)).filter(|mb| *mb > 0)
 }
@@ -252,7 +253,7 @@ fn memory_limit_mb() -> Option<u64> {
 /// The command under a memory limit: past it allocation fails, and JBMC stops by itself. The shell then replaces
 /// itself with JBMC, so a timeout's kill reaches it. Should the kernel run out of memory anyway, the raised
 /// `oom_score_adj` makes JBMC its first choice, ahead of whatever launched it.
-fn limited(cmd: Vec<String>, memory_mb: Option<u64>) -> Vec<String> {
+pub(crate) fn limited(cmd: Vec<String>, memory_mb: Option<u64>) -> Vec<String> {
     let Some(mb) = memory_mb.filter(|_| cfg!(unix)) else { return cmd };
     let script = r#"ulimit -v "$0" || exit 125; echo 1000 > /proc/self/oom_score_adj 2>/dev/null; exec "$@""#;
     let mut limited = vec!["sh".to_string(), "-c".into(), script.into(), (mb * 1024).to_string()];

@@ -378,10 +378,11 @@ RECORDED_GAP_MODE = "assume"
 
 
 def gap_mode(example):
-    """The gap mode the tool's own checker runs an example under: its `approach.gaps`, else RECORDED_GAP_MODE. None
-    when the own checker does not decide the verdict (B9 and B11 under JBMC, and everything else)."""
+    """The gap mode a B9 or B11 proof runs under, whichever checker decides it: its `approach.gaps`, else
+    RECORDED_GAP_MODE. JBMC's own approximations (its stubs, the call sites it does not link) are gaps too (step 4c
+    of llm-dlc/loops/sound-verdicts.md), so an example JBMC proves runs in it as well. None for everything else."""
     a = example["approach"]
-    if a["id"] not in ("B9", "B11") or a.get("engine") not in ("native", "auto"):
+    if a["id"] not in ("B9", "B11"):
         return None
     return a.get("gaps") or RECORDED_GAP_MODE
 
@@ -1611,6 +1612,7 @@ def search_record(outcome):
     if s.get("gaps"):
         record["gaps"] = [{"id": g["id"], "kind": g["kind"], "call": g["call"], "sites": g["sites"],
                            "approximation": g["approximation"], "treatment": g["treatment"],
+                           **({"checker": g["checker"]} if g.get("checker") else {}),
                            **({"contract": camel(g["contract"])} if g.get("contract") else {})} for g in s["gaps"]]
     return record
 
@@ -1742,6 +1744,20 @@ def assumed_gaps(result, treatment="assumed"):
             if g["treatment"] == treatment:
                 seen.setdefault(g["id"], g)
     return list(seen.values())
+
+
+def assumed_lines(res):
+    """The page's account of the gaps a verified verdict assumed (`--gaps assume`): the own checker's, or JBMC's own
+    approximations (`checker` `jbmc`, step 4c of llm-dlc/loops/sound-verdicts.md), each with what it is taken to do."""
+    assumed = assumed_gaps(res) if res.get("verdict") == "verified" else []
+    if not assumed:
+        return []
+    jbmc = [g.get("checker") == "jbmc" for g in assumed]
+    who = "JBMC does" if all(jbmc) else "the checkers do" if any(jbmc) else "the tool's own checker does"
+    return ([f"**The proof assumes {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} {who} not "
+             "implement** (`--gaps assume`): it holds of a JVM on which each of these does what is stated, which the JVM "
+             "need not do.", ""]
+            + [f"- `{g['id']}`: {g['call']} {g['approximation']}, at {', '.join(g['sites'])}." for g in assumed] + [""])
 
 
 LIBRARY = "lib/models/contracts/"  # how the tool names a contract of its contract library (lib/src/contract_library.rs)
@@ -3378,12 +3394,7 @@ def render_example(folder, ex, res, snap=None):
         lines += [f"**The proof is vacuous:** {res['coverage']['reason']}. The tool found this by running the statement with the "
                   "calls replaced by the assertion's failure: an input that reaches the calls would violate it, and none does.", ""]
     lines += advice_lines(folder, res)
-    assumed = assumed_gaps(res) if res.get("verdict") == "verified" else []
-    if assumed:
-        lines += [f"**The proof assumes {len(assumed)} behaviour{'s' if len(assumed) != 1 else ''} the tool's own checker does not "
-                  "implement** (`--gaps assume`): it holds of a JVM on which each of these does what is stated, which the JVM "
-                  "need not do.", ""]
-        lines += [f"- `{g['id']}`: {g['call']} {g['approximation']}, at {', '.join(g['sites'])}." for g in assumed] + [""]
+    lines += assumed_lines(res)
     lines += contract_lines(res)
     lines += snapshot_lines(ex, res, snap)
     lines += details("Verifier output", "text", (folder / res["output"]).read_text())

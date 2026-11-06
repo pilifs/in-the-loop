@@ -403,22 +403,25 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         Vec::new()
     };
     let purpose = if fallback.is_some() { "fallback" } else { "proof" };
+    let base = JbmcRun {
+        executable: options.jbmc.clone(),
+        class: harness::PROPERTY_CLASS.into(),
+        function: harness::METHOD.into(),
+        classpath: classpath.clone(),
+        unwind: options.unwind,
+        timeout: Duration::ZERO,
+        stage: None,
+        refine_strings: options.refine_strings,
+        sat_solver: options.sat_solver.clone(),
+        log: work.join("jbmc.log"),
+        extra_args: extra_args.clone(),
+        read: jbmc::Reading::from_env(),
+    };
+    // What JBMC approximates on the way (its stubs, the call sites it does not link), from its goto program.
+    let preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?) };
     for stage in &stages {
         let budget = deadline.for_stage(*stage);
-        let run = JbmcRun {
-            executable: options.jbmc.clone(),
-            class: harness::PROPERTY_CLASS.into(),
-            function: harness::METHOD.into(),
-            classpath: classpath.clone(),
-            unwind: options.unwind,
-            timeout: budget,
-            stage: stage.map(str::to_string),
-            refine_strings: options.refine_strings,
-            sat_solver: options.sat_solver.clone(),
-            log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
-            extra_args: extra_args.clone(),
-            read: jbmc::Reading::from_env(),
-        };
+        let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..base.clone() };
         let result = jbmc::run(&run)?;
         runs.push(Run::of(&result, purpose, budget));
         // A preliminary stage out of its budget hands on: only the last stage is the proof.
@@ -428,26 +431,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             break;
         }
     }
-    let last = last.expect("at least one stage");
+    let mut last = last.expect("at least one stage");
+    if let Some(pre) = preflight.as_ref().filter(|_| last.native.is_none()) {
+        out.push_str(&pre.note());
+        crate::jbmc_gaps::hold(&mut last, pre, options.gaps);
+    }
     let seconds = started.elapsed().as_secs_f64();
     // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run: the stages
     // only find a small witness sooner, and the proof is the last one's. It is a second check, by a second checker,
     // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
-        let run = JbmcRun {
-            executable: options.jbmc.clone(),
-            class: harness::PROPERTY_CLASS.into(),
-            function: harness::METHOD.into(),
-            classpath: classpath.clone(),
-            unwind: options.unwind,
-            timeout: Duration::from_secs(options.timeout_seconds),
-            stage: None,
-            refine_strings: options.refine_strings,
-            sat_solver: options.sat_solver.clone(),
-            log: work.join("jbmc-confirm.log"),
-            extra_args: extra_args.clone(),
-            read: jbmc::Reading::from_env(),
-        };
+        let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base.clone() };
         let (c, refuting) = crate::equivalence::confirm(&last, &run)?;
         (Some(c), refuting)
     } else {
@@ -767,7 +761,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 }
 
 /// Why `--gaps advised` is refused with `--engine jbmc`.
-pub(crate) const ADVISED_NEEDS_OWN_CHECKER: &str = "--gaps advised needs --engine native or auto: its gaps are those of the tool's own checker, and JBMC's own approximations (its stubs) are not yet named as gaps";
+pub(crate) const ADVISED_NEEDS_OWN_CHECKER: &str = "--gaps advised needs --engine native or auto: a contract for a gap is the tool's own checker's to apply, and JBMC applies none; under --engine jbmc, --gaps strict or assume names JBMC's own approximations (its stubs and the call sites it does not link)";
 
 /// What the interpreter made of a witness of JBMC's that refutes a proof of the own checker's, which shares its
 /// models: evidence for a person, not a verdict.

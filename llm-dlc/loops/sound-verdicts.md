@@ -1172,6 +1172,89 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Next: 4c. Make JBMC's own approximations gaps in the three modes: stubbed missing bodies, and the zero/null
     fallback for an unresolved `invokedynamic`. Acceptance: 1b's reproducers give the same answer under JBMC in each
     mode. After it, the text parser's removal once job `-073804` agrees, then Phase 5.
+- **4c, first part: JBMC's own approximations are gaps under strict and assume (2026-11-06).**
+  - **The preflight** ([`lib/src/jbmc_gaps.rs`](../../lib/src/jbmc_gaps.rs)). Before JBMC's stages, the tool runs
+    JBMC with `--show-goto-functions` on the harness, with the proof's class path and options. This converts what
+    the proof would and solves nothing: 40 ms on 1b's reproducers. It gets an eighth of the deadline, at most 60 s,
+    and writes `jbmc-goto.txt`.
+    - The goto program is JBMC's own account of what it runs, virtual dispatch included. The tool walks its call
+      graph (`CALL` lines) from the harness's entry.
+    - Every function reached is looked up on JBMC's class path. Read from CBMC 6.11.0's `lambda_synthesis.cpp` and
+      `java_bytecode_parser.cpp`, and seen in its listings, JBMC approximates three things:
+      - **A stub** for a method with no bytecode: a constructor constructs the object and nothing else, a `void`
+        method does nothing, and any other method returns any value (`null` or a new object for an object).
+        None throws or changes anything.
+      - **The zero fallback** for an `invokedynamic` that it links to no class of its own making. JBMC never
+        checks the bootstrap method's name: it accepts an entry of the metafactory's shape whose interface is on
+        its class path with one abstract method. So string concatenation is `null` there, a record's
+        `equals`/`hashCode`/`toString` are `false`/`0`/`null`, and so is a lambda for `java.util.function.Function`.
+        A call site counts as linked when its `bytecode-index` has a `lambda_synthetic_class$` instruction.
+      - **Monitors, which JBMC drops.** It models them only under `--java-threading`, so `synchronized (null)`
+        throws nothing. The brief did not name this one.
+  - **Kinds and ids.** A JDK stub keeps the own checker's kind and id
+    (`jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-...`), so a gap reads the same whichever checker meets it.
+    Three kinds are new, met by JBMC only: `missing-body` (a stub outside the JDK), `invokedynamic`
+    (`invokedynamic:<bootstrap>:<site name><descriptor>`) and `monitor` (per method). Each `GapRecord` now has
+    `checker: "jbmc"`, with JBMC's approximation in words.
+  - **Not gaps:**
+    - stubs JBMC reproduces exactly: `gaps::exact_jdk_call`, plus a JDK constructor whose bytecode only calls one
+      such constructor, as `Number.<init>()` does;
+    - stubs that only a JDK class's initializer reaches, such as `Class.getPrimitiveClass` from `Integer.<clinit>`.
+      These fall under the statement's engine assumption for JBMC, now worded for them: JDK classes are initialized
+      by their initializers as JBMC runs them, with its stubs inside.
+
+    Without that second rule, every proof that touches `Integer` or `Math` would be refused.
+  - **The modes** (`jbmc_gaps::hold`, in both drivers and in `--confirm`):
+    - **Strict:** a JBMC proof that reaches a gap is no verdict: `JBMC proved it, but reaches N constructs it
+      approximates ...`. So is one whose preflight could not be read. A counterexample stands only if the
+      interpreter replays it, as before. The message for one that doesn't replay now names JBMC's stubs.
+    - **Assume:** the verdict stands, `assuming N behaviours JBMC does not implement`, with an `assumed:` line per
+      gap.
+    - **Advised:** still refused under `--engine jbmc`, with a new reason: JBMC applies no contract.
+    - **`--confirm`:** JBMC's proof is held to its gaps under the own checker's gap mode. Under strict, a
+      confirmation that reaches a stub is `no-verdict`.
+
+    `build.py` now passes `RECORDED_GAP_MODE` (assume) to the examples JBMC proves too, since the library's strict
+    default now reaches them. It keeps `checker` in `search.gaps`, and the page says whose approximation was
+    assumed (`assumed_lines`). The schema has the new kinds and `checker`.
+  - Acceptance, inline, on the real JBMC 6.11.0: `jbmc_own_approximations_are_gaps_in_the_same_modes`
+    (integration.rs). Each claim is first checked on a JVM.
+    - `capacity` (`new ArrayList<>(n)`) and `firstByte` (`Random.nextBytes` on an argument array): JBMC alone proves
+      both claims the JVM refutes. Under strict they are now refused by name, with the own checker's ids. Under
+      assume they are `Verified, assuming ...`.
+    - **`nullMonitor` (`synchronized (null)`): JBMC proves `result == 1`** where the JVM and the own checker throw
+      NPE. It is now a `monitor` gap under strict, and `Verified` naming it under assume.
+    - `concatIsNull` and `sameRecord` (a record's `equals`): JBMC proves `result` and `!result` on its zero value.
+      Both are now refused as `invokedynamic` gaps.
+    - `bits` (`Integer`'s own bytecode, whose initializer reaches a stub) is still `Verified`, with no gap.
+    - A regression proof that adds `new ArrayList<>(n)`, under `--engine jbmc`, is refused under strict and
+      verified under assume.
+    - Unit tests in `jbmc_gaps.rs` cover the goto reader and the classification. The conformance stand-ins answer
+      the preflight. All Rust tests pass (138 unit, 5 conformance, 59 integration, 1 skill), and so do the 157
+      Python tests, one of them new (`test_a_jbmc_proof_names_the_stubs_it_assumed`).
+    - All 58 existing integration tests, 151 runs of the real JBMC among them, pass unchanged under the new strict
+      default: none of them reaches a JBMC gap with a `Verified`.
+  - **This departs from the brief's acceptance in two ways.**
+    - **"The same answer under JBMC in each mode" is not reachable for `synchronized (null)`.** The own checker
+      gives the violation, while JBMC gives a named gap, because it drops the instruction. That is 1b's
+      acceptance, "a named gap (or a correct violation) ... never `Verified`", not the same answer.
+    - **Advised** gives the same answer only through the own checker: `--engine auto` runs the protocol, and
+      `--engine jbmc --gaps advised` is refused. JBMC applying a contract is 4c's second part.
+  - **The recorded examples: job `20261106-082917-jbmc-s-own-approximations-as-gaps-every`.** It runs `build.py` on a
+    copy of the 41 JBMC examples under assume, where no verdict should move. It tabulates the JBMC gaps each
+    reaches, and how many recorded proofs strict would refuse, as 1a did for the own checker. Their notes get the
+    result when it is back.
+  - Re-rendering every page changed none. `lib/README.md`, the `--gaps` help and the skill's `reference.md` describe
+    JBMC's gaps.
+  - Not done:
+    - The preflight's time is not in `search.runs`. It is outside the proof's runs, though it is in the check's
+      deadline.
+    - A stub reached only on a path no input takes is still a gap, since the call graph is static.
+    - `--java-threading` is not used, so monitors stay a gap.
+  - Next: 4c's second part. JBMC applies a contract where the harness can express it: the call sites redirected
+    to a generated class of contract methods over `org.cprover.CProver` (nondeterminism, assumptions), as shared
+    callees are redirected (`lib/src/shared.rs`). That makes advised work under `--engine jbmc`, and a contract it
+    cannot apply leaves the gap open. Then the text parser's removal once job `-073804` agrees, then Phase 5.
 
 ## Loop settings
 

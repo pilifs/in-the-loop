@@ -325,7 +325,9 @@ struct EquivalenceArgs {
     /// approximation the gap states and names it in the verdict (a call whose value the proof reads has none, and
     /// is refused there too); `advised` scans the harness before solving and,
     /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
-    /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
+    /// template (`advice` in `--json`), and is otherwise strict. JBMC's own approximations (its stubs of methods
+    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in strict and assume
+    /// too, found from its goto program before its proof; JBMC applies no contract, so advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes
@@ -431,7 +433,9 @@ struct ProveArgs {
     /// approximation the gap states and names it in the verdict (a call whose value the proof reads has none, and
     /// is refused there too); `advised` scans the harness before solving and,
     /// when it reaches a gap with no contract, stops with each gap, what a contract for it must state and a
-    /// template (`advice` in `--json`), and is otherwise strict. No effect on JBMC, and advised needs the own checker.
+    /// template (`advice` in `--json`), and is otherwise strict. JBMC's own approximations (its stubs of methods
+    /// it has no bytecode for, the call sites it does not link, the monitors it drops) are gaps in strict and assume
+    /// too, found from its goto program before its proof; JBMC applies no contract, so advised needs the own checker.
     #[arg(long, default_value = "strict")]
     gaps: String,
     /// Under `--gaps advised`, the contracts for the gaps, in the format of the template advised writes

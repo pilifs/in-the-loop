@@ -696,9 +696,9 @@
             }
           }
         },
-        "gapMode": { "description": "The gap mode the own checker ran under (`--gaps`), when the verdict is its: `strict`, `assume` or `advised`. Absent in results written before 2026-11-05.", "enum": ["strict", "assume", "advised"] },
+        "gapMode": { "description": "The gap mode the checker ran under (`--gaps`): `strict`, `assume` or `advised`. Absent in results written before 2026-11-05, and for JBMC's verdicts in results written before 2026-11-06.", "enum": ["strict", "assume", "advised"] },
         "gaps": {
-          "description": "The gaps the own checker met, constructs it does not implement as the JVM does (lib/src/bmc/gaps.rs): each `refused` (strict: the path that reached it ended there) or `assumed` (its approximation taken, which a verified verdict rests on).",
+          "description": "The gaps the checker met, constructs it does not implement as the JVM does: the own checker's (lib/src/bmc/gaps.rs), and JBMC's own approximations, its stubs, the call sites it does not link and the monitors it drops (lib/src/jbmc_gaps.rs, with `checker` `jbmc`). Each is `refused` (strict: the own checker's path that reached it ended there, and a JBMC proof that reached it is no verdict) or `assumed` (its approximation taken, which a verified verdict rests on).",
           "type": "array",
           "items": {
             "type": "object",
@@ -706,10 +706,11 @@
             "additionalProperties": false,
             "properties": {
               "id": { "description": "The stable id: kind and member, with the JDK's version for a JDK call, as `jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1`.", "type": "string" },
-              "kind": { "enum": ["jdk-constructor", "jdk-void-method", "jdk-reference-method", "class-initializer", "string-conversion", "jdk-primitive-method", "jdk-static-method"] },
+              "kind": { "enum": ["jdk-constructor", "jdk-void-method", "jdk-reference-method", "class-initializer", "string-conversion", "jdk-primitive-method", "jdk-static-method", "missing-body", "invokedynamic", "monitor"] },
+              "checker": { "description": "Whose approximation it is: `jbmc` for JBMC's (step 4c of llm-dlc/loops/sound-verdicts.md); absent for the tool's own checker's.", "enum": ["jbmc"] },
               "call": { "description": "The member as Java writes it.", "type": "string" },
               "sites": { "description": "Where the run met it, `pkg.Class.method:line`.", "type": "array", "items": { "type": "string" } },
-              "approximation": { "description": "What the own checker takes it to do under `--gaps assume`.", "type": "string" },
+              "approximation": { "description": "What the checker takes it to do under `--gaps assume`: for JBMC, what its stub or fallback does.", "type": "string" },
               "treatment": { "description": "`refused` (the path ended there), `assumed` (its approximation taken), or closed by a `contract` (--contracts, applied at the call).", "enum": ["refused", "assumed", "contract"] },
               "contract": {
                 "description": "For a gap a contract closed: what it states, who wrote it, what backs it, and where it is. The evidence is `proved` when the tool's own checker proved it against the JDK's bytecode on every input it is about and a JVM test refutes none of it, `tested` when a JVM ran the JDK's call on boundary and seeded random inputs and none refutes it (step 3c of llm-dlc/loops/sound-verdicts.md), else `trusted`, with why the JVM could not test it.",

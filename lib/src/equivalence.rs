@@ -298,8 +298,8 @@ pub enum Confirmed {
     /// JBMC gave no verdict (a timeout, its memory, a construct it refuses): the own checker's proof stands, not
     /// confirmed.
     NoVerdict,
-    /// JBMC was not asked: the own checker assumed a behaviour (`--gaps assume`) that JBMC approximates too,
-    /// without naming it, so a proof of JBMC's would not check it.
+    /// JBMC was not asked: the own checker assumed a behaviour (`--gaps assume`) that JBMC has no bytecode for
+    /// either, and only approximates with a stub of its own, so a proof of JBMC's would not check it.
     NotAsked,
 }
 
@@ -311,15 +311,25 @@ pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun) -> Result<(Confirmatio
     if !assumed.is_empty() || !contracted.is_empty() {
         let mut reasons = Vec::new();
         if !assumed.is_empty() {
-            reasons.push(format!("the tool's own checker assumed {} (--gaps assume), which JBMC approximates too, without naming it", assumed.join(", ")));
+            reasons.push(format!("the tool's own checker assumed {} (--gaps assume), which JBMC has no bytecode for either, and would only approximate with a stub of its own", assumed.join(", ")));
         }
         if !contracted.is_empty() {
             reasons.push(format!("the tool's own checker applied a contract at {} (--contracts), which JBMC cannot apply and approximates instead", contracted.join(", ")));
         }
         return Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reasons.join("; ")) }, None));
     }
-    let result = jbmc::run(run)?;
+    let mut result = jbmc::run(run)?;
+    // JBMC's proof is held to what it approximates on the way, under the own checker's gap mode: a proof that
+    // reaches a stub confirms nothing under strict.
+    if result.verdict == Verdict::Verified {
+        let pre = crate::jbmc_gaps::preflight(run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
+        crate::jbmc_gaps::hold(&mut result, &pre, native.gap_mode.unwrap_or_default());
+    }
     let mut confirmation = Confirmation { status: Confirmed::Confirmed, checker: Some(result.version.clone()), seconds: result.seconds, reason: None };
+    let (assumed, _) = assumed_gaps(&result);
+    if result.verdict == Verdict::Verified && !assumed.is_empty() {
+        confirmation.reason = Some(assumed.trim_start_matches(", ").to_string());
+    }
     match result.verdict {
         Verdict::Verified => Ok((confirmation, None)),
         Verdict::Violation => {
@@ -346,16 +356,16 @@ pub(crate) fn confirmation_line(c: &Confirmation) -> String {
 }
 
 /// Whether the own checker's run refused a gap (under strict, or one with no assume form) that JBMC does not
-/// implement either: then `--engine auto` does not ask JBMC, which gives a call it has no bytecode for an
-/// approximation of its own and does not name it (step 4c of the sound-verdicts brief). A class initializer, and a
-/// call of a JDK class JBMC is given the bytecode of ([`JDK_CLASSES`]), are asked of it.
+/// implement either: then `--engine auto` does not ask JBMC, which has no bytecode for the call either, and whose
+/// stub is a gap of its own ([`crate::jbmc_gaps`]), refused or assumed as the own checker's is. A class
+/// initializer, and a call of a JDK class JBMC is given the bytecode of ([`JDK_CLASSES`]), are asked of it.
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
     result.gaps.iter().any(|g| g.treatment == Some(GapTreatment::Refused) && !g.jbmc)
 }
 
 /// The note `--engine auto` writes when the own checker refused a gap, or applied a contract at one, and JBMC is
 /// not asked.
-pub(crate) const NOT_JBMC: &str = "note: the tool's own checker refused a gap or applied a contract at one, so JBMC is not asked: it approximates a call it has no bytecode for, without naming it";
+pub(crate) const NOT_JBMC: &str = "note: the tool's own checker refused a gap or applied a contract at one, so JBMC is not asked: it has no bytecode for the call either, and would only approximate it with a stub of its own";
 
 /// Why a checker's counterexample may not reproduce in the interpreter: a contract the own checker applied says
 /// what the JDK's call does not, or a method JBMC had no bytecode for returned an arbitrary value.
@@ -363,6 +373,10 @@ pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
     let applied: Vec<&str> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).map(|g| g.id.as_str()).collect();
     if !applied.is_empty() {
         return format!("The path to it goes through the contract{} for {}, which the interpreter does not apply: it runs the JDK's call, so a contract probably says what the call does not (--contracts)", if applied.len() == 1 { "" } else { "s" }, applied.join(", "));
+    }
+    let stubs: Vec<&str> = result.gaps.iter().filter(|g| g.checker.as_deref() == Some("jbmc")).map(|g| g.id.as_str()).collect();
+    if !stubs.is_empty() {
+        return format!("The path to it probably goes through what JBMC approximates ({}): a stub returns any value of its type, which may be one the JDK's call never returns", stubs.join(", "));
     }
     "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
 }
@@ -467,7 +481,8 @@ pub(crate) fn assumed_gaps(result: &JbmcResult) -> (String, String) {
         return (String::new(), String::new());
     }
     let n = assumed.len();
-    let words = format!(", assuming {n} behaviour{} the tool's own checker does not implement (--gaps assume)", if n == 1 { "" } else { "s" });
+    let who = if assumed.iter().all(|g| g.checker.as_deref() == Some("jbmc")) { "JBMC" } else { "the tool's own checker" };
+    let words = format!(", assuming {n} behaviour{} {who} does not implement (--gaps assume)", if n == 1 { "" } else { "s" });
     let lines = assumed.iter().map(|g| format!("  assumed: {}\n", g.line())).collect();
     (words, lines)
 }
@@ -960,24 +975,29 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     } else {
         Vec::new()
     };
-    let run_stages = |classpath: &[PathBuf], tag: &str, purpose: &str, runs: &mut Vec<Run>| -> Result<Option<JbmcResult>, Error> {
-        let mut last = None;
+    let base = |classpath: &[PathBuf], tag: &str| JbmcRun {
+        executable: options.jbmc.clone(),
+        class: harness::CLASS.into(),
+        function: harness::METHOD.into(),
+        classpath: classpath.to_vec(),
+        unwind: options.unwind,
+        timeout: Duration::ZERO,
+        stage: None,
+        refine_strings: options.refine_strings,
+        sat_solver: options.sat_solver.clone(),
+        log: work.join(format!("jbmc{tag}.log")),
+        extra_args: extra_args.clone(),
+        read: jbmc::Reading::from_env(),
+    };
+    // Each class path's runs are held to what JBMC approximates on it (its stubs, the call sites it does not
+    // link), from its goto program ([`crate::jbmc_gaps`]).
+    let run_stages = |classpath: &[PathBuf], tag: &str, purpose: &str, runs: &mut Vec<Run>, notes: &mut String| -> Result<Option<JbmcResult>, Error> {
+        let mut last: Option<JbmcResult> = None;
+        let first = base(classpath, tag);
+        let preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&first, deadline.share(crate::deadline::STAGE_SHARE))?) };
         for stage in &stages {
             let budget = deadline.for_stage(*stage);
-            let run = JbmcRun {
-                executable: options.jbmc.clone(),
-                class: harness::CLASS.into(),
-                function: harness::METHOD.into(),
-                classpath: classpath.to_vec(),
-                unwind: options.unwind,
-                timeout: budget,
-                stage: stage.map(str::to_string),
-                refine_strings: options.refine_strings,
-                sat_solver: options.sat_solver.clone(),
-                log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
-                extra_args: extra_args.clone(),
-                read: jbmc::Reading::from_env(),
-            };
+            let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..first.clone() };
             let result = jbmc::run(&run)?;
             runs.push(Run::of(&result, purpose, budget));
             // A preliminary stage out of its budget hands on: only the last stage is the proof.
@@ -986,6 +1006,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             if stop {
                 break;
             }
+        }
+        if let (Some(result), Some(pre)) = (last.as_mut(), preflight.as_ref()) {
+            notes.push_str(&pre.note());
+            crate::jbmc_gaps::hold(result, pre, options.gaps);
         }
         Ok(last)
     };
@@ -1085,9 +1109,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     // reproduces through the bytecode as written; otherwise the abstraction was too coarse, and the callees are
     // proved as written.
     let mut shared_used = Vec::new();
+    let mut jbmc_notes = String::new();
     if last.is_none() {
         if let Some(cp) = &shared_classpath {
-            if let Some(result) = run_stages(cp, "-shared", "shared", &mut runs)? {
+            if let Some(result) = run_stages(cp, "-shared", "shared", &mut runs, &mut jbmc_notes)? {
                 let keep = match result.verdict {
                     Verdict::Violation => !replay_both(&result.arguments(&flat_types)?).agree,
                     _ => true,
@@ -1102,29 +1127,17 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
         }
         if last.is_none() {
             let purpose = if runs.iter().any(|r| r.purpose == "shared") { "as-written" } else if fallback.is_some() { "fallback" } else { "proof" };
-            last = run_stages(&classpath, "", purpose, &mut runs)?;
+            last = run_stages(&classpath, "", purpose, &mut runs, &mut jbmc_notes)?;
         }
     }
+    out.push_str(&jbmc_notes);
     let last = last.expect("at least one stage");
     let seconds = started.elapsed().as_secs_f64();
     // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run, on the
     // class path the own checker proved it on (the callees as written). It is a second check, by a second checker,
     // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
-        let run = JbmcRun {
-            executable: options.jbmc.clone(),
-            class: harness::CLASS.into(),
-            function: harness::METHOD.into(),
-            classpath: classpath.clone(),
-            unwind: options.unwind,
-            timeout: Duration::from_secs(options.timeout_seconds),
-            stage: None,
-            refine_strings: options.refine_strings,
-            sat_solver: options.sat_solver.clone(),
-            log: work.join("jbmc-confirm.log"),
-            extra_args: extra_args.clone(),
-            read: jbmc::Reading::from_env(),
-        };
+        let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base(&classpath, "") };
         let (c, refuting) = confirm(&last, &run)?;
         (Some(c), refuting)
     } else {

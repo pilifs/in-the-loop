@@ -11,6 +11,9 @@
 //! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
 //! | `jdk-primitive-method` | nothing: refused as under strict | runs it, and returns a value the engine could only make up (`Random.nextInt(bound)`), or throws | yes |
 //! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfLeadingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
+//! | `missing-body` | (JBMC's stub, [`crate::jbmc_gaps`]) returns any value of its type, or `null` or a new object, and does nothing else | runs a method JBMC has no bytecode for (its class is not on JBMC's class path, or it is abstract or native), which may throw or change its arguments | no: JBMC only |
+//! | `monitor` | (JBMC, [`crate::jbmc_gaps`]) drops `monitorenter` and `monitorexit`: a null monitor throws nothing (this engine implements them: NPE on null) | throws `NullPointerException` at a null monitor | no: JBMC only |
+//! | `invokedynamic` | (JBMC, [`crate::jbmc_gaps`]) takes the call site's value to be zero, `false` or `null`, and runs nothing | links the call site by its bootstrap method and runs what it links: a string concatenation, a record's `equals`, `hashCode` or `toString`, a lambda for a JDK interface | no: JBMC only |
 //!
 //! Under `--gaps strict`, the default, a path that reaches a gap ends there, and a run that met one has no verdict
 //! unless another path violates the property; under `--gaps assume` the engine goes on as the second column says,
@@ -64,6 +67,15 @@ pub enum GapKind {
     JdkPrimitiveMethod,
     /// A static JDK method the engine does not model ([`super::models_jdk_static`], `lib/models`).
     JdkStaticMethod,
+    /// A method JBMC has no bytecode for outside the JDK (its class is not on JBMC's class path, or it is abstract
+    /// or native), which JBMC gives a stub ([`crate::jbmc_gaps`]). Never met by the own checker, which refuses it.
+    MissingBody,
+    /// An `invokedynamic` JBMC does not link, whose value it takes to be zero or `null` ([`crate::jbmc_gaps`]).
+    /// The own checker refuses every `invokedynamic` it has no model of.
+    InvokeDynamic,
+    /// A method JBMC runs that synchronizes: JBMC drops monitor instructions ([`crate::jbmc_gaps`]), where this
+    /// engine implements them.
+    Monitor,
 }
 
 impl GapKind {
@@ -76,11 +88,14 @@ impl GapKind {
             GapKind::StringConversion => "string-conversion",
             GapKind::JdkPrimitiveMethod => "jdk-primitive-method",
             GapKind::JdkStaticMethod => "jdk-static-method",
+            GapKind::MissingBody => "missing-body",
+            GapKind::InvokeDynamic => "invokedynamic",
+            GapKind::Monitor => "monitor",
         }
     }
 
     /// Every kind, in order.
-    pub const ALL: [GapKind; 7] = [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::ClassInitializer, GapKind::StringConversion, GapKind::JdkPrimitiveMethod, GapKind::JdkStaticMethod];
+    pub const ALL: [GapKind; 10] = [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::ClassInitializer, GapKind::StringConversion, GapKind::JdkPrimitiveMethod, GapKind::JdkStaticMethod, GapKind::MissingBody, GapKind::InvokeDynamic, GapKind::Monitor];
 
     /// The kind an id's first part names.
     pub fn from_name(name: &str) -> Option<GapKind> {
@@ -109,6 +124,9 @@ impl GapKind {
             GapKind::ClassInitializer => "has run already, and threw nothing",
             GapKind::StringConversion => "makes a new string without calling toString on its object arguments",
             GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod => "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            GapKind::MissingBody => "is JBMC's stub: it returns any value of its type and does nothing else",
+            GapKind::InvokeDynamic => "is a call site JBMC does not link: it takes the value zero or null",
+            GapKind::Monitor => "synchronizes, and JBMC drops its monitor instructions: a null monitor throws nothing",
         }
     }
 }
@@ -191,8 +209,8 @@ impl Gap {
 
     /// Whether JBMC implements the construct, so that `--engine auto` asks it when the tool's own checker refused
     /// it: JBMC runs class initializers, and the bytecode of the JDK classes it is given
-    /// ([`crate::equivalence::JDK_CLASSES`]), but approximates any other JDK call as the engine's assume mode
-    /// does, without naming it (step 4c of `llm-dlc/loops/sound-verdicts.md`).
+    /// ([`crate::equivalence::JDK_CLASSES`]), but has no bytecode for any other JDK call, which it gives a stub
+    /// that is a gap of its own ([`crate::jbmc_gaps`]).
     pub fn jbmc_implements(&self) -> bool {
         self.kind == GapKind::ClassInitializer || (self.kind.of_the_jdk() && crate::equivalence::JDK_CLASSES.contains(&self.owner.as_str()))
     }
@@ -270,6 +288,9 @@ pub struct GapRecord {
     pub treatment: Option<GapTreatment>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contract: Option<ContractUse>,
+    /// The checker whose approximation it is: `jbmc` for JBMC's ([`crate::jbmc_gaps`]), absent for the tool's own.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checker: Option<String>,
 }
 
 /// What a run did at a gap it met.
@@ -360,7 +381,7 @@ pub fn records(gaps: &BTreeMap<Gap, BTreeSet<Site>>, jdk: Option<&str>, treatmen
                 Some(GapTreatment::Assumed) if !g.kind.assumable() => Some(GapTreatment::Refused),
                 t => t,
             };
-            GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), jbmc: g.jbmc_implements(), treatment, contract: None }
+            GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), jbmc: g.jbmc_implements(), treatment, contract: None, checker: None }
         })
         .collect()
 }

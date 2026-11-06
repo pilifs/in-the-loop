@@ -248,6 +248,16 @@ fn obligations(kind: GapKind, params: &[Type], returns: &Type) -> Vec<Obligation
             }
             out.push(o(Part::Exceptions, "Which exceptions does it throw, and on which arguments?"));
         }
+        // JBMC's (crate::jbmc_gaps), which JBMC applies no contract for yet: what one would state.
+        GapKind::MissingBody => {
+            if *returns != Type::Void {
+                out.push(o(Part::Result, "What does it return, as a condition over the arguments and `result`?"));
+            }
+            out.push(o(Part::Exceptions, "Which exceptions does it throw, and on which arguments?"));
+            out.push(o(Part::Receiver, "Does it change the object it is called on? (`modifies: this`, or nothing)"));
+        }
+        GapKind::InvokeDynamic => out.push(o(Part::Result, "What does the call site compute, as a condition over its arguments and `result`?")),
+        GapKind::Monitor => out.push(o(Part::Exceptions, "Is the monitor ever null? (it throws NullPointerException there)")),
     }
     if references && kind != GapKind::ClassInitializer {
         out.push(o(Part::Arguments, "Does it change an array or object passed to it? (`modifies: <parameter>`, and what holds of it after, with `\\old`)"));
@@ -300,6 +310,9 @@ fn describe(kind: GapKind) -> &'static str {
         GapKind::ClassInitializer => "is a class initializer, which the tool's own checker does not run",
         GapKind::JdkPrimitiveMethod => "is a JDK method returning a primitive that the tool's own checker has no model of",
         GapKind::JdkStaticMethod => "is a static JDK method the tool's own checker has no model of",
+        GapKind::MissingBody => "is a method JBMC has no bytecode for, which it gives a stub",
+        GapKind::InvokeDynamic => "is an invokedynamic call site JBMC does not link, which it gives the value zero",
+        GapKind::Monitor => "synchronizes, and JBMC drops its monitor instructions",
     }
 }
 

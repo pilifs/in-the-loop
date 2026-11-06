@@ -649,7 +649,7 @@ fn fake_jbmc(name: &str) -> PathBuf {
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let script = dir.join("jbmc");
-    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
     script
@@ -798,7 +798,7 @@ fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let jbmc = dir.join("jbmc");
-    std::fs::write(&jbmc, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" >> \"$d/runs.txt\"\ncase \"$*\" in *--java-assume-inputs-interval*) [ -e \"$d/hang-stages\" ] && exec sleep 30;; esac\n[ -e \"$d/hang\" ] && exec sleep 30\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
+    std::fs::write(&jbmc, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\ncase \"$*\" in *--show-goto-functions*) p=; for a in \"$@\"; do [ \"$p\" = --function ] && f=$a; p=$a; done; echo \"check /* java::$f:()V */\"; exit 0;; esac\necho \"$@\" >> \"$d/runs.txt\"\ncase \"$*\" in *--java-assume-inputs-interval*) [ -e \"$d/hang-stages\" ] && exec sleep 30;; esac\n[ -e \"$d/hang\" ] && exec sleep 30\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&jbmc, std::fs::Permissions::from_mode(0o755)).unwrap();
     write_answer(&dir, &proved());

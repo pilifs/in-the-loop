@@ -2119,6 +2119,8 @@ public class Gaps {
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
     public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
+    public static boolean concatIsNull(int n) { return ("n=" + n) == null; }
+    public static boolean sameRecord(int n) { return new Point(n, n).equals(new Point(n, n)); }
 }
 "#;
 
@@ -2295,6 +2297,128 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
         assert_eq!(search.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>(), ["jdk-constructor:java.util.ArrayList.<init>(I)V"], "{}", o.output);
         if gaps == GapMode::Assume {
             assert!(o.output.contains("assuming 1 behaviour the tool's own checker does not implement"), "{}", o.output);
+        }
+    }
+}
+
+/// Step 4c of llm-dlc/loops/sound-verdicts.md: JBMC's own approximations are gaps in the same modes. 1b's
+/// reproducers give the answers under `--engine jbmc` that the tool's own checker gives: a JDK constructor that
+/// throws, and a JDK mutator of an argument array, are refused by name under strict (JBMC's stubs do nothing, so
+/// JBMC alone proves both claims the JVM refutes) and `Verified, assuming ...` under assume, with the own checker's
+/// ids. `synchronized (null)`, which JBMC proves returns, is a `monitor` gap, since JBMC drops monitor
+/// instructions. Two call sites JBMC does not link, whose value it takes to be zero, prove two more claims the JVM
+/// refutes, and are refused as `invokedynamic` gaps. `--gaps advised` needs the
+/// own checker, which applies the contracts.
+#[test]
+fn jbmc_own_approximations_are_gaps_in_the_same_modes() {
+    use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
+    use jvmcontract::Engine;
+    if !has("jbmc") {
+        return;
+    }
+    let dir = target_tmp().join("gaps-jbmc-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Gaps.java"), GAPS).unwrap();
+    let Some(classes) = compile("gaps-jbmc", &[dir.join("Gaps.java")]) else { return };
+    // The JVM refutes every claim below but nullMonitor's, which it refutes with an exception.
+    if has("java") {
+        let probe = "public class Probe { public static void main(String[] a) {\n".to_string()
+            + "System.out.println(fixtures.Gaps.concatIsNull(1));\n"
+            + "System.out.println(fixtures.Gaps.sameRecord(1)); } }\n";
+        std::fs::write(dir.join("Probe.java"), probe).unwrap();
+        let status = Command::new("javac").args(["-proc:none", "-cp"]).arg(&classes).arg("-d").arg(&classes).arg(dir.join("Probe.java")).status().expect("javac runs");
+        assert!(status.success());
+        let run = Command::new("java").arg("-cp").arg(&classes).arg("Probe").output().expect("java runs");
+        let lines = String::from_utf8_lossy(&run.stdout).lines().map(str::to_string).collect::<Vec<_>>();
+        assert_eq!(lines, ["false", "true"], "{lines:?}");
+    }
+    let prove = |method: &str, assert: &str, gaps: GapMode| {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Gaps#{method}"));
+        options.assert = Some(assert.into());
+        options.engine = Engine::Jbmc;
+        options.gaps = gaps;
+        let work = target_tmp().join(format!("property-jbmc-gaps-{method}-{gaps:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options)
+    };
+    let ids = |o: &property::Outcome, treatment: GapTreatment| -> Vec<String> {
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!(search.engine, "jbmc", "{}", o.output);
+        assert!(search.gaps.iter().all(|g| g.treatment == Some(treatment) && g.checker.as_deref() == Some("jbmc")), "{:?}", search.gaps);
+        search.gaps.iter().map(|g| g.id.split('@').next().unwrap().to_string()).collect()
+    };
+    let cases: [(&str, &str, &[&str]); 4] = [
+        ("capacity", "result == 1", &["jdk-constructor:java.util.ArrayList.<init>(I)V"]),
+        ("firstByte", "out.length == 0 || result == \\old(out[0])", &["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]),
+        ("concatIsNull", "result", &["invokedynamic:java.lang.invoke.StringConcatFactory.makeConcatWithConstants:makeConcatWithConstants(I)Ljava/lang/String;"]),
+        ("sameRecord", "!result", &["invokedynamic:java.lang.runtime.ObjectMethods.bootstrap:equals(Lfixtures/Gaps$Point;Ljava/lang/Object;)Z"]),
+    ];
+    for (method, assert, expected) in cases {
+        let o = prove(method, assert, GapMode::Strict).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Refused), expected, "{}", o.output);
+        let problem = o.problem.as_deref().unwrap();
+        assert!(problem.contains("JBMC proved it, but reaches") && problem.contains("(--gaps strict)"), "{}", o.output);
+        assert!(o.output.contains("\n  jbmc gap: "), "{}", o.output);
+        assert!(o.work.join("jbmc-goto.txt").exists());
+
+        let o = prove(method, assert, GapMode::Assume).unwrap();
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Assumed), expected, "{}", o.output);
+        let n = expected.len();
+        assert!(o.output.contains(&format!(", assuming {n} behaviour{} JBMC does not implement (--gaps assume)", if n == 1 { "" } else { "s" })), "{}", o.output);
+        assert!(o.output.contains("\n  assumed: "), "{}", o.output);
+    }
+    // The stubs' words, and what each kind of gap is taken to do.
+    let o = prove("capacity", "result == 1", GapMode::Assume).unwrap();
+    let gap = &o.search.as_ref().unwrap().gaps[0];
+    assert!(gap.approximation.starts_with("is JBMC's stub: it constructs the object and does nothing else"), "{gap:?}");
+    assert_eq!(gap.sites, ["fixtures.Gaps.capacity:13"], "{gap:?}");
+    let o = prove("concatIsNull", "result", GapMode::Assume).unwrap();
+    let gap = &o.search.as_ref().unwrap().gaps[0];
+    assert!(gap.approximation.contains("takes the value null and runs nothing"), "{}", o.output);
+    assert_eq!(gap.call, "the invokedynamic makeConcatWithConstants(int) of java.lang.invoke.StringConcatFactory.makeConcatWithConstants");
+    // JBMC drops monitor instructions, so alone it proves the review's second reproducer, which the own checker
+    // and the JVM refute with a NullPointerException: under strict it is a named gap, the answer 1b asks for (a
+    // named gap or a correct violation), and under assume a proof that names it.
+    let o = prove("nullMonitor", "result == 1", GapMode::Strict).unwrap();
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert_eq!(ids(&o, GapTreatment::Refused), ["monitor:fixtures.Gaps.nullMonitor(I)I"], "{}", o.output);
+    let o = prove("nullMonitor", "result == 1", GapMode::Assume).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("a null monitor throws nothing, where the JVM throws NullPointerException"), "{}", o.output);
+    // A claim that reaches no stub is decided as before, with no gaps: JBMC runs java.lang.Integer's own bytecode,
+    // and the stubs only Integer's initializer reaches (Class.getPrimitiveClass) are not the method's.
+    let o = prove("bits", "result >= 0 && result <= 32", GapMode::Strict).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.search.as_ref().unwrap().gaps.is_empty(), "{}", o.output);
+    assert!(std::fs::read_to_string(o.work.join("jbmc-goto.txt")).unwrap().contains("java::java.lang.Class.getPrimitiveClass:"), "the initializer's stub is there");
+    // JBMC applies no contract: advised is the own checker's.
+    let e = prove("capacity", "result == 1", GapMode::Advised).unwrap_err();
+    assert!(e.to_string().contains("JBMC applies none"), "{e}");
+    // A regression proof on JBMC meets them the same way: a JDK constructor added to a method that returns 1.
+    let (Some(before), Some(after)) = (
+        compile_writers("jbmc-sized-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
+        compile_writers("jbmc-sized-after", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; } }"),
+    ) else {
+        return;
+    };
+    for (gaps, verdict) in [(GapMode::Strict, Verdict::Unverifiable), (GapMode::Assume, Verdict::Verified)] {
+        let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
+        options.engine = Engine::Jbmc;
+        options.gaps = gaps;
+        let work = target_tmp().join(format!("equivalence-jbmc-sized-{gaps:?}"));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        let o = equivalence::run(&options).unwrap();
+        assert_eq!(o.verdict, verdict, "{}", o.output);
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!((search.engine.as_str(), search.gap_mode), ("jbmc", Some(gaps)));
+        assert_eq!(search.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>(), ["jdk-constructor:java.util.ArrayList.<init>(I)V"], "{}", o.output);
+        if gaps == GapMode::Assume {
+            assert!(o.output.contains("assuming 1 behaviour JBMC does not implement"), "{}", o.output);
         }
     }
 }

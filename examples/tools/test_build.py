@@ -1477,7 +1477,7 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual((attempt["claim"], attempt["pipeline"]), (result["claim"]["id"], {"jobId": "job-1", "sourceCommit": "abc", "workdir": "/w"}))
         self.assertEqual(attempt["exploration"], {"unwind": 32, "maxArrayLength": 8, "complete": True})
         self.assertEqual(attempt["bytecode"]["after"]["files"], 1)
-        self.assertEqual(attempt["options"], ["--unwind", "32"])
+        self.assertEqual(attempt["options"], ["--gaps", "assume", "--unwind", "32"])
         self.assertEqual(result["conclusion"], {"claim": result["claim"]["id"], "attempt": attempt["id"], "status": "established",
                                                 "vacuous": False, "expectation": "no", "obligations": []})
         self.assertEqual([a["path"] for a in result["bundle"]["artifacts"]], ["statement.java", "verifier-output.txt"])
@@ -1968,8 +1968,9 @@ class GapModeTest(unittest.TestCase):
 
     def test_the_mode_is_the_example_s_and_assume_for_a_recorded_one(self):
         ex = example()
-        self.assertIsNone(build.gap_mode(ex), "JBMC decides: no gap mode")
-        self.assertNotIn("--gaps", build.plan(ex)["options"])
+        # JBMC's own approximations are gaps too (step 4c): a recorded example JBMC proves runs in assume as well.
+        self.assertEqual(build.gap_mode(ex), "assume")
+        self.assertEqual(build.plan(ex)["options"][-2:], ["--gaps", "assume"])
         ex["approach"]["engine"] = "auto"
         self.assertEqual(build.plan(ex)["options"], ["--engine", "auto", "--gaps", "assume"])
         ex["approach"]["gaps"] = "strict"
@@ -1979,10 +1980,10 @@ class GapModeTest(unittest.TestCase):
         self.assertEqual(build.proof_options(prop), ["--engine", "native", "--gaps", "assume"])
         self.assertEqual(build.proof_options(example(approach="B8")), [])
 
-    def test_every_recorded_example_of_the_own_checker_runs_in_assume_unless_it_says(self):
+    def test_every_recorded_b9_and_b11_example_runs_in_assume_unless_it_says(self):
         for folder, ex in PlanTest.recorded(None):
             mode = build.gap_mode(ex)
-            if ex["approach"]["id"] in ("B9", "B11") and ex["approach"].get("engine") in ("native", "auto"):
+            if ex["approach"]["id"] in ("B9", "B11"):
                 self.assertEqual(mode, ex["approach"].get("gaps") or "assume", folder.name)
             else:
                 self.assertIsNone(mode, folder.name)
@@ -2011,6 +2012,32 @@ class GapModeTest(unittest.TestCase):
         # A refused gap is no assumption: the run had no verdict, and the label says nothing of it.
         refused = {**search, "gap_mode": "strict", "gaps": [{**self.GAP, "treatment": "refused"}]}
         self.assertEqual(build.assumed_gaps({"search": build.search_record({"search": refused})}), [])
+
+    def test_a_jbmc_proof_names_the_stubs_it_assumed(self):
+        """Step 4c: JBMC's own approximations are gaps too, kept with their checker, and the page says whose."""
+        gap = {"id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-25.0.4.1", "kind": "jdk-constructor",
+               "call": "java.util.ArrayList.<init>(int)", "sites": ["a.B.m:4"], "treatment": "assumed", "checker": "jbmc",
+               "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and "
+                                "changes neither its receiver nor its arguments"}
+        site = {**gap, "id": "invokedynamic:java.lang.invoke.StringConcatFactory.makeConcatWithConstants:makeConcatWithConstants(I)Ljava/lang/String;",
+                "kind": "invokedynamic", "call": "the invokedynamic makeConcatWithConstants(int) of java.lang.invoke.StringConcatFactory.makeConcatWithConstants",
+                "approximation": "is a call site JBMC does not link: it takes the value null and runs nothing"}
+        search = {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 0.3, "properties": 2, "unwind": 16,
+                  "max_array_length": 8, "stage": None, "gap_mode": "assume", "gaps": [gap, site]}
+        record = build.search_record({"search": search})
+        self.assertEqual([g["checker"] for g in record["gaps"]], ["jbmc", "jbmc"])
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        jsonschema.validate(record, schema["properties"]["search"])
+        res = {"verdict": "verified", "search": record}
+        lines = build.assumed_lines(res)
+        self.assertTrue(lines[0].startswith("**The proof assumes 2 behaviours JBMC does not implement** (`--gaps assume`)"), lines[0])
+        self.assertIn("java.util.ArrayList.<init>(int) is JBMC's stub", lines[2])
+        own = {**res, "search": {**record, "gaps": [self.GAP, record["gaps"][1]]}}
+        self.assertTrue(build.assumed_lines(own)[0].startswith("**The proof assumes 2 behaviours the checkers do not implement**"))
+        self.assertTrue(build.assumed_lines({**res, "search": {**record, "gaps": [self.GAP]}})[0].startswith(
+            "**The proof assumes 1 behaviour the tool's own checker does not implement**"))
+        self.assertEqual(build.assumed_lines({**res, "verdict": "unverifiable"}), [])
 
 
 class DeadlineTest(unittest.TestCase):

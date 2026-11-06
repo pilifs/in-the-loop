@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T07:42:29.396Z",
-  "duration_seconds": 29280,
+  "ended": "2026-11-06T08:30:47.708Z",
+  "duration_seconds": 32178,
   "stats": {
-    "turns": 101,
-    "api_calls": 1381,
-    "tool_calls": 1394,
+    "turns": 106,
+    "api_calls": 1500,
+    "tool_calls": 1514,
     "tool_errors": 14,
-    "compactions": 18,
+    "compactions": 19,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 2800,
-      "output_tokens": 1335611,
-      "cache_read_input_tokens": 245455876,
-      "cache_creation_input_tokens": 4603085
+      "input_tokens": 3042,
+      "output_tokens": 1456441,
+      "cache_read_input_tokens": 272307406,
+      "cache_creation_input_tokens": 4930631
     }
   },
   "tools": {
-    "Bash": 1245,
-    "Read": 102,
-    "Write": 21,
-    "Edit": 19,
-    "ToolSearch": 5,
-    "WebFetch": 2
+    "Bash": 1356,
+    "Read": 106,
+    "Write": 22,
+    "Edit": 20,
+    "ToolSearch": 6,
+    "WebFetch": 4
   },
   "files_touched": [
     "examples/tools/result_format.py",
@@ -49,6 +49,7 @@
     "lib/src/digest.rs",
     "lib/src/equivalence.rs",
     "lib/src/gap_contracts.rs",
+    "lib/src/jbmc_gaps.rs",
     "lib/src/jvm_witness.rs",
     "lib/src/property.rs",
     "lib/src/statement.rs",
@@ -316,24 +317,38 @@
     {
       "index": 18,
       "started": "2026-11-06T07:18:27.802Z",
-      "ended": "2026-11-06T07:42:29.396Z",
-      "turns": 4,
-      "api_calls": 68,
+      "ended": "2026-11-06T07:43:19.130Z",
+      "turns": 5,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 138,
-        "output_tokens": 71850,
-        "cache_read_input_tokens": 12531779,
-        "cache_creation_input_tokens": 245423
+        "input_tokens": 148,
+        "output_tokens": 73780,
+        "cache_read_input_tokens": 13574123,
+        "cache_creation_input_tokens": 259476
       },
-      "peak_context_tokens": 258503
+      "peak_context_tokens": 272558
+    },
+    {
+      "index": 19,
+      "started": "2026-11-06T07:44:07.199Z",
+      "ended": "2026-11-06T08:30:47.708Z",
+      "turns": 4,
+      "api_calls": 115,
+      "usage": {
+        "input_tokens": 232,
+        "output_tokens": 118900,
+        "cache_read_input_tokens": 25809186,
+        "cache_creation_input_tokens": 313493
+      },
+      "peak_context_tokens": 326573
     }
   ],
   "log": {
-    "sha256": "cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690",
-    "bytes": 43026539,
-    "lines": 14456,
-    "gzip_bytes": 8070768,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690.jsonl.gz"
+    "sha256": "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486",
+    "bytes": 46017608,
+    "lines": 15621,
+    "gzip_bytes": 8609416,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -536,6 +551,14 @@
       "summary": "JBMC is read through --json-ui, and every run says how it ended: a counterexample, an unwinding failure, a timeout, memory exhausted, a solver failure or an input JBMC refused stay apart, with the text reader kept until a differential test over the recorded JBMC examples agrees (verification pending)",
       "body": "Step 4b of llm-dlc/loops/sound-verdicts.md. lib/src/jbmc.rs gains parse_json, now the default reader. Its format comes from CBMC 6.11.0's own source (report_util.cpp, json_goto_trace.cpp, json_expr.cpp, ui_message.cpp at tag cbmc-6.11.0), since JBMC is not run inline to find it out. It reads the array of messages, property results with the failed property's trace, and the overall cProverStatus. It reads element by element, so a cut-off run or text around the array does no harm. A counterexample's inputs come from the trace's input steps by slot, an array's elements from the assignments before its input, and every value from its bits (signed unless char or boolean; IEEE 754 at width 32 or 64), not from how Java prints it. Only success, with every property SUCCESS or UNREACHABLE, is a proof.\n\nEvery result and every run in search.runs now has an ending: verified, counterexample, unwinding-failure, other-failure, timeout, memory-exhausted, killed, solver-failure, unsupported-input, unavailable, unreadable, or the own checker's no-verdict. JbmcResult::out_of_time reads it in place of 4a's text match. The text parser stays as JVMCONTRACT_JBMC_READ=text. JVMCONTRACT_JBMC_READ=both runs JBMC both ways, decides by the JSON, and writes what each reading made of each run to <log>.differential.json (and to the file JVMCONTRACT_JBMC_DIFFERENTIAL names). The schema, lib/README.md and the skill's reference.md describe it.\n\nVerified inline. The integration suite runs the real JBMC 6.11.0 (151 runs, every witness replayed by the interpreter), and it now goes through the JSON reader. A new integration test, the_json_and_the_text_reading_of_jbmc_agree, runs the CLI under both on a proof, counterexamples over an int[] and a long, and an unwinding failure, and every pair of readings agrees. New unit tests cover every ending from fixtures in CBMC's shape, plus the canonical value forms and the differential on stand-ins. The conformance stand-ins answer in JSON when --json-ui is passed. All Rust tests (136 unit, 5 conformance, 58 integration, 1 skill) and the 156 Python tests pass. Re-rendering every page changed none.\n\nJob 20261106-073804-jbmc-read-through-json-ui-agrees-with-th is the brief's differential test. It runs build.py on a copy of examples/ over the 41 recorded B9/B11 JBMC examples under JVMCONTRACT_JBMC_READ=both, and fails on a disagreement or a verdict that moved. The text parser is removed once it passes. Next: 4c, JBMC's stubs as gaps.",
       "log_sha256": "cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690"
+    },
+    {
+      "change_id": "nlvopkvxntotnxxkuowmnrykroyskymu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC's own approximations are gaps under strict and assume: its stubs of methods it has no bytecode for, the invokedynamic call sites it gives the value zero or null, and the monitors it drops are named from its goto program, and a JBMC proof that reaches one is no verdict under strict (verification pending)",
+      "body": "Step 4c, first part, of llm-dlc/loops/sound-verdicts.md. Before JBMC's proof, jvmcontract now runs JBMC with --show-goto-functions on the harness (lib/src/jbmc_gaps.rs). That converts what the proof would and solves nothing: 40 ms on the review's reproducers. It then walks JBMC's own call graph from the harness. Three things count as approximations:\n- a method reached with no bytecode on JBMC's class path: JBMC's stub returns any value of its type and does nothing else;\n- an invokedynamic that JBMC links to no class of its own making: JBMC takes its value to be zero or null. This covers string concatenation, a record's equals/hashCode/toString, and a lambda for a JDK interface. JBMC never checks the bootstrap method's name, as read from CBMC 6.11.0's lambda_synthesis.cpp;\n- a method that synchronizes: JBMC drops monitor instructions, so synchronized (null) throws nothing.\nThey are gaps with the own checker's ids where the call is the same, plus three JBMC-only kinds: missing-body, invokedynamic and monitor. Stubs that only a JDK class's initializer reaches stay under the statement's engine assumption.\n\nUnder --gaps strict (the library's default), a JBMC proof that reaches a gap is Unverifiable, and a counterexample stands only if the interpreter replays it. Under --gaps assume the verdict names each gap. --confirm holds JBMC's proof to its gaps too. build.py now passes the recorded gap mode (assume) to the examples JBMC proves.\n\nVerified inline on the real JBMC 6.11.0 by the new integration test jbmc_own_approximations_are_gaps_in_the_same_modes. JBMC alone proved five claims the JVM refutes: new ArrayList<>(n) returning, Random.nextBytes leaving its array, synchronized (null) returning, a string concatenation being null, and a record unequal to its copy. Under strict all five are now refused by name, and under assume each is Verified naming its gap. A regression proof under --engine jbmc behaves the same. All Rust tests pass (138 unit, 5 conformance, 59 integration, 1 skill), and so do the 157 Python tests. The existing integration tests, with their 151 real JBMC runs, pass unchanged under the new strict default. Re-rendering every page changed none.\n\nJob 20261106-082917-jbmc-s-own-approximations-as-gaps-every runs build.py on a copy of the 41 recorded JBMC examples under assume, where no verdict should move. It tabulates the JBMC gaps each one reaches, which is what strict would cost them.\n\nWhere the brief is wrong or out of date:\n- It names stubs and the invokedynamic fallback, but not monitors, which JBMC also drops.\n- Its acceptance, 1b's reproducers giving the same answer under JBMC in each mode, cannot hold for synchronized (null). JBMC gives a named gap where the own checker gives the violation, which still meets 1b's own acceptance (a named gap or a correct violation).\n- Advised gives the same answer only through the own checker, since JBMC does not apply contracts yet. That is 4c's second part, recorded under Progress as next.",
+      "log_sha256": "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486"
     }
   ],
   "logs": {
@@ -627,6 +650,12 @@
       "bytes": 20056807,
       "lines": 6891,
       "gzip_bytes": 3663096,
+      "url": null
+    },
+    "83c9a91397ed9377afc6f7295289d4d8e4c39f82c53ce90c2a8d176c3f85e486": {
+      "bytes": 46017608,
+      "lines": 15621,
+      "gzip_bytes": 8609416,
       "url": null
     },
     "a55f270188983de71e140e81a8c92e2d1a8749f76541d67d2dcf9801f714fc17": {
