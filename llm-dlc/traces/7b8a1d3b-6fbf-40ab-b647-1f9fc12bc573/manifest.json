@@ -12,29 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T23:14:11.409Z",
-  "duration_seconds": 14347,
+  "ended": "2026-11-06T23:19:01.975Z",
+  "duration_seconds": 14638,
   "stats": {
-    "turns": 49,
-    "api_calls": 480,
-    "tool_calls": 477,
-    "tool_errors": 7,
-    "compactions": 9,
+    "turns": 54,
+    "api_calls": 520,
+    "tool_calls": 517,
+    "tool_errors": 8,
+    "compactions": 10,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 958,
-      "output_tokens": 390961,
-      "cache_read_input_tokens": 53898109,
-      "cache_creation_input_tokens": 1357120
+      "input_tokens": 1038,
+      "output_tokens": 407906,
+      "cache_read_input_tokens": 57239126,
+      "cache_creation_input_tokens": 1451282
     }
   },
   "tools": {
-    "Bash": 457,
-    "Read": 10,
-    "Edit": 8,
+    "Bash": 490,
+    "Read": 14,
+    "Edit": 11,
     "Write": 2
   },
   "files_touched": [
+    "examples/schema/result.schema.json",
     "lib/src/jbmc.rs",
     "lib/src/jbmc_gaps.rs",
     "lib/src/statement.rs",
@@ -172,24 +173,38 @@
     {
       "index": 9,
       "started": "2026-11-06T22:57:07.832Z",
-      "ended": "2026-11-06T23:14:11.409Z",
-      "turns": 4,
-      "api_calls": 58,
+      "ended": "2026-11-06T23:14:43.637Z",
+      "turns": 5,
+      "api_calls": 62,
       "usage": {
-        "input_tokens": 116,
-        "output_tokens": 39962,
-        "cache_read_input_tokens": 6230846,
-        "cache_creation_input_tokens": 152869
+        "input_tokens": 124,
+        "output_tokens": 42061,
+        "cache_read_input_tokens": 6905029,
+        "cache_creation_input_tokens": 159333
       },
-      "peak_context_tokens": 165948
+      "peak_context_tokens": 172412
+    },
+    {
+      "index": 10,
+      "started": "2026-11-06T23:15:16.037Z",
+      "ended": "2026-11-06T23:19:01.975Z",
+      "turns": 4,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 72,
+        "output_tokens": 14846,
+        "cache_read_input_tokens": 2666834,
+        "cache_creation_input_tokens": 87698
+      },
+      "peak_context_tokens": 100777
     }
   ],
   "log": {
-    "sha256": "925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b",
-    "bytes": 12528117,
-    "lines": 5004,
-    "gzip_bytes": 2229692,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b.jsonl.gz"
+    "sha256": "ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2",
+    "bytes": 13599495,
+    "lines": 5415,
+    "gzip_bytes": 2444886,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -280,6 +295,14 @@
       "summary": "Under --confirm, a JBMC refutation through a named defect, whose witness does not reproduce, is no verdict; job 20261106-203452 triaged (verification pending)",
       "body": "Job 20261106-203452 (step 3 of llm-dlc/loops/engine-priorities.md) failed two of its three steps. Its --confirm step had 12 disagreements, all on conformance/caught, caughtAsRuntime and nestedHandler under strict and assume: the own checker proves the claim, and JBMC's confirming run refutes it at n = 0 through return-past-handler or stubbed-handler, the defects step 3 found and guards against, on a witness the interpreter does not reproduce. The tool called that a disagreement. Now equivalence::confirm runs JBMC's preflight on a refutation too, and takes the caller's replay of the witness in the harness: when the preflight names a defect and the witness does not reproduce, the refutation is the defect's, as a JBMC proof through one is refused, so the confirmation is no-verdict and the own checker's proof stands, unconfirmed, the line naming the defects. A witness that reproduces is still a disagreement, as is one with no defect in reach.\n\nIts integration step failed at the own checker's regression proof of fixtures.Pricing#total in the_tools_own_checker_agrees_with_jbmc_on_integer_proofs, not at JBMC as the brief's Progress had said. Inline on cvm, 2 of 8 identical runs ran out of 40 s where the others took 4 s: the own checker's branch probes are budgeted by wall-clock time, so its path order depends on timing. That is lib/src/bmc/, the native stream's, so it is recorded under Progress with a reproducer for the native stream and the reconcile loop, and nothing there changed. That step's tee also failed, since lib/target did not exist yet in the job's fresh checkout.\n\nVerified: on the real JBMC (milliseconds), caught, caughtAsRuntime and nestedHandler under auto --confirm are now verified, not confirmed, naming the defect. A new test, confirm_takes_a_refutation_through_a_jbmc_defect_for_no_verdict, uses a stand-in JBMC whose program reaches caught, for prove and equivalence, and fails with the fix disabled. Lib 157 tests and the conformance tests pass, except the corpus's 12 known disagreements from the contract records (JDK 25.0.5 against 25.0.4.1). lib/README.md's --confirm paragraph says so. Shared files changed: lib/tests/conformance.rs (fake_jbmc reads an optional goto.txt; the test), equivalence.rs and property.rs (confirm's closure and its two calls), lib/README.md.\n\nJob 20261106-231317 reruns the three steps, with lib/target created first. The corpus under JBMC and auto also hasn't run since the unmasked-shift claims and the full-range default went in.",
       "log_sha256": "925e70debeb12febbb6e2ffe214db0cc7e72388cc7c4a4db504e07cf275c836b"
+    },
+    {
+      "change_id": "tokyzslsyxozmzkvstvvztuvmxxzwkxq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The examples' result schema allows the statement's SAT solver record; 4a's job rerun (verification pending)",
+      "body": "Job 20261106-204220, step 4a of llm-dlc/loops/engine-priorities.md (the 41 recorded JBMC examples under strict on both engines), stopped in both engine steps at its first example: build.py refused 013's result against examples/schema/result.schema.json because 'sat' was unexpected. That is step 1b's stated.checker.sat, the SAT solver each result's evidence now names, which the schema did not allow yet. The checker object in the statement now allows sat, in the shape lib/src/statement.rs Sat serializes (solver, version or null, source, configuration), and nothing more.\n\nVerified inline: real sat records from a millisecond proof on each engine, spliced into the 14 committed results that carry a statement, pass build.py's whole validation (flat schema, round trip through the stored format, stored schema), and a record with an extra field is refused; three real statements (own checker, JBMC, auto --confirm) validate in full against $defs/statement; test_build.py has the same 35 pre-existing errors before and after the change, and test_gap_table.py passes.\n\nJob 20261106-231837 reruns -204220's three steps unchanged at this commit, so it also measures the unmasked-shift guard, --confirm's rule for refutations through a defect, and the full-range default on the examples. The stream's status is now waiting on jobs 20261106-231317 and 20261106-231837.",
+      "log_sha256": "ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2"
     }
   ],
   "logs": {
@@ -347,6 +370,12 @@
       "bytes": 1313989,
       "lines": 559,
       "gzip_bytes": 233050,
+      "url": null
+    },
+    "ff93a9879ea688850a019b0499fe225928b72f6eb1b4340c38ec1b82bce9b7b2": {
+      "bytes": 13599495,
+      "lines": 5415,
+      "gzip_bytes": 2444886,
       "url": null
     }
   },

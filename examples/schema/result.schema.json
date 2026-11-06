@@ -393,6 +393,18 @@
                 "string",
                 "null"
               ]
+            },
+            "sat": {
+              "description": "The SAT solver the verdict's checker ran (lib/src/statement.rs `Sat`, step 1b of llm-dlc/loops/engine-priorities.md): its name, its own version (null where it could not be read), where it comes from, and its configuration. Absent in results written before 2026-11-06, and when no checker gave the verdict.",
+              "type": "object",
+              "required": ["solver", "version", "source", "configuration"],
+              "additionalProperties": false,
+              "properties": {
+                "solver": { "type": "string" },
+                "version": { "type": ["string", "null"] },
+                "source": { "type": "string" },
+                "configuration": { "type": "array", "items": { "type": "string" } }
+              }
             }
           }
         },

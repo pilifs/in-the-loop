@@ -218,7 +218,8 @@ Progress, so the reconcile loop knows where to look.
     - A `GapKind` for defects in `bmc/gaps.rs` could replace the separate `Defect` type, if gaps and defects should
       read alike in `--json`; today a defect shows only in the problem and the notes.
     - 4a's job will run with this guard: a recorded JBMC proof refused for a defect is a difference to report.
-- **4a, the strict job on both engines: submitted, `20261106-204220` (pending).**
+- **4a, the strict job on both engines: `20261106-204220` failed on the result schema; rerun as `20261106-231837`
+  (pending, below).**
   - The job runs `build.py` on the 41 recorded B9/B11 JBMC examples (Quorum, Crosscut, Mica), the same filter as
     job `-082917`, in two scratch copies of `examples/`:
     - as recorded (`--engine jbmc`, `--gaps strict`);
@@ -337,12 +338,26 @@ Progress, so the reconcile loop knows where to look.
     - `lib/README.md`: a sentence in `--confirm`'s paragraph.
   - Lib 157 tests pass, and the conformance tests other than the corpus pass. The corpus fails only on the
     12 known disagreements from the contract records.
-- **Next:**
-  - 4a's job `-204220` failed in both engine steps on `build.py`'s result schema: `'sat' was unexpected`. That is
-    1b's `stated.checker.sat`, which the examples' result schema doesn't allow yet. Fix it and resubmit; the
-    resubmission measures the defect guards too.
-  - Then the results of `-231317`.
-- Status: working
+- **4a's job `20261106-204220`: failed on the schema; fixed; rerun as `20261106-231837` (pending).**
+  - Both engine steps stopped at the first example, 013 (1 m 51 s, peak 1.1 GiB). `build.py` refused its result
+    against `examples/schema/result.schema.json`: `'sat' was unexpected`. That was 1b's `stated.checker.sat`, which
+    the schema didn't allow yet. Nothing else failed. The gap table then read only the 9 results already in format 2,
+    so its assertion of 41 failed.
+  - Fix: the statement's `checker` in the schema allows `sat`, in the shape `Sat` serializes (`solver`, `version`
+    or null, `source`, `configuration`), and nothing else.
+  - Verified inline:
+    - real `sat` records from a tiny proof on each engine, spliced into the 14 committed results that carry a
+      statement, pass all of `check_result`'s validation (flat schema, round trip, stored schema);
+    - a record with an extra field is refused;
+    - three real statements (own checker, JBMC, `auto --confirm`) validate in full against `$defs/statement`;
+    - `test_build.py` has the same 35 errors before and after (1b's note), and `test_gap_table.py` passes.
+  - Job `-231837` is `-204220`'s three steps unchanged, at this commit, so it also measures the unmasked-shift guard,
+    `--confirm`'s new rule and the `full-range` default on the examples.
+  - No shared file changed. `build.py`'s `search_record` doesn't carry 2a's `search.staging` into the examples'
+    results; nothing reads it there yet.
+- **Next:** the results of jobs `-231317` (3's rerun) and `-231837` (4a's rerun). Record what they show under 3 and
+  4a. 4a's tables go to the reconcile loop's 4c as they stand.
+- Status: waiting on jobs 20261106-231317 20261106-231837
 
 ## Loop settings
 
