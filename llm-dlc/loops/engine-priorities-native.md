@@ -592,9 +592,70 @@ are yours, but say under Progress which JBMC results they may change.
   - **Also changed (mine):** `lib/src/bmc/sat.rs`, `bits.rs`, `bitwuzla.rs` and `mod.rs` (the transcript refusal,
     the field, the test), `lib/solvers/compare.py` (`--words`), and `lib/solvers/bitwuzla/README.md`.
   - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
-- **Next:** 6d, the written recommendation, once jobs `-224616` (bit-blasted) and `-230455` (word-level) are back.
-  Nothing else in my phases needs only my own work.
-- Status: waiting on jobs 20261106-224616-the-own-checker-on-cadical-and-on-bitwuz 20261106-230455-the-own-checker-on-cadical-and-on-bitwuz
+- **6c, the two comparisons: jobs `20261106-224616` (bit-blasted, at `09739e6`) and `20261106-230455`
+  (word-level, at `bbb3062`), both passed.** Both ran on vm-1 (x86_64, 28 CPUs), taking 22m41s and 3m51s, with a
+  peak of 1.0 and 1.1 GiB.
+  - **The checks.** Every check of the five workloads is verified on every solver, with the same paths and merges.
+    There are no problems: no wrong or disagreeing verdict, and no replay contradiction.
+  - **Bit-blasted.** Bitwuzla is 2 to 43 times slower than CaDiCaL on the engine's clauses with its defaults, and
+    1.7 to 14 times slower with `preprocess=0`.
+    - Replaying CaDiCaL's transcripts gives the same picture.
+    - In the replays, 1 to 7 calls of binary search and 142 ran past CaDiCaL's recorded per-call limit on Bitwuzla.
+      These are listed as not decided.
+  - **Word-level.** `bitwuzla-words:preprocess=0` against CaDiCaL, whole check, medians:
+
+    | Case | CaDiCaL | `bitwuzla-words:preprocess=0` | Speed-up |
+    |---|---:|---:|---:|
+    | binary search | 1.736 s | 0.900 s | 1.93× |
+    | `example/141` | 1.316 s | 1.279 s | 1.03× |
+    | `example/142` | 4.696 s | 3.594 s | 1.31× |
+    | `held/reverse` | 0.153 s | 0.092 s | 1.66× |
+    | `held/prefix-sums` | 0.051 s | 0.051 s | 1.00× |
+
+    - With Bitwuzla's default preprocessing, 141 and 142 are slower than CaDiCaL: 2.037 s and 10.086 s.
+    - The solver is given 25 to 3,633 word-level operations, where CaDiCaL gets 5,637 to 240,144 clauses.
+  - **The record.** Both tables say `at ?` for the commit. The runner's export has no git, so `compare.py` found no
+    HEAD. The jobs' records give the commits (above). The outputs, `lib/solvers/comparison/*.json` and `.md`, reach
+    this branch at the merge.
+- **6d: the recommendation** (inline; written from the two jobs, nothing run). [`lib/solvers/README.md`](../../lib/solvers/README.md)
+  (new) argues against moving the engine to word-level solving now. It keeps CaDiCaL 1.9.5 and bit-blasting as the
+  default, and keeps `bitwuzla-words` as an opt-in prototype. No default changes.
+  - **The argument:**
+    - **The solver alone gains nothing.** Bitwuzla is slower on the engine's own clauses everywhere.
+    - **Terms gain at most 1.9×, and only with a default turned off.** With Bitwuzla's defaults, two of the five
+      workloads are slower.
+    - **No case moves from undecided to decided.** The own checker already takes 0.05 to 4.7 s on these five,
+      against JBMC's 58.6 s, 65.2 s and out of memory (job `-102624`).
+    - **A migration would cost more than it gains.** It would cost 6a's clause transcripts and the bundled solver.
+      The array theory, which is what would make it architectural, is unbuilt and unmeasured.
+  - **The page also says what would reopen the question:** a slow or undecided check where solving dominates, such
+    as nonlinear arithmetic or arrays past the bounded cells, measured first with `compare.py --words`. It names the
+    evidence's limits:
+    - one machine, three runs each;
+    - Bitwuzla's CaDiCaL 2.1.2 against the engine's 1.9.5, which isn't separated, because no standalone CaDiCaL 2.x
+      is installed and the brief's bar for trying it isn't met;
+    - a prototype with no array theory;
+    - workloads that are integer and array code.
+  - **Fixed:** `compare.py` now takes the commit from the runner's `VERIFY_SOURCE_COMMIT` before trying git. The
+    test is `test_a_job_records_the_runners_commit_since_its_tree_has_no_git`. The recorded tables stand as they
+    are.
+  - **Checked:** the script's tests (5), the skill test, and the new page's relative links. Every figure on the
+    page was recomputed from the jobs' JSON. Rust is unchanged.
+  - **Shared files changed:** `lib/README.md`, one sentence pointing at the recommendation.
+  - **Also changed (mine):** `lib/solvers/README.md` (new), `compare.py`, `test_compare.py` and
+    `lib/solvers/bitwuzla/README.md` (a pointer).
+- **Where the phases stand.**
+  - 1c, 4b, 5, 6a, 6b, 6c and 6d are done. Every job submitted along the way is back. `-192008` and `-203501`
+    failed, and both are explained above.
+  - **Phase 5's last criterion is not met:** 071's two proofs standing under strict. The fix is a path-aware gap
+    check in `jbmc_gaps.rs`, the JBMC stream's file, as recorded above.
+  - **Left for the reconcile loop:**
+    - that `jbmc_gaps.rs` fix;
+    - the `declaring` gap, JBMC's false success under strict, with a possible upstream report to draft for the user;
+    - `lib/benchmark/conformance.json` (`JVMCONTRACT_BLESS=1`);
+    - 071's and 013's notes, from job `-203501`;
+    - Bitwuzla's version, fitted into 1b's record.
+- Status: done
 
 ## Loop settings
 

@@ -102,11 +102,19 @@ def environment(run_module, options):
     record.pop("jbmc", None)
     record["host"] = platform.node()
     record["bitwuzla"] = bitwuzla_library(options.jvmcontract)
-    try:
-        record["commit"] = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, timeout=30).stdout.strip() or None
-    except (OSError, subprocess.SubprocessError):
-        record["commit"] = None
+    record["commit"] = source_commit()
     return record
+
+
+def source_commit():
+    """The commit measured. A pipeline job runs in an exported tree with no git, so the runner's VERIFY_SOURCE_COMMIT
+    comes first; outside a job, git's HEAD. None if neither is known (the tables then say `?`)."""
+    if os.environ.get("VERIFY_SOURCE_COMMIT"):
+        return os.environ["VERIFY_SOURCE_COMMIT"]
+    try:
+        return subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture_output=True, text=True, timeout=30).stdout.strip() or None
+    except (OSError, subprocess.SubprocessError):
+        return None
 
 
 def check(run_module, case, solver, classes, work, transcripts, options):

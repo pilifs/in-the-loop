@@ -3,6 +3,7 @@ root). Nothing here runs a check or a solver; the comparison itself is a pipelin
 
 import sys
 import unittest
+import unittest.mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -30,6 +31,11 @@ def replay(solver, contradictions=0, seconds=0.5, run=1):
 
 
 class CompareTest(unittest.TestCase):
+    def test_a_job_records_the_runners_commit_since_its_tree_has_no_git(self):
+        # Jobs -224616 and -230455 ran in the runner's exported tree, where git finds nothing: their tables say `at ?`.
+        with unittest.mock.patch.dict(compare.os.environ, {"VERIFY_SOURCE_COMMIT": "bbb3062e89b4"}):
+            self.assertEqual(compare.source_commit(), "bbb3062e89b4")
+
     def test_the_five_workloads_are_the_benchmarks_cases(self):
         run = compare.benchmark()
         ids = {c["id"] for c in run.load_cases({2, 3, 4})}

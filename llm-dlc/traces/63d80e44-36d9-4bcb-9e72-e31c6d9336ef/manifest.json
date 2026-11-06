@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.005Z",
-  "ended": "2026-11-06T23:07:37.434Z",
-  "duration_seconds": 13953,
+  "ended": "2026-11-06T23:19:20.364Z",
+  "duration_seconds": 14656,
   "stats": {
-    "turns": 60,
-    "api_calls": 657,
-    "tool_calls": 665,
-    "tool_errors": 8,
-    "compactions": 11,
+    "turns": 66,
+    "api_calls": 689,
+    "tool_calls": 698,
+    "tool_errors": 9,
+    "compactions": 12,
     "peak_context_tokens": 298900,
     "usage": {
-      "input_tokens": 1328,
-      "output_tokens": 618659,
-      "cache_read_input_tokens": 96610542,
-      "cache_creation_input_tokens": 1956016
+      "input_tokens": 1392,
+      "output_tokens": 649198,
+      "cache_read_input_tokens": 100088925,
+      "cache_creation_input_tokens": 2084252
     }
   },
   "tools": {
-    "Bash": 598,
-    "Read": 36,
+    "Bash": 627,
+    "Read": 39,
+    "Write": 12,
     "Edit": 11,
-    "Write": 11,
     "ToolSearch": 6,
     "Monitor": 2,
     "TaskStop": 1
@@ -43,6 +43,7 @@
     "lib/models/java/lang/Enum.java",
     "lib/models/java/util/ImmutableCollections.java",
     "lib/models/java/util/List.java",
+    "lib/solvers/README.md",
     "lib/solvers/bitwuzla/README.md",
     "lib/solvers/bitwuzla/build.sh",
     "lib/solvers/compare.py",
@@ -211,24 +212,38 @@
     {
       "index": 11,
       "started": "2026-11-06T22:48:02.295Z",
-      "ended": "2026-11-06T23:07:37.434Z",
-      "turns": 4,
-      "api_calls": 58,
+      "ended": "2026-11-06T23:08:07.058Z",
+      "turns": 5,
+      "api_calls": 62,
       "usage": {
-        "input_tokens": 118,
-        "output_tokens": 64991,
-        "cache_read_input_tokens": 8787599,
-        "cache_creation_input_tokens": 198435
+        "input_tokens": 126,
+        "output_tokens": 66698,
+        "cache_read_input_tokens": 9640158,
+        "cache_creation_input_tokens": 202869
       },
-      "peak_context_tokens": 211514
+      "peak_context_tokens": 215948
+    },
+    {
+      "index": 12,
+      "started": "2026-11-06T23:08:51.595Z",
+      "ended": "2026-11-06T23:19:20.364Z",
+      "turns": 5,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 56,
+        "output_tokens": 28832,
+        "cache_read_input_tokens": 2625824,
+        "cache_creation_input_tokens": 123802
+      },
+      "peak_context_tokens": 136881
     }
   ],
   "log": {
-    "sha256": "c3e018b904c190837625a492eca1e4d742e9370745bc7a1980cfd31690800b83",
-    "bytes": 17870384,
-    "lines": 6911,
-    "gzip_bytes": 3260472,
-    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/c3e018b904c190837625a492eca1e4d742e9370745bc7a1980cfd31690800b83.jsonl.gz"
+    "sha256": "8888778ec72cdbb5ed578cb8637619fe569c749bf46950e83399cee3cf79a928",
+    "bytes": 19067747,
+    "lines": 7303,
+    "gzip_bytes": 3531810,
+    "path": "llm-dlc/traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/logs/8888778ec72cdbb5ed578cb8637619fe569c749bf46950e83399cee3cf79a928.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -319,6 +334,14 @@
       "summary": "Give Bitwuzla the own checker's word-level terms, and queue the word-level solver comparison (Phase 6c, part 2; verification pending)",
       "body": "The solver interface (lib/src/bmc/sat.rs) gains Terms: a solver may take the formula as terms. Over such a solver the encoding (bits.rs) builds no circuits. Each gate is defined to it as a Boolean term. Each addition, subtraction, multiplication, signed division and remainder, comparison, symbolic shift, bitwise operation of two non-constant values and ite of two values is one word-level operation. Constants and a few identities still fold, and nothing is left to lazy refinement. A path's model is still evaluated by the engine, with each word-level operation computed from its operands' values. JVMCONTRACT_SOLVER=bitwuzla-words[:options] (bitwuzla.rs) makes each operation one Bitwuzla bit-vector term, with extracts for its bits, and reads runs of a term's bits back as the term. Arrays stay bounded cells read and written through ites (no array theory), and such a check refuses a transcript, since there are no clauses to record. The outcome and --json stats gain word_operations, which is left out when zero, so CaDiCaL's output is unchanged. lib/solvers/compare.py --words runs the five workloads' full checks on cadical, bitwuzla-words and bitwuzla-words:preprocess=0, and writes word-level.json and .md.\n\nVerified inline. The blaster's int and long arithmetic tests now also run on bitwuzla-words, and the model's values match the engine's own evaluation. The Bitwuzla engine test covers the word-level solver: the same verdicts, a real violating input, and the refused transcript. The engine's unit tests with the word-level solver chosen: 46 of 51 pass. Four fail by design (they pin lazy refinement or the clauses and transcripts). One JBMC test failed once and passes alone. Unit (162), integration (64) and skill pass. Conformance fails only its two known tests: the 12 library-record claims, and the benchmark file. One inline run each, indicative only: reverse took 0.12 s on words against 0.18 s on CaDiCaL, prefix sums 0.06 s against 0.05 s, and 141 2.35 s on words. All verified.",
       "log_sha256": "c3e018b904c190837625a492eca1e4d742e9370745bc7a1980cfd31690800b83"
+    },
+    {
+      "change_id": "tpytwvmvtzwppxkrlywkktwttyrxxnyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Recommend against moving the own checker to word-level solving, from the two solver comparisons (Phase 6d)",
+      "body": "Jobs 20261106-224616 (bit-blasted, at 09739e6) and 20261106-230455 (word-level, at bbb3062) both passed on vm-1: every check of the five workloads where the formula's size dominates (binary search, examples 141 and 142, reverse, prefix sums) is verified on every solver, with the same paths and merges, and no replay contradicts its recording. Given the engine's own clauses, Bitwuzla 0.8.2 is 2 to 43 times slower than the bundled CaDiCaL 1.9.5 with its defaults and 1.7 to 14 times with preprocess=0. Given word-level terms with preprocess=0, it is 1.93x faster on binary search, 1.66x on reverse, 1.31x on 142 and level on 141 and prefix sums; with its default preprocessing, 141 and 142 are slower than CaDiCaL.\n\nlib/solvers/README.md (new) is Phase 6d's written case: keep CaDiCaL and bit-blasting as the default, and keep bitwuzla-words as an opt-in prototype. The solver alone gains nothing, terms gain under 2x and only with a default turned off, no case moves from undecided to decided, and a migration would cost the clause transcripts and the bundled solver while the array theory that would make it architectural is unbuilt. It says what would reopen the question (a slow check where solving dominates, such as nonlinear arithmetic or long arrays) and the evidence's limits, among them that Bitwuzla's CaDiCaL 2.1.2 against the engine's 1.9.5 isn't separated. No default changes. lib/README.md (shared) gains one sentence pointing at it.\n\nAlso fixed: both jobs' tables say 'at ?' for the commit, since the runner's exported tree has no git; compare.py now takes VERIFY_SOURCE_COMMIT first (a new test). The recorded tables stand. Verified: the script's 5 tests and the skill test pass, the page's relative links resolve, and every figure on it was recomputed from the jobs' JSON; no Rust changed. The brief's Progress records both results and sets the status to done: all of 1c, 4b, 5 and 6 are done, apart from Phase 5's last criterion (071's two proofs under strict), whose fix is in jbmc_gaps.rs, the JBMC stream's file, and is listed for the reconcile loop with the other items it inherits.",
+      "log_sha256": "8888778ec72cdbb5ed578cb8637619fe569c749bf46950e83399cee3cf79a928"
     }
   ],
   "logs": {
@@ -356,6 +379,12 @@
       "bytes": 3206837,
       "lines": 1118,
       "gzip_bytes": 653728,
+      "url": null
+    },
+    "8888778ec72cdbb5ed578cb8637619fe569c749bf46950e83399cee3cf79a928": {
+      "bytes": 19067747,
+      "lines": 7303,
+      "gzip_bytes": 3531810,
       "url": null
     },
     "a1ad840061a3ae521eaa6e3b64061c8d56c6c8ecf831cb3c07c6ce18851245c2": {

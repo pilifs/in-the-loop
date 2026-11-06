@@ -27,6 +27,8 @@ and Bitwuzla bit-blasts what its rewriting leaves. Arrays stay the engine's boun
 `compare.py --words` runs the same full checks on CaDiCaL and on it, with and without `preprocess`, and writes
 `word-level.json` and `word-level.md`.
 
+What the two comparisons found, and the recommendation drawn from them, are in [`../README.md`](../README.md).
+
 [`build.sh`](build.sh) builds a pinned release from source as a verification pipeline job, since it fetches from the
 network and takes minutes:
 
