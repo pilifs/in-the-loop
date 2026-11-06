@@ -895,9 +895,10 @@ def main(argv=None):
     parser.add_argument("--engines", default=",".join(ENGINES))
     parser.add_argument("--modes", default=",".join(MODES))
     parser.add_argument("--groups", default="1,2,3,4")
-    parser.add_argument("--jbmc-staging", default=STAGING[0],
+    parser.add_argument("--jbmc-staging", default="full-range",
                         help="JBMC's staging policies to run jbmc and auto under, comma-separated (staged, full-range, tight); "
-                             "the corpus's tables are over the first, and the others are compared with it")
+                             "the corpus's tables are over the first, and the others are compared with it. By default the "
+                             "tool's own default, full-range, since job 20261106-201041")
     parser.add_argument("--cases", help="only the cases whose id contains this")
     parser.add_argument("--timeout", type=int, default=120, help="seconds each run may take, on either engine")
     parser.add_argument("--search", type=int, default=200000, help="random inputs the JVM tries on each expected proof")

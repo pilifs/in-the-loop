@@ -88,8 +88,8 @@ pub struct Options {
     pub refine_strings: bool,
     /// The SAT solver to ask JBMC for ([`crate::jbmc::JbmcRun::sat_solver`]); CaDiCaL by default.
     pub sat_solver: Option<String>,
-    /// Which of JBMC's interval stages run before the full range ([`crate::deadline::Staging`]); today's staged
-    /// search by default. The own checker's stages and `--confirm`'s one run do not follow it.
+    /// Which of JBMC's interval stages run before the full range ([`crate::deadline::Staging`]); the full range
+    /// alone by default. The own checker's stages and `--confirm`'s one run do not follow it.
     pub jbmc_staging: crate::deadline::Staging,
     /// Which checker proves the harness: JBMC (the default), the tool's own ([`crate::bmc`]), or the tool's own
     /// where the harness is within its fragment and JBMC elsewhere.
@@ -143,7 +143,7 @@ impl Options {
             models: true,
             refine_strings: false,
             sat_solver: Some("cadical".into()),
-            jbmc_staging: crate::deadline::Staging::Staged,
+            jbmc_staging: crate::deadline::Staging::FullRange,
             engine: crate::Engine::Jbmc,
             gaps: crate::bmc::gaps::GapMode::Strict,
             contracts: None,

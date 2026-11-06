@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T19:15:04.048Z",
-  "ended": "2026-11-06T22:47:15.556Z",
-  "duration_seconds": 12732,
+  "ended": "2026-11-06T22:56:08.020Z",
+  "duration_seconds": 13264,
   "stats": {
-    "turns": 39,
-    "api_calls": 387,
-    "tool_calls": 385,
+    "turns": 44,
+    "api_calls": 419,
+    "tool_calls": 417,
     "tool_errors": 6,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 231367,
     "usage": {
-      "input_tokens": 772,
-      "output_tokens": 328980,
-      "cache_read_input_tokens": 44047600,
-      "cache_creation_input_tokens": 1080661
+      "input_tokens": 836,
+      "output_tokens": 349215,
+      "cache_read_input_tokens": 47284921,
+      "cache_creation_input_tokens": 1198641
     }
   },
   "tools": {
-    "Bash": 371,
+    "Bash": 400,
     "Edit": 8,
-    "Read": 4,
+    "Read": 7,
     "Write": 2
   },
   "files_touched": [
@@ -144,24 +144,38 @@
     {
       "index": 7,
       "started": "2026-11-06T20:44:01.503Z",
-      "ended": "2026-11-06T22:47:15.556Z",
-      "turns": 5,
-      "api_calls": 62,
+      "ended": "2026-11-06T22:47:46.370Z",
+      "turns": 6,
+      "api_calls": 65,
       "usage": {
-        "input_tokens": 124,
-        "output_tokens": 44180,
-        "cache_read_input_tokens": 7261439,
-        "cache_creation_input_tokens": 188000
+        "input_tokens": 130,
+        "output_tokens": 46292,
+        "cache_read_input_tokens": 7784286,
+        "cache_creation_input_tokens": 193854
       },
-      "peak_context_tokens": 172424
+      "peak_context_tokens": 178278
+    },
+    {
+      "index": 8,
+      "started": "2026-11-06T22:48:29.963Z",
+      "ended": "2026-11-06T22:56:08.020Z",
+      "turns": 4,
+      "api_calls": 29,
+      "usage": {
+        "input_tokens": 58,
+        "output_tokens": 18123,
+        "cache_read_input_tokens": 2714474,
+        "cache_creation_input_tokens": 112126
+      },
+      "peak_context_tokens": 125205
     }
   ],
   "log": {
-    "sha256": "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351",
-    "bytes": 9953547,
-    "lines": 4005,
-    "gzip_bytes": 1760778,
-    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351.jsonl.gz"
+    "sha256": "8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567",
+    "bytes": 11104483,
+    "lines": 4383,
+    "gzip_bytes": 1992167,
+    "path": "llm-dlc/traces/7b8a1d3b-6fbf-40ab-b647-1f9fc12bc573/logs/8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -236,6 +250,14 @@
       "summary": "JBMC right-shifts by the whole distance: the preflight names an unmasked shift and refuses a JBMC proof through one",
       "body": "Found while reading step 2b's benchmark job 20261106-201041 (passed) for 2c: the one case whose class differed between JBMC's staging policies, conformance/shiftRight/2, has a counterexample under full-range and tight (x = -2147483648, s = 33) that does not reproduce. JBMC 6.11.0 masks the distance of the left shifts (--show-goto-functions: shl(x, bitand(s, 31))) but not of the right ones (ashr(x, s), lshr), for int and long, so a distance outside 0..31 (0..63) fills the value with its sign or zeros where the JVM shifts by the distance's low bits. It also gave false proofs under strict: x >> s where s == 33, asserting result == 0 || result == -1, was verified by JBMC under both policies, while the JVM gives shiftRight(4, 33) == 2; likewise x >>> s == 0 where s == 32. The own checker refutes both.\n\nlib/src/jbmc_gaps.rs gains a third Defect, unmasked-shift: a right shift whose distance is not a constant within the width, nor its bitwise and with one, computed by instructions no branch joins. As with step 3's two, a JBMC proof that reaches one is refused under every --gaps mode and a counterexample is still replayed, its message naming the defect. The rule is broad (conformance/shiftRight/1, a correct JBMC proof under x == -1, is now refused; auto proves it on the own checker); constant distances are untouched. In the apps only Quorum's Backoff has a variable right shift, and its JBMC examples (016, 019) are violations.\n\nVerified: the preflight's fixture test (renamed the_preflight_names_where_jbmc_runs_the_bytecode_otherwise_than_the_jvm) covers 3 new defects and 3 neighbours (s & 31, >> 1, <<) and fails with the detection disabled. The corpus gains conformance/shiftRight/3 and shiftUnsigned/3, the two false proofs, which agree with the JVM on the own checker; lib/benchmark/conformance.json is regenerated (98 claims). On the real JBMC both are now refused naming the defect, and auto gives the violation. Lib 157, integration 63, skill, test_run.py and test_gap_table.py pass; conformance fails only on its 12 known JDK 25.0.5 disagreements. A draft upstream report for this cause is in lib/tests/fixtures/jbmc-defects/README.md, its reproducer checked on JBMC and the JVM; not filed.\n\nShared files changed, added to: lib/tests/conformance.rs (two claims and a call), lib/README.md (a sentence). Progress also records the three collected jobs: -201041 passed (2c next); -203452 failed in its integration step (a JBMC timeout on Pricing#total) and under auto --confirm; -204220 (4a) failed because the examples' result schema does not allow 1b's stated.checker.sat, to fix and resubmit.",
       "log_sha256": "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351"
+    },
+    {
+      "change_id": "wvkxpmzxuuntzmkqzuywovxpvmvypzqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC searches the full range alone by default, on benchmark job 20261106-201041's evidence",
+      "body": "Step 2c of engine-priorities.md. Job 20261106-201041 ran the corpus under JBMC's three staging policies. Under strict, JBMC's proofs were the same 54 of 65 under each, in 654 s under staged, 575 s under full-range and 588 s under tight; the hard ones took half the time without the stages (bounded binary search 26 s against 56 s, example 141 31 s against 61 s). Counterexamples took 9 s against 27 s, no shrunk witness was larger, and no run under full-range was starved. Under auto the policies gave the same verdicts. The one case whose class changed, conformance/shiftRight/2, is JBMC's unmasked right shift (the previous commit), which staged's witness happened to miss; it is not a worse verdict of the policy, and is now the one case where --engine jbmc answers unverifiable where it gave a violation (the own checker and auto decide it).\n\nSo full-range is now the default of --jbmc-staging on prove and equivalence, of Options::new in property.rs and equivalence.rs, and of lib/benchmark/run.py. deadline.rs's module comment records the evidence. The own checker keeps its stages, as decided, and --confirm already ran the full range. lib/README.md and lib/benchmark/README.md describe the new default with the job's figures.",
+      "log_sha256": "8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567"
     }
   ],
   "logs": {
@@ -273,6 +295,12 @@
       "bytes": 8367595,
       "lines": 3333,
       "gzip_bytes": 1501372,
+      "url": null
+    },
+    "8e04dd7ef0608845780c338a5d04322d48f1d0c488603ae863bbe009b1e3d567": {
+      "bytes": 11104483,
+      "lines": 4383,
+      "gzip_bytes": 1992167,
       "url": null
     },
     "d80c23250559f8b5e1d130c9405edf9229e1bd9bddc738417fc4b19103ac7351": {

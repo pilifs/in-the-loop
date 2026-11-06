@@ -988,6 +988,8 @@ fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
         let mut options = property::Options::new(std::slice::from_ref(&compiled.classes), &format!("{CLASS}#{method}"));
         options.assert = Some(assert.to_string());
         options.engine = Engine::Jbmc;
+        // The stages are `staged`'s; the default policy runs the full range alone since job 20261106-201041.
+        options.jbmc_staging = jvmcontract::deadline::Staging::Staged;
         options.timeout_seconds = timeout;
         options.jbmc = jbmc.display().to_string();
         let work = target_tmp().join(format!("stages-{name}"));

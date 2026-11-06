@@ -133,6 +133,20 @@ and how many runs left without a verdict gave the full range under a second or n
 `staged` stages out of time can take the whole fallback). Its case-by-case tables, under strict, give each policy's
 verdict and time and each witness.
 
+**The default, from job `20261106-201041` (step 2c): `full-range`.** That job ran the corpus under all three. Under
+strict, JBMC's proofs were the same 54 of 65 under each policy, in 654 s under `staged`, 575 s under `full-range` and
+588 s under `tight` (medians 0.26, 0.15 and 0.20 s); the hard ones took half the time without the stages (the bounded
+binary search 26 s against 56 s, example 141 31 s against 61 s, checksum's fix-confined 7 s against 18 s). Its
+counterexamples took 9 s against 27 s, and no shrunk witness was larger, though the witnesses found over every input
+were (up to `Long.MAX_VALUE`) and took more interpreter runs to shrink (190 on `remainderLong/2`, where `staged` took
+49), still in less time. No run under `full-range` was starved; under `staged` and `tight`, three were, all without a
+verdict for other reasons. The one case whose class changed,
+`conformance/shiftRight/2` (a violation under `staged`, witness not reproduced under the others, in every mode), is
+JBMC's unmasked right shift, a defect `staged`'s witness happened to miss
+([`../tests/fixtures/jbmc-defects/README.md`](../tests/fixtures/jbmc-defects/README.md)). Under `auto` the policies
+gave the same verdicts. So `full-range` became the default of `--jbmc-staging` for ordinary checks and `auto`'s
+fallback, and of the runner's own `--jbmc-staging`; the own checker keeps its stages.
+
 A witness is measured as reported, after [`../src/shrink.rs`](../src/shrink.rs) shrank it in the interpreter
 (`witnessSize`), and, when shrinking changed it, as the engine found it (`foundSize`, with `shrinkRuns`): the elements
 of its arrays and the largest magnitude among its values. A larger witness is one with more elements or a larger

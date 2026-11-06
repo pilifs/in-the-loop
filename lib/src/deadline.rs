@@ -21,10 +21,17 @@
 //! once.
 //!
 //! Which of those stages JBMC runs is its [`Staging`] policy (`--jbmc-staging`, step 2a of
-//! `llm-dlc/loops/engine-priorities.md`): all of them, as above (`staged`, the default); the full range alone
-//! (`full-range`), whose counterexample the shrinker makes small instead; or the first alone, on
-//! [`TIGHT_SHARE`], then the full range (`tight`). The deadline, the bounds, the models and what a verdict needs
-//! are the same under each: only the last stage proves, and a preliminary stage out of its budget hands on.
+//! `llm-dlc/loops/engine-priorities.md`): all of them, as above (`staged`); the full range alone (`full-range`,
+//! the default), whose counterexample the shrinker makes small instead; or the first alone, on [`TIGHT_SHARE`],
+//! then the full range (`tight`). The deadline, the bounds, the models and what a verdict needs are the same under
+//! each: only the last stage proves, and a preliminary stage out of its budget hands on.
+//!
+//! `full-range` is the default on the evidence of benchmark job `20261106-201041` (step 2c): over the corpus it
+//! gave every proof `staged` gave, in less time (575 s against 654 s under strict, and half the time on the hard
+//! ones: 26 s against 56 s on the bounded binary search, 31 s against 61 s on example 141), found its
+//! counterexamples in a third of the time (9 s against 27 s), left no fallback under `--engine auto` without time
+//! for the full range, and its witnesses, shrunk, were no larger. The one case it lost, `conformance/shiftRight/2`,
+//! is JBMC's unmasked right shift ([`crate::jbmc_gaps`]), which `staged`'s witness happened to miss.
 
 use std::time::{Duration, Instant};
 
@@ -51,9 +58,10 @@ pub const TIGHT_SHARE: f64 = 0.025;
 #[serde(rename_all = "kebab-case")]
 pub enum Staging {
     /// Every stage of [`STAGES`] that leaves out an input, each on at most [`STAGE_SHARE`], then the full range.
-    #[default]
     Staged,
-    /// The full range alone: a counterexample is made small by the shrinker, not by a narrower search first.
+    /// The full range alone: a counterexample is made small by the shrinker, not by a narrower search first. The
+    /// default since job `20261106-201041` (the module's comment says why).
+    #[default]
     FullRange,
     /// The first stage that leaves out an input, on at most [`TIGHT_SHARE`], then the full range.
     Tight,
@@ -293,7 +301,7 @@ mod tests {
             assert_eq!(staging.stages(&[Type::Long, Type::Char]).last(), Some(&None), "{staging}: the full range is last");
             assert_eq!(staging.to_string().parse::<Staging>().unwrap(), staging);
         }
-        assert_eq!(Staging::default(), Staging::Staged, "today's search, until a job decides otherwise");
+        assert_eq!(Staging::default(), Staging::FullRange, "decided by job 20261106-201041");
         assert!("full".parse::<Staging>().unwrap_err().to_string().contains("staged, full-range, tight"));
         assert_eq!(serde_json::to_value(Staging::FullRange).unwrap(), "full-range");
     }

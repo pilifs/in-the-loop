@@ -314,11 +314,11 @@ struct EquivalenceArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
-    /// Which of JBMC's interval stages run before its run over every input: `staged` (the default: `[0:20]`, then
-    /// `[-100000:100000]`, each on at most an eighth of the check, where they leave out an input), `full-range`
-    /// (that run alone, its counterexample shrunk in the interpreter), or `tight` (`[0:20]` on at most a fortieth
-    /// of the check, then that run). The own checker's stages and `--confirm` do not follow it.
-    #[arg(long, default_value = "staged")]
+    /// Which of JBMC's interval stages run before its run over every input: `full-range` (the default: that run
+    /// alone, its counterexample shrunk in the interpreter), `staged` (`[0:20]`, then `[-100000:100000]`, each on at
+    /// most an eighth of the check, where they leave out an input), or `tight` (`[0:20]` on at most a fortieth of
+    /// the check, then that run). The own checker's stages and `--confirm` do not follow it.
+    #[arg(long, default_value = "full-range")]
     jbmc_staging: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
     /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own
@@ -434,11 +434,11 @@ struct ProveArgs {
     /// named is run again with its default.
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
-    /// Which of JBMC's interval stages run before its run over every input: `staged` (the default: `[0:20]`, then
-    /// `[-100000:100000]`, each on at most an eighth of the check, where they leave out an input), `full-range`
-    /// (that run alone, its counterexample shrunk in the interpreter), or `tight` (`[0:20]` on at most a fortieth
-    /// of the check, then that run). The own checker's stages and `--confirm` do not follow it.
-    #[arg(long, default_value = "staged")]
+    /// Which of JBMC's interval stages run before its run over every input: `full-range` (the default: that run
+    /// alone, its counterexample shrunk in the interpreter), `staged` (`[0:20]`, then `[-100000:100000]`, each on at
+    /// most an eighth of the check, where they leave out an input), or `tight` (`[0:20]` on at most a fortieth of
+    /// the check, then that run). The own checker's stages and `--confirm` do not follow it.
+    #[arg(long, default_value = "full-range")]
     jbmc_staging: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
     /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own

@@ -142,7 +142,7 @@ Progress, so the reconcile loop knows where to look.
     - `lib/src/statement.rs`: `staging: None` in a test's `Search`;
     - `lib/tests/conformance.rs`: the helper `staged_jbmc` and the test above;
     - `lib/README.md`: the option and `search.staging`.
-- **2b, the benchmark job: submitted, `20261106-201041` (pending).**
+- **2b, the benchmark job: done, `20261106-201041` (passed; 2c and the third defect below read it).**
   - `lib/benchmark/run.py --jbmc-staging staged,full-range,tight` makes every run of `jbmc` once per policy, and of
     `auto` once under the first, then again under the others only where its own checker gave no verdict and JBMC's
     fallback ran. That gives 2c the `auto` fallback's evidence too, and the 2a note's question (a `staged`
@@ -274,8 +274,32 @@ Progress, so the reconcile loop knows where to look.
   - **Shared files changed:**
     - `lib/tests/conformance.rs`: two claims and a call, appended to `shiftRight` and `shiftUnsigned`;
     - `lib/README.md`: a sentence on `unmasked-shift`.
+- **2c, JBMC's default: `full-range`, from job `20261106-201041`.**
+  - Under strict, JBMC's proofs were the same 54 of 65 under each policy: 654 s `staged`, 575 s `full-range`, 588 s
+    `tight` (medians 0.26, 0.15, 0.20 s). The hard ones took half the time: binary search 26 s against 56 s, 141
+    31 s against 61 s, checksum fix-confined 7 s against 18 s. Counterexamples: 9 s against 27 s. Assume and advised
+    read the same.
+  - No shrunk witness was larger under any policy. Found over every input, witnesses were larger (up to
+    `Long.MAX_VALUE`) and took more interpreter runs to shrink, still in less time.
+  - Starved: none under `full-range`; three under `staged` and `tight` (`caught/1`, `nestedHandler/1`,
+    `pairsEqual/1`), each without a verdict for another reason. `auto`'s fallback gave the same verdicts under every
+    policy, so 2a's concern didn't cost a verdict in this corpus; `full-range` removes it.
+  - The one case that changed class, `conformance/shiftRight/2`, is the unmasked-shift defect (3, above): `staged`'s
+    witness `-1;33` happened to give the same result on JBMC and the JVM. Judged not a worse verdict of the policy.
+    It is the one place `--engine jbmc` now answers unverifiable where it gave a violation; the own checker and
+    `auto` decide it.
+  - Changed: `Staging`'s default in `deadline.rs` (with the evidence in its module comment and the unit test), both
+    commands' `--jbmc-staging` default, `Options` in `property.rs` and `equivalence.rs`, and `run.py`'s default.
+    `--confirm` already ran the full range; the own checker keeps its stages.
+  - Tests: lib 157 and integration 63 pass. Three integration tests asserted JBMC's `[0:20]` stage; they now assert
+    the full range, with the same shrunk witnesses (`roundedHalf(n=2)`, `remainingMillis(0, 1, 0)`). The stand-in
+    JBMC test of `staged`'s stages sets `staged` explicitly. Conformance fails only on the 12 known disagreements.
+    `test_run.py` passes.
+  - Docs: `lib/README.md` step 4 and the option, `lib/benchmark/README.md` (a paragraph with the figures).
+  - Shared files changed: `lib/src/main.rs` (the two defaults), `property.rs` and `equivalence.rs` (the default in
+    `Options::new` and its comment), `lib/tests/integration.rs` (three assertions), `lib/tests/conformance.rs` (one
+    line in `jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline`), `lib/README.md`.
 - **Next:**
-  - 2c from `-201041` (collected, passed).
   - Triage 3's job `-203452`, which failed two steps:
     - integration: `the_tools_own_checker_agrees_with_jbmc_on_integer_proofs`, where JBMC timed out on
       `fixtures.Pricing#total` (it passes inline);

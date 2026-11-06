@@ -352,7 +352,8 @@ fn a_rounding_refactor_is_refuted_with_a_replayed_counterexample() {
     let search = outcome.search.expect("the checker run");
     assert_eq!((search.engine.as_str(), search.unwind, search.native.is_none()), ("jbmc", 16, true));
     assert!(search.checker.starts_with("JBMC"), "{}", search.checker);
-    assert!(search.stage.is_some(), "a small witness is found in a bounded range first");
+    // JBMC searches every input at once, its default since job 20261106-201041; the shrinker makes the witness small.
+    assert!(search.stage.is_none(), "{search:?}");
     let replay = outcome.replay.expect("the witness's replay");
     assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
     assert_eq!((json["replay"]["by"].as_str(), json["search"]["engine"].as_str()), (Some("interpreter"), Some("jbmc")), "{json}");
@@ -621,8 +622,9 @@ fn a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_th
     assert_eq!((c.before.as_str(), c.after.as_str()), ("false", "0"), "{}", outcome.output);
     assert!(outcome.output.contains("✗ fixtures.Expiry#remainingMillis differs from the previous isExpired(writtenAtNanos, ttlNanos, nowNanos) outside the intended inputs"), "{}", outcome.output);
     assert!(outcome.output.contains("\n    the results are not related by previous == (result <= 0)\n"), "{}", outcome.output);
-    assert!(outcome.output.contains(" searching inputs in [0:20]"), "{}", outcome.output);
-    // The tool's own checker looks in the same stages, so it reports the same input without the shrinker's help.
+    // JBMC searches every input at once (its default since job 20261106-201041), and its witness is shrunk to this one.
+    assert!(!outcome.output.contains(" searching inputs in "), "{}", outcome.output);
+    // The tool's own checker looks in its stages, so it reports the same input without the shrinker's help.
     let mut options = equivalence::Options::new(&before, &after, "fixtures.Expiry#remainingMillis");
     options.before_target = Some("fixtures.Expiry#isExpired".into());
     options.results_agree_when = Some("previous == (result <= 0)".into());
@@ -886,7 +888,8 @@ fn a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness() {
     // The witness was replayed in the interpreter, where the property fails on it too.
     let replay = refuted.replay.as_ref().unwrap();
     assert_eq!((replay.by.as_str(), replay.reproduced), ("interpreter", true));
-    assert_eq!(refuted.search.as_ref().unwrap().stage.as_deref(), Some("[0:20]"), "{}", refuted.output);
+    // Found over every input, JBMC's default since job 20261106-201041, and shrunk to the smallest above.
+    assert_eq!(refuted.search.as_ref().unwrap().stage.as_deref(), None, "{}", refuted.output);
     assert!(std::fs::read_to_string(refuted.work.join("report/property.sarif")).unwrap().contains("property-violated"));
 
     // Without the assumption, the exception on n <= 0 violates the property.
