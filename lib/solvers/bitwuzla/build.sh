@@ -62,12 +62,16 @@ log "meson $MESON_VERSION, ninja $NINJA_VERSION"
 # Configure, build, and install into a staging directory that is then moved into place, so a failed build leaves no
 # half install. meson is called directly rather than through configure.py, whose options change between releases:
 # a release build, the library shared (for the C API), the subprojects (CaDiCaL, SymFPU) fetched by their wrap files.
+# CaDiCaL is built static, as its own meson file defaults to, and linked into Bitwuzla's libraries: the project-wide
+# shared default otherwise reaches it, and meson doesn't install a subproject's library, so the binary couldn't load
+# libcadical.so (job 20261106-192008).
 DEST=$PREFIX_ROOT/bitwuzla-$VERSION
 STAGE=$PREFIX_ROOT/.bitwuzla-$VERSION.partial
 mkdir -p "$PREFIX_ROOT"
 rm -rf "${STAGE:?}"
 cd "$WORK/src"
-SETUP=(meson setup build --buildtype=release --prefix "$DEST" -Ddefault_library=shared --wrap-mode=default)
+SETUP=(meson setup build --buildtype=release --prefix "$DEST" -Ddefault_library=shared -Dcadical:default_library=static
+  --wrap-mode=default)
 log "configure: ${SETUP[*]}"
 "${SETUP[@]}"
 cd build
@@ -83,6 +87,12 @@ BIN=$DEST/bin/bitwuzla
 # Meson drops the build's rpath on install, so the library's directory goes on LD_LIBRARY_PATH (recorded as libDir).
 LIB_DIR=$(dirname "$(find "$DEST" -name 'libbitwuzla.so*' -print -quit)")
 export LD_LIBRARY_PATH=$LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+MISSING=$(ldd "$BIN" | grep 'not found' || true)
+if [[ -n $MISSING ]]; then
+  log "the installed binary can't load these libraries:"
+  printf '%s\n' "$MISSING"
+  exit 1
+fi
 BIN_VERSION=$("$BIN" --version)
 log "bitwuzla --version: $BIN_VERSION"
 

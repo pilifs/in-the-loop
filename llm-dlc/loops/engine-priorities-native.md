@@ -67,11 +67,22 @@ are yours, but say under Progress which JBMC results they may change.
 
 ## Progress
 
-- **1c, queued.** Job `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` builds Bitwuzla 0.8.2 from source
-  with `lib/solvers/bitwuzla/build.sh`. It installs into `~/tools/bitwuzla/bitwuzla-0.8.2` and brings back
-  `lib/solvers/bitwuzla/build.json`: the commit, the tarball digest, the CaDiCaL it links, smoke answers and the C API
-  version. It fetches from the network, and says so. The runner is x86_64, not the ARM64 the brief names. If the tag
-  is missing, the job lists the latest tags and exits 3: resubmit pinned to one. Phase 6c's job waits on this one.
+- **1c, resubmitted.**
+  - **The first job failed.** Job `20261106-192008-bitwuzla-0-8-2-built-from-source-for-the` ran
+    `lib/solvers/bitwuzla/build.sh 0.8.2` on vm-1 (x86_64; 23.7 s at 8 jobs, peak 1.9 GiB). The fetch, the build and
+    the install into `~/tools/bitwuzla/bitwuzla-0.8.2` worked. Then the binary exited 127 on `libcadical.so`: the
+    project-wide `-Ddefault_library=shared` reached the CaDiCaL subproject, and meson doesn't install a subproject's
+    library. `build.json` wasn't written.
+  - **The fix.** `build.sh` now passes `-Dcadical:default_library=static`, CaDiCaL's own default, so CaDiCaL is
+    linked into Bitwuzla's shared libraries. A configure-only meson run on the failed job's tree showed the `cadical`
+    target static and Bitwuzla's four libraries shared. The script also fails, naming the libraries, if `ldd` still
+    finds one missing.
+  - **The CaDiCaL inside it is 2.1.2** (Bitwuzla 0.8.2's wrap), not the engine's 1.9.5. 6c has to keep the two
+    apart.
+  - **Resubmitted** as job `20261106-194049-bitwuzla-0-8-2-built-from-source-cadical`. It brings back
+    `lib/solvers/bitwuzla/build.json`: the commit, the tarball digest, the CaDiCaL it links, smoke answers and the C
+    API version. It fetches from the network, and says so. The runner is x86_64, not the ARM64 the brief names.
+    Phase 6c waits on this job.
 - **4b, counted** (static, inline, JDK 25.0.5).
   - **The tool.** `jvmcontract gaps` now gives each `class-initializer` gap's `<clinit>` a shape (`initializer_shape` in
     `lib/src/bmc/gaps.rs`), read from the initializer's bytecode and the application methods it calls. The shapes are
