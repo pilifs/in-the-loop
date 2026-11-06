@@ -157,6 +157,8 @@ pub struct Blaster {
     lazy: Vec<Lazy>,
     divisions: HashMap<(Bits, Bits), usize>,
     products: HashMap<(Bits, Bits), usize>,
+    /// How many functional-consistency lemmas have been added ([`Blaster::inconsistent_pair`]).
+    pub congruences: u64,
     /// How many clauses have been added, for reporting.
     pub clauses: u64,
     /// How many times the solver was asked, for reporting, and the time it took.
@@ -211,7 +213,7 @@ impl Default for Blaster {
 
 impl Blaster {
     pub fn new() -> Blaster {
-        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost() };
+        let mut b = Blaster { solver: cadical::Solver::new(), next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost() };
         b.clause(&[TRUE]);
         b
     }
@@ -719,6 +721,57 @@ impl Blaster {
         }).map(|(i, _)| i)
     }
 
+    /// Two operations left to the solver that the last model gives the same operands but different results: a
+    /// division and a division, or a product and a product (its operands in either order), of one width. Each is a
+    /// function of its operands, but they are separate bits unless their operand *terms* are the same, so the
+    /// solver may answer `hash % b` and `(hash & 0x7fffffff) % b` differently where `hash` is not negative. Such a
+    /// model is not real whichever of the two is right; [`Blaster::add_congruence`] rules it out with a clause,
+    /// which is cheaper than building both circuits and having the solver prove two dividers equivalent.
+    pub fn inconsistent_pair(&self) -> Option<(usize, usize, bool)> {
+        let values: Vec<(i64, i64, i64, i64)> = self.lazy.iter().map(|l| {
+            let r = if l.r.is_empty() { 0 } else { self.eval(&l.r) };
+            (self.eval(&l.a), self.eval(&l.b), self.eval(&l.q), r)
+        }).collect();
+        for j in 0..self.lazy.len() {
+            for i in 0..j {
+                let (x, y) = (&self.lazy[i], &self.lazy[j]);
+                if x.op != y.op || x.a.len() != y.a.len() || (x.refined && y.refined) {
+                    continue;
+                }
+                let (vx, vy) = (values[i], values[j]);
+                if (vx.2, vx.3) == (vy.2, vy.3) {
+                    continue;
+                }
+                if (vx.0, vx.1) == (vy.0, vy.1) {
+                    return Some((i, j, false));
+                }
+                if x.op == Op::Mul && (vx.0, vx.1) == (vy.1, vy.0) {
+                    return Some((i, j, true));
+                }
+            }
+        }
+        None
+    }
+
+    /// The lemma for a pair [`Blaster::inconsistent_pair`] found: equal operands give equal results, for every
+    /// value, not only the model's (`swapped`: a product's operands compared crosswise). It holds of the real
+    /// operations, so it rules out no real execution; for a division by zero, whose bits nothing observes since
+    /// the JVM throws first, it only picks equal values for both.
+    pub fn add_congruence(&mut self, i: usize, j: usize, swapped: bool) {
+        self.encoding(|s| {
+            let (x, y) = (&s.lazy[i], &s.lazy[j]);
+            let (xa, xb, ya, yb) = (x.a.clone(), x.b.clone(), y.a.clone(), y.b.clone());
+            let (xq, xr, yq, yr) = (x.q.clone(), x.r.clone(), y.q.clone(), y.r.clone());
+            let (ea, eb) = if swapped { (s.eq_built(&xa, &yb), s.eq_built(&xb, &ya)) } else { (s.eq_built(&xa, &ya), s.eq_built(&xb, &yb)) };
+            let same_operands = s.and(ea, eb);
+            let eq = s.eq_built(&xq, &yq);
+            let er = s.eq_built(&xr, &yr);
+            let same_results = s.and(eq, er);
+            s.clause(&[-same_operands, same_results]);
+        });
+        self.congruences += 1;
+    }
+
     /// Builds the circuit of operation `i` and ties its bits to the ones the solver chooses.
     pub fn refine_operation(&mut self, i: usize) {
         self.encoding(|s| s.refine_operation_built(i))
@@ -1070,6 +1123,45 @@ mod tests {
         let xy = b.xor(x[0], y[0]);
         assert_eq!(b.xor(-x[0], y[0]), -xy, "xor with a negated input is the negated gate");
         assert_eq!(b.xor(-y[0], -x[0]), xy);
+    }
+
+    /// What the engine's solve loop does: lemmas first, then circuits, until the model is real or there is none.
+    fn solve_refined(b: &mut Blaster, assumptions: &[Lit]) -> Option<bool> {
+        loop {
+            match b.solve_with(assumptions) {
+                Some(true) => match (b.inconsistent_pair(), b.wrong_operation()) {
+                    (Some((i, j, swapped)), _) => b.add_congruence(i, j, swapped),
+                    (None, None) => return Some(true),
+                    (None, Some(i)) => b.refine_operation(i),
+                },
+                other => return other,
+            }
+        }
+    }
+
+    #[test]
+    fn equal_operands_give_equal_results_without_building_a_circuit() {
+        // real/bucket/fix-confined: Math.abs(hash) % n and (hash & 0x7fffffff) % n, for a hash that is not negative.
+        let mut b = Blaster::new();
+        let (hash, n) = (b.fresh(32), b.fresh(32));
+        let mask = b.constant(0x7fff_ffff, 32);
+        let cleared = b.and_bits(&hash, &mask);
+        let (_, r1) = b.sdivrem_lazy(&hash, &n);
+        let (_, r2) = b.sdivrem_lazy(&cleared, &n);
+        assert_ne!(r1, r2, "different operand terms: separate bits");
+        let non_negative = -b.negative(&hash);
+        let differ = -b.eq(&r1, &r2);
+        assert_eq!(solve_refined(&mut b, &[non_negative, differ]), Some(false));
+        assert_eq!(b.divisions(), (2, 0), "no divider was built");
+        assert!(b.congruences >= 1);
+        // For a negative hash the operands differ, and so may the remainders: the lemma leaves that model.
+        assert_eq!(solve_refined(&mut b, &[-non_negative, differ]), Some(true));
+        assert_ne!(b.eval(&r1), b.eval(&r2));
+        // Products are one function of their operands in either order.
+        let (p1, p2) = (b.mul_lazy(&hash, &n), b.mul_lazy(&n, &cleared));
+        let differ = -b.eq(&p1, &p2);
+        assert_eq!(solve_refined(&mut b, &[non_negative, differ]), Some(false));
+        assert_eq!(b.multiplications().1, 0, "no multiplier was built");
     }
 
     #[test]

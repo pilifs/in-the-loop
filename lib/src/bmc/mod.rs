@@ -1037,9 +1037,12 @@ impl<'a> Engine<'a> {
             match self.b.solve_with(assumptions) {
                 None => return Ok(None),
                 Some(false) => return Ok(false).map(Some),
-                Some(true) => match self.b.wrong_operation() {
-                    None => return Ok(Some(true)),
-                    Some(i) => self.b.refine_operation(i),
+                // A model that gives one function of equal operands two values is ruled out by a lemma first, so a
+                // proof that two versions compute one remainder differently builds no divider.
+                Some(true) => match (self.b.inconsistent_pair(), self.b.wrong_operation()) {
+                    (Some((i, j, swapped)), _) => self.b.add_congruence(i, j, swapped),
+                    (None, None) => return Ok(Some(true)),
+                    (None, Some(i)) => self.b.refine_operation(i),
                 },
             }
         }
