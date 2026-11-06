@@ -162,8 +162,64 @@ Progress, so the reconcile loop knows where to look.
   - The job runs `native,jbmc,auto` under all three modes, about 2.5 h estimated. Advised runs may stop on the
     JDK 25.0.5 against the contract records' 25.0.4.1 (1a's note).
   - No shared file changed.
-- **Next:** 3, the two witnesses that don't reproduce (`conformance/caught/1`, `nestedHandler/1`), inline while
-  `-201041` runs; then 4a's job. 2c waits on `-201041`.
+- **3, the witnesses that don't reproduce: cause found, guarded, report drafted; job `20261106-203452` (pending).**
+  - **The cause:** not the models, the trace reading, or the harness. JBMC 6.11.0 lets a runtime exception past the
+    handler that catches it on the JVM, so the exception escapes the method. There are two shapes, found by running
+    JBMC (in milliseconds) on the cases and on variants of them (`lib/tests/fixtures/jbmc-defects/README.md`):
+    - **`return-past-handler`, a JBMC defect.** In `try { return 10 / n; } catch (ArithmeticException e)`, javac ends
+      the handler's range before `ireturn`. JBMC keeps `10 / n` on its operand stack and emits it at the `ireturn`,
+      with the check `--throw-runtime-exceptions` adds, after the `pop_catch` it placed at the range's end
+      (`--show-symbol-table`). The same happens for `irem`, `ldiv`, `lrem`, an array element, a field and
+      `arraylength`. A value stored first, passed to a call, compared, or under `finally` is caught.
+      `caught/1` is this shape.
+    - **`stubbed-handler`, this repository's class path.** JBMC's stub of a JDK class has no superclass, so
+      `catch (RuntimeException e)` misses an `ArithmeticException` or an `IllegalArgumentException`. With the real
+      classes on the class path it catches them, but the real `Throwable` brings a native `fillInStackTrace`.
+      `nestedHandler/1` has both shapes.
+  - **Worse than an unverifiable witness:** both shapes gave false proofs under strict with `--engine jbmc`.
+    `prove caught --assert 'result == 10 / n' --throws 'java.lang.ArithmeticException when n == 0'` was ✓, but
+    `caught(0)` returns -1 on the JVM. The same claim was proved on a `catch (RuntimeException e)` too. The own checker
+    gives a violation on both.
+  - **The guard:** JBMC's preflight (`lib/src/jbmc_gaps.rs`, `Defect`, `Found.defects`) finds both shapes in the
+    bytecode of the functions JBMC reaches.
+    - `return-past-handler` is a handler whose range ends at a value `return`, with an instruction computing that value
+      that may throw what the handler catches.
+    - `stubbed-handler` is a handler of a class JBMC has no class file of, where an exception the program may raise
+      extends it on the JVM but not in JBMC. The exceptions counted are those the instructions instrument, and the
+      throwables the reached code instantiates. It is broad: `catch (RuntimeException e)` next to any field access
+      or virtual call counts, since the null check's exception would escape.
+    - A JBMC proof that reaches a defect is no verdict under every `--gaps` mode, assume included, since no statement
+      could assume it. A counterexample is still replayed (the replay boundary is unchanged). When it doesn't
+      reproduce, `prove`'s message names the defect instead of guessing at a missing method; the notes list it as
+      `jbmc defect:`.
+  - **Tests:** `the_preflight_names_where_jbmc_raises_an_exception_past_its_handler` covers 8 shapes from
+    `p/D.java`: 4 defects and 4 neighbours JBMC runs as the JVM does. It fails with the detection disabled.
+    `a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay` covers `hold`.
+    End to end on the real JBMC:
+    - both false proofs are now refused, under assume too;
+    - `caught/1` and `nestedHandler/1` are unverifiable, naming the defect;
+    - `exactCatch` is a violation, as before.
+  - **Corpus:** `conformance/caught/3` and `caughtAsRuntime/1`, `/2` were added, and `lib/benchmark/conformance.json`
+    regenerated. On the JVM and the own checker they agree; the inline test still fails only on the 12 known
+    disagreements, from the JDK version against the contract records.
+  - **Job `20261106-203452`** runs what needs JBMC: the integration tests, and the ignored conformance tests under
+    `jbmc` and `auto` (strict) and `auto --confirm` (strict and assume).
+  - **Upstream:** a report for cause 1 is drafted in the fixture's README, for the user. It is not filed.
+  - **Shared files changed:**
+    - `lib/src/property.rs`: the unreproduced-witness message takes the preflight's defect first (one call);
+    - `lib/tests/conformance.rs`: three claims;
+    - `lib/tests/conformance/conformance/Conformance.java`: `caughtAsRuntime`, appended;
+    - `lib/README.md`: a paragraph on defects.
+    - `equivalence.rs`'s unreproduced message is unchanged; its notes name the defect.
+  - **For the reconcile loop and the native stream:**
+    - The fix for cause 2 is models of the JDK exception classes with their superclasses, and constructors that keep
+      the message, in `lib/models` (not this stream's). Once they are on JBMC's class path, the `stubbed-handler` rule
+      no longer fires for those classes.
+    - A `GapKind` for defects in `bmc/gaps.rs` could replace the separate `Defect` type, if gaps and defects should
+      read alike in `--json`; today a defect shows only in the problem and the notes.
+    - 4a's job will run with this guard: a recorded JBMC proof refused for a defect is a difference to report.
+- **Next:** 4a's job (strict, both engines, the 41 JBMC examples, `gap_table.py --json`). 2c waits on `-201041`;
+  3's job is `-203452`.
 - Status: working
 
 ## Loop settings

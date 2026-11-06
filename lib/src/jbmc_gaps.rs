@@ -164,6 +164,134 @@ pub struct Found {
     pub functions: usize,
     /// The stubs JBMC reproduces exactly, as calls, with how many functions call each.
     pub exact: BTreeMap<String, usize>,
+    /// Where JBMC runs the bytecode otherwise than the JVM, whatever is on its class path ([`Defect`]).
+    pub defects: Vec<Defect>,
+}
+
+/// A place where JBMC 6.11.0 runs a method's bytecode otherwise than the JVM: not an approximation of a call it has
+/// no bytecode for, which a statement could name as an assumption, but code it has and translates wrongly. Both kinds
+/// let a runtime exception past the handler that catches it on the JVM, so the exception escapes the method (a
+/// counterexample that does not reproduce, or a proof that it throws where the JVM returns). Found from the bytecode
+/// of the functions the harness reaches (`tests/fixtures/jbmc-defects/README.md` has the reproducers):
+///
+/// - `return-past-handler`: a `return` of a value whose computation may throw (an integer division or remainder,
+///   an array element, a field, an array's length, a cast) inside a try block whose handler catches the exception.
+///   javac ends the handler's range before the return instruction; JBMC keeps the value on its operand stack and
+///   computes it, with the check that throws, at the return, after the range has ended.
+/// - `stubbed-handler`: a handler of a JDK class JBMC has no class file of (`catch (RuntimeException e)`), and an
+///   exception of a subclass of it raised in the program (`ArithmeticException` from a division, or an
+///   `IllegalArgumentException` thrown): JBMC's stub of a class has no superclass, so it does not know the
+///   exception's class extends the handler's.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub struct Defect {
+    /// `return-past-handler` or `stubbed-handler`.
+    pub kind: &'static str,
+    /// Where: the instruction that throws, or the handler's method and line.
+    pub site: String,
+    /// What JBMC does there, against what the JVM does.
+    pub what: String,
+}
+
+impl Defect {
+    pub fn line(&self) -> String {
+        format!("{} at {}: {}", self.kind, self.site, self.what)
+    }
+}
+
+/// The runtime exceptions JBMC raises under `--throw-runtime-exceptions` at an instruction, as the JVM does, and
+/// whether it computes the instruction's value where it consumes it rather than at the instruction (an expression
+/// left on its operand stack, not a statement of its own).
+fn raises(insn: &Insn) -> (&'static [&'static str], bool) {
+    use crate::classfile::bytecode::{ArithOp, Kind};
+    const ARITHMETIC: &[&str] = &["java/lang/ArithmeticException"];
+    const ELEMENT: &[&str] = &["java/lang/ArrayIndexOutOfBoundsException", "java/lang/NullPointerException"];
+    const NULL: &[&str] = &["java/lang/NullPointerException"];
+    const CAST: &[&str] = &["java/lang/ClassCastException"];
+    const SIZE: &[&str] = &["java/lang/NegativeArraySizeException"];
+    match insn {
+        Insn::Arith(ArithOp::Div | ArithOp::Rem, Kind::Int | Kind::Long) => (ARITHMETIC, true),
+        Insn::ArrayLoad(_) => (ELEMENT, true),
+        Insn::GetField(_) | Insn::ArrayLength => (NULL, true),
+        Insn::CheckCast(_) => (CAST, true),
+        Insn::ArrayStore(_) => (ELEMENT, false),
+        Insn::PutField(_) | Insn::InvokeVirtual(_) | Insn::InvokeInterface(_) | Insn::AThrow => (NULL, false),
+        Insn::NewArray(_) | Insn::ANewArray(_) | Insn::MultiANewArray(..) => (SIZE, false),
+        _ => (&[], false),
+    }
+}
+
+/// How JBMC's operand stack computes the value an instruction pushes, walked back from where the value is
+/// consumed: `Some(n)`, the values it pops into that expression (a constant or a local is a leaf, `0`; a call or
+/// an allocation is a statement of its own, whose value is a leaf too), or `None` for one the walk does not follow.
+fn operands(class: &crate::classfile::ClassFile, insn: &Insn) -> Option<i32> {
+    use crate::classfile::bytecode::ArithOp;
+    match insn {
+        Insn::Load(..) | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_) | Insn::Ldc(_) | Insn::GetStatic(_) => Some(0),
+        Insn::New(_) | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::MultiANewArray(..) => Some(0),
+        Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => {
+            let member = class.pool.member(*i).ok()?;
+            (MethodDescriptor::parse(&member.descriptor).ok()?.ret != Type::Void).then_some(0)
+        }
+        Insn::Arith(ArithOp::Neg, _) | Insn::Convert(..) | Insn::CheckCast(_) | Insn::InstanceOf(_) | Insn::ArrayLength | Insn::GetField(_) => Some(1),
+        Insn::Arith(..) | Insn::Cmp(_) | Insn::ArrayLoad(_) => Some(2),
+        _ => None,
+    }
+}
+
+/// The `return-past-handler` defects of a method: for each handler whose range ends at a `return` of a value, the
+/// instructions in the range that compute that value and may throw what the handler catches on the JVM.
+fn returns_past_handlers(cp: &ClassPath, owner: &str, name: &str, class: &crate::classfile::ClassFile, code: &crate::classfile::Code, insns: &[(u32, Insn)]) -> Vec<Defect> {
+    let mut out = Vec::new();
+    for handler in &code.exception_table {
+        let Some(end) = insns.iter().position(|(pc, _)| *pc == handler.end_pc as u32) else { continue };
+        if !matches!(insns[end].1, Insn::Return(Some(_))) {
+            continue;
+        }
+        // Back from the return, the instructions whose values make up the one returned, within the range.
+        let mut need = 1;
+        for (pc, insn) in insns[..end].iter().rev() {
+            if *pc < handler.start_pc as u32 || need == 0 {
+                break;
+            }
+            let Some(popped) = operands(class, insn) else { break };
+            let (exceptions, deferred) = raises(insn);
+            if deferred {
+                let caught: Vec<&&str> = exceptions.iter().filter(|e| handler.catch_type.as_deref().is_none_or(|t| cp.is_subtype(e, t))).collect();
+                if let Some(exception) = caught.first() {
+                    let what = match &handler.catch_type {
+                        Some(t) => format!("catch ({})", t.replace('/', ".")),
+                        None => "finally".to_string(),
+                    };
+                    out.push(Defect {
+                        kind: "return-past-handler",
+                        site: Site { class: owner.to_string(), method: name.to_string(), line: code.line_at(*pc) }.display(),
+                        what: format!(
+                            "returns a value that may throw {} inside a try block whose {what} catches it on the JVM; JBMC computes the value at the return, after it leaves the try block, so the exception escapes the method",
+                            exception.replace('/', ".")
+                        ),
+                    });
+                    break;
+                }
+            }
+            need += popped - 1;
+        }
+    }
+    out
+}
+
+/// Whether JBMC knows `class` extends `ancestor`: up the superclasses it has class files of, a stub's being unknown.
+fn jbmc_extends(cp: &ClassPath, class: &str, ancestor: &str) -> bool {
+    let mut current = class.to_string();
+    for _ in 0..64 {
+        if current == ancestor {
+            return true;
+        }
+        match cp.application(&current).ok().flatten().and_then(|c| c.super_class.clone()) {
+            Some(parent) => current = parent,
+            None => return false,
+        }
+    }
+    false
 }
 
 /// The gaps of JBMC's `program` from the function `java::<class>.<method>:...`, with JBMC's class path `jbmc_cp`
@@ -230,6 +358,52 @@ pub fn find(program: &Program, class: &str, method: &str, jbmc_cp: &ClassPath, j
             }
         }
     }
+    // Where JBMC runs the bytecode it has otherwise than the JVM: the handlers each method reached has, and the
+    // exceptions the program may raise, for the handlers of a class JBMC has a stub of.
+    let mut handlers: Vec<(String, Site)> = Vec::new();
+    let mut raised: BTreeSet<String> = BTreeSet::new();
+    for id in reached.iter().filter(|(_, caller)| caller.is_some()).map(|(id, _)| id) {
+        let Some((owner, name, descriptor)) = method_of(id) else { continue };
+        let Some(class) = jbmc_cp.application(&owner).ok().flatten() else { continue };
+        let Some(code) = class.method(&name, &descriptor).and_then(|m| m.code.as_ref()) else { continue };
+        let insns = code.instructions().unwrap_or_default();
+        found.defects.extend(returns_past_handlers(jbmc_cp, &owner, &name, &class, code, &insns));
+        for (_, insn) in &insns {
+            raised.extend(raises(insn).0.iter().map(|e| e.to_string()));
+            if let Insn::New(i) = insn {
+                raised.extend(class.pool.class_name(*i).ok().filter(|c| jbmc_cp.is_subtype(c, "java/lang/Throwable")).map(str::to_string));
+            }
+        }
+        for h in &code.exception_table {
+            if let Some(t) = &h.catch_type {
+                handlers.push((t.clone(), Site { class: owner.clone(), method: name.clone(), line: code.line_at(h.handler_pc as u32) }));
+            }
+        }
+    }
+    for (t, site) in handlers {
+        if jbmc_cp.application(&t).ok().flatten().is_some() {
+            continue;
+        }
+        let missed: Vec<&String> = raised.iter().filter(|e| *e != &t && jbmc_cp.is_subtype(e, &t) && !jbmc_extends(jbmc_cp, e, &t)).collect();
+        if missed.is_empty() {
+            continue;
+        }
+        let names: Vec<String> = missed.iter().map(|e| e.replace('/', ".")).collect();
+        found.defects.push(Defect {
+            kind: "stubbed-handler",
+            site: site.display(),
+            what: format!(
+                "catch ({}) catches {} on the JVM, which the program may raise, but JBMC has no class file of {} and its stub has no superclass, so JBMC does not know {} extend{} it: the exception escapes the handler",
+                t.replace('/', "."),
+                names.join(", "),
+                t.replace('/', "."),
+                if names.len() == 1 { "the exception's class" } else { "their classes" },
+                if names.len() == 1 { "s" } else { "" }
+            ),
+        });
+    }
+    found.defects.sort();
+    found.defects.dedup();
     for id in only_initializers.keys() {
         let Some((owner, name, descriptor)) = method_of(id).filter(|(_, n, _)| n != "<clinit>") else { continue };
         if let Body::Stub(_) = body(jbmc_cp, &owner, &name, &descriptor) {
@@ -445,18 +619,36 @@ impl Preflight {
     /// The note a report prints for it.
     pub fn note(&self) -> String {
         match (&self.found, &self.problem) {
-            (Some(f), _) if f.records.is_empty() => String::new(),
+            (Some(f), _) if f.records.is_empty() && f.defects.is_empty() => String::new(),
             (Some(f), _) => {
                 let mut out = String::new();
-                let _ = writeln!(out, "note: JBMC reaches {} construct{} it approximates (its stubs and unlinked call sites, {}):", f.records.len(), if f.records.len() == 1 { "" } else { "s" }, self.log.display());
-                for r in &f.records {
-                    let _ = writeln!(out, "  jbmc gap: {}", r.line());
+                if !f.records.is_empty() {
+                    let _ = writeln!(out, "note: JBMC reaches {} construct{} it approximates (its stubs and unlinked call sites, {}):", f.records.len(), if f.records.len() == 1 { "" } else { "s" }, self.log.display());
+                    for r in &f.records {
+                        let _ = writeln!(out, "  jbmc gap: {}", r.line());
+                    }
+                }
+                if !f.defects.is_empty() {
+                    let _ = writeln!(out, "note: JBMC runs {} construct{} otherwise than the JVM, whatever its class path:", f.defects.len(), if f.defects.len() == 1 { "" } else { "s" });
+                    for d in &f.defects {
+                        let _ = writeln!(out, "  jbmc defect: {}", d.line());
+                    }
                 }
                 out
             }
             (None, Some(p)) => format!("note: JBMC's own approximations are not known: {p}\n"),
             (None, None) => String::new(),
         }
+    }
+
+    /// Why a JBMC counterexample may not reproduce in the interpreter, when JBMC runs a construct the path may go
+    /// through otherwise than the JVM: `None` when it runs none.
+    pub fn unreproduced_cause(&self) -> Option<String> {
+        let defects = &self.found.as_ref()?.defects;
+        if defects.is_empty() {
+            return None;
+        }
+        Some(format!("The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: {}", defects.iter().map(Defect::line).collect::<Vec<_>>().join("; ")))
     }
 }
 
@@ -469,7 +661,21 @@ pub fn hold(result: &mut JbmcResult, pre: &Preflight, mode: GapMode) {
     let records = pre.records(mode);
     let ids: Vec<String> = records.iter().map(|r| r.id.clone()).collect();
     result.gaps.extend(records);
-    if mode == GapMode::Assume || result.verdict != Verdict::Verified {
+    if result.verdict != Verdict::Verified {
+        return;
+    }
+    // A defect is no approximation a statement could assume: a proof through one is refused in every mode.
+    if let Some(f) = pre.found.as_ref().filter(|f| !f.defects.is_empty()) {
+        let n = f.defects.len();
+        result.verdict = Verdict::Unverifiable;
+        result.problem = Some(format!(
+            "JBMC proved it, but runs {n} construct{} otherwise than the JVM ({}), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
+            if n == 1 { "" } else { "s" },
+            f.defects.iter().map(|d| format!("{} at {}", d.kind, d.site)).collect::<Vec<_>>().join(", ")
+        ));
+        return;
+    }
+    if mode == GapMode::Assume {
         return;
     }
     if let Some(p) = &pre.problem {
@@ -573,5 +779,94 @@ java.util.ArrayList.<init>() /* java::java.util.ArrayList.<init>:(I)V */
         assert!(list.approximation.starts_with("is JBMC's stub: it constructs the object and does nothing else"), "{}", list.approximation);
         assert_eq!(list.checker.as_deref(), Some("jbmc"));
         assert!(find(&p, "H", "other", &cp, None).is_err());
+    }
+
+    /// `tests/fixtures/jbmc-defects/p/D.java`, compiled, on JBMC's class path with the JDK image: `None` without
+    /// javac or a JDK.
+    fn defect_fixture() -> Option<(tempfile::TempDir, ClassPath)> {
+        let javac = std::process::Command::new("javac").arg("-version").output().is_ok_and(|o| o.status.success());
+        let cp = ClassPath::new().with_models(false).with_default_jdk();
+        if !javac || !cp.has_jdk() {
+            assert!(std::env::var("JVMCONTRACT_SKIP_MISSING_TOOLS").is_ok_and(|v| v == "1"), "javac or a JDK not found: put them on the PATH, or set JVMCONTRACT_SKIP_MISSING_TOOLS=1 to skip this test");
+            return None;
+        }
+        let out = tempfile::tempdir().unwrap();
+        let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/jbmc-defects/p/D.java");
+        let status = std::process::Command::new("javac").args(["-g", "-d"]).arg(out.path()).arg(&source).status().unwrap();
+        assert!(status.success(), "the fixture compiles");
+        let mut cp = cp;
+        cp.add(out.path()).unwrap();
+        Some((out, cp))
+    }
+
+    /// A goto program whose harness `H.<method>` calls `p.D.<method>` alone.
+    fn calling(method: &str, descriptor: &str) -> Program {
+        parse_goto(&format!(
+            "H.{method}() /* java::H.{method}:()V */\n        // 1 file H.java line 1 function java::H.{method}:()V bytecode-index 1\n        CALL java::p.D.{method}:{descriptor}(x)\n        END_FUNCTION\n\n^^^^^^^^\n\np.D.{method}() /* java::p.D.{method}:{descriptor} */\n        END_FUNCTION\n\n^^^^^^^^\n"
+        ))
+    }
+
+    /// The reproducer of `conformance/caught/1` and `nestedHandler/1`, whose JBMC counterexamples do not reproduce:
+    /// JBMC 6.11.0 raises a runtime exception past the handler that catches it on the JVM, for a value returned from
+    /// a try block, and for a handler of a JDK class it has a stub of, which it does not know the exception's class
+    /// extends. Each is named where the program reaches it; their neighbours, which JBMC runs as the JVM does, are not.
+    #[test]
+    fn the_preflight_names_where_jbmc_raises_an_exception_past_its_handler() {
+        let Some((_dir, cp)) = defect_fixture() else { return };
+        let defects = |method: &str, descriptor: &str| -> Vec<(String, String)> {
+            let found = find(&calling(method, descriptor), "H", method, &cp, None).unwrap();
+            found.defects.iter().map(|d| (d.kind.to_string(), d.site.clone())).collect()
+        };
+        assert_eq!(defects("returned", "(I)I"), [("return-past-handler".to_string(), "p.D.returned:7".to_string())]);
+        assert_eq!(defects("field", "(Lp/D;)I"), [("return-past-handler".to_string(), "p.D.field:8".to_string())]);
+        assert_eq!(defects("superCatch", "(I)I"), [("stubbed-handler".to_string(), "p.D.superCatch:12".to_string())]);
+        assert_eq!(defects("thrown", "(I)I"), [("stubbed-handler".to_string(), "p.D.thrown:13".to_string())]);
+        for (method, descriptor) in [("stored", "(I)I"), ("uncaught", "([II)I"), ("called", "(I)I"), ("exact", "(I)I")] {
+            assert_eq!(defects(method, descriptor), [], "{method}");
+        }
+        let found = find(&calling("returned", "(I)I"), "H", "returned", &cp, None).unwrap();
+        let what = &found.defects[0].what;
+        assert!(what.contains("java.lang.ArithmeticException") && what.contains("after it leaves the try block"), "{what}");
+        let found = find(&calling("thrown", "(I)I"), "H", "thrown", &cp, None).unwrap();
+        let what = &found.defects[0].what;
+        assert!(what.contains("catch (java.lang.RuntimeException)") && what.contains("java.lang.IllegalArgumentException"), "{what}");
+    }
+
+    /// A JBMC proof that reaches a defect is refused under every gap mode, assume too: the defect is not an
+    /// approximation a statement could name, but code JBMC runs otherwise than the JVM. A counterexample stands,
+    /// for the interpreter's replay, and the replay's message names the defect as the likely cause.
+    #[test]
+    fn a_proof_through_a_defect_is_refused_under_every_mode_and_a_counterexample_is_left_to_the_replay() {
+        let defect = Defect { kind: "return-past-handler", site: "p.D.returned:7".into(), what: "raises it after it leaves the try block".into() };
+        let pre = Preflight { found: Some(Found { defects: vec![defect], ..Found::default() }), problem: None, log: PathBuf::from("jbmc-goto.txt"), seconds: 0.0 };
+        let result = |verdict: Verdict| crate::jbmc::JbmcResult {
+            verdict,
+            version: "6.11.0".into(),
+            properties: 2,
+            raw_inputs: BTreeMap::new(),
+            raw_arrays: BTreeMap::new(),
+            stage: None,
+            problem: None,
+            log: PathBuf::new(),
+            seconds: 0.0,
+            native: None,
+            gaps: Vec::new(),
+            gap_mode: None,
+            ending: crate::jbmc::Ending::Verified,
+            profile: Default::default(),
+        };
+        for mode in [GapMode::Strict, GapMode::Assume, GapMode::Advised] {
+            let mut proved = result(Verdict::Verified);
+            hold(&mut proved, &pre, mode);
+            assert_eq!(proved.verdict, Verdict::Unverifiable, "{mode:?}");
+            let problem = proved.problem.unwrap();
+            assert!(problem.contains("return-past-handler at p.D.returned:7") && problem.contains("every --gaps mode"), "{problem}");
+            let mut refuted = result(Verdict::Violation);
+            hold(&mut refuted, &pre, mode);
+            assert_eq!((refuted.verdict, refuted.problem), (Verdict::Violation, None), "{mode:?}");
+        }
+        assert!(pre.note().contains("jbmc defect: return-past-handler at p.D.returned:7"), "{}", pre.note());
+        assert!(pre.unreproduced_cause().is_some_and(|c| c.contains("return-past-handler at p.D.returned:7")));
+        assert_eq!(Preflight { found: Some(Found::default()), ..pre }.unreproduced_cause(), None);
     }
 }

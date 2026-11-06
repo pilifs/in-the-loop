@@ -214,4 +214,15 @@ public class Conformance {
     public static int increment(int x) { x++; return x; }
 
     public static int byteSum(byte a, byte b) { return a + b; }
+
+    // A division's ArithmeticException caught as its superclass: JBMC 6.11.0, whose stub of RuntimeException has no
+    // superclass, lets it escape (tests/fixtures/jbmc-defects/README.md).
+    public static int caughtAsRuntime(int n) {
+        try {
+            int r = 10 / n;
+            return r;
+        } catch (RuntimeException e) {
+            return -1;
+        }
+    }
 }

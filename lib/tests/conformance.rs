@@ -112,7 +112,10 @@ fn corpus() -> Vec<Case> {
         Case::new("quiet", &[("3", "returns 3")]).holds(None, "result == n", &[], U),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
-        Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X),
+        Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X)
+            // JBMC 6.11.0 computes the returned quotient past the handler, so it proved this (tests/fixtures/jbmc-defects).
+            .refuted(None, "result == 10 / n", &["ArithmeticException when n == 0"], X),
+        Case::new("caughtAsRuntime", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result == 10 / n", &["ArithmeticException when n == 0"], X),
         Case::new("nestedHandler", &[("0", "returns -2"), ("3", "returns 33")]).holds(None, "n != 0 || result == -2", &[], V).refuted(None, "result != -2", &[], X),
         Case::new("element", &[("[];0", "throws java.lang.ArrayIndexOutOfBoundsException"), ("[4,5];1", "returns 5")])
             .holds(None, "result == a[i]", &["ArrayIndexOutOfBoundsException when i < 0 || i >= a.length"], V)

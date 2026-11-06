@@ -701,7 +701,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if evaluable && holds_on_found {
                 let (rendered, _) = witness::call(&method_name, &params, &found);
                 let did = if replayed.thrown.is_some() { replayed.outcome.clone() } else { format!("returns {}", replayed.outcome) };
-                let p = format!("{}'s counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. {}", if last.native.is_some() { "The tool's own checker" } else { "JBMC" }, crate::equivalence::unreproduced_cause(&last));
+                let p = format!("{}'s counterexample {rendered} does not reproduce: the method {did} in the interpreter and the property holds on it. {}", if last.native.is_some() { "The tool's own checker" } else { "JBMC" }, preflight.as_ref().filter(|_| last.native.is_none()).and_then(crate::jbmc_gaps::Preflight::unreproduced_cause).unwrap_or_else(|| crate::equivalence::unreproduced_cause(&last)));
                 let message = format!("{} cannot be verified: {p}", options.target);
                 let _ = writeln!(out, "✗ {message}");
                 findings.push(Finding::new("unverifiable", message, uri.clone(), line));
