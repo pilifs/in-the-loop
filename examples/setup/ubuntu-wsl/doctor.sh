@@ -56,7 +56,7 @@ check optional acl2     "command -v acl2"
 check optional angr     "angr-python -c 'import angr; print(\"angr\", angr.__version__)'"
 echo "Native / cross"
 check required riscv-gcc "riscv64-linux-gnu-gcc --version"
-check required qemu-rv64 "qemu-riscv64-static --version"
+check required qemu-rv64 "qemu-riscv64-static --version 2>/dev/null || qemu-riscv64 --version"
 check required musl-gcc "command -v musl-gcc"
 check required zlib-dev "dpkg-query -W -f='zlib1g-dev \${Version}\\n' zlib1g-dev"   # native-image links -lz
 

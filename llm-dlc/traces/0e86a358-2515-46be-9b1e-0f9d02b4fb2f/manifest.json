@@ -1,0 +1,82 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "0e86a358-2515-46be-9b1e-0f9d02b4fb2f",
+  "status": "open",
+  "title": "setup-repo-on-ryzen-machine",
+  "first_prompt": "This is my first time opening this repo on this machine. I've just pushed some other settings from my laptop (WSL Ubuntu) via SSH. This machine is running Ubuntu and is much more powerful (Ryzen AI Ma",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-06T15:24:58.188Z",
+  "ended": "2026-11-06T15:29:24.365Z",
+  "duration_seconds": 266,
+  "stats": {
+    "turns": 1,
+    "api_calls": 20,
+    "tool_calls": 24,
+    "tool_errors": 4,
+    "compactions": 0,
+    "peak_context_tokens": 88271,
+    "usage": {
+      "input_tokens": 38,
+      "output_tokens": 15742,
+      "cache_read_input_tokens": 1342172,
+      "cache_creation_input_tokens": 59348
+    }
+  },
+  "tools": {
+    "Bash": 23,
+    "Write": 1
+  },
+  "files_touched": [
+    "verification/pipeline.local.toml"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T15:24:58.188Z",
+      "ended": "2026-11-06T15:29:24.365Z",
+      "turns": 1,
+      "api_calls": 20,
+      "usage": {
+        "input_tokens": 38,
+        "output_tokens": 15742,
+        "cache_read_input_tokens": 1342172,
+        "cache_creation_input_tokens": 59348
+      },
+      "peak_context_tokens": 88271
+    }
+  ],
+  "log": {
+    "sha256": "1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc",
+    "bytes": 767868,
+    "lines": 259,
+    "gzip_bytes": 152734,
+    "path": "llm-dlc/traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/logs/1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "toypwvtplprpnwwlrwvtuwsmzysmnyqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Installer runs on Ubuntu 26.04 and sets PATH for zsh login shells",
+      "body": "On Ubuntu 26.04 the system component's single apt-get install aborted: dotnet-sdk-8.0 no longer exists (only .NET 10), and qemu-user-static is a virtual package with two providers, which apt refuses. The installer now picks the first available package (dotnet-sdk-8.0, else dotnet-sdk-10.0; qemu-user-static, else qemu-user with qemu-user-binfmt), and CBMC/JBMC fall back to Diffblue's 24.04 .deb when there is none for the running release. It also installs tmux, so unattended loops and the verification runner survive an SSH disconnect, and writes the PATH block to ~/.zshrc when the login shell is zsh, since agent and SSH sessions there never read ~/.bashrc. doctor.sh accepts qemu-riscv64 when there is no -static name.\n\nVerified on a fresh Ubuntu 26.04 machine: the helper picks dotnet-sdk-10.0 and the qemu fallback there; the devtools, jvm, k8s, verify and provers components installed cleanly and doctor.sh reports them all ok. The sudo-only system component has not run here yet.",
+      "log_sha256": "1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc"
+    }
+  ],
+  "logs": {
+    "1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc": {
+      "bytes": 767868,
+      "lines": 259,
+      "gzip_bytes": 152734,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

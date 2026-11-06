@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Toolchain installer for Ubuntu 24.04 (native or WSL2), amd64 or arm64.
+# Toolchain installer for Ubuntu 24.04 and 26.04 (native or WSL2), amd64 or arm64.
 #
 #   examples/setup/ubuntu-wsl/install.sh                  # default components
 #   examples/setup/ubuntu-wsl/install.sh jvm provers      # just these
@@ -47,13 +47,20 @@ link_bin() {   # link_bin <dir> <binary name>: symlink the first match found und
   [[ -n $found ]] || { warn "$2 not found under $1"; return 1; }
   ln -sf "$found" "$BIN/$2"
 }
+apt_pick() {   # apt_pick <package>...: the first one apt can install here (packages differ between releases)
+  local p c
+  for p in "$@"; do
+    c=$(apt-cache policy "$p" 2>/dev/null | awk '/Candidate:/{print $2}')
+    [[ -z $c || $c == "(none)" ]] || { echo "$p"; return; }
+  done
+}
 sdkman() { set +u; source "$HOME/.sdkman/bin/sdkman-init.sh"; "$@"; local rc=$?; set -u; return $rc; }
 
 # --------------------------------------------------------------------------- checks
 preflight() {
   [[ $EUID -ne 0 ]] || { echo "Run as your normal user, not root (sudo is used where needed)." >&2; exit 1; }
   . /etc/os-release
-  [[ ${VERSION_ID:-} == 24.04 ]] || warn "tested on Ubuntu 24.04; this is ${PRETTY_NAME:-unknown}"
+  [[ ${VERSION_ID:-} == 24.04 || ${VERSION_ID:-} == 26.04 ]] || warn "tested on Ubuntu 24.04 and 26.04; this is ${PRETTY_NAME:-unknown}"
   if grep -qi microsoft /proc/version; then
     [[ $(ps -p 1 -o comm=) == systemd ]] || warn "WSL without systemd: add '[boot]\nsystemd=true' to /etc/wsl.conf, then 'wsl --shutdown'"
     [[ $(command -v docker || true) == /mnt/* ]] && warn "'docker' resolves to Docker Desktop's Windows shim; this installs native Docker Engine instead. Quit Docker Desktop (or disable its WSL integration) to avoid two daemons."
@@ -65,14 +72,21 @@ preflight() {
 install_system() {
   step "apt packages (sudo)"
   sudo apt-get update
+  # 24.04 has .NET 8 and qemu-user-static; 26.04 has only .NET 10, and its qemu-user ships the static binaries.
+  local dotnet qemu
+  dotnet=$(apt_pick dotnet-sdk-8.0 dotnet-sdk-10.0)
+  [[ -n $dotnet ]] || warn "no .NET SDK from apt; Dafny and Boogie will be skipped"
+  qemu=$(apt_pick qemu-user-static)
+  [[ -n $qemu ]] || qemu="qemu-user qemu-user-binfmt"
+  # shellcheck disable=SC2086  # $dotnet and $qemu are package lists
   sudo apt-get install -y \
     build-essential ca-certificates curl gnupg git jq zip unzip pkg-config zlib1g-dev \
-    python3-venv python3-yaml \
+    python3-venv python3-yaml tmux \
     z3 libz3-java graphviz \
-    dotnet-sdk-8.0 \
+    $dotnet \
     opam bubblewrap libgmp-dev \
     gcc-riscv64-linux-gnu musl-tools gdb-multiarch binutils-multiarch \
-    qemu-user-static binfmt-support
+    $qemu binfmt-support
 
   step "Docker Engine (official repo)"
   . /etc/os-release
@@ -89,7 +103,9 @@ install_system() {
   step "CBMC / JBMC (bounded model checking of C and Java bytecode)"
   local suffix="" deb
   [[ $ARCH == arm64 ]] && suffix="-arm64"
-  deb=$(gh_asset diffblue/cbmc "^ubuntu-${VERSION_ID}${suffix}-cbmc-.*-Linux\\.deb$") \
+  # Diffblue publishes .debs for 22.04 and 24.04; a newer release takes the 24.04 one.
+  deb=$(gh_asset diffblue/cbmc "^ubuntu-${VERSION_ID}${suffix}-cbmc-.*-Linux\\.deb$" 2>/dev/null \
+        || gh_asset diffblue/cbmc "^ubuntu-24\\.04${suffix}-cbmc-.*-Linux\\.deb$") \
     && curl -fsSLo /tmp/cbmc.deb "$deb" && sudo apt-get install -y /tmp/cbmc.deb && rm -f /tmp/cbmc.deb \
     || warn "no CBMC .deb for Ubuntu $VERSION_ID/$ARCH"
 
@@ -273,6 +289,20 @@ command -v helm >/dev/null && source <(helm completion bash)
 EOF
 }
 
+install_zshrc() {   # a zsh login shell gets the same PATH, so the tools resolve in SSH and agent sessions
+  local mark="# >>> formal-verification toolchain >>>"
+  [[ -f $HOME/.zshrc || $(getent passwd "$USER" | cut -d: -f7) == */zsh ]] || return 0
+  grep -qF "$mark" "$HOME/.zshrc" 2>/dev/null && return
+  step "~/.zshrc"
+  cat >> "$HOME/.zshrc" <<'EOF'
+# >>> formal-verification toolchain >>>
+export PATH="$HOME/.local/bin:$HOME/.dotnet/tools:$HOME/.elan/bin:$PATH"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+command -v opam >/dev/null && [[ -d $HOME/.opam ]] && eval "$(opam env --switch=rocq 2>/dev/null)"
+# <<< formal-verification toolchain <<<
+EOF
+}
+
 # --------------------------------------------------------------------------- main
 usage() {
   echo "usage: $0 [all | component...]"
@@ -294,6 +324,7 @@ main() {
     "install_$c"
   done
   install_shellrc
+  install_zshrc
   step "Done. Open a new shell (docker group + PATH), then run examples/setup/ubuntu-wsl/doctor.sh"
 }
 
