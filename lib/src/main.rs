@@ -315,8 +315,8 @@ struct EquivalenceArgs {
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
-    /// for methods over integers without arrays or floating point), or `auto` (the tool's own where it applies,
-    /// JBMC elsewhere).
+    /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own
+    /// where it applies, JBMC elsewhere).
     #[arg(long, default_value = "jbmc")]
     engine: String,
     /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK
@@ -424,8 +424,8 @@ struct ProveArgs {
     #[arg(long, default_value = "cadical")]
     sat_solver: String,
     /// Which checker proves the statement: `jbmc` (the default), `native` (the tool's own bounded model checker,
-    /// for methods over integers without arrays or floating point), or `auto` (the tool's own where it applies,
-    /// JBMC elsewhere).
+    /// for methods over integers, arrays of them and records, without floating point), or `auto` (the tool's own
+    /// where it applies, JBMC elsewhere).
     #[arg(long, default_value = "jbmc")]
     engine: String,
     /// What the tool's own checker does at a gap, a construct it does not implement as the JVM does (a JDK

@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-094317-benchmark-corpus-step-5a-both-engines-un",
+  "title": "Benchmark corpus (step 5a): both engines under strict, assume and advised over the three groups",
+  "description": "lib/benchmark/ is new: a benchmark corpus in three groups (the 93 claims of the conformance corpus; 13 cases from four documented bugs, each with its broken and fixed version: JDK-5045582's binarySearch midpoint, FindBugs RV_ABSOLUTE_VALUE_OF_HASHCODE, Java Puzzlers' Oddity, CERT NUM00-J's overflowing range check; 12 held-out regressions written after the engines' optimizations). run.py runs every case with jvmcontract on --engine native and --engine jbmc under --gaps strict, assume and advised (the contract library, --max-trust 0), with matched settings (one harness, unwind 16, arrays up to 8, a 120 s deadline per check), and classifies each run against the expected answer as correct, correct-assuming, unsupported (with the reason), false success or false alarm. The expected answers and every witness an engine reports are checked on the JVM (Reference.java for groups 2 and 3, the conformance runner for group 1). It records wall and CPU seconds and peak memory per run (wait4, JBMC included) and writes lib/benchmark/results.json and lib/benchmark/RESULTS.md. Inline, the native engine alone over groups 2 and 3 (20 s deadline) gave 24 of 25 correct in each mode; real/bucket/fix-confined (Math.abs(hash) % b against (hash & 0x7fffffff) % b for non-negative hashes) ran out of time, which is a finding, not a failure: expect it unsupported at 120 s too. JBMC's side has not been run beyond a smoke test of five runs.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "benchmark",
+    "own-checker"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark"
+    ]
+  },
+  "expected": "exits 0: no false success and no false alarm on either engine in any mode, and the JVM bears out every expected answer; RESULTS.md has a row per group, engine and mode. Unsupported runs are expected (gaps under strict, a few out of time) and are not failures.",
+  "submitted": {
+    "at": "2026-11-06T09:43:17+00:00",
+    "session": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+    "by": "claude (sound-verdicts loop)"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "45m",
+    "notes": "about 700 runs: native ones take 0.1-3 s, except about 3 at the deadline; JBMC ones 0.3-1 s on small claims, with some arithmetic and array cases possibly at the 120 s deadline in each of the three modes"
+  },
+  "steps": [
+    {
+      "name": "benchmark",
+      "run": "python3 lib/benchmark/run.py --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/results.json",
+    "lib/benchmark/RESULTS.md"
+  ]
+}

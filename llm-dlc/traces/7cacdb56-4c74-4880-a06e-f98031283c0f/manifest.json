@@ -12,33 +12,38 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T09:17:47.443Z",
-  "duration_seconds": 34998,
+  "ended": "2026-11-06T09:44:08.896Z",
+  "duration_seconds": 36580,
   "stats": {
-    "turns": 112,
-    "api_calls": 1608,
-    "tool_calls": 1621,
+    "turns": 117,
+    "api_calls": 1664,
+    "tool_calls": 1681,
     "tool_errors": 15,
-    "compactions": 20,
-    "peak_context_tokens": 361492,
+    "compactions": 21,
+    "peak_context_tokens": 375335,
     "usage": {
-      "input_tokens": 3262,
-      "output_tokens": 1565783,
-      "cache_read_input_tokens": 299878267,
-      "cache_creation_input_tokens": 5294893
+      "input_tokens": 3374,
+      "output_tokens": 1671499,
+      "cache_read_input_tokens": 310878088,
+      "cache_creation_input_tokens": 5559709
     }
   },
   "tools": {
-    "Bash": 1456,
-    "Read": 111,
-    "Write": 23,
-    "Edit": 20,
+    "Bash": 1505,
+    "Read": 115,
+    "Write": 27,
+    "Edit": 22,
     "ToolSearch": 7,
-    "WebFetch": 4
+    "WebFetch": 4,
+    "TaskStop": 1
   },
   "files_touched": [
     "examples/tools/result_format.py",
     "examples/tools/test_build.py",
+    "lib/benchmark/README.md",
+    "lib/benchmark/Reference.java",
+    "lib/benchmark/run.py",
+    "lib/benchmark/test_run.py",
     "lib/src/advice.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/classpath.rs",
@@ -346,24 +351,38 @@
     {
       "index": 20,
       "started": "2026-11-06T08:32:43.803Z",
-      "ended": "2026-11-06T09:17:47.443Z",
-      "turns": 5,
-      "api_calls": 105,
+      "ended": "2026-11-06T09:18:23.299Z",
+      "turns": 6,
+      "api_calls": 108,
       "usage": {
-        "input_tokens": 214,
-        "output_tokens": 107349,
-        "cache_read_input_tokens": 26584198,
-        "cache_creation_input_tokens": 348412
+        "input_tokens": 220,
+        "output_tokens": 108722,
+        "cache_read_input_tokens": 27674325,
+        "cache_creation_input_tokens": 362255
       },
-      "peak_context_tokens": 361492
+      "peak_context_tokens": 375335
+    },
+    {
+      "index": 21,
+      "started": "2026-11-06T09:19:06.675Z",
+      "ended": "2026-11-06T09:44:08.896Z",
+      "turns": 4,
+      "api_calls": 53,
+      "usage": {
+        "input_tokens": 106,
+        "output_tokens": 104343,
+        "cache_read_input_tokens": 9909694,
+        "cache_creation_input_tokens": 250973
+      },
+      "peak_context_tokens": 264053
     }
   ],
   "log": {
-    "sha256": "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7",
-    "bytes": 49147189,
-    "lines": 16712,
-    "gzip_bytes": 9212744,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7.jsonl.gz"
+    "sha256": "78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02",
+    "bytes": 51382760,
+    "lines": 17348,
+    "gzip_bytes": 9675512,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -582,6 +601,14 @@
       "summary": "JBMC applies the contracts for its gaps: under --engine jbmc --gaps advised a JDK call JBMC stubs takes the contract the own checker would, its call sites rewritten into calls of the contract's method, and a gap with no contract stops the run with the advice",
       "body": "Step 4c, second part, of llm-dlc/loops/sound-verdicts.md (lib/src/jbmc_contracts.rs). The gaps JBMC's goto-program preflight finds are the advice protocol's scan: a JDK-call gap with no contract stops the run before solving (advice.checker \"jbmc\"), and contracts are read and checked as for the own checker (proved, tested on a JVM, trusted, the library's records, --max-trust); a JBMC gap has the own checker's id, so one contract serves both checkers. Monitors, unlinked invokedynamic and missing bodies outside the JDK take no contract: the advice lists them as approximated by JBMC whatever the contracts, and the proof is refused as under strict. JBMC runs the same GapContracts class: every call site of a closed gap in the harness and application class directories is rewritten into an invokestatic of the contract's method (shared::redirect_calls now takes any call kind; invokeinterface becomes invokestatic plus two nops, so no offset moves), a constructor through GapContractCalls.k<N>, which takes the uninitialized receiver; the intrinsics are a class over org.cprover.CProver (nondetInt/nondetLong, assume(false), a nondet loop over an array's elements, and open as an AssertionError that JBMC reports as its own property, which is no verdict: an input outside the contract's assume:). A second preflight on the rewritten class path holds whatever JBMC still approximates. A call site whose JDK method an application class overrides, calls from JDK bytecode and jars are not rewritten, so their gaps stay open. Under auto, JBMC's turn applies the own checker's contracts. The verdict reads 'relying on N contracts for gaps of JBMC'; build.py and the schema (advice.checker) name JBMC on the page. Both drivers no longer refuse --gaps advised under --engine jbmc.\n\nVerified inline on the real JBMC 6.11.0 by jbmc_applies_the_contracts_for_its_gaps (integration.rs): the advice with nothing solved; new ArrayList<>(n) is the violation capacity(n=-1) the interpreter reproduces with the JVM's message, Verified with the exception declared (1 tested), a contract that says it never throws is refuted by the JVM and goes back to the agent, assume: capacity >= 0 meets the gap; Random nextBytes/nextInt contracts give a violation the JVM runs, two proofs, and a witness the JVM does not reproduce; StringBuilder.append result == this; a monitor next to the call is refused; the auto fallback and a regression proof. The 4c part one test now gets the violations the JVM gives on 1b's reproducers under advised, from the contract library. All Rust tests pass (141 unit, 5 conformance, 60 integration, 1 skill), the native regression test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs after a rerun (it failed once at 629 s on a loaded machine, and passed alone in 18 s); 158 Python tests pass. Re-rendering every page changed none, and no job was needed, since no recorded example runs JBMC under advised. Not done: --confirm still does not ask JBMC about a proof that rests on contracts. Phase 4 is done apart from removing the text parser, which waits on job 20261106-073804.",
       "log_sha256": "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7"
+    },
+    {
+      "change_id": "vnslpqrkzxnxnotkunplmsswztowlkmr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The benchmark corpus: the conformance corpus, four documented bugs with their broken and fixed versions, and twelve held-out regressions, run on both engines under strict, assume and advised, with every expected answer and every witness checked on the JVM and correctness, coverage, time and memory kept apart (verification pending)",
+      "body": "Step 5a of llm-dlc/loops/sound-verdicts.md. lib/benchmark/ holds 118 cases in the brief's three groups. Group 1 is the conformance corpus's 93 claims, written to conformance.json by a new test in lib/tests/conformance.rs that fails when the file is not the corpus. Group 2 is four documented bugs, each with its broken and fixed version as a source tree: JDK-5045582's binarySearch midpoint, FindBugs' RV_ABSOLUTE_VALUE_OF_HASHCODE, Java Puzzlers' Oddity, and CERT NUM00-J's overflowing range check. Each bug has three cases, the ecosystem review's sequence: the broken property refuted, the fixed one proved, and a regression proof that the fix changes only what it meant to. A fourth case for JDK-5045582 is the whole search, which agrees on every array of up to 8 elements: a real bug outside the proof's domain. Group 3 is twelve regressions written after the engines' optimizations, over the workloads step 5b tabulates (scalar arithmetic, div/rem, binary search, UTF-8 length, array mutation, records), three of them violations.\n\nThe expected answers come from the JVM, not the tool. Reference.java states each claim of groups 2 and 3 in Java, apart from the tool's harness generator and expression language, and runs each version in its own class loader. A violation case's witness must refute the claim there. A verified case is searched on boundary values and 200,000 seeded inputs, which is evidence, not proof. lib/benchmark/run.py runs each case on --engine native and --engine jbmc under --gaps strict, assume and advised (the contract library, --max-trust 0) with matched settings: one harness, unwind 16, arrays of up to 8, a 120 s deadline. It classifies each run as correct, correct assuming a named gap, unsupported with its reason, false success, or false alarm. It runs every reported witness on the JVM, and records wall and CPU seconds, peak memory from wait4 (which counts JBMC: a 300 MB grandchild reads as 308 MB) and the solver's figures. It writes results.json and RESULTS.md.\n\nVerified: the 14 tests of lib/benchmark/test_run.py pass (classification, matched commands, witness arguments, measurement, the tables, and Reference.java listing exactly the corpus's ids). Unit (140), conformance (6) and skill tests pass; the integration suite was not run, since the only change to lib/src is help text. Inline, the own checker alone over groups 2 and 3 at a 20 s deadline: the JVM bears out all 25 answers, and 24 of 25 cases are correct in each mode, with none wrong, a median of 0.1 s and 73 MB at most. real/bucket/fix-confined (Math.abs(hash) % b against (hash & 0x7fffffff) % b for non-negative hashes) runs out of time, as it did past 100 s under the default deadline: a held-out finding about the lazy division. A five-run smoke test of the JBMC side found nothing unexpected.\n\nVerification pending: job 20261106-094317-benchmark-corpus-step-5a-both-engines-un (verification/jobs/), the full run of about 700 runs, which writes lib/benchmark/RESULTS.md and results.json. Also fixed: lib/README.md still said --gaps advised needs --engine native or auto, which step 4c's second part made untrue, and the --engine help said the own checker has no arrays. The brief is not wrong, but this step departs from it three ways, recorded under Progress: there is no CVE kernel; group 2's properties are stated from their published sources and held to the JVM, not reviewed by a person; and group 3 is held out from the optimizations' development but not from their author, this session.",
+      "log_sha256": "78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02"
     }
   ],
   "logs": {
@@ -673,6 +700,12 @@
       "bytes": 20056807,
       "lines": 6891,
       "gzip_bytes": 3663096,
+      "url": null
+    },
+    "78023527e392f5e43cddcabe41e561a9d0fe4ed5822448485325451389b66e02": {
+      "bytes": 51382760,
+      "lines": 17348,
+      "gzip_bytes": 9675512,
       "url": null
     },
     "80874b59099537bc7e32a2cd664d43fd2195850009b4742f32cfaf454362d2d7": {

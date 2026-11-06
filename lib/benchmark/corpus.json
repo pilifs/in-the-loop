@@ -1,0 +1,379 @@
+{
+  "about": "Groups 2 and 3 of the benchmark corpus (lib/benchmark/README.md). Each case is a claim the tool checks and Reference.java checks on a JVM, apart from the tool: its expected answer, the source it comes from, why it holds or fails, and, for a violation, an input on which the JVM refutes it.",
+  "versions": {
+    "broken": "src/broken",
+    "fixed": "src/fixed",
+    "v1": "src/v1",
+    "v2": "src/v2",
+    "v3": "src/v3"
+  },
+  "cases": [
+    {
+      "id": "real/midpoint/broken-property",
+      "group": 2,
+      "workload": "scalar-arithmetic",
+      "kind": "property",
+      "classes": "broken",
+      "target": "bench.real.Midpoint#midpoint",
+      "assume": "0 <= low && low <= high",
+      "assert": "low <= result && result <= high",
+      "throws": [],
+      "expected": "violation",
+      "source": "JDK-5045582; Joshua Bloch, \"Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken\", Google Research blog, 2 June 2006",
+      "why": "low + high overflows once it passes Integer.MAX_VALUE, and the quotient of the negative sum is below low",
+      "witness": [
+        1073741824,
+        1073741824
+      ]
+    },
+    {
+      "id": "real/midpoint/fixed-property",
+      "group": 2,
+      "workload": "scalar-arithmetic",
+      "kind": "property",
+      "classes": "fixed",
+      "target": "bench.real.Midpoint#midpoint",
+      "assume": "0 <= low && low <= high",
+      "assert": "low <= result && result <= high",
+      "throws": [],
+      "expected": "verified",
+      "source": "JDK-5045582; Joshua Bloch, \"Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken\", Google Research blog, 2 June 2006",
+      "why": "the sum of two non-negative ints fits 32 bits unsigned, and >>> 1 halves it as unsigned"
+    },
+    {
+      "id": "real/midpoint/fix-confined",
+      "group": 2,
+      "workload": "scalar-arithmetic",
+      "kind": "regression",
+      "before": "broken",
+      "after": "fixed",
+      "target": "bench.real.Midpoint#midpoint",
+      "unchangedUnless": "low < 0 || high < low || low + high < 0",
+      "expected": "verified",
+      "source": "JDK-5045582; Joshua Bloch, \"Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken\", Google Research blog, 2 June 2006",
+      "why": "the fix changes the midpoint only where low + high overflows, or outside the search's ranges"
+    },
+    {
+      "id": "real/midpoint/search-within-bound",
+      "group": 2,
+      "workload": "binary-search",
+      "kind": "regression",
+      "before": "broken",
+      "after": "fixed",
+      "target": "bench.real.Midpoint#search",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "JDK-5045582; Joshua Bloch, \"Extra, Extra - Read All About It: Nearly All Binary Searches and Mergesorts are Broken\", Google Research blog, 2 June 2006",
+      "why": "the overflow needs low + high > Integer.MAX_VALUE, an array of more than 2^30 elements: on arrays of up to 8 elements, the domain of the proof, the two searches agree. The bug is real and outside the domain"
+    },
+    {
+      "id": "real/bucket/broken-property",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "property",
+      "classes": "broken",
+      "target": "bench.real.Bucket#index",
+      "assume": "buckets > 0",
+      "assert": "0 <= result && result < buckets",
+      "throws": [],
+      "expected": "violation",
+      "source": "FindBugs bug pattern RV_ABSOLUTE_VALUE_OF_HASHCODE, \"Bad attempt to compute absolute value of signed 32-bit hashcode\"",
+      "why": "Math.abs(Integer.MIN_VALUE) is Integer.MIN_VALUE, whose remainder by 3 is -2",
+      "witness": [
+        -2147483648,
+        3
+      ]
+    },
+    {
+      "id": "real/bucket/fixed-property",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "property",
+      "classes": "fixed",
+      "target": "bench.real.Bucket#index",
+      "assume": "buckets > 0",
+      "assert": "0 <= result && result < buckets",
+      "throws": [],
+      "expected": "verified",
+      "source": "FindBugs bug pattern RV_ABSOLUTE_VALUE_OF_HASHCODE, \"Bad attempt to compute absolute value of signed 32-bit hashcode\"",
+      "why": "hash & 0x7fffffff is non-negative, and so is its remainder by a positive count, which is below the count"
+    },
+    {
+      "id": "real/bucket/fix-confined",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "regression",
+      "before": "broken",
+      "after": "fixed",
+      "target": "bench.real.Bucket#index",
+      "unchangedUnless": "hash < 0",
+      "expected": "verified",
+      "source": "FindBugs bug pattern RV_ABSOLUTE_VALUE_OF_HASHCODE, \"Bad attempt to compute absolute value of signed 32-bit hashcode\"",
+      "why": "for a non-negative hash, Math.abs(hash) and hash & 0x7fffffff are the hash"
+    },
+    {
+      "id": "real/oddity/broken-property",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "property",
+      "classes": "broken",
+      "target": "bench.real.Oddity#isOdd",
+      "assume": null,
+      "assert": "result == ((i & 1) == 1)",
+      "throws": [],
+      "expected": "violation",
+      "source": "Joshua Bloch and Neal Gafter, Java Puzzlers (2005), Puzzle 1, \"Oddity\"",
+      "why": "-1 % 2 is -1, not 1",
+      "witness": [
+        -1
+      ]
+    },
+    {
+      "id": "real/oddity/fixed-property",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "property",
+      "classes": "fixed",
+      "target": "bench.real.Oddity#isOdd",
+      "assume": null,
+      "assert": "result == ((i & 1) == 1)",
+      "throws": [],
+      "expected": "verified",
+      "source": "Joshua Bloch and Neal Gafter, Java Puzzlers (2005), Puzzle 1, \"Oddity\"",
+      "why": "i % 2 is 0 exactly when the lowest bit of i is clear, whatever the sign"
+    },
+    {
+      "id": "real/oddity/fix-confined",
+      "group": 2,
+      "workload": "div-rem",
+      "kind": "regression",
+      "before": "broken",
+      "after": "fixed",
+      "target": "bench.real.Oddity#isOdd",
+      "unchangedUnless": "i < 0",
+      "expected": "verified",
+      "source": "Joshua Bloch and Neal Gafter, Java Puzzlers (2005), Puzzle 1, \"Oddity\"",
+      "why": "for a non-negative i, i % 2 is 0 or 1"
+    },
+    {
+      "id": "real/checksum/broken-property",
+      "group": 2,
+      "workload": "array-bounds",
+      "kind": "property",
+      "classes": "broken",
+      "target": "bench.real.Checksum#sum",
+      "assume": null,
+      "assert": "len != 0 || result == 0",
+      "throws": [
+        "IndexOutOfBoundsException when off < 0 || len < 0 || len > b.length - off"
+      ],
+      "expected": "violation",
+      "source": "The CERT Oracle Coding Standard for Java, NUM00-J, \"Detect or prevent integer overflow\"; JDK 8's java.io.OutputStream.write(byte[], int, int) also tests (off + len) < 0",
+      "why": "off + len overflows to a negative number, which passes the check, and the loop runs no iteration: 0 for a range that is not in the array",
+      "witness": [
+        [],
+        1,
+        2147483647
+      ]
+    },
+    {
+      "id": "real/checksum/fixed-property",
+      "group": 2,
+      "workload": "array-bounds",
+      "kind": "property",
+      "classes": "fixed",
+      "target": "bench.real.Checksum#sum",
+      "assume": null,
+      "assert": "len != 0 || result == 0",
+      "throws": [
+        "IndexOutOfBoundsException when off < 0 || len < 0 || len > b.length - off"
+      ],
+      "expected": "verified",
+      "source": "The CERT Oracle Coding Standard for Java, NUM00-J, \"Detect or prevent integer overflow\"; JDK 8's java.io.OutputStream.write(byte[], int, int) also tests (off + len) < 0",
+      "why": "b.length - off cannot overflow once off >= 0"
+    },
+    {
+      "id": "real/checksum/fix-confined",
+      "group": 2,
+      "workload": "array-bounds",
+      "kind": "regression",
+      "before": "broken",
+      "after": "fixed",
+      "target": "bench.real.Checksum#sum",
+      "unchangedUnless": "off > 0 && len > 0 && off + len < 0",
+      "expected": "verified",
+      "source": "The CERT Oracle Coding Standard for Java, NUM00-J, \"Detect or prevent integer overflow\"; JDK 8's java.io.OutputStream.write(byte[], int, int) also tests (off + len) < 0",
+      "why": "the two checks differ only where off + len overflows"
+    },
+    {
+      "id": "held/saturating",
+      "group": 3,
+      "workload": "scalar-arithmetic",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Saturating#add",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "a + b overflows exactly when both operands' signs differ from the wrapped sum's, and then saturates toward a's sign"
+    },
+    {
+      "id": "held/average/bits",
+      "group": 3,
+      "workload": "scalar-arithmetic",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Average#mean",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "a + b == 2 * (a & b) + (a ^ b), so the floor of half the sum is (a & b) + ((a ^ b) >> 1), with no overflow"
+    },
+    {
+      "id": "held/average/unsigned-shift",
+      "group": 3,
+      "workload": "scalar-arithmetic",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v3",
+      "target": "bench.held.Average#mean",
+      "unchangedUnless": null,
+      "expected": "violation",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "(a + b) >>> 1 shifts the sign bit in: the mean of -1 and -1 comes out as Integer.MAX_VALUE",
+      "witness": [
+        -1,
+        -1
+      ]
+    },
+    {
+      "id": "held/floor-mod/wide-modulus",
+      "group": 3,
+      "workload": "div-rem",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.FloorMod#mod",
+      "unchangedUnless": "n <= 0",
+      "expected": "violation",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "(a % n) + n overflows once n passes 2^30: a = 2^31 - 2, n = 2^31 - 1 gives -3 before, 2^31 - 2 after",
+      "witness": [
+        2147483646,
+        2147483647
+      ]
+    },
+    {
+      "id": "held/floor-mod/jdk",
+      "group": 3,
+      "workload": "div-rem",
+      "kind": "regression",
+      "before": "v2",
+      "after": "v3",
+      "target": "bench.held.FloorMod#mod",
+      "unchangedUnless": "n <= 0",
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "for a positive modulus, Math.floorMod is the remainder, plus the modulus when the remainder is negative"
+    },
+    {
+      "id": "held/ceil-div",
+      "group": 3,
+      "workload": "div-rem",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.CeilDiv#ceilDiv",
+      "unchangedUnless": "b <= 0",
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "for a positive divisor, q * b == a - a % b, which is below a exactly when the remainder is positive"
+    },
+    {
+      "id": "held/lower-bound",
+      "group": 3,
+      "workload": "binary-search",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.LowerBound#lowerBound",
+      "unchangedUnless": "!(\\forall int i; 0 <= i && i < a.length - 1; a[i] <= a[i + 1])",
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "on a sorted array, the elements below the key are a prefix, and both versions return its length"
+    },
+    {
+      "id": "held/utf8-length",
+      "group": 3,
+      "workload": "utf8",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Utf8Length#length",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "the fast path counts one byte per char of the leading ASCII run, as the general loop does"
+    },
+    {
+      "id": "held/reverse",
+      "group": 3,
+      "workload": "array-mutation",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Reverse#reverse",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "both swap a[i] with a[n - 1 - i] for each i below n / 2"
+    },
+    {
+      "id": "held/prefix-sums",
+      "group": 3,
+      "workload": "array-mutation",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.PrefixSums#accumulate",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "after step i both hold the wrapped sum of a[0..i] at i"
+    },
+    {
+      "id": "held/overlap/meets",
+      "group": 3,
+      "workload": "records",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Overlap#meets",
+      "unchangedUnless": null,
+      "expected": "verified",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "De Morgan's laws: not (x ends before y or y ends before x)"
+    },
+    {
+      "id": "held/overlap/length",
+      "group": 3,
+      "workload": "records",
+      "kind": "regression",
+      "before": "v1",
+      "after": "v2",
+      "target": "bench.held.Overlap#length",
+      "unchangedUnless": null,
+      "expected": "violation",
+      "source": "written for the benchmark on 2026-11-06, after the engines' optimizations, and not changed to suit them",
+      "why": "min(x.hi, y.hi) - max(x.lo, y.lo) overflows in an int for wide intervals: [MIN, MAX] with itself gives 0 before, Integer.MAX_VALUE after",
+      "witness": [
+        -2147483648,
+        2147483647,
+        -2147483648,
+        2147483647
+      ]
+    }
+  ]
+}

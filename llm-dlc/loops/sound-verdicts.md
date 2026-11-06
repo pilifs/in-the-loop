@@ -1341,6 +1341,87 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     with a known bad and fixed version, and held-out performance cases, and reports correctness, supported coverage
     per gap mode, time and memory separately for both engines. The text parser goes as soon as `-073804` agrees.
 
+- **5a, the benchmark corpus (2026-11-06).**
+  - [`lib/benchmark/`](../../lib/benchmark/README.md) has three groups, 118 cases:
+    - **Group 1: the conformance corpus's 93 claims.** `conformance.json` is written by a new test in
+      `conformance.rs`, `the_benchmark_takes_its_first_group_from_this_corpus`. The test fails when the file is not
+      the corpus, so the two cannot drift (`JVMCONTRACT_BLESS=1` writes it).
+    - **Group 2: four documented bugs, 13 cases.** Each bug has its broken and fixed version as source trees
+      (`src/broken`, `src/fixed`):
+      - JDK-5045582, the `binarySearch` midpoint;
+      - FindBugs' `RV_ABSOLUTE_VALUE_OF_HASHCODE`;
+      - Java Puzzlers' "Oddity";
+      - CERT NUM00-J's overflowing range check.
+
+      For each, the broken version's property is refuted, the fixed version's is proved, and a regression proof
+      shows the fix changes only the inputs it was meant to. That is the ecosystem review's §6.3 sequence. The
+      whole `binarySearch` before and after its fix is a case too: the two agree on every array of up to 8
+      elements, since the overflow needs more than 2^30 of them. So it is expected `verified`, a real bug outside
+      the domain.
+    - **Group 3: 12 held-out regressions** (`src/v1`–`src/v3`), over the workloads 5b's table is over:
+      - scalar arithmetic: saturating add, the floor mean;
+      - div/rem: `floorMod` three ways, `ceilDiv`;
+      - binary search: a scan to a lower-bound bisection;
+      - UTF-8: an encoded length with an ASCII fast path;
+      - array mutation: reverse, prefix sums;
+      - records: interval overlap.
+
+      Three are violations. One was found while writing them: `((a % n) + n) % n` overflows once `n` passes 2^30.
+  - **The answers come from the JVM, not the tool.**
+    - [`Reference.java`](../../lib/benchmark/Reference.java) writes out each claim of groups 2 and 3 in Java, apart
+      from the harness generator and the expression language, and runs each version in a class loader of its own.
+    - A `violation` case names a witness, and the JVM must refute the claim on it.
+    - For a `verified` case, the JVM searches boundary values and 200,000 seeded inputs. That is evidence, not proof.
+    - Every witness an engine reports is run on the JVM too: group 1's through the tool's harness and the
+      conformance runner, groups 2 and 3's through `Reference.java`. One the JVM does not reproduce is a false
+      alarm.
+    - Inline, the JVM bears out all 25 answers.
+  - **The runner, [`run.py`](../../lib/benchmark/run.py).**
+    - It runs each case on `native` and `jbmc` under strict, assume and advised. Advised uses the library alone, with
+      `--max-trust 0`, and no agent.
+    - The configurations are matched: one harness, unwind 16, arrays of up to 8, the models on both, and a 120 s
+      deadline.
+    - A run is `correct`, `correct-assuming` (a gap named), `unsupported` (with the reason), `false-success`
+      (`-assuming` when the verdict names the gap), or `false-alarm`.
+    - It keeps wall and CPU seconds and the peak memory from `wait4`, which counts JBMC and the JVM. Checked: a
+      300 MB grandchild reads as 308 MB.
+    - It keeps the solver's figures: the own checker's paths, solver calls, variables and clauses, and JBMC's runs.
+    - It writes `results.json` and `RESULTS.md`, and exits 1 on a false success, a false alarm, or an answer the JVM
+      does not bear out.
+    - `test_run.py` has 14 tests. Among them: `Reference.java` lists exactly the corpus's ids, every version names
+      its class, and both engines get the same command but for `--engine`.
+  - **Inline, the own checker alone over groups 2 and 3** (a 20 s deadline, not the job's 120 s):
+    - 24 of 25 correct in each mode, none wrong; median 0.1 s, 3.0 s at most when it decides; 73 MB at most.
+    - **A held-out finding:** `real/bucket/fix-confined`, `Math.abs(hash) % b` against `(hash & 0x7fffffff) % b`
+      for a non-negative hash, runs out of time. It was over 100 s before it was stopped, under the default
+      deadline. The two dividends are equal only under the scope, and the lazy division does not relate two
+      remainders of different terms.
+    - A smoke test of the runner on JBMC (five runs) found no surprise. For `capacity`, on both engines: strict
+      unsupported for the gap, assume a false success naming it, and advised correct through the library.
+  - **The full run is job `20261106-094317-benchmark-corpus-step-5a-both-engines-un`**: about 700 runs, both
+    engines, three modes. It writes `lib/benchmark/RESULTS.md` and `results.json`.
+  - Also fixed:
+    - `lib/README.md` still said advised needs `--engine native` or `auto`, which 4c's second part made untrue.
+    - The `--engine` help said the own checker has no arrays.
+  - **This departs from the brief in three ways.**
+    - No CVE kernel. The brief welcomes them, and none was added.
+    - "Properties reviewed independently of the tool" is met by stating each from its published source and holding
+      it to the JVM in `Reference.java`. No person reviewed them.
+    - Group 3 is held out from the optimizations' development, not from their author: this session wrote both. It
+      is recorded as first written, whatever an engine makes of it.
+  - Not done:
+    - `--engine auto` and `--confirm` are not in the matrix.
+    - Each configuration runs once, so the times carry the machine's noise.
+    - The per-phase split is 5b's.
+  - Next: 5b, the per-phase measurements, on this corpus and on the recorded examples 5b names (binary search
+    141, UTF-8 142).
+    - The own checker extends `bmc::Stats` with its phases: decoding, symbolic execution, encoding, solving,
+      extracting the witness, shrinking, and checking contracts. JBMC's `--verbosity` timings and its program and
+      formula sizes are read from its log.
+    - `run.py` carries both into the results.
+    - A table per workload says which phase dominates on each engine, and goes into `jbmc-patch-queue.md`.
+    - The text parser goes once `-073804` agrees.
+
 ## Loop settings
 
 The session is fixed: further work on this brief resumes it.

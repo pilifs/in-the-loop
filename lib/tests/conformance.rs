@@ -616,6 +616,50 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
     assert!(failures.is_empty(), "{} disagreements with the JVM:\n{}", failures.len(), failures.join("\n"));
 }
 
+/// The benchmark corpus of step 5a (`lib/benchmark/`) takes its first group from this corpus, as
+/// `lib/benchmark/conformance.json`: each claim with its method, the answer the JVM gives (`violation` for a claim
+/// one of the case's calls refutes, which the test above checks on a JVM, `verified` otherwise), and the native
+/// engine's verdict recorded here. The file must say what the corpus says: `JVMCONTRACT_BLESS=1` writes it.
+#[test]
+fn the_benchmark_takes_its_first_group_from_this_corpus() {
+    let verdict = |v: &Verdict| match v {
+        V => "verified",
+        X => "violation",
+        U => "unverifiable",
+    };
+    let mut claims = Vec::new();
+    for case in corpus() {
+        for (i, claim) in case.claims.iter().enumerate() {
+            claims.push(serde_json::json!({
+                "id": format!("conformance/{}/{}", case.method, i + 1),
+                "group": 1,
+                "workload": "semantics",
+                "kind": "property",
+                "target": format!("{CLASS}#{}", case.method),
+                "assume": claim.assume,
+                "assert": claim.assert,
+                "throws": claim.throws,
+                "expected": if claim.refuted { "violation" } else { "verified" },
+                "basis": if claim.refuted { "a call the corpus lists refutes it on the JVM" } else { "no call the corpus lists refutes it on the JVM, and the corpus states it" },
+                "nativeStrict": verdict(&claim.native),
+            }));
+        }
+    }
+    let corpus = serde_json::json!({
+        "about": "Group 1 of the benchmark corpus: the conformance corpus of lib/tests/conformance.rs, written out by its test the_benchmark_takes_its_first_group_from_this_corpus. Do not edit: change the corpus and run the test with JVMCONTRACT_BLESS=1.",
+        "source": "lib/tests/conformance/conformance/Conformance.java",
+        "class": CLASS,
+        "cases": claims,
+    });
+    let text = serde_json::to_string_pretty(&corpus).unwrap() + "\n";
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("benchmark/conformance.json");
+    if std::env::var("JVMCONTRACT_BLESS").is_ok_and(|v| v == "1") {
+        std::fs::write(&path, &text).unwrap();
+    }
+    let recorded = std::fs::read_to_string(&path).unwrap_or_default();
+    assert!(recorded == text, "{} is not the corpus as it is: run this test with JVMCONTRACT_BLESS=1 to write it", path.display());
+}
+
 /// JBMC and `--engine auto` under strict, on the same corpus: a pipeline job, since it runs JBMC once or more per
 /// claim (`cargo test --release --test conformance -- --ignored`).
 #[test]
