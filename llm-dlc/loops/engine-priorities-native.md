@@ -450,13 +450,87 @@ are yours, but say under Progress which JBMC results they may change.
   - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs` (new), `sat.rs`, `mod.rs` (the module, the default solver,
     `solver_signature`, the outcome's solver name, the test), and `lib/solvers/bitwuzla/README.md`.
   - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
-- **Next:** 6c's job. Before it can be submitted:
-  - Bitwuzla's configuration (`preprocess`) selectable, named in its signature;
-  - the word-level prototype for the five workloads;
-  - the job's script.
+- **5, the strict rerun: job `20261106-203501`, failed** (at `7457928`, Phase 5 step 2; vm-1, 14 min, peak 1.0 GiB).
+  - **What stands.** 071 and 013 give their expected violations under strict, and 071's third property is a
+    violation whose witness replays. `Enum.<init>`, `List.of` and `List.copyOf` are no longer gaps in either example:
+    the models are used.
+  - **071's properties 1 and 2 stay unverifiable under strict**, on two other JBMC stubs, as step 2 warned:
+    `Collection.isEmpty()` and `Collection.toArray()`. `jbmc_gaps.rs` finds them at `ImmutableCollections.listCopy:82`
+    and `:85`. No path of these proofs reaches them:
+    - `Decision.Transition`'s constructor calls `List.copyOf(effects)`;
+    - its `effects` come from `List.of`, through `Decision.transition`;
+    - so `listCopy` returns at its first branch.
 
-  Phase 5's own work is done. Job `-203501` has run (the status says failed) and isn't collected yet: record its
-  result here once it is.
+    The preflight walks JBMC's call graph, not its paths. 013 names the same two gaps in a note beside its
+    violation.
+  - **So Phase 5's last criterion, 071's two proofs standing under strict, is not met, and the fix isn't in my
+    files.** A model can't remove those stubs without hiding them: on a collection that isn't one of the model's, a
+    call has to reach JBMC's stub. The way out is a gap check in `jbmc_gaps.rs` (the JBMC stream's) that follows
+    paths, for instance by asking JBMC whether a stub's call site is reachable before refusing the proof. For the
+    reconcile loop.
+  - **The library, recorded on JDK 25.0.5:**
+    - 10 contracts checked, all 10 accepted: 3 proved, 7 tested.
+    - The new `lib/models/contracts/checked.json` is among the job's outputs and reaches this branch at the merge.
+    - The 12 library-record claims that conformance fails here should then pass. That is expected, not yet seen.
+  - **Conformance under JBMC and `auto`** (73 cases, 131 claims, 262 runs) has one disagreement with the JVM, on
+    `declaring`. JBMC 6.11.0 proves `result == n + 107` under strict, and the JVM refutes it: the method returns
+    `n + 7`.
+    - **The cause.** `Sub.value` is declared in `Holder`. On the JVM, the `getstatic` initializes `Holder` alone
+      (JVMS §5.5), and JBMC runs `Sub.<clinit>` too.
+    - **This is a false success of the JBMC route under strict.** The other claim (`n + 7`) is unverifiable under
+      JBMC: its counterexample doesn't replay.
+    - **`auto` decides both as the JVM does,** through the own checker.
+    - **The fix is the adapter's.** It should name a gap in `jbmc_gaps.rs` for a static field reached through a
+      class other than its declaring one, when a class from there up to the declarer has a `<clinit>`. That is for
+      the JBMC stream and the reconcile loop, and an upstream report could be drafted for the user. The reproducer is
+      the case itself, in `the_corpus_agrees_with_the_jvm_under_jbmc_and_auto`.
+  - **The enum and list cases agree with the JVM** under JBMC and under `auto`. Under JBMC strict, the 20 list claims
+    are 1 verified, 8 refuted and 11 unverifiable; the log doesn't keep their gaps. Step 3's cases weren't in the
+    corpus at that commit.
+  - The two examples' pages and results are the reconcile loop's to take from the job's outputs.
+- **6c, step 2: Bitwuzla's options, and the bit-blasted comparison queued** (inline; Bitwuzla 0.8.2, CaDiCaL 1.9.5
+  bundled).
+  - **Options by name.** `JVMCONTRACT_SOLVER` and `transcript --solver` take `bitwuzla:` followed by Bitwuzla's
+    options, by the long names of its command line: `bitwuzla:preprocess=0,rewrite-level=0`.
+    - The binding reads each option's range or modes from the library (`bitwuzla_get_option_info`, a struct whose C
+      layout a test checks). It refuses a value outside them before setting it, since the C API aborts the process
+      on one.
+    - It also refuses the options it sets itself (`produce-models`, `time-limit-per`, `sat-solver`) and string
+      options.
+    - The signature lists the options, so the statement's `checker.solver` and the transcripts' headers name the
+      configuration.
+    - `sat::named` now returns a `Maker` (a shared closure), not a function pointer. `Options::solver` is unchanged.
+  - **The comparison's script,** `lib/solvers/compare.py`, with `test_compare.py`.
+    - It imports `lib/benchmark/run.py`'s cases, compilation, command lines and measurement, and changes none of
+      them.
+    - It runs the five workloads (`real/midpoint/search-within-bound`, `example/141`, `example/142`,
+      `held/reverse`, `held/prefix-sums`) under strict, on `cadical`, `bitwuzla` and `bitwuzla:preprocess=0`, with
+      three runs of each full check.
+    - The first run of each check records its transcripts. CaDiCaL's are replayed on all three solvers, three times
+      each.
+    - It writes `bit-blasted.json` and `bit-blasted.md`.
+    - It fails on a wrong decisive verdict, on solvers that disagree, on CaDiCaL missing an expected verdict, or on a
+      replay contradiction. A Bitwuzla run out of time is listed as not decided.
+  - **Checked.**
+    - Unit tests: the option layout; settings parsed, checked and named; a refused range, mode, name, an own option
+      and a string option; solver names with options. Unit (160), integration (64) and skill pass. Conformance fails
+      only its two known tests (the 12 library-record claims, and the benchmark file). The script's 4 tests pass.
+    - `held/lower-bound` end to end under `bitwuzla:preprocess=0`: verified, with the same two transcripts by
+      count, and the statement names the option. Its 460 replayed calls take 1.19 s, and 0.89 s with
+      `rewrite-level=0` too, against 0.18 s on CaDiCaL.
+    - The script inline, on `held/prefix-sums` and `held/reverse` on all three solvers, run twice: all verified, no
+      contradiction. On reverse, a whole check takes 0.16 s on CaDiCaL, 3.90 s on Bitwuzla's defaults and 1.48 s with
+      `preprocess=0`. These are indicative only; the job's figures are the evidence.
+    - All five workloads on CaDiCaL alone: verified, in 942, 115, 18, 1,044 (plus a 5-call check) and 1,885 calls.
+      942 and 1,044 are the review's counts for binary search and 141.
+  - **Queued:** job `20261106-224616-the-own-checker-on-cadical-and-on-bitwuz`. Phase 6c's single job is now two: this one (SAT only), and a later one for word-level
+    terms.
+  - **Shared files changed:** `lib/src/main.rs` (the doc of `transcript --solver`) and `lib/README.md` (the
+    solver-interface paragraph).
+  - **Also changed (mine):** `lib/src/bmc/bitwuzla.rs`, `sat.rs`, `lib/solvers/compare.py` and `test_compare.py`
+    (new), and `lib/solvers/bitwuzla/README.md`.
+  - **JBMC results:** none change. Under CaDiCaL, no result of the own checker changes either.
+- **Next:** the word-level prototype for the five workloads (6c, part 2), and its job, while `-224616` runs. Then 6d.
 - Status: working
 
 ## Loop settings

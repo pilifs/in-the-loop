@@ -35,30 +35,45 @@ pub trait Sat {
     fn variables(&self) -> i32;
 }
 
-/// The environment variable choosing the solver for checks whose options don't: `cadical` (the default) or
-/// `bitwuzla` ([`super::bitwuzla`]). Like the transcripts' variable, it reaches the checks that the proof drivers,
-/// the benchmark or a job run, and the results name the solver it chose ([`super::solver_signature`]).
+/// The environment variable choosing the solver for checks whose options don't: `cadical` (the default), or
+/// `bitwuzla` ([`super::bitwuzla`]) with Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`). Like the
+/// transcripts' variable, it reaches the checks that the proof drivers, the benchmark or a job run, and the results
+/// name the solver it chose, with those options ([`super::solver_signature`]).
 pub const ENV: &str = "JVMCONTRACT_SOLVER";
 
 /// The solvers by the names [`ENV`] and `jvmcontract transcript --solver` take.
 pub const NAMES: &[&str] = &["cadical", "bitwuzla"];
 
-/// The maker of the solver called `name`, once it is known to work here: Bitwuzla's library must load.
-pub fn named(name: &str) -> Result<fn() -> Box<dyn Sat>, crate::Error> {
-    match name {
-        "cadical" => Ok(cadical),
-        "bitwuzla" => super::bitwuzla::available().map(|()| super::bitwuzla::boxed as fn() -> Box<dyn Sat>),
+/// What makes a new, empty solver of one kind and configuration.
+pub type Maker = std::sync::Arc<dyn Fn() -> Box<dyn Sat> + Send + Sync>;
+
+/// The maker of the solver `name` names, `cadical`, `bitwuzla`, or `bitwuzla:` and Bitwuzla's options
+/// (`bitwuzla:preprocess=0,rewrite-level=0`), once it is known to work here: Bitwuzla's library must load and take
+/// the options.
+pub fn named(name: &str) -> Result<Maker, crate::Error> {
+    let (base, options) = match name.split_once(':') {
+        Some((base, options)) => (base, Some(options)),
+        None => (name, None),
+    };
+    match base {
+        "cadical" if options.is_none() => Ok(std::sync::Arc::new(cadical)),
+        "cadical" => Err(crate::Error::new(format!("{ENV}: the bundled CaDiCaL takes no options here ({name:?})"))),
+        "bitwuzla" => {
+            let settings = super::bitwuzla::settings(options.unwrap_or(""))?;
+            super::bitwuzla::Bitwuzla::with(&settings)?;
+            Ok(std::sync::Arc::new(move || super::bitwuzla::boxed_with(&settings)))
+        }
         _ => Err(crate::Error::new(format!("{ENV}: no solver called {name:?} (the solvers are {})", NAMES.join(", ")))),
     }
 }
 
-static CONFIGURED: std::sync::OnceLock<Result<fn() -> Box<dyn Sat>, String>> = std::sync::OnceLock::new();
+static CONFIGURED: std::sync::OnceLock<Result<Maker, String>> = std::sync::OnceLock::new();
 
 /// The solver [`ENV`] chooses, read once per process; CaDiCaL when it is unset or empty.
-pub fn configuration() -> Result<fn() -> Box<dyn Sat>, crate::Error> {
+pub fn configuration() -> Result<Maker, crate::Error> {
     let chosen = CONFIGURED.get_or_init(|| match std::env::var(ENV) {
         Ok(name) if !name.is_empty() => named(&name).map_err(|e| e.0),
-        _ => Ok(cadical as fn() -> Box<dyn Sat>),
+        _ => Ok(std::sync::Arc::new(cadical)),
     });
     chosen.clone().map_err(crate::Error::new)
 }
@@ -222,5 +237,20 @@ mod tests {
         assert_eq!(s.solve(&[]), Some(false));
         s.set_limit(None);
         assert_eq!(s.solve(&[]), Some(false));
+    }
+
+    #[test]
+    fn a_solver_is_named_with_its_options() {
+        assert!(named("cadical").unwrap()().signature().starts_with("CaDiCaL 1.9.5"));
+        assert!(named("cadical:x=1").err().unwrap().0.contains("takes no options"));
+        assert!(named("minisat").err().unwrap().0.contains("the solvers are cadical, bitwuzla"));
+        if super::super::bitwuzla::available().is_err() {
+            eprintln!("skipped: Bitwuzla isn't installed");
+            return;
+        }
+        assert!(named("bitwuzla").unwrap()().signature().contains("produce-models, otherwise defaults"));
+        let make = named("bitwuzla:preprocess=0").unwrap();
+        assert!(make().signature().contains("produce-models, preprocess=0, otherwise defaults"), "{}", make().signature());
+        assert!(named("bitwuzla:preprocess=7").err().unwrap().0.contains("from 0 to 1"));
     }
 }

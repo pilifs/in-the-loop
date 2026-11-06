@@ -198,7 +198,7 @@ enum Command {
         #[arg(long)]
         limit: Option<f32>,
         /// The solver to run it on: `cadical` (bundled), or `bitwuzla`, loaded from JVMCONTRACT_BITWUZLA or
-        /// ~/tools/bitwuzla/current.
+        /// ~/tools/bitwuzla/current, with Bitwuzla's options after a colon if any (`bitwuzla:preprocess=0`).
         #[arg(long, default_value = "cadical")]
         solver: String,
         /// Print JSON, with every call.

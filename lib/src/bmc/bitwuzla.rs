@@ -34,6 +34,47 @@ const KIND_NOT: c_int = 9;
 const KIND_OR: c_int = 10;
 const OPT_PRODUCE_MODELS: c_int = 1;
 const OPT_SAT_SOLVER: c_int = 11;
+const NUM_OPTS: c_int = 54;
+
+/// `BitwuzlaOptionInfo` in 0.8.2's `bitwuzla.h`: 120 bytes, with the offsets the C program printed (`lng` at 16,
+/// the flags at 32, `numeric` at 40, `mode` at 72), which [`tests::the_option_info_has_the_c_layout`] checks.
+#[repr(C)]
+struct OptionInfo {
+    opt: c_int,
+    shrt: *const c_char,
+    lng: *const c_char,
+    description: *const c_char,
+    is_numeric: bool,
+    is_mode: bool,
+    is_string: bool,
+    numeric: [u64; 4],
+    mode_cur: *const c_char,
+    mode_dflt: *const c_char,
+    num_modes: usize,
+    modes: *const *const c_char,
+    string: [*const c_char; 2],
+}
+
+/// An option set by its long name, as Bitwuzla's command line takes it (`preprocess=0`), on top of the binding's own
+/// (`produce-models`, `sat-solver cadical`). [`settings`] reads a list of them.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Setting {
+    pub name: String,
+    pub value: String,
+}
+
+/// The settings in `name=value,name=value` (an empty text is none). Whether Bitwuzla has each option and takes the
+/// value is checked when an instance is made with them ([`Bitwuzla::with`]).
+pub fn settings(text: &str) -> Result<Vec<Setting>, Error> {
+    text.split(',').filter(|s| !s.trim().is_empty()).map(|item| match item.split_once('=') {
+        Some((name, value)) if !name.trim().is_empty() && !value.trim().is_empty() => Ok(Setting { name: name.trim().to_string(), value: value.trim().to_string() }),
+        _ => Err(Error::new(format!("Bitwuzla setting {item:?} is not name=value (as in preprocess=0)"))),
+    }).collect()
+}
+
+/// The options the binding sets itself, which a setting may not change: models are read after every satisfiable
+/// call, the limit is the termination callback's, and the solver must be an incremental one.
+const OWN: &[&str] = &["produce-models", "time-limit-per", "sat-solver"];
 
 type Opts = c_void;
 type Tm = c_void;
@@ -49,6 +90,7 @@ struct Api {
     options_delete: unsafe extern "C" fn(*mut Opts),
     set_option: unsafe extern "C" fn(*mut Opts, c_int, u64),
     set_option_mode: unsafe extern "C" fn(*mut Opts, c_int, *const c_char),
+    get_option_info: unsafe extern "C" fn(*mut Opts, c_int, *mut OptionInfo),
     term_manager_new: unsafe extern "C" fn() -> *mut Tm,
     term_manager_delete: unsafe extern "C" fn(*mut Tm),
     new: unsafe extern "C" fn(*mut Tm, *const Opts) -> *mut Bzla,
@@ -147,6 +189,7 @@ fn load() -> Result<Api, Error> {
             options_delete: sym!("bitwuzla_options_delete"),
             set_option: sym!("bitwuzla_set_option"),
             set_option_mode: sym!("bitwuzla_set_option_mode"),
+            get_option_info: sym!("bitwuzla_get_option_info"),
             term_manager_new: sym!("bitwuzla_term_manager_new"),
             term_manager_delete: sym!("bitwuzla_term_manager_delete"),
             new: sym!("bitwuzla_new"),
@@ -168,6 +211,53 @@ fn load() -> Result<Api, Error> {
         }
         Ok(api)
     }
+}
+
+/// Sets one option on `options`, by its long name, once Bitwuzla's own description of it says the value is good.
+///
+/// # Safety
+/// `options` is a live `BitwuzlaOptions` of `api`'s library.
+unsafe fn set(api: &Api, options: *mut Opts, setting: &Setting) -> Result<(), Error> {
+    let Setting { name, value } = setting;
+    if OWN.contains(&name.as_str()) {
+        return Err(Error::new(format!("Bitwuzla setting {name}: the binding sets it itself ({})", OWN.join(", "))));
+    }
+    for opt in 0..NUM_OPTS {
+        let mut info = std::mem::MaybeUninit::<OptionInfo>::zeroed();
+        // SAFETY: an option number below the count, and a struct of the C layout to fill.
+        let info = unsafe {
+            (api.get_option_info)(options, opt, info.as_mut_ptr());
+            info.assume_init()
+        };
+        // SAFETY: the info's names and modes are static NUL-terminated strings of the library.
+        let text = |p: *const c_char| if p.is_null() { String::new() } else { unsafe { CStr::from_ptr(p) }.to_string_lossy().into_owned() };
+        if info.opt != opt || text(info.lng) != *name {
+            continue;
+        }
+        if info.is_numeric {
+            let [_, _, min, max] = info.numeric;
+            let n: u64 = value.parse().map_err(|_| Error::new(format!("Bitwuzla setting {name}={value}: the value is a number, from {min} to {max}")))?;
+            if n < min || n > max {
+                return Err(Error::new(format!("Bitwuzla setting {name}={value}: the value is from {min} to {max}")));
+            }
+            // SAFETY: a numeric option, with a value in its range.
+            unsafe { (api.set_option)(options, opt, n) };
+            return Ok(());
+        }
+        if info.is_mode {
+            // SAFETY: `num_modes` strings at `modes`, as the info describes them.
+            let modes: Vec<String> = (0..info.num_modes).map(|i| text(unsafe { *info.modes.add(i) })).collect();
+            if !modes.contains(value) {
+                return Err(Error::new(format!("Bitwuzla setting {name}={value}: the modes are {}", modes.join(", "))));
+            }
+            let mode = CString::new(value.as_str()).map_err(|_| Error::new("a NUL in a Bitwuzla setting"))?;
+            // SAFETY: a mode option, with one of its modes.
+            unsafe { (api.set_option_mode)(options, opt, mode.as_ptr()) };
+            return Ok(());
+        }
+        return Err(Error::new(format!("Bitwuzla setting {name}: only numeric and mode options can be set here")));
+    }
+    Err(Error::new(format!("Bitwuzla setting {name}: Bitwuzla {VERSION} has no option called that")))
 }
 
 /// When a call is to stop, for the termination callback; `None` for no limit.
@@ -194,6 +284,8 @@ pub struct Bitwuzla {
     deadline: Box<Deadline>,
     /// Whether the last call was satisfiable, so that a model may be read.
     model: bool,
+    /// The settings it was made with, beyond the binding's own.
+    settings: Vec<Setting>,
 }
 
 impl std::fmt::Debug for Bitwuzla {
@@ -204,21 +296,35 @@ impl std::fmt::Debug for Bitwuzla {
 
 impl Bitwuzla {
     /// A new, empty instance, with models on and CaDiCaL as its SAT solver (Bitwuzla's default, set so that the
-    /// signature can say it).
+    /// signature can say it), and otherwise Bitwuzla's defaults.
     pub fn new() -> Result<Bitwuzla, Error> {
+        Bitwuzla::with(&[])
+    }
+
+    /// A new, empty instance as [`Bitwuzla::new`] makes one, with these options set as well. Each must be one of
+    /// Bitwuzla's, numeric or a mode, not one the binding sets itself ([`OWN`]), and its value in range or one of
+    /// its modes: the C API aborts the process on a value it refuses, so the binding checks first.
+    pub fn with(settings: &[Setting]) -> Result<Bitwuzla, Error> {
         let api = api()?;
         // SAFETY: the C API is used as `bitwuzla.h` documents: options made and set before the instance, which is
-        // made over a term manager that outlives it (both are deleted in `drop`, the instance first).
+        // made over a term manager that outlives it (both are deleted in `drop`, the instance first). An option's
+        // info is read into a struct of the C layout, and its strings are static.
         unsafe {
             let options = (api.options_new)();
             (api.set_option)(options, OPT_PRODUCE_MODELS, 1);
             (api.set_option_mode)(options, OPT_SAT_SOLVER, c"cadical".as_ptr());
+            for setting in settings {
+                if let Err(e) = set(api, options, setting) {
+                    (api.options_delete)(options);
+                    return Err(e);
+                }
+            }
             let tm = (api.term_manager_new)();
             let solver = (api.new)(tm, options);
             let mut deadline = Box::new(Deadline { at: None });
             (api.set_termination_callback)(solver, Some(past_deadline), (&mut *deadline as *mut Deadline).cast());
             let boolean = (api.mk_bool_sort)(tm);
-            Ok(Bitwuzla { api, tm, options, solver, boolean, variables: Vec::new(), limit: None, deadline, model: false })
+            Ok(Bitwuzla { api, tm, options, solver, boolean, variables: Vec::new(), limit: None, deadline, model: false, settings: settings.to_vec() })
         }
     }
 
@@ -244,10 +350,15 @@ impl Bitwuzla {
     }
 }
 
-/// A new, empty [`Bitwuzla`], as [`super::Options::solver`] makes one. The library must load: the selection
-/// ([`super::sat::configured`]) checks that first.
+/// A new, empty [`Bitwuzla`] with Bitwuzla's defaults, as [`super::Options::solver`] makes one. The library must
+/// load: the selection ([`super::sat::configured`]) checks that first.
 pub fn boxed() -> Box<dyn Sat> {
-    match Bitwuzla::new() {
+    boxed_with(&[])
+}
+
+/// A new, empty [`Bitwuzla`] with these settings, which [`Bitwuzla::with`] has already accepted once.
+pub fn boxed_with(settings: &[Setting]) -> Box<dyn Sat> {
+    match Bitwuzla::with(settings) {
         Ok(b) => Box::new(b),
         Err(e) => panic!("{}", e.0),
     }
@@ -268,7 +379,8 @@ impl Sat for Bitwuzla {
     fn signature(&self) -> String {
         // SAFETY: the version is a static NUL-terminated string.
         let version = unsafe { CStr::from_ptr((self.api.version)()) }.to_string_lossy().into_owned();
-        format!("Bitwuzla {version} (the engine's clauses as Boolean terms; sat-solver cadical, produce-models, otherwise defaults)")
+        let set: String = self.settings.iter().map(|s| format!(", {}={}", s.name, s.value)).collect();
+        format!("Bitwuzla {version} (the engine's clauses as Boolean terms; sat-solver cadical, produce-models{set}, otherwise defaults)")
     }
 
     fn add_clause(&mut self, lits: &[Lit]) {
@@ -363,6 +475,42 @@ mod tests {
         assert_eq!(t.variables(), 5);
         t.add_clause(&[]);
         assert_eq!(t.solve(&[]), Some(false));
+    }
+
+    #[test]
+    fn the_option_info_has_the_c_layout() {
+        assert_eq!(std::mem::size_of::<OptionInfo>(), 120);
+        assert_eq!(std::mem::offset_of!(OptionInfo, lng), 16);
+        assert_eq!(std::mem::offset_of!(OptionInfo, is_numeric), 32);
+        assert_eq!(std::mem::offset_of!(OptionInfo, numeric), 40);
+        assert_eq!(std::mem::offset_of!(OptionInfo, mode_cur), 72);
+        assert_eq!(std::mem::offset_of!(OptionInfo, string), 104);
+    }
+
+    #[test]
+    fn settings_are_read_checked_against_bitwuzla_and_named_in_the_signature() {
+        let off = |text: &str| settings(text).unwrap();
+        assert_eq!(off(""), vec![]);
+        assert_eq!(off("preprocess=0, rewrite-level=1"), vec![Setting { name: "preprocess".into(), value: "0".into() }, Setting { name: "rewrite-level".into(), value: "1".into() }]);
+        assert!(settings("preprocess").is_err());
+        assert!(settings("=0").is_err());
+        let Some(_) = installed() else { return };
+        let mut s = Bitwuzla::with(&off("preprocess=0,rewrite-level=0")).unwrap();
+        assert!(s.signature().ends_with("(the engine's clauses as Boolean terms; sat-solver cadical, produce-models, preprocess=0, rewrite-level=0, otherwise defaults)"), "{}", s.signature());
+        s.add_clause(&[1, 2]);
+        s.add_clause(&[-1, 2]);
+        assert_eq!(s.solve(&[-2]), Some(false));
+        assert_eq!(s.solve(&[1]), Some(true));
+        assert_eq!(s.value(2), Some(true));
+        let refused = |text: &str| Bitwuzla::with(&off(text)).unwrap_err().0;
+        assert!(refused("preprocess=2").contains("from 0 to 1"), "{}", refused("preprocess=2"));
+        assert!(refused("preprocess=no").contains("is a number"));
+        assert!(refused("bv-solver=fast").contains("the modes are preprop, prop, bitblast"), "{}", refused("bv-solver=fast"));
+        assert!(refused("no-such-option=1").contains("has no option called that"));
+        assert!(refused("produce-models=0").contains("sets it itself"));
+        assert!(refused("write-cnf=/tmp/x").contains("only numeric and mode"));
+        // A mode, set.
+        assert!(Bitwuzla::with(&off("bv-solver=prop")).is_ok());
     }
 
     #[test]

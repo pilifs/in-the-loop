@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 29, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 22:27 UTC |
-| Prompts | 883 |
-| Model calls | 8,774 |
-| Tool calls | 9,628 (207 failed) |
-| Compactions | 118 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 22:46 UTC |
+| Prompts | 889 |
+| Model calls | 8,851 |
+| Tool calls | 9,705 (207 failed) |
+| Compactions | 119 |
 | Subagents | 3 |
-| Tokens written | 11,878,750 |
-| Tokens read | 1,496,640,873 (97.9% from cache) |
-| Commits with a trace | 270 |
-| Log snapshots | 331 (1003.2 MB gzipped, 322 uploaded) |
+| Tokens written | 11,944,463 |
+| Tokens read | 1,507,360,073 (97.9% from cache) |
+| Commits with a trace | 271 |
+| Log snapshots | 332 (1006.2 MB gzipped, 322 uploaded) |
 
 ## Sessions
 
@@ -55,7 +55,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-06 15:24 UTC | [setup-repo-on-ryzen-machine](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | open | 39 min | `claude-opus-5-5` | 3 | 34 | 36 | 5 | 0 | 103,564 | 2 |
 | 2026-11-06 16:53 UTC | [Commit and publish to remote](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | ended | 1 h 34 min | `claude-opus-5-5` | 12 | 193 | 187 | 6 | 0 | 289,035 | 14 |
 | 2026-11-06 19:07 UTC | [Agent session transfer warnings](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | open | 4 min | `claude-opus-5-5` | 2 | 13 | 12 | 1 | 0 | 53,617 | 2 |
-| 2026-11-06 19:15 UTC | [Feature loop run review actions](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | open | 3 h 12 min | `claude-opus-5-5` | 49 | 517 | 525 | 7 | 9 | 298,900 | 9 |
+| 2026-11-06 19:15 UTC | [Feature loop run review actions](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | open | 3 h 31 min | `claude-opus-5-5` | 55 | 594 | 602 | 7 | 10 | 298,900 | 10 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -93,18 +93,18 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 23,386 | 68 | 72,506 | 2,701,932 | 97.4% | 119 |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 123,882 | 410 | 251,410 | 30,843,927 | 99.2% | 251 |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 4,261 | 28 | 22,899 | 610,433 | 96.4% | 149 |
-| [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | 485,272 | 1,040 | 1,549,511 | 76,248,439 | 98.0% | 160 |
+| [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | 550,985 | 1,200 | 1,752,008 | 86,764,982 | 98.0% | 161 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 8,379 | 87.0% | 29 |
-| `Edit` | 422 | 4.4% | 15 |
-| `Read` | 338 | 3.5% | 18 |
-| `Write` | 317 | 3.3% | 15 |
-| `ToolSearch` | 65 | 0.7% | 15 |
-| `Monitor` | 31 | 0.3% | 5 |
+| `Bash` | 8,449 | 87.1% | 29 |
+| `Edit` | 423 | 4.4% | 15 |
+| `Read` | 341 | 3.5% | 18 |
+| `Write` | 318 | 3.3% | 15 |
+| `ToolSearch` | 66 | 0.7% | 15 |
+| `Monitor` | 32 | 0.3% | 6 |
 | `WebFetch` | 24 | 0.2% | 5 |
 | `AskUserQuestion` | 23 | 0.2% | 6 |
 | `TaskStop` | 14 | 0.1% | 5 |
@@ -390,6 +390,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 268 | change `syntvmqp` | Put the own checker's SAT solver behind a narrow interface (Phase 6b) | [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) ([log](https://terminalvalue.net/raw-traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/67fd094d3533a2bd8208e5f575e30b9f41de9e11de317910beabcc2ab29abae6.jsonl.gz)) |
 | 269 | change `ulstzomt` | Run enums in the own checker: arrays of references, Enum's model, switch maps (Phase 5, step 3) | [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) ([log](https://terminalvalue.net/raw-traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/eec4bdad5202557f358641f9ba0a33d8bb0653387e13598bee14b7c60c2c511f.jsonl.gz)) |
 | 270 | change `osspkxkz` | Put Bitwuzla behind the own checker's solver interface, chosen by JVMCONTRACT_SOLVER (Phase 6c, step 1) | [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) ([log](https://terminalvalue.net/raw-traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/812061b5e73ea09f16d0118ff2c05aa174341d16749839f971bb89be4641ff3f.jsonl.gz)) |
+| 271 | change `wqskvlym` | Make Bitwuzla's options selectable by name and queue the bit-blasted solver comparison (Phase 6c, step 2; verification pending) | [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) ([log](https://terminalvalue.net/raw-traces/63d80e44-36d9-4bcb-9e72-e31c6d9336ef/4fa1cc46e62ed8a3d239da33fc04175ebe9675b30f2edab16995e1977c702e75.jsonl.gz)) |
 
 ## Logs
 
@@ -425,7 +426,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 14 | 14 | 5.4 MB | [`bea739fae396`](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz) |
 | [`07d0ee30`](07d0ee30-0145-462d-80fc-8ef65f32f59a/summary.md) | 2 | 2 | 0.2 MB | [`3dcf14c608d7`](https://terminalvalue.net/raw-traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/3dcf14c608d7609eb57c72f0ba7e862e5834061d8f8950d4b51a65d17c3befc7.jsonl.gz) |
-| [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | 9 | 0 | 12.2 MB | `812061b5e73e`, not uploaded |
+| [`63d80e44`](63d80e44-36d9-4bcb-9e72-e31c6d9336ef/summary.md) | 10 | 0 | 15.1 MB | `4fa1cc46e62e`, not uploaded |
 
 ## Session notes
 

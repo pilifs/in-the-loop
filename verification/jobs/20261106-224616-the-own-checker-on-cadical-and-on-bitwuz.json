@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-224616-the-own-checker-on-cadical-and-on-bitwuz",
+  "title": "The own checker on CaDiCaL and on Bitwuzla, given the same bit-blasted clauses: five workloads, full checks and replays (Phase 6c, part 1)",
+  "description": "Phase 6c of llm-dlc/loops/engine-priorities.md (the native stream), its first part: the solver apart from the encoding. lib/solvers/compare.py runs the own checker's full checks of the benchmark's five workloads where the formula's size dominates (real/midpoint/search-within-bound, the bounded binary search; example/141; example/142; held/reverse; held/prefix-sums), under strict with the benchmark's own command lines (lib/benchmark/run.py, imported, not changed), on three solvers chosen by JVMCONTRACT_SOLVER: the bundled CaDiCaL 1.9.5; Bitwuzla 0.8.2 with its defaults (sat-solver cadical, i.e. its CaDiCaL 2.1.2, produce-models); and Bitwuzla with preprocess=0. Bitwuzla is given the engine's own clauses as Boolean terms (lib/src/bmc/bitwuzla.rs, loaded with dlopen from ~/tools/bitwuzla/current, the install job 20261106-194049 made on this runner), so only the solver differs. Each check runs three times, and the first run records its solver calls (JVMCONTRACT_TRANSCRIPTS); CaDiCaL's transcripts are then replayed on all three solvers, three times each, so that every solver is timed on exactly the same calls (a full check on another solver can take other paths, since the engine keeps a path's models). The script writes lib/solvers/comparison/bit-blasted.json (every run, with the solvers' signatures, the library's path and sha256, the commit, the machine) and bit-blasted.md (the tables). It fails if CaDiCaL misses a case's expected verdict, if any decisive verdict is wrong or the solvers' decisive verdicts differ, or if a replay contradicts its recording; a Bitwuzla run out of time is a measurement, listed as not decided. Times are taken on a shared runner, so other jobs may run beside it. The second part, Bitwuzla on word-level terms for the same workloads, is a later job. No network.",
+  "kind": "other",
+  "capabilities": [
+    "solver:bitwuzla",
+    "jvmcontract:equivalence",
+    "jvmcontract:transcript"
+  ],
+  "links": {
+    "paths": [
+      "lib/solvers/compare.py",
+      "lib/src/bmc/bitwuzla.rs",
+      "lib/src/bmc/sat.rs"
+    ],
+    "jobs": [
+      "20261106-194049-bitwuzla-0-8-2-built-from-source-cadical"
+    ]
+  },
+  "expected": "exits 0: all five cases verified on CaDiCaL, every decisive verdict on Bitwuzla verified, every replay with 0 contradictions; bit-blasted.json and bit-blasted.md written with the three solvers' signatures",
+  "submitted": {
+    "at": "2026-11-06T22:46:16+00:00",
+    "session": "63d80e44-36d9-4bcb-9e72-e31c6d9336ef",
+    "by": "claude (engines-native stream)"
+  },
+  "requires": [
+    "cargo",
+    "java",
+    "javac",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1h30m",
+    "memoryLimit": "4G",
+    "timeout": "6h",
+    "notes": "Measured inline on this machine: the five checks take 8.3 s on CaDiCaL and their transcripts replay in 7.8 s; Bitwuzla with preprocess=0 replayed binary search's 942 calls in 11.4 s (7x CaDiCaL), and with its defaults took 25-35x CaDiCaL on reverse and lower-bound. Three runs of every check and replay come to about an hour; peak memory was 212 MB on reverse under Bitwuzla, more on the 240k-clause binary search"
+  },
+  "steps": [
+    {
+      "name": "build jvmcontract",
+      "run": "cd lib && cargo build --release",
+      "cwd": "."
+    },
+    {
+      "name": "Bitwuzla loads here",
+      "run": "cd lib && out=$(cargo test --release --lib bitwuzla -- --nocapture 2>&1); status=$?; echo \"$out\"; test $status -eq 0 && ! grep -q \"skipped:\" <<< \"$out\"",
+      "cwd": "."
+    },
+    {
+      "name": "the comparison",
+      "run": "python3 lib/solvers/compare.py --out lib/solvers/comparison",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/solvers/comparison/bit-blasted.json",
+    "lib/solvers/comparison/bit-blasted.md"
+  ]
+}
