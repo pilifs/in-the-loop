@@ -346,6 +346,40 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Still approximated silently in both modes, as the table says: hidden fields, literal identity and class
     initializers. That is 1c.
   - Next: 1c, identity and initialization.
+- **1c, identity and initialization (2026-11-05).**
+  - Two of the three are now implemented, not gaps, so `hidden-field` and `literal-identity` are no longer gap kinds
+    (like `monitor` in 1b).
+    - **Fields:** `ClassPath::resolve_field` is the JVM's field lookup (JVMS §5.4.3.2), and `ClassPath::field_key`
+      keeps a field a subclass declares again under `Declaring.name`, while the usual field keeps its plain name. The
+      engine and the interpreter both key fields this way. **The interpreter had the same bug**, so it replayed the
+      engine's wrong witness as confirmed. That is the brief's point about shared semantics, shown.
+    - **Literals:** each path keeps one object per distinct string or class literal (`Path.literals`). A string
+      concatenation stays a new object, as JLS §15.18.1 says (checked on JDK 25: `s + ""` is not `s`). The
+      interpreter already interned literals.
+  - **Class initializers** are a gap the engine meets. `gaps::initializers` lists the `<clinit>`s that a class's
+    initialization runs, in the JVM's order (JVMS §5.5): the superclasses' first, then superinterfaces with a default
+    method, then the class's own. The engine meets them at the first `new`, `getstatic` (of the declaring class) or
+    `invokestatic` (of the declaring class) on a path. The scan uses the same function. Under assume the initializer
+    "has run already, and threw nothing". A JDK class is taken to be initialized already.
+  - **`--engine auto` now asks JBMC when every gap refused is a class initializer** (`GapKind::jbmc_implements`),
+    since JBMC runs initializers. It still doesn't ask JBMC after a JDK-call gap.
+  - Acceptance, in the integration test `identity_and_initialization_agree_with_the_jvm`, each claim checked
+    against a real JVM run:
+    - field hiding, both the subclass's field and the hidden one;
+    - a string literal compared across two classes, two different literals, and a class literal;
+    - a throwing `<clinit>`, a throwing superclass `<clinit>`, and a harmless one.
+    - The old engine gave `Verified` for four claims the JVM refutes, checked on the parent commit's binary:
+      `hiding` `result == 2`, `sameLiteral` `!result`, `sameClass` `!result`, and `boom` `result == n`, where the
+      JVM throws `ExceptionInInitializerError`.
+    - Now the first three are violations whose witnesses the interpreter replays. `boom` is refused by name under
+      strict, `Verified, assuming ...` under assume, and a violation (`ExceptionInInitializerError`) from JBMC
+      under auto.
+    - A harmless initializer is refused under strict too. That is the coverage strictness costs.
+  - The 56 examples were scanned again, in 41 s. Only 013 and 071 changed: the literal-identity gap left them, and
+    they keep their four enum initializers. Strict mode still moves no recorded verdict, and no job was needed.
+  - Not done: a `getstatic` of a `String` constant field is still refused (javac inlines those as `ldc`).
+  - Next: 1d, the conformance corpus. It starts from 1b's and 1c's reproducers, then covers exceptions, aliasing,
+    null array parameters, record constructors and arithmetic edge cases.
 
 ## Loop settings
 

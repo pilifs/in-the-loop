@@ -94,6 +94,9 @@ pub struct Machine<'a> {
     class_objects: HashMap<Type, Ref>,
     boxes: HashMap<(String, i64), Ref>,
     codes: HashMap<(String, String, String), Rc<Code>>,
+    /// Whether a class has an instance field a subclass of it along its chain declares again (field hiding):
+    /// only then does a field's key need the field's resolution ([`ClassPath::field_key`]).
+    hides: HashMap<String, bool>,
     epoch: u32,
     clinit_depth: usize,
     pinned_in_case: bool,
@@ -116,6 +119,7 @@ impl<'a> Machine<'a> {
             class_objects: HashMap::new(),
             boxes: HashMap::new(),
             codes: HashMap::new(),
+            hides: HashMap::new(),
             epoch: 0,
             clinit_depth: 0,
             pinned_in_case: false,
@@ -344,9 +348,12 @@ impl<'a> Machine<'a> {
         while let Some(c) = current {
             match self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))? {
                 Some(cf) => {
+                    // A field a subclass declares again is a second field, kept under its declaring class's
+                    // name ([`ClassPath::field_key`]).
                     for field in cf.fields.iter().filter(|f| !f.is_static()) {
                         let t = Type::parse(&field.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
-                        fields.entry(field.name.clone()).or_insert(Value::default_for(&t));
+                        let key = if fields.contains_key(&field.name) { format!("{c}.{}", field.name) } else { field.name.clone() };
+                        fields.insert(key, Value::default_for(&t));
                     }
                     current = cf.super_class.clone();
                 }
@@ -394,6 +401,26 @@ impl<'a> Machine<'a> {
             return Err(Fault::Impure(format!("writes {what} of an object that existed before the call (a {})", self.class_of(target).replace('/', "."))));
         }
         Ok(())
+    }
+
+    /// The key the instance field `owner.name:descriptor` has in `object`: its name, unless a subclass along the
+    /// object's class hides it ([`ClassPath::field_key`]).
+    fn field_key(&mut self, object: Value, owner: &str, name: &str, descriptor: &str) -> Exec<String> {
+        let Some(r) = object.as_ref() else { return Ok(name.to_string()) };
+        let class = self.class_of(r);
+        let hides = match self.hides.get(&class) {
+            Some(&h) => h,
+            None => {
+                let h = self.cp.hides_fields(&class);
+                self.hides.insert(class.clone(), h);
+                h
+            }
+        };
+        if !hides {
+            return Ok(name.to_string());
+        }
+        let declaring = self.cp.resolve_field(owner, name, descriptor).ok_or_else(|| Fault::Unsupported(format!("no field {}.{name}", owner.replace('/', "."))))?;
+        Ok(self.cp.field_key(&class, &declaring, name))
     }
 
     pub fn get_field(&mut self, object: Value, name: &str) -> Exec<Value> {
@@ -863,7 +890,8 @@ impl<'a> Machine<'a> {
             Insn::GetField(index) => {
                 let field = pool.member(*index).map_err(|e| Fault::Unsupported(e.to_string()))?;
                 let object = pop!();
-                let v = self.get_field(object, &field.name)?;
+                let key = self.field_key(object, &field.owner, &field.name, &field.descriptor)?;
+                let v = self.get_field(object, &key)?;
                 stack.push(v);
             }
             Insn::PutField(index) => {
@@ -878,7 +906,8 @@ impl<'a> Machine<'a> {
                     (Type::Short, Value::Int(x)) => Value::Int(x as i16 as i32),
                     (_, v) => v,
                 };
-                self.put_field(object, &field.name, v)?;
+                let key = self.field_key(object, &field.owner, &field.name, &field.descriptor)?;
+                self.put_field(object, &key, v)?;
             }
             Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                 let member = pool.member(*index).map_err(|e| Fault::Unsupported(e.to_string()))?;

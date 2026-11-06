@@ -38,8 +38,8 @@ enum Command {
     },
     /// Prove two compiled versions of a method equivalent with JBMC, or show an input on which they differ.
     Equivalence(EquivalenceArgs),
-    /// List the gaps of the tool's own checker a method reaches: JDK calls, monitors, hidden fields, literal
-    /// identity and class initializers it approximates rather than implements, found statically.
+    /// List the gaps of the tool's own checker a method reaches: JDK calls, string conversions and class
+    /// initializers it approximates rather than implements, found statically.
     Gaps {
         /// `pkg.Class#method` (repeatable), or `pkg.Class#method(int, long[])` to name one of several overloads.
         #[arg(long = "target", required = true)]

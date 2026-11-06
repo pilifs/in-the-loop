@@ -2073,9 +2073,9 @@ public class Gaps {
 
 /// The gap scan (step 1a of llm-dlc/loops/sound-verdicts.md) names each construct the tool's own checker
 /// approximates: a JDK constructor that may throw (a review's reproducer), a `void` JDK mutator of an argument
-/// array, a hidden field, a literal compared by reference and a class initializer; it counts the JDK calls the
-/// engine reproduces exactly (an exception's constructor, `Record.<init>`, `Math.addExact`) as no gap, and a
-/// monitor, which the engine implements (step 1b), as none either.
+/// array, and a class initializer; it counts the JDK calls the engine reproduces exactly (an exception's
+/// constructor, `Record.<init>`, `Math.addExact`) as no gap, and a monitor (step 1b), a hidden field and a literal
+/// compared by reference (step 1c), which the engine implements, as none either.
 #[test]
 fn the_gap_scan_names_what_the_own_checker_approximates() {
     let dir = target_tmp().join("gaps-src");
@@ -2098,10 +2098,11 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     assert!(ids.is_empty(), "{ids:?}");
     let (ids, _) = scan("randomBytes");
     assert_eq!(ids, ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"]);
+    // A hidden field is a second field, and a literal is one object, as on the JVM (step 1c): neither is a gap.
     let (ids, _) = scan("hiding");
-    assert_eq!(ids, ["hidden-field:fixtures.Gaps$A.x:I", "hidden-field:fixtures.Gaps$B.x:I"]);
+    assert!(ids.is_empty(), "{ids:?}");
     let (ids, _) = scan("sameLiteral");
-    assert_eq!(ids, ["literal-identity:java.lang.String"]);
+    assert!(ids.is_empty(), "{ids:?}");
     let (ids, s) = scan("initialised");
     assert_eq!(ids, ["class-initializer:fixtures.Gaps$Table.<clinit>()V"]);
     assert!(s.refused.is_empty(), "{:?}", s.refused);
@@ -2217,5 +2218,117 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
         if gaps == GapMode::Assume {
             assert!(o.output.contains("assuming 1 behaviour the tool's own checker does not implement"), "{}", o.output);
         }
+    }
+}
+
+const IDENTITY: &str = r#"
+package fixtures;
+
+public class Identity {
+    static class A { int x; }
+    static class B extends A { int x; }
+    static class Other { static String a() { return "a"; } }
+    static class Boom {
+        static final int[] TABLE = table();
+        static int[] table() { throw new IllegalStateException("no table"); }
+        static int value(int n) { return n; }
+    }
+    static class Base {
+        static final int[] TABLE = table();
+        static int[] table() { throw new IllegalStateException("no base table"); }
+    }
+    static class Derived extends Base { static int value(int n) { return n; } }
+    static class Quiet {
+        static final int[] TABLE = { 1, 2 };
+        static int value(int n) { return n; }
+    }
+
+    public static int hiding(int n) { B b = new B(); b.x = n; ((A) b).x = 2; return b.x; }
+    public static int hidden(int n) { B b = new B(); b.x = n; ((A) b).x = 2; return ((A) b).x; }
+    public static boolean sameLiteral(int n) { String s = "a"; return s == Other.a(); }
+    public static boolean otherLiteral(int n) { String s = "a"; String t = "b"; return s == t; }
+    public static boolean sameClass(int n) { Class<?> c = Identity.class; return c == Identity.class; }
+    public static int boom(int n) { return Boom.value(n); }
+    public static int inherited(int n) { return Derived.value(n); }
+    public static int quiet(int n) { return Quiet.value(n); }
+}
+"#;
+
+/// Step 1c of llm-dlc/loops/sound-verdicts.md: identity and initialization, against a real JVM. A field a subclass
+/// declares again is a second field, and every load of a string or class literal is one object, so the tool's own
+/// checker and the interpreter that replays its witnesses agree with the JVM on each claim below; before, both kept
+/// one field per name, and the engine made each literal a new object, so a claim the JVM refutes was `Verified`.
+/// A class whose initializer the engine does not run is a `class-initializer` gap: refused by name under strict
+/// (the JVM throws `ExceptionInInitializerError` from it), named as an assumption under assume, and under
+/// `--engine auto` handed to JBMC, which runs initializers.
+#[test]
+fn identity_and_initialization_agree_with_the_jvm() {
+    use jvmcontract::bmc::gaps::{GapMode, GapTreatment};
+    use jvmcontract::Engine;
+    let dir = target_tmp().join("identity-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Identity.java"), IDENTITY).unwrap();
+    let Some(classes) = compile("identity", &[dir.join("Identity.java")]) else { return };
+    if has("java") {
+        let probe = "public class Probe { public static void main(String[] a) {\n".to_string()
+            + "System.out.println(fixtures.Identity.hiding(5));\n"
+            + "System.out.println(fixtures.Identity.hidden(5));\n"
+            + "System.out.println(fixtures.Identity.sameLiteral(0));\n"
+            + "System.out.println(fixtures.Identity.otherLiteral(0));\n"
+            + "System.out.println(fixtures.Identity.sameClass(0));\n"
+            + "try { System.out.println(fixtures.Identity.boom(3)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
+            + "try { System.out.println(fixtures.Identity.inherited(3)); } catch (Throwable t) { System.out.println(t.getClass().getName()); }\n"
+            + "System.out.println(fixtures.Identity.quiet(3)); } }\n";
+        std::fs::write(dir.join("Probe.java"), probe).unwrap();
+        let status = Command::new("javac").args(["-proc:none", "-cp"]).arg(&classes).arg("-d").arg(&classes).arg(dir.join("Probe.java")).status().expect("javac runs");
+        assert!(status.success());
+        let run = Command::new("java").arg("-cp").arg(&classes).arg("Probe").output().expect("java runs");
+        let lines = String::from_utf8_lossy(&run.stdout).lines().map(str::to_string).collect::<Vec<_>>();
+        assert_eq!(lines, ["5", "2", "true", "false", "true", "java.lang.ExceptionInInitializerError", "java.lang.ExceptionInInitializerError", "3"]);
+    }
+    let prove = |method: &str, assert: &str, engine: Engine, gaps: GapMode| {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.Identity#{method}"));
+        options.assert = Some(assert.into());
+        options.engine = engine;
+        options.gaps = gaps;
+        let work = target_tmp().join(format!("property-identity-{method}-{}-{engine:?}-{gaps:?}", assert.len()));
+        let _ = std::fs::remove_dir_all(&work);
+        options.work = Some(work);
+        property::run(&options).unwrap()
+    };
+    // What the JVM says holds is verified, and what it refutes is a violation whose witness the interpreter
+    // replays; in either mode, since none of these is a gap.
+    for gaps in [GapMode::Strict, GapMode::Assume] {
+        for (method, holds, refuted) in [("hiding", "result == n", "result == 2"), ("hidden", "result == 2", "result == n"), ("sameLiteral", "result", "!result"), ("otherLiteral", "!result", "result"), ("sameClass", "result", "!result")] {
+            let o = prove(method, holds, Engine::Native, gaps);
+            assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+            assert!(o.search.as_ref().unwrap().gaps.is_empty(), "{method}: {}", o.output);
+            let o = prove(method, refuted, Engine::Native, gaps);
+            assert_eq!(o.verdict, Verdict::Violation, "{method}: {}", o.output);
+        }
+    }
+    let ids = |o: &property::Outcome| -> Vec<String> { o.search.as_ref().expect("a checker ran").gaps.iter().map(|g| g.id.clone()).collect() };
+    // An initializer the engine does not run: refused by name, the superclass's for a subclass, and refused even
+    // where it would have thrown nothing (what strictness costs).
+    for (method, id) in [("boom", "class-initializer:fixtures.Identity$Boom.<clinit>()V"), ("inherited", "class-initializer:fixtures.Identity$Base.<clinit>()V"), ("quiet", "class-initializer:fixtures.Identity$Quiet.<clinit>()V")] {
+        let o = prove(method, "result == n", Engine::Native, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert_eq!(ids(&o), [id], "{method}: {}", o.output);
+        assert!(o.problem.as_deref().unwrap().contains(&format!("refused it (--gaps strict): {id}")), "{method}: {}", o.output);
+        let o = prove(method, "result == n", Engine::Native, GapMode::Assume);
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        assert_eq!(ids(&o), [id], "{method}: {}", o.output);
+        assert_eq!(o.search.as_ref().unwrap().gaps[0].treatment, Some(GapTreatment::Assumed));
+        assert!(o.output.contains("has run already, and threw nothing"), "{method}: {}", o.output);
+    }
+    // JBMC runs initializers, so `--engine auto` asks it, and it finds the error the JVM throws.
+    if has("jbmc") {
+        let o = prove("boom", "result == n", Engine::Auto, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert_eq!(o.search.as_ref().unwrap().engine, "jbmc", "{}", o.output);
+        assert!(o.counterexample.as_ref().unwrap().outcome.contains("ExceptionInInitializerError"), "{}", o.output);
+        let o = prove("quiet", "result == n", Engine::Auto, GapMode::Strict);
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     }
 }

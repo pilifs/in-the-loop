@@ -8,15 +8,18 @@
 //! | `jdk-void-method` | returns and does nothing | runs it, and it may change its receiver or arguments (`Random.nextBytes` fills its array), or throw | yes |
 //! | `jdk-reference-method` | returns a new object, never null | may return null or an object that exists already, or throw | yes |
 //! | `string-conversion` | makes a new string without converting its arguments | calls `toString` on an object argument, which may throw (bytecode of javac 9 to 18: from 19 on, javac calls `String.valueOf` first, which the engine refuses) | yes |
-//! | `hidden-field` | keys an object's fields by name alone | a field declared again by a subclass is a second field | not yet (step 1c) |
-//! | `literal-identity` | makes each `ldc` of a string or class a fresh object | one object per distinct literal, so `==` on two loads of it is true | not yet (step 1c) |
-//! | `class-initializer` | never runs a `<clinit>` | runs it on first use, and it may throw or set state | not yet (step 1c) |
+//! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
 //!
-//! Under `--gaps strict`, the default, a path that reaches a gap the engine meets ends there, and a run that met
-//! one has no verdict unless another path violates the property; under `--gaps assume` the engine goes on as the
-//! second column says, and a verdict names every gap it assumed. A gap the last column says the engine does not
-//! meet yet is approximated silently in both modes until step 1c of `llm-dlc/loops/sound-verdicts.md`; the scan
-//! reports it all the same.
+//! Under `--gaps strict`, the default, a path that reaches a gap ends there, and a run that met one has no verdict
+//! unless another path violates the property; under `--gaps assume` the engine goes on as the second column says,
+//! and a verdict names every gap it assumed. A JDK class is taken to be initialized already: its initializer sets
+//! the JDK's own state, which the engine reads only through the calls it models.
+//!
+//! What step 1c of `llm-dlc/loops/sound-verdicts.md` made exact, and so is no gap: a field is resolved as the JVM
+//! resolves it (JVMS §5.4.3.2, [`ClassPath::resolve_field`]), so a field a subclass declares again is a second field
+//! ([`ClassPath::field_key`]), and every `ldc` of one string or class literal is the same object, as the JVM interns
+//! strings (JLS §3.10.5) and has one `Class` object per class. A string concatenation makes a new string, as JLS
+//! §15.18.1 says it does unless the expression is a constant, which javac folds into a literal.
 //!
 //! A JDK call the engine reproduces exactly is not a gap ([`jdk_instance_call`]): `Object.<init>`,
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
@@ -30,8 +33,7 @@
 //! [`scan`] walks the methods a set of roots may reach, as the engine resolves them: the application's own methods
 //! (with every override an application class declares, since the receiver's class picks one), and the static
 //! methods of the tool's models. It reads every instruction of each, so it may report a gap on a path no input
-//! takes, and a literal is a gap wherever the code walked also compares references at all (an enum compared with
-//! `==`, say), since which references meet at an `if_acmp` is a question for the paths. The harness itself, and the
+//! takes. The harness itself, and the
 //! expressions of a property or relation compiled into it, are not walked. Step 1a of
 //! `llm-dlc/loops/sound-verdicts.md`: what strictness would cost each recorded example.
 
@@ -52,8 +54,6 @@ pub enum GapKind {
     JdkConstructor,
     JdkVoidMethod,
     JdkReferenceMethod,
-    HiddenField,
-    LiteralIdentity,
     ClassInitializer,
     StringConversion,
 }
@@ -64,11 +64,16 @@ impl GapKind {
             GapKind::JdkConstructor => "jdk-constructor",
             GapKind::JdkVoidMethod => "jdk-void-method",
             GapKind::JdkReferenceMethod => "jdk-reference-method",
-            GapKind::HiddenField => "hidden-field",
-            GapKind::LiteralIdentity => "literal-identity",
             GapKind::ClassInitializer => "class-initializer",
             GapKind::StringConversion => "string-conversion",
         }
+    }
+
+    /// Whether JBMC implements the construct, so that `--engine auto` asks it when the tool's own checker refused
+    /// one: it runs class initializers, but approximates a JDK call it has no bytecode for as the engine's assume
+    /// mode does, without naming it (step 4c of `llm-dlc/loops/sound-verdicts.md`).
+    pub fn jbmc_implements(self) -> bool {
+        matches!(self, GapKind::ClassInitializer)
     }
 
     /// What the engine takes the construct to do under `--gaps assume`: the assumption a verdict states.
@@ -77,8 +82,6 @@ impl GapKind {
             GapKind::JdkConstructor => "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
             GapKind::JdkVoidMethod => "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
             GapKind::JdkReferenceMethod => "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
-            GapKind::HiddenField => "is the one field of that name the object has",
-            GapKind::LiteralIdentity => "is a new object at each load, so that no two loads are the same reference",
             GapKind::ClassInitializer => "has run already, and threw nothing",
             GapKind::StringConversion => "makes a new string without calling toString on its object arguments",
         }
@@ -361,20 +364,61 @@ pub fn roots(cp: &ClassPath, targets: &[String]) -> Result<Vec<MemberRef>, Error
     Ok(out)
 }
 
+/// The application classes whose `<clinit>` the JVM runs when a use of `class` initializes it (JVMS §5.5), in the
+/// order it runs them: for a class, its superclass's first (recursively), then those of its superinterfaces that
+/// declare a non-abstract instance method (a default method), then its own; for an interface, its own alone. A
+/// class without a `<clinit>`, and a JDK class, which the engine takes to be initialized already, add none.
+pub fn initializers(cp: &ClassPath, class: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut seen = BTreeSet::new();
+    initializers_of(cp, class, &mut out, &mut seen);
+    out
+}
+
+fn initializers_of(cp: &ClassPath, class: &str, out: &mut Vec<String>, seen: &mut BTreeSet<String>) {
+    if crate::classpath::is_jdk_name(class) || !seen.insert(class.to_string()) {
+        return;
+    }
+    let Ok(Some(cf)) = cp.application(class) else { return };
+    if !cf.is_interface() {
+        if let Some(sup) = &cf.super_class {
+            initializers_of(cp, sup, out, seen);
+        }
+        let mut interfaces = Vec::new();
+        let mut visit: Vec<String> = cf.interfaces.iter().rev().cloned().collect();
+        while let Some(i) = visit.pop() {
+            if interfaces.contains(&i) || crate::classpath::is_jdk_name(&i) {
+                continue;
+            }
+            if let Ok(Some(icf)) = cp.application(&i) {
+                visit.extend(icf.interfaces.iter().rev().cloned());
+            }
+            interfaces.push(i);
+        }
+        for i in interfaces {
+            let Ok(Some(icf)) = cp.application(&i) else { continue };
+            if icf.methods.iter().any(|m| !m.is_static() && !m.is_abstract() && m.name != "<clinit>") {
+                initializers_of(cp, &i, out, seen);
+            }
+        }
+    }
+    if cf.method("<clinit>", "()V").is_some() {
+        out.push(class.to_string());
+    }
+}
+
 struct Walker<'a> {
     cp: &'a ClassPath,
     scan: Scan,
     queue: VecDeque<(String, String, String)>,
     seen: BTreeSet<(String, String, String)>,
     initialised: BTreeSet<String>,
-    literals: BTreeSet<(String, Site)>,
-    compares_references: bool,
 }
 
 /// Scans what the roots (`(owner, name, descriptor)`, internal names) may reach. A root that is a static method
 /// or a constructor initialises its class, as the harness's call does.
 pub fn scan(cp: &ClassPath, roots: &[MemberRef]) -> Result<Scan, Error> {
-    let mut w = Walker { cp, scan: Scan { jdk: jdk_release(), ..Scan::default() }, queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new(), literals: BTreeSet::new(), compares_references: false };
+    let mut w = Walker { cp, scan: Scan { jdk: jdk_release(), ..Scan::default() }, queue: VecDeque::new(), seen: BTreeSet::new(), initialised: BTreeSet::new() };
     for r in roots {
         let root = Site { class: "harness".into(), method: "check".into(), line: None };
         w.initialise(&r.owner, &root);
@@ -382,11 +426,6 @@ pub fn scan(cp: &ClassPath, roots: &[MemberRef]) -> Result<Scan, Error> {
     }
     while let Some((owner, name, descriptor)) = w.queue.pop_front() {
         w.walk(&owner, &name, &descriptor)?;
-    }
-    if w.compares_references {
-        for (class, site) in std::mem::take(&mut w.literals) {
-            w.gap(GapKind::LiteralIdentity, &class, "", "", site);
-        }
     }
     Ok(w.scan)
 }
@@ -407,19 +446,13 @@ impl Walker<'_> {
         self.scan.refused.entry(why.to_string()).or_insert_with(|| Refusal { first: what, at: site.display(), sites: 0 }).sites += 1;
     }
 
-    /// A use of `class` that initialises it (JVMS §5.5): its `<clinit>`, and its superclasses', are gaps, since the
-    /// engine runs none. A JDK class is taken as initialised already.
+    /// A use of `class` that initializes it (JVMS §5.5): each `<clinit>` that runs ([`initializers`]) is a gap,
+    /// since the engine runs none, recorded where the walk first reaches it.
     fn initialise(&mut self, class: &str, site: &Site) {
-        let mut current = Some(class.to_string());
-        while let Some(c) = current {
-            if crate::classpath::is_jdk_name(&c) || !self.initialised.insert(c.clone()) {
-                break;
-            }
-            let Ok(Some(cf)) = self.cp.application(&c) else { break };
-            if !cf.is_interface() && cf.method("<clinit>", "()V").is_some() {
+        for c in initializers(self.cp, class) {
+            if self.initialised.insert(c.clone()) {
                 self.gap(GapKind::ClassInitializer, &c, "<clinit>", "()V", site.clone());
             }
-            current = cf.super_class.clone();
         }
     }
 
@@ -453,33 +486,22 @@ impl Walker<'_> {
                     self.refuse("writes a static field", format!("{}.{}", member.owner.replace('/', "."), member.name), &site);
                 }
                 Insn::ANewArray(_) | Insn::MultiANewArray(..) => self.refuse("arrays of references", "a new array of references".into(), &site),
-                Insn::IfACmp(..) => self.compares_references = true,
-                Insn::Ldc(index) => match cf.pool.loadable(index) {
-                    Ok(BootstrapArg::Str(_)) => {
-                        self.literals.insert(("java/lang/String".into(), site));
+                Insn::Ldc(index) => {
+                    if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
+                        self.refuse("floating point", "a floating-point constant".into(), &site);
                     }
-                    Ok(BootstrapArg::Class(_)) => {
-                        self.literals.insert(("java/lang/Class".into(), site));
-                    }
-                    Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) => self.refuse("floating point", "a floating-point constant".into(), &site),
-                    _ => {}
-                },
+                }
                 Insn::GetStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     if !self.constant(&member.owner, &member.name) {
                         self.refuse("reads a static field that is not a compile-time constant", format!("{}.{}", member.owner.replace('/', "."), member.name), &site);
                     }
-                    self.initialise(&member.owner, &site);
+                    let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                    self.initialise(&declaring, &site);
                 }
                 Insn::New(index) => {
                     let class = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?.to_string();
                     self.initialise(&class, &site);
-                }
-                Insn::GetField(index) | Insn::PutField(index) => {
-                    let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
-                    if self.hidden(&member.owner, &member.name) {
-                        self.gap(GapKind::HiddenField, &member.owner, &member.name, &member.descriptor, site);
-                    }
                 }
                 Insn::InvokeDynamic(index) => {
                     let (_, _, text) = cf.pool.invoke_dynamic(index).map_err(|e| Error::new(e.to_string()))?;
@@ -495,7 +517,8 @@ impl Walker<'_> {
                 Insn::InvokeStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     if self.cp.is_application(&member.owner) {
-                        self.initialise(&member.owner, &site);
+                        let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(c, _)| c.name.clone()).unwrap_or_else(|| member.owner.clone());
+                        self.initialise(&declaring, &site);
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
@@ -538,27 +561,5 @@ impl Walker<'_> {
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };
         cf.field(name).filter(|f| f.is_static()).is_some_and(|f| f.attributes.iter().any(|a| a.name == "ConstantValue"))
-    }
-
-    /// Whether a field name stands for two fields along `owner`'s class hierarchy: declared by `owner` or a
-    /// superclass, and again by another of them or by an application class below `owner`.
-    fn hidden(&self, owner: &str, name: &str) -> bool {
-        let mut declaring = BTreeSet::new();
-        let mut current = Some(owner.to_string());
-        while let Some(c) = current {
-            let Ok(Some(cf)) = self.cp.application(&c) else { break };
-            if cf.field(name).is_some_and(|f| !f.is_static()) {
-                declaring.insert(c.clone());
-            }
-            current = cf.super_class.clone();
-        }
-        if let Ok(classes) = self.cp.application_classes() {
-            for (n, cf) in &classes {
-                if cf.field(name).is_some_and(|f| !f.is_static()) && self.cp.is_subtype(n, owner) {
-                    declaring.insert(n.clone());
-                }
-            }
-        }
-        declaring.len() > 1
     }
 }

@@ -231,10 +231,11 @@ pub struct Search {
     pub gaps: Vec<crate::bmc::gaps::GapRecord>,
 }
 
-/// Whether the own checker's run refused a gap (strict): then `--engine auto` does not ask JBMC, which gives a call
-/// it has no bytecode for an approximation of its own and does not name it (step 4c of the sound-verdicts brief).
+/// Whether the own checker's run refused a gap (strict) that JBMC does not implement either: then `--engine auto`
+/// does not ask JBMC, which gives a call it has no bytecode for an approximation of its own and does not name it
+/// (step 4c of the sound-verdicts brief). A class initializer, which JBMC runs, is asked of it.
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
-    result.gap_mode == Some(crate::bmc::gaps::GapMode::Strict) && !result.gaps.is_empty()
+    result.gap_mode == Some(crate::bmc::gaps::GapMode::Strict) && result.gaps.iter().any(|g| !g.kind.jbmc_implements())
 }
 
 /// The note `--engine auto` writes when the own checker refused a gap and JBMC is not asked.

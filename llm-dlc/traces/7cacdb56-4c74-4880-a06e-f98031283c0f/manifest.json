@@ -12,33 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T01:38:26.079Z",
-  "duration_seconds": 7437,
+  "ended": "2026-11-06T01:58:30.152Z",
+  "duration_seconds": 8641,
   "stats": {
-    "turns": 19,
-    "api_calls": 295,
-    "tool_calls": 296,
+    "turns": 24,
+    "api_calls": 356,
+    "tool_calls": 358,
     "tool_errors": 2,
-    "compactions": 2,
+    "compactions": 3,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 608,
-      "output_tokens": 285000,
-      "cache_read_input_tokens": 53901360,
-      "cache_creation_input_tokens": 786390
+      "input_tokens": 730,
+      "output_tokens": 340229,
+      "cache_read_input_tokens": 62841188,
+      "cache_creation_input_tokens": 981473
     }
   },
   "tools": {
-    "Bash": 272,
-    "Read": 12,
-    "Write": 7,
-    "Edit": 2,
+    "Bash": 329,
+    "Read": 14,
+    "Write": 8,
+    "Edit": 4,
     "WebFetch": 2,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/result_format.py",
     "lib/src/bmc/gaps.rs",
+    "lib/src/classpath.rs",
     "llm-dlc/loops/jbmc-patch-queue.md",
     "llm-dlc/loops/sound-verdicts.md",
     "~/.claude/projects/-home-user-code-java-formal-verification/memory/sound-verdicts-loop.md"
@@ -75,24 +76,38 @@
     {
       "index": 2,
       "started": "2026-11-06T01:15:49.959Z",
-      "ended": "2026-11-06T01:38:26.079Z",
-      "turns": 4,
-      "api_calls": 87,
+      "ended": "2026-11-06T01:38:55.801Z",
+      "turns": 5,
+      "api_calls": 89,
       "usage": {
-        "input_tokens": 174,
-        "output_tokens": 75557,
-        "cache_read_input_tokens": 16281313,
-        "cache_creation_input_tokens": 262627
+        "input_tokens": 178,
+        "output_tokens": 76748,
+        "cache_read_input_tokens": 16830592,
+        "cache_creation_input_tokens": 274921
       },
-      "peak_context_tokens": 273895
+      "peak_context_tokens": 286189
+    },
+    {
+      "index": 3,
+      "started": "2026-11-06T01:39:46.969Z",
+      "ended": "2026-11-06T01:58:30.152Z",
+      "turns": 4,
+      "api_calls": 59,
+      "usage": {
+        "input_tokens": 118,
+        "output_tokens": 54038,
+        "cache_read_input_tokens": 8390549,
+        "cache_creation_input_tokens": 182789
+      },
+      "peak_context_tokens": 195869
     }
   ],
   "log": {
-    "sha256": "07c94de43f12db9d9316eddb4363287001ace0f9d6c82e911f0b52dda2875f23",
-    "bytes": 8285915,
-    "lines": 2931,
-    "gzip_bytes": 1431771,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/07c94de43f12db9d9316eddb4363287001ace0f9d6c82e911f0b52dda2875f23.jsonl.gz"
+    "sha256": "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f",
+    "bytes": 10138795,
+    "lines": 3581,
+    "gzip_bytes": 1759902,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -167,6 +182,14 @@
       "summary": "Gaps as data: the tool's own checker refuses a JDK call it does not implement by name under --gaps strict, or names it as an assumption under --gaps assume",
       "body": "Step 1b of llm-dlc/loops/sound-verdicts.md. The native engine (lib/src/bmc) used to approximate a JDK constructor (skipped), a void JDK instance method (did nothing) and a reference-returning one (a fresh object), so a claim the JVM refutes could come back Verified: new ArrayList<>(n) throws for a negative n, Random.nextBytes fills its argument array. These are now gaps the engine meets as it runs, by the same stable ids and classification as the 1a scan (gaps::jdk_instance_call), with the string conversion of an object in an indy concatenation. Under --gaps strict, the library's default, the path ends at the gap; a run that met one is Unverifiable unless another path is a violation, and its reason lists every gap met with its sites. Under --gaps assume the old approximation stays, and the verdict says so: '✓ ..., assuming 1 behaviour the tool's own checker does not implement (--gaps assume)', with an 'assumed:' line per gap and the gaps in the JSON outcome's search (gap_mode, gaps: id, kind, call, sites, approximation, refused/assumed). monitorenter/monitorexit now throw NullPointerException on null and otherwise do nothing, so synchronized (null) is a violation in both modes, and the scan no longer reports monitors. --engine auto doesn't hand a refused gap to JBMC, which approximates a call it has no bytecode for without naming it (step 4c). The engine's module docs have a table of every instruction and call as implemented, modelled, a gap or refused. A unit test decodes every opcode and checks it has a row there, and that every gap kind has one in gaps.rs.\n\nbuild.py passes --gaps only where the own checker decides the verdict (engine native or auto). The mode is the example's approach.gaps (new in the schema), or 'assume' for a recorded example (RECORDED_GAP_MODE), so a rerun records assumptions rather than changing a verdict. result.search keeps gapMode and gaps, and a verified label and page name each assumed gap. Docs: lib/README.md, examples/README.md, the verify-bytecode skill's reference.\n\nVerified: cargo test --release passes (119 unit, 52 integration). The new integration test proves both review reproducers and a void mutator of an argument array on the native engine and under --engine auto in both modes. It also runs them on a real JVM (IllegalArgumentException, NullPointerException, an array changed), and runs a regression proof with a JDK constructor added. The 136 build.py tests pass, and --render-only changed no page: no recorded result has a gap (1a), so no pipeline job was needed.\n\nWhere the brief is out of date: 1b's 'implemented, modelled, or a gap' needs a fourth class, refused, which is most of what the engine doesn't handle and stays a refusal with a reason. Its allow-list is wider than 'Object.<init> and lib/models': Record.<init> and the JDK exceptions' (), (String) and (String, Throwable) constructors, as 1a found. The checked-at-HEAD list's monitor item is now fixed. Hidden fields, literal identity and class initializers are still approximated silently in both modes until 1c. The gap mode is recorded as an attempt option, not as part of the claim, so recorded claims don't go stale; 2a's statement should take it in.",
       "log_sha256": "07c94de43f12db9d9316eddb4363287001ace0f9d6c82e911f0b52dda2875f23"
+    },
+    {
+      "change_id": "uvwzvlqwooqxmqswktkrskouzmtknrkp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Identity and initialization: a hidden field is a second field and a literal one object, as on the JVM, and a class initializer the tool's own checker does not run is a named gap",
+      "body": "Step 1c of llm-dlc/loops/sound-verdicts.md. Fields are now resolved by the JVM's field lookup (JVMS 5.4.3.2, ClassPath::resolve_field). A field that a subclass declares again is kept as a second field under its declaring class's name (ClassPath::field_key), in both the tool's own checker and the interpreter that replays its witnesses. The interpreter had the same name-only keying, so it confirmed the engine's wrong witness. Each path of the checker keeps one object per distinct string or class literal, as the JVM interns them. A string concatenation stays a new object, as JLS 15.18.1 says; this was checked on JDK 25.\n\nA class whose initialization runs an application <clinit> is a class-initializer gap. gaps::initializers lists those initializers in JVMS 5.5 order: superclasses first, then superinterfaces with default methods, then the class itself. The engine meets the gap at a path's first new, getstatic or invokestatic of the class, and the static scan uses the same function. Under --gaps strict the path is refused by name; under --gaps assume the initializer is taken to have run and thrown nothing, and the verdict names it. --engine auto now asks JBMC when every gap the checker refused is a class initializer, because JBMC runs initializers; JDK-call gaps still don't fall back. Because hidden fields and literal identity are now implemented, they are no longer gap kinds (the result schema and docs follow).\n\nVerified by the new integration test identity_and_initialization_agree_with_the_jvm, which runs every claim on a real JVM first. On the parent commit's binary, four claims the JVM refutes came back Verified: hiding 'result == 2', sameLiteral '!result', sameClass '!result', and boom 'result == n', which throws ExceptionInInitializerError on the JVM. Now the first three are violations that the interpreter replays. boom is refused by name under strict and Verified-with-assumption under assume, and JBMC gives a violation (ExceptionInInitializerError) for it under auto; a harmless initializer is refused under strict too. cargo test --release passes (119 unit, 53 integration tests), and so do build.py's 136 tests. build.py --scan-gaps rescanned all 56 B9/B11 examples in 41 s. Only 013's and 071's notes changed (their literal-identity gap is gone, their four enum initializers stay), so strict mode still moves no recorded verdict and no verification job is needed.\n\nWhere the brief is out of date: its 'checked at HEAD' list still says fields are keyed by name, and the 1a Progress entry lists hidden-field and literal-identity as kinds. Both are now historical. 1c allowed 'reference comparison on a literal is a gap'; the faithful identity was implemented instead. 1b's rule that auto never falls back after a refused gap is now limited to gaps JBMC also approximates. Still refused: a getstatic of a String constant field, which javac inlines as ldc anyway. Next: 1d, the conformance corpus.",
+      "log_sha256": "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f"
     }
   ],
   "logs": {
@@ -174,6 +197,12 @@
       "bytes": 8285915,
       "lines": 2931,
       "gzip_bytes": 1431771,
+      "url": null
+    },
+    "115839ac3ae9f7847dbb12a27088c8b12d678a0aedf35999997eb18ecf78686f": {
+      "bytes": 10138795,
+      "lines": 3581,
+      "gzip_bytes": 1759902,
       "url": null
     },
     "15dbb238339ee2f18a5e2bf04b83cccab525597f6f034dd3224c5365ea1871db": {

@@ -38,17 +38,17 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
-//! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field is keyed by its name (gap `hidden-field`, not met yet: step 1c) |
+//! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
 //! | `getstatic` of a compile-time constant (an application field with a `ConstantValue`, `Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`) | implemented |
+//! | class initialization, at the first `new`, `getstatic` or `invokestatic` of an application class whose initialization runs a `<clinit>` ([`gaps::initializers`]) | gap: `class-initializer`, since the engine runs no initializer; a JDK class is taken to be initialized already |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
-//! | `ldc` of a string or a class | a new opaque object (gap `literal-identity`, not met yet: step 1c) |
-//! | class initialization | not run (gap `class-initializer`, not met yet: step 1c) |
+//! | `ldc` of a string or a class | implemented: one opaque object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, any other static JDK method, a JDK instance method returning a primitive or an array, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -323,6 +323,19 @@ struct Path {
     resumed: bool,
     objects: Vec<Obj>,
     back_edges: HashMap<(String, String, u32), u32>,
+    /// The object each string or class literal loaded so far is, so that every load of one literal is the same
+    /// reference, as the JVM's interned strings and `Class` objects are.
+    literals: BTreeMap<Literal, usize>,
+    /// The application classes whose initialization the path has reached ([`gaps::initializers`]), so that a
+    /// `class-initializer` gap is met once per class, where the JVM would run the initializer.
+    initialised: std::collections::BTreeSet<String>,
+}
+
+/// A string or class literal, the identity of what an `ldc` of it loads.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+enum Literal {
+    Str(String),
+    Class(String),
 }
 
 /// Where a path waits at a join point: each frame's instruction index, class and method, outermost first, so that
@@ -354,6 +367,7 @@ fn same_shape(a: &Path, b: &Path) -> bool {
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
         && a.objects.len() == b.objects.len()
+        && a.literals == b.literals
         && a.objects.iter().zip(&b.objects).all(|(o, q)| {
             o.class == q.class
                 && o.fields.len() == q.fields.len()
@@ -431,6 +445,11 @@ struct Engine<'a> {
     gap_mode: GapMode,
     /// The gaps met so far, with where.
     met: BTreeMap<Gap, std::collections::BTreeSet<Site>>,
+    /// Whether an object of a class has a field that a subclass along its chain declares again, by class: only
+    /// then does an access need the field's resolution to find its key ([`ClassPath::field_key`]).
+    hides: HashMap<String, bool>,
+    /// The application classes whose `<clinit>` initializing a class would run, by class ([`gaps::initializers`]).
+    initializers: HashMap<String, Rc<Vec<String>>>,
 }
 
 fn unsupported<T>(what: impl Into<String>) -> Result<T, Stop> {
@@ -483,6 +502,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         stage_lits: vec![None; STAGES.len()],
         gap_mode: options.gaps,
         met: BTreeMap::new(),
+        hides: HashMap::new(),
+        initializers: HashMap::new(),
     };
     let solver = engine.b.signature();
     let jdk = gaps::jdk_release();
@@ -564,7 +585,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     }
     let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
     locals.resize(code.max_locals.max(locals.len()), None);
-    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new() };
+    let first = Path { frames: vec![Frame { class: harness.clone(), method: m.name.clone(), code, at: 0, locals, stack: Vec::new() }], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, back_edges: HashMap::new(), literals: BTreeMap::new(), initialised: Default::default() };
     engine.pending.push(first);
 
     // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -632,7 +653,7 @@ pub fn refused_gaps(gaps: &[GapRecord]) -> String {
     let n = gaps.len();
     let list = gaps.iter().map(|g| format!("{} ({} at {})", g.id, g.call, g.sites.join(", "))).collect::<Vec<_>>().join("; ");
     let instead = match gaps {
-        [g] => format!("that the call {}", g.approximation),
+        [g] => format!("that {} {}", g.call, g.approximation),
         _ => "what each gap's approximation states".to_string(),
     };
     format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps strict): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" })
@@ -986,6 +1007,7 @@ impl<'a> Engine<'a> {
         let either = self.b.or(takes_into, takes_other);
         into.cond.truncate(prefix);
         into.cond.extend(common);
+        into.initialised.extend(other.initialised.iter().cloned());
         if either != TRUE {
             into.cond.push(either);
         }
@@ -1338,12 +1360,14 @@ impl<'a> Engine<'a> {
                     let c = self.b.constant(v, 64);
                     self.push(path, Val::J(c));
                 }
-                BootstrapArg::Str(_) => {
-                    let o = self.alloc(path, "java/lang/String");
+                // One object per distinct literal, as the JVM interns strings (JLS §3.10.5) and has one `Class`
+                // object per class.
+                BootstrapArg::Str(text) => {
+                    let o = self.literal(path, Literal::Str(text), "java/lang/String");
                     self.push(path, Val::R(Some(o)));
                 }
-                BootstrapArg::Class(_) => {
-                    let o = self.alloc(path, "java/lang/Class");
+                BootstrapArg::Class(name) => {
+                    let o = self.literal(path, Literal::Class(name), "java/lang/Class");
                     self.push(path, Val::R(Some(o)));
                 }
                 BootstrapArg::Float(_) | BootstrapArg::Double(_) => return unsupported("floating point"),
@@ -1578,6 +1602,10 @@ impl<'a> Engine<'a> {
             }
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if let Some(end) = self.initialise(path, &declaring) {
+                    return Ok(Some(end));
+                }
                 let v = self.get_static(&member.owner, &member.name, &member.descriptor)?;
                 self.push(path, v);
             }
@@ -1589,7 +1617,8 @@ impl<'a> Engine<'a> {
                     Ok(o) => o.expect("checked"),
                     Err(step) => return step,
                 };
-                let v = match path.objects[o].fields.get(&member.name) {
+                let key = self.field_key(path, o, &member.owner, &member.name, &member.descriptor)?;
+                let v = match path.objects[o].fields.get(&key) {
                     Some(v) => v.clone(),
                     None => self.default_value(&member.descriptor)?,
                 };
@@ -1603,13 +1632,19 @@ impl<'a> Engine<'a> {
                     Ok(o) => o.expect("checked"),
                     Err(step) => return step,
                 };
-                path.objects[o].fields.insert(member.name.clone(), v);
+                let key = self.field_key(path, o, &member.owner, &member.name, &member.descriptor)?;
+                path.objects[o].fields.insert(key, v);
             }
             Insn::InvokeStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let args = self.pop_args(path, descriptor.params.len())?;
                 if self.cp.is_application(&member.owner) {
+                    // The class that declares the method is initialized first (JVMS §5.5).
+                    let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| member.owner.clone());
+                    if let Some(end) = self.initialise(path, &declaring) {
+                        return Ok(Some(end));
+                    }
                     return self.call(path, &member.owner, &member.name, &member.descriptor, args);
                 }
                 // A JDK class the tool models (Character.digit, say) runs as bytecode here too, so that the
@@ -1674,6 +1709,9 @@ impl<'a> Engine<'a> {
             }
             Insn::New(index) => {
                 let name = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
+                if let Some(end) = self.initialise(path, &name) {
+                    return Ok(Some(end));
+                }
                 let r = self.alloc(path, &name);
                 self.push(path, Val::R(Some(r)));
             }
@@ -1721,6 +1759,61 @@ impl<'a> Engine<'a> {
         let site = Site { class: frame.class.name.clone(), method: frame.method.clone(), line: frame.code.lines[frame.at] };
         self.met.entry(Gap { kind, owner: owner.to_string(), name: name.to_string(), descriptor: descriptor.to_string() }).or_default().insert(site);
         (self.gap_mode == GapMode::Strict).then_some(End::Gap)
+    }
+
+    /// The path uses `class` in a way that initializes it (JVMS §5.5: `new`, `getstatic`, `invokestatic`): each
+    /// application class whose `<clinit>` that would run, and the path has not reached before, is a
+    /// `class-initializer` gap, since the engine runs no initializer. Under assume it is taken to have run already.
+    fn initialise(&mut self, path: &mut Path, class: &str) -> Option<End> {
+        if path.initialised.contains(class) || crate::classpath::is_jdk_name(class) {
+            return None;
+        }
+        let classes = match self.initializers.get(class) {
+            Some(c) => c.clone(),
+            None => {
+                let c = Rc::new(gaps::initializers(self.cp, class));
+                self.initializers.insert(class.to_string(), c.clone());
+                c
+            }
+        };
+        let fresh: Vec<String> = classes.iter().filter(|c| !path.initialised.contains(*c)).cloned().collect();
+        path.initialised.insert(class.to_string());
+        path.initialised.extend(classes.iter().cloned());
+        for c in &fresh {
+            if let Some(end) = self.meet(path, GapKind::ClassInitializer, c, "<clinit>", "()V") {
+                return Some(end);
+            }
+        }
+        None
+    }
+
+    /// The object a string or class literal is on this path: made at its first load.
+    fn literal(&self, path: &mut Path, literal: Literal, class: &str) -> usize {
+        if let Some(&o) = path.literals.get(&literal) {
+            return o;
+        }
+        let o = self.alloc(path, class);
+        path.literals.insert(literal, o);
+        o
+    }
+
+    /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
+    /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
+    fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        let class = &path.objects[o].class;
+        let hides = match self.hides.get(class) {
+            Some(&h) => h,
+            None => {
+                let h = self.cp.hides_fields(class);
+                self.hides.insert(class.clone(), h);
+                h
+            }
+        };
+        if !hides {
+            return Ok(name.to_string());
+        }
+        let declaring = self.cp.resolve_field(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("no field {}.{name}", owner.replace('/', "."))))?;
+        Ok(self.cp.field_key(class, &declaring, name))
     }
 
     fn default_value(&self, descriptor: &str) -> Result<Val, Stop> {
@@ -2196,7 +2289,7 @@ mod tests {
             assert!(table.contains(&format!("| {row}")), "a row of what is {row}");
         }
         let kinds = docs(include_str!("gaps.rs"));
-        for kind in [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::HiddenField, GapKind::LiteralIdentity, GapKind::ClassInitializer, GapKind::StringConversion] {
+        for kind in [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::ClassInitializer, GapKind::StringConversion] {
             assert!(kinds.contains(&format!("| `{}` |", kind.name())), "the gap table has a row for {}", kind.name());
             assert!(table.contains(&format!("`{}`", kind.name())), "the instruction table says where a {} gap is met", kind.name());
         }

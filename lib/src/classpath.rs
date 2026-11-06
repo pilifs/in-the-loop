@@ -317,6 +317,74 @@ impl ClassPath {
         None
     }
 
+    /// The class that declares the field a reference `owner.name:descriptor` resolves to, by the JVM's field
+    /// lookup (JVMS §5.4.3.2): `owner` if it declares a field of that name and descriptor, else the first of its
+    /// direct superinterfaces, each searched the same way, that leads to one, else its superclass, searched the
+    /// same way. `None` when no class on the way declares it, or one on the way cannot be read.
+    pub fn resolve_field(&self, owner: &str, name: &str, descriptor: &str) -> Option<String> {
+        let mut budget = 256;
+        self.lookup_field(owner, name, descriptor, &mut budget)
+    }
+
+    fn lookup_field(&self, class: &str, name: &str, descriptor: &str, budget: &mut u32) -> Option<String> {
+        *budget = budget.checked_sub(1)?;
+        let Ok(Some(loaded)) = self.load(class) else { return None };
+        let cf = loaded.class;
+        if cf.fields.iter().any(|f| f.name == name && f.descriptor == descriptor) {
+            return Some(class.to_string());
+        }
+        for iface in &cf.interfaces {
+            if let Some(found) = self.lookup_field(iface, name, descriptor, budget) {
+                return Some(found);
+            }
+        }
+        cf.super_class.as_deref().and_then(|s| self.lookup_field(s, name, descriptor, budget))
+    }
+
+    /// Whether two classes along `class`'s superclass chain declare an instance field of one name, so that one
+    /// hides the other in an object of `class`.
+    pub fn hides_fields(&self, class: &str) -> bool {
+        let mut names = std::collections::HashSet::new();
+        let mut current = Some(class.to_string());
+        let mut hops = 0;
+        while let Some(c) = current {
+            let Ok(Some(loaded)) = self.load(&c) else { break };
+            for f in loaded.class.fields.iter().filter(|f| !f.is_static()) {
+                if !names.insert(f.name.clone()) {
+                    return true;
+                }
+            }
+            current = loaded.class.super_class.clone();
+            hops += 1;
+            if hops > 64 {
+                break;
+            }
+        }
+        false
+    }
+
+    /// The key under which an object of class `object_class` keeps its instance field `name` declared by
+    /// `declaring`: the name alone for the field of that name nearest the object's class, the one a subclass
+    /// sees, and `declaring.name` (internal name) for one it hides, so that a field declared again by a subclass
+    /// is a second field and the usual one keeps its plain name. Both the interpreter and the tool's own checker
+    /// key fields this way.
+    pub fn field_key(&self, object_class: &str, declaring: &str, name: &str) -> String {
+        let mut current = Some(object_class.to_string());
+        let mut hops = 0;
+        while let Some(c) = current {
+            if c == declaring {
+                return name.to_string();
+            }
+            let Ok(Some(loaded)) = self.load(&c) else { break };
+            if loaded.class.fields.iter().any(|f| f.name == name && !f.is_static()) || hops > 64 {
+                break;
+            }
+            current = loaded.class.super_class.clone();
+            hops += 1;
+        }
+        format!("{declaring}.{name}")
+    }
+
     /// Loads an application class, or `None` if it is a JDK class or missing.
     pub fn application(&self, name: &str) -> Result<Option<Rc<ClassFile>>, Error> {
         Ok(match self.load(name)? {
