@@ -9,10 +9,14 @@
 //! | `jdk-reference-method` | returns a new object, never null | may return null or an object that exists already, or throw | yes |
 //! | `string-conversion` | makes a new string without converting its arguments | calls `toString` on an object argument, which may throw (bytecode of javac 9 to 18: from 19 on, javac calls `String.valueOf` first, which the engine refuses) | yes |
 //! | `class-initializer` | takes the class's `<clinit>` to have run already, and thrown nothing | runs it at the class's first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS §5.5), after its superclasses' and those of its superinterfaces that declare a default method, and it may throw (`ExceptionInInitializerError`) or set state | yes |
+//! | `jdk-primitive-method` | nothing: refused as under strict | runs it, and returns a value the engine could only make up (`Random.nextInt(bound)`), or throws | yes |
+//! | `jdk-static-method` | nothing: refused as under strict | runs a static JDK method the engine does not model (`Integer.numberOfLeadingZeros`, `Arrays.fill`), which may return any value, change an argument array, or throw | yes |
 //!
 //! Under `--gaps strict`, the default, a path that reaches a gap ends there, and a run that met one has no verdict
 //! unless another path violates the property; under `--gaps assume` the engine goes on as the second column says,
-//! and a verdict names every gap it assumed. A JDK class is taken to be initialized already: its initializer sets
+//! and a verdict names every gap it assumed. The last two kinds have no assume form ([`GapKind::assumable`]): the
+//! only approximation of a value is a made-up one, so they are refused under assume too, and only a contract
+//! (`--gaps advised`, [`crate::gap_contracts`]) closes them. A JDK class is taken to be initialized already: its initializer sets
 //! the JDK's own state, which the engine reads only through the calls it models.
 //!
 //! What step 1c of `llm-dlc/loops/sound-verdicts.md` made exact, and so is no gap: a field is resolved as the JVM
@@ -25,7 +29,7 @@
 //! `Record.<init>`, the constructors of the JDK's exceptions that take no argument or a message (and a cause),
 //! which change nothing the proof observes, and the static JDK methods it models ([`super::models_jdk_static`]).
 //! The scan counts those it relied on. A construct the engine refuses (floating point, a static field written, an
-//! array of references, a primitive result of a JDK instance method, ...) is not a gap either: it ends the proof
+//! array of references, a floating-point or array result of a JDK method, ...) is not a gap either: it ends the proof
 //! with no verdict, as it should, in either mode. The scan lists those reasons too, since a method that has one is
 //! outside the engine whatever its gaps. `monitorenter` and `monitorexit` are implemented: they throw
 //! `NullPointerException` on null and otherwise do nothing, which is all they do in a run of one thread.
@@ -56,6 +60,10 @@ pub enum GapKind {
     JdkReferenceMethod,
     ClassInitializer,
     StringConversion,
+    /// A JDK instance method with an integral, `char` or `boolean` result.
+    JdkPrimitiveMethod,
+    /// A static JDK method the engine does not model ([`super::models_jdk_static`], `lib/models`).
+    JdkStaticMethod,
 }
 
 impl GapKind {
@@ -66,15 +74,31 @@ impl GapKind {
             GapKind::JdkReferenceMethod => "jdk-reference-method",
             GapKind::ClassInitializer => "class-initializer",
             GapKind::StringConversion => "string-conversion",
+            GapKind::JdkPrimitiveMethod => "jdk-primitive-method",
+            GapKind::JdkStaticMethod => "jdk-static-method",
         }
     }
 
-    /// Whether JBMC implements the construct, so that `--engine auto` asks it when the tool's own checker refused
-    /// one: it runs class initializers, but approximates a JDK call it has no bytecode for as the engine's assume
-    /// mode does, without naming it (step 4c of `llm-dlc/loops/sound-verdicts.md`).
-    pub fn jbmc_implements(self) -> bool {
-        matches!(self, GapKind::ClassInitializer)
+    /// Every kind, in order.
+    pub const ALL: [GapKind; 7] = [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::ClassInitializer, GapKind::StringConversion, GapKind::JdkPrimitiveMethod, GapKind::JdkStaticMethod];
+
+    /// The kind an id's first part names.
+    pub fn from_name(name: &str) -> Option<GapKind> {
+        GapKind::ALL.into_iter().find(|k| k.name() == name)
     }
+
+    /// Whether it is a call into the JDK, whose id names the JDK's version.
+    pub fn of_the_jdk(self) -> bool {
+        matches!(self, GapKind::JdkConstructor | GapKind::JdkVoidMethod | GapKind::JdkReferenceMethod | GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod)
+    }
+
+    /// Whether `--gaps assume` has an approximation for it. A call whose value the proof reads has none: the engine
+    /// could only make the value up, and a made-up value is no approximation of the call's. Such a gap is refused
+    /// in every mode, and only a contract closes it.
+    pub fn assumable(self) -> bool {
+        !matches!(self, GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod)
+    }
+
 
     /// What the engine takes the construct to do under `--gaps assume`: the assumption a verdict states.
     pub fn approximation(self) -> &'static str {
@@ -84,6 +108,7 @@ impl GapKind {
             GapKind::JdkReferenceMethod => "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
             GapKind::ClassInitializer => "has run already, and threw nothing",
             GapKind::StringConversion => "makes a new string without calling toString on its object arguments",
+            GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod => "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
         }
     }
 }
@@ -153,8 +178,7 @@ impl Gap {
             (false, true) => format!("{owner}.{}{}", self.name, self.descriptor),
             (false, false) => format!("{owner}.{}:{}", self.name, self.descriptor),
         };
-        let of_the_jdk = matches!(self.kind, GapKind::JdkConstructor | GapKind::JdkVoidMethod | GapKind::JdkReferenceMethod);
-        match jdk.filter(|_| of_the_jdk) {
+        match jdk.filter(|_| self.kind.of_the_jdk()) {
             Some(v) => format!("{}:{member}@jdk-{v}", self.kind.name()),
             None => format!("{}:{member}", self.kind.name()),
         }
@@ -163,6 +187,14 @@ impl Gap {
     /// The member as a reader writes it: `java.util.ArrayList.<init>(int)`.
     pub fn call(&self) -> String {
         java_call(&self.owner, &self.name, &self.descriptor)
+    }
+
+    /// Whether JBMC implements the construct, so that `--engine auto` asks it when the tool's own checker refused
+    /// it: JBMC runs class initializers, and the bytecode of the JDK classes it is given
+    /// ([`crate::equivalence::JDK_CLASSES`]), but approximates any other JDK call as the engine's assume mode
+    /// does, without naming it (step 4c of `llm-dlc/loops/sound-verdicts.md`).
+    pub fn jbmc_implements(&self) -> bool {
+        self.kind == GapKind::ClassInitializer || (self.kind.of_the_jdk() && crate::equivalence::JDK_CLASSES.contains(&self.owner.as_str()))
     }
 }
 
@@ -231,6 +263,9 @@ pub struct GapRecord {
     pub call: String,
     pub sites: Vec<String>,
     pub approximation: String,
+    /// Whether JBMC implements it ([`Gap::jbmc_implements`]).
+    #[serde(skip)]
+    pub jbmc: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub treatment: Option<GapTreatment>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -307,8 +342,17 @@ impl GapRecord {
 }
 
 /// The records of gaps with the sites that meet them, under the JDK `jdk`, treated as `treatment` (none for a scan).
+/// A gap with no assume form is refused, whatever `treatment` says of the others.
 pub fn records(gaps: &BTreeMap<Gap, BTreeSet<Site>>, jdk: Option<&str>, treatment: Option<GapTreatment>) -> Vec<GapRecord> {
-    gaps.iter().map(|(g, sites)| GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), treatment, contract: None }).collect()
+    gaps.iter()
+        .map(|(g, sites)| {
+            let treatment = match treatment {
+                Some(GapTreatment::Assumed) if !g.kind.assumable() => Some(GapTreatment::Refused),
+                t => t,
+            };
+            GapRecord { id: g.id(jdk), kind: g.kind, call: g.call(), sites: sites.iter().map(Site::display).collect(), approximation: g.kind.approximation().to_string(), jbmc: g.jbmc_implements(), treatment, contract: None }
+        })
+        .collect()
 }
 
 /// The records of the gaps contracts closed, with the sites where each was applied.
@@ -389,7 +433,7 @@ pub enum JdkCall {
     Exact,
     /// The call is a gap of this kind.
     Gap(GapKind),
-    /// It refuses the call: a primitive or array result it could only make up.
+    /// It refuses the call: a floating-point or array result, or floating-point arguments, which it does not have.
     Refused,
 }
 
@@ -405,8 +449,24 @@ pub fn jdk_instance_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &s
     match MethodDescriptor::parse(descriptor).map(|d| d.ret) {
         Ok(Type::Void) => JdkCall::Gap(GapKind::JdkVoidMethod),
         Ok(Type::Object(_)) => JdkCall::Gap(GapKind::JdkReferenceMethod),
+        Ok(t) if crate::harness::expr::ty_of(&t).is_some() => JdkCall::Gap(GapKind::JdkPrimitiveMethod),
         _ => JdkCall::Refused,
     }
+}
+
+/// How the engine treats a static call of the JDK `owner.name(descriptor)` that no model of `lib/models` runs: one
+/// it models ([`super::models_jdk_static`]) is exact, one with a floating-point parameter or result, or an array
+/// result, is refused, and any other is a `jdk-static-method` gap. The engine and the scan share it.
+pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
+    let Ok(d) = MethodDescriptor::parse(descriptor) else { return JdkCall::Refused };
+    let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
+    if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {
+        return JdkCall::Refused;
+    }
+    if super::models_jdk_static(owner, name) {
+        return JdkCall::Exact;
+    }
+    JdkCall::Gap(GapKind::JdkStaticMethod)
 }
 
 /// The object arguments a string concatenation by `invokedynamic` would convert with `toString`: every parameter
@@ -599,10 +659,12 @@ impl Walker<'_> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if super::models_jdk_static(&member.owner, &member.name) {
-                        *self.scan.exact.entry(format!("{}.{}", member.owner.replace('/', "."), member.name)).or_default() += 1;
                     } else {
-                        self.refuse("a static JDK method it does not model", java_call(&member.owner, &member.name, &member.descriptor), &site);
+                        match jdk_static_call(&member.owner, &member.name, &member.descriptor) {
+                            JdkCall::Exact => *self.scan.exact.entry(format!("{}.{}", member.owner.replace('/', "."), member.name)).or_default() += 1,
+                            JdkCall::Gap(kind) => self.gap(kind, &member.owner, &member.name, &member.descriptor, site),
+                            JdkCall::Refused => self.refuse("floating point or an array result of a static JDK method", java_call(&member.owner, &member.name, &member.descriptor), &site),
+                        }
                     }
                 }
                 Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
@@ -621,7 +683,7 @@ impl Walker<'_> {
                     match jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) {
                         JdkCall::Exact => *self.scan.exact.entry(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)).or_default() += 1,
                         JdkCall::Gap(kind) => self.gap(kind, &member.owner, &member.name, &member.descriptor, site),
-                        JdkCall::Refused => self.refuse("a primitive result of a JDK instance method", java_call(&member.owner, &member.name, &member.descriptor), &site),
+                        JdkCall::Refused => self.refuse("a floating-point or array result of a JDK instance method", java_call(&member.owner, &member.name, &member.descriptor), &site),
                     }
                 }
                 _ => {}
@@ -638,5 +700,39 @@ impl Walker<'_> {
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };
         cf.field(name).filter(|f| f.is_static()).is_some_and(|f| f.attributes.iter().any(|a| a.name == "ConstantValue"))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Step 3c of `llm-dlc/loops/sound-verdicts.md`: a static JDK method the engine does not model, and a JDK
+    /// method with a primitive result, are gaps with no assume form, which only a contract closes; a call JBMC
+    /// has the bytecode of is one `--engine auto` asks it about.
+    #[test]
+    fn a_call_whose_value_the_proof_reads_is_a_gap_with_no_assume_form() {
+        assert_eq!(jdk_static_call("java/lang/Integer", "numberOfLeadingZeros", "(I)I"), JdkCall::Gap(GapKind::JdkStaticMethod));
+        assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
+        assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
+        assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Refused);
+        let cp = ClassPath::new().with_default_jdk();
+        assert_eq!(jdk_instance_call(&cp, "java/util/Random", "nextInt", "(I)I"), JdkCall::Gap(GapKind::JdkPrimitiveMethod));
+        assert_eq!(jdk_instance_call(&cp, "java/util/BitSet", "get", "(I)Z"), JdkCall::Gap(GapKind::JdkPrimitiveMethod));
+        assert_eq!(jdk_instance_call(&cp, "java/util/Random", "nextDouble", "()D"), JdkCall::Refused);
+        for kind in GapKind::ALL {
+            assert_eq!(GapKind::from_name(kind.name()), Some(kind));
+            assert_eq!(kind.assumable(), !matches!(kind, GapKind::JdkPrimitiveMethod | GapKind::JdkStaticMethod), "{}", kind.name());
+        }
+        let nlz = Gap { kind: GapKind::JdkStaticMethod, owner: "java/lang/Integer".into(), name: "numberOfLeadingZeros".into(), descriptor: "(I)I".into() };
+        assert_eq!(nlz.id(Some("25")), "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25");
+        assert!(nlz.jbmc_implements(), "JBMC is given java.lang.Integer's bytecode");
+        let next = Gap { kind: GapKind::JdkPrimitiveMethod, owner: "java/util/Random".into(), name: "nextInt".into(), descriptor: "(I)I".into() };
+        assert!(!next.jbmc_implements(), "JBMC stubs java.util.Random");
+        // Under assume, a gap with no approximation is refused, and the others assumed.
+        let met: BTreeMap<Gap, BTreeSet<Site>> = [(nlz, BTreeSet::new()), (Gap { kind: GapKind::JdkConstructor, owner: "java/util/Random".into(), name: "<init>".into(), descriptor: "(J)V".into() }, BTreeSet::new())].into_iter().collect();
+        let treatments: Vec<_> = records(&met, None, Some(GapTreatment::Assumed)).into_iter().map(|r| (r.kind, r.treatment)).collect();
+        assert_eq!(treatments, [(GapKind::JdkConstructor, Some(GapTreatment::Assumed)), (GapKind::JdkStaticMethod, Some(GapTreatment::Refused))]);
     }
 }

@@ -288,7 +288,7 @@ pub enum Confirmed {
 /// Asks JBMC to prove, over every input, the harness the own checker proved (`native`). `run` is JBMC's run of the
 /// same harness, on the same class path. Returns the confirmation, and JBMC's result when it refutes the statement.
 pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun) -> Result<(Confirmation, Option<JbmcResult>), Error> {
-    let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.kind.jbmc_implements() && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
+    let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.jbmc && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
     let (assumed, contracted) = (approximated(false), approximated(true));
     if !assumed.is_empty() || !contracted.is_empty() {
         let mut reasons = Vec::new();
@@ -327,11 +327,12 @@ pub(crate) fn confirmation_line(c: &Confirmation) -> String {
     }
 }
 
-/// Whether the own checker's run refused a gap (strict) that JBMC does not implement either: then `--engine auto`
-/// does not ask JBMC, which gives a call it has no bytecode for an approximation of its own and does not name it
-/// (step 4c of the sound-verdicts brief). A class initializer, which JBMC runs, is asked of it.
+/// Whether the own checker's run refused a gap (under strict, or one with no assume form) that JBMC does not
+/// implement either: then `--engine auto` does not ask JBMC, which gives a call it has no bytecode for an
+/// approximation of its own and does not name it (step 4c of the sound-verdicts brief). A class initializer, and a
+/// call of a JDK class JBMC is given the bytecode of ([`JDK_CLASSES`]), are asked of it.
 pub(crate) fn refuses_gaps(result: &JbmcResult) -> bool {
-    result.gap_mode.is_some_and(crate::bmc::gaps::GapMode::refuses) && result.gaps.iter().any(|g| !g.kind.jbmc_implements())
+    result.gaps.iter().any(|g| g.treatment == Some(GapTreatment::Refused) && !g.jbmc)
 }
 
 /// The note `--engine auto` writes when the own checker refused a gap, or applied a contract at one, and JBMC is
@@ -346,6 +347,24 @@ pub(crate) fn unreproduced_cause(result: &JbmcResult) -> String {
         return format!("The path to it goes through the contract{} for {}, which the interpreter does not apply: it runs the JDK's call, so a contract probably says what the call does not (--contracts)", if applied.len() == 1 { "" } else { "s" }, applied.join(", "));
     }
     "A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value".into()
+}
+
+/// Why a counterexample of a run that applied contracts is no verdict when the interpreter cannot run the method on
+/// it (`replay` is what it said): a contract admits what the JDK's call may never do (any value in a range, any
+/// elements of an array), so a witness through it is one the contracts admit, and only a run of the JDK's call
+/// shows whether the JVM does it. `None` when the run applied no contract.
+pub(crate) fn unconfirmed_through_contracts(result: &JbmcResult, rendered: &str, replay: &str) -> Option<String> {
+    let applied: Vec<&str> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Contract)).map(|g| g.id.as_str()).collect();
+    if applied.is_empty() {
+        return None;
+    }
+    let why = replay.trim_start_matches("<could not replay: ").replace(['<', '>'], "");
+    Some(format!(
+        "the tool's own checker's counterexample {rendered} goes through the contract{s} for {list}, and the interpreter cannot run the method on it to confirm it ({why}). A contract admits what the JDK's call may never do, so the witness is one the contract{s} admit{verb}: run the method on it on a JVM",
+        s = if applied.len() == 1 { "" } else { "s" },
+        verb = if applied.len() == 1 { "s" } else { "" },
+        list = applied.join(", ")
+    ))
 }
 
 /// The verdict's words for the contracts a verified run rests on (`--contracts`), `, relying on 2 contracts for
@@ -390,12 +409,13 @@ pub(crate) fn evidence_words(c: &crate::bmc::gaps::ContractUse) -> String {
 /// The verdict's words for the gaps a verified run assumed, `, assuming 2 behaviours the tool's own checker does not
 /// implement`, and a line for each; nothing when it assumed none.
 pub(crate) fn assumed_gaps(result: &JbmcResult) -> (String, String) {
-    if result.gap_mode != Some(crate::bmc::gaps::GapMode::Assume) || result.gaps.is_empty() {
+    let assumed: Vec<&crate::bmc::gaps::GapRecord> = result.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Assumed)).collect();
+    if result.gap_mode != Some(crate::bmc::gaps::GapMode::Assume) || assumed.is_empty() {
         return (String::new(), String::new());
     }
-    let n = result.gaps.len();
+    let n = assumed.len();
     let words = format!(", assuming {n} behaviour{} the tool's own checker does not implement (--gaps assume)", if n == 1 { "" } else { "s" });
-    let lines = result.gaps.iter().map(|g| format!("  assumed: {}\n", g.line())).collect();
+    let lines = assumed.iter().map(|g| format!("  assumed: {}\n", g.line())).collect();
     (words, lines)
 }
 
@@ -1155,6 +1175,20 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             let found = last.arguments(&flat_types)?;
             let replays = replay_both(&found);
             replay = Some(Replay { by: "interpreter".into(), reproduced: !replays.agree });
+            let unreplayed = [&replays.before, &replays.after].into_iter().find(|t| t.starts_with("<could not replay"));
+            if let Some(p) = unreplayed.and_then(|t| unconfirmed_through_contracts(&last, &witness::call_in(&method_name, &layout, &found).0, t)) {
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                problem = Some(p);
+                verdict = Verdict::Unverifiable;
+                replay = Some(Replay { by: "interpreter".into(), reproduced: false });
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("equivalence.sarif"), &findings)?;
+                }
+                let stated = Some(stated(Some(&last), search.as_ref(), false));
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), counterexample, proof, problem, statement: Some(statement), findings, output: out, work, shared: shared_used, previous: previous_display.clone(), relation: options.results_agree_when.clone(), vacuous: None, search, replay, stated, advice: None });
+            }
             // A counterexample the interpreter cannot reproduce is no counterexample: JBMC has given an arbitrary
             // result to a method it had no bytecode for (one outside its models and the class path it was given).
             if replays.agree {

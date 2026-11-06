@@ -1829,6 +1829,8 @@ def run_tool_equivalence(folder, example, root, module, result):
 # before it is the default.
 
 GAP_NOTE = "Gap scan ("
+# The gap kinds `--gaps assume` has no approximation of: a call whose value the proof reads.
+NO_ASSUME_FORM = {"jdk-primitive-method", "jdk-static-method"}
 
 
 def gap_scan_problem(example):
@@ -1905,6 +1907,10 @@ def gap_note(example, scans, today=None):
                 + ("the proof by the tool's own checker would end with no verdict"
                    if native else "a run by the tool's own checker would end with no verdict")
                 + "; the example runs in `assume` until the user decides how the recorded examples move.")
+        unassumable = sorted({g["kind"] for g in gaps} & NO_ASSUME_FORM)
+        if unassumable:
+            text += (f" A {' or '.join(f'`{k}`' for k in unassumable)} gap has no assume form: `assume` refuses it too, "
+                     "and only a contract closes it (`--gaps advised`).")
     if not native:
         text += (" The recorded proof is JBMC's, which strict mode of the tool's own checker does not change"
                  + (f"; the checker refuses part of it in any mode ({'; '.join(refused)})" if refused else "")

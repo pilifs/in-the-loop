@@ -2388,6 +2388,14 @@ class GapScanTest(unittest.TestCase):
         self.assertIn("runs in `assume` until the user decides", note)
         self.assertIn("The recorded proof is JBMC's", note)
         self.assertIn("refuses part of it in any mode (floating point (floating-point arithmetic, and 2 more))", note)
+        self.assertNotIn("no assume form", note)
+
+    def test_a_gap_with_no_assume_form_says_so(self):
+        gap = {"id": "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25.0.4.1", "kind": "jdk-static-method",
+               "call": "java.lang.Integer.numberOfLeadingZeros(int)", "sites": ["a.B.m:3"]}
+        note = build.gap_note(self.example(), {"after": self.scan([gap]), "before": self.scan()})
+        self.assertIn("A `jdk-static-method` gap has no assume form: `assume` refuses it too, and only a contract "
+                      "closes it (`--gaps advised`).", note)
 
     def test_the_note_replaces_an_earlier_one(self):
         with tempfile.TemporaryDirectory() as d:

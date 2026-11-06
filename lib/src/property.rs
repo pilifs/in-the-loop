@@ -575,6 +575,18 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 }
                 harness::expr::eval_with(&harness.assertion, &locals, &arrays)
             };
+            if let Some(p) = Some(&replayed).filter(|r| r.could_not_replay()).and_then(|r| crate::equivalence::unconfirmed_through_contracts(&last, &witness::call(&method_name, &params, &found).0, &r.outcome)) {
+                let message = format!("{} cannot be verified: {p}", options.target);
+                let _ = writeln!(out, "✗ {message}");
+                findings.push(Finding::new("unverifiable", message, uri.clone(), line));
+                problem = Some(p);
+                verdict = Verdict::Unverifiable;
+                if let Some(report) = &options.report {
+                    sarif::write(&report.join("property.sarif"), &findings)?;
+                }
+                let replay = Some(crate::equivalence::Replay { by: "interpreter".into(), reproduced: false });
+                return Ok(Outcome { verdict, target: options.target.clone(), domain: Some(domain), assume: options.assume.clone(), assert: Some(assertion), throws: options.throws.clone(), throws_checked, counterexample, proof, problem, statement: Some(statement), findings, output: out, work, vacuous: None, stated: Some(stated(Some(&last), search.as_ref(), false)), search, replay, advice: None });
+            }
             let evaluable = !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
             let holds_on_found = match (applying(&found), replayed.returned, replayed.thrown.as_deref()) {
                 (Some(i), _, Some(thrown)) => cp.is_subtype(thrown, &harness.signals[i].0.class),

@@ -2068,6 +2068,8 @@ public class Gaps {
         return new Point(n, n).x() + Math.addExact(n, 1);
     }
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
+    public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
+    public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
 }
 "#;
 
@@ -2109,8 +2111,14 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     // javac from JDK 19 on converts the object with `String.valueOf` before the concatenation, which the engine
     // refuses; the bytecode of JDK 9 to 18 passes the object itself, a `string-conversion` gap.
     let (ids, s) = scan("described");
-    assert!(ids.is_empty(), "{ids:?}");
-    assert_eq!(s.refused["a static JDK method it does not model"].first, "java.lang.String.valueOf(java.lang.Object)");
+    assert_eq!(ids, ["jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"]);
+    assert!(s.refused.is_empty(), "{:?}", s.refused);
+    // A call whose value the proof reads (step 3c): a static JDK method the engine does not model, and a JDK
+    // method returning a primitive.
+    let (ids, _) = scan("bits");
+    assert_eq!(ids, ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+    let (ids, _) = scan("roll");
+    assert_eq!(ids, ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-primitive-method:java.util.Random.nextInt(I)I"]);
     let (ids, s) = scan("exact");
     assert!(ids.is_empty(), "{ids:?}");
     let exact: Vec<&String> = s.exact.keys().collect();
@@ -2195,6 +2203,27 @@ fn a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume
         assert!(o.output.contains("assuming 2 behaviours"), "{}", o.output);
         let o = prove("nullMonitor", "result == 1", engine, GapMode::Assume);
         assert_eq!(o.verdict, Verdict::Violation, "a monitor is no gap: {}", o.output);
+
+        // A JDK method whose value the proof reads has no assume form: refused under assume too, and JBMC, which
+        // stubs java.util.Random, is not asked; the constructor before it is assumed.
+        let o = prove("roll", "result >= 1", engine, GapMode::Assume);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        let search = o.search.as_ref().expect("a checker ran");
+        assert_eq!(search.engine, "native", "{}", o.output);
+        let treated: Vec<(String, Option<GapTreatment>)> = search.gaps.iter().map(|g| (g.id.split('@').next().unwrap().to_string(), g.treatment)).collect();
+        assert_eq!(treated, [("jdk-constructor:java.util.Random.<init>(J)V".to_string(), Some(GapTreatment::Assumed)), ("jdk-primitive-method:java.util.Random.nextInt(I)I".to_string(), Some(GapTreatment::Refused))], "{}", o.output);
+        let problem = o.problem.as_deref().unwrap();
+        assert!(problem.contains("refused it (--gaps assume): jdk-primitive-method:java.util.Random.nextInt(I)I@") && problem.contains("It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"), "{}", o.output);
+        assert!(!problem.contains("Random.<init>"), "the assumed constructor is not among the refused: {problem}");
+        assert_eq!(o.output.contains("so JBMC is not asked"), engine == Engine::Auto, "{}", o.output);
+    }
+    // A static JDK method the engine does not model, in either mode (JBMC, which has java.lang.Integer's
+    // bytecode, would be asked under auto, and is not run inline).
+    for gaps in [GapMode::Strict, GapMode::Assume] {
+        let o = prove("bits", "result >= 0 && result <= 32", Engine::Native, gaps);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert_eq!(ids(&o, GapTreatment::Refused), ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+        assert!(o.problem.as_deref().unwrap().contains("only a contract closes it"), "{}", o.output);
     }
     // A regression proof meets them the same way: a JDK constructor added to a method that returns 1.
     let (Some(before), Some(after)) = (
@@ -2328,6 +2357,8 @@ public class Contracted {
     public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append(n) == b; }
     public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
+    public static int bits(int n) { return 32 - Integer.numberOfLeadingZeros(n); }
+    public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
 }
 "#;
 
@@ -2437,9 +2468,12 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert!(o.problem.as_deref().unwrap().contains(&format!("refused it (--gaps advised): {capacity}")), "{}", o.output);
         assert!(o.problem.as_deref().unwrap().contains("fixtures.Contracted.capacity:"), "met at the call, not in the contract's method: {}", o.output);
 
-        // An array the call modifies takes any values: what the harness read before the call is gone.
+        // An array the call modifies takes any values: what the harness read before the call is gone. The witness
+        // is one of the values the contract admits, not necessarily the one Random(1) writes, and the interpreter
+        // cannot run Random to tell, so it is no verdict.
         let o = prove("firstByte", "firstByte", "out.length == 0 || result == \\old(out[0])", &[], &[&random, &fill], engine).unwrap();
-        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.problem.as_deref().unwrap().contains("the witness is one the contracts admit"), "{}", o.output);
         assert_eq!(contracts(&o), ["jdk-constructor:java.util.Random.<init>(J)V", "jdk-void-method:java.util.Random.nextBytes([B)V"], "{}", o.output);
         let o = prove("filled", "filled", "result == out.length", &[], &[&random, &fill], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -2486,6 +2520,40 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert_eq!(a.closed, [format!("jdk-constructor:java.util.Random.<init>(J)V{jdk}")]);
         assert_eq!(a.gaps.iter().map(|g| g.id.split('@').next().unwrap()).collect::<Vec<_>>(), ["jdk-void-method:java.util.Random.nextBytes([B)V"]);
         assert!(!a.template.contains("Random.<init>"), "the template is of the gaps still open: {}", a.template);
+
+        // A primitive result is any value `assert:` admits, which the JVM test holds the JDK's call to: a static
+        // JDK method, and an instance method on a receiver the test builds.
+        let random7 = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
+        let next = |assert: &str| block("jdk-primitive-method:java.util.Random.nextInt(I)I", &format!("  call: java.util.Random.nextInt(int bound) -> int\n  throws: IllegalArgumentException when bound <= 0\n  assert: {assert}\n  modifies: this\n"));
+        let nlz = |assert: &str| block("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I", &format!("  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  assert: {assert}\n  modifies: nothing\n"));
+        let exact = nlz("0 <= result && result <= 32 && (i == 0) == (result == 32) && (i < 0) == (result == 0)");
+        let o = prove("bits", "bits", "result >= 0 && result <= 32", &[], &[&exact], engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert!(o.output.contains("relying on 1 contract for gaps of the tool's own checker, 1 tested"), "{}", o.output);
+        assert_eq!(contracts(&o), ["jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I"]);
+        // A violation through it, which the interpreter, running the JDK's own bytecode, reproduces.
+        let o = prove("bits-violated", "bits", "result < 32", &[], &[&exact], engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+        assert_eq!(o.counterexample.as_ref().unwrap().outcome, "32", "{}", o.output);
+        assert!(o.replay.as_ref().unwrap().reproduced, "{}", o.output);
+        // The JVM refutes a bound the call does not keep, with the value it returned.
+        let o = prove("bits-wrong", "bits", "result >= 0 && result <= 32", &[], &[&nlz("0 <= result && result < 32")], engine).unwrap();
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.starts_with("a JVM refutes it: on i=0 the JVM's call returns 32, where the contract says it returns with `assert: 0 <= result && result < 32` holding (1 of "), "{}", o.output);
+
+        let o = prove("roll", "roll", "result >= 1 && result <= sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 <= result && result < bound")], engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert!(o.output.contains("relying on 2 contracts for gaps of the tool's own checker, 2 tested"), "{}", o.output);
+        assert!(o.output.contains("throws java.lang.IllegalArgumentException when bound <= 0; then 0 <= result && result < bound; modifies this (written by the test; tested on ") && o.output.contains(", each called on new java.util.Random(), none refuting it)"), "{}", o.output);
+        // A witness through the contract is one the contract admits: the interpreter cannot run Random to show
+        // the JVM's, so there is no verdict.
+        let o = prove("roll-violated", "roll", "result >= 1 && result < sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 <= result && result < bound")], engine).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.problem.as_deref().unwrap().contains("goes through the contracts for jdk-constructor:java.util.Random.<init>(J)V") && o.problem.as_deref().unwrap().contains("the interpreter cannot run the method on it to confirm it"), "{}", o.output);
+        assert!(!o.replay.as_ref().unwrap().reproduced, "{}", o.output);
+        let o = prove("roll-wrong", "roll", "result >= 1 && result <= sides", &["IllegalArgumentException when sides <= 0"], &[&random7, &next("0 < result && result < bound")], engine).unwrap();
+        let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
+        assert!(refused.starts_with("a JVM refutes it: on bound=1 the JVM's call returns 0, where the contract says it returns with `assert: 0 < result && result < bound` holding"), "{}", o.output);
     }
     let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.Contracted#capacity");
     options.assert = Some("result == 1".into());

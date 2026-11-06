@@ -194,7 +194,7 @@ pub fn advise(cp: &ClassPath, gap: &Gap, sites: Vec<String>, jdk: Option<&str>) 
         returns: returns.java_name(),
         sites,
         assumed: gap.kind.approximation().to_string(),
-        must_state: obligations(gap.kind, &params),
+        must_state: obligations(gap.kind, &params, &returns),
         template: String::new(),
         refused_contract: None,
         counterexamples: Vec::new(),
@@ -203,8 +203,8 @@ pub fn advise(cp: &ClassPath, gap: &Gap, sites: Vec<String>, jdk: Option<&str>) 
     advice
 }
 
-/// What a contract for a gap of `kind`, with these parameter types, must state.
-fn obligations(kind: GapKind, params: &[Type]) -> Vec<Obligation> {
+/// What a contract for a gap of `kind`, with these parameter types and result, must state.
+fn obligations(kind: GapKind, params: &[Type], returns: &Type) -> Vec<Obligation> {
     let o = |part, question: &str| Obligation { part, question: question.to_string() };
     let references = params.iter().any(|t| matches!(t, Type::Object(_) | Type::Array(_)));
     let mut out = Vec::new();
@@ -231,6 +231,19 @@ fn obligations(kind: GapKind, params: &[Type]) -> Vec<Obligation> {
             out.push(o(Part::Exceptions, "Does the initializer throw? (the class's first use then throws ExceptionInInitializerError, and every later use NoClassDefFoundError)"));
             out.push(o(Part::State, "Which static fields does it set, and to what?"));
         }
+        GapKind::JdkPrimitiveMethod => {
+            out.push(o(Part::Result, "What does it return, as a condition over the arguments and `result`? (`assert: 0 <= result && result < bound`; the receiver's state is not kept, so not over `this`)"));
+            out.push(o(Part::Exceptions, "Which exceptions does it throw, and on which arguments and states of the receiver?"));
+            out.push(o(Part::Receiver, "Does it change the object it is called on? (`modifies: this`, or nothing)"));
+        }
+        GapKind::JdkStaticMethod => {
+            match returns {
+                Type::Void => {}
+                Type::Object(_) => out.push(o(Part::Result, "What does it return: null, an argument, or a new object? (`assert:` over `result`)")),
+                _ => out.push(o(Part::Result, "What does it return, as a condition over the arguments and `result`? (`assert: 0 <= result && result <= 32`)")),
+            }
+            out.push(o(Part::Exceptions, "Which exceptions does it throw, and on which arguments?"));
+        }
     }
     if references && kind != GapKind::ClassInitializer {
         out.push(o(Part::Arguments, "Does it change an array or object passed to it? (`modifies: <parameter>`, and what holds of it after, with `\\old`)"));
@@ -245,7 +258,11 @@ fn block(g: &GapAdvice) -> String {
     let params = g.parameters.iter().map(|p| format!("{} {}", p.ty, p.name)).collect::<Vec<_>>().join(", ");
     let _ = writeln!(out, "{}", g.id);
     let _ = writeln!(out, "  # {} {}, at {}.", g.call, describe(g.kind), g.sites.join(", "));
-    let _ = writeln!(out, "  # --gaps assume would take it that it {}.", g.assumed);
+    if g.kind.assumable() {
+        let _ = writeln!(out, "  # --gaps assume would take it that it {}.", g.assumed);
+    } else {
+        let _ = writeln!(out, "  # --gaps assume has no approximation of it: only a contract closes it.");
+    }
     match g.kind {
         GapKind::ClassInitializer => {
             let _ = writeln!(out, "  call: {}.<clinit>()", g.owner);
@@ -258,7 +275,8 @@ fn block(g: &GapAdvice) -> String {
             let _ = writeln!(out, "  assume: true");
             let _ = writeln!(out, "  throws: TODO when TODO");
             if g.must_state.iter().any(|o| o.part == Part::Result) {
-                let _ = writeln!(out, "  assert: TODO (over the arguments, this and result)");
+                let over = if matches!(g.kind, GapKind::JdkReferenceMethod | GapKind::StringConversion) { "the arguments, this and result" } else { "the arguments and result" };
+                let _ = writeln!(out, "  assert: TODO (over {over})");
             } else if g.must_state.iter().any(|o| o.part == Part::Arguments) {
                 let _ = writeln!(out, "  assert: TODO (what holds of an argument it changes, with \\old for its value before; true for nothing)");
             }
@@ -276,6 +294,8 @@ fn describe(kind: GapKind) -> &'static str {
         GapKind::JdkReferenceMethod => "is a JDK method returning an object that the tool's own checker has no model of",
         GapKind::StringConversion => "is the toString a string concatenation calls on an object, which the tool's own checker does not run",
         GapKind::ClassInitializer => "is a class initializer, which the tool's own checker does not run",
+        GapKind::JdkPrimitiveMethod => "is a JDK method returning a primitive that the tool's own checker has no model of",
+        GapKind::JdkStaticMethod => "is a static JDK method the tool's own checker has no model of",
     }
 }
 
@@ -380,5 +400,16 @@ mod tests {
         assert!(a.must_state.iter().any(|o| o.part == Part::State));
         let file = template(&[a], Some("25"));
         assert!(file.contains("\nkind: gap-contracts\n\nclass-initializer:p.Boom.<clinit>()V\n"), "{file}");
+
+        // A call whose value the proof reads: its result is a condition over `result`, and assume has no form of it.
+        let gap = Gap { kind: GapKind::JdkPrimitiveMethod, owner: "java/util/Random".into(), name: "nextInt".into(), descriptor: "(I)I".into() };
+        let a = advise(&cp, &gap, vec!["p.C.m:7".into()], Some("25"));
+        assert_eq!(a.must_state[0].part, Part::Result);
+        assert!(a.template.contains("  # --gaps assume has no approximation of it: only a contract closes it.\n"), "{}", a.template);
+        assert!(a.template.contains(" -> int\n") && a.template.contains("  assert: TODO (over the arguments and result)\n"), "{}", a.template);
+        let gap = Gap { kind: GapKind::JdkStaticMethod, owner: "java/util/Arrays".into(), name: "fill".into(), descriptor: "([II)V".into() };
+        let a = advise(&cp, &gap, vec!["p.C.m:8".into()], Some("25"));
+        let parts: Vec<Part> = a.must_state.iter().map(|o| o.part).collect();
+        assert_eq!(parts, vec![Part::Exceptions, Part::Arguments, Part::Purity], "a void static method has no result, and may change its array");
     }
 }

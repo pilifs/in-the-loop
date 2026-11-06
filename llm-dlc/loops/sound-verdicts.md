@@ -687,6 +687,75 @@ Each run counts only its own commits, so work done in earlier runs is listed her
     model, gap kinds with no assume form, so a contract can state a value (`size()`, `add` returning `true`). Prove
     a contract against the JDK's bytecode where the method is in the fragment (`Arrays.fill`), giving `proved`
     above `tested`. Then the recorded example.
+- **3c, second part: calls whose value the proof reads are gaps (2026-11-06).**
+  - Two new gap kinds, both in the scan and the engine (`gaps::jdk_instance_call`, and `gaps::jdk_static_call`
+    for the static case):
+    - `jdk-primitive-method`: a JDK instance method returning an integer, a `char` or a `boolean`, such as
+      `Random.nextInt(bound)`;
+    - `jdk-static-method`: a static JDK method the engine does not model, such as `Integer.numberOfLeadingZeros`
+      or `Arrays.fill`.
+
+    The engine used to refuse both outright. What it still refuses is a JDK method with a floating-point parameter
+    or result, or with an array result.
+  - **Neither has an assume form** (`GapKind::assumable`). The engine could only make the value up, so `--gaps
+    assume` refuses them as strict does, with treatment `refused`, and the reason says that only a contract closes
+    them. A run under assume that met both kinds of gap names the assumed ones and refuses these.
+  - **A contract states the value.** `assert:` reads `result` for a primitive result, as in `0 <= result && result
+    < bound`; `throws:` and `assume:` cannot read it. The contract's method takes the value from a new intrinsic
+    (`anyInt()` or `anyLong()`), narrows it to the result's type, and keeps only what `assert:` admits. A static
+    call has no receiver.
+  - **The JVM test covers both kinds.** It calls a static method by `invokestatic`, and stores a primitive result
+    where `result` reads it. A refuted assertion says what the JVM returned: `on i=0 the JVM's call returns 32,
+    where the contract says it returns with `assert: 0 <= result && result < 32` holding`.
+  - **A witness through a contract that the interpreter cannot run is now no verdict.** For example,
+    `new Random(7)` is not something the interpreter can run. A contract admits values the JDK's call may never
+    return, so such a witness is one the contracts admit, not yet the JVM's. Both drivers apply this rule
+    (`equivalence::unconfirmed_through_contracts`).
+    - **This changes a 3b result:** `firstByte` with a `nextBytes` contract was a violation, and is now
+      `Unverifiable`, since `Random(1)` writes one particular byte.
+    - Running such a witness on a real JVM would settle it, and is not done yet.
+  - **`--engine auto` now decides per gap whether to ask JBMC** (`Gap::jbmc_implements`, the `jbmc` field of
+    `GapRecord`). Before, it decided per kind. It asks JBMC about a class initializer, as before, and now also about
+    a call to a JDK class whose bytecode JBMC is given (`equivalence::JDK_CLASSES`: `Math`, `StrictMath`, `Integer`,
+    `Long`, `Short`, `Byte`). That keeps today's fallback for, say, `Integer.numberOfLeadingZeros`. A gap in
+    `java.util.Random` is still not handed to JBMC, since JBMC stubs that class.
+  - **A bug fixed:** the JVM test ran `java` in its own directory with a relative class path. So a relative
+    `--work` or `--classes` made every contract trusted ("could not find GapContractTests"). The paths are now
+    absolute.
+  - Acceptance, inline:
+    - `a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume` covers `bits`, which calls
+      `Integer.numberOfLeadingZeros`, under strict and assume. It also covers `roll` under assume on native and
+      auto, where the `Random` constructor is assumed, `nextInt` is refused, and JBMC is not asked.
+    - The scan test covers both kinds. `String.valueOf(Object)`, which javac 19+ emits for a concatenation, is now
+      a gap.
+    - `a_contract_closes_its_gap_and_the_verdict_rests_on_it` has three new cases:
+      - `bits` is Verified on one tested contract. Its violation `bits(n=-1)` is reproduced by the interpreter,
+        which runs `Integer`'s own bytecode. A bound the call does not keep is refuted at `i=0`.
+      - `roll` is Verified on two tested contracts. A witness of `result < sides` through the contract is no
+        verdict.
+      - `0 < result` for `nextInt` is refuted at `bound=1`, where the JVM returns 0.
+    - New unit tests in `gaps.rs`, `gap_contracts.rs` and `advice.rs`.
+    - The conformance corpus is unchanged.
+    - All Rust tests and the 151 Python tests pass.
+  - **The 56 scanned examples were scanned again (41 s).** Four notes changed, all on JBMC examples, so no verdict
+    moves:
+    - 037 and 127 meet `Integer.numberOfLeadingZeros` and `Long.numberOfLeadingZeros`. Before, these were
+      "refused in any mode".
+    - 013 and 071 now also meet `List.of` and `List.copyOf`.
+
+    The note says such a gap has no assume form (`build.py`'s `NO_ASSUME_FORM`). The other 52 notes differed only
+    in the date and were left as they were. Re-rendering every page changed only those four. No job was needed.
+  - Not done:
+    - **`proved`** (the 3c part one deviation). `Integer.numberOfLeadingZeros(int)` is now a gap, and it is pure
+      `int` arithmetic in the engine's fragment, so it is the natural first contract to prove against the JDK's
+      own bytecode. It is also what 037's new version calls.
+    - Running a witness that goes through a contract on a JVM.
+    - Object parameters (`list.add(e)`) are still untested, so their contracts stay trusted.
+  - Next: 3c's last part.
+    - Add the `proved` level: prove a contract with `prove` against the extracted JDK method when the method is in
+      the fragment (the `Integer` and `Long` bit operations, `Arrays.fill`), with `proved` ranked above `tested`.
+    - Then the recorded example. 037's `tableSizeFor`, rewritten with `numberOfLeadingZeros`, is a candidate for a
+      proved contract, and a `Random` or `ArrayList` call for a tested one.
 
 ## Loop settings
 

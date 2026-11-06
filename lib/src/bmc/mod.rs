@@ -44,23 +44,25 @@
 //! | `getstatic` of a compile-time constant (an application field with a `ConstantValue`, `Integer`/`Long` `MAX_VALUE`/`MIN_VALUE`) | implemented |
 //! | class initialization, at the first `new`, `getstatic` or `invokestatic` of an application class whose initialization runs a `<clinit>` ([`gaps::initializers`]) | gap: `class-initializer`, since the engine runs no initializer; a JDK class is taken to be initialized already |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
+//! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
+//! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives (the result an opaque string); an object argument it would convert is a gap, `string-conversion` |
 //! | `ldc` of a string or a class | implemented: one opaque object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class |
-//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, any other static JDK method, a JDK instance method returning a primitive or an array, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic`, any other `getstatic`, `anewarray`, `multianewarray`, `aaload`/`aastore`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
 //! one has no verdict unless another path is a violation, which stands. Under [`gaps::GapMode::Assume`] the engine
 //! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
-//! assumed ([`Outcome::gaps`]). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
+//! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too. Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
 //! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
 //! engine meets one only where the scan did not see it. A gap a contract closes (`--contracts`,
 //! [`crate::gap_contracts`], [`Options::contracts`]) is no gap: at a JDK call the engine runs the contract's method
 //! of the generated class [`crate::gap_contracts::CLASS`] in place of the call, whose intrinsics open the gap again
-//! on an input outside the contract's `assume:` (met at the call), give an array it modifies fresh elements, and
-//! end a path the contract's assertion excludes; an initializer whose contract throws nothing is taken to have run.
+//! on an input outside the contract's `assume:` (met at the call), give an array it modifies fresh elements, give
+//! a primitive result a fresh value, and end a path the contract's assertion excludes; an initializer whose contract throws nothing is taken to have run.
 //! The outcome names every gap a contract closed, with the contract (treatment `contract`).
 
 pub mod bits;
@@ -190,7 +192,15 @@ impl Outcome {
     pub fn summary(&self) -> String {
         let gaps = match self.gaps.len() {
             0 => String::new(),
-            n => format!(", {n} gap{} {} (--gaps {})", if n == 1 { "" } else { "s" }, if self.gap_mode.refuses() { "refused" } else { "assumed" }, self.gap_mode.name()),
+            n => {
+                let refused = self.gaps.iter().filter(|g| g.treatment == Some(GapTreatment::Refused)).count();
+                let what = match (refused, n - refused) {
+                    (_, 0) => "refused".to_string(),
+                    (0, _) => "assumed".to_string(),
+                    (r, a) => format!("({r} refused, {a} assumed)"),
+                };
+                format!(", {n} gap{} {what} (--gaps {})", if n == 1 { "" } else { "s" }, self.gap_mode.name())
+            }
         };
         format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
     }
@@ -656,8 +666,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
     if best.is_some() {
         return Ok(violation(&engine, best));
     }
-    if engine.gap_mode.refuses() && !engine.met.is_empty() {
-        let problem = refused_gaps(&gaps::records(&engine.met, jdk.as_deref(), None), engine.gap_mode);
+    if !engine.met.is_empty() && (engine.gap_mode.refuses() || engine.met.keys().any(|g| !g.kind.assumable())) {
+        let refused: BTreeMap<Gap, std::collections::BTreeSet<Site>> = engine.met.iter().filter(|(g, _)| engine.gap_mode.refuses() || !g.kind.assumable()).map(|(g, s)| (g.clone(), s.clone())).collect();
+        let problem = refused_gaps(&gaps::records(&refused, jdk.as_deref(), None), engine.gap_mode);
         return Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(problem)));
     }
     Ok(outcome(&engine, Verdict::Verified, Input::default(), None, None))
@@ -667,11 +678,18 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
 pub fn refused_gaps(gaps: &[GapRecord], mode: GapMode) -> String {
     let n = gaps.len();
     let list = gaps.iter().map(|g| format!("{} ({} at {})", g.id, g.call, g.sites.join(", "))).collect::<Vec<_>>().join("; ");
-    let instead = match gaps {
-        [g] => format!("that {} {}", g.call, g.approximation),
-        _ => "what each gap's approximation states".to_string(),
+    let assumable: Vec<&GapRecord> = gaps.iter().filter(|g| g.kind.assumable()).collect();
+    let after = if assumable.is_empty() {
+        if n == 1 { "It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)".to_string() } else { "They have no approximation under --gaps assume, since their values could only be made up: only contracts close them (--gaps advised)".to_string() }
+    } else {
+        let instead = match (gaps, assumable.as_slice()) {
+            ([_], [g]) => format!("that {} {}", g.call, g.approximation),
+            _ => "what each gap's approximation states".to_string(),
+        };
+        let rest = if assumable.len() < n { ", except where a gap has no approximation" } else { "" };
+        format!("With --gaps assume it assumes instead {instead}, and the verdict names the assumption{rest}")
     };
-    format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps {mode}): {list}. With --gaps assume it assumes instead {instead}, and the verdict names the assumption", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" }, mode = mode.name())
+    format!("the tool's own checker met {n} gap{s}, a construct it does not implement as the JVM does, and refused {it} (--gaps {mode}): {list}. {after}", s = if n == 1 { "" } else { "s" }, it = if n == 1 { "it" } else { "them" }, mode = mode.name())
 }
 
 /// The SAT solver the engine is built with, by name and version: `CaDiCaL 1.9.5 (bundled)`.
@@ -1684,7 +1702,19 @@ impl<'a> Engine<'a> {
                 if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                     return self.call(path, &member.owner, &member.name, &member.descriptor, args);
                 }
-                return self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args);
+                match gaps::jdk_static_call(&member.owner, &member.name, &member.descriptor) {
+                    JdkCall::Exact => return self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args),
+                    JdkCall::Refused => return unsupported(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)),
+                    JdkCall::Gap(kind) => {
+                        let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
+                        if let Some(Closure { how: Closing::Stub { method, descriptor: stub, .. }, .. }) = self.contracts.get(&gap).cloned() {
+                            self.apply(path, gap);
+                            return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
+                        }
+                        // No approximation: the path ends here in every mode.
+                        return Ok(self.meet(path, kind, &member.owner, &member.name, &member.descriptor));
+                    }
+                }
             }
             Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
@@ -1705,8 +1735,9 @@ impl<'a> Engine<'a> {
                     }
                 }
                 // A JDK method on an opaque object: reproduced exactly (an exception's constructor), a gap, or, with
-                // a primitive result the engine could only make up, refused. Under assume, a constructor does
-                // nothing, a void method nothing, and a method that returns an object returns a new one.
+                // a floating-point or array result, refused. Under assume, a constructor does nothing, a void method
+                // nothing, and a method that returns an object returns a new one; one that returns a primitive has
+                // no approximation, and is refused there too.
                 match gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) {
                     JdkCall::Exact => {}
                     JdkCall::Gap(kind) => {
@@ -1800,7 +1831,7 @@ impl<'a> Engine<'a> {
     fn meet(&mut self, path: &Path, kind: GapKind, owner: &str, name: &str, descriptor: &str) -> Option<End> {
         let site = site(path.frames.last().expect("a frame"));
         self.met.entry(Gap { kind, owner: owner.to_string(), name: name.to_string(), descriptor: descriptor.to_string() }).or_default().insert(site);
-        self.gap_mode.refuses().then_some(End::Gap)
+        (self.gap_mode.refuses() || !kind.assumable()).then_some(End::Gap)
     }
 
     /// The path reaches a gap a contract closes: recorded with where, for the verdict to say what it rests on.
@@ -1818,8 +1849,9 @@ impl<'a> Engine<'a> {
                 let index = self.b.constant_value(index).ok_or_else(|| Stop::Unsupported("a contract's number is not a constant".into()))? as usize;
                 let gap = self.contracts.iter().find(|(_, c)| c.contract.index == index).map(|(g, _)| g.clone()).ok_or_else(|| Stop::Unsupported(format!("no contract {index}")))?;
                 let caller = path.frames.len().checked_sub(2).map(|i| path.frames[i].clone()).ok_or_else(|| Stop::Unsupported("a contract's method called from nowhere".into()))?;
+                let assumable = gap.kind.assumable();
                 self.met.entry(gap).or_default().insert(site(&caller));
-                if self.gap_mode.refuses() {
+                if self.gap_mode.refuses() || !assumable {
                     return Ok(Some(End::Gap));
                 }
             }
@@ -1832,6 +1864,16 @@ impl<'a> Engine<'a> {
                 path.objects[*o].array.as_mut().expect("an array").cells = cells;
             }
             ("havoc", [Val::R(None)]) => return self.raise(path, "java/lang/NullPointerException"),
+            // A primitive result: any value of the width, which the contract's method narrows to its type and its
+            // assertion to what the contract states.
+            ("anyInt", []) => {
+                let v = self.b.fresh(32);
+                self.push(path, Val::I(v));
+            }
+            ("anyLong", []) => {
+                let v = self.b.fresh(64);
+                self.push(path, Val::J(v));
+            }
             // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
             ("infeasible", []) => return Ok(Some(End::Infeasible)),
             _ => return unsupported(format!("unknown intrinsic {name} of a contract")),
@@ -2373,7 +2415,7 @@ mod tests {
             assert!(table.contains(&format!("| {row}")), "a row of what is {row}");
         }
         let kinds = docs(include_str!("gaps.rs"));
-        for kind in [GapKind::JdkConstructor, GapKind::JdkVoidMethod, GapKind::JdkReferenceMethod, GapKind::ClassInitializer, GapKind::StringConversion] {
+        for kind in GapKind::ALL {
             assert!(kinds.contains(&format!("| `{}` |", kind.name())), "the gap table has a row for {}", kind.name());
             assert!(table.contains(&format!("`{}`", kind.name())), "the instruction table says where a {} gap is met", kind.name());
         }

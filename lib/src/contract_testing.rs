@@ -103,6 +103,13 @@ fn plan(shape: &Shape, cp: &ClassPath) -> Result<Plan, String> {
             }
             None
         }
+        GapKind::JdkStaticMethod => {
+            let (_, m) = cp.find_method(&gap.owner, &gap.name, &gap.descriptor).ok_or_else(|| format!("the test finds no method {}.{}", owner, gap.name))?;
+            if m.access & flags::PUBLIC == 0 || m.access & flags::STATIC == 0 {
+                return Err(format!("{owner}.{} is not a public static method, so the test cannot call it", gap.name));
+            }
+            None
+        }
         _ => {
             let (_, m) = cp.find_method(&gap.owner, &gap.name, &gap.descriptor).ok_or_else(|| format!("the test finds no method {}.{}", owner, gap.name))?;
             if m.access & flags::PUBLIC == 0 || m.access & flags::STATIC != 0 {
@@ -356,8 +363,11 @@ fn run(shapes: &[Shape], plans: &[Result<Plan, String>], entries: &[PathBuf], di
     let _ = std::fs::remove_dir_all(dir);
     std::fs::create_dir_all(dir).map_err(|e| format!("cannot write the JVM test into {}: {e}", dir.display()))?;
     std::fs::write(dir.join(format!("{CLASS}.class")), writer.to_bytes()).map_err(|e| format!("cannot write the JVM test: {e}"))?;
-    let mut class_path = vec![dir.to_path_buf()];
-    class_path.extend(entries.iter().cloned());
+    // The JVM runs in `dir`, so every entry is made absolute first: a relative `--work` or `--classes` would
+    // otherwise name another directory.
+    let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
+    let mut class_path = vec![absolute(dir)];
+    class_path.extend(entries.iter().map(|e| absolute(e)));
     let class_path = std::env::join_paths(&class_path).map_err(|e| format!("a class path entry cannot be joined: {e}"))?;
     let stdout = std::fs::File::create(dir.join("stdout")).map_err(|e| e.to_string())?;
     let stderr = std::fs::File::create(dir.join("stderr")).map_err(|e| e.to_string())?;
@@ -603,7 +613,7 @@ fn tester(shape: &Shape, index: usize, writer: &mut ClassWriter) -> String {
     if gap.kind == GapKind::JdkConstructor {
         code.op_u16(0xbb, owner);
         code.op(0x59);
-    } else {
+    } else if shape.receiver {
         code.load(Kind::Ref, 0);
         code.op_u16(0xc0, owner);
     }
@@ -616,9 +626,12 @@ fn tester(shape: &Shape, index: usize, writer: &mut ClassWriter) -> String {
         code.store(Kind::Ref, result);
     } else {
         let m = writer.pool.method_ref(&gap.owner, &gap.name, &gap.descriptor);
-        code.op_u16(0xb6, m);
-        if shape.descriptor.ret != Type::Void {
-            code.store(Kind::Ref, result);
+        code.op_u16(if gap.kind == GapKind::JdkStaticMethod { 0xb8 } else { 0xb6 }, m);
+        match (&shape.descriptor.ret, shape.result_slot) {
+            (Type::Void, _) => {}
+            // A primitive result goes where the contract's `result` reads it.
+            (t, Some(s)) => code.store(kind_of(t), s),
+            _ => code.store(Kind::Ref, result),
         }
     }
     code.bind(call_end);
@@ -728,6 +741,14 @@ fn tester(shape: &Shape, index: usize, writer: &mut ClassWriter) -> String {
         let holds = code.label();
         expr::emit(a, &mut code, &mut writer.pool);
         code.if_zero(Cond::Ne, holds);
+        // What the call returned, for the counterexample.
+        if let Some(s) = shape.result_slot {
+            let (kind, boxing) = if shape.descriptor.ret == Type::Long { (Kind::Long, ("java/lang/Long", "(J)Ljava/lang/Long;")) } else { (Kind::Int, ("java/lang/Integer", "(I)Ljava/lang/Integer;")) };
+            code.load(kind, s);
+            let value_of = writer.pool.method_ref(boxing.0, "valueOf", boxing.1);
+            code.op_u16(0xb8, value_of);
+            code.op_u16(0xb3, last);
+        }
         int_return(&mut code, ASSERTION);
         code.bind(holds);
     }
@@ -780,7 +801,14 @@ fn judge<'a>(shape: &Shape, plan: &Plan, lines: impl Iterator<Item = &'a Line>) 
             }
             THREW if initializer => Some(found("throws nothing".into(), format!("throws {}", line.thrown))),
             THREW => Some(found("returns normally".into(), format!("throws {}", line.thrown))),
-            ASSERTION => Some(found(format!("returns with `assert: {}` holding", shape.assert.as_deref().unwrap_or("true")), "returns with it false".into())),
+            ASSERTION => {
+                let returned = line.thrown.trim().parse::<i64>().ok().filter(|_| shape.result_slot.is_some()).map(|v| show(&Value::Int(v), &shape.descriptor.ret));
+                let observed = match returned {
+                    Some(v) => format!("returns {v}"),
+                    None => "returns with it false".into(),
+                };
+                Some(found(format!("returns with `assert: {}` holding", shape.assert.as_deref().unwrap_or("true")), observed))
+            }
             CONDITION => Some(found("can be checked, its conditions being defined there".into(), format!("leaves a condition of the contract throwing {}", line.thrown))),
             c if (AS_STATED..CHANGED).contains(&c) => {
                 if let Some(n) = t.thrown.get_mut((c - AS_STATED) as usize) {

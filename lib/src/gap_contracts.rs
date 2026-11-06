@@ -21,7 +21,7 @@
 //! | `call:` | the call, with a name for each parameter (`owner.name(type name, ...) [-> type]`), which the conditions use | required |
 //! | `assume:` | the inputs the contract is about, a condition over the parameters; on the others the gap stays open and is refused | `true` if absent |
 //! | `throws: X when c` | the call throws `X` (built by its constructor of no arguments) exactly where `c` holds, the first clause whose condition holds deciding, as in a property's throws clauses; it may be repeated | none if absent |
-//! | `assert:` | what holds when it returns: over the parameters and the arrays it modifies; for a call that returns an object, which object (`result == this`, `result == <parameter>`, `result == null`, or `\fresh(result)` for a new one) | `true` if absent, required for an object result |
+//! | `assert:` | what holds when it returns: over the parameters, the arrays it modifies, and `result` when it returns an integer, a `char` or a `boolean` (`0 <= result && result < bound`); for a call that returns an object, which object (`result == this`, `result == <parameter>`, `result == null`, or `\fresh(result)` for a new one) | `true` if absent, required for an object result |
 //! | `modifies:` | `nothing`, or what it changes: `this` (whose state the engine does not keep) and parameters that are arrays of primitives, whose elements become any values `assert:` admits | required |
 //! | `written-by:` | who wrote it: an agent or a person | required |
 //!
@@ -42,9 +42,10 @@
 //! The engine applies a contract by calling a method of a class generated here, [`CLASS`], with the call's
 //! arguments (and its receiver, for a method that may return it): a branch per throws clause that throws, a
 //! choice of new values for each array it modifies, the assertion as a condition the path must meet, and the
-//! result. Three calls of [`INTRINSICS`] mean what bytecode cannot say: `open(int)` (the gap of contract `int` is
-//! met: an input outside `assume:`), `havoc(Object)` (the array's elements become fresh values) and
-//! `infeasible()` (no run of the JDK's call takes this path, as the assertion says).
+//! result. Calls of [`INTRINSICS`] mean what bytecode cannot say: `open(int)` (the gap of contract `int` is met: an
+//! input outside `assume:`), `havoc(Object)` (the array's elements become fresh values), `anyInt()` and
+//! `anyLong()` (a primitive result is any value, which the method narrows to the result's type and the assertion
+//! constrains) and `infeasible()` (no run of the JDK's call takes this path, as the assertion says).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -168,7 +169,9 @@ pub(crate) struct Shape {
     pub after: Option<expr::Expr>,
     pub assert: Option<String>,
     pub result: Option<ResultForm>,
-    /// The first slot after the receiver and parameters, and the first no condition uses.
+    /// For a primitive result, the slot `result` names in the assertion: the first after the parameters.
+    pub result_slot: Option<u16>,
+    /// The first slot after the receiver, parameters and result, and the first no condition uses.
     pub first_free: u16,
     pub slots_used: u16,
 }
@@ -176,7 +179,7 @@ pub(crate) struct Shape {
 impl Shape {
     /// An initializer's contract: it throws nothing.
     fn initializer(gap: &Gap) -> Shape {
-        Shape { gap: gap.clone(), descriptor: MethodDescriptor { params: Vec::new(), ret: Type::Void }, names: Vec::new(), receiver: false, assume: None, throws: Vec::new(), throws_text: Vec::new(), modified: Vec::new(), after: None, assert: None, result: None, first_free: 0, slots_used: 0 }
+        Shape { gap: gap.clone(), descriptor: MethodDescriptor { params: Vec::new(), ret: Type::Void }, names: Vec::new(), receiver: false, assume: None, throws: Vec::new(), throws_text: Vec::new(), modified: Vec::new(), after: None, assert: None, result: None, result_slot: None, first_free: 0, slots_used: 0 }
     }
 }
 
@@ -294,14 +297,7 @@ impl Loaded {
 /// The gap an id names: `kind:owner.name(descriptor)[@jdk-version]`, with the version.
 pub fn gap_of(id: &str) -> Option<(Gap, Option<String>)> {
     let (kind, rest) = id.split_once(':')?;
-    let kind = match kind {
-        "jdk-constructor" => GapKind::JdkConstructor,
-        "jdk-void-method" => GapKind::JdkVoidMethod,
-        "jdk-reference-method" => GapKind::JdkReferenceMethod,
-        "class-initializer" => GapKind::ClassInitializer,
-        "string-conversion" => GapKind::StringConversion,
-        _ => return None,
-    };
+    let kind = GapKind::from_name(kind)?;
     let (member, version) = match rest.rsplit_once("@jdk-") {
         Some((m, v)) => (m, Some(v.to_string())),
         None => (rest, None),
@@ -423,8 +419,7 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         }
     }
     let (gap, version) = gap_of(&block.id).ok_or_else(|| format!("{:?} is not a gap's id: `kind:owner.name(descriptor)`, with `@jdk-<version>` for a JDK call, as the template has it", block.id))?;
-    let of_the_jdk = matches!(gap.kind, GapKind::JdkConstructor | GapKind::JdkVoidMethod | GapKind::JdkReferenceMethod);
-    if of_the_jdk {
+    if gap.kind.of_the_jdk() {
         match (version.as_deref(), jdk) {
             (None, _) => return Err("a contract for a JDK call names the JDK it is about (`@jdk-<version>` in its id), since another JDK's method may behave otherwise".into()),
             (Some(v), Some(here)) if v != here => return Err(format!("it is about JDK {v}, and the proof runs on JDK {here}: a contract is about one JDK's method, and is checked again for another")),
@@ -445,15 +440,21 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         }
         _ => {}
     }
-    match gaps::jdk_instance_call(cp, &gap.owner, &gap.name, &gap.descriptor) {
+    let static_call = gap.kind == GapKind::JdkStaticMethod;
+    let classified = if static_call { gaps::jdk_static_call(&gap.owner, &gap.name, &gap.descriptor) } else { gaps::jdk_instance_call(cp, &gap.owner, &gap.name, &gap.descriptor) };
+    match classified {
         JdkCall::Gap(kind) if kind == gap.kind => {}
         JdkCall::Gap(kind) => return Err(format!("the call is a gap of kind {}, not {}", kind.name(), gap.kind.name())),
         JdkCall::Exact => return Err("the tool's own checker reproduces the call exactly: it is no gap".into()),
-        JdkCall::Refused => return Err("the tool's own checker refuses the call whatever a contract says (a JDK method with a primitive result)".into()),
+        JdkCall::Refused => return Err("the tool's own checker refuses the call whatever a contract says (floating point, or an array result)".into()),
+    }
+    if static_call && cp.model(&gap.owner).is_some() && cp.bytecode_method(&gap.owner, &gap.name, &gap.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
+        return Err("the tool's models run the call's own bytecode: it is no gap".into());
     }
 
-    // The method's locals: the receiver (for a method, which may return it), then the parameters.
-    let receiver = gap.kind != GapKind::JdkConstructor;
+    // The method's locals: the receiver (for an instance method, which may return it), the parameters, and a
+    // primitive result.
+    let receiver = !matches!(gap.kind, GapKind::JdkConstructor | GapKind::JdkStaticMethod);
     let mut slot: u16 = u16::from(receiver);
     let mut params = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
@@ -462,22 +463,33 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         }
         slot += t.slots();
     }
+    let primitive = expr::ty_of(&descriptor.ret).map(|_| descriptor.ret.clone());
+    let result_slot = primitive.as_ref().map(|_| slot);
+    if let Some(t) = &primitive {
+        slot += t.slots();
+    }
     let first_free = slot;
-    let condition = |text: &str, what: &str| -> Result<expr::Expr, String> {
+    let mut after_params = params.clone();
+    if let (Some(t), Some(s)) = (&primitive, result_slot) {
+        after_params.push(Param { name: "result".into(), ty: t.clone(), slot: s });
+    }
+    let parse = |text: &str, what: &str, params: &[Param]| -> Result<expr::Expr, String> {
         if mentions_word(text, "this") {
             return Err(format!("{what} names `this`: the tool's own checker keeps no state of a JDK object, so a condition cannot read it"));
         }
         if text.contains("\\old") {
             return Err(format!("{what} uses \\old, which the tool's own checker does not apply yet: state what holds after the call alone"));
         }
-        expr::parse_in(text, &params, None, first_free).map_err(|e| {
+        expr::parse_in(text, params, None, first_free).map_err(|e| {
             let other = names.iter().zip(&descriptor.params).find(|(n, t)| mentions_word(text, n) && !params.iter().any(|p| &p.name == *n) && !t.is_primitive());
             match other {
                 Some((n, t)) => format!("{what} names {n}, a {}: a condition reads parameters of a primitive type and arrays of them", t.java_name()),
+                None if mentions_word(text, "result") && !params.iter().any(|p| p.name == "result") => format!("{what} names `result`, which only `assert:` reads, after the call"),
                 None => format!("{what}: {e}"),
             }
         })
     };
+    let condition = |text: &str, what: &str| parse(text, what, &params);
     let assume = match block.value("assume") {
         Some(a) if a != "true" => Some(condition(a, "`assume:`")?),
         _ => None,
@@ -497,22 +509,30 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         (Type::Object(_) | Type::Array(_), None) => return Err(format!("no `assert:` on the result: a contract for a call that returns an object says which object, {RESULT_FORMS}")),
         (Type::Object(_) | Type::Array(_), Some(a)) => Some(result_form(a, &names, &descriptor)?),
         (Type::Void, _) => None,
-        (t, _) => return Err(format!("the call returns {}, which the tool's own checker does not take from a contract yet", t.java_name())),
+        (_, _) if primitive.is_some() => None,
+        (t, _) => return Err(format!("the call returns {}, which the tool's own checker does not take from a contract", t.java_name())),
     };
     let after = match (&result, assert) {
-        (None, Some(a)) => Some(condition(a, "`assert:`")?),
+        (None, Some(a)) => Some(parse(a, "`assert:`", &after_params)?),
         _ => None,
     };
 
     // The method.
     let mut code = CodeBuilder::new();
-    let ret_kind = if result.is_some() { Some(Kind::Ref) } else { None };
-    let give_up = |code: &mut CodeBuilder| match ret_kind {
-        Some(_) => {
-            code.op(0x01); // aconst_null
-            code.return_(Some(Kind::Ref));
+    let ret_kind = match &primitive {
+        Some(Type::Long) => Some(Kind::Long),
+        Some(_) => Some(Kind::Int),
+        None if result.is_some() => Some(Kind::Ref),
+        None => None,
+    };
+    let give_up = |code: &mut CodeBuilder| {
+        match ret_kind {
+            Some(Kind::Ref) => code.op(0x01),  // aconst_null
+            Some(Kind::Long) => code.op(0x09), // lconst_0
+            Some(_) => code.iconst(0),
+            None => {}
         }
-        None => code.return_(None),
+        code.return_(ret_kind);
     };
     let mut slots_used = first_free;
     // A contract is about arrays that are there, which is what testing it gives it: a null array meets the gap.
@@ -555,6 +575,22 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
         let havoc = writer.pool.method_ref(INTRINSICS, "havoc", "(Ljava/lang/Object;)V");
         code.op_u16(0xb8, havoc);
     }
+    // A primitive result: any value of its type, which the assertion below constrains.
+    if let (Some(t), Some(s), Some(kind)) = (&primitive, result_slot, ret_kind) {
+        let any = if *t == Type::Long { writer.pool.method_ref(INTRINSICS, "anyLong", "()J") } else { writer.pool.method_ref(INTRINSICS, "anyInt", "()I") };
+        code.op_u16(0xb8, any);
+        match t {
+            Type::Boolean => {
+                code.iconst(1);
+                code.op(0x7e); // iand
+            }
+            Type::Byte => code.op(0x91),  // i2b
+            Type::Char => code.op(0x92),  // i2c
+            Type::Short => code.op(0x93), // i2s
+            _ => {}
+        }
+        code.store(kind, s);
+    }
     if let Some(a) = &after {
         let holds = code.label();
         expr::emit(a, &mut code, &mut writer.pool);
@@ -577,7 +613,11 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
             let c = writer.pool.class(&class);
             code.op_u16(0xbb, c);
         }
-        None => {}
+        None => {
+            if let (Some(s), Some(kind)) = (result_slot, ret_kind) {
+                code.load(kind, s);
+            }
+        }
     }
     code.return_(ret_kind);
     code.max_locals = slots_used.max(first_free) + 4;
@@ -601,7 +641,7 @@ fn accept(block: &Block, cp: &ClassPath, jdk: Option<&str>, index: usize, writer
     }
     summary.push(format!("modifies {modifies}"));
     let throws_text = block.values("throws").into_iter().filter(|c| *c != "nothing").map(str::to_string).collect();
-    let shape = Shape { gap: gap.clone(), descriptor, names, receiver, assume, throws, throws_text, modified, after, assert: assert.map(str::to_string), result, first_free, slots_used };
+    let shape = Shape { gap: gap.clone(), descriptor, names, receiver, assume, throws, throws_text, modified, after, assert: assert.map(str::to_string), result, result_slot, first_free, slots_used };
     Ok((gap, Closing::Stub { method, descriptor: method_descriptor, receiver }, summary.join("; "), shape))
 }
 
@@ -821,5 +861,22 @@ mod tests {
         assert!(refusal(&format!("{clinit}  modifies: nothing\n  throws: IllegalStateException when true\n")).contains("only when it throws nothing"));
         assert!(refusal(&format!("{clinit}  modifies: p.Boom.state\n")).contains("modifies nothing"));
         assert!(refusal("string-conversion:p.Item.toString()Ljava/lang/String;\n  call: p.Item.toString()\n  modifies: nothing\n  written-by: a test\n").contains("string concatenation"));
+
+        // A primitive result is stated by `assert:` over `result`, which no other condition reads; a static call
+        // has no receiver.
+        let nlz = "jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I@jdk-25\n  call: java.lang.Integer.numberOfLeadingZeros(int i) -> int\n  modifies: nothing\n  written-by: a test\n";
+        let mut writer = ClassWriter::new(CLASS);
+        let (_, closing, summary, shape) = accept(&block(&format!("{nlz}  assert: 0 <= result && result <= 32\n")), &cp, Some("25"), 1, &mut writer).unwrap();
+        assert!(matches!(&closing, Closing::Stub { method, descriptor, receiver: false } if method == "c1" && descriptor == "(I)I"), "{closing:?}");
+        assert_eq!(summary, "throws nothing; then 0 <= result && result <= 32; modifies nothing");
+        assert_eq!((shape.result_slot, shape.first_free), (Some(1), 2));
+        assert!(refusal(&format!("{nlz}  throws: IllegalArgumentException when result < 0\n")).contains("names `result`, which only `assert:` reads"));
+        assert!(refusal("jdk-static-method:java.lang.Math.addExact(II)I@jdk-25\n  call: java.lang.Math.addExact(int a, int b) -> int\n  modifies: nothing\n  written-by: a test\n").contains("reproduces the call exactly"));
+        assert!(refusal("jdk-static-method:java.lang.Integer.numberOfLeadingZeros(I)I\n  call: java.lang.Integer.numberOfLeadingZeros(int i)\n  modifies: nothing\n  written-by: a test\n").contains("names the JDK it is about"));
+        let next = "jdk-primitive-method:java.util.Random.nextInt(I)I@jdk-25\n  call: java.util.Random.nextInt(int bound) -> int\n  throws: IllegalArgumentException when bound <= 0\n  assert: 0 <= result && result < bound\n  modifies: this\n  written-by: a test\n";
+        let mut writer = ClassWriter::new(CLASS);
+        let (_, closing, _, shape) = accept(&block(next), &cp, Some("25"), 0, &mut writer).unwrap();
+        assert!(matches!(&closing, Closing::Stub { descriptor, receiver: true, .. } if descriptor == "(Ljava/lang/Object;I)I"), "{closing:?}");
+        assert_eq!(shape.result_slot, Some(2), "after the receiver and the bound");
     }
 }

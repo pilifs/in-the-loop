@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T04:35:23.768Z",
-  "duration_seconds": 18054,
+  "ended": "2026-11-06T05:05:22.000Z",
+  "duration_seconds": 19853,
   "stats": {
-    "turns": 59,
-    "api_calls": 802,
-    "tool_calls": 810,
+    "turns": 64,
+    "api_calls": 886,
+    "tool_calls": 896,
     "tool_errors": 3,
-    "compactions": 10,
+    "compactions": 11,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 1624,
-      "output_tokens": 832298,
-      "cache_read_input_tokens": 141383154,
-      "cache_creation_input_tokens": 2653831
+      "input_tokens": 1792,
+      "output_tokens": 907309,
+      "cache_read_input_tokens": 160525558,
+      "cache_creation_input_tokens": 2967140
     }
   },
   "tools": {
-    "Bash": 735,
-    "Read": 46,
+    "Bash": 801,
+    "Read": 65,
     "Write": 16,
-    "Edit": 10,
+    "Edit": 11,
     "WebFetch": 2,
     "ToolSearch": 1
   },
@@ -198,24 +198,38 @@
     {
       "index": 10,
       "started": "2026-11-06T04:10:21.780Z",
-      "ended": "2026-11-06T04:35:23.768Z",
-      "turns": 4,
-      "api_calls": 62,
+      "ended": "2026-11-06T04:36:01.778Z",
+      "turns": 5,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 124,
-        "output_tokens": 93791,
-        "cache_read_input_tokens": 11793764,
-        "cache_creation_input_tokens": 258071
+        "input_tokens": 128,
+        "output_tokens": 95293,
+        "cache_read_input_tokens": 12339140,
+        "cache_creation_input_tokens": 272062
       },
-      "peak_context_tokens": 271151
+      "peak_context_tokens": 285142
+    },
+    {
+      "index": 11,
+      "started": "2026-11-06T04:36:42.640Z",
+      "ended": "2026-11-06T05:05:22.000Z",
+      "turns": 4,
+      "api_calls": 82,
+      "usage": {
+        "input_tokens": 164,
+        "output_tokens": 73509,
+        "cache_read_input_tokens": 18597028,
+        "cache_creation_input_tokens": 299318
+      },
+      "peak_context_tokens": 312398
     }
   ],
   "log": {
-    "sha256": "5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260",
-    "bytes": 24974274,
-    "lines": 8499,
-    "gzip_bytes": 4594730,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260.jsonl.gz"
+    "sha256": "27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a",
+    "bytes": 27677771,
+    "lines": 9340,
+    "gzip_bytes": 5114540,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -354,6 +368,14 @@
       "summary": "Contracts tested on a real JVM: each contract for a gap is run against the JDK's own call on boundary and seeded random inputs before the tool's own checker applies it; one the JVM refutes goes back to the agent with its counterexamples, and the verdict counts its contracts as tested or trusted",
       "body": "Step 3c of llm-dlc/loops/sound-verdicts.md, first part. Under --gaps advised --contracts, lib/src/contract_testing.rs generates one class for a file's contracts and runs it once with the java of the JDK the gap ids name (128 MB heap). For each contract it calls the JDK's real method on every combination of its parameters' boundary values (up to 512) and on 256 random inputs (SplitMix64, seed 1, recorded), and checks the contract with the same compiled conditions the engine's stub uses: the first throws clause that holds must be the exact class thrown, otherwise the call must return with unmodified arrays unchanged, the named result object, and the assertion holding. An instance method is called on an object its no-argument constructor builds; an initializer is tested by loading its class. A VirtualMachineError (new ArrayList<>(huge)) is counted apart, not as a counterexample. A refuted contract is refused and its gap stays open, with the counterexamples in the advice; an untestable one (object parameter, no receiver, no JVM) is trusted with the reason. Evidence is now tested or trusted, in the verdict line ('1 tested, 1 trusted'), each contract: line, the statement's basis, build.py's label and page, and the result schema. At a null array parameter the engine now meets the gap rather than applying a contract, since contracts are tested on arrays that are there.\n\nVerified inline: the brief's acceptance in a_contract_closes_its_gap_and_the_verdict_rests_on_it (native and auto): 'new ArrayList<>(n) doesn't throw' is refused with 'a JVM refutes it: on capacity=-1 the JVM's call throws java.lang.IllegalArgumentException: Illegal Capacity: -1, where the contract says it returns normally', and the corrected contract is tested and gives the review's reproducer its violation. The JVM also refutes a modifies: that leaves out a filled array, a false assertion, and \\fresh(result) for append. Every contract of the conformance corpus is tested and none refuted. cargo test --release: 126 unit, 4 conformance (2 ignored), 55 integration; 150 Python tests; --render-only of every example changed no page; no job needed.\n\nThe brief departs from what happened in two ways, recorded under Progress: proved evidence is not done, since the JDK calls that are gaps today are almost never in the engine's fragment, and a static JDK method that is (Arrays.fill) is refused outright rather than a gap; and the recorded example is deferred again, since a realistic kernel needs list.add, a primitive-result JDK call the engine also refuses. Both go to 3c's second part.",
       "log_sha256": "5ad1375c503390f1e6d97a100ffe8b1bede88da5c1feaae302ac482aedd13260"
+    },
+    {
+      "change_id": "kwlppvsuqxlyvrmzxywywvzqwrzmkyvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Calls whose value a proof reads are gaps: a JDK method returning a primitive and a static JDK method the tool's own checker does not model are named gaps with no assume form, which a contract closes by stating the result, tested on a real JVM",
+      "body": "Step 3c, second part, of llm-dlc/loops/sound-verdicts.md. Two new gap kinds, jdk-primitive-method (Random.nextInt(bound)) and jdk-static-method (Integer.numberOfLeadingZeros, Arrays.fill), shared by the engine and the gap scan. Before, the engine refused both outright; now only a JDK method with floating point or an array result is. Neither has an assume form, since the engine could only make the value up: --gaps assume refuses them as strict does, and the reason says only a contract closes them. A contract states the value with assert: over result (0 <= result && result < bound); the contract's generated method takes any value from a new intrinsic, narrows it to the result's type and keeps what the assertion admits. The JVM test calls static methods too, and a refuted assertion says what the JVM returned (on i=0 the JVM's call returns 32).\n\nTwo behaviours change. A witness that goes through a contract and that the interpreter cannot run (it has no java.util.Random) is now no verdict rather than a violation, since a contract admits values the JDK's call may never give; 3b's firstByte case under a nextBytes contract is Unverifiable now. And --engine auto decides per gap whether to ask JBMC: still for a class initializer, and now also for a call into a JDK class JBMC is given the bytecode of (Math, StrictMath, Integer, Long, Short, Byte), which keeps today's fallback for Integer.numberOfLeadingZeros. A bug is fixed on the way: the JVM test ran java in its own directory, so a relative --work made every contract trusted.",
+      "log_sha256": "27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a"
     }
   ],
   "logs": {
@@ -385,6 +407,12 @@
       "bytes": 16224934,
       "lines": 5637,
       "gzip_bytes": 2935795,
+      "url": null
+    },
+    "27681128d6e5d24a5e3d5f7819e10d73efa326b4d15d4d48fd6f03bfd82c335a": {
+      "bytes": 27677771,
+      "lines": 9340,
+      "gzip_bytes": 5114540,
       "url": null
     },
     "3beb15f8028ef10402453f4b9ff856254a9ddc5ae7d864978cde99959286ea5e": {
