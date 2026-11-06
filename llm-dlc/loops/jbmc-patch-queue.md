@@ -78,7 +78,8 @@ deadline or its memory gives the rest of its time to the phase it was in.
 **The table** is `lib/benchmark/RESULTS.md`, section "Where the time goes, by workload, under strict". It covers the
 benchmark corpus and examples 141 and 142, under one configuration: one harness, unwind 16, arrays of up to 8, a
 120 s deadline, the models on, and CaDiCaL on both. It comes from pipeline job
-`20261106-102624-benchmark-corpus-with-per-phase-measurem`, which is still pending.
+`20261106-102624-benchmark-corpus-with-per-phase-measurem` (passed, collected 2026-11-06), at commit `b2e3b9c5`: before
+the own checker's functional-consistency lemma, so `real/bucket/fix-confined` is out of time on both engines there.
 
 **Which phase each candidate would shrink**, so the table can rank them:
 
@@ -101,6 +102,31 @@ benchmark corpus and examples 141 and 142, under one configuration: one harness,
 - Small cases (`real/midpoint`'s three others): JBMC takes about 0.1 s per run. JBMC's start and output are a fifth
   of a check, its goto preflight another fifth, and the interval stages run it up to three times.
 - Example 142 on the own checker: 7.3 s, 95% solving.
+
+**What the table says (job `-102624`), and the ranking it gives.**
+- Correctness: 0 false successes under strict and advised on either engine, 0 false alarms, every expected answer and
+  witness borne out on the JVM. Under assume, the false successes (7 own checker, 8 JBMC) all name their gap.
+- JBMC gives no verdict where the own checker decides in under a second: `held/floor-mod/jdk` and `held/ceil-div`
+  out of time (own checker 0.16 s, 0.10 s), `held/reverse` out of memory at 17 million clauses (0.21 s), example 142
+  out of memory (7.2 s). Where both decide, JBMC's formula is 10 to 35 times larger: `search-within-bound` 3.3 million
+  clauses and 59 s against 240,000 and 2.8 s; example 141 4.7 million and 65 s against 137,000 and 2.2 s.
+- Solving dominates every workload whose runs take more than a second, on both engines (82–99%). On short checks
+  JBMC's start and output and its preflight are about half its time; the own checker's driver about 50 ms.
+
+Ranked by that evidence:
+1. **Array representations** would pay most: `binary-search`, `utf8` and `array-mutation` lose by the formula's
+   size. It is the larger engine work the queue asks strong evidence for, and the own checker already wins there by
+   20 to 30 times.
+2. **Shared quotient/remainder (3)** would help where `/` and `%` share operands (`floor-mod`), not where equal
+   values are written differently (`fix-confined`, which the own checker closed with a congruence lemma).
+3. **Compiled-model cache, worker pool** pays only on checks that take under a second already.
+4. **Modular multiplication (4), structural hashing, persistent prefixes**: no workload in the table where their
+   phase stands out.
+
+**Recommendation (for the user's decision, open question 1):** no fork for performance. The patches the table
+favours are engine-scale work where the own checker already decides, so JBMC stays stock, as the fallback under
+`--engine auto` and the second checker under `--confirm`. A fork stays worth reconsidering only for the correctness
+patches (1, strict mode; 2, model selection), if JBMC's string reasoning is wanted back.
 
 ## Notes
 

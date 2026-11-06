@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261106-102624-benchmark-corpus-with-per-phase-measurem",
+  "title": "Benchmark corpus with per-phase measurements (step 5b): both engines, the three groups and examples 141 and 142, each run's time split into the same phases",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 41m43s, peak 3.4 GiB (estimated 50m00s, 3.5 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261106-102624-benchmark-corpus-with-per-phase-measurem.json",
+    "sha256": "39878a9fd4c3e934e4f0c7fbc4eb7c779824c4e5510591591f466772dc46823d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261106-102624-benchmark-corpus-with-per-phase-measurem",
+      "title": "Benchmark corpus with per-phase measurements (step 5b): both engines, the three groups and examples 141 and 142, each run's time split into the same phases",
+      "description": "Step 5b of llm-dlc/loops/sound-verdicts.md. lib/src/phases.rs splits every checker run into the same phases for both engines: loading, lowering, symbolic, encoding, solving, trace and the rest. The tool's own checker times them itself; its encoding is estimated from one word-level operation in 64, since a clock read costs about 0.3 us on this WSL2 machine. JBMC's phases are read from its own Runtime lines and from the times of its messages, which it now prints under --json-ui --timestamp monotonic. A run cut off by its deadline or its memory gives the rest of its time to the phase it was in. Each run also records its formula: JBMC's SSA steps and verification conditions, and the variables and clauses. The drivers time their own steps too: setup, harness, gap scan and JBMC preflight, contracts, replay, and the JVM witness run (search.phases). lib/benchmark/run.py carries all of these into results.json, and RESULTS.md gains a table per workload and engine, under strict, of each phase's share and the phase that dominates. It also gains group 4: examples 141 (binary search) and 142 (UTF-8), patched onto Mica and run under strict alone. Everything else is the 5a run (job 20261106-094317), which this job supersedes, since it measures the same runs and more: about 700 runs, both engines, strict, assume and advised, matched settings (unwind 16, arrays up to 8, a 120 s deadline), every expected answer and every witness checked on the JVM. Inline, the own checker over groups 2-4 is correct on every case but real/bucket/fix-confined, which is out of time as in 5a. 141 took 2.0 s and 142 7.3 s, solving dominant (89% and 92%). A JBMC smoke run of the midpoint cases gave the bounded binarySearch 45 s, 94% of it solving 3.28 million clauses.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "benchmark",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark",
+          "lib/src/phases.rs"
+        ],
+        "examples": [
+          "141",
+          "142"
+        ]
+      },
+      "expected": "exits 0: no false success and no false alarm on either engine in any mode, and the JVM bears out every expected answer of groups 2 and 3. RESULTS.md has the correctness table, the section 'Where the time goes, by workload, under strict' with a row per workload and engine, and 'The recorded examples' with rows for example/141 and example/142 on both engines. On JBMC, 141 and 142 may well be unsupported (out of time at 120 s, or out of memory under the 3 GiB cap). That is a finding, not a failure, and their row says which phase the time went to.",
+      "submitted": {
+        "at": "2026-11-06T10:26:24+00:00",
+        "session": "7cacdb56-4c74-4880-a06e-f98031283c0f",
+        "by": "claude (sound-verdicts loop)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "javac",
+        "cargo",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3.5G",
+        "duration": "50m",
+        "timeout": "2h",
+        "notes": "the 5a run's ~700 runs (native 0.1-3 s, a few at the deadline; JBMC 0.3-1 s on small claims, some at the 120 s deadline per mode) plus four group-4 runs: own checker 2 and 7 s, JBMC up to the 120 s deadline or its 3 GiB cap each; and building the crate"
+      },
+      "steps": [
+        {
+          "name": "benchmark",
+          "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/results.json",
+        "lib/benchmark/RESULTS.md"
+      ]
+    }
+  },
+  "sourceCommit": "b2e3b9c51da8630559a5c816d73be22ff0ef5b12",
+  "startedAt": "2026-11-06T11:40:19+00:00",
+  "finishedAt": "2026-11-06T12:22:03+00:00",
+  "wallSeconds": 2504.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "FilSurface",
+    "pid": 2138457,
+    "workers": 2,
+    "cpus": 6.0,
+    "memoryBudgetBytes": 5368709120
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3758096384,
+    "durationSeconds": 3000.0,
+    "notes": "the 5a run's ~700 runs (native 0.1-3 s, a few at the deadline; JBMC 0.3-1 s on small claims, some at the 120 s deadline per mode) plus four group-4 runs: own checker 2 and 7 s, JBMC up to the 120 s deadline or its 3 GiB cap each; and building the crate"
+  },
+  "usage": {
+    "peakMemoryBytes": 3698692096,
+    "wallSeconds": 2503.6,
+    "cpuSeconds": 2522.6,
+    "memoryOfEstimate": 0.98,
+    "durationOfEstimate": 0.83
+  },
+  "environment": {
+    "host": "FilSurface",
+    "os": "Linux-6.6.87.2-microsoft-standard-WSL2-aarch64-with-glibc2.39",
+    "machine": "aarch64",
+    "cpuModel": "0x001",
+    "cpuCount": 8,
+    "memoryTotalBytes": 10410356736,
+    "python": "3.12.3",
+    "tools": {
+      "java": "openjdk version \"25.0.4.1\" 2026-08-18 LTS",
+      "javac": "javac 25.0.4.1",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 255 (255.4-1ubuntu8.18)"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "benchmark",
+      "run": "(cd lib && cargo build --release -q) && python3 lib/benchmark/run.py --out lib/benchmark/results.json --table lib/benchmark/RESULTS.md",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "cancelled": false,
+      "wallSeconds": 2503.647,
+      "cpuSeconds": 2522.612,
+      "cpuThrottledSeconds": 1.409,
+      "peakMemoryBytes": 3698692096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-benchmark.log",
+        "lines": 712,
+        "bytes": 83304,
+        "sha256": "e0d8dc12c90186d1f4af4e39b35f5dc7edb18653d6b5ffec0c875e7acefe1225",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "held/lower-bound                             native strict  verified     correct                   0.40 s    36.8 MB",
+        "held/lower-bound                             native assume  verified     correct                   0.41 s    38.3 MB",
+        "held/lower-bound                             native advised verified     correct                   0.40 s    42.5 MB",
+        "held/lower-bound                             jbmc   strict  verified     correct                   7.21 s   183.7 MB",
+        "held/lower-bound                             jbmc   assume  verified     correct                   6.65 s   183.7 MB",
+        "held/lower-bound                             jbmc   advised verified     correct                   6.68 s   183.7 MB",
+        "held/utf8-length                             native strict  verified     correct                   0.47 s    32.5 MB",
+        "held/utf8-length                             native assume  verified     correct                   0.48 s    32.5 MB",
+        "held/utf8-length                             native advised verified     correct                   0.48 s    38.4 MB",
+        "held/utf8-length                             jbmc   strict  verified     correct                   0.99 s    80.3 MB",
+        "held/utf8-length                             jbmc   assume  verified     correct                   1.05 s    80.3 MB",
+        "held/utf8-length                             jbmc   advised verified     correct                   1.13 s    80.3 MB",
+        "held/reverse                                 native strict  verified     correct                   0.21 s    37.2 MB",
+        "held/reverse                                 native assume  verified     correct                   0.22 s    37.2 MB",
+        "held/reverse                                 native advised verified     correct                   0.23 s    43.0 MB",
+        "held/reverse                                 jbmc   strict  unverifiable unsupported              15.89 s  3367.8 MB",
+        "held/reverse                                 jbmc   assume  unverifiable unsupported               9.77 s  3367.8 MB",
+        "held/reverse                                 jbmc   advised unverifiable unsupported              10.23 s  3367.9 MB",
+        "held/prefix-sums                             native strict  verified     correct                   0.20 s    29.3 MB",
+        "held/prefix-sums                             native assume  verified     correct                   0.09 s    29.2 MB",
+        "held/prefix-sums                             native advised verified     correct                   0.16 s    30.5 MB",
+        "held/prefix-sums                             jbmc   strict  verified     correct                   4.65 s   395.3 MB",
+        "held/prefix-sums                             jbmc   assume  verified     correct                   4.59 s   395.3 MB",
+        "held/prefix-sums                             jbmc   advised verified     correct                   4.81 s   395.3 MB",
+        "held/overlap/meets                           native strict  verified     correct                   0.17 s    35.4 MB",
+        "held/overlap/meets                           native assume  verified     correct                   0.10 s    35.4 MB",
+        "held/overlap/meets                           native advised verified     correct                   0.13 s    35.6 MB",
+        "held/overlap/meets                           jbmc   strict  verified     correct                   0.56 s    35.7 MB",
+        "held/overlap/meets                           jbmc   assume  verified     correct                   0.61 s    35.7 MB",
+        "held/overlap/meets                           jbmc   advised verified     correct                   0.69 s    35.8 MB",
+        "held/overlap/length                          native strict  violation    correct                   0.12 s    35.7 MB",
+        "held/overlap/length                          native assume  violation    correct                   0.14 s    35.7 MB",
+        "held/overlap/length                          native advised violation    correct                   0.14 s    35.9 MB",
+        "held/overlap/length                          jbmc   strict  violation    correct                   0.53 s    36.0 MB",
+        "held/overlap/length                          jbmc   assume  violation    correct                   0.54 s    36.0 MB",
+        "held/overlap/length                          jbmc   advised violation    correct                   0.63 s    36.2 MB",
+        "example/141                                  native strict  verified     correct                   2.19 s    56.9 MB",
+        "example/141                                  jbmc   strict  verified     correct                  65.17 s  2066.2 MB",
+        "example/142                                  native strict  verified     correct                   7.19 s    82.1 MB",
+        "example/142                                  jbmc   strict  unverifiable unsupported              13.88 s  3407.7 MB"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/results.json",
+      "change": "added",
+      "bytes": 1177612,
+      "sha256": "693a06ee1828789ed7589e98acc6418333eed7487897559e41f611ef5fd9b9de",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/RESULTS.md",
+      "change": "added",
+      "bytes": 33083,
+      "sha256": "6b81c7bda66f5d66bbdc069e3e4cd3c66c95003d3e90b25378a37943764df46a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-06T12:38:12+00:00",
+    "applied": [
+      "lib/benchmark/results.json",
+      "lib/benchmark/RESULTS.md"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

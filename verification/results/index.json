@@ -2,6 +2,76 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261106-102624-benchmark-corpus-with-per-phase-measurem",
+      "title": "Benchmark corpus with per-phase measurements (step 5b): both engines, the three groups and examples 141 and 142, each run's time split into the same phases",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 41m43s, peak 3.4 GiB (estimated 50m00s, 3.5 GiB); 2 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "benchmark",
+        "own-checker",
+        "B9"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark",
+          "lib/src/phases.rs"
+        ],
+        "examples": [
+          "141",
+          "142"
+        ]
+      },
+      "sourceCommit": "b2e3b9c51da8630559a5c816d73be22ff0ef5b12",
+      "finishedAt": "2026-11-06T12:22:03+00:00",
+      "wallSeconds": 2503.6,
+      "peakMemoryBytes": 3698692096,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3758096384,
+        "durationSeconds": 3000.0,
+        "notes": "the 5a run's ~700 runs (native 0.1-3 s, a few at the deadline; JBMC 0.3-1 s on small claims, some at the 120 s deadline per mode) plus four group-4 runs: own checker 2 and 7 s, JBMC up to the 120 s deadline or its 3 GiB cap each; and building the crate"
+      },
+      "host": "FilSurface",
+      "result": "20261106-102624-benchmark-corpus-with-per-phase-measurem/result.json"
+    },
+    {
+      "id": "20261106-073804-jbmc-read-through-json-ui-agrees-with-th",
+      "title": "JBMC read through --json-ui agrees with the text reading on every recorded JBMC example (step 4b of the sound-verdicts brief)",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 25m57s, peak 1.4 GiB (estimated 40m00s, 3.5 GiB); 2 output file(s) changed; signals: example:differ×1; example:unexpected×1",
+      "attention": [
+        "step 1 (41 recorded JBMC examples, read both ways) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "B9",
+        "B11",
+        "jvmcontract:equivalence",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/jbmc.rs",
+          "llm-dlc/loops/sound-verdicts.md",
+          "examples/tools/build.py"
+        ]
+      },
+      "sourceCommit": "cdafe2ccb96d487953c4054aa60b91c21cb55c9e",
+      "finishedAt": "2026-11-06T11:40:19+00:00",
+      "wallSeconds": 1558.0,
+      "peakMemoryBytes": 1498722304,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 3758096384,
+        "durationSeconds": 2400.0,
+        "notes": "the 41 examples' recorded JBMC proof lines add up to about 150 s; every run is made twice here, with the interval stages, and build.py compiles and tests the app for each example (some 20-30 s each); JBMC is capped at 3 GiB"
+      },
+      "host": "FilSurface",
+      "result": "20261106-073804-jbmc-read-through-json-ui-agrees-with-th/result.json"
+    },
+    {
       "id": "20261105-022629-example-036-after-its-patch-was-rebased",
       "title": "Example 036 after its patch was rebased: the switch lowering costs narrowed from long to int, refuted by a regression proof",
       "status": "passed",

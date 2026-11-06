@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T12:37:47.592Z",
-  "duration_seconds": 6553,
+  "ended": "2026-11-06T12:38:37.177Z",
+  "duration_seconds": 6602,
   "stats": {
     "turns": 11,
-    "api_calls": 210,
-    "tool_calls": 212,
+    "api_calls": 212,
+    "tool_calls": 214,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 361405,
+    "peak_context_tokens": 363818,
     "usage": {
-      "input_tokens": 442,
-      "output_tokens": 122280,
-      "cache_read_input_tokens": 46717876,
-      "cache_creation_input_tokens": 324395
+      "input_tokens": 446,
+      "output_tokens": 123076,
+      "cache_read_input_tokens": 47441785,
+      "cache_creation_input_tokens": 326808
     }
   },
   "tools": {
-    "Bash": 196,
+    "Bash": 198,
     "AskUserQuestion": 11,
     "Edit": 3,
     "ToolSearch": 1,
@@ -44,24 +44,24 @@
     {
       "index": 0,
       "started": "2026-11-06T10:48:34.990Z",
-      "ended": "2026-11-06T12:37:47.592Z",
+      "ended": "2026-11-06T12:38:37.177Z",
       "turns": 11,
-      "api_calls": 210,
+      "api_calls": 212,
       "usage": {
-        "input_tokens": 442,
-        "output_tokens": 122280,
-        "cache_read_input_tokens": 46717876,
-        "cache_creation_input_tokens": 324395
+        "input_tokens": 446,
+        "output_tokens": 123076,
+        "cache_read_input_tokens": 47441785,
+        "cache_creation_input_tokens": 326808
       },
-      "peak_context_tokens": 361405
+      "peak_context_tokens": 363818
     }
   ],
   "log": {
-    "sha256": "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b",
-    "bytes": 4221252,
-    "lines": 1858,
-    "gzip_bytes": 657474,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b.jsonl.gz"
+    "sha256": "4c552f7b7127cbcec318fb24f21fb2ebf395a84495df50c3e9fd3443631c63c0",
+    "bytes": 4455243,
+    "lines": 1888,
+    "gzip_bytes": 702492,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/4c552f7b7127cbcec318fb24f21fb2ebf395a84495df50c3e9fd3443631c63c0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -152,6 +152,14 @@
       "summary": "Pipeline jobs apply git-format patches: git in a job no longer takes this repository for the job's, and a skipped file fails the patch stage",
       "body": "A pipeline job's export and build.py's patched copies live under verification/.state/work, inside this repository's tree. There, git apply reads a git-format patch's paths (diff --git) from this repository's top level, skips every file outside the copy and still exits 0. Since change myrqmxqq (2026-11-05 18:54), which keeps each attempt's copy in the job's work directory, every pipeline run of an example with a git-format patch ran on the unpatched code: 25 examples (110-119, 128-139, 147-149). Job 20261106-073804 found it: examples 128-131 and 134 gave no verdict ('class not found: net.terminalvalue.crosscut.kafka.Batch', a class the patch adds). An example expected to verify would have compared the unpatched code with itself and matched its expectation. No collected result is affected: nothing was collected after that change.\n\nThe runner now sets GIT_CEILING_DIRECTORIES to the work directory's parent in every step's environment, which also covers the jobs queued at older commits, whose build.py has no guard. build.py's new apply_patch (both apply sites) sets the same, runs git apply --verbose, and fails the stage on any 'Skipped patch' line.",
       "log_sha256": "a1b5047cbc9331e8ab46ccfddad9f4554c1823d6db70dea1bee03dbed0d0117b"
+    },
+    {
+      "change_id": "wntwknplvkuulqpmrupyuwxrsmklkpnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 jobs: the benchmark's per-phase table, and the JBMC reader differential, which agreed but failed on unapplied patches",
+      "body": "20261106-102624 (benchmark with per-phase measurements, step 5b) passed in 41m43s, peak 3.4 GiB, and writes lib/benchmark/RESULTS.md and results.json: 0 false successes under strict and advised on either engine, 0 false alarms, every answer and witness borne out on the JVM; JBMC out of time or memory on four cases the own checker decides in under a second, and formulas 10 to 35 times larger where both decide. jbmc-patch-queue.md now ranks the candidates from it (array representations first, then shared quotient/remainder) and recommends no fork for performance, for the user's decision.\n\n20261106-073804 (JBMC read through --json-ui against the text reading, step 4b) failed: the 78 JBMC runs were read both ways with 0 disagreements, but examples 128-131 and 134 gave no verdict, since their git-format patches were never applied in the job (fixed in the previous commit). The text reader stays until those five are read both ways too.",
+      "log_sha256": "4c552f7b7127cbcec318fb24f21fb2ebf395a84495df50c3e9fd3443631c63c0"
     }
   ],
   "logs": {
@@ -178,6 +186,12 @@
       "lines": 1477,
       "gzip_bytes": 568184,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4829eb00b8c11ffc88e250bf55a74e3324a1be22dbceaed2ac37b011a44e720f.jsonl.gz"
+    },
+    "4c552f7b7127cbcec318fb24f21fb2ebf395a84495df50c3e9fd3443631c63c0": {
+      "bytes": 4455243,
+      "lines": 1888,
+      "gzip_bytes": 702492,
+      "url": null
     },
     "60bc21576206b799b4edbd15f0fa480d7f61fc75f0212509984e0a24793f61f8": {
       "bytes": 1305077,
