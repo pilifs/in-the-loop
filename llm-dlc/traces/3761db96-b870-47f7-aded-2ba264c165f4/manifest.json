@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T10:48:34.990Z",
-  "ended": "2026-11-06T18:56:10.694Z",
-  "duration_seconds": 29256,
+  "ended": "2026-11-06T19:02:47.324Z",
+  "duration_seconds": 29652,
   "stats": {
-    "turns": 42,
-    "api_calls": 533,
-    "tool_calls": 520,
+    "turns": 44,
+    "api_calls": 535,
+    "tool_calls": 521,
     "tool_errors": 7,
     "compactions": 2,
     "peak_context_tokens": 451666,
     "usage": {
-      "input_tokens": 1132,
-      "output_tokens": 399959,
-      "cache_read_input_tokens": 123324320,
-      "cache_creation_input_tokens": 879556
+      "input_tokens": 1136,
+      "output_tokens": 401293,
+      "cache_read_input_tokens": 123993936,
+      "cache_creation_input_tokens": 881440
     }
   },
   "tools": {
-    "Bash": 481,
+    "Bash": 482,
     "AskUserQuestion": 15,
     "Write": 9,
     "Edit": 6,
@@ -84,24 +84,24 @@
     {
       "index": 2,
       "started": "2026-11-06T16:58:20.397Z",
-      "ended": "2026-11-06T18:56:10.694Z",
-      "turns": 9,
-      "api_calls": 152,
+      "ended": "2026-11-06T19:02:47.324Z",
+      "turns": 11,
+      "api_calls": 154,
       "usage": {
-        "input_tokens": 318,
-        "output_tokens": 168448,
-        "cache_read_input_tokens": 32158150,
-        "cache_creation_input_tokens": 300929
+        "input_tokens": 322,
+        "output_tokens": 169782,
+        "cache_read_input_tokens": 32827766,
+        "cache_creation_input_tokens": 302813
       },
-      "peak_context_tokens": 334105
+      "peak_context_tokens": 335989
     }
   ],
   "log": {
-    "sha256": "ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80",
-    "bytes": 12236894,
-    "lines": 4886,
-    "gzip_bytes": 2040979,
-    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz"
+    "sha256": "863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2",
+    "bytes": 12339249,
+    "lines": 4914,
+    "gzip_bytes": 2061857,
+    "path": "llm-dlc/traces/3761db96-b870-47f7-aded-2ba264c165f4/logs/863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -412,10 +412,18 @@
     {
       "change_id": "vzpymtvonsrupznvyxqzkpqmmwxmxsuz",
       "commit_id": "7dca2d9d176c92cdf2398ea9e1122d91984e7406",
-      "immutable": false,
+      "immutable": true,
       "summary": "run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge",
       "body": "llm-dlc/tools/run-streams.sh engines now needs a person only at the end. After the compact, forks and workspaces, it starts verification-loop.sh (unless one already runs for this repo) so the loops' jobs are run, collected and committed. It runs both streams' loops and supervises each. When every stream is finished, it runs the brief's own loop (feature-loop.sh engines, the merge, in its fresh session) the same way, then stops the verification loop and exits.\n\nThe supervisor reads a status line that each brief now ends its Progress with: '- Status: working', 'waiting on jobs ID ...', 'done' or 'blocked: ...'. All three engine-priorities briefs carry the rule and start at 'working'. A loop waiting on jobs is run again once each job's result is collected under verification/results/, polling every RUN_STREAMS_POLL seconds (300) and giving up as blocked after RUN_STREAMS_JOB_WAIT (12 h). Done or blocked, it is finished, and a blocked stream is merged with what it committed. A stop with no such status is retried once, then counted as blocked; so is one claiming to wait on jobs that are already back. On a restart, finished loops are skipped and waiting ones wait first. verification-loop.sh gains a stop on SIGUSR1, which lets the run under way finish. The brief's Streams and Reconciling text and llm-dlc/README.md describe it.\n\nVerified with a dry run in a throwaway jj repo, with a fake claude that sets status lines and commits and a fake verification loop that collects a job after a few seconds. In order: one compact and two forks; jbmc waited on its job, picked up when it was collected and finished; native finished; the merge loop ran and finished; the verification loop stopped on SIGUSR1; exit 0. A restart skipped the finished stream. Ctrl-C mid-cycle gave exit 130, both stream loops recorded the interruption, and no process or scope was left. The verification-loop detection first matched the test shell's own command line; it now needs a bash running the script with the repo as its working directory.",
       "log_sha256": "ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80"
+    },
+    {
+      "change_id": "qwtxlmvonluvqnpuvslmywotspmyowvp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2"
     }
   ],
   "logs": {
@@ -532,6 +540,12 @@
       "lines": 4303,
       "gzip_bytes": 1838541,
       "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/7f457f04277a2949bf92e7eaef7c3dc5fb8ef1d1399db047fbed0aa2a7e2896e.jsonl.gz"
+    },
+    "863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2": {
+      "bytes": 12339249,
+      "lines": 4914,
+      "gzip_bytes": 2061857,
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/863419e8b42e64da7cbcc7a96b8b6881c4c0f5ee02e06c647ba67ce96db2a1e2.jsonl.gz"
     },
     "89a9c9496f354ba12b8eea755400963ac8f31dec25c48d64806fc00630ea339a": {
       "bytes": 9869378,
