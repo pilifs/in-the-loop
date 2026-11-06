@@ -30,8 +30,8 @@ gh_latest() {  # gh_latest owner/repo -> tag of latest release
 }
 gh_asset() {   # gh_asset owner/repo regex -> URL of first matching asset of latest release
   curl -fsSL "https://api.github.com/repos/$1/releases/latest" \
-    | jq -er --arg re "$2" '[.assets[] | select(.name | test($re))][0].browser_download_url'
-}
+    | jq -er --arg re "$2" 'first(.assets[] | select(.name | test($re)) | .browser_download_url)'
+}  # no match: no output (not "null"), so a fallback in $(a || b) gets only the other URL
 wrap_jar() {   # wrap_jar <command> <java args...>: write a launcher into $BIN
   local name=$1; shift
   printf '#!/usr/bin/env bash\nexec java %s "$@"\n' "$*" > "$BIN/$name"
@@ -217,6 +217,14 @@ install_verify() {
     for t in dafny boogie; do
       dotnet tool update --global "$t" >/dev/null 2>&1 || dotnet tool install --global "$t"
     done
+    # Both are built for .NET 8; 26.04 has only .NET 10, where Boogie refuses to start. A launcher ahead
+    # of ~/.dotnet/tools on PATH lets them roll forward to the newest runtime when 8 is absent.
+    if ! dotnet --list-runtimes | grep -q "^Microsoft\\.NETCore\\.App 8\\."; then
+      for t in dafny boogie; do
+        printf '#!/usr/bin/env bash\nDOTNET_ROLL_FORWARD=Major exec %s "$@"\n' "$HOME/.dotnet/tools/$t" > "$BIN/$t"
+        chmod +x "$BIN/$t"
+      done
+    fi
   else
     warn "dotnet missing; run the 'system' component first"
   fi
