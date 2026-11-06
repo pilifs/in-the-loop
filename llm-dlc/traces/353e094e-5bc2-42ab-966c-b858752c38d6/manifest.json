@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "353e094e-5bc2-42ab-966c-b858752c38d6",
-  "status": "open",
+  "status": "ended",
   "title": "Commit and publish to remote",
   "first_prompt": "Commit and publish all work to remote. Note: this is the first commit from this new VM environment, flag any potential setup issues for review",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T16:53:18.349Z",
-  "ended": "2026-11-06T18:27:08.299Z",
-  "duration_seconds": 5630,
+  "ended": "2026-11-06T18:28:14.045Z",
+  "duration_seconds": 5696,
   "stats": {
     "turns": 12,
-    "api_calls": 191,
-    "tool_calls": 186,
+    "api_calls": 193,
+    "tool_calls": 187,
     "tool_errors": 6,
     "compactions": 0,
-    "peak_context_tokens": 288016,
+    "peak_context_tokens": 289035,
     "usage": {
-      "input_tokens": 406,
-      "output_tokens": 122916,
-      "cache_read_input_tokens": 30267546,
-      "cache_creation_input_tokens": 250389
+      "input_tokens": 410,
+      "output_tokens": 123882,
+      "cache_read_input_tokens": 30843927,
+      "cache_creation_input_tokens": 251410
     }
   },
   "tools": {
-    "Bash": 179,
+    "Bash": 180,
     "Edit": 4,
     "Read": 1,
     "Skill": 1,
@@ -45,24 +45,24 @@
     {
       "index": 0,
       "started": "2026-11-06T16:53:18.349Z",
-      "ended": "2026-11-06T18:27:08.299Z",
+      "ended": "2026-11-06T18:28:14.045Z",
       "turns": 12,
-      "api_calls": 191,
+      "api_calls": 193,
       "usage": {
-        "input_tokens": 406,
-        "output_tokens": 122916,
-        "cache_read_input_tokens": 30267546,
-        "cache_creation_input_tokens": 250389
+        "input_tokens": 410,
+        "output_tokens": 123882,
+        "cache_read_input_tokens": 30843927,
+        "cache_creation_input_tokens": 251410
       },
-      "peak_context_tokens": 288016
+      "peak_context_tokens": 289035
     }
   ],
   "log": {
-    "sha256": "0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff",
-    "bytes": 3676838,
-    "lines": 1418,
-    "gzip_bytes": 582436,
-    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz"
+    "sha256": "bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04",
+    "bytes": 3736395,
+    "lines": 1436,
+    "gzip_bytes": 593894,
+    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -157,15 +157,15 @@
     {
       "change_id": "uqpqmzoxzroosktovokrlwkwwlppqxvu",
       "commit_id": "ffe65af7b226fcb533d5755980dbe22f1dc66298",
-      "immutable": false,
+      "immutable": true,
       "summary": "Verification findings that need a person go into verification/findings.md, kept by the agent that runs the pipeline",
       "body": "A run's findings lived in its results, its commit message and the managing session's report, and the last two are easy to lose before anyone acts. verification/findings.md is now the durable list: each entry (VF-NNN) records a verdict against a change, an error a submitter must fix, or a decision that changes what the results mean, with its jobs, commit and machine, what was found, what would settle it and who should act, where else it is tracked, and the check that closes it. Open entries come first.\n\nIt starts with the two open findings from the first runs on vm-1: VF-001, the conformance corpus jobs where JBMC proves claims the JVM refutes, reports violations the JVM does not reproduce, and --engine auto passes JBMC's wrong Verified through (Phase 1 of the sound-verdicts brief is not done); and VF-002, examples 147-149, whose patches create their subject file, which build.py's excerpts() does not accept. The run-verification skill gains a Record step (add, update, close; never close on a job that did not run the named check), reads open entries before a run, commits the file with the results and names entries in its report. The unattended verification loop's instruction and the verification README say the same.",
       "log_sha256": "ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c"
     },
     {
       "change_id": "kqnlkvuwowpvnmruzurzksmrtwzyurrr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7031d336e750e3094a33b3dd6eb00c6c2900a33d",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff"
@@ -237,6 +237,12 @@
       "lines": 1255,
       "gzip_bytes": 488888,
       "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/9f9022352c28775051ddae384a24218b2846249adf8197b6449ea049de2d69b2.jsonl.gz"
+    },
+    "bea739fae39691bd5acf88ee619e5c716295b520a147beac53489ae6329e2d04": {
+      "bytes": 3736395,
+      "lines": 1436,
+      "gzip_bytes": 593894,
+      "url": null
     },
     "ce943dd82f8a5f95713a1f1485d6371f150e11375652ba738a3de814226a891c": {
       "bytes": 3588188,

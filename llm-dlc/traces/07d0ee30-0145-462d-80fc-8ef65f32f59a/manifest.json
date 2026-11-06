@@ -1,0 +1,79 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "07d0ee30-0145-462d-80fc-8ef65f32f59a",
+  "status": "open",
+  "title": "Agent session transfer warnings",
+  "first_prompt": "I just transferred a bunch of sessions and sync'd data between you and another agent. Let's review any actions (warnings) required prior to starting the next feature loop.",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.319"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-06T19:07:17.628Z",
+  "ended": "2026-11-06T19:11:22.890Z",
+  "duration_seconds": 245,
+  "stats": {
+    "turns": 2,
+    "api_calls": 11,
+    "tool_calls": 10,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 52752,
+    "usage": {
+      "input_tokens": 24,
+      "output_tokens": 3779,
+      "cache_read_input_tokens": 504564,
+      "cache_creation_input_tokens": 22032
+    }
+  },
+  "tools": {
+    "Bash": 10
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-06T19:07:17.628Z",
+      "ended": "2026-11-06T19:11:22.890Z",
+      "turns": 2,
+      "api_calls": 11,
+      "usage": {
+        "input_tokens": 24,
+        "output_tokens": 3779,
+        "cache_read_input_tokens": 504564,
+        "cache_creation_input_tokens": 22032
+      },
+      "peak_context_tokens": 52752
+    }
+  ],
+  "log": {
+    "sha256": "5e8ee7563ee9a084ae5fe407bf2d4a2a37b311212e87b1e47c17ab6c54b47dd8",
+    "bytes": 472067,
+    "lines": 124,
+    "gzip_bytes": 110219,
+    "path": "llm-dlc/traces/07d0ee30-0145-462d-80fc-8ef65f32f59a/logs/5e8ee7563ee9a084ae5fe407bf2d4a2a37b311212e87b1e47c17ab6c54b47dd8.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "szokxylkmmzpzzklpnltzqxvwqytlptw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Accept finding 7426ada1: the VM's hostname written as an ssh host name in a laptop session",
+      "body": "Session 3761db96 ran on the laptop, where the VM's hostname was only the name of a remote ssh host, so the laptop's redactor let it through. Once the session was moved to the VM, check flagged it as this machine's hostname (17 places in summary.md, manifest.json and metrics.json). The trace was already published on origin/main, and the mentions are innocuous, so the maintainer accepted the finding with review accept, as with 4a9c05db. check now reports 0 errors and 0 warnings.",
+      "log_sha256": "5e8ee7563ee9a084ae5fe407bf2d4a2a37b311212e87b1e47c17ab6c54b47dd8"
+    }
+  ],
+  "logs": {
+    "5e8ee7563ee9a084ae5fe407bf2d4a2a37b311212e87b1e47c17ab6c54b47dd8": {
+      "bytes": 472067,
+      "lines": 124,
+      "gzip_bytes": 110219,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
