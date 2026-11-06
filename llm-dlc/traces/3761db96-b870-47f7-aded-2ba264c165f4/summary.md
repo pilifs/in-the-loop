@@ -303,7 +303,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### Accept finding 7426ada1: the VM's hostname written as an ssh host name in a laptop session
 
-change `szokxylkmmzp` · [log `4a6d26b4daf0`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4a6d26b4daf02e7d9d13258592c8f5d5d9436f9f9e4f693894878d71ef2ed63f.jsonl.gz)
+[`2887a6487c07`](https://github.com/pilifs/in-the-loop/commit/2887a6487c0769668a41645df4c0cc54db70bb78) · [log `4a6d26b4daf0`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/4a6d26b4daf02e7d9d13258592c8f5d5d9436f9f9e4f693894878d71ef2ed63f.jsonl.gz)
 
 Session 3761db96 ran on the laptop, where the VM's hostname was only the name of a remote ssh host, so the laptop's redactor let it through. Once the session was moved to the VM, check flagged it as this machine's hostname (17 places in summary.md, manifest.json and metrics.json). The trace was already published on origin/main, and the mentions are innocuous, so the maintainer accepted the finding with review accept, as with 4a9c05db. check now reports 0 errors and 0 warnings.
 
