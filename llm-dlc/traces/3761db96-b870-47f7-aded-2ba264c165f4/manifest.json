@@ -411,7 +411,7 @@
     },
     {
       "change_id": "vzpymtvonsrupznvyxqzkpqmmwxmxsuz",
-      "commit_id": null,
+      "commit_id": "7dca2d9d176c92cdf2398ea9e1122d91984e7406",
       "immutable": false,
       "summary": "run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge",
       "body": "llm-dlc/tools/run-streams.sh engines now needs a person only at the end. After the compact, forks and workspaces, it starts verification-loop.sh (unless one already runs for this repo) so the loops' jobs are run, collected and committed. It runs both streams' loops and supervises each. When every stream is finished, it runs the brief's own loop (feature-loop.sh engines, the merge, in its fresh session) the same way, then stops the verification loop and exits.\n\nThe supervisor reads a status line that each brief now ends its Progress with: '- Status: working', 'waiting on jobs ID ...', 'done' or 'blocked: ...'. All three engine-priorities briefs carry the rule and start at 'working'. A loop waiting on jobs is run again once each job's result is collected under verification/results/, polling every RUN_STREAMS_POLL seconds (300) and giving up as blocked after RUN_STREAMS_JOB_WAIT (12 h). Done or blocked, it is finished, and a blocked stream is merged with what it committed. A stop with no such status is retried once, then counted as blocked; so is one claiming to wait on jobs that are already back. On a restart, finished loops are skipped and waiting ones wait first. verification-loop.sh gains a stop on SIGUSR1, which lets the run under way finish. The brief's Streams and Reconciling text and llm-dlc/README.md describe it.\n\nVerified with a dry run in a throwaway jj repo, with a fake claude that sets status lines and commits and a fake verification loop that collects a job after a few seconds. In order: one compact and two forks; jbmc waited on its job, picked up when it was collected and finished; native finished; the merge loop ran and finished; the verification loop stopped on SIGUSR1; exit 0. A restart skipped the finished stream. Ctrl-C mid-cycle gave exit 130, both stream loops recorded the interruption, and no process or scope was left. The verification-loop detection first matched the test shell's own command line; it now needs a bash running the script with the repo as its working directory.",
@@ -603,7 +603,7 @@
       "bytes": 12236894,
       "lines": 4886,
       "gzip_bytes": 2040979,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz"
     },
     "edb3664d23e0feec85e93c3656b675095f87d2b24e07665ad50c571e7c37e433": {
       "bytes": 11748553,

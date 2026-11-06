@@ -287,7 +287,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge
 
-change `vzpymtvonsru` · [log `ece0b699a5ab`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz)
+[`7dca2d9d176c`](https://github.com/pilifs/in-the-loop/commit/7dca2d9d176c92cdf2398ea9e1122d91984e7406) · [log `ece0b699a5ab`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz)
 
 llm-dlc/tools/run-streams.sh engines now needs a person only at the end. After the compact, forks and workspaces, it starts verification-loop.sh (unless one already runs for this repo) so the loops' jobs are run, collected and committed. It runs both streams' loops and supervises each. When every stream is finished, it runs the brief's own loop (feature-loop.sh engines, the merge, in its fresh session) the same way, then stops the verification loop and exits.
 

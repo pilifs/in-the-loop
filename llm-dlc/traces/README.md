@@ -19,7 +19,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Tokens written | 11,386,917 |
 | Tokens read | 1,416,959,613 (97.9% from cache) |
 | Commits with a trace | 258 |
-| Log snapshots | 317 (986.1 MB gzipped, 316 uploaded) |
+| Log snapshots | 317 (986.1 MB gzipped, 317 uploaded) |
 
 ## Sessions
 
@@ -358,7 +358,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 240 | [`290d7d0d`](https://github.com/pilifs/in-the-loop/commit/290d7d0d186943f8e1902a9ab1edd16d0c3b7fe2) | Accept finding 4a9c05db: the laptop's hostname kept as its machine name in verification results | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/edb3664d23e0feec85e93c3656b675095f87d2b24e07665ad50c571e7c37e433.jsonl.gz)) |
 | 241 | [`d7a6290a`](https://github.com/pilifs/in-the-loop/commit/d7a6290aaf3542f73d43cf2ac00a18788e460de6) | transfer-session.sh (was copy-session.sh) also brings the other machine's repo to the pushed main | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/edb3664d23e0feec85e93c3656b675095f87d2b24e07665ad50c571e7c37e433.jsonl.gz)) |
 | 242 | [`e60a755f`](https://github.com/pilifs/in-the-loop/commit/e60a755f0ea48caf06513b8a83ef03e4fc8a4954) | Record session traces | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/c04f3aa184c46b7b782467499eebc5f0f32ca56d78ed922300bdbbe88a85a668.jsonl.gz)) |
-| 243 | change `vzpymtvo` | run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz)) |
+| 243 | [`7dca2d9d`](https://github.com/pilifs/in-the-loop/commit/7dca2d9d176c92cdf2398ea9e1122d91984e7406) | run-streams.sh runs a brief's whole loop unattended: streams, jobs, then the merge | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz)) |
 | 244 | [`04743c9f`](https://github.com/pilifs/in-the-loop/commit/04743c9fa208ede74b0226bec30fdc1b9632aba9) | Installer runs on Ubuntu 26.04 and sets PATH for zsh login shells | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/1a17214568ea6084b70e6659b01ad31e58ce997d8846d360e0379a67305c0fbc.jsonl.gz)) |
 | 245 | change `pvplpzpu` | Record session traces | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) ([log](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz)) |
 | 246 | [`d92473f1`](https://github.com/pilifs/in-the-loop/commit/d92473f1f023fc1599bc171d0c15f1daa0a777d2) | Installer runs Dafny and Boogie on hosts with only .NET 10 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) ([log](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78.jsonl.gz)) |
@@ -405,7 +405,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 30 | 131.3 MB | [`77dc99012204`](https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/77dc990122040ca11622d39d658172e0e0500249a45ac5c8089d1de21c653ade.jsonl.gz) |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 37 | 36 | 40.1 MB | `ece0b699a5ab`, not uploaded |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 37 | 37 | 40.1 MB | [`ece0b699a5ab`](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/ece0b699a5ab9ec790e7136da645218ef71500e5f2c2fa16e3aaa20927b40e80.jsonl.gz) |
 | [`0e86a358`](0e86a358-2515-46be-9b1e-0f9d02b4fb2f/summary.md) | 2 | 2 | 0.4 MB | [`000c1283aae8`](https://terminalvalue.net/raw-traces/0e86a358-2515-46be-9b1e-0f9d02b4fb2f/000c1283aae8375f3db5d8619fbcab1a29c08ec8aff3fc9c17f770a8180a5b10.jsonl.gz) |
 | [`353e094e`](353e094e-5bc2-42ab-966c-b858752c38d6/summary.md) | 13 | 13 | 4.8 MB | [`0044c89ca196`](https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/0044c89ca196952c798b234c2745a6b7c8ead2f923fc5c53619fb46f651612ff.jsonl.gz) |
 
