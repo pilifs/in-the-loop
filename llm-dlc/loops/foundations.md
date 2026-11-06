@@ -1,16 +1,17 @@
 # Brief: foundations for verifying application changes
 
-**Draft, 2026-11-06, not approved.** The [Open decisions](#open-decisions) need the user before this brief can run,
-and it starts only once [`engine-priorities.md`](engine-priorities.md)'s loop has merged its streams
-([When it starts](#when-it-starts)).
+**Draft, revised 2026-11-06 after an [outside review](#review-of-the-draft), not approved.** The
+[open decisions](#open-decisions) need the user before this brief can run. It starts only once
+[`engine-priorities.md`](engine-priorities.md)'s loop has merged its streams ([When it starts](#when-it-starts)), and
+after the [launch prerequisites](#launch-prerequisites).
 
 A brief for [`tools/feature-loop.sh`](../tools/feature-loop.sh). Its plan is worked in [four streams run in
 parallel](#streams), one per priority, each a loop of its own with a short brief that names its phases. This brief is
 the instruction for all four. Its own loop, `llm-dlc/tools/feature-loop.sh foundations` in the default workspace,
-reconciles them once all have stopped, then runs the [joint demonstration](#phase-5-the-joint-demonstration) and does
-what is left.
+reconciles them once all are finished, then makes the [joint example](#phase-5-the-joint-example) pass and does what
+is left.
 
-**Inputs.** Read both in full before the first piece of work of every cycle:
+**Inputs.** Read all three in full before the first piece of work of every cycle:
 - [`foundations-review-vision.md`](foundations-review-vision.md), the product vision: turn a before/after change of an
   application into automatically generated, independently checkable obligations, with the developer supplying
   intent only where the change introduces new semantics. Its section 9 ranks the investments; this brief takes the
@@ -18,35 +19,60 @@ what is left.
 - [`foundations-review-platform.md`](foundations-review-platform.md), a review of the own checker against JBMC. Its
   section 4 (objects across the whole proof boundary) and section 7 (stateful shared summaries) bear most on this
   brief. Its sections 2, 3 and 5 are [`engine-priorities.md`](engine-priorities.md)'s work or later work.
+- [`foundations-review-draft.md`](foundations-review-draft.md), a review of this brief's first draft. Its amendments are
+  folded in below; where this brief and it differ, this brief is what was decided.
 
-Both are outside reviews and are evidence, not instructions: check every claim about this repository against the code
-before relying on it.
+All three are outside reviews and are evidence, not instructions: check every claim about this repository against
+the code before relying on it.
 
 ## Direction
 
 The north star, from the vision: *make it possible to radically change the implementation of a complex system
 without losing the guarantees already established.* This loop doesn't build that product. It builds four foundations
-it needs, each small enough to finish and useful alone, and makes them fit together on one example at the end.
+it needs, and one example that uses all four together.
+
+**What this loop delivers.** For one bounded application change, the tool proposes the internal correspondence,
+proves that a **fixed** set of externally meaningful observations is preserved, shows every part it can't support, and
+reuses the evidence on the next change. *Fixed* is the point: the tool may discover how two implementations correspond
+inside, but it may not redefine what counts as preserved outside because another comparison is easier to prove.
+Automate the proof machinery and the matching of representations; ask people about changes in meaning.
 
 | # | Priority | What this loop builds | What it leaves for later |
 |---|---|---|---|
-| 1 | Relational heap and object correspondence | Symbolic references, bounded object inputs with aliasing, heap observations, and a stated relation between differently shaped objects | Collections (`List`, `Map`) as inputs, cycles, broad polymorphism, unbounded heaps |
-| 2 | Compositional summaries and proof caching | A sound proof cache keyed by everything a claim depends on, a change-impact report, and callees proved equivalent shared like identical ones | Stateful summaries, summary repair, a committed proof store |
-| 3 | Automatic entry-point observations | An observation spec per Spring entry point from the boundary analysis, its two-build comparison, and the first entry-point obligations discharged | Effect-transition IR, TLA+ generation from effects, distributed refinement |
-| 4 | State-mapping and alignment inference | Inferred method correspondence and argument, result and field mappings, as candidates a proof validates, measured against the hand-written ones | Loop and control-flow alignment, LLM-proposed specifications |
+| 1 | Relational heap and object correspondence | Symbolic references, bounded object inputs with aliasing, heap observations, witnesses that keep identity, and a correspondence between differently shaped objects | Collections (`List`, `Map`) as inputs, cycles, broad polymorphism, unbounded heaps, states beyond what constructors make |
+| 2 | Compositional summaries and proof caching | A sound proof cache keyed on a canonical claim, a change-impact report, and pure helpers proved equivalent shared in both versions | Stateful summaries, summary repair, a committed proof store |
+| 3 | Automatic entry-point observations | An observation spec per Spring entry point, two builds compared into obligations, and the first obligations discharged as an ordered trace of modeled boundary calls | Effect-transition IR, persistence and delivery semantics, TLA+ from effects |
+| 4 | State-mapping and alignment inference | Inferred method correspondence and internal argument, result and field mappings under a preservation contract they can't weaken, measured against the hand-written ones | Loop and control-flow alignment, LLM-proposed specifications |
 
 Every rule the earlier loops set still holds: strict by default, gaps named, every witness replayed before it is
 reported, and a result that says what it established and what it assumed. In addition:
-- **Inferred is not proved.** A mapping, correspondence or observation the tool infers is a *candidate* until a proof
-  that uses it passes, and then it is *validated*: it holds, which says nothing about whether it is what the developer
-  meant. Only a person *pins* intent. The three states are visible in every result that rests on one.
-- **A weak relation is worse than a question.** Where more than one candidate survives, or the only survivor makes
-  the proof vacuous, the tool says so and asks; it never picks silently. Every proof under an inferred or stated
-  relation gets the vacuity check.
-- **A reused result is the same claim.** A cached proof is reused only when everything the claim depends on is
-  unchanged. When in doubt, it is a miss. A reused result says it was reused and from which run.
-- **Bounded stays bounded.** An object bound, an array bound or an unwinding is part of the claim, carried through
-  every summary and cache entry. A bounded result never becomes an unbounded one by being stored.
+- **The preservation contract is fixed; inference works under it.** Every comparison has a preservation contract:
+  the external input domain (how both versions' inputs come from the same logical request or call) and the required
+  observations. Inference may relate internal representations under it. It may not change what an external input
+  means, drop or weaken a required observation, or accept different behaviour, without a person's explicit
+  authorization. The model case: `price(c)` returns `c`, then `c + 1`; the input mapping `before.c = after.c + 1`
+  makes the results agree, is not vacuous and is even a bijection, and it hides a regression. Such a mapping must be
+  impossible to infer for an anchored input.
+- **Observations are accounted for.** Every observation the old version was held to is, in the result, preserved,
+  changed with a person's approval, or unresolved. Nothing leaves the count silently, by mapping or by projection.
+- **Intent and evidence are separate.** A mapping, correspondence or observation has an intent state (proposed, or
+  approved by a person) and an evidence state (unchecked; proved for claim key K; refuted; unknown; stale). A person
+  can approve before a proof, an approved relation can later be refuted, and a proof is evidence only for the exact
+  claim key it was made under. "Pinned" never implies proved, and "validated" never outlives its key.
+- **A standalone method has no anchor.** Where nothing external fixes what the inputs mean, the honest result is
+  "this relation is proved; whether it is the intended one is unconfirmed", not an approved refactor.
+- **A weak relation is worse than a question.** Where several candidates survive after collapsing the ones that are
+  equivalent under the contract, or the only survivor makes the proof vacuous, the tool asks; it never picks. Every
+  proof under an inferred or stated relation gets the vacuity check, which is necessary and not sufficient.
+- **A reused result is the same claim.** A cached proof is reused only when the canonical claim is unchanged. When in
+  doubt, it is a miss. A reused result says it was reused, how (an exact hit, or a callee's evidence), and from which
+  run.
+- **Bounded stays bounded, and the domain says what it is.** Object bounds, allocation bounds, array bounds and
+  unwinding are part of the claim, carried through every summary and cache entry. Exhausting a bound narrows the
+  stated claim or leaves it unresolved; it never truncates observations under a broader verdict. A domain of objects
+  made by constructors is labelled as exactly that.
+- **Successes are not independently certified.** A refutation is checked by replaying its witness; a proof is not
+  checked by an independent certificate. That stays a stated limit of this loop's results.
 
 ## Where it starts from
 
@@ -77,6 +103,10 @@ expression (`equivalence.rs:760-808`). There is no notion of a relation between 
 - Within a run: an identical closure skips the proof, and identical pure static callees become one memoised stub
   in both versions (`lib/src/shared.rs`, `ENTRIES = 4`). If a counterexample under the stubs doesn't replay, the whole
   proof reruns with every callee as written: refinement is all or nothing.
+- "Identical" is `same_method` (`shared.rs:275`): the same class name and access flags, and the same `shape`, which is
+  each instruction with its constant-pool references resolved, plus the exception table with catch types resolved
+  (`:282`). That is an exact fingerprint of a method's body. It says nothing about what lies outside the body: the
+  class hierarchy, which targets a virtual call may dispatch to, field declarations, annotations or configuration.
 - Across runs: only the contract library's records (`lib/models/contracts/checked.json`, keyed by contract text, JDK
   release and the JDK class's digest) and `build.py`'s TLC checkpoints. No proof of application code is reused. A
   `Statement` carries the models' digest but no digest of the code it is about.
@@ -91,7 +121,8 @@ or `tla.rs` reads it, and no boundary fact becomes a proof obligation.
 
 **Provenance is already structured.** `Statement` (`lib/src/statement.rs:29`) has the domain, assumptions (each with
 a kind and a basis: stated, harness, engine, assumed, proved, tested, trusted), observations, bounds, models,
-checker, gap mode and vacuity. This loop extends it; it doesn't start a second schema.
+checker, gap mode and vacuity. This loop extends it; it doesn't start a second schema. Some of its fields describe a
+result rather than a claim (vacuity, confirmation): the cache key is a projection of it, not all of it.
 
 **Test beds.** Box Office (`examples/apps/`) is the real Spring Boot app: routes, `@KafkaListener`, `@Scheduled`,
 `@Document`, two services, a TLA+ model. Crosscut, Quorum and Mica are plain kernels. The record and signature-change
@@ -109,15 +140,29 @@ explicitly; the JVM is the semantic reference; a reproducer before a fix.
 In addition:
 - **Foundations, not experiments.** Each step is small to medium: a capability with its tests and one or two examples,
   not a rewrite. A step that grows past a few cycles is split, and the rest recorded under Progress. Large experiments
-  (the vision's experiments A–C at full scale) are [deferred](#deferred-not-in-this-loop).
-- **Build on the shared IR.** [Phase 0](#phase-0-the-shared-ir-before-the-streams) fixes the types the four streams
-  meet at. Extend them by adding fields and variants; changing one's meaning is a note for the reconcile loop, not a
-  change made in a stream.
-- **Every new capability gets a planted defect.** An example that proves a correct change also gets a sibling with a
-  defect ordinary tests are liable to miss, and the tool must find it with a replayed witness.
-- **Measure the vision's four things where a step touches them:** decisions a person had to make and lines they had
-  to write, obligations discharged without unverified assumptions, cold and warm CPU time, and planted defects found.
-  False matches and wrong inferred relations are counted too.
+  (the vision's experiments B and C) are [deferred](#deferred-not-in-this-loop).
+- **The joint example comes first in each stream's core.** Each stream's core includes its narrow part of the
+  [integration contract](#phase-0-the-shared-ir-and-the-integration-contract). Broad work beyond it comes after.
+- **Build on the shared IR.** [Phase 0](#phase-0-the-shared-ir-and-the-integration-contract) fixes the types and
+  interfaces the four streams meet at. Extend them by adding fields and variants; changing one's meaning is a note
+  for the reconcile loop, not a change made in a stream.
+- **Defects aimed at the abstractions.** An example that proves a correct change also gets a sibling with a planted
+  defect that the tool must find with a replayed witness. Besides ordinary application bugs, plant defects that an
+  automation layer could hide by redefining, narrowing or reusing the claim:
+  - an offset mapping that hides a changed result (the `price` case above);
+  - an alias turned into a copy with identical primitive values;
+  - a dropped or duplicated effect;
+  - a bug only in a state outside the constructor-made domain, which must show as outside the claim, not as proved;
+  - a stale cached result after a change to metadata, configuration or a model.
+
+  The question each answers: *can any automation layer make this bug disappear?*
+- **Measure what the vision measures, honestly.** Where a step touches them: obligations discharged without
+  unverified assumptions; preparation and hashing time apart from solver time; exact cache hits apart from reused
+  callee evidence; planted defects found; false matches and wrong inferred relations. Human effort counts every
+  decision a person made, not only mapping lines written: approved exclusions, domain restrictions, observation
+  changes and environment assumptions too, so effort can't hide by moving category.
+- **Results name what they checked.** Every result records the commit of the code it checked and the configuration it
+  ran with, so a stream's result can be told from another's after the merge.
 
 ## When it starts
 
@@ -129,13 +174,22 @@ The streams fork from the merge of `engine-priorities`, not before:
 
 If the engines loop stops with arrays of references not done, the heap stream does them first (its phase H0).
 
+## Launch prerequisites
+
+After approval and before `run-streams.sh foundations`, by the planning session:
+1. **Register the names.** `foundations` and `foundations-STREAM` in `feature-loop.sh`, and `foundations` with its
+   four streams in `run-streams.sh`.
+2. **The integration check** in `run-streams.sh` ([below](#the-integration-check)), with its tests.
+3. **Phase 0**, committed in the default workspace.
+4. **Session ids** in the five briefs' Loop settings, and `- fork:` naming the planning session.
+
 ## Streams
 
 | Loop | Brief | jj workspace | Priority | Owns |
 |---|---|---|---|---|
-| `foundations-heap` | [`foundations-heap.md`](foundations-heap.md) | `heap` | 1 | `lib/src/bmc/`, `harness/`, `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `relocate.rs` |
-| `foundations-summaries` | [`foundations-summaries.md`](foundations-summaries.md) | `summaries` | 2 | `shared.rs`, `digest.rs`, the new proof cache, `examples/tools/build.py`'s use of it |
-| `foundations-observations` | [`foundations-observations.md`](foundations-observations.md) | `observations` | 3 | `boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation spec, Box Office |
+| `foundations-heap` | [`foundations-heap.md`](foundations-heap.md) | `heap` | 1 | `lib/src/bmc/`, `harness/` (apart from Phase 0's effect-log hook), `witness.rs`, `jvm_witness.rs`, `shrink.rs`, `relocate.rs` |
+| `foundations-summaries` | [`foundations-summaries.md`](foundations-summaries.md) | `summaries` | 2 | `shared.rs`, `digest.rs`, the new proof cache, the `impact` command, `examples/tools/build.py`'s use of the cache |
+| `foundations-observations` | [`foundations-observations.md`](foundations-observations.md) | `observations` | 3 | `boundaries.rs`, `reach.rs`, `failures.rs`, `wire.rs`, `store.rs`, the new observation spec, the recording stubs, Box Office |
 | `foundations-alignment` | [`foundations-alignment.md`](foundations-alignment.md) | `alignment` | 4 | the new alignment module and its command, the hints file |
 | `foundations` | this brief | `default` | | the merge, Phase 5, the docs, and what the streams left |
 
@@ -143,90 +197,164 @@ If the engines loop stops with arrays of references not done, the heap stream do
 functions; no reorganization), naming each change under its Progress: `lib/src/main.rs`, `lib.rs`, `statement.rs`,
 `equivalence.rs`, `property.rs`, `Cargo.toml`, `lib/tests/`, `lib/README.md`, `examples/tags.json`,
 `examples/README.md`. `equivalence.rs` is where three streams hook in (the cache lookup, inferred mappings, object
-observations): keep each hook a call into the stream's own module.
+and effect observations): keep each hook a call into the stream's own module.
 
 **Example numbers.** Phase 0 reserves a block of ten example numbers for each stream, after the highest number at the
-fork. A stream numbers its new examples from its block only. The reconcile loop closes any gaps with
-`examples/tools/build.py --render-only`.
+fork, and the joint example's numbers. A stream numbers its new examples from its block only. The reconcile loop
+closes any gaps with `examples/tools/build.py --render-only`.
 
 **Running it all** (the user, from the default workspace, in tmux): `llm-dlc/tools/run-streams.sh foundations`, as
 for [`engine-priorities`](engine-priorities.md#streams): it compacts the planning session once, adds the four
-workspaces from the latest commit, starts `verification-loop.sh`, runs the streams side by side, then this brief's own
-loop. Four loops at 3.5 GB each leave about 30 GB of this machine's 46 GB for the runner.
+workspaces from the latest commit, starts `verification-loop.sh`, runs the streams side by side with the integration
+check, then this brief's own loop. Four loops at 3.5 GB each leave about 30 GB of this machine's 46 GB for the runner.
+
+**Stopped, waiting and finished are different.** A stream's scope going inactive means only that its process
+stopped. It is waiting while its status says `waiting on jobs`, and finished only when its status says `done` or
+`blocked`. `done` requires that none of its jobs is pending and that its part of the integration contract passes on
+its branch. The reconcile loop starts on finished streams, never on inactive ones alone.
+
+### The integration check
+
+So that a disagreement between streams (alignment emits a relation the heap engine reads differently; observations
+produces an effect kind the harness can't record) shows up while they run, not after:
+- `run-streams.sh` keeps a disposable workspace of its own, `integration`. When every stream has committed since its
+  last check (and at most every few hours), it makes there a merge of the four streams' current `@-` commits,
+  `jj new heap@- summaries@- observations@- alignment@-`, and runs the integration contract's tests on it (compiling
+  and unit-level only; proofs stay queued).
+- It writes what it found, with the four commit ids, to `llm-dlc/loop-summaries/foundations-integration.md` in the
+  default workspace. Each stream reads that file at the start of every cycle (by its absolute path) and treats a
+  failure in its own part as the next piece of work. A merge conflict is reported, not resolved.
+- The workspace is never committed from, pushed, or used for anything else. The streams' rule against merging or
+  rebasing their own branches is unchanged.
+
+If the check isn't built before launch, the reconcile loop does it once at its start, and the risk it covers is
+accepted.
 
 **How the streams ran, and where their work is**: as in `engine-priorities`'s
-[table](engine-priorities.md#streams), with the stream names `heap`, `summaries`, `observations` and `alignment` and
-scopes `feature-loop-foundations-STREAM.scope`. The planning session is this brief's `- fork:` below once approved.
+[table](engine-priorities.md#streams), with the stream names `heap`, `summaries`, `observations` and `alignment`,
+scopes `feature-loop-foundations-STREAM.scope`, and the integration file above. The planning session is this brief's
+`- fork:` once approved.
 
-**Reconciling** follows `engine-priorities`'s seven steps, for four streams: check all four scopes are inactive,
-record each stream's last turns, copy their logs, merge with `jj new @- heap@- summaries@- observations@- alignment@-`,
-commit, fold their Progress here, and forget the workspaces. Where the streams extended the shared IR in different
-directions, reconcile the IR first, then the code that uses it, and say under Progress what was chosen.
+**Reconciling** follows `engine-priorities`'s seven steps, for four streams: check all four are finished (status,
+not only inactive scope), record each stream's last turns, copy their logs, merge with
+`jj new @- heap@- summaries@- observations@- alignment@-`, commit, fold their Progress here, and forget the
+workspaces (and `integration`). Where the streams extended the shared IR in different directions, reconcile the IR
+first, then the code that uses it, and say under Progress what was chosen.
 
 ## The plan
 
-### Phase 0: the shared IR, before the streams
+### Phase 0: the shared IR and the integration contract
 
-Done once in the default workspace, by the planning session after approval, before `run-streams.sh`: one commit,
-types and documentation only, no behaviour change.
-- **Domain** (`statement.rs`): the object part of an input domain. Allowed classes, an object-count bound,
-  nullability per parameter or field, which parameters may alias, and how inputs are made (by constructor or factory;
-  see [decision 2](#open-decisions)).
-- **Observations**: besides return, exception and array parameters, a field path into a returned object or a
-  parameter (`result.total.cents`, `p.items[i]`), an alias fact (`result == p`), and an effect (an entry point's
-  write, send or publish, with its payload's observed paths).
-- **Correspondence**: a relation between old and new states, as equations over field paths and expressions
-  (`old.totalCents == new.total.cents`), on inputs (how the old version's input is made from the new one's) and on
-  outputs (what must agree). The existing `--before-arguments` and `--results-agree-when` become two special cases
-  of it, and keep working unchanged.
-- **Hints file**: a machine-written file of candidate mappings and correspondences, each with its source (inferred,
-  stated), its state (candidate, validated, pinned), and the evidence for its state. JSON, beside the build, not in
-  the source tree.
-- **Claim key**: the parts of a `Statement` and its inputs that decide a result, named so the cache can digest them:
-  the code closure of each version, domain, observations, correspondence, bounds, assumptions with their contracts,
-  models, JDK, checker and its configuration, and the tool's version.
-- Serialization round-trip tests, and a page in `lib/README.md` that says what each type means.
-- The reserved example numbers, written here under [Progress](#progress).
+Done once in the default workspace, by the planning session after approval, before `run-streams.sh`. Types,
+interfaces, fixtures and tests; no behaviour change to any existing command.
+
+**The types** (in `statement.rs` and beside it):
+- **Preservation contract.** The external input domain and the required observations of a comparison: how both
+  versions' inputs are derived from one logical request or call (identity for an unchanged signature; a stated
+  derivation otherwise), and the observations the old version is held to. Inference may not change it; only a person
+  may, and the change is recorded as an approved observation change.
+- **Domain.** The object part of an input domain: allowed classes; an input-object bound, apart from an allocation
+  bound for what the code makes, each settable per version where representations differ (a value object wrapping a
+  primitive adds an object without changing behaviour); nullability per parameter or field; which parameters may
+  alias; and how inputs are made, labelled in every result: "objects made by these constructors or factories, under
+  these argument constraints" (see [decision 2](#open-decisions)). A field-by-field or invariant-constrained domain is
+  a later variant, named now so the label has somewhere to go.
+- **Observations.** Besides return, exception and array parameters: a field path into a returned object or a
+  parameter (`result.total.cents`); an identity relation *within* a version (`result.left == result.right`,
+  `result == p`), compared across versions as "holds in old iff it holds in new", never by comparing object ids
+  across versions; and an effect (see below). Which identity relations count is the observation spec's choice per
+  boundary: they matter for a Java API that returns mutable objects, not for a wire response observed as serialized
+  values.
+- **Effects.** An effect is a *modeled boundary-call attempt*: the call's kind and target, and a snapshot of its
+  observed payload values taken at the call (never a reference read later). The first contract is an ordered trace of
+  such attempts with the response and the supported failure outcome, compared in exact order, under an explicit
+  environment model: corresponding calls in the two versions receive the same modeled outcome (return value or
+  failure), and the model says which outcomes it allows. A trace bound that is reached makes the result unresolved,
+  never a shorter trace. A recorded `save` means the application attempted it, not that anything was committed or
+  delivered.
+- **Correspondence.** A relation between old and new internal states, as equations over field paths and
+  expressions (`old.totalCents == new.total.cents`), on inputs (how the old version's internal input is made from the
+  new one's, below the preservation contract) and on outputs. The existing `--before-arguments` and
+  `--results-agree-when` become special cases of it and keep working unchanged; a hand-written one is a stated
+  derivation with a person's authority.
+- **Hints file.** A machine-written JSON file beside the build, not in the source tree: candidate mappings,
+  correspondences and observation changes, each with its source (inferred or stated), its intent state (proposed or
+  approved), and its evidence state (unchecked, proved for claim key K, refuted, unknown, stale).
+- **Canonical claim.** A projection of the prepared claim, after flags, hints, inferred mappings, models and
+  generated observations are resolved: the preservation contract, each version's code closure, domain,
+  observations, correspondence, bounds, assumptions with their contracts and stubs, environment model, models, JDK,
+  checker and its configuration, and the tool's identity (the binary's digest, not only its version). Excluded:
+  anything that depends on the result or the run (verdict, vacuity, confirmation, timings, run ids, reuse
+  provenance). A result record is the claim key plus verdict, evidence and run provenance.
+
+**The interfaces**, each with a stub implementation that returns a named unsupported result:
+- the harness's effect-log hook: where recording stubs append, and how the harness compares two logs;
+- alignment's output consumed by the check (hints file in, prepared claim out);
+- the cache's lookup on a prepared claim and its store of a result record;
+- the observation spec's output consumed by the comparison of two builds.
+
+**The integration contract**, executable:
+- the joint example's fixture ([Phase 5](#phase-5-the-joint-example)): the before and after builds and each defective
+  sibling, committed under the joint example's reserved numbers;
+- golden files of its preservation contract, domain, observations, correspondence and canonical claim;
+- a test per stream's part, expected to fail with the named unsupported result until that stream's part lands, and
+  the final verdicts each case must reach;
+- the parts each stream owns, listed in its brief.
+
+Also: serialization round-trip tests, a page in `lib/README.md` on what each type means, and the reserved example
+numbers written here under [Progress](#progress).
 
 ### Phases 1–4: the streams
 
 Each stream brief names its steps. In short:
 - **Heap (1):** symbolic references with a concrete fast path; bounded object inputs with nullability and aliasing;
-  field-path and alias observations; then a stated correspondence between differently shaped classes. Witnesses
-  rebuild the objects with their identities on the JVM.
-- **Summaries (2):** the proof cache on the claim key; a change-impact report (which claims a change invalidates);
-  callees proved equivalent shared in both versions like identical ones; refinement per callee instead of all or
-  nothing; then one job measuring cold against warm runs over the recorded examples.
-- **Observations (3):** an observation spec per entry point; two builds' specs compared into obligations (preserved,
-  changed, new, removed); then the first obligations discharged, for entry points whose decision path is within the
-  fragment, with effects recorded by stubs and compared as observations.
-- **Alignment (4):** method correspondence between two builds; argument, record-component and result mappings
-  inferred and validated by proof; field correspondence candidates in Phase 0's format; all measured against the
-  hand-written mappings of examples 121–139.
+  field-path and identity observations; witnesses that rebuild objects with their identities on the JVM, required
+  with object inputs; then correspondence between differently shaped classes, narrowly, for the joint example.
+- **Summaries (2):** closure digests that cover dispatch, hierarchy, annotations and configuration; the proof cache
+  on the canonical claim, with adversarial invalidation tests; a change-impact report; pure helpers proved
+  equivalent, shared in both versions under a call-site applicability check; refinement per callee; one job measuring
+  categorized changes.
+- **Observations (3):** an observation spec per entry point; two builds compared into obligations, accounted for;
+  then the first obligations discharged as ordered traces of modeled calls under an explicit environment model.
+- **Alignment (4):** the ground truth from examples 121–139; method correspondence; internal argument, record and
+  result mappings inferred under the preservation contract, collapsed and validated by proof; field correspondence
+  candidates for the joint example.
 
-### Phase 5: the joint demonstration
+### Phase 5: the joint example
 
-The reconcile loop's own work, once the merge is committed: one small, deliberate end-to-end example, the vision's
-experiment A at small scale. A domain class in a Box Office or Crosscut kernel is refactored into a differently
-shaped one (a primitive amount into a value object, say), and a caller is changed with it.
-- Alignment proposes the correspondence; the heap support proves the change under it; the cache makes the second run
-  free and the impact report names exactly what the refactor invalidated; if the code is behind an entry point, its
-  observation spec frames the obligation.
-- A sibling with a planted defect is refuted with a replayed witness.
-- The record says how many decisions a person made and how many lines they wrote, which is the number to drive down.
-- Where a foundation can't do its part yet, the example says what is missing, and that becomes the first item of the
-  next brief.
+The acceptance gate of this loop, the vision's experiment A at small scale: a small Crosscut-style kernel behind one
+thin, real annotated entry point (a Spring route or listener), so that every stream takes part. Its fixture is fixed in
+Phase 0. The change combines a primitive amount becoming a value object, an internal method or field mapping, one
+changed pure helper, and one recorded outgoing effect. The external request's meaning and the required observations
+stay fixed.
+
+The reconcile loop makes it pass once the merge is committed. It passes when:
+
+| Requirement | Evidence |
+|---|---|
+| Automatic mapping | Alignment proposes the internal relation, with no hand-written mapping for this fixture |
+| Object correspondence | The relation is checked over the declared bounded domain |
+| Boundary preservation | The required response and effect observations are proved preserved, and the accounting shows none dropped |
+| Exact reuse | An unchanged rerun is an exact cache hit |
+| Compositional reuse | The changed helper's proved equivalence is used in the caller's proof |
+| Defect detection | Each defective sibling (the abstraction-aimed defects above included) gives a replayed counterexample, or is outside the stated claim and says so |
+| Honest incompleteness | One unsupported case stays visibly unresolved |
+| Effort | The number of decisions a person made, by category |
+
+**Partial is not done.** If a foundation can't do its part, the loop may stop there, but its status records a
+*partial* Phase 5: which rows pass, which don't, and what each missing one needs. That becomes the first item of the
+next brief. Only a passing example counts as this loop's milestone.
 
 ## Done when
 
 | Phase | Criterion |
 |---|---|
-| 0 | The shared IR is committed, documented and round-trip tested, and the existing flags are special cases of it |
-| 1 | A regression proof over mutable object inputs with aliasing, and one across a stated correspondence between differently shaped classes, each with a planted defect refuted by a witness that replays on the JVM |
-| 2 | A cached result is reused exactly when its claim key is unchanged (tests that change each part of the key), the impact report is right on the recorded examples, and a job measures cold against warm |
-| 3 | `jvmcontract` gives Box Office's entry points an observation spec, compares two builds' specs into obligations, and discharges at least one entry-point obligation with a planted defect found |
-| 4 | Inferred mappings for examples 121–139, compared with the hand-written ones: how many found, how many wrong, how many asked about; none accepted without a proof |
-| 5 | The joint example runs end to end, or its record says which foundation stopped it |
+| 0 | The shared IR, interfaces and integration contract are committed, documented and tested, and the existing flags are special cases of the IR |
+| 1 | Regression proofs over mutable object inputs with aliasing, with witnesses that replay on the JVM with their identities, each with planted defects refuted (the alias-to-copy one included); the joint example's correspondence part passes |
+| 2 | A cached result is reused exactly when its canonical claim is unchanged (the invalidation tests pass), the impact report is right on the recorded examples, a changed helper's proof is reused in a caller, and a job measures categorized changes |
+| 3 | Box Office's entry points have observation specs, two builds' specs compare into accounted obligations, and the joint example's effect obligation is discharged with a dropped effect and a duplicated one refuted |
+| 4 | Inferred mappings for examples 121–139 scored against the hand-written ones (found, asked, wrong, missed), none accepted without a proof, the offset-mapping defect never accepted, and the joint example's mapping proposed |
+| 5 | The joint example passes every row above |
 
 The pipeline jobs submitted along the way are back with their expected verdicts, or their failures are explained under
 Progress.
@@ -234,38 +362,70 @@ Progress.
 ## Deferred: not in this loop
 
 - **Priorities 5–7 of the vision**: the effect-transition IR, selective transient specification generation, and
-  implementation-to-model refinement. This loop's observation specs and correspondence are their inputs.
+  implementation-to-model refinement. This loop's observation specs, effect traces and correspondence are their
+  inputs.
+- **Persistence and delivery semantics**: committed state, transactions' atomicity, delivery guarantees. The effect
+  trace here is of attempted calls under a stated environment model.
 - **Collections as inputs**: `List` and `Map` parameters, and relations like multiset equality between a list and a
-  map's values. They need the object domain first; the vision's `Order` example is the target for the next brief.
-- **Strings and floating point** in the own checker (the platform review's sections 5–6). They are separate
-  capability work.
+  map's values. The vision's `Order` example is the target for the next brief.
+- **Object states beyond construction**: bounded sequences of method calls after construction, and states
+  constrained by inferred invariants. The domain label leaves room for them; general invariant inference is not
+  started.
+- **Stateful summaries** and proofs that depend on each other recursively.
+- **Strings and floating point** in the own checker (the platform review's sections 5–6).
 - **Loop and control-flow alignment** (a loop against a stream pipeline). Method-level alignment comes first.
-- **LLM-proposed specifications.** The hints file can carry them later as candidates; this loop infers from bytecode
+- **LLM-proposed specifications.** The hints file can carry them later as proposed; this loop infers from bytecode
   only.
-- **A committed proof store** shared between machines or with CI. The cache here is local.
+- **A committed proof store** shared between machines or with CI. The cache here is local; its claim keys and result
+  records are portable, so a shared store can come later.
+- **Independent certificates for successful proofs.** Refutations are checked by replay; proofs are not
+  independently checked. A stated limit, not a workstream for now.
 - **The vision's experiments B and C** at full scale (persistence and service refactor; outbox protocol).
 - **Removing JBMC from the default paths** (the platform review's section 2). That is `engine-priorities`'s line of
   work.
 
 ## Open decisions
 
-For the user before this brief runs. Each has the recommendation first.
+For the user before this brief runs. Each has the recommendation first; the outside review agreed with each.
 1. **Start after the `engine-priorities` merge** (recommended), or start now with `lib/src/bmc/` frozen for the heap
-   stream until then. The second loses the heap stream's first weeks of work to waiting.
+   stream until then.
 2. **How object inputs are made.** By constructor or factory, with symbolic arguments, as records are today
-   (recommended): every state is one the application can reach, and the witness replays as Java. Or field by field,
-   which reaches more states, including ones no constructor makes, and reports such states as assumptions.
-3. **Where the proof cache lives.** A local directory, never committed (recommended), or committed beside the
-   examples' results so a later session reuses them.
-4. **Phase 5's test bed.** A Crosscut kernel (recommended: small, already proved in parts) or Box Office (real Spring,
-   so the observation spec takes part, but more to model).
-5. **Model and effort** for the four streams and the merge: Opus 5.5 at high effort, as for `engine-priorities`
-   (recommended).
+   (recommended), labelled as that domain in every result and never claimed to cover every valid state. Or field by
+   field, which reaches states no constructor makes and reports them as assumptions.
+3. **Where the proof cache lives.** A local directory, never committed, with portable claim keys and result records
+   (recommended); or committed beside the examples' results.
+4. **The joint example's test bed.** A small Crosscut-style kernel behind one thin real annotated entry point
+   (recommended; it brings in the observation stream without a broad Box Office attempt), a kernel alone, or Box
+   Office itself.
+5. **Model and effort**: Opus 5.5 at high effort for the four streams and the merge, as for `engine-priorities`
+   (recommended), so that this run changes the acceptance controls and not the agents as well.
+
+## Review of the draft
+
+The first draft was reviewed on 2026-11-06 ([`foundations-review-draft.md`](foundations-review-draft.md)). It kept
+the scope, the split and the deferrals, and changed the acceptance contract. Taken in:
+- the preservation contract that inference can't weaken, observation accounting, and intent apart from evidence;
+- one working four-stream example as the gate, its fixture and interfaces fixed in Phase 0, each stream's part in
+  its core, a partial result recorded as partial;
+- the integration check while the streams run, and finished told apart from stopped;
+- the domain labelled as constructor-made, identity relations within a version, input-object and allocation bounds
+  apart, and replay required with object inputs;
+- a canonical claim projection for the cache key, adversarial invalidation tests, a call-site applicability check
+  and acyclic dependencies for shared helpers, and a mandatory narrow S4;
+- effects as an ordered trace of modeled call attempts with payload snapshots, a coupled environment model and
+  visible bounds;
+- defects aimed at the abstractions, and effort measured across every category of human decision;
+- the wording of the stream briefs' editing rule.
+
+Checked against the code rather than taken from it: whether `shared.rs`'s `shape` is an exact fingerprint. It is, for
+a method's body (constant-pool references and catch types resolved); it doesn't cover dispatch, hierarchy,
+annotations or configuration, which S1 adds.
 
 ## Progress
 
-- Drafted on the branch `foundations-draft`, with its inputs. Not approved.
-- Status: blocked: the open decisions, then the `engine-priorities` merge.
+- Drafted on the branch `foundations-draft`, with its inputs, and revised after the review of the draft. Not
+  approved.
+- Status: blocked: the open decisions, then the `engine-priorities` merge and the launch prerequisites.
 
 ## Loop settings
 
@@ -274,8 +434,9 @@ For the user before this brief runs. Each has the recommendation first.
 
 ## Loop until
 
-The reconcile comes first; don't stop before the merge is committed unless a stream is still running or the merge needs
+The reconcile comes first; don't stop before the merge is committed unless a stream is unfinished or the merge needs
 the user. Keep the last line of Progress a status: `working`, `waiting on jobs ID ...`, `done`, or `blocked: ...` with
-what needs the user. After the merge, Phase 5 is the core: don't stop before it has run or its record says what stopped
-it. Then go on while a cycle can still realize a substantial part of what is left; stop when the rest is small or
-speculative next to what is done, or needs the user and is recorded as deferred. Don't go on to polish.
+what needs the user. After the merge, Phase 5 is the core: `done` only when the joint example passes every row; if a
+row can't pass without the user or a later brief, stop with `blocked: Phase 5 partial: ...` naming the rows. Then go
+on while a cycle can still realize a substantial part of what is left; stop when the rest is small or speculative
+next to what is done, or needs the user and is recorded as deferred. Don't go on to polish.
