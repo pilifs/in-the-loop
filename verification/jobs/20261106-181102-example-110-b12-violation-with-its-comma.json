@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181102-example-110-b12-violation-with-its-comma",
+  "title": "Example 110 (B12, violation) with its commands run as logged stages",
+  "description": "Step 3d of llm-dlc/loops/build-orchestration.md: every command build.py runs is now a named stage. Its stdout and stderr stream into logs/NN-name.stdout/.stderr in the attempt's directory as it runs, and logs/stages.jsonl gets a line as each stage starts and ends. In a pipeline job the attempt (its patched copy, the harnesses, the tools' work directories and the logs) is kept under $VERIFY_WORKDIR/.build-py, which the pipeline keeps for a job that does not pass. The unpatched baseline of a regression proof is compiled without its tests. The verdict and every recorded field must be unchanged; the attempt must gain stages and a workspace under .build-py/.",
+  "kind": "example",
+  "capabilities": [
+    "B12",
+    "jvmcontract:verify"
+  ],
+  "links": {
+    "examples": [
+      "110"
+    ]
+  },
+  "expected": "example 110 gives its expected verdict, violation: build.py prints 'as expected' and exits 0; its attempt lists its stages and a workspace under .build-py/",
+  "submitted": {
+    "at": "2026-11-06T18:11:02+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "jvmcontract"
+  ],
+  "resources": {
+    "memory": "3G",
+    "duration": "10m",
+    "notes": "Box Office Gradle build and boundary contracts",
+    "cpus": 2.0
+  },
+  "steps": [
+    {
+      "name": "example 110 (B12)",
+      "run": "python3 examples/tools/build.py 110",
+      "cwd": "."
+    },
+    {
+      "name": "attempt records stages and workspace",
+      "run": "python3 -c \"import json,glob; r=json.load(open(glob.glob('examples/110-*/result.json')[0])); a=r['attempt']; assert a['stages'] and all(s['status'] in ('exited','killed','timed-out','not-started') for s in a['stages']), a['stages']; assert (a['workspace'] or '').startswith('.build-py/'), a['workspace']; print(len(a['stages']), 'stages; workspace', a['workspace'])\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/110-idempotency-key-header-drops-request-validation"
+  ],
+  "supersedes": "20261105-235230-example-110-b12-violation-with-its-comma"
+}

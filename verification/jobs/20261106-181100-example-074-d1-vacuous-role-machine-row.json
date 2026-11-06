@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181100-example-074-d1-vacuous-role-machine-row",
+  "title": "Example 074 (D1, vacuous role-machine row): coverage status complete, still vacuous",
+  "description": "As for 072, on the role machine: 074 changes a row no run takes (a follower counting a late majority) and expects 'verified, vacuously'. The verdict must be unchanged with coverage.status complete; the result gains checkpoints and per-configuration termination reasons.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/tla.rs",
+      "examples/tools/build.py"
+    ],
+    "examples": [
+      "074"
+    ]
+  },
+  "expected": "example 074 gives its expected verdict, verified (vacuously): build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-06T18:11:00+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "example 074 (D1)",
+      "run": "python3 examples/tools/build.py 074",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/074-follower-that-leads-on-a-late-majority-passes-a-model-that-never-counts-votes-late"
+  ],
+  "supersedes": "20261105-125706-example-074-d1-vacuous-role-machine-row"
+}

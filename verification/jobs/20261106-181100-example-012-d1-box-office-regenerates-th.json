@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181100-example-012-d1-box-office-regenerates-th",
+  "title": "Example 012 (D1, Box Office) regenerates the order state machine on every run",
+  "description": "Step 2a of llm-dlc/loops/build-orchestration.md: Box Office's run_tlc now runs :ticketing-domain:updateContracts on every D1 run, not only for an intended change, and compares OrderLifecycle#decide's contract with the committed one. 012 patches HoldService and is not meant to change behaviour, so the contract must be unchanged ('verified') and the verdict must not move.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "tlc"
+  ],
+  "links": {
+    "examples": [
+      "012"
+    ]
+  },
+  "expected": "build.py exits 0, 012 verified as before; modelContracts has OrderLifecycle#decide connection verified, rowsChanged 0, allowed true; contractDiff null",
+  "submitted": {
+    "at": "2026-11-06T18:11:00+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "gradle",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m",
+    "notes": "Gradle build of the Box Office copy plus one updateContracts"
+  },
+  "steps": [
+    {
+      "name": "example 012 (D1)",
+      "run": "python3 examples/tools/build.py 012",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/012-deleting-the-sweeper-is-safe"
+  ],
+  "supersedes": "20261105-124134-example-012-d1-box-office-regenerates-th"
+}

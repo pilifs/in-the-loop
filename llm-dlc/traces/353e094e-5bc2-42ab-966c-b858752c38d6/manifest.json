@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-06T16:53:18.349Z",
-  "ended": "2026-11-06T18:10:13.767Z",
-  "duration_seconds": 4615,
+  "ended": "2026-11-06T18:11:04.097Z",
+  "duration_seconds": 4666,
   "stats": {
     "turns": 7,
-    "api_calls": 139,
-    "tool_calls": 138,
+    "api_calls": 143,
+    "tool_calls": 142,
     "tool_errors": 4,
     "compactions": 0,
-    "peak_context_tokens": 212263,
+    "peak_context_tokens": 219394,
     "usage": {
-      "input_tokens": 292,
-      "output_tokens": 81037,
-      "cache_read_input_tokens": 17075232,
-      "cache_creation_input_tokens": 177975
+      "input_tokens": 300,
+      "output_tokens": 85207,
+      "cache_read_input_tokens": 17931896,
+      "cache_creation_input_tokens": 185106
     }
   },
   "tools": {
-    "Bash": 134,
+    "Bash": 138,
     "Edit": 3,
     "Skill": 1
   },
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-06T16:53:18.349Z",
-      "ended": "2026-11-06T18:10:13.767Z",
+      "ended": "2026-11-06T18:11:04.097Z",
       "turns": 7,
-      "api_calls": 139,
+      "api_calls": 143,
       "usage": {
-        "input_tokens": 292,
-        "output_tokens": 81037,
-        "cache_read_input_tokens": 17075232,
-        "cache_creation_input_tokens": 177975
+        "input_tokens": 300,
+        "output_tokens": 85207,
+        "cache_read_input_tokens": 17931896,
+        "cache_creation_input_tokens": 185106
       },
-      "peak_context_tokens": 212263
+      "peak_context_tokens": 219394
     }
   ],
   "log": {
-    "sha256": "7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd",
-    "bytes": 2474863,
-    "lines": 1023,
-    "gzip_bytes": 381352,
-    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd.jsonl.gz"
+    "sha256": "650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb",
+    "bytes": 2612711,
+    "lines": 1053,
+    "gzip_bytes": 403890,
+    "path": "llm-dlc/traces/353e094e-5bc2-42ab-966c-b858752c38d6/logs/650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -109,6 +109,14 @@
       "summary": "The verification runner stops a step past its timeout only when it has stalled; the installer puts GNU coreutils first on Ubuntu 26.04",
       "body": "A job's timeout used to be a deadline: at 4 times its estimate (at least 5 minutes) a step was stopped, working or not. Estimates are often far off, and a long run is information about the change and the machine, so the timeout is now where the runner starts looking for a hang. Past it, a step is stopped only once it has stalled: under 1% of a CPU (read from its cgroup, or from /proc for its session without one) and no new log output for stall_window, 10 minutes by default. A step still working is left to finish, and the result marks it overranTimeout with an attention line. Only max_timeout (6h by default) stops a step that is still working; stoppedFor says which rule stopped one. Results record both settings.\n\nUbuntu 26.04 ships the Rust uutils as its coreutils, and jobs noticed: timeout exits 124 rather than GNU's 137 after -s KILL, which failed the job for example 142 killed mid-proof. build-essential depends on coreutils-from-uutils there, so the installer does not switch system-wide; it links GNU's gnu-prefixed binaries under their own names into ~/.local/lib/gnu-coreutils and puts that first on PATH in .bashrc, .profile (a non-interactive login shell stops early in .bashrc) and .zshrc. doctor.sh fails when timeout is not GNU's, and every result now records the coreutils its job saw.",
       "log_sha256": "7d5e20954251764c22c4c405e391d57c172a884b13002f302f1c281c941cb3fd"
+    },
+    {
+      "change_id": "lwmqtwvzwquvroonxuoqswqtkwnrvyur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Rerun 39 verification jobs at this commit on vm-1 (verification pending)",
+      "body": "The first run on the VM left the outputs of 43 jobs unapplied, because the example files they wrote had changed since the jobs' commits. Each distinct one is resubmitted to run at this commit (38 jobs; four exact duplicates and the superseded benchmark are left out), with 2 CPUs for those that asked for 1, since their JVM runs spent 30-93% of their time held back by the quota. The job for example 142 killed mid-proof is resubmitted unchanged: it failed only on uutils timeout's exit status, and GNU coreutils now come first on the VM's PATH. Examples 147-149 and the two conformance corpora are not rerun: their failures are deterministic findings for their authors.",
+      "log_sha256": "650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb"
     }
   ],
   "logs": {
@@ -129,6 +137,12 @@
       "lines": 90,
       "gzip_bytes": 104190,
       "url": "https://terminalvalue.net/raw-traces/353e094e-5bc2-42ab-966c-b858752c38d6/584c77f06146c3e893761af0bedfc3c6c7abc1b6642bb2538f8281b9a0dbed78.jsonl.gz"
+    },
+    "650833124696606f68a7a228b7de5dfd041615233090cbcfa82994359aeac2bb": {
+      "bytes": 2612711,
+      "lines": 1053,
+      "gzip_bytes": 403890,
+      "url": null
     },
     "747b5ba7f4cc53bef8e6f2d5f0198925a99c171f6697d5023e4f13c72676d864": {
       "bytes": 1360806,

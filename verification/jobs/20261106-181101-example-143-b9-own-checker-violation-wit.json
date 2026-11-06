@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181101-example-143-b9-own-checker-violation-wit",
+  "title": "Example 143 (B9, own checker, violation) with char and int arrays typed",
+  "description": "jvmcontract's equivalence and prove outcomes now keep each counterexample's witness as data (the second half of step 3b of llm-dlc/loops/build-orchestration.md): typed inputs with exact values (a long as a decimal string, a float or double as Java's toString), the patched version's call (class, class file, descriptor, static or not, the receiver as a record of its components, each argument naming the input it came from) and for a regression proof the previous version's call, whose arguments under previousArguments name the expression that computed them. build.py records it as counterexamples[].witness, with each class file's SHA-256 as built. The verdict and every other field must be unchanged; the counterexample must gain a witness that validates against the schema. 143's witness is encodeInto(chars=['\\u0080'], out=[32]): the inputs must be a char[] of code units (128) and an int array, as JSON arrays.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "own-checker"
+  ],
+  "links": {
+    "examples": [
+      "143"
+    ]
+  },
+  "expected": "example 143 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-06T18:11:01+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "5m",
+    "notes": "the own checker, about 1 s"
+  },
+  "steps": [
+    {
+      "name": "example 143 (B9)",
+      "run": "python3 examples/tools/build.py 143",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/143-an-ascii-fast-path-that-admits-u0080-writes-it-in-one-byte-which-the-properties-allow"
+  ],
+  "supersedes": "20261105-133040-example-143-b9-own-checker-violation-wit"
+}

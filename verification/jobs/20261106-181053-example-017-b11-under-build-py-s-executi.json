@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181053-example-017-b11-under-build-py-s-executi",
+  "title": "Example 017 (B11) under build.py's execution status",
+  "description": "build.py now decides how the verifier's run ended (execution: completed, timed-out, killed, invalid-output, tool-error) before reading a verdict, and a violation needs its evidence and report (build-orchestration brief, step 1a). This example's verdict must be unchanged, and its result.json gains execution.status completed and expectation yes.",
+  "kind": "example",
+  "capabilities": [
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "017"
+    ]
+  },
+  "expected": "example 017 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-06T18:10:53+00:00"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "example 017 (B11)",
+      "run": "python3 examples/tools/build.py 017",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/017-hybrid-logical-clock-refactor-proved-monotonic"
+  ],
+  "supersedes": "20261105-112331-example-017-b11-under-build-py-s-executi"
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181100-example-083-d1-changed-rows-taken-only-u",
+  "title": "Example 083 (D1): changed rows taken only under the delayed configuration, coverage known everywhere",
+  "description": "083 is verified under all seven election configurations, and only the delayed one takes the rows the change touches. With the coverage status, the page's table must be as before (no 'not counted' cell) and coverage.status complete, which shows TLC's statistics list both generated operators under every configuration that counts coverage.",
+  "kind": "example",
+  "capabilities": [
+    "D1",
+    "jvmcontract:tlc"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/tla.rs",
+      "examples/tools/build.py"
+    ],
+    "examples": [
+      "083"
+    ]
+  },
+  "expected": "example 083 gives its expected verdict, verified: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-06T18:11:00+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "example 083 (D1)",
+      "run": "python3 examples/tools/build.py 083",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/083-logging-of-stale-replies-verified-by-the-configuration-that-delivers-them"
+  ],
+  "supersedes": "20261105-125706-example-083-d1-changed-rows-taken-only-u"
+}

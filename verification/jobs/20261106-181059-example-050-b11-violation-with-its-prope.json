@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261106-181059-example-050-b11-violation-with-its-prope",
+  "title": "Example 050 (B11, violation) with its property witness typed",
+  "description": "jvmcontract's equivalence and prove outcomes now keep each counterexample's witness as data (the second half of step 3b of llm-dlc/loops/build-orchestration.md): typed inputs with exact values (a long as a decimal string, a float or double as Java's toString), the patched version's call (class, class file, descriptor, static or not, the receiver as a record of its components, each argument naming the input it came from) and for a regression proof the previous version's call, whose arguments under previousArguments name the expression that computed them. build.py records it as counterexamples[].witness, with each class file's SHA-256 as built. The verdict and every other field must be unchanged; the counterexample must gain a witness that validates against the schema. 050 is a property proof that refutes: properties[].counterexample and counterexamples[] must carry the same witness, with call.classes after and no previousCall.",
+  "kind": "example",
+  "capabilities": [
+    "B11",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "050"
+    ]
+  },
+  "expected": "example 050 gives its expected verdict, violation: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-06T18:10:59+00:00",
+    "session": "cc65240f-1df0-42e0-81ce-41a80fa61028"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "notes": "a JBMC property proof, under a minute"
+  },
+  "steps": [
+    {
+      "name": "example 050 (B11)",
+      "run": "python3 examples/tools/build.py 050",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/050-code-attribute-length-that-leaves-out-the-nested-attribute-headers"
+  ],
+  "supersedes": "20261105-133040-example-050-b11-violation-with-its-prope"
+}
