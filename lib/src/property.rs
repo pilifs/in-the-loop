@@ -484,7 +484,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base.clone() };
-        let (c, refuting) = crate::equivalence::confirm(&last, &run)?;
+        let contracts = crate::equivalence::ConfirmContracts { setting: &gap_setting, rewrite: entries.clone(), cp: &cp, dir: work.join("jbmc-confirm-contracts") };
+        let (c, refuting) = crate::equivalence::confirm(&last, &run, Some(contracts))?;
         (Some(c), refuting)
     } else {
         (None, None)

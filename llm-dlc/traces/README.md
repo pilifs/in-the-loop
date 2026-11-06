@@ -10,16 +10,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 25, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-06 12:04 UTC |
-| Prompts | 780 |
-| Model calls | 7,623 |
-| Tool calls | 8,489 (182 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-06 12:22 UTC |
+| Prompts | 782 |
+| Model calls | 7,648 |
+| Tool calls | 8,514 (182 failed) |
 | Compactions | 107 |
 | Subagents | 3 |
-| Tokens written | 10,924,829 |
-| Tokens read | 1,284,602,548 (97.7% from cache) |
-| Commits with a trace | 211 |
-| Log snapshots | 271 (942.8 MB gzipped, 242 uploaded) |
+| Tokens written | 10,936,490 |
+| Tokens read | 1,292,014,180 (97.8% from cache) |
+| Commits with a trace | 212 |
+| Log snapshots | 272 (943.4 MB gzipped, 242 uploaded) |
 
 ## Sessions
 
@@ -51,7 +51,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-04 13:08 UTC | [build.py newProblems schema mismatch](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | ended | 13 h 21 min | `claude-opus-5-5` | 6 | 97 | 95 | 1 | 0 | 182,965 | 10 |
 | 2026-11-05 10:47 UTC | [`build.py` orchestration feature loop](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | ended | 2 h 45 min | `claude-opus-5-5` | 54 | 553 | 569 | 7 | 9 | 203,187 | 14 |
 | 2026-11-05 23:34 UTC | [Last feature loop results](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | ended | 10 h 56 min | `claude-opus-5-5` | 127 | 1,786 | 1,804 | 16 | 23 | 375,335 | 29 |
-| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 1 h 16 min | `claude-opus-5-5` | 7 | 141 | 142 | 1 | 0 | 284,728 | 7 |
+| 2026-11-06 10:48 UTC | [Feature loop run review actions](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | open | 1 h 34 min | `claude-opus-5-5` | 9 | 166 | 167 | 1 | 0 | 305,586 | 8 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -85,15 +85,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 48,583 | 206 | 442,096 | 11,524,936 | 96.3% | 246 |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 455,398 | 1,124 | 1,516,484 | 67,559,354 | 97.8% | 152 |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 1,780,300 | 3,618 | 5,965,079 | 337,354,372 | 98.3% | 193 |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 84,173 | 296 | 252,672 | 24,887,822 | 99.0% | 299 |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 95,834 | 350 | 272,446 | 32,279,626 | 99.2% | 340 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 7,327 | 86.3% | 25 |
+| `Bash` | 7,352 | 86.4% | 25 |
 | `Edit` | 405 | 4.8% | 13 |
-| `Read` | 302 | 3.6% | 15 |
+| `Read` | 302 | 3.5% | 15 |
 | `Write` | 297 | 3.5% | 12 |
 | `ToolSearch` | 60 | 0.7% | 14 |
 | `Monitor` | 31 | 0.4% | 5 |
@@ -323,6 +323,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 209 | change `lrrtprqs` | A relative --jbmc path is found, and --details prints the statement and the time under a verdict | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/3ce4facf1e0a1424ba8c60f5839c7ece27fe4d3f678546b22a4643caf687fcb0.jsonl.gz)) |
 | 210 | change `xlpuxzwn` | Benchmark group 2 reviewed by the user: the midpoint regression's scope tightened, the checksum property's note corrected | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/045f9999e2f037ad827e213287fbb541129ac6bb1f5b34318fc2aed6ce0afd32.jsonl.gz)) |
 | 211 | change `lrswmqvk` | The own checker makes a division or product of equal operands one value: a functional-consistency lemma before any circuit is built | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/f67e8c835e0a9e3fd91473191d986f0eef13e83a52620ff2b8a981fb5cf29d11.jsonl.gz)) |
+| 212 | change `knonkrpp` | Confirming a proof that rests on contracts: under --confirm, JBMC applies the own checker's contracts at the same calls and proves it again | [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) ([log](https://terminalvalue.net/raw-traces/3761db96-b870-47f7-aded-2ba264c165f4/261e85d7b8624a58d58746c317c21b709baa77f38ad2e74720230fcb211be8e8.jsonl.gz)) |
 
 ## Logs
 
@@ -354,7 +355,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7605134a`](7605134a-8541-491b-9c22-2594d85b8a6e/summary.md) | 9 | 9 | 3.0 MB | [`d1a3c3d6a157`](https://terminalvalue.net/raw-traces/7605134a-8541-491b-9c22-2594d85b8a6e/d1a3c3d6a157497d37a2c591c140cd33cf938d0b213dc6c3c09da9024b07e7a3.jsonl.gz) |
 | [`cc65240f`](cc65240f-1df0-42e0-81ce-41a80fa61028/summary.md) | 14 | 14 | 16.0 MB | [`c41e35f64d8f`](https://terminalvalue.net/raw-traces/cc65240f-1df0-42e0-81ce-41a80fa61028/c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b.jsonl.gz) |
 | [`7cacdb56`](7cacdb56-4c74-4880-a06e-f98031283c0f/summary.md) | 30 | 7 | 131.3 MB | `77dc99012204`, not uploaded |
-| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 6 | 0 | 2.1 MB | `f67e8c835e0a`, not uploaded |
+| [`3761db96`](3761db96-b870-47f7-aded-2ba264c165f4/summary.md) | 7 | 0 | 2.6 MB | `261e85d7b862`, not uploaded |
 
 ## Session notes
 

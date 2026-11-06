@@ -307,32 +307,64 @@ pub enum Confirmed {
     NotAsked,
 }
 
+/// The contracts the own checker's proof rests on, for JBMC to apply at the same gaps when it confirms the proof
+/// ([`crate::jbmc_contracts::apply`]): the setting, the class path directories whose call sites are rewritten, the
+/// class path with the JDK (for overrides and exceptions), and where the rewritten classes go.
+pub(crate) struct ConfirmContracts<'a> {
+    pub setting: &'a crate::bmc::gaps::GapSetting,
+    pub rewrite: Vec<PathBuf>,
+    pub cp: &'a crate::classpath::ClassPath,
+    pub dir: PathBuf,
+}
+
 /// Asks JBMC to prove, over every input, the harness the own checker proved (`native`). `run` is JBMC's run of the
-/// same harness, on the same class path. Returns the confirmation, and JBMC's result when it refutes the statement.
-pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun) -> Result<(Confirmation, Option<JbmcResult>), Error> {
+/// same harness, on the same class path. Where the own checker applied contracts for its gaps (`--gaps advised`),
+/// JBMC applies the same ones at the same calls (`contracts`), so that both checkers prove the statement on the
+/// contracts' word: the confirmation checks the reasoning given the contracts, whose own evidence (proved, tested,
+/// trusted) is the verdict's. Returns the confirmation, and JBMC's result when it refutes the statement.
+pub(crate) fn confirm(native: &JbmcResult, run: &JbmcRun, contracts: Option<ConfirmContracts<'_>>) -> Result<(Confirmation, Option<JbmcResult>), Error> {
     let approximated = |contract: bool| -> Vec<&str> { native.gaps.iter().filter(|g| !g.jbmc && (g.treatment == Some(GapTreatment::Contract)) == contract).map(|g| g.call.as_str()).collect() };
     let (assumed, contracted) = (approximated(false), approximated(true));
-    if !assumed.is_empty() || !contracted.is_empty() {
-        let mut reasons = Vec::new();
-        if !assumed.is_empty() {
-            reasons.push(format!("the tool's own checker assumed {} (--gaps assume), which JBMC has no bytecode for either, and would only approximate with a stub of its own", assumed.join(", ")));
-        }
-        if !contracted.is_empty() {
-            reasons.push(format!("the tool's own checker applied a contract at {} (--contracts), which JBMC cannot apply and approximates instead", contracted.join(", ")));
-        }
-        return Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reasons.join("; ")) }, None));
+    let not_asked = |reason: String| Ok((Confirmation { status: Confirmed::NotAsked, checker: None, seconds: 0.0, reason: Some(reason) }, None));
+    if !assumed.is_empty() {
+        return not_asked(format!("the tool's own checker assumed {} (--gaps assume), which JBMC has no bytecode for either, and would only approximate with a stub of its own", assumed.join(", ")));
     }
-    let mut result = jbmc::run(run)?;
+    let mut run = run.clone();
+    let mut applied = None;
+    if !contracted.is_empty() {
+        let Some(c) = contracts else {
+            return not_asked(format!("the tool's own checker applied a contract at {} (--contracts), and JBMC was not given the contracts to apply", contracted.join(", ")));
+        };
+        let pre = crate::jbmc_gaps::preflight(&run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
+        let Some(found) = pre.found.as_ref() else {
+            return not_asked(format!("the tool's own checker applied a contract at {}, and JBMC's goto program could not be read to apply it: {}", contracted.join(", "), pre.problem.as_deref().unwrap_or("no reason")));
+        };
+        let a = crate::jbmc_contracts::apply(c.setting, found, &run.classpath, &c.rewrite, c.cp, &c.dir)?;
+        run = JbmcRun { classpath: a.classpath.clone(), log: c.dir.join("jbmc-confirm.log"), ..run };
+        applied = Some(a);
+    }
+    let mut result = jbmc::run(&run)?;
     // JBMC's proof is held to what it approximates on the way, under the own checker's gap mode: a proof that
-    // reaches a stub confirms nothing under strict.
+    // reaches a stub confirms nothing under strict, nor under advised where no contract closes the stub.
     if result.verdict == Verdict::Verified {
-        let pre = crate::jbmc_gaps::preflight(run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
+        let pre = crate::jbmc_gaps::preflight(&run, Duration::from_secs(crate::jbmc_gaps::PREFLIGHT_SECONDS))?;
         crate::jbmc_gaps::hold(&mut result, &pre, native.gap_mode.unwrap_or_default());
+    }
+    if let Some(a) = &applied {
+        crate::jbmc_contracts::settle(&mut result, a);
     }
     let mut confirmation = Confirmation { status: Confirmed::Confirmed, checker: Some(result.version.clone()), seconds: result.seconds, reason: None };
     let (assumed, _) = assumed_gaps(&result);
-    if result.verdict == Verdict::Verified && !assumed.is_empty() {
-        confirmation.reason = Some(assumed.trim_start_matches(", ").to_string());
+    if result.verdict == Verdict::Verified {
+        let mut said = Vec::new();
+        if !assumed.is_empty() {
+            said.push(assumed.trim_start_matches(", ").to_string());
+        }
+        if let Some(a) = applied.as_ref().filter(|a| !a.records.is_empty()) {
+            let ids: Vec<&str> = a.records.iter().map(|r| r.id.as_str()).collect();
+            said.push(format!("on the same contract{} as the tool's own checker, for {}", if ids.len() == 1 { "" } else { "s" }, ids.join(", ")));
+        }
+        confirmation.reason = Some(said.join("; ")).filter(|s| !s.is_empty());
     }
     match result.verdict {
         Verdict::Verified => Ok((confirmation, None)),
@@ -1196,7 +1228,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base(&classpath, "") };
-        let (c, refuting) = confirm(&last, &run)?;
+        let rewrite: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
+        let contracts = ConfirmContracts { setting: &gap_setting, rewrite, cp: &contract_cp, dir: work.join("jbmc-confirm-contracts") };
+        let (c, refuting) = confirm(&last, &run, Some(contracts))?;
         (Some(c), refuting)
     } else {
         (None, None)

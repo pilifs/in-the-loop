@@ -3384,3 +3384,73 @@ fn a_relative_jbmc_path_is_found_from_the_current_directory() {
     let text = String::from_utf8_lossy(&out.stdout);
     assert!(out.status.success() && text.contains("✓"), "{text}{}", String::from_utf8_lossy(&out.stderr));
 }
+
+/// `--engine auto --confirm` on a proof of the own checker that rests on contracts (`--gaps advised`): JBMC applies
+/// the same contracts at the same calls and proves the statement again, where it used to be not asked. Real JBMC.
+#[test]
+fn confirm_applies_the_own_checkers_contracts_for_jbmc() {
+    use jvmcontract::bmc::gaps::GapMode;
+    use jvmcontract::equivalence::Confirmed;
+    use jvmcontract::Engine;
+    if !has("jbmc") || !has("java") {
+        return;
+    }
+    let dir = target_tmp().join("confirm-contracts-src");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("Contracted.java"), CONTRACTED).unwrap();
+    let Some(classes) = compile("confirm-contracts", &[dir.join("Contracted.java")]) else { return };
+    let jdk = jvmcontract::bmc::gaps::jdk_release().map(|v| format!("@jdk-{v}")).unwrap_or_default();
+    let capacity = "jdk-constructor:java.util.ArrayList.<init>(I)V";
+    let file = dir.join("throwing.contracts");
+    std::fs::write(&file, format!("kind: gap-contracts\n\n{capacity}{jdk}\n  call: java.util.ArrayList.<init>(int capacity)\n  throws: IllegalArgumentException when capacity < 0\n  modifies: nothing\n  written-by: the test\n")).unwrap();
+
+    let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.Contracted#capacity");
+    options.assert = Some("result == 1".into());
+    options.throws = vec!["IllegalArgumentException when n < 0".into()];
+    options.engine = Engine::Auto;
+    options.gaps = GapMode::Advised;
+    options.confirm = true;
+    options.contract_library = false;
+    options.contracts = Some(file.clone());
+    let work = target_tmp().join("property-confirm-contracts");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work.clone());
+    let o = property::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let search = o.search.as_ref().unwrap();
+    assert_eq!(search.engine, "native", "the own checker's proof: {}", o.output);
+    let c = search.confirmation.as_ref().expect("confirmation");
+    assert_eq!(c.status, Confirmed::Confirmed, "{c:?}\n{}", o.output);
+    assert!(c.reason.as_deref().unwrap_or("").contains(&format!("on the same contract as the tool's own checker, for {capacity}")), "{c:?}");
+    assert!(work.join("jbmc-confirm-contracts/redirected/fixtures/Contracted.class").exists(), "JBMC ran on the rewritten class");
+
+    // Without the exception declared, the own checker finds the violation itself; nothing to confirm.
+    options.throws = Vec::new();
+    let _ = std::fs::remove_dir_all(&work);
+    let o = property::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    assert!(o.search.as_ref().unwrap().confirmation.is_none(), "{}", o.output);
+
+    // A regression proof the same way: the constructor added before `return 1`, outside the negative capacities.
+    let (Some(before), Some(after)) = (
+        compile_writers("confirm-contracted-before", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { return 1; } }"),
+        compile_writers("confirm-contracted-after", "Sized", "package fixtures; public class Sized { public static int capacity(int n) { new java.util.ArrayList<Object>(n); return 1; } }"),
+    ) else {
+        return;
+    };
+    let mut options = equivalence::Options::new(&before, &after, "fixtures.Sized#capacity");
+    options.unchanged_unless = Some("n < 0".into());
+    options.engine = Engine::Auto;
+    options.gaps = GapMode::Advised;
+    options.confirm = true;
+    options.contract_library = false;
+    options.contracts = Some(file);
+    let work = target_tmp().join("equivalence-confirm-contracts");
+    let _ = std::fs::remove_dir_all(&work);
+    options.work = Some(work);
+    let o = equivalence::run(&options).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let c = o.search.as_ref().unwrap().confirmation.as_ref().expect("confirmation");
+    assert_eq!(c.status, Confirmed::Confirmed, "{c:?}\n{}", o.output);
+}

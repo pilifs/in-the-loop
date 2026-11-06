@@ -271,9 +271,12 @@ Decided by the user on 2026-11-06, after the loop's run (the numbers above are u
 - **The landing page at terminalvalue.net:** no update needed; the item is dropped.
 - **The JBMC fork (question 4):** ranked from job `20261106-102624`'s table when it is back; fork or not is decided
   from that ranking.
-- **Leftovers:** the relative `--jbmc` path and the console report's statement and phases are fixed next. For
-  `real/bucket/fix-confined` (the timeout) and `--confirm` with contracts, an analysis comes first, and the user
-  decides from it whether to do them.
+- **Leftovers:** the relative `--jbmc` path and the console report's statement and phases (`--details`) are done.
+  From an analysis, the user chose to do the other two, and both are done: `real/bucket/fix-confined` timed out
+  because two divisions of equal values written differently were separate unknowns (now a functional-consistency
+  lemma, verified in 0.17 s), and `--confirm` now has JBMC apply the own checker's contracts instead of not asking it.
+- **Benchmark group 2:** reviewed by the user case by case on 2026-11-06. `real/midpoint/fix-confined`'s scope is now
+  `low + high < 0`, and `real/checksum/broken-property`'s note says the throws clause catches the bug.
 
 ## Done when
 
