@@ -121,17 +121,21 @@ Compare three policies on the benchmark corpus and the recorded JBMC examples, a
 Keep the overall deadline, the bounds, the models and the evidence rules the same across the three.
 
 Measure proofs and counterexamples separately, and how small each witness is. The stages exist to give small
-witnesses, so with full range first a counterexample is shrunk afterwards. Find out whether the adapter can shrink a
-JBMC witness as the own checker does, through the interpreter. If it can't, that's part of this phase.
+witnesses. With full range first, a counterexample is shrunk afterwards by `lib/src/shrink.rs`, which already shrinks
+any engine's witness through the interpreter. A shrunk witness is a local minimum, so compare its size with the staged
+one's.
 
 `--confirm` already runs the full range, so the change applies to ordinary JBMC checks and to the `auto` fallback. The
-default changes only on the job's evidence. Whether the own checker's staging changes too is a separate question,
-answered from the same job (it searches its stages per violating path).
+default changes only on the job's evidence, and **only JBMC's** (decided 2026-11-06). The own checker keeps searching
+its stages per violating path. Those stages are cheap, and they keep its witnesses small.
 
 ### Phase 3: application class initializers in the own checker
 
-- **Count first.** Find how often `class-initializer` gaps occur in the recorded examples and the benchmark, from
-  `--gaps` scans run inline where they are cheap. Then decide on a scope ([open question 3](#open-questions)).
+- **Count first.** Find how often `class-initializer` gaps occur, and of what shape, in the recorded examples and in
+  the apps (Mica, Crosscut, Quorum, Box Office), from `--gaps` scans run inline where they are cheap. The recorded
+  results predate gap records, so today's count of zero means nothing. Choose the scope from the count, **leaning toward
+  the semantics that occur most, where they're convenient** (decided 2026-11-06). The two choices are full JVMS §5.5
+  semantics, or initializers that only assign constants first.
 - **Then implement.** Run a class's `<clinit>` at its first `new`, `getstatic`, `putstatic` or `invokestatic` (JVMS
   §5.5), after its superclasses' and the relevant superinterfaces', which `gaps.rs` already lists. Model an
   `ExceptionInInitializerError` and the later `NoClassDefFoundError`.
@@ -152,9 +156,13 @@ report for the user, never filed by an agent.
   example 141 takes 1,044, so a backend judged on one final CNF can mislead.
 - **Put a narrow SAT interface** between the engine and CaDiCaL. It separates scheduling the queries, encoding them and
   solving them.
-- **Then experiment:** a newer CaDiCaL first. After that, typed bit-vector and array obligations for Bitwuzla and Z3.
-  Record both the fixed transcripts and the full checks. Fetching and building a new solver needs network access and a
-  pipeline job ([open question 4](#open-questions)).
+- **Then experiment, on architecture rather than percentages** (decided 2026-11-06). **Bitwuzla is the preferred
+  backend.** It sits on CaDiCaL, which gives an easier path to try a major change: word-level bit-vector and array
+  obligations handed to the solver instead of being bit-blasted by the engine. Fetching and building it on ARM64 is a
+  pipeline job with network access.
+  - A newer CaDiCaL (2.x against the bundled 1.9.5) and Z3 5.3.1 or cvc5 1.4.2 (installed) on exported transcripts are
+    in scope only where a quick estimate shows more than an incremental gain. A small percentage is deferred.
+  - Record both the fixed transcripts and the full checks.
 
 ### Phase 6, targeted: example 071's two property proofs
 
@@ -184,15 +192,15 @@ These upstream reports could still be drafted for the user, never filed by an ag
 
 ## Open questions
 
-1. **Order.** The review puts 1a (phase accounting) and Phase 2 (staging) first, then class initializers, then solver
-   infrastructure. Keep that order?
-2. **Staging default.** If full range first wins, should it become the default only for JBMC, or for the own checker
-   too? And how much witness size are we willing to give up for it?
-3. **Class-initializer scope.** Run every application `<clinit>` with its full semantics, or begin with initializers
-   that only assign constants and leave the rest as gaps?
-4. **Solver experiments.** Where are Bitwuzla, Z3 and a newer CaDiCaL fetched and built (network access, an ARM64
-   build job), and are they in scope for this loop or a later one?
-5. **When does this become a loop brief**, with settings and a session of its own?
+1. **Order.** Still open: it's reviewed last, before the brief is written.
+
+Settled by the user on 2026-11-06:
+2. **Staging default:** if full range first wins, only JBMC's default changes. The own checker keeps its staging.
+3. **Class-initializer scope:** count first, then choose, leaning toward the semantics that occur most where they're
+   convenient.
+4. **Solver experiments:** Bitwuzla is preferred, for its path to a change of architecture on CaDiCaL. Other solver
+   experiments only where the benefit is more than incremental: now is not the time for small percentages.
+5. **The brief:** written once the order is agreed.
 
 ## Notes
 
