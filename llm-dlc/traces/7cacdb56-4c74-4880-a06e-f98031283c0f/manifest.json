@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-05T23:34:29.367Z",
-  "ended": "2026-11-06T07:17:22.756Z",
-  "duration_seconds": 27773,
+  "ended": "2026-11-06T07:42:29.396Z",
+  "duration_seconds": 29280,
   "stats": {
-    "turns": 96,
-    "api_calls": 1310,
-    "tool_calls": 1323,
+    "turns": 101,
+    "api_calls": 1381,
+    "tool_calls": 1394,
     "tool_errors": 14,
-    "compactions": 17,
+    "compactions": 18,
     "peak_context_tokens": 340299,
     "usage": {
-      "input_tokens": 2656,
-      "output_tokens": 1262429,
-      "cache_read_input_tokens": 232254206,
-      "cache_creation_input_tokens": 4344050
+      "input_tokens": 2800,
+      "output_tokens": 1335611,
+      "cache_read_input_tokens": 245455876,
+      "cache_creation_input_tokens": 4603085
     }
   },
   "tools": {
-    "Bash": 1181,
-    "Read": 97,
+    "Bash": 1245,
+    "Read": 102,
     "Write": 21,
-    "Edit": 18,
-    "ToolSearch": 4,
+    "Edit": 19,
+    "ToolSearch": 5,
     "WebFetch": 2
   },
   "files_touched": [
@@ -302,24 +302,38 @@
     {
       "index": 17,
       "started": "2026-11-06T07:02:19.575Z",
-      "ended": "2026-11-06T07:17:22.756Z",
-      "turns": 5,
-      "api_calls": 63,
+      "ended": "2026-11-06T07:17:54.009Z",
+      "turns": 6,
+      "api_calls": 66,
       "usage": {
-        "input_tokens": 130,
-        "output_tokens": 52032,
-        "cache_read_input_tokens": 10173695,
-        "cache_creation_input_tokens": 208523
+        "input_tokens": 136,
+        "output_tokens": 53364,
+        "cache_read_input_tokens": 10843586,
+        "cache_creation_input_tokens": 222135
       },
-      "peak_context_tokens": 221603
+      "peak_context_tokens": 235215
+    },
+    {
+      "index": 18,
+      "started": "2026-11-06T07:18:27.802Z",
+      "ended": "2026-11-06T07:42:29.396Z",
+      "turns": 4,
+      "api_calls": 68,
+      "usage": {
+        "input_tokens": 138,
+        "output_tokens": 71850,
+        "cache_read_input_tokens": 12531779,
+        "cache_creation_input_tokens": 245423
+      },
+      "peak_context_tokens": 258503
     }
   ],
   "log": {
-    "sha256": "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039",
-    "bytes": 40765995,
-    "lines": 13725,
-    "gzip_bytes": 7638045,
-    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039.jsonl.gz"
+    "sha256": "cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690",
+    "bytes": 43026539,
+    "lines": 14456,
+    "gzip_bytes": 8070768,
+    "path": "llm-dlc/traces/7cacdb56-4c74-4880-a06e-f98031283c0f/logs/cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -514,6 +528,14 @@
       "summary": "JBMC's interval stages run only where they bound an input, and a check has one deadline: a harness over arrays alone, as example 142's, runs JBMC once, and every run gets a budget out of --timeout (verification pending)",
       "body": "Step 4a of llm-dlc/loops/sound-verdicts.md. --java-assume-inputs-interval bounds the primitive inputs of the harness's entry method, not array elements, so a preliminary stage ([0:20], [-100000:100000]) is kept only where its interval leaves out a value of some primitive parameter (lib/src/deadline.rs, stages_for, read from the harness class's check descriptor). A harness over arrays alone runs once, one over bytes, chars or shorts skips the second stage, one over booleans runs once. Both the property and the regression driver use it.\n\nThe whole check now has one deadline, --timeout, where the own checker, each JBMC stage, JBMC's fallback under auto, the shared-callee and as-written runs and the vacuity probe each used to get all of it. A preliminary stage gets at most an eighth of the check, the own checker under --engine auto all but a quarter kept for JBMC's fallback, and the last stage and the probe what is left. JBMC's rerun with its default solver takes what is left of its run's budget. A preliminary stage out of time now hands on to the next (before, the first stage to time out ended the check with no verdict, though only the last stage is the proof). --confirm stays a second check with a deadline of its own: the brief does not say, and giving it the remainder would leave it nothing. The outcome records search.deadline_seconds and search.runs (checker, purpose, interval, budget, seconds, how it ended), which build.py keeps as search.deadlineSeconds/runs (in the schema). Docs: --timeout help, lib/README.md step 4 and search text, the verify-bytecode skill's budget line.\n\nVerified inline: jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline (lib/tests/conformance.rs), with a stand-in JBMC that logs its runs and can hang, shows one run for length(int[]) as property and regression, [0:20] then the proof for byteSum(byte, byte), three runs with budgets of 75/75/rest of 600 s for increment(int), hanging stages handed on and verified in under 8 s of a 16 s check, every run hanging ending a 4 s check in under 6 s with budgets adding up to 4 s, and the own checker's 75 of 100 s under auto with its probe recorded. Unit tests in deadline.rs, DeadlineTest in test_build.py; all Rust tests and the 155 Python tests pass. No recorded result changes and no page changed.\n\nPipeline job 20261106-071536-example-142-s-regression-harness-under-j compiles Mica before and after 142's patch and runs equivalence --engine jbmc --timeout 300 on the real JBMC, checking for one JBMC run over every input within the deadline; its steps were dry-run with a stand-in JBMC. The brief's at-HEAD note that every run walks all three stages is now out of date, as this step intended. Not done: a stage that the scope fixes (x == 3) still runs; out_of_time reads the problem text until 4b's structured outcome.",
       "log_sha256": "3876645b1893e4774310b0b4dfffbeb46068c41d93cb98b2026856605be84039"
+    },
+    {
+      "change_id": "ksvxwzlkyoqwnsyrxpokxtqyrwsmomyz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "JBMC is read through --json-ui, and every run says how it ended: a counterexample, an unwinding failure, a timeout, memory exhausted, a solver failure or an input JBMC refused stay apart, with the text reader kept until a differential test over the recorded JBMC examples agrees (verification pending)",
+      "body": "Step 4b of llm-dlc/loops/sound-verdicts.md. lib/src/jbmc.rs gains parse_json, now the default reader. Its format comes from CBMC 6.11.0's own source (report_util.cpp, json_goto_trace.cpp, json_expr.cpp, ui_message.cpp at tag cbmc-6.11.0), since JBMC is not run inline to find it out. It reads the array of messages, property results with the failed property's trace, and the overall cProverStatus. It reads element by element, so a cut-off run or text around the array does no harm. A counterexample's inputs come from the trace's input steps by slot, an array's elements from the assignments before its input, and every value from its bits (signed unless char or boolean; IEEE 754 at width 32 or 64), not from how Java prints it. Only success, with every property SUCCESS or UNREACHABLE, is a proof.\n\nEvery result and every run in search.runs now has an ending: verified, counterexample, unwinding-failure, other-failure, timeout, memory-exhausted, killed, solver-failure, unsupported-input, unavailable, unreadable, or the own checker's no-verdict. JbmcResult::out_of_time reads it in place of 4a's text match. The text parser stays as JVMCONTRACT_JBMC_READ=text. JVMCONTRACT_JBMC_READ=both runs JBMC both ways, decides by the JSON, and writes what each reading made of each run to <log>.differential.json (and to the file JVMCONTRACT_JBMC_DIFFERENTIAL names). The schema, lib/README.md and the skill's reference.md describe it.\n\nVerified inline. The integration suite runs the real JBMC 6.11.0 (151 runs, every witness replayed by the interpreter), and it now goes through the JSON reader. A new integration test, the_json_and_the_text_reading_of_jbmc_agree, runs the CLI under both on a proof, counterexamples over an int[] and a long, and an unwinding failure, and every pair of readings agrees. New unit tests cover every ending from fixtures in CBMC's shape, plus the canonical value forms and the differential on stand-ins. The conformance stand-ins answer in JSON when --json-ui is passed. All Rust tests (136 unit, 5 conformance, 58 integration, 1 skill) and the 156 Python tests pass. Re-rendering every page changed none.\n\nJob 20261106-073804-jbmc-read-through-json-ui-agrees-with-th is the brief's differential test. It runs build.py on a copy of examples/ over the 41 recorded B9/B11 JBMC examples under JVMCONTRACT_JBMC_READ=both, and fails on a disagreement or a verdict that moved. The text parser is removed once it passes. Next: 4c, JBMC's stubs as gaps.",
+      "log_sha256": "cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690"
     }
   ],
   "logs": {
@@ -618,6 +640,12 @@
       "lines": 421,
       "gzip_bytes": 245458,
       "url": "https://terminalvalue.net/raw-traces/7cacdb56-4c74-4880-a06e-f98031283c0f/b99c8a55cee254ea157b73fe7f3714a48dc219b4ea727256346ef47385a3b6d8.jsonl.gz"
+    },
+    "cb3761225bb9b748fb1fdaa39f6c6048b822a69511063da3a1cba1bbe7ace690": {
+      "bytes": 43026539,
+      "lines": 14456,
+      "gzip_bytes": 8070768,
+      "url": null
     },
     "da337388aa819ff753807ac5b269b2a752487216d9babf99527680eed1a4f594": {
       "bytes": 22779112,

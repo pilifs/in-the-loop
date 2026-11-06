@@ -691,7 +691,8 @@
               "stage": { "description": "The input interval of a preliminary JBMC stage, as `[0:20]`; null for every input.", "type": ["string", "null"] },
               "budgetSeconds": { "description": "The time the run was given.", "type": "number" },
               "seconds": { "description": "The time it took.", "type": "number" },
-              "ended": { "description": "`verified`, `violation`, `no-verdict`, or `out-of-time` when its budget ran out; a preliminary stage out of time hands on to the next.", "enum": ["verified", "violation", "no-verdict", "out-of-time"] }
+              "ended": { "description": "`verified`, `violation`, `no-verdict`, or `out-of-time` when its budget ran out; a preliminary stage out of time hands on to the next.", "enum": ["verified", "violation", "no-verdict", "out-of-time"] },
+              "ending": { "description": "How the checker said the run ended (lib/src/jbmc.rs `Ending`, step 4b of llm-dlc/loops/sound-verdicts.md), the kinds of no verdict apart: `verified`; `counterexample` (the harness's assertion fails); `unwinding-failure` (a loop past --unwind); `other-failure` (a property the harness does not state fails); `timeout`; `memory-exhausted`; `killed` (by a signal, possibly the out-of-memory killer); `solver-failure` (nothing failed and nothing was proved); `unsupported-input` (JBMC did not take the program, or a class path entry); `unavailable` (no JBMC); `unreadable` (output that says none of these); `no-verdict` (the own checker's other reasons: a gap refused, a construct outside its fragment, its path budget). JBMC's is read from its `--json-ui` output. Absent in results written before 2026-11-06.", "enum": ["verified", "counterexample", "unwinding-failure", "other-failure", "timeout", "memory-exhausted", "killed", "solver-failure", "unsupported-input", "unavailable", "unreadable", "no-verdict"] }
             }
           }
         },

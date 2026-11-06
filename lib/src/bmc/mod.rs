@@ -153,6 +153,7 @@ impl Outcome {
     /// The outcome in the shape of a JBMC result, so that the proof drivers treat it as one.
     pub fn into_jbmc_result(self, log: std::path::PathBuf) -> crate::jbmc::JbmcResult {
         let stats = self.stats();
+        let ending = crate::jbmc::Ending::of_native(self.verdict, self.problem.as_deref());
         crate::jbmc::JbmcResult {
             verdict: self.verdict,
             version: format!("jvmcontract's own checker ({})", self.solver),
@@ -166,6 +167,7 @@ impl Outcome {
             native: Some(stats),
             gaps: self.gaps,
             gap_mode: Some(self.gap_mode),
+            ending,
         }
     }
 

@@ -976,6 +976,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
                 sat_solver: options.sat_solver.clone(),
                 log: work.join(format!("jbmc{tag}{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())),
                 extra_args: extra_args.clone(),
+                read: jbmc::Reading::from_env(),
             };
             let result = jbmc::run(&run)?;
             runs.push(Run::of(&result, purpose, budget));
@@ -1122,6 +1123,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             sat_solver: options.sat_solver.clone(),
             log: work.join("jbmc-confirm.log"),
             extra_args: extra_args.clone(),
+            read: jbmc::Reading::from_env(),
         };
         let (c, refuting) = confirm(&last, &run)?;
         (Some(c), refuting)

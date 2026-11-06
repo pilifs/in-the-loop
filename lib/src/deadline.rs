@@ -132,6 +132,8 @@ pub struct Run {
     pub seconds: f64,
     /// `verified`, `violation`, `no-verdict`, or `out-of-time` when the budget ran out.
     pub ended: String,
+    /// How the checker said the run ended ([`crate::jbmc::Ending`]): which kind of no verdict it was, above all.
+    pub ending: crate::jbmc::Ending,
 }
 
 impl Run {
@@ -149,6 +151,7 @@ impl Run {
             budget_seconds: round(budget.as_secs_f64()),
             seconds: round(result.seconds),
             ended: ended.into(),
+            ending: result.ending,
         }
     }
 }

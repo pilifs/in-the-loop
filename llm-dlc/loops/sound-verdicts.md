@@ -1113,6 +1113,65 @@ Each run counts only its own commits, so work done in earlier runs is listed her
   - Next: 4b, reading JBMC through `--json-ui`, with the text parser kept until a differential test over the
     recorded JBMC examples shows the two agree. Unsupported input, unwinding failure, timeout, memory exhaustion,
     solver failure and counterexample stay distinct, which also replaces `out_of_time`'s text match.
+- **4b, JBMC read through `--json-ui` (2026-11-06).**
+  - **The format is CBMC 6.11.0's own**, read from its source (`report_util.cpp`, `json_goto_trace.cpp`,
+    `json_expr.cpp`, `ui_message.cpp` at tag `cbmc-6.11.0`), since JBMC is not run inline to find it out. It is one
+    JSON array holding:
+    - the `program`;
+    - messages (`messageType`, `messageText`);
+    - a `result` with every property's `status`, and a `trace` for each failed one;
+    - the overall `cProverStatus` (`success`, `failure`, `inconclusive` or `error`).
+
+    There is no `** N of M failed` line in this mode. A run that is killed leaves the array unclosed.
+  - **The reader** ([`jbmc::parse_json`](../../lib/src/jbmc.rs)) is now the default.
+    - It reads the array element by element, up to the first that does not parse, so a cut-off run and text around
+      the array (the solver note, the timeout line) do no harm.
+    - A counterexample's inputs come from the trace's `input` steps, by slot.
+    - An array's elements come from the `length`, `data` and element assignments before its input step, as in the
+      text.
+    - **A value is read from its bits** (`binary` with its width), not from how Java prints it. An integer is
+      signed unless its type is `char` or `boolean` (JBMC writes `const long`). A float is IEEE 754 at width 32 or
+      64.
+    - Only `success`, with every property `SUCCESS` or `UNREACHABLE`, is a proof.
+  - **How a run ended is data:** `Ending` on every result, and `search.runs[].ending`. The values are `verified`,
+    `counterexample`, `unwinding-failure`, `other-failure`, `timeout`, `memory-exhausted`, `killed`,
+    `solver-failure`, `unsupported-input` (a class path entry JBMC could not read, or an `ERROR` message before any
+    result), `unavailable`, `unreadable`, and the own checker's `no-verdict`.
+    - `out_of_time` reads the ending now, not the problem text.
+    - The text parser gives the same endings, except that it cannot tell an error before any result from output it
+      cannot read.
+  - **The text parser is kept**, as `JVMCONTRACT_JBMC_READ=text`. `both` runs JBMC both ways and decides by the
+    JSON. It writes what each reading made of the run (verdict, ending, property count, and the counterexample in
+    one canonical form) to `<log>.differential.json`, and appends it to the file `JVMCONTRACT_JBMC_DIFFERENTIAL`
+    names. Under `both` the second run gets a budget of its own, so it is a test mode.
+  - Acceptance, inline:
+    - **On the real JBMC 6.11.0.** The integration suite's JBMC cases (151 runs of the real JBMC, 107 `success`
+      and 38 `failure`) now go through the JSON reader. Every witness among them is replayed by the interpreter,
+      which checks the inputs read: longs, ints, `int[]`, records, and stages.
+    - A new test, `the_json_and_the_text_reading_of_jbmc_agree`, runs the CLI under `both` on four claims (six
+      runs): a proof, a counterexample over an `int[]` and an `int`, one over a `long`, and an unwinding failure.
+      Every pair of readings agrees.
+    - Unit tests in `jbmc.rs` cover every ending from fixtures in CBMC's shape: arrays of `byte` and `char` and a
+      `null` one, a store after the input, `1.5f` and a double NaN from their bits, a cut-off array, a note before
+      it, the class path warning and an error before any result. They also cover the canonical forms, and `both` on
+      a stand-in that agrees and one that does not.
+    - The conformance stand-ins answer in JSON when asked for it, in text otherwise. `DeadlineTest` checks
+      `ending` in the record and the schema (156 Python tests). All Rust tests pass.
+  - **The differential test over every recorded JBMC example is a pipeline job**:
+    `20261106-073804-jbmc-read-through-json-ui-agrees-with-th`. It runs `build.py` on a copy of `examples/` over the
+    41 B9/B11 examples JBMC proves on the javac apps, under `both`. It fails on any disagreement, and on any verdict
+    that differs from its expected one. Its summary step was dry-run on the inline test's records. **The text parser
+    goes once it passes.** The pending JBMC jobs (the corpus under JBMC and auto-confirm, 127, and 142 on JBMC) now
+    run under the JSON reader too.
+  - Re-rendering every page changed none. `lib/README.md` and the skill's `reference.md` say how JBMC is read.
+  - Not done:
+    - The console report and the page don't show the ending; `--json` and the result's `search.runs` do.
+    - JBMC's solver version is still not recorded.
+  - Seen for 4c: JBMC's JSON names each stub class in a message, `stub class symbol java::... already exists`. That
+    could be the preflight's starting point.
+  - Next: 4c. Make JBMC's own approximations gaps in the three modes: stubbed missing bodies, and the zero/null
+    fallback for an unresolved `invokedynamic`. Acceptance: 1b's reproducers give the same answer under JBMC in each
+    mode. After it, the text parser's removal once job `-073804` agrees, then Phase 5.
 
 ## Loop settings
 

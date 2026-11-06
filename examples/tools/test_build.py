@@ -2030,6 +2030,23 @@ class DeadlineTest(unittest.TestCase):
         jsonschema.validate(record, schema["properties"]["search"])
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate({**record, "runs": [{**record["runs"][0], "ended": "timeout"}]}, schema["properties"]["search"])
+
+    def test_a_run_keeps_how_the_checker_said_it_ended(self):
+        """Step 4b: JBMC's kinds of no verdict stay apart in the record, read from its --json-ui output."""
+        import jsonschema
+        schema = json.loads((build.EXAMPLES / "schema/result.schema.json").read_text())
+        runs = [{"checker": "jbmc", "purpose": "proof", "stage": "[0:20]", "budget_seconds": 75.0, "seconds": 75.0, "ended": "out-of-time", "ending": "timeout"},
+                {"checker": "jbmc", "purpose": "proof", "stage": None, "budget_seconds": 525.0, "seconds": 40.0, "ended": "no-verdict", "ending": "memory-exhausted"}]
+        search = {"engine": "jbmc", "checker": "JBMC 6.11.0", "seconds": 115.0, "properties": 5, "unwind": 16,
+                  "max_array_length": 8, "stage": None, "deadline_seconds": 600.0, "runs": runs}
+        record = build.search_record({"search": search})
+        self.assertEqual([r["ending"] for r in record["runs"]], ["timeout", "memory-exhausted"])
+        jsonschema.validate(record, schema["properties"]["search"])
+        for ending in ("unwinding-failure", "solver-failure", "unsupported-input", "counterexample", "no-verdict"):
+            jsonschema.validate(build.search_record({"search": {**search, "runs": [{**runs[0], "ending": ending}]}}),
+                                schema["properties"]["search"])
+        with self.assertRaises(jsonschema.ValidationError):
+            jsonschema.validate(build.search_record({"search": {**search, "runs": [{**runs[0], "ending": "out-of-time"}]}}), schema["properties"]["search"])
         # A result written before the runs were recorded has neither.
         old = build.search_record({"search": {k: v for k, v in search.items() if k not in ("deadline_seconds", "runs")}})
         self.assertNotIn("runs", old)

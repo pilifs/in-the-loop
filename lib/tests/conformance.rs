@@ -649,17 +649,54 @@ fn fake_jbmc(name: &str) -> PathBuf {
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let script = dir.join("jbmc");
-    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" > \"$d/args.txt\"\ncat \"$d/answer.txt\"\n").unwrap();
+    std::fs::write(&script, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" > \"$d/args.txt\"\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
     script
 }
 
-const PROVED: &str = "JBMC version 6.11.0 (cbmc-6.11.0)\n** 0 of 5 failed (1 iterations)\nVERIFICATION SUCCESSFUL\n";
-const NO_ANSWER: &str = "JBMC version 6.11.0 (cbmc-6.11.0)\nRunning with 8 object bits\n";
+/// What a stand-in JBMC answers: `text` as JBMC prints it, `json` as it prints it under `--json-ui`, the one the
+/// run asks for.
+struct Answer {
+    text: String,
+    json: String,
+}
 
-fn refuted_by_jbmc(class: &str, descriptor: &str, input: &str) -> String {
-    format!("JBMC version 6.11.0 (cbmc-6.11.0)\n[{class}.check:{descriptor}.assertion.1] line 1 assertion at file {class}.java line 1 function java::{class}.check:{descriptor} bytecode-index 9: FAILURE\n  INPUT arg0a: {input}\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n")
+fn write_answer(dir: &Path, answer: &Answer) {
+    std::fs::write(dir.join("answer.txt"), &answer.text).unwrap();
+    std::fs::write(dir.join("answer.json"), &answer.json).unwrap();
+}
+
+/// JBMC's JSON: the program, a version message, the results and the overall status, as CBMC 6.11.0 writes them.
+fn json_answer(results: &[String], status: Option<&str>) -> String {
+    let status = status.map(|s| format!(",\n  {{\n    \"cProverStatus\": \"{s}\"\n  }}")).unwrap_or_default();
+    let results = if results.is_empty() { String::new() } else { format!(",\n  {{\n    \"result\": [{}]\n  }}", results.join(", ")) };
+    format!("[\n  {{\n    \"program\": \"JBMC 6.11.0 (cbmc-6.11.0)\"\n  }},\n  {{\n    \"messageText\": \"JBMC version 6.11.0 (cbmc-6.11.0) 64-bit\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  }}{results}{status}\n]\n")
+}
+
+fn proved() -> Answer {
+    let results: Vec<String> = (1..=5).map(|n| format!("{{\"property\": \"java::H.check:(I)V.assertion.{n}\", \"status\": \"SUCCESS\"}}")).collect();
+    Answer { text: "JBMC version 6.11.0 (cbmc-6.11.0)\n** 0 of 5 failed (1 iterations)\nVERIFICATION SUCCESSFUL\n".into(), json: json_answer(&results, Some("success")) }
+}
+
+/// A run that stops before any result, the array left open.
+fn no_answer() -> Answer {
+    Answer {
+        text: "JBMC version 6.11.0 (cbmc-6.11.0)\nRunning with 8 object bits\n".into(),
+        json: "[\n  {\n    \"program\": \"JBMC 6.11.0 (cbmc-6.11.0)\"\n  },\n  {\n    \"messageText\": \"Running with 8 object bits\",\n    \"messageType\": \"STATUS-MESSAGE\"\n  }".into(),
+    }
+}
+
+/// The harness's assertion refuted on an `int` first parameter.
+fn refuted_by_jbmc(class: &str, descriptor: &str, input: i32) -> Answer {
+    let bits = format!("{:032b}", input as u32);
+    let trace = format!("{{\"stepType\": \"input\", \"inputID\": \"arg0i\", \"values\": [{{\"binary\": \"{bits}\", \"data\": \"{input}\", \"name\": \"integer\", \"type\": \"int\", \"width\": 32}}]}}");
+    let mut results = vec![format!("{{\"property\": \"java::{class}.check:{descriptor}.assertion.1\", \"status\": \"FAILURE\", \"trace\": [{trace}]}}")];
+    results.extend((2..=5).map(|n| format!("{{\"property\": \"java::{class}.check:{descriptor}.assertion.{n}\", \"status\": \"SUCCESS\"}}")));
+    Answer {
+        text: format!("JBMC version 6.11.0 (cbmc-6.11.0)\n[{class}.check:{descriptor}.assertion.1] line 1 assertion at file {class}.java line 1 function java::{class}.check:{descriptor} bytecode-index 9: FAILURE\n  INPUT arg0a: {input}\n** 1 of 5 failed (2 iterations)\nVERIFICATION FAILED\n"),
+        json: json_answer(&results, Some("failure")),
+    }
 }
 
 /// `--engine auto --confirm`: a proof of the own checker's that JBMC proves too is confirmed, one JBMC refutes is
@@ -671,8 +708,8 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     let Some(compiled) = compile() else { return };
     let jbmc = fake_jbmc("confirm");
     let dir = jbmc.parent().unwrap().to_path_buf();
-    let answer = |text: &str| {
-        std::fs::write(dir.join("answer.txt"), text).unwrap();
+    let answer = |a: &Answer| {
+        write_answer(&dir, a);
         let _ = std::fs::remove_file(dir.join("args.txt"));
     };
     let prove = |method: &str, assert: &str, gaps: GapMode, name: &str| {
@@ -689,7 +726,7 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     };
     let status = |o: &property::Outcome| o.search.as_ref().and_then(|s| s.confirmation.as_ref()).map(|c| c.status);
 
-    answer(PROVED);
+    answer(&proved());
     let confirmed = prove("increment", "result == x + 1", GapMode::Strict, "proved");
     assert_eq!(confirmed.verdict, Verdict::Verified, "{}", confirmed.output);
     assert_eq!(status(&confirmed), Some(Confirmed::Confirmed));
@@ -700,7 +737,7 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     let json = serde_json::to_value(&confirmed).unwrap();
     assert_eq!(json["search"]["confirmation"]["status"], "confirmed");
 
-    answer(&refuted_by_jbmc("PropertyHarness", "(I)V", "5"));
+    answer(&refuted_by_jbmc("PropertyHarness", "(I)V", 5));
     let disagreed = prove("increment", "result == x + 1", GapMode::Strict, "refuted");
     assert_eq!(disagreed.verdict, Verdict::Unverifiable, "neither verdict: {}", disagreed.output);
     assert_eq!(status(&disagreed), Some(Confirmed::Disagreed));
@@ -711,14 +748,14 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     assert_eq!(runner_arguments(&witness.inputs), "5");
     assert!(!disagreed.replay.as_ref().unwrap().reproduced);
 
-    answer(NO_ANSWER);
+    answer(&no_answer());
     let unconfirmed = prove("increment", "result == x + 1", GapMode::Strict, "silent");
     assert_eq!(unconfirmed.verdict, Verdict::Verified, "{}", unconfirmed.output);
     assert_eq!(status(&unconfirmed), Some(Confirmed::NoVerdict));
     assert!(unconfirmed.output.contains("  not confirmed: JBMC 6.11.0 gave no verdict"), "{}", unconfirmed.output);
 
     // `new ArrayList<>(n)` assumed to return: JBMC has no bytecode for it either, so it is not asked.
-    answer(PROVED);
+    answer(&proved());
     let assumed = prove("capacity", "result == 1", GapMode::Assume, "assumed");
     assert_eq!(assumed.verdict, Verdict::Verified, "{}", assumed.output);
     assert_eq!(status(&assumed), Some(Confirmed::NotAsked));
@@ -731,7 +768,7 @@ fn confirm_reports_what_jbmc_made_of_a_proof_of_the_own_checker() {
     assert_eq!(status(&refuted), None);
 
     // A regression proof: the same class as both versions, proved rather than taken as identical.
-    answer(&refuted_by_jbmc("EquivalenceHarness", "(I)V", "7"));
+    answer(&refuted_by_jbmc("EquivalenceHarness", "(I)V", 7));
     let mut options = jvmcontract::equivalence::Options::new(&compiled.classes, &compiled.classes, &format!("{CLASS}#increment"));
     options.engine = Engine::Auto;
     options.confirm = true;
@@ -761,10 +798,10 @@ fn jbmc_runs_only_the_stages_that_change_the_domain_within_one_deadline() {
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let jbmc = dir.join("jbmc");
-    std::fs::write(&jbmc, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" >> \"$d/runs.txt\"\ncase \"$*\" in *--java-assume-inputs-interval*) [ -e \"$d/hang-stages\" ] && exec sleep 30;; esac\n[ -e \"$d/hang\" ] && exec sleep 30\ncat \"$d/answer.txt\"\n").unwrap();
+    std::fs::write(&jbmc, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 6.11.0; exit 0; fi\nd=$(dirname \"$0\")\necho \"$@\" >> \"$d/runs.txt\"\ncase \"$*\" in *--java-assume-inputs-interval*) [ -e \"$d/hang-stages\" ] && exec sleep 30;; esac\n[ -e \"$d/hang\" ] && exec sleep 30\ncase \"$*\" in *--json-ui*) cat \"$d/answer.json\";; *) cat \"$d/answer.txt\";; esac\n").unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&jbmc, std::fs::Permissions::from_mode(0o755)).unwrap();
-    std::fs::write(dir.join("answer.txt"), PROVED).unwrap();
+    write_answer(&dir, &proved());
     let set = |hang_stages: bool, hang: bool| {
         let _ = std::fs::remove_file(dir.join("runs.txt"));
         for (name, on) in [("hang-stages", hang_stages), ("hang", hang)] {
@@ -1070,7 +1107,7 @@ fn vacuity_is_a_status_of_a_verified_statement() {
     // Unknown: JBMC (a stand-in here) proves a statement over records whose constructor meets a gap, which the own
     // checker's probe refuses under strict.
     let jbmc = fake_jbmc("vacuity");
-    std::fs::write(jbmc.parent().unwrap().join("answer.txt"), PROVED).unwrap();
+    write_answer(jbmc.parent().unwrap(), &proved());
     let sized = regress("sized", "Sized#twice", &|o| {
         o.engine = Engine::Jbmc;
         o.jbmc = jbmc.display().to_string();
